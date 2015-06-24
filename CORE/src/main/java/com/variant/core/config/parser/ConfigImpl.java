@@ -5,14 +5,14 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.variant.core.config.Config;
+import com.variant.core.config.TestConfig;
 import com.variant.core.config.Test;
 import com.variant.core.config.View;
 
 /**
  * @author Igor
  */
-public class ConfigImpl implements Config {
+public class ConfigImpl implements TestConfig {
 
 	// Views are keyed by name
 	LinkedHashSet<View> views = new LinkedHashSet<View>();

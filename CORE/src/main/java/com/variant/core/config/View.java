@@ -15,9 +15,15 @@ public interface View {
 	public String getName();	
 	
 	/**
-	 *  View's declared path
+	 *  View's declared control path
 	 * @return
 	 */
 	public String getPath();
 
+	/**
+	 * Does this view has variants (! isInvariant) in a particular test?
+	 * @param test
+	 * @return
+	 */
+	public boolean isInvariantIn(Test test);
 }

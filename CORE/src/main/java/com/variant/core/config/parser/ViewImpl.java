@@ -1,5 +1,7 @@
 package com.variant.core.config.parser;
 
+import com.variant.core.VariantInternalException;
+import com.variant.core.config.Test;
 import com.variant.core.config.View;
 
 /**
@@ -46,6 +48,15 @@ class ViewImpl implements View {
 	@Override
 	public int hashCode() {
 		return name.hashCode();
+	}
+
+	@Override
+	public boolean isInvariantIn(Test test) {
+
+		for (Test.OnView tov: test.getOnViews()) {
+			if (tov.getTest().equals(test)) return tov.isInvariant();
+		}
+		throw new VariantInternalException(String.format("Test [%s] is not instrumented on view [%s]", test.getName(), name));
 	}
 
 }

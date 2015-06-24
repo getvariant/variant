@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.variant.core.config.Config;
+import com.variant.core.config.TestConfig;
 
 class ParserResponse {
 
@@ -63,7 +63,7 @@ class ParserResponse {
 	 * Get the config in progress, built by the current invocation of the parser.
 	 * @param view
 	 */
-	Config getConfig() {
+	TestConfig getConfig() {
 		return config;
 	}
 }

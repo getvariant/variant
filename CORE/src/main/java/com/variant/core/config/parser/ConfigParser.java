@@ -1,16 +1,12 @@
 package com.variant.core.config.parser;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Consumer;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.Variant;
-import com.variant.core.config.View;
 import com.variant.core.util.StringUtils;
 
 public class ConfigParser {
@@ -100,7 +96,7 @@ public class ConfigParser {
 		
 		// Only replace config if no fatal errors.
 		if (response.highestSeverity().lessThan(ParserError.Severity.FATAL)) {
-			Variant.setConfig(response.getConfig());
+			Variant.setTestConfig(response.getConfig());
 		}
 		
 		return response;

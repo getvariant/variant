@@ -2,7 +2,7 @@ package com.variant.core.config.parser;
 
 import com.variant.core.config.Test;
 
-public class TestExperienceImpl implements Test.Experience  {
+class TestExperienceImpl implements Test.Experience  {
 
 	private String name;
 	private Test test;

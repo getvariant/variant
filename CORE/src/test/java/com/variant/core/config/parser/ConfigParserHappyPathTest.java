@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.variant.core.Variant;
-import com.variant.core.config.Config;
+import com.variant.core.config.TestConfig;
 import com.variant.core.config.View;
 
 
@@ -182,7 +182,7 @@ public class ConfigParserHappyPathTest extends ConfigParserBaseTest {
 						
 		};
 
-		Config config = Variant.getConfig();
+		TestConfig config = Variant.getTestConfig();
 		
 		// Verify views returned as a list.
 		List<View> actualViews = config.getAllViews();
@@ -244,7 +244,7 @@ public class ConfigParserHappyPathTest extends ConfigParserBaseTest {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest1(com.variant.core.config.Test test, Config config) {
+	private static void verifyTest1(com.variant.core.config.Test test, TestConfig config) {
 		
 		assertNotNull(test);
 		assertEquals("test1", test.getName());
@@ -282,7 +282,7 @@ public class ConfigParserHappyPathTest extends ConfigParserBaseTest {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest2(com.variant.core.config.Test test, Config config) {
+	private static void verifyTest2(com.variant.core.config.Test test, TestConfig config) {
 
 		assertNotNull(test);
 		assertEquals("test2", test.getName());
@@ -337,7 +337,7 @@ public class ConfigParserHappyPathTest extends ConfigParserBaseTest {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest3(com.variant.core.config.Test test, Config config) {
+	private static void verifyTest3(com.variant.core.config.Test test, TestConfig config) {
 		
 		assertNotNull(test);
 		assertEquals("Test1", test.getName());

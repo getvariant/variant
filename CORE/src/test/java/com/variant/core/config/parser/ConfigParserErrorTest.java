@@ -2172,7 +2172,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 			    "}                                                             \n";
 		
 		ParserResponse response = ConfigParser.parse(config);
-printErrors(response);
+
 		assertTrue(response.hasErrors());
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());

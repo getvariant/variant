@@ -7,7 +7,7 @@ import java.util.List;
  * In-memory representation of the configuration instance.
  * @author Igor
  */
-public interface Config {
+public interface TestConfig {
 
 	/**
 	 * Get a list or all views in the order they were defined.
