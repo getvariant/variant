@@ -1,5 +1,10 @@
 package com.variant.core.event;
 
+/**
+ * Exposes Event Persister to test classes
+ * @author Igor
+ *
+ */
 public class EventWriterTestFacade {
 
 	private EventWriter eventWriter;

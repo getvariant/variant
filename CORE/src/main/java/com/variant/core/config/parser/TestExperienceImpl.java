@@ -10,7 +10,7 @@ class TestExperienceImpl implements Test.Experience  {
 	boolean isControl;
 	
 	/**
-	 * 
+	 * Instantiation.
 	 * @param name
 	 */
 	TestExperienceImpl(String name, float weight, boolean isControl) {

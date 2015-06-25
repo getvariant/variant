@@ -5,14 +5,14 @@ package com.variant.core.config.parser;
  * @author Igor
  *
  */
-public class ViewTestImpl extends ViewImpl {
+public class ViewImplTestFacade extends ViewImpl {
 
 	/**
 	 * 
 	 * @param name
 	 * @param path
 	 */
-	public ViewTestImpl(String name, String path) {
+	public ViewImplTestFacade(String name, String path) {
 		super(name, path);
 	}
 

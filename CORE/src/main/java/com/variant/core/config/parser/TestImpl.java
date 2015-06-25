@@ -1,11 +1,9 @@
 package com.variant.core.config.parser;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import com.variant.core.config.Test;
-import com.variant.core.config.View;
 
 /**
  * 

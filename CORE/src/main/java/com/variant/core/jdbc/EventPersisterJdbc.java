@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Iterator;
@@ -13,6 +14,7 @@ import com.variant.core.event.BaseEvent;
 import com.variant.core.event.EventExperience;
 import com.variant.core.event.EventPersister;
 import com.variant.core.util.JdbcUtil;
+import com.variant.core.util.VariantProperties;
 
 /**
  * JDBC persisters extend this class instead of implementing the EventPersister interface. 
@@ -43,16 +45,11 @@ abstract public class EventPersisterJdbc implements EventPersister {
 		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
 			    "(id, session_id, created_on, event_name, event_value, status) " +
-			    "VALUES (events_id_seq.NEXTVAL, ?, ?, ?, ?, ?)";
+				(VariantProperties.jdbcVendor() == JdbcService.Vendor.POSTGRES ?
+						"VALUES (NEXTVAL('events_id_seq'), ?, ?, ?, ?, ?)" :
+				VariantProperties.jdbcVendor() == JdbcService.Vendor.H2 ?
+						"VALUES (events_id_seq.NEXTVAL, ?, ?, ?, ?, ?)" : "");
 
-		/*
-		 * event_id              CHAR(32) REFERENCES events(id) ON DELETE CASCADE,
-  test_name             VARCHAR(128) NOT NULL,     -- Test name
-  experience_name       VARCHAR(128) NOT NULL,     -- Experience name
-  is_experience_control BOOLEAN NOT NULL,          -- Is experience control for the test?
-  is_view_invariant     BOOLEAN,                   -- If event is a view serve event, is this view invariant for this test?
-  view_resolved_path    VARCHAR(256),              -- If event is a view serve event, the view's actual path; null otherwise.
-		 */
 		final String INSERT_EVENTS_EXPERIENCES_SQL = 
 				"INSERT INTO events_experiences " +
 			    "(event_id, test_name, experience_name, is_control, is_view_invariant, view_resolved_path) " +
@@ -68,7 +65,9 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					// 1. Insert into EVENTS and get the sequence generated IDs back.
 					//
-					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL);
+					
+					// Postgres requires Statement.RETURN_GENERATED_KEYS.
+					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
 					for (BaseEvent event: events) {
 

@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import com.variant.core.Variant;
+import com.variant.core.VariantInternalException;
 
 public class EventWriter {
 	
@@ -33,6 +34,16 @@ public class EventWriter {
 	
 	// The actual event persister passed to the constructor by client code.
 	private EventPersister persisterImpl = null;
+	
+	/**
+	 * Validate that event is well-formed.
+	 * @param event
+	 */
+	private void validateEvent(BaseEvent event) {
+		if (event.experiences.size() == 0) 
+			throw new VariantInternalException(
+					String.format("Event [%s] [%s] has no experiences. Ignored.", event.eventName, event.eventValue));
+	}
 	
 	/**
 	 * Expose event persister to tests via package visibility.
@@ -113,6 +124,7 @@ public class EventWriter {
 		Iterator<BaseEvent> iter = events.iterator();
 		while (currentQueueSize < queueSize && iter.hasNext()) {
 			BaseEvent event = iter.next();
+			validateEvent(event);
 			eventQueue.add(event);
 			currentQueueSize++;
 			acceptCount++;

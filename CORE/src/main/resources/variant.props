@@ -1,0 +1,13 @@
+#
+# Base properties for Variant Core.
+#
+
+# Event Persister
+#persister.class.name = com.variant.ext.persist.H2EventPersister
+persister.class.name = com.variant.ext.persist.PostgresEventPersister
+
+# jdbc connector
+jdbc.vendor = postgres
+jdbc.url = jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;
+jdbc.user = 
+jdbc.password = 

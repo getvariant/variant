@@ -6,10 +6,8 @@ import java.util.List;
 
 import com.variant.core.config.TestConfig;
 
-class ParserResponse {
+public class ParserResponse {
 
-
-	
 	private ArrayList<ParserError> errors = new ArrayList<ParserError>();
 	private ConfigImpl config = new ConfigImpl();
 	
@@ -30,10 +28,22 @@ class ParserResponse {
 	}
 
 	/**
-	 * 
-	 * @return highest severity if there are errors or null otherwise.
+	 * Get the config in progress, built by the current invocation of the parser.
+	 * @param view
 	 */
-	ParserError.Severity highestSeverity() {
+	TestConfig getConfig() {
+		return config;
+	}
+
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 * 
+	 * @return Highest severity if there are errors or null otherwise.
+	 */
+	public ParserError.Severity highestSeverity() {
 		
 		ParserError.Severity result = ParserError.Severity.NONE;
 		for (ParserError error: errors) {
@@ -47,7 +57,7 @@ class ParserResponse {
 	 * 
 	 * @return
 	 */
-	boolean hasErrors() {
+	public boolean hasErrors() {
 		return errors.size() > 0;
 	}
 	
@@ -55,15 +65,8 @@ class ParserResponse {
 	 * All parse errors in order they were produced as an unmodifiable list.
 	 * @return
 	 */
-	List<ParserError> getErrors() {
+	public List<ParserError> getErrors() {
 		return Collections.unmodifiableList(errors);
 	}
 	
-	/**
-	 * Get the config in progress, built by the current invocation of the parser.
-	 * @param view
-	 */
-	TestConfig getConfig() {
-		return config;
-	}
 }

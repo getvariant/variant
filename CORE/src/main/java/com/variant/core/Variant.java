@@ -169,7 +169,7 @@ public class Variant {
 	 */
 	public static class Config {
 		
-		private String persisterClassName = null;
+		private String persisterClassName = "com.variant.ext.persist.H2EventPersister"; // Default is in-memory H2.
 		private EventPersister.Config persisterConfig;
 		private EventWriter.Config eventWriterConfig;
 		

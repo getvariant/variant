@@ -1,12 +1,15 @@
-package com.variant.core.config.parser;
+package com.variant.core.junit;
 
 import java.util.function.Consumer;
+
+import com.variant.core.config.parser.ParserError;
+import com.variant.core.config.parser.ParserResponse;
 
 /**
  * Common utility methods for all JUnit tests.
  */
 
-public class ConfigParserBaseTest {
+public class BaseTest {
 	
 	/**
 	 * Print all errors to std out.

@@ -4,7 +4,7 @@ import java.util.Random;
 
 import com.variant.core.util.StringUtils;
 
-public class VariantSessionTestImpl extends VariantSessionImpl {
+public class VariantSessionImplTestFacade extends VariantSessionImpl {
 
 	private static Random random = new Random();
 	

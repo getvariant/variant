@@ -1,16 +1,23 @@
-package com.variant.core.config.parser;
+package com.variant.core.junit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.variant.core.config.parser.ConfigParser;
+import com.variant.core.config.parser.ParserError;
+import com.variant.core.config.parser.ParserErrorTemplate;
+import com.variant.core.config.parser.ParserErrorTestFacade;
+import com.variant.core.config.parser.ParserResponse;
+import com.variant.core.config.parser.ParserError.Severity;
+
 /**
  * Parse time exceptions
  * @author Igor
  *
  */
-public class ConfigParserErrorTest extends ConfigParserBaseTest {
+public class ConfigParserErrorTest extends BaseTest {
 
 	/**
 	 * JSON_PARSE
@@ -61,7 +68,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.JSON_PARSE, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries").getMessage(), error.getMessage());		
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.JSON_PARSE, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries").getMessage(), error.getMessage());		
 		assertEquals(7, error.getLine().intValue());
 		assertEquals(4, error.getColumn().intValue());
 	}
@@ -83,11 +90,11 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(2, response.getErrors().size());
 
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.NO_VIEWS_CLAUSE).getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.NO_VIEWS_CLAUSE).getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.INFO, error.getSeverity());
 
 		error = response.getErrors().get(1);
-		assertEquals(new ParserError(ParserErrorTemplate.NO_TESTS_CLAUSE).getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.NO_TESTS_CLAUSE).getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.INFO, error.getSeverity());
 
 	}
@@ -136,11 +143,11 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(2, response.getErrors().size());
 
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.NO_VIEWS_CLAUSE).getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.NO_VIEWS_CLAUSE).getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.INFO, error.getSeverity());
 
 		error = response.getErrors().get(1);
-		assertEquals(new ParserError(ParserErrorTemplate.VIEWREF_UNDEFINED, "view1", "Test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VIEWREF_UNDEFINED, "view1", "Test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -191,11 +198,11 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(2, response.getErrors().size());
 
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.NO_VIEWS).getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.NO_VIEWS).getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.INFO, error.getSeverity());
 
 		error = response.getErrors().get(1);
-		assertEquals(new ParserError(ParserErrorTemplate.VIEWREF_UNDEFINED, "view1", "Test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VIEWREF_UNDEFINED, "view1", "Test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 
 	}
@@ -250,7 +257,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VIEW_NAME_MISSING).getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VIEW_NAME_MISSING).getMessage(), error.getMessage());
 	}
 
 	/**
@@ -308,7 +315,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VIEW_NAME_NOT_STRING).getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VIEW_NAME_NOT_STRING).getMessage(), error.getMessage());
 	}
 
 	/**
@@ -367,7 +374,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VIEW_NAME_DUPE, "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VIEW_NAME_DUPE, "view1").getMessage(), error.getMessage());
 	}
 
 	/**
@@ -424,7 +431,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VIEW_PATH_MISSING, "view3").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VIEW_PATH_MISSING, "view3").getMessage(), error.getMessage());
 	}
 
 	/**
@@ -451,7 +458,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.NO_TESTS_CLAUSE).getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.NO_TESTS_CLAUSE).getMessage(), error.getMessage());
 	}
 
 	/**
@@ -480,7 +487,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.NO_TESTS).getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.NO_TESTS).getMessage(), error.getMessage());
 	}
 
 	/**
@@ -538,9 +545,9 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.WARN, response.highestSeverity());
 		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.UNSUPPORTED_CLAUSE, "invalid clause").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.UNSUPPORTED_CLAUSE, "invalid clause").getMessage(), error.getMessage());
 		error = response.getErrors().get(1);
-		assertEquals(new ParserError(ParserErrorTemplate.VIEW_UNSUPPORTED_PROPERTY, "invalid property", "view2").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VIEW_UNSUPPORTED_PROPERTY, "invalid property", "view2").getMessage(), error.getMessage());
 	}
 
 	/**
@@ -596,7 +603,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.TEST_NAME_MISSING).getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.TEST_NAME_MISSING).getMessage(), error.getMessage());
 	}
 
 	/**
@@ -652,7 +659,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.TEST_NAME_NOT_STRING).getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.TEST_NAME_NOT_STRING).getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 	
@@ -735,7 +742,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.TEST_NAME_DUPE, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.TEST_NAME_DUPE, "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -793,7 +800,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.WARN, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.TEST_UNSUPPORTED_PROPERTY, "unsupported", "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.TEST_UNSUPPORTED_PROPERTY, "unsupported", "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.WARN, error.getSeverity());
 	}
 
@@ -840,10 +847,10 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCES_NOT_LIST, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCES_NOT_LIST, "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 		error = response.getErrors().get(1);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCEREF_UNDEFINED, "A", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCEREF_UNDEFINED, "A", "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -892,10 +899,10 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCES_LIST_EMPTY, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCES_LIST_EMPTY, "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 		error = response.getErrors().get(1);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCEREF_UNDEFINED, "A", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCEREF_UNDEFINED, "A", "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -948,7 +955,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCE_NOT_OBJECT, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCE_NOT_OBJECT, "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1005,7 +1012,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCE_NAME_NOT_STRING, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCE_NAME_NOT_STRING, "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1063,7 +1070,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.ISCONTROL_NOT_BOOLEAN, "test1", "A").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.ISCONTROL_NOT_BOOLEAN, "test1", "A").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1120,7 +1127,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.WEIGHT_NOT_NUMBER, "test1", "B").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.WEIGHT_NOT_NUMBER, "test1", "B").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1178,7 +1185,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.WARN, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCE_UNSUPPORTED_PROPERTY, "unsupported", "test1", "A").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCE_UNSUPPORTED_PROPERTY, "unsupported", "test1", "A").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.WARN, error.getSeverity());
 	}
 
@@ -1235,7 +1242,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.ONVIEWS_NOT_LIST, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.ONVIEWS_NOT_LIST, "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1282,7 +1289,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.ONVIEWS_LIST_EMPTY, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.ONVIEWS_LIST_EMPTY, "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 	
@@ -1329,7 +1336,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.ONVIEW_NOT_OBJECT, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.ONVIEW_NOT_OBJECT, "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1386,7 +1393,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VIEWREF_NOT_STRING, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VIEWREF_NOT_STRING, "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1442,7 +1449,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VIEWREF_MISSING, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VIEWREF_MISSING, "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1500,7 +1507,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VIEWREF_UNDEFINED, "View1", "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VIEWREF_UNDEFINED, "View1", "test1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1558,7 +1565,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.ISINVARIANT_NOT_BOOLEAN, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.ISINVARIANT_NOT_BOOLEAN, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1616,7 +1623,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VARIANTS_NOT_LIST, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VARIANTS_NOT_LIST, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1670,7 +1677,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VARIANTS_LIST_EMPTY, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VARIANTS_LIST_EMPTY, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1728,7 +1735,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VARIANTS_UNSUPPORTED_PROPERTY, "unsupported", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VARIANTS_UNSUPPORTED_PROPERTY, "unsupported", "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1786,7 +1793,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VARIANTS_ISINVARIANT_INCOMPATIBLE, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VARIANTS_ISINVARIANT_INCOMPATIBLE, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1837,7 +1844,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VARIANTS_ISINVARIANT_XOR, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VARIANTS_ISINVARIANT_XOR, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1889,10 +1896,10 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.VARIANT_NOT_OBJECT, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VARIANT_NOT_OBJECT, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 		error = response.getErrors().get(1);
-		assertEquals(new ParserError(ParserErrorTemplate.VARIANT_NOT_OBJECT, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.VARIANT_NOT_OBJECT, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -1949,7 +1956,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCEREF_MISSING, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCEREF_MISSING, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 	
@@ -2006,7 +2013,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCEREF_NOT_STRING, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCEREF_NOT_STRING, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -2063,7 +2070,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCEREF_UNDEFINED, "foo", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCEREF_UNDEFINED, "foo", "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -2120,7 +2127,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCEREF_ISCONTROL, "B", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCEREF_ISCONTROL, "B", "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 
@@ -2177,7 +2184,7 @@ public class ConfigParserErrorTest extends ConfigParserBaseTest {
 		assertEquals(ParserError.Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ParserErrorTemplate.EXPERIENCEREF_PATH_NOT_STRING, "test1", "view1", "A").getMessage(), error.getMessage());
+		assertEquals(new ParserErrorTestFacade(ParserErrorTemplate.EXPERIENCEREF_PATH_NOT_STRING, "test1", "view1", "A").getMessage(), error.getMessage());
 		assertEquals(ParserError.Severity.ERROR, error.getSeverity());
 	}
 

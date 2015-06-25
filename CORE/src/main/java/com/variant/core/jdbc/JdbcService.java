@@ -2,6 +2,7 @@ package com.variant.core.jdbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 /**
  * 
@@ -10,6 +11,38 @@ import java.sql.SQLException;
  */
 public class JdbcService {
 
+	/**
+	 * SQLException has its own stacking paradigm and log4j cannot unwind it.
+	 * @param e
+	 */
+	private static RuntimeException toRuntimeException(SQLException e) {
+
+		// Get all exceptions.
+		ArrayList<SQLException> stack = new ArrayList<SQLException>();
+		SQLException next = e.getNextException();
+		while (next != null) {
+			stack.add(next);
+			next = next.getNextException();
+		};
+		
+		// Build one long message.
+		StringBuilder msg = new StringBuilder();
+		for (int i = 0; i < stack.size(); i++) {
+			msg.append(stack.get(i).getMessage());
+		}
+		
+		return new RuntimeException(e.getMessage(), new RuntimeException(msg.toString()));
+	}
+
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
+	public static enum Vendor {
+		POSTGRES,
+		H2
+	}
+	
 	/**
 	 * A Query JDBC operation.
 	 * @author Igor
@@ -41,6 +74,9 @@ public class JdbcService {
 			conn.commit();
 			return result;
 		}
+		catch (SQLException e) {
+			throw toRuntimeException(e);
+		}
 		finally {
 			if (conn != null) {
 				conn.rollback();
@@ -60,12 +96,15 @@ public class JdbcService {
 			op.execute(conn);
 			conn.commit();
 		}
+		catch (SQLException e) {
+			throw toRuntimeException(e);
+		}
 		finally {
 			if (conn != null) {
 				conn.rollback();
 				conn.close();
 			}
 		}
-	}	
-
+	}
+	
 }

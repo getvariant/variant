@@ -5,7 +5,7 @@ package com.variant.core.config.parser;
  * 
  * @author Igor
  */
-enum ParserErrorTemplate {
+public enum ParserErrorTemplate {
 	
 	// View related errors
 	NO_VIEWS_CLAUSE                    (ParserError.Severity.INFO, "VIEWS clause is not found"),                                                            /// junit exists.

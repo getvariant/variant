@@ -64,7 +64,7 @@ public class ApplicationProperties {
 
 	/**
 	 * Get a property from property files.
-	 * First try the local.  If not found, try the global.
+	 * Scan properties left to right and return first one found.
 	 * @param key
 	 */
 	private static String getProperty(String key) {

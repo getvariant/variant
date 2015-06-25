@@ -55,6 +55,13 @@
   			<version>${jackson.version}</version>
 		</dependency>  
     
+    	<!-- Postgres 9.1 JDBC driver -->
+	    <dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.1-901-1.jdbc4</version>
+		</dependency>
+    	
     	<!-- JUnit -->    
         <dependency>
 			<groupId>junit</groupId>
