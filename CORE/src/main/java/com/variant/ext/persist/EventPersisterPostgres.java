@@ -3,10 +3,11 @@ package com.variant.ext.persist;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import com.variant.core.jdbc.EventPersisterJdbc;
 
-public class H2EventPersister extends EventPersisterJdbc {
+public class EventPersisterPostgres extends EventPersisterJdbc {
 
 	private Config config = null;
 	
@@ -17,9 +18,12 @@ public class H2EventPersister extends EventPersisterJdbc {
 
 	@Override
 	public Connection getJdbcConnection() throws ClassNotFoundException, SQLException {
-		Class.forName("org.h2.Driver");
-		return DriverManager.getConnection(config.getJdbcUrl(), config.getJdbcUser(), config.getJdbcPassword());
+	
+		String url = config.getJdbcUrl();
+		Properties props = new Properties();
+		props.setProperty("user",config.getJdbcUser());
+		props.setProperty("password",config.getJdbcPassword());
+		return DriverManager.getConnection(url, props);		
 	}
-
 
 }

@@ -32,4 +32,5 @@ public class StringUtils {
 	public static String random128BitString(Random rand) {
 		return random64BitString(rand) + random64BitString(rand);
 	}
+	
 }

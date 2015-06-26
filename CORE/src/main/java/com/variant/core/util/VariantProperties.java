@@ -4,7 +4,7 @@ import com.variant.core.jdbc.JdbcService;
 
 public class VariantProperties {
 
-	private static ApplicationProperties props = new ApplicationProperties("/local-test.props", "/test.props", "/variant.props");
+	private static ApplicationProperties props = new ApplicationProperties("/variant.props");
 
 	/**
 	 * Static singleton

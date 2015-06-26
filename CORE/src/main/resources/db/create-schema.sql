@@ -13,7 +13,7 @@ CREATE SEQUENCE events_id_seq
   INCREMENT BY 1
   NO CYCLE;
  
-CREATE TABLE events_experiences ( 
+CREATE TABLE event_experiences ( 
   event_id              BIGINT REFERENCES events(id) ON DELETE CASCADE,
   test_name             VARCHAR(128) NOT NULL,     -- Test name
   experience_name       VARCHAR(128) NOT NULL,     -- Experience name
@@ -25,7 +25,7 @@ CREATE TABLE events_experiences (
 
 CREATE TABLE event_params ( 
   event_id              BIGINT REFERENCES events(id) ON DELETE CASCADE,
-  param_name            VARCHAR(64) NOT NULL, 
+  param_key             VARCHAR(64) NOT NULL, 
   param_value           VARCHAR(512) NOT NULL
  );
  

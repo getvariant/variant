@@ -50,10 +50,15 @@ abstract public class EventPersisterJdbc implements EventPersister {
 				VariantProperties.jdbcVendor() == JdbcService.Vendor.H2 ?
 						"VALUES (events_id_seq.NEXTVAL, ?, ?, ?, ?, ?)" : "");
 
-		final String INSERT_EVENTS_EXPERIENCES_SQL = 
-				"INSERT INTO events_experiences " +
+		final String INSERT_EVENT_EXPERIENCES_SQL = 
+				"INSERT INTO event_experiences " +
 			    "(event_id, test_name, experience_name, is_control, is_view_invariant, view_resolved_path) " +
 			    "VALUES (?, ?, ?, ?, ?, ?)";
+
+		final String INSERT_EVENT_PARAMETERS_SQL = 
+				"INSERT INTO event_params " +
+			    "(event_id, param_key, param_value) " +
+			    "VALUES (?, ?, ?)";
 
 		JdbcService.executeUpdate(
 			JdbcUtil.getConnection(), 
@@ -102,7 +107,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					// 2. Insert into EVENTS_EXPERIENCES.
 					//
-					stmt = conn.prepareStatement(INSERT_EVENTS_EXPERIENCES_SQL);
+					stmt = conn.prepareStatement(INSERT_EVENT_EXPERIENCES_SQL);
 					
 					for (BaseEvent event: events) {
 						for (EventExperience ee: event.getEventExperiences()) {
@@ -119,6 +124,25 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					}
 					
 					stmt.executeBatch();
+					
+					//
+					// 3. Insert into EVENTS_PARAMETERS.
+					//
+					stmt = conn.prepareStatement(INSERT_EVENT_PARAMETERS_SQL);
+					
+					for (BaseEvent event: events) {
+						for (String key: event.getParameterKeys()) {
+	
+							stmt.setLong(1, event.getId());
+							stmt.setString(2, key);
+							stmt.setString(3, event.getParameter(key));
+						
+							stmt.addBatch();
+						}
+					}
+					
+					stmt.executeBatch();
+
 				}
 			}
 		);

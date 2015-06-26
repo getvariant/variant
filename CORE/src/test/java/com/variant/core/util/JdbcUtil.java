@@ -14,6 +14,7 @@ import com.variant.core.Variant;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriterTestFacade;
 import com.variant.core.jdbc.EventPersisterJdbc;
+import com.variant.core.jdbc.JdbcService;
 
 public class JdbcUtil {
 
@@ -74,19 +75,35 @@ public class JdbcUtil {
 	}
 	
 	/**
-	 * Drop relational schema
+	 * Drop relational schema. Ignore the table does not exist errors.
 	 * 
 	 * @param conn
 	 * @throws Exception
 	 */
 	public static void dropSchema() throws Exception {
 		
+		final String[] SQL_STATES_OBJECT_DOES_NOT_EXIST = 
+				VariantProperties.jdbcVendor() == JdbcService.Vendor.POSTGRES ? new String[] {"42P01"} :
+				VariantProperties.jdbcVendor() == JdbcService.Vendor.H2       ? new String[] {"42S02", "90036"} : null;
+		
 		List<String> statements = statementsFromResourceFile("/db/drop-schema.sql");
 		Statement jdbcStmt = getConnection().createStatement();
+
 		for (String stmt: statements) {
-			jdbcStmt.execute(stmt);
+			
 			String[] tokens = stmt.split(" ");
-			Variant.getLogger().debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
+			
+			try {
+				jdbcStmt.execute(stmt);
+				Variant.getLogger().debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
+			}
+			catch (SQLException e) {				
+				System.out.println(e.getSQLState());
+				if (StringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_DOES_NOT_EXIST)) {
+					Variant.getLogger().debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Relation Does Not Exist.");
+				}
+				else throw e;
+			}
 		}
 	}
 

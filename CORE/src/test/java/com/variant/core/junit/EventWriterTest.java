@@ -18,7 +18,7 @@ import com.variant.core.event.EventWriter;
 import com.variant.core.event.ViewServeEventTestFacade;
 import com.variant.core.session.VariantSessionImplTestFacade;
 import com.variant.core.util.JdbcUtil;
-import com.variant.core.util.TestProperties;
+import com.variant.core.util.VariantProperties;
 
 public class EventWriterTest extends BaseTest {
 
@@ -36,18 +36,23 @@ public class EventWriterTest extends BaseTest {
 		eventWriterConfig.setBufferSize(10);
 		
 		EventPersister.Config persisterConfig = new EventPersister.Config();
-		persisterConfig.setJdbcUrl(TestProperties.jdbcUrl()); 
-		persisterConfig.setJdbcUser(TestProperties.jdbcUser());
-		persisterConfig.setJdbcPassword(TestProperties.jdbcPassword());
+		persisterConfig.setJdbcUrl(VariantProperties.jdbcUrl()); 
+		persisterConfig.setJdbcUser(VariantProperties.jdbcUser());
+		persisterConfig.setJdbcPassword(VariantProperties.jdbcPassword());
 		Variant.Config variantConfig = new Variant.Config();
-		variantConfig.setPersisterClassName(TestProperties.persisterClassName());
+		variantConfig.setPersisterClassName(VariantProperties.persisterClassName());
 		variantConfig.setPersisterConfig(persisterConfig);
 		variantConfig.setEventWriterConfig(eventWriterConfig);
 		
 		Variant.bootstrap(variantConfig);
 
-		// Recreate the schema;
-		JdbcUtil.recreateSchema();
+		// (Re)create the schema;
+		switch (VariantProperties.jdbcVendor()) {
+		case POSTGRES: 
+			JdbcUtil.recreateSchema();;
+		case H2:
+			JdbcUtil.createSchema();;  // Fresh in-memory DB.
+		}
 
 	}
 
@@ -58,7 +63,7 @@ public class EventWriterTest extends BaseTest {
 	@After
 	public void afterEachTest() throws Exception {
 
-		// Sleep bit to give the event writer thread a chance to complete.
+		// Sleep a bit to give the event writer thread a chance to flush before JUnit kills it.
 		Thread.sleep(2000);
 	}
 	
@@ -76,6 +81,7 @@ public class EventWriterTest extends BaseTest {
 		VariantSession session = new VariantSessionImplTestFacade();
 		ViewServeEventTestFacade event = new ViewServeEventTestFacade(view, session, BaseEvent.Status.SUCCESS, "viewResolvedPath");
 		event.addExperience(test.getExperience("A"));
+		event.putParameter("key1", "value1");
 		Variant.getEventWriter().write(event);
 	}
 	
