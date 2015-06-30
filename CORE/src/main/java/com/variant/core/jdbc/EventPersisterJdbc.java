@@ -13,7 +13,6 @@ import com.variant.core.VariantInternalException;
 import com.variant.core.event.BaseEvent;
 import com.variant.core.event.EventExperience;
 import com.variant.core.event.EventPersister;
-import com.variant.core.util.JdbcUtil;
 import com.variant.core.util.VariantProperties;
 
 /**
@@ -93,6 +92,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					Iterator<BaseEvent> eventsIter = events.iterator();
 					ResultSet gennedKeys = stmt.getGeneratedKeys();
 					while(gennedKeys.next()) {
+
 						if (!eventsIter.hasNext()) 
 							throw new VariantInternalException("Received more genereated keys than inserted events.");
 						
@@ -111,7 +111,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					for (BaseEvent event: events) {
 						for (EventExperience ee: event.getEventExperiences()) {
-	
+
 							stmt.setLong(1, ee.getEventId());
 							stmt.setString(2, ee.getTestName());
 							stmt.setString(3, ee.getExperienceName());

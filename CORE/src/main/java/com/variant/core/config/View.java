@@ -1,5 +1,7 @@
 package com.variant.core.config;
 
+import java.util.List;
+
 /**
  * 
  * @author Igor
@@ -21,7 +23,13 @@ public interface View {
 	public String getPath();
 
 	/**
-	 * Does this view has variants (! isInvariant) in a particular test?
+	 * Get all tests instrumented on this view.
+	 * @return
+	 */
+	List<Test> getInstrumentedTests();
+
+	/**
+	 * Does this view have variants (! isInvariant) in a particular test?
 	 * @param test
 	 * @return
 	 */

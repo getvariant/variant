@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -180,10 +181,9 @@ public class ConfigParserHappyPathTest extends BaseTest {
 	/**
 	 * Happy path.
 	 */
+	@SuppressWarnings("serial")
 	@Test
 	public void happyPathTest() throws Exception {
-		
-		
 		
 		ParserResponse response = ConfigParser.parse(CONFIG);
 		if (response.hasErrors()) printErrors(response);
@@ -204,14 +204,14 @@ public class ConfigParserHappyPathTest extends BaseTest {
 				{"view8", "/path/to/view8"},
 				{"view9", "/path/to/view9"},
 				{"view10", "/path/to/view10"},
-				{"View1", "/path/to/View1"}
+				{"View1",  "/path/to/View1"}
 						
 		};
 
-		TestConfig config = Variant.getTestConfig();
+		final TestConfig config = Variant.getTestConfig();
 		
 		// Verify views returned as a list.
-		List<View> actualViews = config.getAllViews();
+		List<View> actualViews = config.getViews();
 		assertEquals(expectedViews.length, actualViews.size());
 		verifyView(expectedViews[0], actualViews.get(0));
 		verifyView(expectedViews[1], actualViews.get(1));
@@ -237,11 +237,50 @@ public class ConfigParserHappyPathTest extends BaseTest {
 			assertNull(config.getView(expectedView[0].toUpperCase()));
 		}
 		
+		// Instrumented tests.
+		View view = config.getView("view1");
+		ArrayList<com.variant.core.config.Test> expectedInstrumentedTests = new ArrayList<com.variant.core.config.Test>() {{
+			add(config.getTest("test1"));
+			add(config.getTest("Test1"));
+		}};
+		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
+		assertFalse(view.isInvariantIn(config.getTest("test1")));
+		assertFalse(view.isInvariantIn(config.getTest("Test1")));
+		try {
+			assertFalse(view.isInvariantIn(config.getTest("non-existent")));
+		}
+		catch (NullPointerException npe ) { /* expected */ }
+
+		view = config.getView("view2");
+		expectedInstrumentedTests = new ArrayList<com.variant.core.config.Test>() {{
+			add(config.getTest("test2"));
+		}};
+		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
+		assertFalse(view.isInvariantIn(config.getTest("test2")));
+		
+		view = config.getView("view3");
+		expectedInstrumentedTests = new ArrayList<com.variant.core.config.Test>() {{
+			add(config.getTest("test2"));
+		}};
+		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
+		assertFalse(view.isInvariantIn(config.getTest("test2")));
+
+		view = config.getView("view4");
+		expectedInstrumentedTests = new ArrayList<com.variant.core.config.Test>() {{
+			add(config.getTest("test2"));
+		}};
+		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
+		assertTrue(view.isInvariantIn(config.getTest("test2")));
+		
+		view = config.getView("view5");
+		expectedInstrumentedTests = new ArrayList<com.variant.core.config.Test>();
+		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
+
 		//
 		// Tests.
 		//
 
-		List<com.variant.core.config.Test> actualTests = config.getAllTests();
+		List<com.variant.core.config.Test> actualTests = config.getTests();
 		
 		assertEquals(3, actualTests.size());
 		verifyTest1(actualTests.get(0), config);
@@ -302,6 +341,8 @@ public class ConfigParserHappyPathTest extends BaseTest {
 		com.variant.core.config.Test.OnView.Variant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("B"), variant.getExperience());
 		assertEquals("/path/to/view1/test1.B", variant.getPath());
+		
+		
 	}
 	
 	/**

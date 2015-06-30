@@ -1,4 +1,4 @@
-package com.variant.core.util;
+package com.variant.core.jdbc;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,9 +12,9 @@ import java.util.List;
 
 import com.variant.core.Variant;
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.EventWriterTestFacade;
-import com.variant.core.jdbc.EventPersisterJdbc;
-import com.variant.core.jdbc.JdbcService;
+import com.variant.core.util.StringUtils;
+import com.variant.core.util.VariantProperties;
+
 
 public class JdbcUtil {
 
@@ -69,7 +69,7 @@ public class JdbcUtil {
 	 */
 	public static Connection getConnection() throws ClassNotFoundException, SQLException {
 	
-		EventPersister ep = new EventWriterTestFacade(Variant.getEventWriter()).getEventPersister();
+		EventPersister ep = Variant.getEventWriter().getEventPersister();
 		return ((EventPersisterJdbc) ep).getJdbcConnection();
 
 	}

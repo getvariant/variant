@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.variant.core.config.View;
+import com.variant.core.error.ErrorTemplate;
 
 /**
  * Parse the VIEWS clause.
@@ -23,17 +24,17 @@ public class ViewsParser implements Keywords {
 			rawViews = (List<Map<String, ?>>) viewsObject;
 		}
 		catch (Exception e) {
-			response.addError(ParserErrorTemplate.INTERNAL, e.getMessage());
+			response.addError(ErrorTemplate.INTERNAL, e.getMessage());
 		}
 		
 		if (rawViews.size() == 0) {
-			response.addError(ParserErrorTemplate.NO_VIEWS);
+			response.addError(ErrorTemplate.PARSER_NO_VIEWS);
 		}
 		
 		for (Map<String, ?> rawView: rawViews) {
 			View view = parseView(rawView, response);
 			if (view != null && !((ConfigImpl) response.getConfig()).addView(view)) {
-				response.addError(ParserErrorTemplate.VIEW_NAME_DUPE, view.getName());
+				response.addError(ErrorTemplate.PARSER_VIEW_NAME_DUPE, view.getName());
 			}
 		}
 	}
@@ -55,7 +56,7 @@ public class ViewsParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addError(ParserErrorTemplate.VIEW_NAME_NOT_STRING);
+					response.addError(ErrorTemplate.PARSER_VIEW_NAME_NOT_STRING);
 				}
 				else {
 					name = (String) nameObject;
@@ -66,7 +67,7 @@ public class ViewsParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addError(ParserErrorTemplate.VIEW_NAME_MISSING);
+				response.addError(ErrorTemplate.PARSER_VIEW_NAME_MISSING);
 			}
 			return null;
 		}
@@ -80,19 +81,19 @@ public class ViewsParser implements Keywords {
 				pathFound = true;
 				Object pathObject = entry.getValue();
 				if (! (pathObject instanceof String)) {
-					response.addError(ParserErrorTemplate.VIEW_PATH_NOT_STRING, name);
+					response.addError(ErrorTemplate.PARSER_VIEW_PATH_NOT_STRING, name);
 				}
 				path = (String) pathObject;
 			}
 			else {
-				response.addError(ParserErrorTemplate.VIEW_UNSUPPORTED_PROPERTY, entry.getKey(), name);
+				response.addError(ErrorTemplate.PARSER_VIEW_UNSUPPORTED_PROPERTY, entry.getKey(), name);
 			}
 		}
 		
 		
 		if (path == null) {
 			if (!pathFound) {
-				response.addError(ParserErrorTemplate.VIEW_PATH_MISSING, name);
+				response.addError(ErrorTemplate.PARSER_VIEW_PATH_MISSING, name);
 			}
 			return null;
 		}

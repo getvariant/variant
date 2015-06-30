@@ -47,7 +47,7 @@ public class ConfigImpl implements TestConfig {
 	/**
 	 * Views in the order they were created as an immutable list.
 	 */
-	public List<View> getAllViews() {
+	public List<View> getViews() {
 		ArrayList<View> result = new ArrayList<View>(views.size());
 		for (View v: views) {
 			result.add(v);
@@ -68,7 +68,7 @@ public class ConfigImpl implements TestConfig {
 	/**
 	 * Get all tests.
 	 */
-	public List<Test> getAllTests() {
+	public List<Test> getTests() {
 		ArrayList<Test> result = new ArrayList<Test>(tests.size());
 		for (Test test: tests) {
 			result.add(test);

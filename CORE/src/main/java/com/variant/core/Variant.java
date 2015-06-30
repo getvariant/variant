@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.config.TestConfig;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
+import com.variant.core.runtime.VariantRuntime;
+import com.variant.core.session.VariantViewRequestImpl;
 
 /**
  * The Variant Container.
@@ -129,11 +131,31 @@ public class Variant {
 	
 	/**
 	 * Start of a view request.
+	 * 1. Look up the view by its path.  If the view is not known, return null.  
+	 * 2. Find all the tests instrumented on this view.  This is the view's test list,
+	 *    i.e. the list of tests to be targeted before we can resolve the view.
+	 * 3. Target all these tests, i.e. figure out an experience for each of them. 
+	 * 4. Find the subset of the view's test list that are already targeted by consulting the 
+	 *    targeting persister.
+     * 5. If such a subset exists, confirm that we are able to handle this test cell. 
+     *    The reason we may not is if the two tests used to be covariant and the experience
+     *    persister reports two already targeted variant experiences, but in a recent config 
+     *    change these two tests are no longer covariant and hence we don't know how to resolve
+     *    this test cell.
+     * 6. If we're still able to resolve the pre-targeted cell, continue with the rest of the tests 
+     *    on the view's list in the order they were defined, and target each test via the regular 
+     *    targeting mechanism.
+     * 7. If we're unable to resolve the pre-targeted cell, remove all its experience from the
+     *    tergeting persister, i.e. make it equivalent to there being no pre-targed tests at all
+     *    and target all tests, in the order they were defined, regularly.
+     *
 	 * @return
 	 */
-	public static VariantViewRequest startViewRequest() {
+	public static VariantViewRequest startViewRequest(String viewPath) {
+		
 		stateCheck();
-		return null;
+		VariantRuntime.targetSession(testConfig, viewPath);		
+		return new VariantViewRequestImpl();
 	}
 	
 	/**
@@ -169,9 +191,10 @@ public class Variant {
 	 */
 	public static class Config {
 		
-		private String persisterClassName = "com.variant.ext.persist.H2EventPersister"; // Default is in-memory H2.
-		private EventPersister.Config persisterConfig;
-		private EventWriter.Config eventWriterConfig;
+		// Default is in-memory H2.
+		private String persisterClassName = "com.variant.ext.persist.EventPersisterH2";
+		private EventPersister.Config persisterConfig = new EventPersister.Config();
+		private EventWriter.Config eventWriterConfig = new EventWriter.Config();
 		
 		/**
 		 * Default values.

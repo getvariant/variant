@@ -1,24 +1,24 @@
 package com.variant.core.config.parser;
 
+import com.variant.core.error.BaseError;
+import com.variant.core.error.ErrorTemplate;
+
 /**
  * Parser error.
  * 
  * @author Igor
  */
-public class ParserError {
+public class ParserError extends BaseError {
 	
-	private ParserErrorTemplate template;
 	private Integer line = null, column = null;
-	private String[] args;
-	
+
 	/**
 	 * 
 	 * @param template
 	 * @param args
 	 */
-	ParserError(ParserErrorTemplate template, String...args) {
-		this.template = template;
-		this.args = args;
+	public ParserError(ErrorTemplate template, String...args) {
+		super(template, args);
 	}
 
 	/**
@@ -28,8 +28,8 @@ public class ParserError {
 	 * @param column
 	 * @param args
 	 */
-	ParserError(ParserErrorTemplate template, int line, int column, String...args) {
-		this(template, args);
+	public ParserError(ErrorTemplate template, int line, int column, String...args) {
+		super(template, args);
 		this.line = line;
 		this.column = column;
 	}
@@ -37,63 +37,6 @@ public class ParserError {
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-
-	/**
-	 * How severe is the error
-	 */
-	public static enum Severity {
-		
-		// --- Order is important --- //
-		NONE,     // Nothing.
-		INFO,     // Information only. Not an error.
-		WARN,     // Parse can continue, fit for run time.
-		ERROR,    // Parse can continue, but not fit for run time
-		FATAL;    // Parse cannot continue.
-
-		/**
-		 * Is other severity greater than this?
-		 * @param other
-		 * @return
-		 */
-		public boolean greaterThan(Severity other) {
-			return ordinal() > other.ordinal();
-		}
-
-		/**
-		 * Is other severity less than this?
-		 * @param other
-		 * @return
-		 */
-		public boolean lessThan(Severity other) {
-			return ordinal() < other.ordinal();
-		}
-
-		/**
-		 * Is other severity greater or equal than this?
-		 * @param other
-		 * @return
-		 */
-		public boolean greaterOrEqualThan(Severity other) {
-			return ordinal() >= other.ordinal();
-		}
-
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public Severity getSeverity() {
-		return template.getSeverity();
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public String getMessage() {
-		return String.format(template.getFormat(), (Object[]) args);
-	}
 
 	/**
 	 * 
@@ -116,8 +59,7 @@ public class ParserError {
 	 */
 	@Override
 	public String toString() {
-		
-		return getSeverity().name() + " - " + getMessage() + (line == null ? "" : String.format(" @ line %s, column %s", line, column));
+		return super.toString() + (line == null ? "" : String.format(" @ line %s, column %s", line, column));
 	}
 
 }

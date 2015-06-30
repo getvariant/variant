@@ -49,7 +49,7 @@ public class EventWriter {
 	 * Expose event persister to tests via package visibility.
 	 * @return
 	 */
-	EventPersister getEventPersister() {
+	public EventPersister getEventPersister() {
 		return persisterImpl;
 	}
 	

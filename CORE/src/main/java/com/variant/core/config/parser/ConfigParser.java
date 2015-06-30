@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.Variant;
+import com.variant.core.error.ErrorTemplate;
+import com.variant.core.error.Severity;
 import com.variant.core.util.StringUtils;
 
 public class ConfigParser {
@@ -31,7 +33,7 @@ public class ConfigParser {
 		int line = Integer.parseInt(tokens[0]);
 		int column = Integer.parseInt(tokens[1]);
 		
-		response.addError(ParserErrorTemplate.JSON_PARSE, line, column, message);
+		response.addError(ErrorTemplate.PARSER_JSON_PARSE, line, column, message);
 
 	}
 	
@@ -57,10 +59,10 @@ public class ConfigParser {
 			toParserError(parseException, configAsJsonString, response);
 		} 
 		catch (Exception exception) {
-			response.addError(ParserErrorTemplate.INTERNAL, exception.getMessage());
+			response.addError(ErrorTemplate.INTERNAL, exception.getMessage());
 		}
 		
-		if (response.highestSeverity().greaterOrEqualThan(ParserError.Severity.FATAL)) return response;
+		if (response.highestSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
 		
 		// Cean map will contain only entries with expected clauses with keys uppercased 
 		Map<String, Object> cleanMap = new LinkedHashMap<String, Object>();
@@ -71,31 +73,31 @@ public class ConfigParser {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {
-				response.addError(ParserErrorTemplate.UNSUPPORTED_CLAUSE, entry.getKey());
+				response.addError(ErrorTemplate.PARSER_UNSUPPORTED_CLAUSE, entry.getKey());
 			}
 		}
 		
 		// Pass2. Look at all clauses.  Expected ones are already uppercased.
 		Object views = cleanMap.get("VIEWS");
 		if (views == null) {
-			response.addError(ParserErrorTemplate.NO_VIEWS_CLAUSE);
+			response.addError(ErrorTemplate.PARSER_NO_VIEWS_CLAUSE);
 		}
 		else {
 			ViewsParser.parseViews(views, response);
 		}
 
-		if (response.highestSeverity().greaterOrEqualThan(ParserError.Severity.FATAL)) return response;
+		if (response.highestSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
 
 		Object tests = cleanMap.get("TESTS");
 		if (tests == null) {
-			response.addError(ParserErrorTemplate.NO_TESTS_CLAUSE);
+			response.addError(ErrorTemplate.PARSER_NO_TESTS_CLAUSE);
 		}
 		else {
 			TestsParser.parseTests(tests, response);
 		}
 		
 		// Only replace config if no fatal errors.
-		if (response.highestSeverity().lessThan(ParserError.Severity.FATAL)) {
+		if (response.highestSeverity().lessThan(Severity.FATAL)) {
 			Variant.setTestConfig(response.getConfig());
 		}
 		

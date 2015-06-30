@@ -4,19 +4,19 @@
 
 
 # H2 Event Persister
-persister.class.name = com.variant.ext.persist.EventPersisterH2
+# persister.class.name = com.variant.ext.persist.EventPersisterH2
 
 # H2 jdbc connector
-jdbc.vendor = h2
-jdbc.url = jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;
-jdbc.user = 
-jdbc.password = 
+#jdbc.vendor = h2
+#jdbc.url = jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;
+#jdbc.user = 
+#jdbc.password = 
 
 # Postgres Event Persister
-#persister.class.name = com.variant.ext.persist.EventPersisterPostgres
+persister.class.name = com.variant.ext.persist.EventPersisterPostgres
 
 # Postgres jdbc connector
-#jdbc.vendor = postgres
-#jdbc.url = jdbc:postgresql://localhost/variant
-#jdbc.user = variant
-#jdbc.password = variant
+jdbc.vendor = postgres
+jdbc.url = jdbc:postgresql://localhost/variant
+jdbc.user = variant
+jdbc.password = variant

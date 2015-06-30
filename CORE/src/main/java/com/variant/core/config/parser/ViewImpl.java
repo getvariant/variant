@@ -1,8 +1,15 @@
 package com.variant.core.config.parser;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
+import com.variant.core.VariantRuntimeException;
 import com.variant.core.config.Test;
 import com.variant.core.config.View;
+import com.variant.core.error.ErrorTemplate;
 
 /**
  * 
@@ -27,11 +34,13 @@ class ViewImpl implements View {
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-	
+
+	@Override
 	public String getName() {
 		return name;
 	}
 	
+	@Override
 	public String getPath() {
 		return path;
 	}
@@ -42,7 +51,7 @@ class ViewImpl implements View {
 	@Override
 	public boolean equals(Object other) {
 		if (! (other instanceof View)) return false;
-		return ((View) other).getName().equalsIgnoreCase(this.getName());
+		return ((View) other).getName().equals(this.getName());
 	}
 
 	@Override
@@ -51,12 +60,25 @@ class ViewImpl implements View {
 	}
 
 	@Override
+	public List<Test> getInstrumentedTests() {
+		
+		ArrayList<Test> result = new ArrayList<Test>();
+		
+		for (Test test: Variant.getTestConfig().getTests()) {
+			for (Test.OnView tov: test.getOnViews()) {
+				if (tov.getView().equals(this)) result.add(test);
+			}
+		}
+		return Collections.unmodifiableList(result);
+	}
+
+	@Override
 	public boolean isInvariantIn(Test test) {
 
 		for (Test.OnView tov: test.getOnViews()) {
-			if (tov.getTest().equals(test)) return tov.isInvariant();
+			if (tov.getView().equals(this)) return tov.isInvariant();
 		}
-		throw new VariantInternalException(String.format("Test [%s] is not instrumented on view [%s]", test.getName(), name));
+		throw new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, name, test.getName());
 	}
 
 }

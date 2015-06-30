@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.variant.core.config.TestConfig;
+import com.variant.core.error.ErrorTemplate;
+import com.variant.core.error.Severity;
 
 public class ParserResponse {
 
@@ -15,7 +17,7 @@ public class ParserResponse {
 	 * 
 	 * @param error
 	 */
-	void addError(ParserErrorTemplate template, int line, int column, String...args) {
+	void addError(ErrorTemplate template, int line, int column, String...args) {
 		errors.add(new ParserError(template, line, column, args));
 	}
 	
@@ -23,7 +25,7 @@ public class ParserResponse {
 	 * 
 	 * @param error
 	 */
-	void addError(ParserErrorTemplate template, String...args) {
+	void addError(ErrorTemplate template, String...args) {
 		errors.add(new ParserError(template, args));
 	}
 
@@ -43,9 +45,9 @@ public class ParserResponse {
 	 * 
 	 * @return Highest severity if there are errors or null otherwise.
 	 */
-	public ParserError.Severity highestSeverity() {
+	public Severity highestSeverity() {
 		
-		ParserError.Severity result = ParserError.Severity.NONE;
+		Severity result = Severity.NONE;
 		for (ParserError error: errors) {
 			if (result.compareTo(error.getSeverity()) < 0)
 				result = error.getSeverity();					

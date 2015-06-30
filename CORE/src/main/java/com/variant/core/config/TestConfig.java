@@ -13,7 +13,7 @@ public interface TestConfig {
 	 * Get a list or all views in the order they were defined.
 	 * @return
 	 */
-	public List<View> getAllViews();
+	public List<View> getViews();
 
 	/**
 	 * Get a view by name.
@@ -26,7 +26,7 @@ public interface TestConfig {
 	 * Get a list of all tests in the order they were declared.
 	 * @return
 	 */
-	public List<Test>getAllTests();
+	public List<Test>getTests();
 	
 	/**
 	 * Get a test by name.
