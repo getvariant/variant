@@ -10,7 +10,7 @@ import com.variant.core.config.TestConfig;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
 import com.variant.core.runtime.VariantRuntime;
-import com.variant.core.session.VariantViewRequestImpl;
+import com.variant.core.session.SessionService;
 
 /**
  * The Variant Container.
@@ -24,7 +24,8 @@ public class Variant {
 	private static boolean isBootstrapped = false;
 	private static TestConfig testConfig = null;
 	private static EventWriter eventWriter = null;
-
+	private static SessionService sessionService = null;
+	
 	// Tests will call this to replace logger implementation.
 	static void setLogger(Logger logger) {
 		Variant.logger = logger;
@@ -105,14 +106,15 @@ public class Variant {
 			);
 		}
 		
+		// Session Service.
+		sessionService = new SessionService(config.sessionServiceConfig);
+
+		// Instantiate event writer.
+		eventWriter = new EventWriter(config.eventWriterConfig, persister);
+
 		// User callback
 		persister.initialized(config.persisterConfig);
-		
-		//
-		// Instantiate event writer.
-		//
-		eventWriter = new EventWriter(config.eventWriterConfig, persister);
-		
+				
 		isBootstrapped = true;
 		
 		logger.info("Variant bootstrapped in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
@@ -127,6 +129,15 @@ public class Variant {
 		stateCheck();
 		return testConfig;
 	
+	}
+	
+	/**
+	 * 
+	 * @param create
+	 * @return
+	 */
+	public static VariantSession getSession(boolean create) {
+		return sessionService.getSession(true);
 	}
 	
 	/**
@@ -151,11 +162,10 @@ public class Variant {
      *
 	 * @return
 	 */
-	public static VariantViewRequest startViewRequest(String viewPath) {
+	public static void startViewRequest(VariantSession session, String viewPath) {
 		
 		stateCheck();
-		VariantRuntime.targetSession(testConfig, viewPath);		
-		return new VariantViewRequestImpl();
+		VariantRuntime.targetSession(session, viewPath);		
 	}
 	
 	/**
@@ -195,6 +205,7 @@ public class Variant {
 		private String persisterClassName = "com.variant.ext.persist.EventPersisterH2";
 		private EventPersister.Config persisterConfig = new EventPersister.Config();
 		private EventWriter.Config eventWriterConfig = new EventWriter.Config();
+		private SessionService.Config sessionServiceConfig = new SessionService.Config();
 		
 		/**
 		 * Default values.
@@ -208,6 +219,14 @@ public class Variant {
 		public void setPersisterClassName(String persisterClassName) {
 			this.persisterClassName = persisterClassName;
 		}
+
+		/**
+		 * 
+		 * @return
+		 */
+		public String getPersisterClassName() {
+			return persisterClassName;
+		}
 		
 		/**
 		 * 
@@ -219,10 +238,42 @@ public class Variant {
 		
 		/**
 		 * 
+		 * @return
+		 */
+		public EventPersister.Config getEventPersisterConfig() {
+			return persisterConfig;
+		}
+		
+		/**
+		 * 
 		 * @param config
 		 */
 		public void setEventWriterConfig(EventWriter.Config config) {
 			this.eventWriterConfig = config;
+		}
+
+		/**
+		 * 
+		 * @return
+		 */
+		public EventWriter.Config getEventWriterConfig() {
+			return eventWriterConfig;
+		}
+		
+		/**
+		 * 
+		 * @param config
+		 */
+		public void setSessioinServiceConfig(SessionService.Config config) {
+			this.sessionServiceConfig = config;
+		}
+
+		/**
+		 * 
+		 * @return
+		 */
+		public SessionService.Config getSessionServiceConfig() {
+			return sessionServiceConfig;
 		}
 	}
 }

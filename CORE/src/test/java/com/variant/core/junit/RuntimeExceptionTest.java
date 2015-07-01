@@ -17,7 +17,6 @@ import com.variant.core.error.ErrorTemplate;
 
 public class RuntimeExceptionTest extends BaseTest {
 	
-
 	/**
 	 * 
 	 * @throws Exception

@@ -13,7 +13,7 @@ public class VariantBootstrapException extends Exception {
 	 * 
 	 * @param msg
 	 */
-	VariantBootstrapException(String msg) {
+	public VariantBootstrapException(String msg) {
 		super(msg);
 	}
 
@@ -22,7 +22,7 @@ public class VariantBootstrapException extends Exception {
 	 * @param msg
 	 * @param t
 	 */
-	VariantBootstrapException(String msg, Throwable t) {
+	public VariantBootstrapException(String msg, Throwable t) {
 		super(msg, t);
 	}
 

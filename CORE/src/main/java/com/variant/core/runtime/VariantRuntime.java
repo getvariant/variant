@@ -1,7 +1,8 @@
 package com.variant.core.runtime;
 
+import com.variant.core.Variant;
 import com.variant.core.VariantRuntimeException;
-import com.variant.core.config.TestConfig;
+import com.variant.core.VariantSession;
 import com.variant.core.config.View;
 import com.variant.core.error.ErrorTemplate;
 
@@ -24,12 +25,12 @@ public class VariantRuntime {
 	 * @param config
 	 * @param viewPath
 	 */
-	public static void targetSession(TestConfig config, String viewPath) {
+	public static void targetSession(VariantSession ssn, String viewPath) {
 
-		// Get 
+		// Find the View by its path.
 		View view = null;
 		
-		for(View v: config.getViews()) {
+		for(View v: Variant.getTestConfig().getViews()) {
 			if (v.getPath().equalsIgnoreCase(viewPath)) {
 				view = v;
 				break;
