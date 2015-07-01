@@ -10,6 +10,7 @@ import com.variant.core.config.TestConfig;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
 import com.variant.core.runtime.VariantRuntime;
+import com.variant.core.session.SessionKeyResolver;
 import com.variant.core.session.SessionService;
 
 /**
@@ -132,14 +133,30 @@ public class Variant {
 	}
 	
 	/**
-	 * 
-	 * @param create
-	 * @return
+	 *  Get user's Variant session. 
+	 *  
+	 * @param create   Whether or not create the session if does not exist.
+	 * @param userData Client code can supply runtime details that will be passed without
+	 *                 interpretation to <code>SessionKeyResolver.getSessionKey()</code>
+	 *                 In an environment like servlet container, this will be http request.
+	 * @return          
 	 */
-	public static VariantSession getSession(boolean create) {
-		return sessionService.getSession(true);
+	public static VariantSession getSession(boolean create, SessionKeyResolver.UserData userData) {
+		return sessionService.getSession(create, userData);
 	}
 	
+	/**
+	 * Get user's Variant session. 
+	 * 
+	 * @param userArgs Client code can supply runtime details that will be passed without
+	 *                 interpretation to <code>SessionKeyResolver.getSessionKey()</code>
+	 *                 In an environment like servlet container, this will be http request.
+	 * @return
+	 */
+	public static <T> VariantSession getSession(SessionKeyResolver.UserData userData) {
+		return sessionService.getSession(true, userData);
+	}
+
 	/**
 	 * Start of a view request.
 	 * 1. Look up the view by its path.  If the view is not known, return null.  

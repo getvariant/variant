@@ -1,4 +1,4 @@
-package com.variant.core.junit;
+package com.variant.core.tests;
 
 import static org.junit.Assert.assertFalse;
 
@@ -7,6 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.variant.core.Variant;
+import com.variant.core.VariantSession;
 import com.variant.core.config.TestConfig;
 import com.variant.core.config.View;
 import com.variant.core.config.parser.ConfigParser;
@@ -16,8 +17,8 @@ import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
 import com.variant.core.event.ViewServeEventTestFacade;
 import com.variant.core.jdbc.JdbcUtil;
-import com.variant.core.session.VariantSessionImplTestFacade;
 import com.variant.core.util.VariantProperties;
+import com.variant.ext.session.SessionKeyResolverJunit;
 
 public class EventWriterTest extends BaseTest {
 
@@ -42,6 +43,7 @@ public class EventWriterTest extends BaseTest {
 		variantConfig.setPersisterClassName(VariantProperties.persisterClassName());
 		variantConfig.setPersisterConfig(persisterConfig);
 		variantConfig.setEventWriterConfig(eventWriterConfig);
+		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.ext.session.SessionKeyResolverJunit");
 		
 		Variant.bootstrap(variantConfig);
 
@@ -79,8 +81,9 @@ public class EventWriterTest extends BaseTest {
 		TestConfig config = Variant.getTestConfig();
 		com.variant.core.config.Test test = config.getTest("test1");
 		View view = config.getView("view1");
-		ViewServeEventTestFacade event1 = new ViewServeEventTestFacade(view, new VariantSessionImplTestFacade(), BaseEvent.Status.SUCCESS, "viewResolvedPath");
-		ViewServeEventTestFacade event2 = new ViewServeEventTestFacade(view, new VariantSessionImplTestFacade(), BaseEvent.Status.SUCCESS, "viewResolvedPath");
+		VariantSession ssn = Variant.getSession(new SessionKeyResolverJunit.UserDataImpl("foo"));
+		ViewServeEventTestFacade event1 = new ViewServeEventTestFacade(view, ssn, BaseEvent.Status.SUCCESS, "viewResolvedPath");
+		ViewServeEventTestFacade event2 = new ViewServeEventTestFacade(view, ssn, BaseEvent.Status.SUCCESS, "viewResolvedPath");
 		event1.addExperience(test.getExperience("A"));
 		event1.putParameter("event1-key1", "value1");
 		event2.addExperience(test.getExperience("B"));

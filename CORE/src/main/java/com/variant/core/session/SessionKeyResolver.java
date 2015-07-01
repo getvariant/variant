@@ -10,5 +10,17 @@ package com.variant.core.session;
 
 public interface SessionKeyResolver {
 
-	String getSessionKey();
+	/**
+	 * 
+	 * @param userArgs in an environment like servlet container, user arg will be http request.
+	 * 
+	 * @return
+	 */
+	String getSessionKey(UserData...userArgs);
+	
+	/**
+	 * 
+	 * @author Igor
+	 */
+	public static interface UserData {};
 }

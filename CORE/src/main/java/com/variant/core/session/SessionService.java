@@ -38,7 +38,7 @@ public class SessionService {
 		}
 		catch (Exception e) {
 			throw new VariantBootstrapException(
-					"Unable to instantiate event bootstrapper class [" +
+					"Unable to instantiate Session Key Resolver class [" +
 					config.keyResolverClassName +
 					"]",
 					e
@@ -53,8 +53,10 @@ public class SessionService {
 	 * 
 	 * @return user session if exists or null if doesn't and create is false.
 	 */
-	public VariantSession getSession(boolean create) {
-		String key = keyResolver.getSessionKey();
+	public VariantSession getSession(boolean create, SessionKeyResolver.UserData...userArgs) {
+		
+		String key = keyResolver.getSessionKey(userArgs);
+		
 		if (key == null) 
 			throw new VariantRuntimeException(
 					ErrorTemplate.INTERNAL, 
@@ -63,7 +65,7 @@ public class SessionService {
 		VariantSession result = store.get(key);
 
 		if (result == null && create) {
-			result = new VariantSessionImpl();
+			result = new VariantSessionImpl(key);
 			store.put(key, result);
 		}
 		return result;

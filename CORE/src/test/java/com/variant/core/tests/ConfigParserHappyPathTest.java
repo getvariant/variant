@@ -1,4 +1,4 @@
-package com.variant.core.junit;
+package com.variant.core.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -17,8 +17,6 @@ import com.variant.core.config.TestConfig;
 import com.variant.core.config.View;
 import com.variant.core.config.parser.ConfigParser;
 import com.variant.core.config.parser.ParserResponse;
-import com.variant.core.event.EventPersister;
-import com.variant.core.event.EventWriter;
 
 
 public class ConfigParserHappyPathTest extends BaseTest {
@@ -172,8 +170,7 @@ public class ConfigParserHappyPathTest extends BaseTest {
 
 		// Bootstrap the Variant container with defaults.
 		Variant.Config variantConfig = new Variant.Config();
-		variantConfig.setPersisterConfig(new EventPersister.Config());
-		variantConfig.setEventWriterConfig(new EventWriter.Config());		
+		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.ext.session.SessionKeyResolverJunit");
 		Variant.bootstrap(variantConfig);
 
 	}

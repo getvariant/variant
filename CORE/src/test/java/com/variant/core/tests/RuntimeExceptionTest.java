@@ -1,4 +1,4 @@
-package com.variant.core.junit;
+package com.variant.core.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,7 +25,9 @@ public class RuntimeExceptionTest extends BaseTest {
 	public static void beforeTestCase() throws Exception {
 		
 		// Bootstrap the Variant container with defaults.
-		Variant.bootstrap(new Variant.Config());
+		Variant.Config variantConfig = new Variant.Config();
+		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.ext.session.SessionKeyResolverJunit");
+		Variant.bootstrap(variantConfig);
 	}
 
 	/**

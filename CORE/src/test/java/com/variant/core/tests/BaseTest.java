@@ -1,4 +1,4 @@
-package com.variant.core.junit;
+package com.variant.core.tests;
 
 import java.util.function.Consumer;
 
