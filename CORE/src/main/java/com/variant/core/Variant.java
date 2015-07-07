@@ -7,11 +7,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.config.TestConfig;
+import com.variant.core.config.View;
+import com.variant.core.config.parser.ConfigParser;
+import com.variant.core.config.parser.ParserResponse;
+import com.variant.core.error.ErrorTemplate;
+import com.variant.core.error.Severity;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
 import com.variant.core.runtime.VariantRuntime;
 import com.variant.core.session.SessionKeyResolver;
 import com.variant.core.session.SessionService;
+import com.variant.core.session.TargetingPersister;
 
 /**
  * The Variant Container.
@@ -22,6 +28,7 @@ import com.variant.core.session.SessionService;
 public class Variant {
 
 	private static Logger logger = LoggerFactory.getLogger("Variant");
+	private static Config config = null;
 	private static boolean isBootstrapped = false;
 	private static TestConfig testConfig = null;
 	private static EventWriter eventWriter = null;
@@ -31,22 +38,16 @@ public class Variant {
 	static void setLogger(Logger logger) {
 		Variant.logger = logger;
 	}
-
-	/**
-	 * Although there's no way not to make this public, client code should not call this. 
-	 */
-	public static  void setTestConfig(TestConfig config) {
-		Variant.testConfig = config;
-	}
 	
 	/**
 	 * Static singleton.
 	 */
-	private Variant() {}
-	
+	private Variant() {
+		throw new RuntimeException("Don't call us.");
+	}
 	
 	private static void stateCheck() {
-		if (!isBootstrapped) throw new IllegalStateException("Variant must be initialized first");
+		if (!isBootstrapped) throw new IllegalStateException("Variant must be bootstrapped first by calling one of the bootstrap() methods");
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -63,7 +64,9 @@ public class Variant {
 	}
 	
 	/**
-	 * Bootstrap from a data structure.
+	 * Variant container bootstrap from a data structure.\
+	 * This must be the first call to Variant, before any other methods may be called.
+	 * Calling this 2nd time over the life of the JVM will throw an IllegalStateException.
 	 * 
 	 * @param config
 	 * @throws IllegalAccessException 
@@ -78,21 +81,20 @@ public class Variant {
 		//
 		// Instantiate event persister.
 		//
-		if (config.persisterClassName == null) {
-			throw new IllegalArgumentException("Property [persistorClassName] must be set");
+		if (config.eventPersisterClassName == null) {
+			throw new IllegalArgumentException("Property [eventPersisterClassName] must be set");
 		}
 		
-		EventPersister persister = null;
+		EventPersister eventPersister = null;
 		try {
-			Class<?> persisterClass = Class.forName(config.persisterClassName);
-			Object persisterObject = persisterClass.newInstance();
-			if (persisterObject instanceof EventPersister) {
-				persister = (EventPersister) persisterObject;
+			Object eventPersisterObject = Class.forName(config.eventPersisterClassName).newInstance();
+			if (eventPersisterObject instanceof EventPersister) {
+				eventPersister = (EventPersister) eventPersisterObject;
 			}
 			else {
 				throw new VariantBootstrapException(
-						"Event bootstrapper class [" + 
-				config.persisterClassName + 
+						"Event persister class [" + 
+				config.eventPersisterClassName + 
 				"] must implement interface [" +
 				EventPersister.class.getName()
 				);
@@ -100,32 +102,71 @@ public class Variant {
 		}
 		catch (Exception e) {
 			throw new VariantBootstrapException(
-					"Unable to instantiate event bootstrapper class [" +
-					config.persisterClassName +
-					"]",
+					"Unable to instantiate event persister class [" + config.eventPersisterClassName +"]",
 					e
 			);
 		}
 		
-		// Session Service.
+		// Instantiate event writer.
+		eventWriter = new EventWriter(config.eventWriterConfig, eventPersister);
+		
+		// Pass the config to the new object.
+		eventPersister.initialized(config.eventPersisterConfig);
+		
+		//
+		// Instantiate session service.
+		//
 		sessionService = new SessionService(config.sessionServiceConfig);
 
-		// Instantiate event writer.
-		eventWriter = new EventWriter(config.eventWriterConfig, persister);
-
-		// User callback
-		persister.initialized(config.persisterConfig);
-				
+		Variant.config = config;
+		
 		isBootstrapped = true;
 		
-		logger.info("Variant bootstrapped in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
+		logger.info("Variant bootstrapped in " + DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"));
 	}
 	
 	/**
-	 * Get current configuration.
+	 * Container configuration.
 	 * @return
 	 */
-	public static TestConfig getTestConfig() {
+	public static Config getConfig() {
+		return config;
+	}
+	
+	/**
+	 * Parse and optionally deploy a new test configuration.
+	 * @param configAsString
+	 * @deploy The new test configuration will be deployed if this is true and no parse errors were encountered.
+	 * @return
+	 */
+	public static ParserResponse parseTestConfiguration(String configAsString, boolean deploy) {
+
+		stateCheck();
+		
+		ParserResponse result = ConfigParser.parse(configAsString);
+		// Only replace config if no ERROR or higher level errors.
+		if (result.highestSeverity().lessThan(Severity.ERROR)) {
+			testConfig = result.getConfig();
+		}
+
+		return result;
+	}
+	
+	/**
+	 * Parse and deploy a new test configuration. The new config will not be deployed if parse errors were encountered.
+	 * @param configAsString
+	 * @return
+	 */
+	public static ParserResponse parseTestConfiguration(String configAsString) {
+
+		return parseTestConfiguration(configAsString, true);
+	}
+
+	/**
+	 * Get current configuration.
+	 * @return Current test configuration or null, if none has been deployed yet.
+	 */
+	public static TestConfig getTestConfiguration() {
 
 		stateCheck();
 		return testConfig;
@@ -153,36 +194,24 @@ public class Variant {
 	 *                 In an environment like servlet container, this will be http request.
 	 * @return
 	 */
-	public static <T> VariantSession getSession(SessionKeyResolver.UserData userData) {
+	public static VariantSession getSession(SessionKeyResolver.UserData userData) {
 		return sessionService.getSession(true, userData);
 	}
 
 	/**
-	 * Start of a view request.
-	 * 1. Look up the view by its path.  If the view is not known, return null.  
-	 * 2. Find all the tests instrumented on this view.  This is the view's test list,
-	 *    i.e. the list of tests to be targeted before we can resolve the view.
-	 * 3. Target all these tests, i.e. figure out an experience for each of them. 
-	 * 4. Find the subset of the view's test list that are already targeted by consulting the 
-	 *    targeting persister.
-     * 5. If such a subset exists, confirm that we are able to handle this test cell. 
-     *    The reason we may not is if the two tests used to be covariant and the experience
-     *    persister reports two already targeted variant experiences, but in a recent config 
-     *    change these two tests are no longer covariant and hence we don't know how to resolve
-     *    this test cell.
-     * 6. If we're still able to resolve the pre-targeted cell, continue with the rest of the tests 
-     *    on the view's list in the order they were defined, and target each test via the regular 
-     *    targeting mechanism.
-     * 7. If we're unable to resolve the pre-targeted cell, remove all its experience from the
-     *    tergeting persister, i.e. make it equivalent to there being no pre-targed tests at all
-     *    and target all tests, in the order they were defined, regularly.
-     *
+     * Start view Request 
 	 * @return
 	 */
-	public static void startViewRequest(VariantSession session, String viewPath) {
+	public static void startViewRequest(VariantSession session, View view) {
 		
 		stateCheck();
-		VariantRuntime.targetSession(session, viewPath);		
+		
+		// It's caller's responsibility to init the targeting persister.
+		if (session.getTargetingPersister() == null) {
+			throw new VariantRuntimeException(ErrorTemplate.RUN_TP_NOT_INITIALIZED);
+		}
+		
+		VariantRuntime.targetSession(session, view);		
 	}
 	
 	/**
@@ -198,7 +227,6 @@ public class Variant {
 	 * @return
 	 */
 	public static Logger getLogger() {
-		stateCheck();
 		return logger;
 	}
 	
@@ -219,8 +247,9 @@ public class Variant {
 	public static class Config {
 		
 		// Default is in-memory H2.
-		private String persisterClassName = "com.variant.ext.persist.EventPersisterH2";
-		private EventPersister.Config persisterConfig = new EventPersister.Config();
+		private String eventPersisterClassName = "com.variant.ext.persist.EventPersisterH2";
+		private EventPersister.Config eventPersisterConfig = new EventPersister.Config();
+		private TargetingPersister.Config targetingPersisterConfig = new TargetingPersister.Config();
 		private EventWriter.Config eventWriterConfig = new EventWriter.Config();
 		private SessionService.Config sessionServiceConfig = new SessionService.Config();
 		
@@ -231,26 +260,26 @@ public class Variant {
 		
 		/**
 		 * 
-		 * @param persisterClassName
+		 * @param eventPersisterClassName
 		 */
-		public void setPersisterClassName(String persisterClassName) {
-			this.persisterClassName = persisterClassName;
+		public void setEventPersisterClassName(String eventPersisterClassName) {
+			this.eventPersisterClassName = eventPersisterClassName;
 		}
 
 		/**
 		 * 
 		 * @return
 		 */
-		public String getPersisterClassName() {
-			return persisterClassName;
+		public String getEventPersisterClassName() {
+			return eventPersisterClassName;
 		}
 		
 		/**
 		 * 
 		 * @return
 		 */
-		public void setPersisterConfig(EventPersister.Config config) {
-			this.persisterConfig = config;
+		public void setEventPersisterConfig(EventPersister.Config config) {
+			this.eventPersisterConfig = config;
 		}
 		
 		/**
@@ -258,7 +287,7 @@ public class Variant {
 		 * @return
 		 */
 		public EventPersister.Config getEventPersisterConfig() {
-			return persisterConfig;
+			return eventPersisterConfig;
 		}
 		
 		/**
@@ -292,5 +321,23 @@ public class Variant {
 		public SessionService.Config getSessionServiceConfig() {
 			return sessionServiceConfig;
 		}
+		
+		/**
+		 * 
+		 * @return
+		 */
+		public TargetingPersister.Config getTargetingPersisterConfig() {
+			return targetingPersisterConfig;
+		}
+
+		/**
+		 * 
+		 * @param targetingPersisterConfig
+		 */
+		public void setTargetingPersisterConfig(
+				TargetingPersister.Config targetingPersisterConfig) {
+			this.targetingPersisterConfig = targetingPersisterConfig;
+		}
+
 	}
 }

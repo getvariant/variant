@@ -6,7 +6,6 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.Variant;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
 import com.variant.core.util.StringUtils;
@@ -95,12 +94,7 @@ public class ConfigParser {
 		else {
 			TestsParser.parseTests(tests, response);
 		}
-		
-		// Only replace config if no fatal errors.
-		if (response.highestSeverity().lessThan(Severity.FATAL)) {
-			Variant.setTestConfig(response.getConfig());
-		}
-		
+				
 		return response;
 	}
 

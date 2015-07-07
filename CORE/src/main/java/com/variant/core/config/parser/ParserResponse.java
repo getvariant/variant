@@ -29,17 +29,17 @@ public class ParserResponse {
 		errors.add(new ParserError(template, args));
 	}
 
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
 	/**
 	 * Get the config in progress, built by the current invocation of the parser.
 	 * @param view
 	 */
-	TestConfig getConfig() {
+	public TestConfig getConfig() {
 		return config;
 	}
-
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
 
 	/**
 	 * 

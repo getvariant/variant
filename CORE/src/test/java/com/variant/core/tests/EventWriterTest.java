@@ -35,13 +35,13 @@ public class EventWriterTest extends BaseTest {
 		eventWriterConfig.setMaxPersisterIntervalMillis(100);
 		eventWriterConfig.setBufferSize(10);
 		
-		EventPersister.Config persisterConfig = new EventPersister.Config();
-		persisterConfig.setJdbcUrl(VariantProperties.jdbcUrl()); 
-		persisterConfig.setJdbcUser(VariantProperties.jdbcUser());
-		persisterConfig.setJdbcPassword(VariantProperties.jdbcPassword());
+		EventPersister.Config eventPersisterConfig = new EventPersister.Config();
+		eventPersisterConfig.setJdbcUrl(VariantProperties.jdbcUrl()); 
+		eventPersisterConfig.setJdbcUser(VariantProperties.jdbcUser());
+		eventPersisterConfig.setJdbcPassword(VariantProperties.jdbcPassword());
 		Variant.Config variantConfig = new Variant.Config();
-		variantConfig.setPersisterClassName(VariantProperties.persisterClassName());
-		variantConfig.setPersisterConfig(persisterConfig);
+		variantConfig.setEventPersisterClassName(VariantProperties.persisterClassName());
+		variantConfig.setEventPersisterConfig(eventPersisterConfig);
 		variantConfig.setEventWriterConfig(eventWriterConfig);
 		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.ext.session.SessionKeyResolverJunit");
 		
@@ -74,11 +74,11 @@ public class EventWriterTest extends BaseTest {
 	public void performanceTest() throws Exception {
 
 		
-		ParserResponse response = ConfigParser.parse(ConfigParserHappyPathTest.CONFIG);
+		ParserResponse response = Variant.parseTestConfiguration(ConfigParserHappyPathTest.CONFIG);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
 
-		TestConfig config = Variant.getTestConfig();
+		TestConfig config = Variant.getTestConfiguration();
 		com.variant.core.config.Test test = config.getTest("test1");
 		View view = config.getView("view1");
 		VariantSession ssn = Variant.getSession(new SessionKeyResolverJunit.UserDataImpl("foo"));

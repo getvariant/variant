@@ -77,6 +77,10 @@ public class ConfigParserHappyPathTest extends BaseTest {
     	    "           {                                                             \n" +
     	    "              'name':'B',                                                \n" +
     	    "              'weight':20                                                \n" +
+    	    "           },                                                            \n" +
+    	    "           {                                                             \n" +
+    	    "              'name':'C',                                                \n" +
+    	    "              'weight':30                                                \n" +
     	    "           }                                                             \n" +
     	    "        ],                                                               \n" +
     	    "        'onViews':[                                                      \n" +
@@ -86,6 +90,10 @@ public class ConfigParserHappyPathTest extends BaseTest {
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'B',                                 \n" +
     	    "                    'path':'/path/to/view1/test1.B'                      \n" +
+    	    "                 },                                                      \n" +
+    	    "                 {                                                       \n" +
+    	    "                    'experienceRef':'C',                                 \n" +
+    	    "                    'path':'/path/to/view1/test1.C'                      \n" +
     	    "                 }                                                       \n" +
     	    "              ]                                                          \n" +
     	    "           }                                                             \n" +
@@ -182,7 +190,7 @@ public class ConfigParserHappyPathTest extends BaseTest {
 	@Test
 	public void happyPathTest() throws Exception {
 		
-		ParserResponse response = ConfigParser.parse(CONFIG);
+		ParserResponse response = Variant.parseTestConfiguration(CONFIG);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
 
@@ -205,7 +213,7 @@ public class ConfigParserHappyPathTest extends BaseTest {
 						
 		};
 
-		final TestConfig config = Variant.getTestConfig();
+		final TestConfig config = Variant.getTestConfiguration();
 		
 		// Verify views returned as a list.
 		List<View> actualViews = config.getViews();
@@ -313,7 +321,7 @@ public class ConfigParserHappyPathTest extends BaseTest {
 		
 		// Experiences
 		List<com.variant.core.config.Test.Experience> actualExperiences = test.getExperiences();
-		assertEquals(2, actualExperiences.size());
+		assertEquals(3, actualExperiences.size());
 		com.variant.core.config.Test.Experience exp = actualExperiences.get(0);
 		assertEquals("A", exp.getName());
 		assertEquals(10, exp.getWeight(), 0.000001);
@@ -322,6 +330,11 @@ public class ConfigParserHappyPathTest extends BaseTest {
 		exp = actualExperiences.get(1);
 		assertEquals("B", exp.getName());
 		assertEquals(20, exp.getWeight(), 0.000001);
+		assertFalse(exp.isControl());
+		assertEquals(test, exp.getTest());
+		exp = actualExperiences.get(2);
+		assertEquals("C", exp.getName());
+		assertEquals(30, exp.getWeight(), 0.000001);
 		assertFalse(exp.isControl());
 		assertEquals(test, exp.getTest());
 		
@@ -334,10 +347,13 @@ public class ConfigParserHappyPathTest extends BaseTest {
 		assertEquals(config.getView("view1"), tov.getView());
 		assertFalse(tov.isInvariant());
 		List<com.variant.core.config.Test.OnView.Variant> actualVariants =  tov.getVariants();
-		assertEquals(1, actualVariants.size());
+		assertEquals(2, actualVariants.size());
 		com.variant.core.config.Test.OnView.Variant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("B"), variant.getExperience());
 		assertEquals("/path/to/view1/test1.B", variant.getPath());
+		variant = actualVariants.get(1);
+		assertEquals(test.getExperience("C"), variant.getExperience());
+		assertEquals("/path/to/view1/test1.C", variant.getPath());
 		
 		
 	}

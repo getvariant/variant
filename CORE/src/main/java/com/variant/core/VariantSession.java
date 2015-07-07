@@ -1,5 +1,7 @@
 package com.variant.core;
 
+import com.variant.core.session.TargetingPersister;
+
 public interface VariantSession {
 
 	/**
@@ -8,4 +10,14 @@ public interface VariantSession {
 	 */
 	public String getId();
 	
+	/**
+	 * Initialize the targeting persister. Targeting persister has the shortest life time and needs to be re-created
+	 * at the beginning of each view request.
+	 * 
+	 * @param userData
+	 */
+	public void initTargetingPersister(TargetingPersister.UserData...userData) throws VariantBootstrapException;
+	
+	public TargetingPersister getTargetingPersister();
+
 }

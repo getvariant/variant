@@ -6,7 +6,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.variant.core.Variant;
+import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantSession;
+import com.variant.core.session.TargetingPersister;
 import com.variant.ext.session.SessionKeyResolverJunit;
 
 public class SessionTest {
@@ -29,7 +31,8 @@ public class SessionTest {
 	 * 
 	 */
 	@Test
-	public void basicTest() {
+	public void basicTest() throws VariantBootstrapException {
+		
 		assertNull(Variant.getSession(false, new SessionKeyResolverJunit.UserDataImpl("foo")));
 		VariantSession bar = Variant.getSession(true, new SessionKeyResolverJunit.UserDataImpl("bar"));
 		assertNotNull(bar);
@@ -37,8 +40,15 @@ public class SessionTest {
 		VariantSession bar2 = Variant.getSession(false, new SessionKeyResolverJunit.UserDataImpl("bar"));
 		assertEquals(bar, bar2);
 		
+		bar2 = Variant.getSession(true, new SessionKeyResolverJunit.UserDataImpl("bar"));
+		assertEquals(bar, bar2);
+
 		bar2 = Variant.getSession(new SessionKeyResolverJunit.UserDataImpl("bar"));
 		assertEquals(bar, bar2);
 
+		assertNull(bar.getTargetingPersister());
+		bar.initTargetingPersister();
+		TargetingPersister tp = bar.getTargetingPersister();
+		assertEquals(0, tp.readAll().size());
 	}
 }

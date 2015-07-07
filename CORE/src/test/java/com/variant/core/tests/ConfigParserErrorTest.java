@@ -17,7 +17,7 @@ import com.variant.core.error.Severity;
  *
  */
 public class ConfigParserErrorTest extends BaseTest {
-
+	
 	/**
 	 * JSON_PARSE
 	 * @throws Exception
@@ -804,7 +804,7 @@ public class ConfigParserErrorTest extends BaseTest {
 	}
 
 	/**
-	 * EXPERIENCES_NOT_LIST + EXPERIENCEREF_UNDEFINED
+	 * EXPERIENCES_NOT_LIST + PARSER_IS_CONTROL_MISSING + EXPERIENCEREF_UNDEFINED
 	 * @throws Exception
 	 */
 	@Test
@@ -844,18 +844,21 @@ public class ConfigParserErrorTest extends BaseTest {
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
-		assertEquals(2, response.getErrors().size());
+		assertEquals(3, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCES_NOT_LIST, "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getErrors().get(1);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_IS_CONTROL_MISSING, "test1").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+		error = response.getErrors().get(2);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "A", "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
 
 	/**
-	 * EXPERIENCES_LIST_EMPTY + + EXPERIENCEREF_UNDEFINED
+	 * EXPERIENCES_LIST_EMPTY + PARSER_IS_CONTROL_MISSING + EXPERIENCEREF_UNDEFINED
 	 * @throws Exception
 	 */
 	@Test
@@ -896,11 +899,14 @@ public class ConfigParserErrorTest extends BaseTest {
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
-		assertEquals(2, response.getErrors().size());
+		assertEquals(3, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCES_LIST_EMPTY, "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getErrors().get(1);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_IS_CONTROL_MISSING, "test1").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+		error = response.getErrors().get(2);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "A", "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
@@ -928,7 +934,13 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':false                               \n" +
 			    "           },                                                 \n" +
 			    "           []                                                 \n" +
 			    "        ],                                                    \n" +
@@ -937,8 +949,8 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "              'viewRef':'view1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                    'experienceRef':'B',                      \n" +
+			    "                    'path':'/path/to/view1/test1.B'           \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -981,12 +993,16 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
 			    "              'weight':50                                     \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'name':234,                                     \n" +
-			    "              'weight':50,                                    \n" +
-			    "              'isControl':true                                \n" +
+			    "              'weight':50                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
 			    "        'onViews':[                                           \n" +
@@ -994,8 +1010,8 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "              'viewRef':'view1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                    'experienceRef':'B',                      \n" +
+			    "                    'path':'/path/to/view1/test1.B'           \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1006,7 +1022,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "}                                                             \n";
 		
 		ParserResponse response = ConfigParser.parse(config);
-	
+
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
@@ -1074,7 +1090,7 @@ public class ConfigParserErrorTest extends BaseTest {
 	}
 
 	/**
-	 * WEIGHT_NOT_NUMBER
+	 * WEIGHT_NOT_NUMBER + 
 	 * @throws Exception
 	 */
 	@Test
@@ -1096,11 +1112,11 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
+			    "              'weight':'40'                                   \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'name':'B',                                     \n" +
-			    "              'weight':'50',                                  \n" +
+			    "              'weight':50,                                    \n" +
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
@@ -1126,7 +1142,7 @@ public class ConfigParserErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ErrorTemplate.PARSER_WEIGHT_NOT_NUMBER, "test1", "B").getMessage(), error.getMessage());
+		assertEquals(new ParserError(ErrorTemplate.PARSER_WEIGHT_NOT_NUMBER, "test1", "A").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1848,7 +1864,7 @@ public class ConfigParserErrorTest extends BaseTest {
 	}
 
 	/**
-	 * VARIANT_NOT_OBJECT
+	 * VARIANT_NOT_OBJECT + PARSER_VARIANT_MISSING
 	 * @throws Exception
 	 */
 	@Test
@@ -1893,17 +1909,20 @@ public class ConfigParserErrorTest extends BaseTest {
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
-		assertEquals(2, response.getErrors().size());
+		assertEquals(3, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_NOT_OBJECT, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getErrors().get(1);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_NOT_OBJECT, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
+		error = response.getErrors().get(2);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_MISSING, "A", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
 	/**
-	 * EXPERIENCEREF_MISSING
+	 * EXPERIENCEREF_MISSING + PARSER_VARIANT_MISSING
 	 * @throws Exception
 	 */
 	@Test
@@ -1953,9 +1972,12 @@ public class ConfigParserErrorTest extends BaseTest {
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
-		assertEquals(1, response.getErrors().size());
+		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCEREF_MISSING, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+		error = response.getErrors().get(1);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_MISSING, "A", "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 	
@@ -1997,6 +2019,10 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "                 {                                            \n" +
 			    "                    'experienceRef': true,                    \n" +
 			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+			    "                    'path':'/path/to/view1/test1.A'           \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2017,7 +2043,7 @@ public class ConfigParserErrorTest extends BaseTest {
 	}
 
 	/**
-	 * EXPERIENCEREF_UNDEFINED
+	 * EXPERIENCEREF_UNDEFINED + PARSER_VARIANT_MISSING
 	 * @throws Exception
 	 */
 	@Test
@@ -2067,9 +2093,12 @@ public class ConfigParserErrorTest extends BaseTest {
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
-		assertEquals(1, response.getErrors().size());
+		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "foo", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+		error = response.getErrors().get(1);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_MISSING, "A", "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2109,6 +2138,10 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "              'viewRef':'view1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
 			    "                    'path':'/path/to/view1/test1.B'           \n" +
 			    "                 }                                            \n" +
@@ -2131,7 +2164,7 @@ public class ConfigParserErrorTest extends BaseTest {
 	}
 
 	/**
-	 * EXPERIENCEREF_PATH_NOT_STRING
+	 * EXPERIENCEREF_PATH_NOT_STRING + PARSER_VARIANT_MISSING
 	 * @throws Exception
 	 */
 	@Test
@@ -2181,9 +2214,267 @@ public class ConfigParserErrorTest extends BaseTest {
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
-		assertEquals(1, response.getErrors().size());
+		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCEREF_PATH_NOT_STRING, "test1", "view1", "A").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+		error = response.getErrors().get(1);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_MISSING, "A", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+	}
+
+	/**
+	 * PARSER_EXPERIENCE_NAME_DUPE + PARSER_VARIANT_MISSING
+	 * @throws Exception
+	 */
+	@Test
+	public void experienceNameDupe_Test() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "   'views':[                                                  \n" +
+			    "     {  'name':'view1',                                       \n" +
+			    "        'path':'/path/to/view1'                               \n" +
+			    "     },                                                       \n" +
+			    "     {  'path':'/path/to/view1',                              \n" +
+			    "        'name':'view2'                                        \n" +
+			    "     }                                                        \n" +
+			    "  ],                                                          \n" +
+				"  'tests':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'name':'TEST',                                        \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onviews':[                                           \n" +
+			    "           {                                                  \n" +
+			    "              'viewRef':'view1',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		ParserResponse response = ConfigParser.parse(config);
+
+		assertTrue(response.hasErrors());
+		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(2, response.getErrors().size());
+		ParserError error = response.getErrors().get(0);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCE_NAME_DUPE, "B", "TEST").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+		error = response.getErrors().get(1);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "view1").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+	}
+
+	/**
+	 * PARSER_CONTROL_EXPERIENCE_DUPE
+	 * @throws Exception
+	 */
+	@Test
+	public void controlExperienceDupe_Test() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "   'views':[                                                  \n" +
+			    "     {  'name':'view1',                                       \n" +
+			    "        'path':'/path/to/view1'                               \n" +
+			    "     },                                                       \n" +
+			    "     {  'path':'/path/to/view1',                              \n" +
+			    "        'name':'view2'                                        \n" +
+			    "     }                                                        \n" +
+			    "  ],                                                          \n" +
+				"  'tests':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'name':'TEST',                                        \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'C',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onviews':[                                           \n" +
+			    "           {                                                  \n" +
+			    "              'viewRef':'view1',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		ParserResponse response = ConfigParser.parse(config);
+
+		assertTrue(response.hasErrors());
+		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(1, response.getErrors().size());
+		ParserError error = response.getErrors().get(0);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_CONTROL_EXPERIENCE_DUPE, "C", "TEST").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+	}
+
+	/**
+	 * PARSER_VARIANT_DUPE + PARSER_VARIANT_MISSING
+	 * @throws Exception
+	 */
+	@Test
+	public void variantDupe_Test() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "   'views':[                                                  \n" +
+			    "     {  'name':'view1',                                       \n" +
+			    "        'path':'/path/to/view1'                               \n" +
+			    "     },                                                       \n" +
+			    "     {  'path':'/path/to/view1',                              \n" +
+			    "        'name':'view2'                                        \n" +
+			    "     }                                                        \n" +
+			    "  ],                                                          \n" +
+				"  'tests':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'name':'TEST',                                        \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'C',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onviews':[                                           \n" +
+			    "           {                                                  \n" +
+			    "              'viewRef':'view1',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		ParserResponse response = ConfigParser.parse(config);
+
+		assertTrue(response.hasErrors());
+		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(2, response.getErrors().size());
+		ParserError error = response.getErrors().get(0);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_DUPE, "A", "TEST", "view1").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+		error = response.getErrors().get(1);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "view1").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+	}
+
+	/**
+	 * PARSER_VARIANT_MISSING
+	 * @throws Exception
+	 */
+	@Test
+	public void variantMissing_Test() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "   'views':[                                                  \n" +
+			    "     {  'name':'view1',                                       \n" +
+			    "        'path':'/path/to/view1'                               \n" +
+			    "     },                                                       \n" +
+			    "     {  'path':'/path/to/view1',                              \n" +
+			    "        'name':'view2'                                        \n" +
+			    "     }                                                        \n" +
+			    "  ],                                                          \n" +
+				"  'tests':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'name':'TEST',                                        \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'C',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onviews':[                                           \n" +
+			    "           {                                                  \n" +
+			    "              'viewRef':'view1',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		ParserResponse response = ConfigParser.parse(config);
+
+		assertTrue(response.hasErrors());
+		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(1, response.getErrors().size());
+		ParserError error = response.getErrors().get(0);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "view1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 

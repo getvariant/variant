@@ -10,7 +10,6 @@ import com.variant.core.Variant;
 import com.variant.core.VariantRuntimeException;
 import com.variant.core.config.TestConfig;
 import com.variant.core.config.View;
-import com.variant.core.config.parser.ConfigParser;
 import com.variant.core.config.parser.ParserResponse;
 import com.variant.core.error.ErrorTemplate;
 
@@ -36,10 +35,10 @@ public class RuntimeExceptionTest extends BaseTest {
 	@Test
 	public void runViewNotInstrumentedForTest_Test() throws Exception {
 		
-		ParserResponse response = ConfigParser.parse(ConfigParserHappyPathTest.CONFIG);
+		ParserResponse response = Variant.parseTestConfiguration(ConfigParserHappyPathTest.CONFIG);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
-		final TestConfig config = Variant.getTestConfig();
+		final TestConfig config = Variant.getTestConfiguration();
 		
 		View view = config.getView("view1");
 		try {
@@ -92,10 +91,10 @@ public class RuntimeExceptionTest extends BaseTest {
 	@Test
 	public void runNoViewForPath_Test() throws Exception {
 
-		ParserResponse response = ConfigParser.parse(ConfigParserHappyPathTest.CONFIG);
+		ParserResponse response = Variant.parseTestConfiguration(ConfigParserHappyPathTest.CONFIG);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
-		final TestConfig config = Variant.getTestConfig();
+		final TestConfig config = Variant.getTestConfiguration();
 		
 		try {
 			config.getView("non-existent");

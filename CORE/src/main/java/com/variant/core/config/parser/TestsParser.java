@@ -1,5 +1,7 @@
 package com.variant.core.config.parser;
 
+import static com.variant.core.error.ErrorTemplate.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,17 +26,17 @@ public class TestsParser implements Keywords {
 			rawTests = (List<Map<String, ?>>) testsObject;
 		}
 		catch (Exception e) {
-			response.addError(ErrorTemplate.INTERNAL, e.getMessage());
+			response.addError(INTERNAL, e.getMessage());
 		}
 		
 		if (rawTests.size() == 0) {
-			response.addError(ErrorTemplate.PARSER_NO_TESTS);
+			response.addError(PARSER_NO_TESTS);
 		}
 		
 		for (Map<String, ?> rawTest: rawTests) {
 			Test test = parseTest(rawTest, response);
 			if (test != null && !((ConfigImpl) response.getConfig()).addTest(test)) {
-				response.addError(ErrorTemplate.PARSER_TEST_NAME_DUPE, test.getName());
+				response.addError(PARSER_TEST_NAME_DUPE, test.getName());
 			}
 		}
 	}
@@ -58,7 +60,7 @@ public class TestsParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addError(ErrorTemplate.PARSER_TEST_NAME_NOT_STRING);
+					response.addError(PARSER_TEST_NAME_NOT_STRING);
 				}
 				else {
 					name = (String) nameObject;
@@ -69,7 +71,7 @@ public class TestsParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addError(ErrorTemplate.PARSER_TEST_NAME_MISSING);
+				response.addError(PARSER_TEST_NAME_MISSING);
 			}
 			return null;
 		}
@@ -84,18 +86,23 @@ public class TestsParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(EXPERIENCES)) {
 				Object experiencesObject = entry.getValue();
 				if (! (experiencesObject instanceof List)) {
-					response.addError(ErrorTemplate.PARSER_EXPERIENCES_NOT_LIST, name);
+					response.addError(PARSER_EXPERIENCES_NOT_LIST, name);
 				}
 				else {
 					List<Object> rawExperiences = (List) experiencesObject;
 					if (rawExperiences.size() == 0) {
-						response.addError(ErrorTemplate.PARSER_EXPERIENCES_LIST_EMPTY, name);
+						response.addError(PARSER_EXPERIENCES_LIST_EMPTY, name);
 					}
 					else {
 						for (Object rawExperience: rawExperiences) {
 							TestExperienceImpl experience = parseTestExperience(rawExperience, name, response);
 							if (experience != null) {
 								experience.setTest(result);
+								boolean dupe = false;
+								for (TestExperienceImpl e: experiences) {
+									if (e.equals(experience))
+										response.addError(PARSER_EXPERIENCE_NAME_DUPE, e.getName(), name);
+								}
 								experiences.add(experience);
 							}
 						}
@@ -103,6 +110,22 @@ public class TestsParser implements Keywords {
 				}
 			}
 		}
+		
+		// One must be control.
+		boolean controlExperienceFound = false;
+		for (TestExperienceImpl e: experiences) {
+			if (e.isControl) {
+				if (controlExperienceFound) {
+					response.addError(PARSER_CONTROL_EXPERIENCE_DUPE, e.getName(), name);
+					break;
+				}
+				else {
+					controlExperienceFound = true;
+				}
+			}
+		}
+		if (!controlExperienceFound) 
+			response.addError(PARSER_IS_CONTROL_MISSING, name);
 		
 		result.setExperiences(experiences);
 		
@@ -114,12 +137,12 @@ public class TestsParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(ON_VIEWS)) {
 				Object onViewsObject = entry.getValue();
 				if (! (onViewsObject instanceof List)) {
-					response.addError(ErrorTemplate.PARSER_ONVIEWS_NOT_LIST, name);
+					response.addError(PARSER_ONVIEWS_NOT_LIST, name);
 				}
 				else {
 					List<Object> rawOnViews = (List) onViewsObject;
 					if (rawOnViews.size() == 0) {
-						response.addError(ErrorTemplate.PARSER_ONVIEWS_LIST_EMPTY, name);						
+						response.addError(PARSER_ONVIEWS_LIST_EMPTY, name);						
 					}
 					else {
 						for (Object testOnViewObject: rawOnViews) {
@@ -130,7 +153,7 @@ public class TestsParser implements Keywords {
 				}
 			}
 			else {
-				response.addError(ErrorTemplate.PARSER_TEST_UNSUPPORTED_PROPERTY, entry.getKey(), name);
+				response.addError(PARSER_TEST_UNSUPPORTED_PROPERTY, entry.getKey(), name);
 			}
 		}
 
@@ -153,7 +176,7 @@ public class TestsParser implements Keywords {
 			experience = (Map<String, ?>) experienceObject;
 		}
 		catch (Exception e) {
-			response.addError(ErrorTemplate.PARSER_EXPERIENCE_NOT_OBJECT, testName);
+			response.addError(PARSER_EXPERIENCE_NOT_OBJECT, testName);
 			return null;
 		}
 
@@ -164,7 +187,7 @@ public class TestsParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(NAME)) {
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addError(ErrorTemplate.PARSER_EXPERIENCE_NAME_NOT_STRING, testName);
+					response.addError(PARSER_EXPERIENCE_NAME_NOT_STRING, testName);
 					return null;
 				}
 				else {
@@ -175,7 +198,7 @@ public class TestsParser implements Keywords {
 		}
 		
 		if (name == null) {
-			response.addError(ErrorTemplate.PARSER_TEST_NAME_MISSING);
+			response.addError(PARSER_TEST_NAME_MISSING);
 			return null;
 		}
 		
@@ -192,7 +215,7 @@ public class TestsParser implements Keywords {
 					isControl = (Boolean) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addError(ErrorTemplate.PARSER_ISCONTROL_NOT_BOOLEAN, testName, name);
+					response.addError(PARSER_ISCONTROL_NOT_BOOLEAN, testName, name);
 				}
 			}
 			else if (entry.getKey().equalsIgnoreCase(WEIGHT)) {
@@ -200,15 +223,16 @@ public class TestsParser implements Keywords {
 					weight = (Number) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addError(ErrorTemplate.PARSER_WEIGHT_NOT_NUMBER, testName, name);
+					response.addError(PARSER_WEIGHT_NOT_NUMBER, testName, name);
+					weight = Float.NaN;
 				}
 			}
 			else {
-				response.addError(ErrorTemplate.PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY, entry.getKey(), testName, name);
+				response.addError(PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY, entry.getKey(), testName, name);
 			}
 		}
 		
-		return weight == null ? null : new TestExperienceImpl(name, weight.floatValue(), isControl);	
+		return new TestExperienceImpl(name, weight.floatValue(), isControl);	
 	}
 	
 	/**
@@ -225,7 +249,7 @@ public class TestsParser implements Keywords {
 			rawTestOnView = (Map<String, Object>) testOnViewObject;
 		}
 		catch (Exception e) {
-			response.addError(ErrorTemplate.PARSER_ONVIEW_NOT_OBJECT, test.getName());
+			response.addError(PARSER_ONVIEW_NOT_OBJECT, test.getName());
 			return null;
 		}
 		
@@ -237,21 +261,21 @@ public class TestsParser implements Keywords {
 					viewRef = (String) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addError(ErrorTemplate.PARSER_VIEWREF_NOT_STRING, test.getName());
+					response.addError(PARSER_VIEWREF_NOT_STRING, test.getName());
 					return null;
 				}
 			}
 		}
 		
 		if (viewRef == null) {
-			response.addError(ErrorTemplate.PARSER_VIEWREF_MISSING, test.getName());
+			response.addError(PARSER_VIEWREF_MISSING, test.getName());
 			return null;
 		}
 		
 		// The view must exist.
 		ViewImpl refView = (ViewImpl) response.getConfig().getView(viewRef);
 		if (refView == null) {
-			response.addError(ErrorTemplate.PARSER_VIEWREF_UNDEFINED, viewRef, test.getName());
+			response.addError(PARSER_VIEWREF_UNDEFINED, viewRef, test.getName());
 			return null;
 		}
 
@@ -269,7 +293,7 @@ public class TestsParser implements Keywords {
 					isInvariant = (Boolean) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addError(ErrorTemplate.PARSER_ISINVARIANT_NOT_BOOLEAN, test.getName(), viewRef);
+					response.addError(PARSER_ISINVARIANT_NOT_BOOLEAN, test.getName(), viewRef);
 				}
 				tov.setInvariant(isInvariant);
 			}
@@ -278,44 +302,62 @@ public class TestsParser implements Keywords {
 					rawVariants = (List<Object>) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addError(ErrorTemplate.PARSER_VARIANTS_NOT_LIST, test.getName(), viewRef);
+					response.addError(PARSER_VARIANTS_NOT_LIST, test.getName(), viewRef);
 					return null;
 				}
 				if (rawVariants.isEmpty()) {
-					response.addError(ErrorTemplate.PARSER_VARIANTS_LIST_EMPTY, test.getName(), viewRef);
+					response.addError(PARSER_VARIANTS_LIST_EMPTY, test.getName(), viewRef);
 					return null;					
 				}
 				for (Object variantObject: rawVariants) {
 					TestOnViewVariantImpl variant = parseVariant(variantObject, tov, response);
-					if (variant != null) tov.addVariant(variant);
+					if (variant != null) {
+						for (Test.OnView.Variant v: tov.getVariants()) {
+							if (v.getExperience().equals(variant.getExperience())) {
+								response.addError(PARSER_VARIANT_DUPE, v.getExperience().getName(), test.getName(), viewRef);
+							}
+						}
+						tov.addVariant(variant);
+					}
 				}
 			}
 		}
 		
-		// 'isInvariant' is incompatible with 'invariantss', but one or the other is required.
+		// 'isInvariant' is incompatible with 'variants', but one or the other is required.
 		if (tov.isInvariant()) {
 			if (tov.getVariants().isEmpty()) {
 				return tov;
 			}
 			else {
-				response.addError(ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_INCOMPATIBLE, test.getName(), viewRef);
+				response.addError(PARSER_VARIANTS_ISINVARIANT_INCOMPATIBLE, test.getName(), viewRef);
 				return null;
 			}
 		}
-		else {
-			if (rawVariants == null || rawVariants.size() == 0) {
-				response.addError(ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_XOR, test.getName(), viewRef);
-				return null;
-			}
-			else {
-				return tov;
-			}
-		}			
+		else if (rawVariants == null || rawVariants.size() == 0) {
+			response.addError(PARSER_VARIANTS_ISINVARIANT_XOR, test.getName(), viewRef);
+			return null;
+		}
 		
+		// Must have a variant for each non-control experience.
+		for (Test.Experience e: test.getExperiences()) {
+			if (e.isControl()) continue;
+			boolean found = false;
+			for (Test.OnView.Variant v: tov.getVariants()) {
+				if (e.equals(v.getExperience())) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				response.addError(PARSER_VARIANT_MISSING, e.getName(), test.getName(), viewRef);
+			}
+		}
+		
+		return tov;
 	}
 	
 	/**
-	 * Parse an element of the 'variants' list inside the 'onViews' element.
+	 * Parse an element of the list property tests/onViews/variants.
 	 * @param variantObject
 	 * @param tov
 	 * @param response
@@ -329,7 +371,7 @@ public class TestsParser implements Keywords {
 			rawVariant = (Map<String, Object>) variantObject;
 		}
 		catch (Exception e) {
-			response.addError(ErrorTemplate.PARSER_VARIANT_NOT_OBJECT, tov.getTest().getName(), tov.getView().getName());
+			response.addError(PARSER_VARIANT_NOT_OBJECT, tov.getTest().getName(), tov.getView().getName());
 			return null;
 		}
 		
@@ -342,27 +384,27 @@ public class TestsParser implements Keywords {
 					experienceRef = (String) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addError(ErrorTemplate.PARSER_EXPERIENCEREF_NOT_STRING, tov.getTest().getName(), tov.getView().getName());
+					response.addError(PARSER_EXPERIENCEREF_NOT_STRING, tov.getTest().getName(), tov.getView().getName());
 					return null;
 				}
 			}
 		}
 		
 		if (experienceRef == null) {
-			response.addError(ErrorTemplate.PARSER_EXPERIENCEREF_MISSING, tov.getTest().getName(), tov.getView().getName());
+			response.addError(PARSER_EXPERIENCEREF_MISSING, tov.getTest().getName(), tov.getView().getName());
 			return null;
 		}
 		
 		// The experience must exist
 		TestExperienceImpl experience = (TestExperienceImpl) tov.getTest().getExperience(experienceRef);
 		if (experience == null) {
-			response.addError(ErrorTemplate.PARSER_EXPERIENCEREF_UNDEFINED, experienceRef, tov.getTest().getName(), tov.getView().getName());
+			response.addError(PARSER_EXPERIENCEREF_UNDEFINED, experienceRef, tov.getTest().getName(), tov.getView().getName());
 			return null;			
 		}
 
 		// Variant cannot refer to a control experience
 		if (experience.isControl) {
-			response.addError(ErrorTemplate.PARSER_EXPERIENCEREF_ISCONTROL, experienceRef, tov.getTest().getName(), tov.getView().getName());
+			response.addError(PARSER_EXPERIENCEREF_ISCONTROL, experienceRef, tov.getTest().getName(), tov.getView().getName());
 			return null;						
 		}
 
@@ -377,11 +419,11 @@ public class TestsParser implements Keywords {
 					path = (String) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addError(ErrorTemplate.PARSER_EXPERIENCEREF_PATH_NOT_STRING, tov.getTest().getName(), tov.getView().getName(), experienceRef);
+					response.addError(PARSER_EXPERIENCEREF_PATH_NOT_STRING, tov.getTest().getName(), tov.getView().getName(), experienceRef);
 				}
 			}
 			else {
-				response.addError(ErrorTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY, entry.getKey(), tov.getTest().getName(), tov.getView().getName());
+				response.addError(PARSER_VARIANTS_UNSUPPORTED_PROPERTY, entry.getKey(), tov.getTest().getName(), tov.getView().getName());
 			}
 		}
 		

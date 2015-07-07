@@ -47,4 +47,15 @@ class TestExperienceImpl implements Test.Experience  {
 		return weight;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof TestExperienceImpl)) return false;
+		TestExperienceImpl other = (TestExperienceImpl) o;
+		return test.equals(other.test) && name.equals(other.name);
+	}
+	
+	@Override
+	public int hashCode() {
+		return test.hashCode() + name.hashCode();
+	}
 }
