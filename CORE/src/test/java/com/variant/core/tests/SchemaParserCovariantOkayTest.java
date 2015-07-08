@@ -192,9 +192,6 @@ public class SchemaParserCovariantOkayTest extends BaseTest {
 	     	    "  ]                                                                      \n" +
 	    	    "}                                                                         ";
 
-		Variant.main();
-		System.out.println("%%%%%%%%%" + System.getProperty("variant.version"));
-
 		ParserResponse response = Variant.parseSchema(schema);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());

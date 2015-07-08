@@ -8,6 +8,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.conf.RuntimeService;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
 import com.variant.core.event.EventPersister;
@@ -50,8 +51,16 @@ public class Variant {
 		throw new RuntimeException("Don't call us.");
 	}
 	
+	/**
+	 * 
+	 */
 	private static void stateCheck() {
 		if (!isBootstrapped) throw new IllegalStateException("Variant must be bootstrapped first by calling one of the bootstrap() methods");
+	}
+	
+	private static String version() {
+		String version = RuntimeService.getVersion();
+		return version == null ? "?" : "V. " + version + " (Alpha), Copyright (C) 2015 getvariant.com";
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -126,7 +135,10 @@ public class Variant {
 		
 		isBootstrapped = true;
 		
-		logger.info("Variant bootstrapped in " + DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"));
+		logger.info(
+				String.format("Core [%s] bootstrapped in %s",
+						version(),
+						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
 	}
 	
 	/**
@@ -259,40 +271,6 @@ public class Variant {
 		return eventWriter;
 	}
 	
-	public static void main() {
-
-		String version = null;
-
-	    // try to load from maven properties first
-	    try {
-	        Properties p = new Properties();
-	        InputStream is = Variant.class.getResourceAsStream("/META-INF/maven/com.variant.core/variant-core/pom.properties");
-	        if (is != null) {
-	            p.load(is);
-	            version = p.getProperty("version", "");
-	        }
-	    } catch (Exception e) {
-	        // ignore
-	    }
-
-	    // fallback to using Java API
-	    if (version == null) {
-	        Package aPackage = Variant.class.getPackage();
-	        if (aPackage != null) {
-	            version = aPackage.getImplementationVersion();
-	            if (version == null) {
-	                version = aPackage.getSpecificationVersion();
-	            }
-	        }
-	    }
-
-	    if (version == null) {
-	        // we could not compute the version so use a blank
-	        version = "dunno";
-	    }
-
-	    System.out.println("********" + version);
-	} 
  	/**
 	 * For programmatic configuration.
 	 * @author Igor
