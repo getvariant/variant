@@ -1,4 +1,4 @@
-package com.variant.core.config;
+package com.variant.core.schema;
 
 import java.util.List;
 

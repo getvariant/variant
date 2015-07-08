@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import com.variant.core.config.Test;
-import com.variant.core.config.Test.Experience;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.TargetingPersister;
 
 /**

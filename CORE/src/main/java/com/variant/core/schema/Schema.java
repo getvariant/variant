@@ -1,4 +1,4 @@
-package com.variant.core.config;
+package com.variant.core.schema;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import java.util.List;
  * In-memory representation of the configuration instance.
  * @author Igor
  */
-public interface TestConfig {
+public interface Schema {
 
 	/**
 	 * Get a list or all views in the order they were defined.

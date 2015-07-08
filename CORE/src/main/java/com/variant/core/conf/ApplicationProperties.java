@@ -1,4 +1,4 @@
-package com.variant.core.util;
+package com.variant.core.conf;
 
 import java.io.InputStream;
 import java.util.ArrayList;

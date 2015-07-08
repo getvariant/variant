@@ -1,4 +1,4 @@
-package com.variant.core.config.parser;
+package com.variant.core.schema.impl;
 
 import com.variant.core.error.BaseError;
 import com.variant.core.error.ErrorTemplate;

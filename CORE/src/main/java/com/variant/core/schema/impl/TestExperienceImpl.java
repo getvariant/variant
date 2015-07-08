@@ -1,6 +1,6 @@
-package com.variant.core.config.parser;
+package com.variant.core.schema.impl;
 
-import com.variant.core.config.Test;
+import com.variant.core.schema.Test;
 
 class TestExperienceImpl implements Test.Experience  {
 

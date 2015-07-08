@@ -1,9 +1,10 @@
-package com.variant.core.config.parser;
+package com.variant.core.schema.impl;
 
 import java.util.Collections;
 import java.util.List;
 
-import com.variant.core.config.Test;
+import com.variant.core.VariantInternalException;
+import com.variant.core.schema.Test;
 
 /**
  * 
@@ -55,15 +56,17 @@ public class TestImpl implements Test {
 	/**
 	 * 
 	 */
+	@Override
 	@SuppressWarnings("unchecked")
-	public List<Test.Experience> getExperiences() {
-		return  (List<Test.Experience>) (List<?>) Collections.unmodifiableList(experiences);
+	public List<Experience> getExperiences() {
+		return  (List<Experience>) (List<?>) Collections.unmodifiableList(experiences);
 	}
 
 	/**
 	 * 
 	 */
-	public Test.Experience getExperience(String name) {
+	@Override
+	public Experience getExperience(String name) {
 		for (TestExperienceImpl e: experiences) {
 			if (e.getName().equalsIgnoreCase(name)) return e;
 		}
@@ -73,6 +76,18 @@ public class TestImpl implements Test {
 	/**
 	 * 
 	 */
+	@Override
+	public Experience getControlExperience() {
+		for (TestExperienceImpl e: experiences) {
+			if (e.isControl()) return e;
+		}
+		throw new VariantInternalException("No control experience found in test [' + getName() + ']");
+	}
+
+	/**
+	 * 
+	 */
+	@Override
 	@SuppressWarnings("unchecked")
 	public List<Test.OnView> getOnViews() {
 		return (List<Test.OnView>) (List<?>) Collections.unmodifiableList(onViews);

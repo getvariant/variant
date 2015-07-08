@@ -1,7 +1,7 @@
 package com.variant.core.event;
 
-import com.variant.core.config.Test;
-import com.variant.core.config.View;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.View;
 
 /**
  * EVENTS_EXPERIENCES DAO.

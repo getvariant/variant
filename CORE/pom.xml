@@ -7,16 +7,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
+	<properties>
+	    <variant.version>0.5</variant.version>
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
+		<jackson.version>2.5.3</jackson.version>
+    </properties>
+
     <artifactId>variant-core</artifactId>
     <name>Variant core lib</name>
     <packaging>jar</packaging>
     <groupId>com.variant.core</groupId>
-    <version>0.5</version>
-
-	<properties>
-    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
-		<jackson.version>2.5.3</jackson.version>
-    </properties>
+    <version>${variant.version}</version>
     
     <dependencies>
         
@@ -101,8 +102,23 @@
                         because Variant.bootstrap() can only be called once per JVM's lifetime. 
                    -->
 			       <reuseForks>false</reuseForks>
+			       <systemPropertyVariables>
+                      <variant.version>0.5</variant.version>
+                  </systemPropertyVariables>
                </configuration>
             </plugin>
+            <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-jar-plugin</artifactId>
+    <configuration>
+        <archive>                   
+            <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+        </archive>
+    </configuration>
+</plugin>
         </plugins>
     </build>
 

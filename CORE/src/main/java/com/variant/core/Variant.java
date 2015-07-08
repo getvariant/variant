@@ -1,20 +1,24 @@
 package com.variant.core;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Properties;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.config.TestConfig;
-import com.variant.core.config.View;
-import com.variant.core.config.parser.ConfigParser;
-import com.variant.core.config.parser.ParserResponse;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
 import com.variant.core.runtime.VariantRuntime;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.View;
+import com.variant.core.schema.impl.SchemaParser;
+import com.variant.core.schema.impl.ParserResponse;
 import com.variant.core.session.SessionKeyResolver;
 import com.variant.core.session.SessionService;
 import com.variant.core.session.TargetingPersister;
@@ -30,7 +34,7 @@ public class Variant {
 	private static Logger logger = LoggerFactory.getLogger("Variant");
 	private static Config config = null;
 	private static boolean isBootstrapped = false;
-	private static TestConfig testConfig = null;
+	private static Schema testConfig = null;
 	private static EventWriter eventWriter = null;
 	private static SessionService sessionService = null;
 	
@@ -134,39 +138,55 @@ public class Variant {
 	}
 	
 	/**
-	 * Parse and optionally deploy a new test configuration.
-	 * @param configAsString
-	 * @deploy The new test configuration will be deployed if this is true and no parse errors were encountered.
+	 * Parse and, if no errors, optionally deploy a new schema
+	 * @param schemaAsString
+	 * @deploy The new test schema will be deployed if this is true and no parse errors were encountered.
 	 * @return
 	 */
-	public static ParserResponse parseTestConfiguration(String configAsString, boolean deploy) {
+	public static ParserResponse parseSchema(String schemaAsString, boolean deploy) {
 
 		stateCheck();
-		
-		ParserResponse result = ConfigParser.parse(configAsString);
-		// Only replace config if no ERROR or higher level errors.
+
+		ParserResponse result = SchemaParser.parse(schemaAsString);
+		// Only replace the schema if no ERROR or higher level errors.
 		if (result.highestSeverity().lessThan(Severity.ERROR)) {
 			testConfig = result.getConfig();
+			StringBuilder msg = new StringBuilder("New schema deployed:");
+			for (Test test: testConfig.getTests()) {
+				msg.append("\n   ").append(test.getName()).append("(");
+				boolean first = true;
+				for (Experience exp: test.getExperiences()) {
+					if (first) first = false;
+					else msg.append(", ");
+					msg.append(exp.getName());
+					if (exp.isControl()) msg.append(" (control)");
+				}
+				msg.append(")");
+			}
+			logger.info(msg.toString());
 		}
-
+		else {
+			logger.error("New schema was not deployed due to parse errors.");
+		}
+		
 		return result;
 	}
 	
 	/**
-	 * Parse and deploy a new test configuration. The new config will not be deployed if parse errors were encountered.
+	 * Parse and, if no errors, deploy a new schema. The new config will not be deployed if parse errors were encountered.
 	 * @param configAsString
 	 * @return
 	 */
-	public static ParserResponse parseTestConfiguration(String configAsString) {
+	public static ParserResponse parseSchema(String schemaAsString) {
 
-		return parseTestConfiguration(configAsString, true);
+		return parseSchema(schemaAsString, true);
 	}
 
 	/**
 	 * Get current configuration.
 	 * @return Current test configuration or null, if none has been deployed yet.
 	 */
-	public static TestConfig getTestConfiguration() {
+	public static Schema getTestConfiguration() {
 
 		stateCheck();
 		return testConfig;
@@ -239,6 +259,40 @@ public class Variant {
 		return eventWriter;
 	}
 	
+	public static void main() {
+
+		String version = null;
+
+	    // try to load from maven properties first
+	    try {
+	        Properties p = new Properties();
+	        InputStream is = Variant.class.getResourceAsStream("/META-INF/maven/com.variant.core/variant-core/pom.properties");
+	        if (is != null) {
+	            p.load(is);
+	            version = p.getProperty("version", "");
+	        }
+	    } catch (Exception e) {
+	        // ignore
+	    }
+
+	    // fallback to using Java API
+	    if (version == null) {
+	        Package aPackage = Variant.class.getPackage();
+	        if (aPackage != null) {
+	            version = aPackage.getImplementationVersion();
+	            if (version == null) {
+	                version = aPackage.getSpecificationVersion();
+	            }
+	        }
+	    }
+
+	    if (version == null) {
+	        // we could not compute the version so use a blank
+	        version = "dunno";
+	    }
+
+	    System.out.println("********" + version);
+	} 
  	/**
 	 * For programmatic configuration.
 	 * @author Igor

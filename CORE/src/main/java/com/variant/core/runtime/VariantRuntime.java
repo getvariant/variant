@@ -1,12 +1,13 @@
 package com.variant.core.runtime;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.variant.core.VariantSession;
-import com.variant.core.config.Test;
-import com.variant.core.config.Test.Experience;
-import com.variant.core.config.View;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.View;
+import com.variant.core.schema.Test.Experience;
 
 /**
  * Entry point into the runtime.
@@ -59,5 +60,14 @@ public class VariantRuntime {
 
 		// 
 	}
-	
+
+	/**
+	 * 
+	 * @param view
+	 * @param coordinates
+	 * @return
+	 */
+	private static String resolvePath(View view, Collection<Test.Experience> coordinates) {
+		return null;
+	}
 }

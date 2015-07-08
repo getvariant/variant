@@ -1,8 +1,8 @@
 package com.variant.core.event;
 
 import com.variant.core.VariantSession;
-import com.variant.core.config.Test;
-import com.variant.core.config.View;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.View;
 
 /**
  * Exposes package methods to tests.

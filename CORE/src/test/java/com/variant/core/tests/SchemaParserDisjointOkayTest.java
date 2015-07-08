@@ -13,16 +13,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.variant.core.Variant;
-import com.variant.core.config.TestConfig;
-import com.variant.core.config.View;
-import com.variant.core.config.parser.ConfigParser;
-import com.variant.core.config.parser.ParserResponse;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.View;
+import com.variant.core.schema.impl.SchemaParser;
+import com.variant.core.schema.impl.ParserResponse;
 
 
-public class ConfigParserHappyPathTest extends BaseTest {
+public class SchemaParserDisjointOkayTest extends BaseTest {
 	
-	// Happy path config is used by other tests too.
-	public static final String CONFIG = 
+	// Happy path schema is used by other tests too.
+	public static final String SCHEMA = 
 
 	"{                                                                                \n" +
     	    //==========================================================================//
@@ -190,7 +190,7 @@ public class ConfigParserHappyPathTest extends BaseTest {
 	@Test
 	public void happyPathTest() throws Exception {
 		
-		ParserResponse response = Variant.parseTestConfiguration(CONFIG);
+		ParserResponse response = Variant.parseSchema(SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
 
@@ -213,7 +213,7 @@ public class ConfigParserHappyPathTest extends BaseTest {
 						
 		};
 
-		final TestConfig config = Variant.getTestConfiguration();
+		final Schema config = Variant.getTestConfiguration();
 		
 		// Verify views returned as a list.
 		List<View> actualViews = config.getViews();
@@ -244,7 +244,7 @@ public class ConfigParserHappyPathTest extends BaseTest {
 		
 		// Instrumented tests.
 		View view = config.getView("view1");
-		ArrayList<com.variant.core.config.Test> expectedInstrumentedTests = new ArrayList<com.variant.core.config.Test>() {{
+		ArrayList<com.variant.core.schema.Test> expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
 			add(config.getTest("test1"));
 			add(config.getTest("Test1"));
 		}};
@@ -257,35 +257,35 @@ public class ConfigParserHappyPathTest extends BaseTest {
 		catch (NullPointerException npe ) { /* expected */ }
 
 		view = config.getView("view2");
-		expectedInstrumentedTests = new ArrayList<com.variant.core.config.Test>() {{
+		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
 			add(config.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertFalse(view.isInvariantIn(config.getTest("test2")));
 		
 		view = config.getView("view3");
-		expectedInstrumentedTests = new ArrayList<com.variant.core.config.Test>() {{
+		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
 			add(config.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertFalse(view.isInvariantIn(config.getTest("test2")));
 
 		view = config.getView("view4");
-		expectedInstrumentedTests = new ArrayList<com.variant.core.config.Test>() {{
+		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
 			add(config.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertTrue(view.isInvariantIn(config.getTest("test2")));
 		
 		view = config.getView("view5");
-		expectedInstrumentedTests = new ArrayList<com.variant.core.config.Test>();
+		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>();
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 
 		//
 		// Tests.
 		//
 
-		List<com.variant.core.config.Test> actualTests = config.getTests();
+		List<com.variant.core.schema.Test> actualTests = config.getTests();
 		
 		assertEquals(3, actualTests.size());
 		verifyTest1(actualTests.get(0), config);
@@ -314,18 +314,19 @@ public class ConfigParserHappyPathTest extends BaseTest {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest1(com.variant.core.config.Test test, TestConfig config) {
+	private static void verifyTest1(com.variant.core.schema.Test test, Schema config) {
 		
 		assertNotNull(test);
 		assertEquals("test1", test.getName());
 		
 		// Experiences
-		List<com.variant.core.config.Test.Experience> actualExperiences = test.getExperiences();
+		List<com.variant.core.schema.Test.Experience> actualExperiences = test.getExperiences();
 		assertEquals(3, actualExperiences.size());
-		com.variant.core.config.Test.Experience exp = actualExperiences.get(0);
+		com.variant.core.schema.Test.Experience exp = actualExperiences.get(0);
 		assertEquals("A", exp.getName());
 		assertEquals(10, exp.getWeight(), 0.000001);
 		assertTrue(exp.isControl());
+		assertEquals(exp, test.getControlExperience());
 		assertEquals(test, exp.getTest());
 		exp = actualExperiences.get(1);
 		assertEquals("B", exp.getName());
@@ -339,16 +340,16 @@ public class ConfigParserHappyPathTest extends BaseTest {
 		assertEquals(test, exp.getTest());
 		
 		// OnViews
-		List<com.variant.core.config.Test.OnView> actualOnViews = test.getOnViews();
+		List<com.variant.core.schema.Test.OnView> actualOnViews = test.getOnViews();
 		assertEquals(1, actualOnViews.size());
 
-		com.variant.core.config.Test.OnView tov = actualOnViews.get(0);
+		com.variant.core.schema.Test.OnView tov = actualOnViews.get(0);
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getView("view1"), tov.getView());
 		assertFalse(tov.isInvariant());
-		List<com.variant.core.config.Test.OnView.Variant> actualVariants =  tov.getVariants();
+		List<com.variant.core.schema.Test.OnView.Variant> actualVariants =  tov.getVariants();
 		assertEquals(2, actualVariants.size());
-		com.variant.core.config.Test.OnView.Variant variant = actualVariants.get(0);
+		com.variant.core.schema.Test.OnView.Variant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("B"), variant.getExperience());
 		assertEquals("/path/to/view1/test1.B", variant.getPath());
 		variant = actualVariants.get(1);
@@ -362,18 +363,19 @@ public class ConfigParserHappyPathTest extends BaseTest {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest2(com.variant.core.config.Test test, TestConfig config) {
+	private static void verifyTest2(com.variant.core.schema.Test test, Schema config) {
 
 		assertNotNull(test);
 		assertEquals("test2", test.getName());
 		
 		// Experiences
-		List<com.variant.core.config.Test.Experience> actualExperiences = test.getExperiences();
+		List<com.variant.core.schema.Test.Experience> actualExperiences = test.getExperiences();
 		assertEquals(2, actualExperiences.size());
-		com.variant.core.config.Test.Experience exp = actualExperiences.get(0);
+		com.variant.core.schema.Test.Experience exp = actualExperiences.get(0);
 		assertEquals("C", exp.getName());
 		assertEquals(0.5, exp.getWeight(), 0.000001);
 		assertTrue(exp.isControl());
+		assertEquals(exp, test.getControlExperience());
 		assertEquals(test, exp.getTest());
 		exp = actualExperiences.get(1);
 		assertEquals("D", exp.getName());
@@ -382,16 +384,16 @@ public class ConfigParserHappyPathTest extends BaseTest {
 		assertEquals(test, exp.getTest());
 		
 		// OnViews
-		List<com.variant.core.config.Test.OnView> actualOnViews = test.getOnViews();
+		List<com.variant.core.schema.Test.OnView> actualOnViews = test.getOnViews();
 		assertEquals(3, actualOnViews.size());
 
-		com.variant.core.config.Test.OnView tov = actualOnViews.get(0);
+		com.variant.core.schema.Test.OnView tov = actualOnViews.get(0);
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getView("view3"), tov.getView());
 		assertFalse(tov.isInvariant());
-		List<com.variant.core.config.Test.OnView.Variant> actualVariants =  tov.getVariants();
+		List<com.variant.core.schema.Test.OnView.Variant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
-		com.variant.core.config.Test.OnView.Variant variant = actualVariants.get(0);
+		com.variant.core.schema.Test.OnView.Variant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("D"), variant.getExperience());
 		assertEquals("/path/to/view3/test2.D", variant.getPath());
 
@@ -417,15 +419,15 @@ public class ConfigParserHappyPathTest extends BaseTest {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest3(com.variant.core.config.Test test, TestConfig config) {
+	private static void verifyTest3(com.variant.core.schema.Test test, Schema config) {
 		
 		assertNotNull(test);
 		assertEquals("Test1", test.getName());
 		
 		// Experiences
-		List<com.variant.core.config.Test.Experience> actualExperiences = test.getExperiences();
+		List<com.variant.core.schema.Test.Experience> actualExperiences = test.getExperiences();
 		assertEquals(2, actualExperiences.size());
-		com.variant.core.config.Test.Experience exp = actualExperiences.get(0);
+		com.variant.core.schema.Test.Experience exp = actualExperiences.get(0);
 		assertEquals("A", exp.getName());
 		assertEquals(10, exp.getWeight(), 0.000001);
 		assertFalse(exp.isControl());
@@ -434,19 +436,20 @@ public class ConfigParserHappyPathTest extends BaseTest {
 		assertEquals("B", exp.getName());
 		assertEquals(20, exp.getWeight(), 0.000001);
 		assertTrue(exp.isControl());
+		assertEquals(exp, test.getControlExperience());
 		assertEquals(test, exp.getTest());
 		
 		// OnViews
-		List<com.variant.core.config.Test.OnView> actualOnViews = test.getOnViews();
+		List<com.variant.core.schema.Test.OnView> actualOnViews = test.getOnViews();
 		assertEquals(1, actualOnViews.size());
 
-		com.variant.core.config.Test.OnView tov = actualOnViews.get(0);
+		com.variant.core.schema.Test.OnView tov = actualOnViews.get(0);
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getView("view1"), tov.getView());
 		assertFalse(tov.isInvariant());
-		List<com.variant.core.config.Test.OnView.Variant> actualVariants =  tov.getVariants();
+		List<com.variant.core.schema.Test.OnView.Variant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
-		com.variant.core.config.Test.OnView.Variant variant = actualVariants.get(0);
+		com.variant.core.schema.Test.OnView.Variant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("A"), variant.getExperience());
 		assertEquals("/path/to/view1/Test1.A", variant.getPath());
 

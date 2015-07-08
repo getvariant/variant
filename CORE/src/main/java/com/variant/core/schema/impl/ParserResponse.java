@@ -1,17 +1,17 @@
-package com.variant.core.config.parser;
+package com.variant.core.schema.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.variant.core.config.TestConfig;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
+import com.variant.core.schema.Schema;
 
 public class ParserResponse {
 
 	private ArrayList<ParserError> errors = new ArrayList<ParserError>();
-	private ConfigImpl config = new ConfigImpl();
+	private SchemaImpl config = new SchemaImpl();
 	
 	/**
 	 * 
@@ -37,7 +37,7 @@ public class ParserResponse {
 	 * Get the config in progress, built by the current invocation of the parser.
 	 * @param view
 	 */
-	public TestConfig getConfig() {
+	public Schema getConfig() {
 		return config;
 	}
 

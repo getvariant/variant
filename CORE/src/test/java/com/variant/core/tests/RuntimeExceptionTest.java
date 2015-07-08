@@ -8,10 +8,10 @@ import org.junit.Test;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantRuntimeException;
-import com.variant.core.config.TestConfig;
-import com.variant.core.config.View;
-import com.variant.core.config.parser.ParserResponse;
 import com.variant.core.error.ErrorTemplate;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.View;
+import com.variant.core.schema.impl.ParserResponse;
 
 
 public class RuntimeExceptionTest extends BaseTest {
@@ -35,10 +35,10 @@ public class RuntimeExceptionTest extends BaseTest {
 	@Test
 	public void runViewNotInstrumentedForTest_Test() throws Exception {
 		
-		ParserResponse response = Variant.parseTestConfiguration(ConfigParserHappyPathTest.CONFIG);
+		ParserResponse response = Variant.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
-		final TestConfig config = Variant.getTestConfiguration();
+		final Schema config = Variant.getTestConfiguration();
 		
 		View view = config.getView("view1");
 		try {
@@ -91,10 +91,10 @@ public class RuntimeExceptionTest extends BaseTest {
 	@Test
 	public void runNoViewForPath_Test() throws Exception {
 
-		ParserResponse response = Variant.parseTestConfiguration(ConfigParserHappyPathTest.CONFIG);
+		ParserResponse response = Variant.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
-		final TestConfig config = Variant.getTestConfiguration();
+		final Schema config = Variant.getTestConfiguration();
 		
 		try {
 			config.getView("non-existent");

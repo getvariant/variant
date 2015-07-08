@@ -10,10 +10,10 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.variant.core.VariantInternalException;
+import com.variant.core.conf.VariantProperties;
 import com.variant.core.event.BaseEvent;
 import com.variant.core.event.EventExperience;
 import com.variant.core.event.EventPersister;
-import com.variant.core.util.VariantProperties;
 
 /**
  * JDBC persisters extend this class instead of implementing the EventPersister interface. 

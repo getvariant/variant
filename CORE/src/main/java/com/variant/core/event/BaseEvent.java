@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.variant.core.VariantSession;
-import com.variant.core.config.Test;
+import com.variant.core.schema.Test;
 
 /**
  * EVENTS DAO.

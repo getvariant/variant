@@ -2,7 +2,7 @@ package com.variant.core.session;
 
 import java.util.Collection;
 
-import com.variant.core.config.Test;
+import com.variant.core.schema.Test;
 
 public interface TargetingPersister {
 	

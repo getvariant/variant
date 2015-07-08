@@ -5,18 +5,18 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.variant.core.config.parser.ConfigParser;
-import com.variant.core.config.parser.ParserError;
-import com.variant.core.config.parser.ParserResponse;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
+import com.variant.core.schema.impl.SchemaParser;
+import com.variant.core.schema.impl.ParserError;
+import com.variant.core.schema.impl.ParserResponse;
 
 /**
  * Parse time exceptions
  * @author Igor
  *
  */
-public class ConfigParserErrorTest extends BaseTest {
+public class SchemaParserErrorTest extends BaseTest {
 	
 	/**
 	 * JSON_PARSE
@@ -62,7 +62,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 		
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
@@ -83,7 +83,7 @@ public class ConfigParserErrorTest extends BaseTest {
 				"{                                                             \n" +			    	   
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(2, response.getErrors().size());
@@ -136,7 +136,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(2, response.getErrors().size());
@@ -191,7 +191,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(2, response.getErrors().size());
@@ -251,7 +251,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 		
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
@@ -309,7 +309,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
@@ -367,7 +367,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 
@@ -425,7 +425,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
@@ -452,7 +452,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 		
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
@@ -481,7 +481,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 		
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
@@ -538,7 +538,7 @@ public class ConfigParserErrorTest extends BaseTest {
 				"  'invalid clause': 'throw an error'                          \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.WARN, response.highestSeverity());
@@ -596,7 +596,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -652,7 +652,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -735,7 +735,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 		
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -793,7 +793,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.WARN, response.highestSeverity());
@@ -840,7 +840,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -895,7 +895,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -960,7 +960,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1021,7 +1021,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1079,7 +1079,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1136,7 +1136,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1194,7 +1194,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.WARN, response.highestSeverity());
@@ -1251,7 +1251,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1298,7 +1298,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1345,7 +1345,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1402,7 +1402,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1458,7 +1458,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1516,7 +1516,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1574,7 +1574,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1632,7 +1632,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1686,7 +1686,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1744,7 +1744,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1802,7 +1802,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1853,7 +1853,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1905,7 +1905,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -1968,7 +1968,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -2032,7 +2032,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -2089,7 +2089,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -2153,7 +2153,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -2210,7 +2210,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -2274,7 +2274,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -2339,7 +2339,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -2404,7 +2404,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());
@@ -2468,7 +2468,7 @@ public class ConfigParserErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = ConfigParser.parse(config);
+		ParserResponse response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestSeverity());

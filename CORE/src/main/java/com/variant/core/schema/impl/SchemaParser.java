@@ -1,4 +1,4 @@
-package com.variant.core.config.parser;
+package com.variant.core.schema.impl;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,7 +10,7 @@ import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
 import com.variant.core.util.StringUtils;
 
-public class ConfigParser {
+public class SchemaParser {
 	
 	/**
 	 * Convert JsonParseException to ParserError.

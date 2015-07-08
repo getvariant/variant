@@ -1,10 +1,10 @@
-package com.variant.core.config.parser;
+package com.variant.core.schema.impl;
 
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.config.View;
 import com.variant.core.error.ErrorTemplate;
+import com.variant.core.schema.View;
 
 /**
  * Parse the VIEWS clause.
@@ -33,7 +33,7 @@ public class ViewsParser implements Keywords {
 		
 		for (Map<String, ?> rawView: rawViews) {
 			View view = parseView(rawView, response);
-			if (view != null && !((ConfigImpl) response.getConfig()).addView(view)) {
+			if (view != null && !((SchemaImpl) response.getConfig()).addView(view)) {
 				response.addError(ErrorTemplate.PARSER_VIEW_NAME_DUPE, view.getName());
 			}
 		}

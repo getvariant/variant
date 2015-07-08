@@ -1,18 +1,18 @@
-package com.variant.core.config.parser;
+package com.variant.core.schema.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.variant.core.config.TestConfig;
-import com.variant.core.config.Test;
-import com.variant.core.config.View;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.View;
 
 /**
  * @author Igor
  */
-public class ConfigImpl implements TestConfig {
+public class SchemaImpl implements Schema {
 
 	// Views are keyed by name
 	LinkedHashSet<View> views = new LinkedHashSet<View>();
@@ -20,7 +20,7 @@ public class ConfigImpl implements TestConfig {
 	// Tests are keyed by name
 	LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
 
-	ConfigImpl() {}
+	SchemaImpl() {}
 	
 	/**
 	 * Add view to the set.

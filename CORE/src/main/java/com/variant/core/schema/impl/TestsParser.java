@@ -1,4 +1,4 @@
-package com.variant.core.config.parser;
+package com.variant.core.schema.impl;
 
 import static com.variant.core.error.ErrorTemplate.*;
 
@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.config.Test;
 import com.variant.core.error.ErrorTemplate;
+import com.variant.core.schema.Test;
 
 /**
  * Parse the TESTS clause.
@@ -35,7 +35,7 @@ public class TestsParser implements Keywords {
 		
 		for (Map<String, ?> rawTest: rawTests) {
 			Test test = parseTest(rawTest, response);
-			if (test != null && !((ConfigImpl) response.getConfig()).addTest(test)) {
+			if (test != null && !((SchemaImpl) response.getConfig()).addTest(test)) {
 				response.addError(PARSER_TEST_NAME_DUPE, test.getName());
 			}
 		}

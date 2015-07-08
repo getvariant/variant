@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.variant.core.Variant;
+import com.variant.core.conf.VariantProperties;
 import com.variant.core.event.EventPersister;
 import com.variant.core.util.StringUtils;
-import com.variant.core.util.VariantProperties;
 
 
 public class JdbcUtil {

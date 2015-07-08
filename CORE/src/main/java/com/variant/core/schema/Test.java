@@ -1,4 +1,4 @@
-package com.variant.core.config;
+package com.variant.core.schema;
 
 import java.util.List;
 
@@ -22,11 +22,17 @@ public interface Test {
 	public List<Experience> getExperiences();
 	
 	/**
-	 * This tests's experience by name, case insensitive.
+	 * This tests's experience by name, case sensitive.
 	 * @param name
 	 * @return The test experience if exists, null otherwise.
 	 */
 	public Experience getExperience(String name);
+	
+	/**
+	 * This test's control experience. 
+	 * @return
+	 */
+	public Experience getControlExperience();
 	
 	/**
 	 * A list of all views instrumented for this Test, in the order they were declared.

@@ -1,10 +1,10 @@
-package com.variant.core.config.parser;
+package com.variant.core.schema.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.variant.core.config.Test;
-import com.variant.core.config.View;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.View;
 
 /**
  * An element of the onViews array of the test definition.
