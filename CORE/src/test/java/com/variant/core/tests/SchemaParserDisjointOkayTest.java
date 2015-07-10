@@ -213,10 +213,10 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 						
 		};
 
-		final Schema config = Variant.getTestConfiguration();
+		final Schema schema = Variant.getSchema();
 		
 		// Verify views returned as a list.
-		List<View> actualViews = config.getViews();
+		List<View> actualViews = schema.getViews();
 		assertEquals(expectedViews.length, actualViews.size());
 		verifyView(expectedViews[0], actualViews.get(0));
 		verifyView(expectedViews[1], actualViews.get(1));
@@ -232,52 +232,52 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		
 		// Verify views returned individually by name.
 		for (String[] expectedView: expectedViews) {	
-			verifyView(expectedView, config.getView(expectedView[0]));
+			verifyView(expectedView, schema.getView(expectedView[0]));
 		}
 
 		// Verify non-existent views.
-		assertNull(config.getView("non-existent'"));		
+		assertNull(schema.getView("non-existent'"));		
 
 		for (String[] expectedView: expectedViews) {
-			assertNull(config.getView(expectedView[0].toUpperCase()));
+			assertNull(schema.getView(expectedView[0].toUpperCase()));
 		}
 		
 		// Instrumented tests.
-		View view = config.getView("view1");
+		View view = schema.getView("view1");
 		ArrayList<com.variant.core.schema.Test> expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
-			add(config.getTest("test1"));
-			add(config.getTest("Test1"));
+			add(schema.getTest("test1"));
+			add(schema.getTest("Test1"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
-		assertFalse(view.isInvariantIn(config.getTest("test1")));
-		assertFalse(view.isInvariantIn(config.getTest("Test1")));
+		assertFalse(view.isInvariantIn(schema.getTest("test1")));
+		assertFalse(view.isInvariantIn(schema.getTest("Test1")));
 		try {
-			assertFalse(view.isInvariantIn(config.getTest("non-existent")));
+			assertFalse(view.isInvariantIn(schema.getTest("non-existent")));
 		}
 		catch (NullPointerException npe ) { /* expected */ }
 
-		view = config.getView("view2");
+		view = schema.getView("view2");
 		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
-			add(config.getTest("test2"));
+			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
-		assertFalse(view.isInvariantIn(config.getTest("test2")));
+		assertFalse(view.isInvariantIn(schema.getTest("test2")));
 		
-		view = config.getView("view3");
+		view = schema.getView("view3");
 		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
-			add(config.getTest("test2"));
+			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
-		assertFalse(view.isInvariantIn(config.getTest("test2")));
+		assertFalse(view.isInvariantIn(schema.getTest("test2")));
 
-		view = config.getView("view4");
+		view = schema.getView("view4");
 		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
-			add(config.getTest("test2"));
+			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
-		assertTrue(view.isInvariantIn(config.getTest("test2")));
+		assertTrue(view.isInvariantIn(schema.getTest("test2")));
 		
-		view = config.getView("view5");
+		view = schema.getView("view5");
 		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>();
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 
@@ -285,17 +285,17 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		// Tests.
 		//
 
-		List<com.variant.core.schema.Test> actualTests = config.getTests();
+		List<com.variant.core.schema.Test> actualTests = schema.getTests();
 		
 		assertEquals(3, actualTests.size());
-		verifyTest1(actualTests.get(0), config);
-		verifyTest1(config.getTest("test1"), config);
-		verifyTest2(actualTests.get(1), config);
-		verifyTest2(config.getTest("test2"), config);
-		verifyTest3(actualTests.get(2), config);
-		verifyTest3(config.getTest("Test1"), config);
+		verifyTest1(actualTests.get(0), schema);
+		verifyTest1(schema.getTest("test1"), schema);
+		verifyTest2(actualTests.get(1), schema);
+		verifyTest2(schema.getTest("test2"), schema);
+		verifyTest3(actualTests.get(2), schema);
+		verifyTest3(schema.getTest("Test1"), schema);
 		
-		assertNull(config.getTest("Test2"));
+		assertNull(schema.getTest("Test2"));
 	
 	}
 	

@@ -1,20 +1,18 @@
 package com.variant.core.tests;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.*;
+
+
 
 import com.variant.core.Variant;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.View;
+import com.variant.core.schema.Test;
 import com.variant.core.schema.impl.ParserResponse;
 
 
@@ -50,10 +48,10 @@ public class SchemaParserCovariantOkayTest extends BaseTest {
 	 * A, B(A), C
 	 * 
 	 */
-	@Test
+	@org.junit.Test
 	public void oneTest() throws Exception {
 		
-		final String schema = 
+		final String SCHEMA = 
 
 		"{                                                                                \n" +
 	    	    //==========================================================================//
@@ -135,7 +133,8 @@ public class SchemaParserCovariantOkayTest extends BaseTest {
 	    	    "     },                                                                  \n" +
 	    	    //--------------------------------------------------------------------------//	
 	    	    "     {                                                                   \n" +
-	    	    "        'name':'test1',                                                  \n" +
+	    	    "        'name':'test2',                                                  \n" +
+	    	    "        'covariantTestRefs': ['test1'],                                  \n" +
 	    	    "        'experiences':[                                                  \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'name':'A',                                                \n" +
@@ -153,15 +152,19 @@ public class SchemaParserCovariantOkayTest extends BaseTest {
 	    	    "        ],                                                               \n" +
 	    	    "        'onViews':[                                                      \n" +
 	    	    "           {                                                             \n" +
+	    	    "              'viewRef':'view1',                                         \n" +
+	    	    "              'isInvariant':true                                         \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
 	    	    "              'viewRef':'view2',                                         \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'path':'/path/to/view2/test1.B'                      \n" +
+	    	    "                    'path':'/path/to/view2/test2.B'                      \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'path':'/path/to/view2/test1.C'                      \n" +
+	    	    "                    'path':'/path/to/view2/test2.C'                      \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
@@ -170,13 +173,77 @@ public class SchemaParserCovariantOkayTest extends BaseTest {
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'path':'/path/to/view3/test1.B'                      \n" +
+	    	    "                    'path':'/path/to/view3/test2.B'                      \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'path':'/path/to/view3/test1.C'                      \n" +
+	    	    "                    'path':'/path/to/view3/test2.C'                      \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'viewRef':'view4',                                         \n" +
+	    	    "              'variants':[                                               \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'path':'/path/to/view4/test2.B'                      \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'C',                                 \n" +
+	    	    "                    'path':'/path/to/view4/test2.C'                      \n" +
+	    	    "                 }                                                       \n" +
+	    	    "              ]                                                          \n" +
+	    	    "           }                                                            \n" +
+	    	    "        ]                                                                \n" +
+	    	    "     },                                                                  \n" +
+	    	    //--------------------------------------------------------------------------//	
+	    	    "     {                                                                   \n" +
+	    	    "        'name':'test3',                                                  \n" +
+	    	    "        'experiences':[                                                  \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'name':'A',                                                \n" +
+	    	    "              'weight':10,                                               \n" +
+	    	    "              'isControl':true                                           \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'name':'B',                                                \n" +
+	    	    "              'weight':20                                                \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'name':'C',                                                \n" +
+	    	    "              'weight':30                                                \n" +
+	    	    "           }                                                             \n" +
+	    	    "        ],                                                               \n" +
+	    	    "        'onViews':[                                                      \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'viewRef':'view1',                                         \n" +
+	    	    "              'variants':[                                               \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'path':'/path/to/view1/test3.B'                      \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'C',                                 \n" +
+	    	    "                    'path':'/path/to/view1/test3.C'                      \n" +
+	    	    "                 }                                                       \n" +
+	    	    "              ]                                                          \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'viewRef':'view2',                                         \n" +
+	    	    "              'variants':[                                               \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'path':'/path/to/view2/test3.B'                      \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'C',                                 \n" +
+	    	    "                    'path':'/path/to/view2/test3.C'                      \n" +
+	    	    "                 }                                                       \n" +
+	    	    "              ]                                                          \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'viewRef':'view3',                                         \n" +
+	    	    "              'isInvariant':true                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'viewRef':'view4',                                         \n" +
@@ -192,9 +259,23 @@ public class SchemaParserCovariantOkayTest extends BaseTest {
 	     	    "  ]                                                                      \n" +
 	    	    "}                                                                         ";
 
-		ParserResponse response = Variant.parseSchema(schema);
+		ParserResponse response = Variant.parseSchema(SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
+
+		Schema schema = Variant.getSchema();
+		final Test test1 = schema.getTest("test1");
+		final Test test2 = schema.getTest("test2");
+		final Test test3 = schema.getTest("test3");
+
+		List<Test> test1CovarList = test1.getCovariantTests();
+		assertEquals(new ArrayList<Test>() {{add(test2);}}, test1CovarList);
+
+		List<Test> test2CovarList = test2.getCovariantTests();
+		assertEquals(new ArrayList<Test>() {{add(test1);}}, test2CovarList);
+
+		List<Test> test3CovarList = test3.getCovariantTests();
+		assertEquals(new ArrayList<Test>(), test3CovarList);
 
 	}
 

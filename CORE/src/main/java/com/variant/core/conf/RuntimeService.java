@@ -29,7 +29,7 @@ public class RuntimeService {
 	    }
 
 	    
-	    /* fallback to using Java API
+	    /* fallback to using Java API ?
 	    if (version == null) {
 	        Package aPackage = Variant.class.getPackage();
 	        if (aPackage != null) {

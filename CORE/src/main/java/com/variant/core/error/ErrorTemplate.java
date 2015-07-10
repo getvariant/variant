@@ -34,6 +34,9 @@ public enum ErrorTemplate {
 	PARSER_EXPERIENCE_NOT_OBJECT              (Severity.ERROR, "'tests/experiences' list element must be an object (Test [%s])"), /// 
 	PARSER_EXPERIENCE_NAME_NOT_STRING         (Severity.ERROR, "'tests/experience/name' property must be a string (Test [%s])"), ///
 	PARSER_EXPERIENCE_NAME_DUPE               (Severity.ERROR, "Duplicate expereince name [%s] in test [%s]"), ///
+	PARSER_COVARIANT_TESTS_NOT_LIST           (Severity.ERROR, "'tests/covariantTestRefs' property must be a list (Test [%s])"), ///
+	PARSER_COVARIANT_TESTREF_NOT_STRING       (Severity.ERROR, "'tests/covariantTestRefs' list element must be a string (Test [%s])"), ///
+	PARSER_COVARIANT_TESTREF_UNDEFINED        (Severity.ERROR, "Property 'tests/covariantTestRefs' references an undefined test [%s] (Test [%s])"), ///
 	PARSER_ISCONTROL_NOT_BOOLEAN              (Severity.ERROR, "'tests/experience/isControl' property must be a boolean (Test [%s], Experience [%s])"), ///
 	PARSER_CONTROL_EXPERIENCE_DUPE            (Severity.ERROR, "Duplicate control experience [%s] in test [%s]"), ///
 	PARSER_IS_CONTROL_MISSING                 (Severity.ERROR, "Control experience is missing in test [%s]"), ///
@@ -44,6 +47,7 @@ public enum ErrorTemplate {
 	PARSER_ONVIEW_NOT_OBJECT                  (Severity.ERROR, "'tests/onViews' list element must be an object (Test [%s])"), ///
 	PARSER_VIEWREF_NOT_STRING                 (Severity.ERROR, "'tests/onViews/viewRef' property must be a string (Test [%s])"), ///
 	PARSER_VIEWREF_MISSING                    (Severity.ERROR, "'tests/onViews/viewRef' property is missing (Test [%s])"), ///
+	PARSER_VIEWREF_DUPE                       (Severity.ERROR, "Duplicate property 'tests/onViews/viewRef' [%s] (Test [%s])"), ///
 	PARSER_VIEWREF_UNDEFINED                  (Severity.ERROR, "'tests/onViews/viewRef' property [%s] references an undefined view (Test [%s])"), ///
 	PARSER_ISINVARIANT_NOT_BOOLEAN            (Severity.ERROR, "'tests/onViews/isInvariant' property must be a boolean (Test [%s], ViewRef [%s])"), ///
 	PARSER_VARIANTS_NOT_LIST                  (Severity.ERROR, "'tests/onViews/variants' property must be a list (Test [%s], ViewRef [%s])"), ///

@@ -34,10 +34,10 @@ public class ParserResponse {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Get the config in progress, built by the current invocation of the parser.
+	 * Get the schema in progress, built by the current invocation of the parser.
 	 * @param view
 	 */
-	public Schema getConfig() {
+	public Schema getSchema() {
 		return config;
 	}
 

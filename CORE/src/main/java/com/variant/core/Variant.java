@@ -1,8 +1,6 @@
 package com.variant.core;
 
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Properties;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
@@ -18,8 +16,8 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
-import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.impl.ParserResponse;
+import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.session.SessionKeyResolver;
 import com.variant.core.session.SessionService;
 import com.variant.core.session.TargetingPersister;
@@ -35,7 +33,7 @@ public class Variant {
 	private static Logger logger = LoggerFactory.getLogger("Variant");
 	private static Config config = null;
 	private static boolean isBootstrapped = false;
-	private static Schema testConfig = null;
+	private static Schema schema = null;
 	private static EventWriter eventWriter = null;
 	private static SessionService sessionService = null;
 	
@@ -158,13 +156,14 @@ public class Variant {
 	public static ParserResponse parseSchema(String schemaAsString, boolean deploy) {
 
 		stateCheck();
-
+		long now = System.currentTimeMillis();
 		ParserResponse result = SchemaParser.parse(schemaAsString);
 		// Only replace the schema if no ERROR or higher level errors.
 		if (result.highestSeverity().lessThan(Severity.ERROR)) {
-			testConfig = result.getConfig();
-			StringBuilder msg = new StringBuilder("New schema deployed:");
-			for (Test test: testConfig.getTests()) {
+			schema = result.getSchema();
+			StringBuilder msg = new StringBuilder("New schema deployed in ");
+			msg.append(DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")).append(":");
+			for (Test test: schema.getTests()) {
 				msg.append("\n   ").append(test.getName()).append("(");
 				boolean first = true;
 				for (Experience exp: test.getExperiences()) {
@@ -178,7 +177,7 @@ public class Variant {
 			logger.info(msg.toString());
 		}
 		else {
-			logger.error("New schema was not deployed due to parse errors.");
+			logger.error("New schema was not deployed due to parser errors.");
 		}
 		
 		return result;
@@ -198,10 +197,10 @@ public class Variant {
 	 * Get current configuration.
 	 * @return Current test configuration or null, if none has been deployed yet.
 	 */
-	public static Schema getTestConfiguration() {
+	public static Schema getSchema() {
 
 		stateCheck();
-		return testConfig;
+		return schema;
 	
 	}
 	

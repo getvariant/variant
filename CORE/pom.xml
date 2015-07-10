@@ -103,22 +103,10 @@
                    -->
 			       <reuseForks>false</reuseForks>
 			       <systemPropertyVariables>
-                      <variant.version>0.5</variant.version>
+                      <variant.version>${variant.version}</variant.version>
                   </systemPropertyVariables>
                </configuration>
             </plugin>
-            <plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-jar-plugin</artifactId>
-    <configuration>
-        <archive>                   
-            <manifest>
-                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-            </manifest>
-        </archive>
-    </configuration>
-</plugin>
         </plugins>
     </build>
 

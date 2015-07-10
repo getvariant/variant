@@ -16,7 +16,7 @@ import com.variant.core.schema.impl.ParserResponse;
  * @author Igor
  *
  */
-public class SchemaParserErrorTest extends BaseTest {
+public class SchemaParserDisjointErrorTest extends BaseTest {
 	
 	/**
 	 * JSON_PARSE
@@ -1413,7 +1413,7 @@ public class SchemaParserErrorTest extends BaseTest {
 	}
 
 	/**
-	 * VIEWREF_MISSING
+	 * PARSER_VIEWREF_MISSING
 	 * @throws Exception
 	 */
 	@Test
@@ -1465,6 +1465,72 @@ public class SchemaParserErrorTest extends BaseTest {
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VIEWREF_MISSING, "test1").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+	}
+
+	/**
+	 * PARSER_VIEWREF_DUPE
+	 * @throws Exception
+	 */
+	@Test
+	public void viewrefDupe_Test() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "   'Views':[                                                  \n" +
+			    "     {  'name':'view1',                                       \n" +
+			    "        'path':'/path/to/view1'                               \n" +
+			    "     },                                                       \n" +
+			    "     {  'path':'/path/to/view1',                              \n" +
+			    "        'name':'view2'                                        \n" +
+			    "     }                                                        \n" +
+			    "  ],                                                          \n" +
+				"  'TESTS':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'NAME':'test1',                                       \n" +
+			    "        'EXPERIENCES':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'NAME':'B',                                     \n" +
+			    "              'WEIGHT':50,                                    \n" +
+			    "              'ISCONTROL':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'ONVIEWS':[                                           \n" +
+			    "           {                                                  \n" +
+			    "              'viewRef':'view1',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef':'A',                      \n" +
+			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'viewRef':'view1',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef':'A',                      \n" +
+			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		ParserResponse response = SchemaParser.parse(config);
+
+		assertTrue(response.hasErrors());
+		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(1, response.getErrors().size());
+		ParserError error = response.getErrors().get(0);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_VIEWREF_DUPE, "view1", "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 

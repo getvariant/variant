@@ -39,6 +39,17 @@ public interface Test {
 	 * @return
 	 */
 	public List<OnView> getOnViews();
+
+	/**
+	 * Get a list of tests covariant with this test.  
+	 * Each test in this list is either mentioned in this test's covariant test refs,
+	 * or mentions this test in its covaraint test refs.  In other words, relationship
+	 * of covariance is commutative: if A is covariant with B, then B is also covariant
+	 * with A.
+	 * 
+	 * @return
+	 */
+	public List<Test> getCovariantTests();
 	
 	/**
 	 * In-memory representation of a test experience.

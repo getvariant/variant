@@ -33,7 +33,7 @@ public class ViewsParser implements Keywords {
 		
 		for (Map<String, ?> rawView: rawViews) {
 			View view = parseView(rawView, response);
-			if (view != null && !((SchemaImpl) response.getConfig()).addView(view)) {
+			if (view != null && !((SchemaImpl) response.getSchema()).addView(view)) {
 				response.addError(ErrorTemplate.PARSER_VIEW_NAME_DUPE, view.getName());
 			}
 		}

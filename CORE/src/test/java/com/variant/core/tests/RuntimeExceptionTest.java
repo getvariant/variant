@@ -38,46 +38,46 @@ public class RuntimeExceptionTest extends BaseTest {
 		ParserResponse response = Variant.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
-		final Schema config = Variant.getTestConfiguration();
+		final Schema schema = Variant.getSchema();
 		
-		View view = config.getView("view1");
+		View view = schema.getView("view1");
 		try {
-			assertFalse(view.isInvariantIn(config.getTest("non-existent")));
+			assertFalse(view.isInvariantIn(schema.getTest("non-existent")));
 		}
 		catch (NullPointerException npe ) { /* expected */ }
 
 		try {
-			assertFalse(view.isInvariantIn(config.getTest("test2")));
+			assertFalse(view.isInvariantIn(schema.getTest("test2")));
 		}
 		catch (VariantRuntimeException vre ) { 
 			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view1", "test2").getMessage(), vre.getMessage());
 		}
 
-		view = config.getView("view2");
+		view = schema.getView("view2");
 		try {
-			assertFalse(view.isInvariantIn(config.getTest("test1")));
+			assertFalse(view.isInvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
 			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view2", "test1").getMessage(), vre.getMessage());
 		}
 		try {
-			assertFalse(view.isInvariantIn(config.getTest("Test1")));
+			assertFalse(view.isInvariantIn(schema.getTest("Test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
 			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view2", "Test1").getMessage(), vre.getMessage());
 		}
 
-		view = config.getView("view4");
+		view = schema.getView("view4");
 		try {
-			assertFalse(view.isInvariantIn(config.getTest("test1")));
+			assertFalse(view.isInvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
 			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view4", "test1").getMessage(), vre.getMessage());
 		}
 		
-		view = config.getView("view5");
+		view = schema.getView("view5");
 		try {
-			assertFalse(view.isInvariantIn(config.getTest("test1")));
+			assertFalse(view.isInvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
 			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view5", "test1").getMessage(), vre.getMessage());
@@ -94,10 +94,10 @@ public class RuntimeExceptionTest extends BaseTest {
 		ParserResponse response = Variant.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
-		final Schema config = Variant.getTestConfiguration();
+		final Schema schema = Variant.getSchema();
 		
 		try {
-			config.getView("non-existent");
+			schema.getView("non-existent");
 		}
 		catch (VariantRuntimeException vre ) { 
 			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_NO_VIEW_FOR_PATH, "non-existent").getMessage(), vre.getMessage());

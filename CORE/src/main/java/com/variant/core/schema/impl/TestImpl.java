@@ -1,8 +1,10 @@
 package com.variant.core.schema.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
 import com.variant.core.schema.Test;
 
@@ -13,9 +15,14 @@ import com.variant.core.schema.Test;
  */
 public class TestImpl implements Test {
 
+	// As defined:
 	private String name;
+	private List<TestImpl> covariantTests;
 	private List<TestExperienceImpl> experiences;
 	private List<TestOnViewImpl> onViews;
+	
+	// Computed and cached:
+	private List<TestImpl> fullCovariantList = null;
 	
 	/**
 	 * 
@@ -41,6 +48,14 @@ public class TestImpl implements Test {
 		this.onViews = onViews;
 	}
 	
+	/**
+	 * 
+	 * @param tests
+	 */
+	void setCovariantTests(List<TestImpl> tests) {
+		this.covariantTests = tests;
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -105,6 +120,37 @@ public class TestImpl implements Test {
 	@Override
 	public int hashCode() {
 		return name.hashCode();
+	}
+
+	/**
+	 * We can (because the result won't change in the lifetime of the current schema, i.e.
+	 * of this object) and should (because we don't want to generate a new heap object each
+	 * time client calls, in case client forgets to release them.
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Test> getCovariantTests() {
+		
+		// 1. All of this tests
+		if (fullCovariantList == null) { 
+			List<TestImpl> result = new ArrayList<TestImpl>();
+			result.addAll(covariantTests);
+			// 2. Any other test whose covariance list contains this test.
+			for (Test other: Variant.getSchema().getTests()) {
+				if (other.equals(this)) continue;
+				for (TestImpl otherCovar: ((TestImpl) other).covariantTests) {
+					if (otherCovar.equals(this)) {
+						result.add((TestImpl) other);
+						break;
+					}
+				}
+			}
+
+			fullCovariantList = result;
+		}
+		
+		return (List<Test>) (List<?>) Collections.unmodifiableList(fullCovariantList);
 	}
 
 }

@@ -78,9 +78,9 @@ public class EventWriterTest extends BaseTest {
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
 
-		Schema config = Variant.getTestConfiguration();
-		com.variant.core.schema.Test test = config.getTest("test1");
-		View view = config.getView("view1");
+		Schema schema = Variant.getSchema();
+		com.variant.core.schema.Test test = schema.getTest("test1");
+		View view = schema.getView("view1");
 		VariantSession ssn = Variant.getSession(new SessionKeyResolverJunit.UserDataImpl("foo"));
 		ViewServeEventTestFacade event1 = new ViewServeEventTestFacade(view, ssn, BaseEvent.Status.SUCCESS, "viewResolvedPath");
 		ViewServeEventTestFacade event2 = new ViewServeEventTestFacade(view, ssn, BaseEvent.Status.SUCCESS, "viewResolvedPath");
