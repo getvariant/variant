@@ -1,0 +1,166 @@
+package com.variant.core.schema.impl;
+
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
+import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_MISSING;
+import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_PATH_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_UNDEFINED;
+import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY;
+import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_NOT_OBJECT;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import com.variant.core.util.VariantStringUtils;
+
+/**
+ * Parse the element of the tests/onViews/variants list.
+ * 
+ * @author Igor
+ *
+ */
+public class VariantParser implements Keywords {
+
+	/**
+	 * Parse an element of the list property tests/onViews/variants.
+	 * @param variantObject
+	 * @param tov
+	 * @param response
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static TestOnViewVariantImpl parseVariant(Object variantObject, TestOnViewImpl tov, ParserResponse response) {
+		
+		Map<String, Object> rawVariant = null;
+		
+		try {
+			rawVariant = (Map<String, Object>) variantObject;
+		}
+		catch (Exception e) {
+			response.addError(PARSER_VARIANT_NOT_OBJECT, tov.getTest().getName(), tov.getView().getName());
+			return null;
+		}
+		
+		// Pass 1. Find local experienceRef
+		String experienceRef = null;
+		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
+			
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_EXPERIENCE_REF)) {
+				try {
+					experienceRef = (String) entry.getValue();
+				}
+				catch (Exception e) {
+					response.addError(PARSER_EXPERIENCEREF_NOT_STRING, tov.getTest().getName(), tov.getView().getName());
+					return null;
+				}
+			}
+		}
+		
+		if (experienceRef == null) {
+			response.addError(PARSER_EXPERIENCEREF_MISSING, tov.getTest().getName(), tov.getView().getName());
+			return null;
+		}
+		
+		// The experience must exist
+		TestExperienceImpl experience = (TestExperienceImpl) tov.getTest().getExperience(experienceRef);
+		if (experience == null) {
+			response.addError(PARSER_EXPERIENCEREF_UNDEFINED, experienceRef, tov.getTest().getName(), tov.getView().getName());
+			return null;			
+		}
+
+		// Variant cannot refer to a control experience
+		if (experience.isControl) {
+			response.addError(PARSER_EXPERIENCEREF_ISCONTROL, experienceRef, tov.getTest().getName(), tov.getView().getName());
+			return null;						
+		}
+
+		ArrayList<TestExperienceImpl> experiences = new ArrayList<TestExperienceImpl>();
+		experiences.add(experience);
+		
+		// Pass 2. Find covariantExperienceRefs.
+		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
+			
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_COVARIANT_EXPERIENCE_REFS)) {
+				List<?> covarExperienceRefList; 
+				try {
+					covarExperienceRefList = (List<?>) entry.getValue();
+				}
+				catch (Exception e) {
+					response.addError(PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST, tov.getTest().getName(), tov.getView().getName(), experienceRef);
+					return null;
+				}
+				for (Object covarExperienceRefObj: covarExperienceRefList) {
+					Map<String,?> covarExperienceRefMap;
+					try {
+						covarExperienceRefMap = (Map<String,?>) covarExperienceRefObj;
+					}
+					catch (Exception e) {
+						response.addError(PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT, tov.getTest().getName(), tov.getView().getName(), experienceRef);
+						return null;
+					}
+					String covarTestRef = null, covarExperienceRef = null;
+					try {
+						covarTestRef = (String) covarExperienceRefMap.get(KEYWORD_TEST_REF);
+					}
+					catch (Exception e) {
+						response.addError(PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING, tov.getTest().getName(), tov.getView().getName(), experienceRef);
+					}
+					try {
+						covarExperienceRef = (String) covarExperienceRefMap.get(KEYWORD_EXPERIENCE_REF);
+					}
+					catch (Exception e) {
+						response.addError(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING, tov.getTest().getName(), tov.getView().getName(), experienceRef);
+					}
+					
+					if (covarTestRef == null || covarExperienceRef == null) return null;
+					
+					// Covar experience must have already been defined.
+					TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);
+					if (covarTest == null) {
+						response.addError(PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED, covarTestRef, tov.getTest().getName(), tov.getView().getName(), experienceRef);
+						return null;
+					}
+					
+					TestExperienceImpl covarExperience = (TestExperienceImpl) covarTest.getExperience(covarExperienceRef);
+					if (covarExperience == null) {
+						response.addError(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, covarTestRef, covarExperienceRef, tov.getTest().getName(), tov.getView().getName(), experienceRef);
+						return null;
+					}
+
+				}
+				
+			}
+
+		}
+
+		// Pass 3. Parse the rest of experience element.
+		String path = null;
+		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
+			
+			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_EXPERIENCE_REF, KEYWORD_COVARIANT_EXPERIENCE_REFS)) continue;
+		
+			else if (entry.getKey().equalsIgnoreCase(KEYWORD_PATH)) {
+				try {
+					path = (String) entry.getValue();
+				}
+				catch (Exception e) {
+					response.addError(PARSER_EXPERIENCEREF_PATH_NOT_STRING, tov.getTest().getName(), tov.getView().getName(), experienceRef);
+				}
+			}
+			else {
+				response.addError(PARSER_VARIANTS_UNSUPPORTED_PROPERTY, entry.getKey(), tov.getTest().getName(), tov.getView().getName());
+			}
+		}
+		
+		if (path == null) return null;
+		
+		return new TestOnViewVariantImpl(tov, experiences, path);
+	}
+}

@@ -18,7 +18,12 @@ public class ParserResponse {
 	 * @param error
 	 */
 	void addError(ErrorTemplate template, int line, int column, String...args) {
-		errors.add(new ParserError(template, line, column, args));
+		if (template.equals(ErrorTemplate.PARSER_JSON_PARSE)) {
+			errors.add(new SyntaxError(template, line, column, args));
+		}
+		else {
+			errors.add(new ParserError(template, line, column, args));
+		}
 	}
 	
 	/**

@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
-import com.variant.core.util.StringUtils;
+import com.variant.core.util.VariantStringUtils;
 
 public class SchemaParser {
 	
@@ -21,7 +21,7 @@ public class SchemaParser {
 		
 		String rawMessage = parseException.getMessage();
 		// Pull out the actual message: it's on the first line.
-		String message = rawMessage.substring(0, rawMessage.indexOf(System.lineSeparator()));
+		StringBuilder message = new StringBuilder(rawMessage.substring(0, rawMessage.indexOf(System.lineSeparator())));
 
 		// Pull out line and column info from exception message.
 		// Message starts with the repeat of the entire input, so skip that.
@@ -32,7 +32,7 @@ public class SchemaParser {
 		int line = Integer.parseInt(tokens[0]);
 		int column = Integer.parseInt(tokens[1]);
 		
-		response.addError(ErrorTemplate.PARSER_JSON_PARSE, line, column, message);
+		response.addError(ErrorTemplate.PARSER_JSON_PARSE, line, column, message.toString(), rawInput);
 
 	}
 	
@@ -68,7 +68,7 @@ public class SchemaParser {
 		
 		// Pass 1. Uppercase all the expected clauses to support case insensitive key words.
 		for (Map.Entry<String, ?> entry: cbb.entrySet()) {
-			if (StringUtils.equalsIgnoreCase(entry.getKey(), "views", "tests")) {
+			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), "views", "tests")) {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {

@@ -163,6 +163,16 @@ public class SchemaParserCovariantOkayTest extends BaseTest {
 	    	    "                    'path':'/path/to/view2/test2.B'                      \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'experienceRef': 'three'                       \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'path':'/path/to/view2/test2.B'                      \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'path':'/path/to/view2/test2.C'                      \n" +
 	    	    "                 }                                                       \n" +

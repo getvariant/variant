@@ -13,7 +13,7 @@ import java.util.List;
 import com.variant.core.Variant;
 import com.variant.core.conf.VariantProperties;
 import com.variant.core.event.EventPersister;
-import com.variant.core.util.StringUtils;
+import com.variant.core.util.VariantStringUtils;
 
 
 public class JdbcUtil {
@@ -99,7 +99,7 @@ public class JdbcUtil {
 			}
 			catch (SQLException e) {				
 				System.out.println(e.getSQLState());
-				if (StringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_DOES_NOT_EXIST)) {
+				if (VariantStringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_DOES_NOT_EXIST)) {
 					Variant.getLogger().debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Relation Does Not Exist.");
 				}
 				else throw e;

@@ -52,7 +52,7 @@ public class ViewsParser implements Keywords {
 		// Pass 1: figure out the name.
 		for(Map.Entry<String, ?> entry: view.entrySet()) {
 
-			if (entry.getKey().equalsIgnoreCase(NAME)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
@@ -75,9 +75,9 @@ public class ViewsParser implements Keywords {
 		// Pass 2: Finish parsing if we have the name.
 		for(Map.Entry<String, ?> entry: view.entrySet()) {
 			
-			if (entry.getKey().equalsIgnoreCase(NAME)) continue;
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) continue;
 			
-			if (entry.getKey().equalsIgnoreCase(PATH)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_PATH)) {
 				pathFound = true;
 				Object pathObject = entry.getValue();
 				if (! (pathObject instanceof String)) {

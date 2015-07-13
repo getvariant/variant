@@ -148,7 +148,7 @@ public class Variant {
 	}
 	
 	/**
-	 * Parse and, if no errors, optionally deploy a new schema
+	 * Parse and, if no errors, optionally deploy a new schema.
 	 * @param schemaAsString
 	 * @deploy The new test schema will be deployed if this is true and no parse errors were encountered.
 	 * @return
@@ -177,7 +177,7 @@ public class Variant {
 			logger.info(msg.toString());
 		}
 		else {
-			logger.error("New schema was not deployed due to parser errors.");
+			logger.error("New schema was not deployed due to parser error(s).");
 		}
 		
 		return result;

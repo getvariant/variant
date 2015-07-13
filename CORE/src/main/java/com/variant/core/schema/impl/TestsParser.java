@@ -1,52 +1,13 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.error.ErrorTemplate.INTERNAL;
-import static com.variant.core.error.ErrorTemplate.PARSER_CONTROL_EXPERIENCE_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_PATH_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCES_LIST_EMPTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCES_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NAME_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NAME_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NOT_OBJECT;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_ISCONTROL_NOT_BOOLEAN;
-import static com.variant.core.error.ErrorTemplate.PARSER_ISINVARIANT_NOT_BOOLEAN;
-import static com.variant.core.error.ErrorTemplate.PARSER_IS_CONTROL_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_NO_TESTS;
-import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEWS_LIST_EMPTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEWS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEW_NOT_OBJECT;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_UNSUPPORTED_PROPERTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_INCOMPATIBLE;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_XOR;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_LIST_EMPTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_NOT_OBJECT;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_WEIGHT_NOT_NUMBER;
+import static com.variant.core.error.ErrorTemplate.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.variant.core.schema.Test;
-import com.variant.core.util.StringUtils;
+import com.variant.core.util.VariantStringUtils;
 
 /**
  * Parse the TESTS clause.
@@ -98,7 +59,7 @@ public class TestsParser implements Keywords {
 		// Pass 1: Figure out the name.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 
-			if (entry.getKey().equalsIgnoreCase(NAME)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
@@ -123,9 +84,9 @@ public class TestsParser implements Keywords {
 		// Pass 2: Parse experiences.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
-			if (entry.getKey().equalsIgnoreCase(NAME)) continue;
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) continue;
 			
-			if (entry.getKey().equalsIgnoreCase(EXPERIENCES)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_EXPERIENCES)) {
 				Object experiencesObject = entry.getValue();
 				if (! (experiencesObject instanceof List)) {
 					response.addError(PARSER_EXPERIENCES_NOT_LIST, name);
@@ -172,12 +133,10 @@ public class TestsParser implements Keywords {
 		
 		result.setExperiences(experiences);
 		
-		// Pass 3: Parse onViews.
+		// Pass 3: Parse covariantTestRefs.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
-			if (StringUtils.equalsIgnoreCase(entry.getKey(), NAME, EXPERIENCES)) continue;
-
-			if (entry.getKey().equalsIgnoreCase(COVARIANT_TEST_REFS)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_COVARIANT_TEST_REFS)) {
 				Object covarTestRefsObject = entry.getValue();
 				if (!(covarTestRefsObject instanceof List)) {
 					response.addError(PARSER_COVARIANT_TESTS_NOT_LIST, name);
@@ -203,7 +162,16 @@ public class TestsParser implements Keywords {
 					}
 				}
 			}
-			else if (entry.getKey().equalsIgnoreCase(ON_VIEWS)) {
+		}
+		
+		result.setCovariantTests(covarTests);
+
+		// Pass 4: Parse onViews.
+		for(Map.Entry<String, ?> entry: test.entrySet()) {
+			
+			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS)) continue;
+
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_VIEWS)) {
 				Object onViewsObject = entry.getValue();
 				if (! (onViewsObject instanceof List)) {
 					response.addError(PARSER_ONVIEWS_NOT_LIST, name);
@@ -240,7 +208,6 @@ public class TestsParser implements Keywords {
 		if (onViews.isEmpty()) return null;
 		
 		result.setOnViews(onViews);
-		result.setCovariantTests(covarTests);
 		
 		return result;
 	}
@@ -267,7 +234,7 @@ public class TestsParser implements Keywords {
 		String name = null;
 		for (Map.Entry<String, ?> entry: experience.entrySet()) {
 			
-			if (entry.getKey().equalsIgnoreCase(NAME)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
 					response.addError(PARSER_EXPERIENCE_NAME_NOT_STRING, testName);
@@ -291,9 +258,9 @@ public class TestsParser implements Keywords {
 		
 		for(Map.Entry<String, ?> entry: experience.entrySet()) {
 			
-			if (entry.getKey().equalsIgnoreCase(NAME)) continue;
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) continue;
 			
-			if (entry.getKey().equalsIgnoreCase(IS_CONTROL)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_IS_CONTROL)) {
 				try {
 					isControl = (Boolean) entry.getValue();
 				}
@@ -301,7 +268,7 @@ public class TestsParser implements Keywords {
 					response.addError(PARSER_ISCONTROL_NOT_BOOLEAN, testName, name);
 				}
 			}
-			else if (entry.getKey().equalsIgnoreCase(WEIGHT)) {
+			else if (entry.getKey().equalsIgnoreCase(KEYWORD_WEIGHT)) {
 				try {
 					weight = (Number) entry.getValue();
 				}
@@ -340,7 +307,7 @@ public class TestsParser implements Keywords {
 		// Pass 1. Figure out the experienceRef
 		String viewRef = null;
 		for (Map.Entry<String, Object> entry: rawTestOnView.entrySet()) {
-			if (entry.getKey().equalsIgnoreCase(VIEW_REF)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_VIEW_REF)) {
 				try {
 					viewRef = (String) entry.getValue();
 				}
@@ -369,9 +336,9 @@ public class TestsParser implements Keywords {
 		List<Object> rawVariants = null;
 		
 		for (Map.Entry<String, Object> entry: rawTestOnView.entrySet()) {
-			if (entry.getKey().equalsIgnoreCase(VIEW_REF)) continue;
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_VIEW_REF)) continue;
 			
-			if (entry.getKey().equalsIgnoreCase(IS_INVARIANT)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_IS_INVARIANT)) {
 				boolean isInvariant = false;
 				try {
 					isInvariant = (Boolean) entry.getValue();
@@ -381,7 +348,7 @@ public class TestsParser implements Keywords {
 				}
 				tov.setInvariant(isInvariant);
 			}
-			else if (entry.getKey().equalsIgnoreCase(VARIANTS)) {
+			else if (entry.getKey().equalsIgnoreCase(KEYWORD_VARIANTS)) {
 				try {
 					rawVariants = (List<Object>) entry.getValue();
 				}
@@ -394,11 +361,11 @@ public class TestsParser implements Keywords {
 					return null;					
 				}
 				for (Object variantObject: rawVariants) {
-					TestOnViewVariantImpl variant = parseVariant(variantObject, tov, response);
+					TestOnViewVariantImpl variant = VariantParser.parseVariant(variantObject, tov, response);
 					if (variant != null) {
 						for (Test.OnView.Variant v: tov.getVariants()) {
-							if (v.getExperience().equals(variant.getExperience())) {
-								response.addError(PARSER_VARIANT_DUPE, v.getExperience().getName(), test.getName(), viewRef);
+							if (v.getLocalExperience().equals(variant.getLocalExperience())) {
+								response.addError(PARSER_VARIANT_DUPE, v.getLocalExperience().getName(), test.getName(), viewRef);
 							}
 						}
 						tov.addVariant(variant);
@@ -422,12 +389,12 @@ public class TestsParser implements Keywords {
 			return null;
 		}
 		
-		// Must have a variant for each non-control experience.
+		// Must have a variant for each local (in this test) non-control experience.
 		for (Test.Experience e: test.getExperiences()) {
 			if (e.isControl()) continue;
 			boolean found = false;
 			for (Test.OnView.Variant v: tov.getVariants()) {
-				if (e.equals(v.getExperience())) {
+				if (e.equals(v.getLocalExperience())) {
 					found = true;
 					break;
 				}
@@ -436,84 +403,29 @@ public class TestsParser implements Keywords {
 				response.addError(PARSER_VARIANT_MISSING, e.getName(), test.getName(), viewRef);
 			}
 		}
+
+		// Must have a variant for each covariant test's non-control experience,
+		// unless the remote variant is invariant.
+		for (Test covarTest: test.getDeclaredCovariantTests()) {
+			if (refView.isInvariantIn(covarTest)) continue;
+			for (Test.Experience covarExperience: covarTest.getExperiences()) {
+				if (covarExperience.isControl()) continue;
+				boolean found = false;
+				for (Test.OnView.Variant v: tov.getVariants()) {
+					if (covarExperience.equals(v.getLocalExperience())) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					response.addError(
+							PARSER_COVARIANT_VARIANT_MISSING, 
+							covarExperience.getTest().getName(), covarExperience.getName(), test.getName(), viewRef);
+				}
+			}
+		}
 		
 		return tov;
 	}
 	
-	/**
-	 * Parse an element of the list property tests/onViews/variants.
-	 * @param variantObject
-	 * @param tov
-	 * @param response
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static TestOnViewVariantImpl parseVariant(Object variantObject, TestOnViewImpl tov, ParserResponse response) {
-		
-		Map<String, Object> rawVariant = null;
-		
-		try {
-			rawVariant = (Map<String, Object>) variantObject;
-		}
-		catch (Exception e) {
-			response.addError(PARSER_VARIANT_NOT_OBJECT, tov.getTest().getName(), tov.getView().getName());
-			return null;
-		}
-		
-		// Pass 1. Find Experience Ref.
-		String experienceRef = null;
-		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
-			
-			if (entry.getKey().equalsIgnoreCase(EXPERIENCE_REF)) {
-				try {
-					experienceRef = (String) entry.getValue();
-				}
-				catch (Exception e) {
-					response.addError(PARSER_EXPERIENCEREF_NOT_STRING, tov.getTest().getName(), tov.getView().getName());
-					return null;
-				}
-			}
-		}
-		
-		if (experienceRef == null) {
-			response.addError(PARSER_EXPERIENCEREF_MISSING, tov.getTest().getName(), tov.getView().getName());
-			return null;
-		}
-		
-		// The experience must exist
-		TestExperienceImpl experience = (TestExperienceImpl) tov.getTest().getExperience(experienceRef);
-		if (experience == null) {
-			response.addError(PARSER_EXPERIENCEREF_UNDEFINED, experienceRef, tov.getTest().getName(), tov.getView().getName());
-			return null;			
-		}
-
-		// Variant cannot refer to a control experience
-		if (experience.isControl) {
-			response.addError(PARSER_EXPERIENCEREF_ISCONTROL, experienceRef, tov.getTest().getName(), tov.getView().getName());
-			return null;						
-		}
-
-		// Pass 2. Parse the rest of experience element.
-		String path = null;
-		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
-			
-			if (entry.getKey().equalsIgnoreCase(EXPERIENCE_REF)) continue;
-		
-			else if (entry.getKey().equalsIgnoreCase(PATH)) {
-				try {
-					path = (String) entry.getValue();
-				}
-				catch (Exception e) {
-					response.addError(PARSER_EXPERIENCEREF_PATH_NOT_STRING, tov.getTest().getName(), tov.getView().getName(), experienceRef);
-				}
-			}
-			else {
-				response.addError(PARSER_VARIANTS_UNSUPPORTED_PROPERTY, entry.getKey(), tov.getTest().getName(), tov.getView().getName());
-			}
-		}
-		
-		if (path == null) return null;
-		
-		return new TestOnViewVariantImpl(experience, path);
-	}
 }

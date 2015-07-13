@@ -7,18 +7,20 @@ package com.variant.core.schema.impl;
  */
 interface Keywords {
 
-	static String NAME                = "name";
-	static String COVARIANT_TEST_REFS = "covariantTestRefs";
-	static String EXPERIENCES         = "experiences";
-	static String EXPERIENCE_REF      = "experienceRef";
-	static String IS_CONTROL          = "isControl";
-	static String IS_INVARIANT        = "isInvariant";
-	static String ON_VIEWS            = "onViews";
-	static String PATH                = "path";
-	static String TEST                = "test";
-	static String VARIANTS            = "variants";
-	static String VIEWS               = "views";
-	static String VIEW_REF            = "viewRef"; 
-	static String WEIGHT              = "weight";
+	static String KEYWORD_NAME                      = "name";
+	static String KEYWORD_COVARIANT_EXPERIENCE_REFS = "covariantExperienceRefs";
+	static String KEYWORD_COVARIANT_TEST_REFS       = "covariantTestRefs";
+	static String KEYWORD_EXPERIENCES               = "experiences";
+	static String KEYWORD_EXPERIENCE_REF            = "experienceRef";
+	static String KEYWORD_IS_CONTROL                = "isControl";
+	static String KEYWORD_IS_INVARIANT              = "isInvariant";
+	static String KEYWORD_ON_VIEWS                  = "onViews";
+	static String KEYWORD_PATH                      = "path";
+	static String KEYWORD_TEST                      = "test";
+	static String KEYWORD_TEST_REF                  = "testRef";
+	static String KEYWORD_VARIANTS                  = "variants";
+	static String KEYWORD_VIEWS                     = "views";
+	static String KEYWORD_VIEW_REF                  = "viewRef"; 
+	static String KEYWORD_WEIGHT                    = "weight";
 	
 }

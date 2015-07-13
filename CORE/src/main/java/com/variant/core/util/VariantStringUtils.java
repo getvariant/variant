@@ -2,7 +2,7 @@ package com.variant.core.util;
 
 import java.util.Random;
 
-public class StringUtils {
+public class VariantStringUtils {
 
 	/**
 	 * Does the first string equal (ignore case) to any of the subsequent strings?

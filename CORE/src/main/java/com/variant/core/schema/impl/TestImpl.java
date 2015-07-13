@@ -55,7 +55,7 @@ public class TestImpl implements Test {
 	void setCovariantTests(List<TestImpl> tests) {
 		this.covariantTests = tests;
 	}
-
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -64,6 +64,7 @@ public class TestImpl implements Test {
 	 * View's declared name
 	 * @return
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
@@ -153,5 +154,13 @@ public class TestImpl implements Test {
 		return (List<Test>) (List<?>) Collections.unmodifiableList(fullCovariantList);
 	}
 
+	/**
+	 * Extension of the public interface - not for client code.
+	 * 
+	 * @return
+	 */
+	public List<TestImpl> getDeclaredCovariantTests() {
+		return covariantTests;
+	}
 }
 

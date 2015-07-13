@@ -126,10 +126,34 @@ public interface Test {
 		public static interface Variant {
 			
 			/**
-			 * Test experience this variant is for.
+			 * The Test.OnView object this Variant belongs to.
 			 * @return
 			 */
-			public Experience getExperience();
+			public OnView getOnView();
+
+			/**
+			 * The test within which this variant is defined. Equivalent to calling
+			 * <code>getOnView().getTest()</code>
+			 * @return
+			 */
+			public Test getTest();
+			
+			/**
+			 * List of test experiences that define variant.
+			 * One of them is local (for this test), the others are remote
+			 * (for covariant tests)
+			 * 
+			 * @return
+			 */
+			public List<Experience> getExperiences();
+			
+			/**
+			 * Get experience corresponding to the test within witch this Variant is defined.
+			 * This is equivalent to calling <code>getLocalExperiences()</code> and finding among
+			 * them the one that corresponds to the test returned by <code>getTest()</code>
+			 * @return
+			 */
+			public Experience getLocalExperience();
 			
 			/**
 			 * Resource path corresponding to this test variant.
