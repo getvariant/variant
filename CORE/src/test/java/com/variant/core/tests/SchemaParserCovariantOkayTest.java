@@ -167,14 +167,44 @@ public class SchemaParserCovariantOkayTest extends BaseTest {
 	    	    "                    'covariantExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
 	    	    "                          'testRef': 'test1',                            \n" +
-	    	    "                          'experienceRef': 'three'                       \n" +
+	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'path':'/path/to/view2/test2.B'                      \n" +
+	    	    "                    'path':'/path/to/view2/test1.B+test2.B'              \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'experienceRef': 'C'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'path':'/path/to/view2/test1.C+test2.B'              \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'path':'/path/to/view2/test2.C'                      \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'C',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'experienceRef': 'B'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'path':'/path/to/view2/test1.B+test2.C'              \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'C',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'experienceRef': 'C'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'path':'/path/to/view2/test1.C+test2.C'              \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +

@@ -11,7 +11,8 @@ import com.variant.core.schema.Test.OnView;
 class TestOnViewVariantImpl implements Test.OnView.Variant{
 
 	private TestOnViewImpl onViewImpl;
-	private List<TestExperienceImpl> experiences;
+	private TestExperienceImpl ownExperience;
+	private List<TestExperienceImpl> covarExperiences;
 	private String path;
 	
 	/**
@@ -19,12 +20,21 @@ class TestOnViewVariantImpl implements Test.OnView.Variant{
 	 * @param experiences
 	 * @param path
 	 */
-	TestOnViewVariantImpl(TestOnViewImpl onViewImpl, List<TestExperienceImpl> experiences, String path) {
+	TestOnViewVariantImpl(TestOnViewImpl onViewImpl, TestExperienceImpl ownExperience, List<TestExperienceImpl> covarExperiences, String path) {
 		this.onViewImpl = onViewImpl;
-		this.experiences = experiences;
+		this.ownExperience = ownExperience;
+		this.covarExperiences = covarExperiences;
 		this.path = path;
 	}
 
+	/**
+	 * 
+	 * @param experience
+	 */
+	void addCovariantExperience(TestExperienceImpl experience) {
+		covarExperiences.add(experience);
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -57,18 +67,15 @@ class TestOnViewVariantImpl implements Test.OnView.Variant{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Experience> getExperiences() {
-		return (List<Experience>) (List<?>) Collections.unmodifiableList(experiences);
+	public List<Experience> getCovariantExperiences() {
+		return (List<Experience>) (List<?>) Collections.unmodifiableList(covarExperiences);
 	}
 
 	/**
 	 * 
 	 */
 	@Override
-	public Experience getLocalExperience() {
-		for (Experience e: experiences) {
-			if (e.getTest().equals(getTest())) return e;
-		}
-		return null;
+	public Experience getExperience() {
+		return ownExperience;
 	}
 }

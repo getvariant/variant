@@ -1,18 +1,6 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_PATH_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_NOT_OBJECT;
+import static com.variant.core.error.ErrorTemplate.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,11 +68,10 @@ public class VariantParser implements Keywords {
 			response.addError(PARSER_EXPERIENCEREF_ISCONTROL, experienceRef, tov.getTest().getName(), tov.getView().getName());
 			return null;						
 		}
-
-		ArrayList<TestExperienceImpl> experiences = new ArrayList<TestExperienceImpl>();
-		experiences.add(experience);
 		
 		// Pass 2. Find covariantExperienceRefs.
+		ArrayList<TestExperienceImpl> covarTestExperiences = new ArrayList<TestExperienceImpl>();
+		
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_COVARIANT_EXPERIENCE_REFS)) {
@@ -121,19 +108,33 @@ public class VariantParser implements Keywords {
 					
 					if (covarTestRef == null || covarExperienceRef == null) return null;
 					
-					// Covar experience must have already been defined.
-					TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);
+					// Covar test must have already been defined.
+					TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);					
 					if (covarTest == null) {
 						response.addError(PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED, covarTestRef, tov.getTest().getName(), tov.getView().getName(), experienceRef);
 						return null;
 					}
 					
+					// Current view cannot be invariant in the covar test.
+					if (tov.getView().isInvariantIn(covarTest)) {
+						response.addError(PARSER_COVARIANT_EXPERIENCE_TEST_REF_INVARIANT, covarTestRef, tov.getTest().getName(), tov.getView().getName(), experienceRef);
+						return null;						
+					}
+					
+					// Covar experience must have already been defined.
 					TestExperienceImpl covarExperience = (TestExperienceImpl) covarTest.getExperience(covarExperienceRef);
 					if (covarExperience == null) {
 						response.addError(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, covarTestRef, covarExperienceRef, tov.getTest().getName(), tov.getView().getName(), experienceRef);
 						return null;
 					}
 
+					// This test must declare the other test as covariant.
+					if (!((TestImpl)tov.getTest()).getDeclaredCovariantTests().contains(covarTest)) {
+						response.addError(PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT, covarTestRef, covarExperienceRef, tov.getTest().getName(), tov.getView().getName());
+						return null;
+					}
+
+					covarTestExperiences.add(covarExperience);
 				}
 				
 			}
@@ -161,6 +162,6 @@ public class VariantParser implements Keywords {
 		
 		if (path == null) return null;
 		
-		return new TestOnViewVariantImpl(tov, experiences, path);
+		return new TestOnViewVariantImpl(tov, experience, covarTestExperiences, path);
 	}
 }

@@ -58,7 +58,8 @@ public class Variant {
 	
 	private static String version() {
 		String version = RuntimeService.getVersion();
-		return version == null ? "?" : "V. " + version + " (Alpha), Copyright (C) 2015 getvariant.com";
+		if (version == null) version = "?";
+		return "V. " + version + " (Alpha), Copyright (C) 2015 getvariant.com";
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -134,7 +135,7 @@ public class Variant {
 		isBootstrapped = true;
 		
 		logger.info(
-				String.format("Core [%s] bootstrapped in %s",
+				String.format("Core %s bootstrapped in %s",
 						version(),
 						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
 	}

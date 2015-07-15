@@ -57,13 +57,16 @@ public enum ErrorTemplate {
 	PARSER_VARIANTS_ISINVARIANT_XOR                       (Severity.ERROR, "Property 'tests/onViews' must specify one of: 'isInvariant' or 'variants' (Test [%s], ViewRef [%s])"), ///
 	PARSER_VARIANT_NOT_OBJECT                             (Severity.ERROR, "'tests/onViews/variants' list element must be an object (Test [%s], ViewRef [%s])"), ///
 	PARSER_VARIANT_DUPE                                   (Severity.ERROR, "Duplicate list element 'tests/onViews/variants' references experience [%s] (Test [%s], ViewRef [%s])"), ///
+	PARSER_COVARIANT_VARIANT_DUPE                         (Severity.ERROR, "Duplicate list element 'tests/onViews/variants' references experience [%s] and covariant experiences [%s] (Test [%s], ViewRef [%s])"), ///
 	PARSER_VARIANT_MISSING                                (Severity.ERROR, "Variant element 'tests/onViews/variants' missing for experience [%s] (Test [%s], ViewRef [%s])"), ///
-	PARSER_COVARIANT_VARIANT_MISSING                      (Severity.ERROR, "Variant element 'tests/onViews/variants' missing for covariant experience [%s.%s] (Test [%s], ViewRef [%s])"), ///
+	PARSER_COVARIANT_VARIANT_MISSING                      (Severity.ERROR, "Variant element 'tests/onViews/variants' missing for covariant experience [%s.%s] (Test [%s], ViewRef [%s], Experience [%s])"), ///	
+	PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT           (Severity.ERROR, "Variant element 'tests/onViews/variants' for covariant experience [%s.%s] cannot refer to a non-covariant test (Test [%s], ViewRef [%s])"), ///	
 	PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST              (Severity.ERROR, "'tests/onViews/covariantExperienceRefs' property must be a list (Test [%s], ViewRef [%s], ExperienceRef [%s])"), ///
 	PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT            (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs' list element must be an object (Test [%s], ViewRef [%s], ExperienceRef [%s])"), ///
 	PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING       (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs/testRef' property must be a string (Test [%s], ViewRef [%s], ExperienceRef [%s])"), ///
 	PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs/experienceRef' property must be a string (Test [%s], ViewRef [%s], ExperienceRef [%s])"), ///
 	PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED        (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs/testRef' references an undefined test [%s] (Test [%s], ViewRef [%s], ExperienceRef [%s])"), ///
+	PARSER_COVARIANT_EXPERIENCE_TEST_REF_INVARIANT        (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs/testRef' cannot reference test [%s] which is invariant on this view (Test [%s], ViewRef [%s], ExperienceRef [%s])"), ///
 	PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED  (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs/experienceRef' references an undefined experience [%s.%s] (Test [%s], ViewRef [%s], ExperienceRef [%s])"), ///
 	PARSER_EXPERIENCEREF_MISSING                          (Severity.ERROR, "'tests/onViews/variants/experienceRef' property is missing (Test [%s], ViewRef [%s])"), ///
 	PARSER_EXPERIENCEREF_NOT_STRING                       (Severity.ERROR, "'tests/onViews/variants/experienceRef' property must be a string (Test [%s], ViewRef [%s])"), ///

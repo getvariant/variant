@@ -41,11 +41,19 @@ public class BaseError {
 	}
 	
 	/**
+	 * Error code
+	 * @return
+	 */
+	public String getCode() {
+		return template.toString();
+	}
+	
+	/**
 	 * 
 	 */
 	@Override
 	public String toString() {
-		return getSeverity().name() + " - " + getMessage();
+		return getSeverity().name() + " - [" + getCode() + "] "+ getMessage();
 	}
 
 }

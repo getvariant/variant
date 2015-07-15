@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.variant.core.schema.Test;
 import com.variant.core.util.VariantStringUtils;
 
@@ -364,8 +366,22 @@ public class TestsParser implements Keywords {
 					TestOnViewVariantImpl variant = VariantParser.parseVariant(variantObject, tov, response);
 					if (variant != null) {
 						for (Test.OnView.Variant v: tov.getVariants()) {
-							if (v.getLocalExperience().equals(variant.getLocalExperience())) {
-								response.addError(PARSER_VARIANT_DUPE, v.getLocalExperience().getName(), test.getName(), viewRef);
+							if (v.getExperience().equals(variant.getExperience())) { 
+								if (v.getCovariantExperiences().isEmpty() && variant.getCovariantExperiences().isEmpty()) {
+									// Dupe local experience ref and no covariant experiences in this view.
+									response.addError(
+											PARSER_VARIANT_DUPE, 
+											v.getExperience().getName(), 
+											test.getName(), viewRef);
+								}
+								else if (v.getCovariantExperiences().equals(variant.getCovariantExperiences())){
+									// Dupe local and covariant list.  Note that for this predicate relies on proper ordering. 
+									response.addError(
+											PARSER_COVARIANT_VARIANT_DUPE, 
+											v.getExperience().getName(), 
+											StringUtils.join(v.getCovariantExperiences(), ", "), 
+											test.getName(), viewRef);
+								}
 							}
 						}
 						tov.addVariant(variant);
@@ -394,7 +410,7 @@ public class TestsParser implements Keywords {
 			if (e.isControl()) continue;
 			boolean found = false;
 			for (Test.OnView.Variant v: tov.getVariants()) {
-				if (e.equals(v.getLocalExperience())) {
+				if (e.equals(v.getExperience())) {
 					found = true;
 					break;
 				}
@@ -404,23 +420,27 @@ public class TestsParser implements Keywords {
 			}
 		}
 
-		// Must have a variant for each covariant test's non-control experience,
-		// unless the remote variant is invariant.
+		// Must have a covariant variant (one for each covariant test's non-control experience),
+		// for each local experience, unless the remote variant is invariant.
 		for (Test covarTest: test.getDeclaredCovariantTests()) {
 			if (refView.isInvariantIn(covarTest)) continue;
 			for (Test.Experience covarExperience: covarTest.getExperiences()) {
 				if (covarExperience.isControl()) continue;
-				boolean found = false;
-				for (Test.OnView.Variant v: tov.getVariants()) {
-					if (covarExperience.equals(v.getLocalExperience())) {
-						found = true;
-						break;
+				for (Test.Experience localExperience: tov.getTest().getExperiences()) {
+					if (localExperience.isControl()) continue;
+					boolean found = false;
+					for (Test.OnView.Variant variant: tov.getVariants()) {
+						if (localExperience.equals(variant.getExperience()) && 
+						    variant.getCovariantExperiences().contains(covarExperience)) {
+							found = true;
+							break;
+						}
 					}
-				}
-				if (!found) {
-					response.addError(
-							PARSER_COVARIANT_VARIANT_MISSING, 
-							covarExperience.getTest().getName(), covarExperience.getName(), test.getName(), viewRef);
+					if (!found) {
+						response.addError(
+								PARSER_COVARIANT_VARIANT_MISSING, 
+								covarExperience.getTest().getName(), covarExperience.getName(), test.getName(), viewRef, localExperience.getName());
+					}
 				}
 			}
 		}
