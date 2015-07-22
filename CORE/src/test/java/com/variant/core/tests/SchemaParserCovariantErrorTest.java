@@ -1,11 +1,23 @@
 package com.variant.core.tests;
 
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_INVARIANT;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_UNDEFINED;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTS_NOT_LIST;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_DUPE;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_MISSING;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT;
+import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-
-import static com.variant.core.error.ErrorTemplate.*;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.error.Severity;
@@ -1904,7 +1916,7 @@ public class SchemaParserCovariantErrorTest extends BaseTest {
 	 * 
 	 * @throws Exception
 	 */
-	//@Test
+	@Test
 	public void covariantVariantDupe_Test() throws Exception {
 		
 		String config = 
@@ -2285,7 +2297,22 @@ public class SchemaParserCovariantErrorTest extends BaseTest {
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
 			    "                    'path':'/path/to/view2/test1.C+test2.C+test3.C'   \n" +
-			    "                 }                                            \n" +
+			    "                 },                                           \n" +
+			    // DUPE:
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'C',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       },                                     \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+			    "                    'path':'/path/to/view2/test1.B+test2.B+test3.C'   \n" +
+			    "                 }                                           \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
@@ -2299,18 +2326,12 @@ public class SchemaParserCovariantErrorTest extends BaseTest {
 			    "}                                                             \n";
 		
 		ParserResponse response = SchemaParser.parse(config);
-printErrors(response);
+
 		assertTrue(response.hasErrors());
 		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(3, response.getErrors().size());
+		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "bad", "test2", "view2", "B").getMessage(), error.getMessage());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(1);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_MISSING, "test1", "B", "test2", "view2").getMessage(), error.getMessage());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(2);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_MISSING, "test1", "C", "test2", "view2").getMessage(), error.getMessage());
+		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_DUPE, "test1.B, test2.B", "test3", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}

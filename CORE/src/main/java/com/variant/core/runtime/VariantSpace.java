@@ -56,7 +56,7 @@ public class VariantSpace {
 		basis = new LinkedHashSet<Test>();
 		basis.add(tovImpl.getTest());
 		basis.addAll(tovImpl.getTest().getCovariantTests());
-		
+
 		// Pass 1. Build empty space, i.e. all Points with nulls for Variant values, for now.
 		for (Test t: basis) {
 			
@@ -64,8 +64,8 @@ public class VariantSpace {
 			// To take a snapshot, we crate a new collection;
 			ArrayList<Coordinates> oldKeys = new ArrayList<Coordinates>(table.keySet());
 			
-			// If nothing yet, add all non-control experiences with nulls for variants.
 			if (oldKeys.size() == 0) {
+				// First test is the local test - add all non-control experiences.
 				for (Experience exp: t.getExperiences()) {
 					if (exp.isControl()) continue;
 					Coordinates coordinates = new Coordinates(exp);
@@ -73,10 +73,10 @@ public class VariantSpace {
 					//System.out.println("Added [" + exp + "], Test [" + tovImpl.getTest().getName() + "], View [" + tovImpl.getView().getName() + "] " + coordinates.hashCode());
 				}
 			}
-			// If something already in the table, compute the cartеsian product of what's already in the table 
-			// and this current tests's experience list.
 			else {
-				if (tovImpl.getView().isInvariantIn(t)) continue;
+				// 2nd and on test is a covariant test.  Skip it if it's not instrumented on this view or is invariant on this view.
+				// Otherwise, compute the cartеsian product of what's already in the table and this current tests's experience list.
+				if (!tovImpl.getView().isInstrumentedBy(t) || tovImpl.getView().isInvariantIn(t)) continue;
 				for (Experience exp: t.getExperiences()) {
 					if (exp.isControl()) continue;
 					for (Coordinates oldKey: oldKeys) {

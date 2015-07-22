@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
@@ -14,6 +13,7 @@ import com.variant.core.Variant;
 import com.variant.core.runtime.VariantRuntime;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
+import com.variant.core.util.VariantListUtils;
 
 
 /**
@@ -359,14 +359,14 @@ public class SchemaParserCovariantOkay1Test extends BaseTest {
 		// Declared test covariance.
 		//
 		assertEquals(0, test1.getCovariantTests().size());
-		assertEquals(new ArrayList<Test>() {{add(test1);}}, test2.getCovariantTests());
+		assertEquals(VariantListUtils.newArrayList(test1), test2.getCovariantTests());
 		assertEquals(0, test3.getCovariantTests().size());
 
 		// 
 		// Runtime test covariance.
 		//
-		assertEquals(new ArrayList<Test>() {{add(test2);}}, VariantRuntime.getCovariantTests(test1));
-		assertEquals(new ArrayList<Test>() {{add(test1);}}, VariantRuntime.getCovariantTests(test2));
+		assertEquals(VariantListUtils.newArrayList(test2), VariantRuntime.getCovariantTests(test1));
+		assertEquals(VariantListUtils.newArrayList(test1), VariantRuntime.getCovariantTests(test2));
 		assertEquals(0, VariantRuntime.getCovariantTests(test3).size());
 
 		// 
@@ -432,6 +432,7 @@ public class SchemaParserCovariantOkay1Test extends BaseTest {
 		// view1
 		onView = onViews.get(0);
 		assertTrue(onView.isInvariant());
+		assertTrue(onView.getVariants().isEmpty());
 		assertEquals(schema.getView("view1"), onView.getView());
 
 		// view2

@@ -419,10 +419,9 @@ public class TestsParser implements Keywords {
 								else if (v.getCovariantExperiences().equals(variant.getCovariantExperiences())){
 									// Dupe local and covariant list.  Note that for this predicate relies on proper ordering. 
 									response.addError(
-											PARSER_COVARIANT_VARIANT_DUPE, 
-											v.getExperience().getName(), 
+											PARSER_COVARIANT_VARIANT_DUPE,  
 											StringUtils.join(v.getCovariantExperiences(), ", "), 
-											test.getName(), viewRef);
+											test.getName(), viewRef, v.getExperience().getName());
 									dupe = true;
 									break;
 								}

@@ -14,6 +14,7 @@ import com.variant.core.Variant;
 import com.variant.core.runtime.VariantRuntime;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
+import com.variant.core.util.VariantListUtils;
 
 
 /**
@@ -255,14 +256,14 @@ public class SchemaParserCovariantOkay2Test extends BaseTest {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'path':'/path/to/view2/test1.C+test2.B'              \n" +
+	    	    "                    'path':'/path/to/view2/test1.C+test3.B'              \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'path':'/path/to/view2/test3.C'                      \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'covariantExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
 	    	    "                          'testRef': 'test1',                            \n" +
@@ -272,14 +273,14 @@ public class SchemaParserCovariantOkay2Test extends BaseTest {
 	    	    "                    'path':'/path/to/view2/test1.B+test3.C'              \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'covariantExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
 	    	    "                          'testRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'path':'/path/to/view2/test1.C+test2.C'              \n" +
+	    	    "                    'path':'/path/to/view2/test1.C+test3.C'              \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
@@ -315,14 +316,14 @@ public class SchemaParserCovariantOkay2Test extends BaseTest {
 		//
 		assertEquals(0, test1.getCovariantTests().size());
 		assertEquals(0, test2.getCovariantTests().size());
-		assertEquals(new ArrayList<Test>() {{add(test1);}}, test3.getCovariantTests().size());
+		assertEquals(VariantListUtils.newArrayList(test1), test3.getCovariantTests());
 
 		// 
 		// Runtime test covariance.
 		//
-		assertEquals(new ArrayList<Test>() {{add(test3);}}, VariantRuntime.getCovariantTests(test1));
+		assertEquals(VariantListUtils.newArrayList(test3), VariantRuntime.getCovariantTests(test1));
 		assertEquals(0, VariantRuntime.getCovariantTests(test2).size());
-		assertEquals(new ArrayList<Test>() {{add(test1);}}, VariantRuntime.getCovariantTests(test3));
+		assertEquals(VariantListUtils.newArrayList(test1), VariantRuntime.getCovariantTests(test3));
 
 		// 
 		// test1 OnView objects
@@ -387,6 +388,7 @@ public class SchemaParserCovariantOkay2Test extends BaseTest {
 		// view1
 		onView = onViews.get(0);
 		assertTrue(onView.isInvariant());
+		assertTrue(onView.getVariants().isEmpty());
 		assertEquals(schema.getView("view1"), onView.getView());
 
 		// view2
@@ -394,7 +396,7 @@ public class SchemaParserCovariantOkay2Test extends BaseTest {
 		assertFalse(onView.isInvariant());
 		assertEquals(schema.getView("view2"), onView.getView());
 		variants = onView.getVariants();
-		assertEquals(6, variants.size());
+		assertEquals(2, variants.size());
 		
 		variant = variants.get(0);
 		assertEquals(variant.getExperience(), test2.getExperience("B"));
@@ -402,40 +404,16 @@ public class SchemaParserCovariantOkay2Test extends BaseTest {
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		variant = variants.get(1);
-		assertEquals(variant.getExperience(), test2.getExperience("B"));
-		assertEquals(1, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view2/test1.B+test2.B", variant.getPath());
-
-		variant = variants.get(2);
-		assertEquals(variant.getExperience(), test2.getExperience("B"));
-		assertEquals(1, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view2/test1.C+test2.B", variant.getPath());
-
-		variant = variants.get(3);
 		assertEquals(variant.getExperience(), test2.getExperience("C"));
 		assertEquals("/path/to/view2/test2.C", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
-
-		variant = variants.get(4);
-		assertEquals(variant.getExperience(), test2.getExperience("C"));
-		assertEquals(1, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view2/test1.B+test2.C", variant.getPath());
-
-		variant = variants.get(5);
-		assertEquals(variant.getExperience(), test2.getExperience("C"));
-		assertEquals(1, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view2/test1.C+test2.C", variant.getPath());
 
 		// view3
 		onView = onViews.get(2);
 		assertFalse(onView.isInvariant());
 		assertEquals(schema.getView("view3"), onView.getView());
 		variants = onView.getVariants();
-		assertEquals(6, variants.size());
+		assertEquals(2, variants.size());
 		
 		variant = variants.get(0);
 		assertEquals(variant.getExperience(), test2.getExperience("B"));
@@ -443,33 +421,9 @@ public class SchemaParserCovariantOkay2Test extends BaseTest {
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		variant = variants.get(1);
-		assertEquals(variant.getExperience(), test2.getExperience("B"));
-		assertEquals(1, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view3/test1.B+test2.B", variant.getPath());
-
-		variant = variants.get(2);
-		assertEquals(variant.getExperience(), test2.getExperience("B"));
-		assertEquals(1, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view3/test1.C+test2.B", variant.getPath());
-
-		variant = variants.get(3);
 		assertEquals(variant.getExperience(), test2.getExperience("C"));
 		assertEquals("/path/to/view3/test2.C", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
-
-		variant = variants.get(4);
-		assertEquals(variant.getExperience(), test2.getExperience("C"));
-		assertEquals(1, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view3/test1.B+test2.C", variant.getPath());
-
-		variant = variants.get(5);
-		assertEquals(variant.getExperience(), test2.getExperience("C"));
-		assertEquals(1, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view3/test1.C+test2.C", variant.getPath());
 
 		// view4
 		onView = onViews.get(3);
@@ -516,7 +470,7 @@ public class SchemaParserCovariantOkay2Test extends BaseTest {
 		assertFalse(onView.isInvariant());
 		assertEquals(schema.getView("view2"), onView.getView());
 		variants = onView.getVariants();
-		assertEquals(2, variants.size());
+		assertEquals(6, variants.size());
 
 		variant = variants.get(0);
 		assertEquals(variant.getExperience(), test3.getExperience("B"));
@@ -524,9 +478,33 @@ public class SchemaParserCovariantOkay2Test extends BaseTest {
 		assertEquals(0, variant.getCovariantExperiences().size());
 		
 		variant = variants.get(1);
+		assertEquals(variant.getExperience(), test3.getExperience("B"));
+		assertEquals(1, variant.getCovariantExperiences().size());
+		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
+		assertEquals("/path/to/view2/test1.B+test3.B", variant.getPath());
+
+		variant = variants.get(2);
+		assertEquals(variant.getExperience(), test3.getExperience("B"));
+		assertEquals(1, variant.getCovariantExperiences().size());
+		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
+		assertEquals("/path/to/view2/test1.C+test3.B", variant.getPath());
+
+		variant = variants.get(3);
 		assertEquals(variant.getExperience(), test3.getExperience("C"));
 		assertEquals("/path/to/view2/test3.C", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
+
+		variant = variants.get(4);
+		assertEquals(variant.getExperience(), test3.getExperience("C"));
+		assertEquals(1, variant.getCovariantExperiences().size());
+		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
+		assertEquals("/path/to/view2/test1.B+test3.C", variant.getPath());
+
+		variant = variants.get(5);
+		assertEquals(variant.getExperience(), test3.getExperience("C"));
+		assertEquals(1, variant.getCovariantExperiences().size());
+		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
+		assertEquals("/path/to/view2/test1.C+test3.C", variant.getPath());
 
 		// view3
 		onView = onViews.get(2);

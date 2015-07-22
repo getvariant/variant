@@ -57,7 +57,7 @@ public enum ErrorTemplate {
 	PARSER_VARIANTS_ISINVARIANT_XOR                       (Severity.ERROR, "Property 'tests/onViews' must specify one of: 'isInvariant' or 'variants' (Test [%s], ViewRef [%s])"), ///
 	PARSER_VARIANT_NOT_OBJECT                             (Severity.ERROR, "'tests/onViews/variants' list element must be an object (Test [%s], ViewRef [%s])"), ///
 	PARSER_VARIANT_DUPE                                   (Severity.ERROR, "Duplicate list element 'tests/onViews/variants' references experience [%s] (Test [%s], ViewRef [%s])"), ///
-	PARSER_COVARIANT_VARIANT_DUPE                         (Severity.ERROR, "Duplicate list element 'tests/onViews/variants' references experience [%s] and covariant experiences [%s] (Test [%s], ViewRef [%s])"), ///
+	PARSER_COVARIANT_VARIANT_DUPE                         (Severity.ERROR, "Duplicate list element 'tests/onViews/variants' references covariant experiences [%s] (Test [%s], ViewRef [%s], Experience [%s])"), ///
 	PARSER_VARIANT_MISSING                                (Severity.ERROR, "Variant element 'tests/onViews/variants' missing for experience [%s] (Test [%s], ViewRef [%s])"), ///
 	PARSER_COVARIANT_VARIANT_MISSING                      (Severity.ERROR, "Variant element 'tests/onViews/variants' missing for covariant experiences [%s] (Test [%s], ViewRef [%s], Experience [%s])"), ///	
 	PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT           (Severity.ERROR, "Variant element 'tests/onViews/variants' for covariant experience [%s.%s] cannot refer to a non-covariant test (Test [%s], ViewRef [%s])"), ///	
