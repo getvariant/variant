@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.conf.VariantProperties;
@@ -16,8 +17,6 @@ import com.variant.core.event.ViewServeEventTestFacade;
 import com.variant.core.jdbc.JdbcUtil;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
-import com.variant.core.schema.impl.SchemaParser;
-import com.variant.core.schema.impl.ParserResponse;
 import com.variant.ext.session.SessionKeyResolverJunit;
 
 public class EventWriterTest extends BaseTest {

@@ -53,7 +53,7 @@ public class SessionService {
 	 * 
 	 * @return user session if exists or null if doesn't and create is false.
 	 */
-	public VariantSession getSession(boolean create, SessionKeyResolver.UserData...userArgs) {
+	public VariantSession getSession(boolean create, SessionKeyResolver.UserData...userArgs) throws VariantRuntimeException {
 		
 		String key = keyResolver.getSessionKey(userArgs);
 		

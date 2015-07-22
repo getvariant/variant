@@ -58,4 +58,10 @@ class TestExperienceImpl implements Test.Experience  {
 	public int hashCode() {
 		return test.hashCode() + name.hashCode();
 	}
+	
+	@Override
+	public String toString() {
+		return test.getName() + "." + name;
+	}
+
 }

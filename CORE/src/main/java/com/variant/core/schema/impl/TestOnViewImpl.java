@@ -3,6 +3,8 @@ package com.variant.core.schema.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.variant.core.VariantRuntimeException;
+import com.variant.core.runtime.VariantSpace;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;
 
@@ -10,13 +12,14 @@ import com.variant.core.schema.View;
  * An element of the onViews array of the test definition.
  * @author Igor
  */
-class TestOnViewImpl implements Test.OnView {
+public class TestOnViewImpl implements Test.OnView {
 
 	private ViewImpl view;
 	private TestImpl test;
 	private boolean isInvariant = false;
 	private List<Variant> variants = new ArrayList<Variant>();
-	
+	private VariantSpace variantSpace;
+
 	/**
 	 * @param view
 	 */
@@ -39,6 +42,20 @@ class TestOnViewImpl implements Test.OnView {
 	 */
 	void addVariant(Variant variant) {
 		variants.add(variant);
+	}
+	
+	/**
+	 * Get (and, if not yet, build) his object's variant space. 
+	 * Note that we have the test and its covariant set at the time of construction, 
+	 * but variants are added one by one later. Caller must only call this when last 
+	 * variant was added.
+	 * 
+	 * @return
+	 * @throws VariantRuntimeException 
+	 */
+	VariantSpace variantSpace() throws VariantRuntimeException {
+		if (variantSpace == null) variantSpace = new VariantSpace(this);
+		return variantSpace;
 	}
 	
 	//---------------------------------------------------------------------------------------------//

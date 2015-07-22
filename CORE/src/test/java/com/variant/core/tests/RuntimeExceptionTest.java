@@ -2,16 +2,17 @@ package com.variant.core.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantRuntimeException;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
-import com.variant.core.schema.impl.ParserResponse;
 
 
 public class RuntimeExceptionTest extends BaseTest {
@@ -94,14 +95,8 @@ public class RuntimeExceptionTest extends BaseTest {
 		ParserResponse response = Variant.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
-		final Schema schema = Variant.getSchema();
-		
-		try {
-			schema.getView("non-existent");
-		}
-		catch (VariantRuntimeException vre ) { 
-			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_NO_VIEW_FOR_PATH, "non-existent").getMessage(), vre.getMessage());
-		}
+		final Schema schema = Variant.getSchema();		
+		assertNull(schema.getView("non-existent"));
 
 	}
 }

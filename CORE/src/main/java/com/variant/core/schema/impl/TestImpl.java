@@ -1,11 +1,11 @@
 package com.variant.core.schema.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
-import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
+import com.variant.core.runtime.VariantSpace;
 import com.variant.core.schema.Test;
 
 /**
@@ -19,10 +19,11 @@ public class TestImpl implements Test {
 	private String name;
 	private List<TestImpl> covariantTests;
 	private List<TestExperienceImpl> experiences;
+	private VariantSpace variantSpace;
 	private List<TestOnViewImpl> onViews;
 	
-	// Computed and cached:
-	private List<TestImpl> fullCovariantList = null;
+	// Runtime will cache stuff in this instance.
+	private HashMap<String, Object> runtimeAttributes = new HashMap<String, Object>();
 	
 	/**
 	 * 
@@ -52,8 +53,16 @@ public class TestImpl implements Test {
 	 * 
 	 * @param tests
 	 */
-	void setCovariantTests(List<TestImpl> tests) {
-		this.covariantTests = tests;
+	void setCovariantTests(List<TestImpl> covarTests) {
+		this.covariantTests = covarTests;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	VariantSpace getVariantSpace() {
+		return variantSpace;
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -124,43 +133,40 @@ public class TestImpl implements Test {
 	}
 
 	/**
-	 * We can (because the result won't change in the lifetime of the current schema, i.e.
-	 * of this object) and should (because we don't want to generate a new heap object each
-	 * time client calls, in case client forgets to release them.
+	 * Covariant tests declared by this test.
 	 * 
+	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Test> getCovariantTests() {
-		
-		// 1. All of this tests
-		if (fullCovariantList == null) { 
-			List<TestImpl> result = new ArrayList<TestImpl>();
-			result.addAll(covariantTests);
-			// 2. Any other test whose covariance list contains this test.
-			for (Test other: Variant.getSchema().getTests()) {
-				if (other.equals(this)) continue;
-				for (TestImpl otherCovar: ((TestImpl) other).covariantTests) {
-					if (otherCovar.equals(this)) {
-						result.add((TestImpl) other);
-						break;
-					}
-				}
-			}
-
-			fullCovariantList = result;
-		}
-		
-		return (List<Test>) (List<?>) Collections.unmodifiableList(fullCovariantList);
+		return (List<Test>) (List<?>) Collections.unmodifiableList(covariantTests);
 	}
+	
+	//---------------------------------------------------------------------------------------------//
+	//                                    PUBLIC EXTENSION                                         //
+	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Extension of the public interface - not for client code.
+	 * Get а runtime attribute.  These are intended to be attributes not directly contained in the
+	 * schema definitions, but computed at run time, and only valid for the lifetime of the schema, i.e.
+	 * of this object.
 	 * 
+	 * @param key
 	 * @return
 	 */
-	public List<TestImpl> getDeclaredCovariantTests() {
-		return covariantTests;
+	public synchronized Object getRuntimeAttribute(String key) {
+		return runtimeAttributes.get(key);
 	}
+	
+	/**
+	 * Put runtime attribute
+	 * @param key
+	 * @return Object previously associated with this key, or null if none.
+	 */
+	public synchronized Object putRuntimeAttribute(String key, Object attribute) {
+		return runtimeAttributes.put(key, attribute);
+	}
+
 }
 

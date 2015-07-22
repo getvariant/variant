@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import com.variant.core.runtime.VariantSpace;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
@@ -19,7 +20,7 @@ public class SchemaImpl implements Schema {
 	
 	// Tests are keyed by name
 	LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
-
+	
 	SchemaImpl() {}
 	
 	/**
@@ -39,14 +40,15 @@ public class SchemaImpl implements Schema {
 	boolean addTest(Test test) {
 		return tests.add(test);
 	}
-
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
+		
+    //---------------------------------------------------------------------------------------------//
+	//                                    PUBLIC INTERFACE                                         //
 	//---------------------------------------------------------------------------------------------//
 
 	/**
 	 * Views in the order they were created as an immutable list.
 	 */
+	@Override
 	public List<View> getViews() {
 		ArrayList<View> result = new ArrayList<View>(views.size());
 		for (View v: views) {
@@ -68,6 +70,7 @@ public class SchemaImpl implements Schema {
 	/**
 	 * Get all tests.
 	 */
+	@Override
 	public List<Test> getTests() {
 		ArrayList<Test> result = new ArrayList<Test>(tests.size());
 		for (Test test: tests) {
@@ -79,6 +82,7 @@ public class SchemaImpl implements Schema {
 	/**
 	 * Gat a test by name.
 	 */
+	@Override
 	public Test getTest(String name) {
 		for (Test test: tests) {
 			if (test.getName().equals(name)) return test;

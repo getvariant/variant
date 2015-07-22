@@ -12,10 +12,10 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
-import com.variant.core.schema.impl.ParserResponse;
 
 
 public class SchemaParserDisjointOkayTest extends BaseTest {

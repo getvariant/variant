@@ -6,6 +6,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.variant.core.VariantRuntimeException;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
 import com.variant.core.util.VariantStringUtils;
@@ -17,7 +18,7 @@ public class SchemaParser {
 	 * @param parseException
 	 * @return
 	 */
-	private static void toParserError(JsonParseException parseException, String rawInput, ParserResponse response) {
+	private static void toParserError(JsonParseException parseException, String rawInput, ParserResponseImpl response) {
 		
 		String rawMessage = parseException.getMessage();
 		// Pull out the actual message: it's on the first line.
@@ -41,9 +42,9 @@ public class SchemaParser {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	public static ParserResponse parse(String configAsJsonString) {
+	public static ParserResponseImpl parse(String configAsJsonString) throws VariantRuntimeException {
 		
-		ParserResponse response = new ParserResponse();
+		ParserResponseImpl response = new ParserResponseImpl();
 		
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
 		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
@@ -61,7 +62,7 @@ public class SchemaParser {
 			response.addError(ErrorTemplate.INTERNAL, exception.getMessage());
 		}
 		
-		if (response.highestSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
+		if (response.highestErrorSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
 		
 		// Cean map will contain only entries with expected clauses with keys uppercased 
 		Map<String, Object> cleanMap = new LinkedHashMap<String, Object>();
@@ -85,7 +86,7 @@ public class SchemaParser {
 			ViewsParser.parseViews(views, response);
 		}
 
-		if (response.highestSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
+		if (response.highestErrorSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
 
 		Object tests = cleanMap.get("TESTS");
 		if (tests == null) {

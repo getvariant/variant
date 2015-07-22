@@ -59,7 +59,7 @@ public enum ErrorTemplate {
 	PARSER_VARIANT_DUPE                                   (Severity.ERROR, "Duplicate list element 'tests/onViews/variants' references experience [%s] (Test [%s], ViewRef [%s])"), ///
 	PARSER_COVARIANT_VARIANT_DUPE                         (Severity.ERROR, "Duplicate list element 'tests/onViews/variants' references experience [%s] and covariant experiences [%s] (Test [%s], ViewRef [%s])"), ///
 	PARSER_VARIANT_MISSING                                (Severity.ERROR, "Variant element 'tests/onViews/variants' missing for experience [%s] (Test [%s], ViewRef [%s])"), ///
-	PARSER_COVARIANT_VARIANT_MISSING                      (Severity.ERROR, "Variant element 'tests/onViews/variants' missing for covariant experience [%s.%s] (Test [%s], ViewRef [%s], Experience [%s])"), ///	
+	PARSER_COVARIANT_VARIANT_MISSING                      (Severity.ERROR, "Variant element 'tests/onViews/variants' missing for covariant experiences [%s] (Test [%s], ViewRef [%s], Experience [%s])"), ///	
 	PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT           (Severity.ERROR, "Variant element 'tests/onViews/variants' for covariant experience [%s.%s] cannot refer to a non-covariant test (Test [%s], ViewRef [%s])"), ///	
 	PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST              (Severity.ERROR, "'tests/onViews/covariantExperienceRefs' property must be a list (Test [%s], ViewRef [%s], ExperienceRef [%s])"), ///
 	PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT            (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs' list element must be an object (Test [%s], ViewRef [%s], ExperienceRef [%s])"), ///
@@ -83,7 +83,7 @@ public enum ErrorTemplate {
 	//------------------------------------------------------------------------------------------------------------------------//
 	
 	RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST                    (Severity.ERROR, "View [%s] is not instrumented for test [%s]"), ///
-	RUN_NO_VIEW_FOR_PATH                                  (Severity.ERROR, "No view matches path [%s]"),
+	//RUN_NO_VIEW_FOR_PATH                                  (Severity.ERROR, "No view matches path [%s]"),
 	RUN_TP_NOT_INITIALIZED                                (Severity.ERROR, "Targeting persister is not initialized"),
 	
 	//------------------------------------------------------------------------------------------------------------------------//

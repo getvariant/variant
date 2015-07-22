@@ -5,11 +5,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.variant.core.ParserResponse;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.impl.ParserError;
-import com.variant.core.schema.impl.ParserResponse;
+import com.variant.core.schema.impl.ParserResponseImpl;
 
 /**
  * Parse time exceptions
@@ -83,7 +84,7 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 				"{                                                             \n" +			    	   
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(2, response.getErrors().size());
@@ -136,7 +137,7 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(2, response.getErrors().size());
@@ -191,7 +192,7 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(2, response.getErrors().size());
@@ -251,7 +252,7 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 		
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
@@ -309,7 +310,7 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
@@ -367,7 +368,7 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 
@@ -425,7 +426,7 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
@@ -452,7 +453,7 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 		
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
@@ -481,7 +482,7 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 		
 		assertTrue(response.hasErrors());
 		assertEquals(1, response.getErrors().size());
@@ -538,10 +539,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 				"  'invalid clause': 'throw an error'                          \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.WARN, response.highestSeverity());
+		assertEquals(Severity.WARN, response.highestErrorSeverity());
 		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_UNSUPPORTED_CLAUSE, "invalid clause").getMessage(), error.getMessage());
@@ -596,10 +597,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_TEST_NAME_MISSING).getMessage(), error.getMessage());
@@ -652,10 +653,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_TEST_NAME_NOT_STRING).getMessage(), error.getMessage());
@@ -735,10 +736,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 		
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_TEST_NAME_DUPE, "test1").getMessage(), error.getMessage());
@@ -793,10 +794,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.WARN, response.highestSeverity());
+		assertEquals(Severity.WARN, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_TEST_UNSUPPORTED_PROPERTY, "unsupported", "test1").getMessage(), error.getMessage());
@@ -840,10 +841,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(3, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCES_NOT_LIST, "test1").getMessage(), error.getMessage());
@@ -895,10 +896,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(3, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCES_LIST_EMPTY, "test1").getMessage(), error.getMessage());
@@ -960,10 +961,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCE_NOT_OBJECT, "test1").getMessage(), error.getMessage());
@@ -1021,10 +1022,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCE_NAME_NOT_STRING, "test1").getMessage(), error.getMessage());
@@ -1079,10 +1080,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_ISCONTROL_NOT_BOOLEAN, "test1", "A").getMessage(), error.getMessage());
@@ -1136,10 +1137,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_WEIGHT_NOT_NUMBER, "test1", "A").getMessage(), error.getMessage());
@@ -1194,10 +1195,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.WARN, response.highestSeverity());
+		assertEquals(Severity.WARN, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY, "unsupported", "test1", "A").getMessage(), error.getMessage());
@@ -1251,10 +1252,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_ONVIEWS_NOT_LIST, "test1").getMessage(), error.getMessage());
@@ -1298,10 +1299,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_ONVIEWS_LIST_EMPTY, "test1").getMessage(), error.getMessage());
@@ -1345,10 +1346,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_ONVIEW_NOT_OBJECT, "test1").getMessage(), error.getMessage());
@@ -1402,10 +1403,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 	
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VIEWREF_NOT_STRING, "test1").getMessage(), error.getMessage());
@@ -1458,10 +1459,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VIEWREF_MISSING, "test1").getMessage(), error.getMessage());
@@ -1524,10 +1525,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VIEWREF_DUPE, "view1", "test1").getMessage(), error.getMessage());
@@ -1582,10 +1583,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VIEWREF_UNDEFINED, "View1", "test1").getMessage(), error.getMessage());
@@ -1640,10 +1641,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_ISINVARIANT_NOT_BOOLEAN, "test1", "view1").getMessage(), error.getMessage());
@@ -1698,10 +1699,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANTS_NOT_LIST, "test1", "view1").getMessage(), error.getMessage());
@@ -1752,10 +1753,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANTS_LIST_EMPTY, "test1", "view1").getMessage(), error.getMessage());
@@ -1810,10 +1811,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY, "unsupported", "test1", "view1").getMessage(), error.getMessage());
@@ -1868,10 +1869,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_INCOMPATIBLE, "test1", "view1").getMessage(), error.getMessage());
@@ -1919,10 +1920,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_XOR, "test1", "view1").getMessage(), error.getMessage());
@@ -1971,10 +1972,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(3, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_NOT_OBJECT, "test1", "view1").getMessage(), error.getMessage());
@@ -2034,10 +2035,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCEREF_MISSING, "test1", "view1").getMessage(), error.getMessage());
@@ -2098,10 +2099,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCEREF_NOT_STRING, "test1", "view1").getMessage(), error.getMessage());
@@ -2155,10 +2156,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "foo", "test1", "view1").getMessage(), error.getMessage());
@@ -2219,10 +2220,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCEREF_ISCONTROL, "B", "test1", "view1").getMessage(), error.getMessage());
@@ -2276,10 +2277,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCEREF_PATH_NOT_STRING, "test1", "view1", "A").getMessage(), error.getMessage());
@@ -2340,10 +2341,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_EXPERIENCE_NAME_DUPE, "B", "TEST").getMessage(), error.getMessage());
@@ -2405,10 +2406,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_CONTROL_EXPERIENCE_DUPE, "C", "TEST").getMessage(), error.getMessage());
@@ -2470,10 +2471,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(2, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_DUPE, "A", "TEST", "view1").getMessage(), error.getMessage());
@@ -2534,10 +2535,10 @@ public class SchemaParserDisjointErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(config);
 
 		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestSeverity());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "view1").getMessage(), error.getMessage());

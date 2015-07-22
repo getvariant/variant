@@ -1,5 +1,6 @@
 package com.variant.core.util;
 
+import java.util.Collection;
 import java.util.Random;
 
 public class VariantStringUtils {
@@ -32,5 +33,22 @@ public class VariantStringUtils {
 	public static String random128BitString(Random rand) {
 		return random64BitString(rand) + random64BitString(rand);
 	}
-	
+
+	/**
+	 * Collection toString();
+	 * @param c
+	 * @param separator
+	 * @return
+	 */
+	public static String toString(Collection<?> c, String separator) {
+		
+		StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (Object o: c) {
+			if (first) first = false;
+			else result.append(separator);
+			result.append(o);
+		}
+		return result.toString();
+	}
 }

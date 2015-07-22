@@ -2,6 +2,8 @@ package com.variant.core.schema;
 
 import java.util.List;
 
+import com.variant.core.VariantRuntimeException;
+
 /**
  * 
  * @author Igor
@@ -29,9 +31,17 @@ public interface View {
 	List<Test> getInstrumentedTests();
 
 	/**
-	 * Does this view have variants (! isInvariant) in a particular test?
+	 * Is this view instrumented by a particular test?
 	 * @param test
 	 * @return
 	 */
-	public boolean isInvariantIn(Test test);
+	public boolean isInstrumentedBy(Test test);
+
+	/**
+	 * Does this view have variants (not isInvariant) in a particular test?
+	 * @param test
+	 * @return
+	 * @throws VariantRuntimeException if this view is not instrumented by the given test.
+	 */
+	public boolean isInvariantIn(Test test) throws VariantRuntimeException;
 }

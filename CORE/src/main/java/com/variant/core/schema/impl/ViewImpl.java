@@ -73,7 +73,16 @@ class ViewImpl implements View {
 	}
 
 	@Override
-	public boolean isInvariantIn(Test test) {
+	public boolean isInstrumentedBy(Test test) {
+
+		for (Test.OnView tov: test.getOnViews()) {
+			if (tov.getView().equals(this)) return true;
+		}
+		return false;
+	}		
+
+	@Override
+	public boolean isInvariantIn(Test test) throws VariantRuntimeException {
 
 		for (Test.OnView tov: test.getOnViews()) {
 			if (tov.getView().equals(this)) return tov.isInvariant();

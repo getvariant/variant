@@ -35,17 +35,13 @@ public interface Test {
 	public Experience getControlExperience();
 	
 	/**
-	 * A list of all views instrumented for this Test, in the order they were declared.
+	 * A list of all view instrumentations for this Test, in the order they were declared.
 	 * @return
 	 */
 	public List<OnView> getOnViews();
 
 	/**
-	 * Get a list of tests covariant with this test.  
-	 * Each test in this list is either mentioned in this test's covariant test refs,
-	 * or mentions this test in its covaraint test refs.  In other words, relationship
-	 * of covariance is commutative: if A is covariant with B, then B is also covariant
-	 * with A.
+	 * Get a list of tests, declared by this test as covariant.
 	 * 
 	 * @return
 	 */

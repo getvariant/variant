@@ -1,6 +1,40 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.error.ErrorTemplate.*;
+import static com.variant.core.error.ErrorTemplate.INTERNAL;
+import static com.variant.core.error.ErrorTemplate.PARSER_CONTROL_EXPERIENCE_DUPE;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_UNDEFINED;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTS_NOT_LIST;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_DUPE;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_MISSING;
+import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCES_LIST_EMPTY;
+import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCES_NOT_LIST;
+import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NAME_DUPE;
+import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NAME_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NOT_OBJECT;
+import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY;
+import static com.variant.core.error.ErrorTemplate.PARSER_ISCONTROL_NOT_BOOLEAN;
+import static com.variant.core.error.ErrorTemplate.PARSER_ISINVARIANT_NOT_BOOLEAN;
+import static com.variant.core.error.ErrorTemplate.PARSER_IS_CONTROL_MISSING;
+import static com.variant.core.error.ErrorTemplate.PARSER_NO_TESTS;
+import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEWS_LIST_EMPTY;
+import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEWS_NOT_LIST;
+import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEW_NOT_OBJECT;
+import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_DUPE;
+import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_MISSING;
+import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_TEST_UNSUPPORTED_PROPERTY;
+import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_INCOMPATIBLE;
+import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_XOR;
+import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_LIST_EMPTY;
+import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_NOT_LIST;
+import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_DUPE;
+import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_MISSING;
+import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_DUPE;
+import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_MISSING;
+import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_UNDEFINED;
+import static com.variant.core.error.ErrorTemplate.PARSER_WEIGHT_NOT_NUMBER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +42,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.variant.core.VariantRuntimeException;
+import com.variant.core.runtime.VariantSpace;
 import com.variant.core.schema.Test;
 import com.variant.core.util.VariantStringUtils;
 
@@ -21,9 +57,10 @@ public class TestsParser implements Keywords {
 	/**
 	 * @param result
 	 * @param viewsObject
+	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parseTests(Object testsObject, ParserResponse response) {
+	static void parseTests(Object testsObject, ParserResponseImpl response) throws VariantRuntimeException {
 		List<Map<String, ?>> rawTests = null;
 		try {
 			rawTests = (List<Map<String, ?>>) testsObject;
@@ -48,8 +85,9 @@ public class TestsParser implements Keywords {
 	 * 
 	 * @param test
 	 * @param response
+	 * @throws VariantRuntimeException 
 	 */
-	private static Test parseTest(Map<String, ?> test, ParserResponse response) {
+	private static Test parseTest(Map<String, ?> test, ParserResponseImpl response) throws VariantRuntimeException {
 		
 		List<TestImpl> covarTests = new ArrayList<TestImpl>();
 		List<TestExperienceImpl> experiences = new ArrayList<TestExperienceImpl>();
@@ -167,7 +205,7 @@ public class TestsParser implements Keywords {
 		}
 		
 		result.setCovariantTests(covarTests);
-
+		
 		// Pass 4: Parse onViews.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
@@ -221,7 +259,7 @@ public class TestsParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static TestExperienceImpl parseTestExperience(Object experienceObject, String testName, ParserResponse response) {
+	private static TestExperienceImpl parseTestExperience(Object experienceObject, String testName, ParserResponseImpl response) {
 		
 		Map<String, ?> experience = null;
 		try {
@@ -292,9 +330,10 @@ public class TestsParser implements Keywords {
 	 * @param testOnViewObject
 	 * @param response
 	 * @return
+	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	private static TestOnViewImpl parseTestOnView(Object testOnViewObject, TestImpl test, ParserResponse response) {
+	private static TestOnViewImpl parseTestOnView(Object testOnViewObject, TestImpl test, ParserResponseImpl response) throws VariantRuntimeException {
 		
 		Map<String, Object> rawTestOnView = null;
 		
@@ -365,6 +404,7 @@ public class TestsParser implements Keywords {
 				for (Object variantObject: rawVariants) {
 					TestOnViewVariantImpl variant = VariantParser.parseVariant(variantObject, tov, response);
 					if (variant != null) {
+						boolean dupe = false;
 						for (Test.OnView.Variant v: tov.getVariants()) {
 							if (v.getExperience().equals(variant.getExperience())) { 
 								if (v.getCovariantExperiences().isEmpty() && variant.getCovariantExperiences().isEmpty()) {
@@ -373,6 +413,8 @@ public class TestsParser implements Keywords {
 											PARSER_VARIANT_DUPE, 
 											v.getExperience().getName(), 
 											test.getName(), viewRef);
+									dupe = true;
+									break;
 								}
 								else if (v.getCovariantExperiences().equals(variant.getCovariantExperiences())){
 									// Dupe local and covariant list.  Note that for this predicate relies on proper ordering. 
@@ -381,10 +423,15 @@ public class TestsParser implements Keywords {
 											v.getExperience().getName(), 
 											StringUtils.join(v.getCovariantExperiences(), ", "), 
 											test.getName(), viewRef);
+									dupe = true;
+									break;
 								}
 							}
 						}
-						tov.addVariant(variant);
+					    // Don't add a dupe.
+						if (!dupe) {
+							tov.addVariant(variant);
+						}
 					}
 				}
 			}
@@ -405,8 +452,24 @@ public class TestsParser implements Keywords {
 			return null;
 		}
 		
-		// Must have a variant for each local (in this test) non-control experience.
+		// Confirm Must have a variant for each vector in the variant space
+		// defined by the local and covariant experiences.
+		for (VariantSpace.Point point: tov.variantSpace().getAll()) {
+			if (point.getVariant() == null) {
+				if (point.getCovariantExperiences().size() == 0) {
+					response.addError(PARSER_VARIANT_MISSING, point.getExperience().getName(), test.getName(), viewRef);
+				}
+				else {
+					response.addError(
+							PARSER_COVARIANT_VARIANT_MISSING, 
+							VariantStringUtils.toString(point.getCovariantExperiences(),  ","), test.getName(), viewRef, point.getExperience().getName());
+				}
+			}
+		}
+		
+/*
 		for (Test.Experience e: test.getExperiences()) {
+			
 			if (e.isControl()) continue;
 			boolean found = false;
 			for (Test.OnView.Variant v: tov.getVariants()) {
@@ -420,10 +483,18 @@ public class TestsParser implements Keywords {
 			}
 		}
 
-		// Must have a covariant variant (one for each covariant test's non-control experience),
+		// Must define a covariant variant for each covariance vector,
 		// for each local experience, unless the remote variant is invariant.
-		for (Test covarTest: test.getDeclaredCovariantTests()) {
-			if (refView.isInvariantIn(covarTest)) continue;
+		for (Test covarTest: test.getCovariantTests()) {
+			
+			try {
+				if (refView.isInvariantIn(covarTest)) continue;
+			}
+			catch (VariantRuntimeException vre) {
+				// refView is not instrumented by covarTest.
+				continue;
+			}
+			
 			for (Test.Experience covarExperience: covarTest.getExperiences()) {
 				if (covarExperience.isControl()) continue;
 				for (Test.Experience localExperience: tov.getTest().getExperiences()) {
@@ -444,7 +515,7 @@ public class TestsParser implements Keywords {
 				}
 			}
 		}
-		
+*/
 		return tov;
 	}
 	

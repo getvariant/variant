@@ -18,7 +18,7 @@ public class ViewsParser implements Keywords {
 	 * @param result
 	 * @param viewsObject
 	 */
-	 static void parseViews(Object viewsObject, ParserResponse response) {
+	 static void parseViews(Object viewsObject, ParserResponseImpl response) {
 		List<Map<String, ?>> rawViews = null;
 		try {
 			rawViews = (List<Map<String, ?>>) viewsObject;
@@ -44,7 +44,7 @@ public class ViewsParser implements Keywords {
 	 * @param view
 	 * @param response
 	 */
-	private static View parseView(Map<String, ?> view, final ParserResponse response) {
+	private static View parseView(Map<String, ?> view, final ParserResponseImpl response) {
 		
 		String name = null, path = null;
 		boolean nameFound = false, pathFound = false;

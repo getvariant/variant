@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.variant.core.VariantRuntimeException;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -24,7 +25,8 @@ public class VariantParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static TestOnViewVariantImpl parseVariant(Object variantObject, TestOnViewImpl tov, ParserResponse response) {
+	public static TestOnViewVariantImpl parseVariant(Object variantObject, TestOnViewImpl tov, ParserResponseImpl response) 
+	throws VariantRuntimeException {
 		
 		Map<String, Object> rawVariant = null;
 		
@@ -129,7 +131,7 @@ public class VariantParser implements Keywords {
 					}
 
 					// This test must declare the other test as covariant.
-					if (!((TestImpl)tov.getTest()).getDeclaredCovariantTests().contains(covarTest)) {
+					if (!((TestImpl)tov.getTest()).getCovariantTests().contains(covarTest)) {
 						response.addError(PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT, covarTestRef, covarExperienceRef, tov.getTest().getName(), tov.getView().getName());
 						return null;
 					}

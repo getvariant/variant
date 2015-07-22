@@ -1,5 +1,6 @@
 package com.variant.core.event;
 
+import com.variant.core.VariantRuntimeException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;
 
@@ -66,7 +67,12 @@ public class EventExperience {
 	 * @return
 	 */
 	public Boolean isViewInvariant() {
-		return view.isInvariantIn(experience.getTest());
+		try {
+			return view.isInvariantIn(experience.getTest());
+		}
+		catch (VariantRuntimeException vre) {
+			return null;
+		}
 	}
 	
 	/**

@@ -16,7 +16,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
-import com.variant.core.schema.impl.ParserResponse;
+import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.session.SessionKeyResolver;
 import com.variant.core.session.SessionService;
@@ -158,10 +158,20 @@ public class Variant {
 
 		stateCheck();
 		long now = System.currentTimeMillis();
-		ParserResponse result = SchemaParser.parse(schemaAsString);
+		ParserResponseImpl response;
+		
+		try {
+			response = SchemaParser.parse(schemaAsString);
+		}
+		catch (Throwable t) {
+			Variant.getLogger().error(t.getMessage(), t);
+			response = new ParserResponseImpl();
+			response.addError(ErrorTemplate.INTERNAL, t.getMessage() + ". See log for details.");
+		}
+
 		// Only replace the schema if no ERROR or higher level errors.
-		if (result.highestSeverity().lessThan(Severity.ERROR)) {
-			schema = result.getSchema();
+		if (response.highestErrorSeverity().lessThan(Severity.ERROR)) {
+			schema = response.getSchema();
 			StringBuilder msg = new StringBuilder("New schema deployed in ");
 			msg.append(DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")).append(":");
 			for (Test test: schema.getTests()) {
@@ -181,7 +191,7 @@ public class Variant {
 			logger.error("New schema was not deployed due to parser error(s).");
 		}
 		
-		return result;
+		return response;
 	}
 	
 	/**
@@ -213,8 +223,9 @@ public class Variant {
 	 *                 interpretation to <code>SessionKeyResolver.getSessionKey()</code>
 	 *                 In an environment like servlet container, this will be http request.
 	 * @return          
+	 * @throws VariantRuntimeException 
 	 */
-	public static VariantSession getSession(boolean create, SessionKeyResolver.UserData userData) {
+	public static VariantSession getSession(boolean create, SessionKeyResolver.UserData userData) throws VariantRuntimeException {
 		return sessionService.getSession(create, userData);
 	}
 	
@@ -225,16 +236,18 @@ public class Variant {
 	 *                 interpretation to <code>SessionKeyResolver.getSessionKey()</code>
 	 *                 In an environment like servlet container, this will be http request.
 	 * @return
+	 * @throws VariantRuntimeException 
 	 */
-	public static VariantSession getSession(SessionKeyResolver.UserData userData) {
+	public static VariantSession getSession(SessionKeyResolver.UserData userData) throws VariantRuntimeException {
 		return sessionService.getSession(true, userData);
 	}
 
 	/**
      * Start view Request 
 	 * @return
+	 * @throws VariantRuntimeException 
 	 */
-	public static void startViewRequest(VariantSession session, View view) {
+	public static void startViewRequest(VariantSession session, View view) throws VariantRuntimeException {
 		
 		stateCheck();
 		

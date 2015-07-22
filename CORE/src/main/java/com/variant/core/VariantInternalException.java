@@ -11,4 +11,14 @@ public class VariantInternalException extends RuntimeException {
 	public VariantInternalException(String msg) {
 		super(msg);
 	}
+	
+	/**
+	 * 
+	 * @param msg
+	 * @param t
+	 */
+	public VariantInternalException(String msg, Throwable t) {
+		super(msg, t);
+	}
+
 }
