@@ -136,6 +136,11 @@ public class VariantParser implements Keywords {
 						return null;
 					}
 
+					if (covarTestExperiences.contains(covarExperience)) {
+						response.addError(PARSER_COVARIANT_EXPERIENCE_DUPE, covarTestRef, covarExperienceRef, tov.getTest().getName(), tov.getView().getName(), experienceRef);
+						return null;
+					}
+	
 					covarTestExperiences.add(covarExperience);
 				}
 				
@@ -143,6 +148,7 @@ public class VariantParser implements Keywords {
 
 		}
 
+		
 		// Pass 3. Parse the rest of experience element.
 		String path = null;
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
