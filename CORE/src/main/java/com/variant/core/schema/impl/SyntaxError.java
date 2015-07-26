@@ -38,6 +38,13 @@ public class SyntaxError extends ParserError {
 		String lines[] = rawInput.split("\n");
 		
 		StringBuilder result = new StringBuilder(super.toString()); 
+		
+		if (getLine() > 3) {
+			result.append("\n     ...");
+		}
+		if (getLine() > 2) {
+			result.append("\n     >").append(lines[getLine() - 3]);
+		}
 		if (getLine() > 1) {
 			result.append("\n     >").append(lines[getLine() - 2]);
 		}
@@ -45,6 +52,12 @@ public class SyntaxError extends ParserError {
 		result.append("\n      ").append(StringUtils.repeat(" ", getColumn() - 2)).append("^");
 		if (getLine() < lines.length) {
 			result.append("\n     >").append(lines[getLine()]);
+		}
+		if (getLine() < lines.length - 1) {
+			result.append("\n     >").append(lines[getLine() + 1]);
+		}
+		if (getLine() < lines.length - 2) {
+			result.append("\n     ...");
 		}
 		
 		return result.toString();

@@ -204,7 +204,12 @@ public class TestsParser implements Keywords {
 			}
 		}
 		
-		result.setCovariantTests(covarTests);
+		// Resort covariant tests in ordinal order before adding to the result.
+		List<TestImpl> covarTestsReordered = new ArrayList<TestImpl>(covarTests.size());
+		for (Test t: response.getSchema().getTests()) {
+			if (covarTests.contains(t)) covarTestsReordered.add((TestImpl)t);
+		}
+		result.setCovariantTests(covarTestsReordered);
 		
 		// Pass 4: Parse onViews.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {

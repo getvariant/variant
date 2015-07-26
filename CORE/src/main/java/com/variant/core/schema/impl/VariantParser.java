@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.variant.core.VariantRuntimeException;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -170,6 +172,17 @@ public class VariantParser implements Keywords {
 		
 		if (path == null) return null;
 		
-		return new TestOnViewVariantImpl(tov, experience, covarTestExperiences, path);
+		// Resort covarTestExperiences in ordinal order
+		List<TestExperienceImpl> orderedCovarTestExperiences = new ArrayList<TestExperienceImpl>(covarTestExperiences.size());
+
+		for (Test t: response.getSchema().getTests()) {
+			for (Experience e: covarTestExperiences) {
+				if (t.equals(e.getTest())) {
+					orderedCovarTestExperiences.add((TestExperienceImpl) e);
+					break;
+				}
+			}
+		}
+		return new TestOnViewVariantImpl(tov, experience, orderedCovarTestExperiences, path);
 	}
 }

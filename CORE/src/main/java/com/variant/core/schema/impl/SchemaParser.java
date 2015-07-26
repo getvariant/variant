@@ -26,13 +26,13 @@ public class SchemaParser {
 
 		// Pull out line and column info from exception message.
 		// Message starts with the repeat of the entire input, so skip that.
-		String tail = parseException.getMessage().substring(rawInput.length()).trim();
+		String tail = VariantStringUtils.splice(parseException.getMessage(), "line\\: \\d*\\, column\\: \\d*");
+
 		// the remainder is something like '; line: 33, column: 4]'
 		tail = tail.replaceAll("[^0-9,]","");
 		String[] tokens = tail.split(",");
 		int line = Integer.parseInt(tokens[0]);
 		int column = Integer.parseInt(tokens[1]);
-		
 		response.addError(ErrorTemplate.PARSER_JSON_PARSE, line, column, message.toString(), rawInput);
 
 	}

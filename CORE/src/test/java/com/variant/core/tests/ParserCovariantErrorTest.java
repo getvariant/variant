@@ -1,12 +1,23 @@
 package com.variant.core.tests;
 
-import static com.variant.core.error.ErrorTemplate.*;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_INVARIANT;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_NOT_STRING;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_UNDEFINED;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTS_NOT_LIST;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_MISSING;
+import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT;
+import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.variant.core.ParserResponse;
 import com.variant.core.error.Severity;
 import com.variant.core.schema.impl.ParserError;
 import com.variant.core.schema.impl.ParserResponseImpl;

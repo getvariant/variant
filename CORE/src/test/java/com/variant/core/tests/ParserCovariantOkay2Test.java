@@ -25,7 +25,7 @@ import com.variant.core.util.VariantListUtils;
  * test3 + + - - -
  * blank: not instrumented, -: invariant, +: has variants.
  * 
- * A, B, C(A)
+ * T1, T2, T3(T1)
  * 
  * @author Igor
  */

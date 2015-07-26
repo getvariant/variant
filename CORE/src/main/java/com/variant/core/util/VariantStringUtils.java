@@ -2,6 +2,8 @@ package com.variant.core.util;
 
 import java.util.Collection;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class VariantStringUtils {
 
@@ -50,5 +52,17 @@ public class VariantStringUtils {
 			result.append(o);
 		}
 		return result.toString();
+	}
+	
+	/**
+	 * Pull a region matching the regex out of the input string.
+	 * @param input
+	 * @param regex
+	 * @return
+	 */
+	public static String splice(String input, String regex) {
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(input);
+		return matcher.find() ? matcher.group(0) : null;
 	}
 }
