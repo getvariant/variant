@@ -555,14 +555,14 @@ public class ParserCovariantOkay5Test extends BaseTest {
 		//
 		assertEquals(0, test1.getCovariantTests().size());
 		assertEquals(VariantListUtils.list(test1), test2.getCovariantTests());
-		assertEquals(VariantListUtils.list(test2, test1), test3.getCovariantTests());
+		assertEquals(VariantListUtils.list(test1, test2), test3.getCovariantTests());
 
 		// 
 		// Runtime test covariance.
 		//
 		assertEquals(VariantListUtils.list(test2, test3), VariantRuntime.getCovariantTests(test1));
 		assertEquals(VariantListUtils.list(test1, test3), VariantRuntime.getCovariantTests(test2));
-		assertEquals(VariantListUtils.list(test2, test1), VariantRuntime.getCovariantTests(test3));
+		assertEquals(VariantListUtils.list(test1, test2), VariantRuntime.getCovariantTests(test3));
 
 		// 
 		// test1 OnView objects

@@ -1,8 +1,10 @@
 package com.variant.core.tests;
 
+import java.io.InputStream;
 import java.util.function.Consumer;
 
 import com.variant.core.ParserResponse;
+import com.variant.core.conf.ApplicationProperties;
 import com.variant.core.schema.impl.ParserError;
 
 /**
@@ -25,5 +27,18 @@ public class BaseTest {
 					}
 			);
 		}
+	}
+	
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
+	static protected InputStream openResourceAsInputStream(String name) {
+		InputStream result = ApplicationProperties.class.getResourceAsStream(name);
+		if (result == null) {
+			throw new RuntimeException("Classpath resource '" + name + "' does not exist.");
+		}
+		return result;
 	}
 }

@@ -1,7 +1,10 @@
 package com.variant.core;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,6 +157,24 @@ public class Variant {
 	 * @deploy The new test schema will be deployed if this is true and no parse errors were encountered.
 	 * @return
 	 */
+	public static ParserResponse parseSchema(InputStream schemaAsInputString, boolean deploy) {
+		
+		String input = null;
+		try {
+			input = IOUtils.toString(schemaAsInputString);
+		} catch (IOException e) {
+			throw new VariantInternalException("Unable to read input from stream", e);
+		}
+		return parseSchema(input, deploy);
+	}
+
+
+	/**
+	 * Parse and, if no errors, optionally deploy a new schema.
+	 * @param schemaAsString
+	 * @deploy The new test schema will be deployed if this is true and no parse errors were encountered.
+	 * @return
+	 */
 	public static ParserResponse parseSchema(String schemaAsString, boolean deploy) {
 
 		stateCheck();
@@ -194,6 +215,16 @@ public class Variant {
 		return response;
 	}
 	
+	/**
+	 * Parse and, if no errors, deploy a new schema. The new config will not be deployed if parse errors were encountered.
+	 * @param configAsString
+	 * @return
+	 */
+	public static ParserResponse parseSchema(InputStream schemaAsInputStream) {
+
+		return parseSchema(schemaAsInputStream, true);
+	}
+
 	/**
 	 * Parse and, if no errors, deploy a new schema. The new config will not be deployed if parse errors were encountered.
 	 * @param configAsString

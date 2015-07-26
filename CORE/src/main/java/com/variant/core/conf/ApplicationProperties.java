@@ -19,10 +19,12 @@ public class ApplicationProperties {
 	 * @return
 	 */
 	private static Properties loadFromClasspath(String fileName) {
+		
 		InputStream is = ApplicationProperties.class.getResourceAsStream(fileName);
 		if (is == null) {
 			throw new RuntimeException("Classpath resource by the name '" + fileName + "' does not exist.");
 		}
+		
 		Properties result = new Properties();
 		try {
 			result.load(is);
