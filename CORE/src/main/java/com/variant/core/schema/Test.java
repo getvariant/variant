@@ -41,6 +41,16 @@ public interface Test {
 	public List<OnView> getOnViews();
 
 	/**
+	 * Is this test disjoint with the other test?
+	 * This is to say that there does not exist a view on which both
+	 * this and the other test are instrumented. It is illegal if this.equal(other) is true;
+	 * 
+	 * @param other
+	 * @return
+	 */
+	public boolean isDisjointWith(Test other);
+		
+	/**
 	 * Get a list of tests, declared by this test as covariant.
 	 * 
 	 * @return

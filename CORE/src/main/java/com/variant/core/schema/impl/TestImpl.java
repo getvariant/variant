@@ -143,6 +143,24 @@ public class TestImpl implements Test {
 		return (List<Test>) (List<?>) Collections.unmodifiableList(covariantTests);
 	}
 	
+	/**
+	 * 
+	 */
+	@Override
+	public boolean isDisjointWith(Test other) {
+		
+		if (this.equals(other)) throw new IllegalArgumentException("Argument cannot be equal to this");
+		
+		for (OnView thisOnView: getOnViews()) {
+			if (thisOnView.isInvariant()) continue;
+			for (OnView otherOnView: other.getOnViews()) {
+				if (otherOnView.isInvariant()) continue;
+				if (thisOnView.getView().equals(otherOnView.getView())) return false;
+			}
+		}
+		return true;
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC EXTENSION                                         //
 	//---------------------------------------------------------------------------------------------//

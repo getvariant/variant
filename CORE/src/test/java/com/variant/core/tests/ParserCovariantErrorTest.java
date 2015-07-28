@@ -1,18 +1,6 @@
 package com.variant.core.tests;
 
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_INVARIANT;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_MISSING;
+import static com.variant.core.error.ErrorTemplate.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -128,6 +116,107 @@ public class ParserCovariantErrorTest extends BaseTest {
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(PARSER_COVARIANT_TESTS_NOT_LIST, "test2").getMessage(), error.getMessage());
+		assertEquals(Severity.ERROR, error.getSeverity());
+	}
+
+	/**
+	 * PARSER_COVARIANT_TEST_DISJOINT
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void covariantTestDisjoint_Test() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "   'views':[                                                  \n" +
+			    "     {  'name':'view1',                                       \n" +
+			    "        'path':'/path/to/view1'                               \n" +
+			    "     },                                                       \n" +
+			    "     {  'path':'/path/to/view1',                              \n" +
+			    "        'name':'view2'                                        \n" +
+			    "     }                                                        \n" +
+			    "  ],                                                          \n" +
+				"  'tests':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'name':'test1',                                       \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':10,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':20                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'C',                                     \n" +
+			    "              'weight':30                                     \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onViews':[                                           \n" +
+			    "           {                                                  \n" +
+			    "              'viewRef':'view1',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'B',                     \n" +
+			    "                    'path':'/path/to/view1/test1.B'           \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'C',                     \n" +
+			    "                    'path':'/path/to/view1/test1.C'           \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     },                                                       \n" +
+			    //----------------------------------------------------------------//	
+			    "     {                                                        \n" +
+			    "        'name':'test2',                                       \n" +
+	    	    "        'covariantTestRefs': ['test1'],                         \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':10,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':20                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'C',                                     \n" +
+			    "              'weight':30                                     \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onViews':[                                           \n" +
+			    "           {                                                  \n" +
+			    "              'viewRef':'view2',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'B',                     \n" +
+			    "                    'path':'/path/to/view2/test1.B'           \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'C',                     \n" +
+			    "                    'path':'/path/to/view2/test1.C'           \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		ParserResponseImpl response = SchemaParser.parse(config);
+
+		assertTrue(response.hasErrors());
+		assertEquals(Severity.ERROR, response.highestErrorSeverity());
+		assertEquals(1, response.getErrors().size());
+		ParserError error = response.getErrors().get(0);
+		assertEquals(new ParserError(PARSER_COVARIANT_TEST_DISJOINT, "test1", "test2").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 

@@ -1,40 +1,6 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.error.ErrorTemplate.INTERNAL;
-import static com.variant.core.error.ErrorTemplate.PARSER_CONTROL_EXPERIENCE_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCES_LIST_EMPTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCES_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NAME_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NAME_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NOT_OBJECT;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_ISCONTROL_NOT_BOOLEAN;
-import static com.variant.core.error.ErrorTemplate.PARSER_ISINVARIANT_NOT_BOOLEAN;
-import static com.variant.core.error.ErrorTemplate.PARSER_IS_CONTROL_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_NO_TESTS;
-import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEWS_LIST_EMPTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEWS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEW_NOT_OBJECT;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_UNSUPPORTED_PROPERTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_INCOMPATIBLE;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_XOR;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_LIST_EMPTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_WEIGHT_NOT_NUMBER;
+import static com.variant.core.error.ErrorTemplate.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -253,6 +219,13 @@ public class TestsParser implements Keywords {
 		if (onViews.isEmpty()) return null;
 		
 		result.setOnViews(onViews);
+		
+		// A covariant test cannot be disjoint.
+		for (Test covarTest: covarTests) {
+			if (result.isDisjointWith(covarTest)) {
+				response.addError(PARSER_COVARIANT_TEST_DISJOINT, covarTest.getName(), name);
+			}
+		}
 		
 		return result;
 	}

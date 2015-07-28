@@ -37,6 +37,7 @@ public enum ErrorTemplate {
 	PARSER_COVARIANT_TESTS_NOT_LIST                       (Severity.ERROR, "'tests/covariantTestRefs' property must be a list (Test [%s])"), ///
 	PARSER_COVARIANT_TESTREF_NOT_STRING                   (Severity.ERROR, "'tests/covariantTestRefs' list element must be a string (Test [%s])"), ///
 	PARSER_COVARIANT_TESTREF_UNDEFINED                    (Severity.ERROR, "Property 'tests/covariantTestRefs' references an undefined test [%s] (Test [%s])"), ///
+	PARSER_COVARIANT_TEST_DISJOINT                        (Severity.ERROR, "Covariant test [%s] cannot be disjoint (Test [%s])"), ///
 	PARSER_ISCONTROL_NOT_BOOLEAN                          (Severity.ERROR, "'tests/experience/isControl' property must be a boolean (Test [%s], Experience [%s])"), ///
 	PARSER_CONTROL_EXPERIENCE_DUPE                        (Severity.ERROR, "Duplicate control experience [%s] in test [%s]"), ///
 	PARSER_IS_CONTROL_MISSING                             (Severity.ERROR, "Control experience is missing in test [%s]"), ///

@@ -2,16 +2,17 @@ package com.variant.core.runtime;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.variant.core.Variant;
+import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
-import com.variant.core.schema.impl.TestImpl;
+import com.variant.core.util.VariantCollectionsUtils;
 
 /**
  * Entry point into the runtime.
@@ -22,7 +23,8 @@ import com.variant.core.schema.impl.TestImpl;
 public class VariantRuntime {
 
 	/**
-	 * static singleton.
+	 * Static singleton.
+	 * Need package visibility for test facade.
 	 */
 	private VariantRuntime() {}
 	
@@ -53,10 +55,10 @@ public class VariantRuntime {
 
 		Schema schema = Variant.getSchema();
 
-		// It is illegal to call this with a view that is not in schema, i.e. before runtime.
+		// It is illegal to call this with a view that is not in schema, e.g. before runtime.
 		View schemaView = schema.getView(view.getName());
 		if (System.identityHashCode(schemaView) != System.identityHashCode(view)) 
-			throw new IllegalArgumentException("View [" + view.getName() + "] is not in schema");
+			throw new VariantInternalException("View [" + view.getName() + "] is not in schema");
 
 		// Tests that are instrumented on this page.
 		List<Test> testList = view.getInstrumentedTests();
@@ -79,17 +81,12 @@ public class VariantRuntime {
 	 * covarainttestRefs. In other words, relationship of covariance is commutative: if A is covariant with B, 
 	 * then B is also covariant with A, and this method computes and returns closure over this relationship.
      *
-	 */
+	 * *** DOESN'T LOOK LIKE THIS IS NEEDED. Remove TestImpl.get/putRuntimeAttribute() as well ***
 	@SuppressWarnings("unchecked")
 	public static List<TestImpl> getCovariantTests(Test test) {
 
 		Schema schema = Variant.getSchema();
-		
-		// It is illegal to call this with a test that is not in schema, i.e. before runtime.
-		Test schemaTest = schema.getTest(test.getName());
-		if (System.identityHashCode(schemaTest) != System.identityHashCode(test)) 
-			throw new IllegalArgumentException("Test [" + test.getName() + "] is not in schema");
-		
+				
 		// This is called on each view hit, so we cache it inside the test object.
 		Object cachedResult = ((TestImpl)test).getRuntimeAttribute("fullCovarList");
 		if (cachedResult == null) { 
@@ -111,14 +108,54 @@ public class VariantRuntime {
 		
 		return (List<TestImpl>) Collections.unmodifiableList((List<TestImpl>)cachedResult);
 	}
+	*/
 
 	/**
+	 * Find the maximal resolvable subvector.
+	 * A given vector is resolvable is we are able to resolve it for every view where it is relevant.
+	 * A max resolvable subvector is one that is as close as possible to the original vector and is resolvable,
+	 * while the original vector is not.
+	 * 1. Sort vector in ordinal order.
+	 * 2. 
 	 * 
-	 * @param view
+	 * 
+	 * TODO: GETME.
+	 * 
 	 * @param coordinates
 	 * @return
 	 */
-	private static String resolvePath(View view, Collection<Test.Experience> coordinates) {
+	private static Collection<Experience> maxResolvableSubvector(Collection<Experience> vector) {
 		return null;
 	}
+	
+	/**
+	 * Is a set of tests resolvable in the current schema?
+	 * In other words, does current schema has a variant for every experience permutation on every view
+	 * where the constituent tests are instrumented?
+	 * 
+	 * 1. Find the test Tk with the highest ordinal number from all in the input set. 
+	 * 2. The given set {T} is resolvable if {T}\Tk is a subset of Tk's covariance set. 
+	 *  
+	 * @param test set of tests.  We require set to guarantee no duplicates.
+	 * @return
+	 */
+	static boolean isResolvable(Set<Test> tests) {
+		
+		Schema schema = Variant.getSchema();
+		
+		ArrayList<Test> sortedTests = new ArrayList<Test>(tests.size());
+		Test rightMostTest = null;
+		for (Test t: schema.getTests()) {
+			if (tests.contains(t)) {
+				rightMostTest = t;
+			}
+		}
+		
+		sortedTests.remove(rightMostTest);
+		
+		return VariantCollectionsUtils.contains(rightMostTest.getCovariantTests(), sortedTests);
+		
+	}
+	
+
 }
