@@ -2,9 +2,9 @@ package com.variant.core;
 
 import java.util.List;
 
+import com.variant.core.error.ParserError;
 import com.variant.core.error.Severity;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.impl.ParserError;
 
 public interface ParserResponse {
 

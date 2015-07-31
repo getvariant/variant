@@ -43,21 +43,7 @@ public class TestOnViewImpl implements Test.OnView {
 	void addVariant(Variant variant) {
 		variants.add(variant);
 	}
-	
-	/**
-	 * Get (and, if not yet, build) his object's variant space. 
-	 * Note that we have the test and its covariant set at the time of construction, 
-	 * but variants are added one by one later. Caller must only call this when last 
-	 * variant was added.
-	 * 
-	 * @return
-	 * @throws VariantRuntimeException 
-	 */
-	VariantSpace variantSpace() throws VariantRuntimeException {
-		if (variantSpace == null) variantSpace = new VariantSpace(this);
-		return variantSpace;
-	}
-	
+		
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -90,4 +76,22 @@ public class TestOnViewImpl implements Test.OnView {
 		return variants;
 	}
 			
+	//---------------------------------------------------------------------------------------------//
+	//                                    PUBLIC EXTENSION                                         //
+	//---------------------------------------------------------------------------------------------//
+	
+	/**
+	 * Get (and, if not yet, build) his object's variant space. 
+	 * Note that we have the test and its covariant set at the time of construction, 
+	 * but variants are added one by one later. Caller must only call this when last 
+	 * variant was added.
+	 * 
+	 * @return
+	 * @throws VariantRuntimeException 
+	 */
+	public VariantSpace variantSpace() throws VariantRuntimeException {
+		if (variantSpace == null) variantSpace = new VariantSpace(this);
+		return variantSpace;
+	}
+
 }

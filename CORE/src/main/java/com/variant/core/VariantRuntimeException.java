@@ -3,7 +3,7 @@ package com.variant.core;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
 
-public class VariantRuntimeException extends Exception {
+public class VariantRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 	private ErrorTemplate template;

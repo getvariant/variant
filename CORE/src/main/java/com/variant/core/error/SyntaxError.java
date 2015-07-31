@@ -1,8 +1,6 @@
-package com.variant.core.schema.impl;
+package com.variant.core.error;
 
 import org.apache.commons.lang3.StringUtils;
-
-import com.variant.core.error.ErrorTemplate;
 
 /**
  * JSON syntax error.

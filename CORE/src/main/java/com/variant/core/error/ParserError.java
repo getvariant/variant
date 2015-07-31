@@ -1,7 +1,5 @@
-package com.variant.core.schema.impl;
+package com.variant.core.error;
 
-import com.variant.core.error.BaseError;
-import com.variant.core.error.ErrorTemplate;
 
 /**
  * Parser error.

@@ -7,6 +7,7 @@ import java.util.List;
 import com.variant.core.VariantInternalException;
 import com.variant.core.runtime.VariantSpace;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.View;
 
 /**
  * 
@@ -50,7 +51,7 @@ public class TestImpl implements Test {
 	}
 	
 	/**
-	 * 
+	 * Caller must ensure that the covarTests are sorted in ordinal order.
 	 * @param tests
 	 */
 	void setCovariantTests(List<TestImpl> covarTests) {
@@ -114,8 +115,17 @@ public class TestImpl implements Test {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<Test.OnView> getOnViews() {
+	public List<OnView> getOnViews() {
 		return (List<Test.OnView>) (List<?>) Collections.unmodifiableList(onViews);
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public OnView getOnView(View view) {
+		for (OnView tov: onViews) if (tov.getView().equals(view)) return tov;
+		return null;
 	}
 
 	/**
@@ -186,5 +196,9 @@ public class TestImpl implements Test {
 		return runtimeAttributes.put(key, attribute);
 	}
 
+	@Override
+	public String toString() {
+		return name;
+	}
 }
 

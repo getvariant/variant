@@ -1,8 +1,6 @@
 package com.variant.core.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -13,23 +11,11 @@ import com.variant.core.Variant;
 import com.variant.core.runtime.VariantRuntime;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.View;
 import com.variant.core.util.VariantCollectionsUtils;
 
 
 /**
- * All Tests:
- * Tests Views
- *       1 2 3 4 5
- * test1   + + - -
- * test2 - + + +  
- * test3 - + - + 
- * test4 + +   - -
- * test5 + + - + -
- * test6 + - +   -
- * blank: not instrumented, -: invariant, +: has variants.
- * 
- * T1, T2, T3(T2), T4(T1), T5(T2,T3), T6(T1,T2,T3,T4)
- * 
  * @author Igor
  */
 public class ParserCovariantOkayBigTest extends BaseTest {
@@ -65,6 +51,12 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		final Test test4 = schema.getTest("test4");
 		final Test test5 = schema.getTest("test5");
 		final Test test6 = schema.getTest("test6");
+
+		final View view1 = schema.getView("view1");
+		final View view2 = schema.getView("view2");
+		final View view3 = schema.getView("view3");
+		final View view4 = schema.getView("view4");
+		final View view5 = schema.getView("view5");
 
 		// 
 		// Declared test covariance.
@@ -169,7 +161,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view2
 		Test.OnView onView = onViews.get(0);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view2"), onView.getView());
+		assertEquals(view2, onView.getView());
 		List<Test.OnView.Variant> variants = onView.getVariants();
 		assertEquals(2, variants.size());
 
@@ -186,7 +178,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view3
 		onView = onViews.get(1);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view3"), onView.getView());
+		assertEquals(view3, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 		
@@ -203,14 +195,14 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view4
 		onView = onViews.get(2);
 		assertTrue(onView.isInvariant());
-		assertEquals(schema.getView("view4"), onView.getView());
+		assertEquals(view4, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
 		// view5
 		onView = onViews.get(3);
 		assertTrue(onView.isInvariant());
-		assertEquals(schema.getView("view5"), onView.getView());
+		assertEquals(view5, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
@@ -224,12 +216,12 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		onView = onViews.get(0);
 		assertTrue(onView.isInvariant());
 		assertTrue(onView.getVariants().isEmpty());
-		assertEquals(schema.getView("view1"), onView.getView());
+		assertEquals(view1, onView.getView());
 
 		// view2
 		onView = onViews.get(1);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view2"), onView.getView());
+		assertEquals(view2, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 		
@@ -246,7 +238,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view3
 		onView = onViews.get(2);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view3"), onView.getView());
+		assertEquals(view3, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 		
@@ -263,7 +255,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view4
 		onView = onViews.get(3);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view4"), onView.getView());
+		assertEquals(view4, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 		
@@ -286,14 +278,14 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view1
 		onView = onViews.get(0);
 		assertTrue(onView.isInvariant());
-		assertEquals(schema.getView("view1"), onView.getView());
+		assertEquals(view1, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
 		// view2
 		onView = onViews.get(1);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view2"), onView.getView());
+		assertEquals(view2, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 
@@ -334,14 +326,14 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view3
 		onView = onViews.get(2);
 		assertTrue(onView.isInvariant());
-		assertEquals(schema.getView("view3"), onView.getView());
+		assertEquals(view3, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
 		// view4
 		onView = onViews.get(3);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view4"), onView.getView());
+		assertEquals(view4, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 
@@ -389,7 +381,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view1
 		onView = onViews.get(0);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view1"), onView.getView());
+		assertEquals(view1, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 
@@ -406,7 +398,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view2
 		onView = onViews.get(1);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view2"), onView.getView());
+		assertEquals(view2, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 
@@ -447,13 +439,13 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view4
 		onView = onViews.get(2);
 		assertTrue(onView.isInvariant());
-		assertEquals(schema.getView("view4"), onView.getView());
+		assertEquals(view4, onView.getView());
 		assertEquals(0, onView.getVariants().size());
 
 		// view5
 		onView = onViews.get(3);
 		assertTrue(onView.isInvariant());
-		assertEquals(schema.getView("view5"), onView.getView());
+		assertEquals(view5, onView.getView());
 		assertEquals(0, onView.getVariants().size());
 
 		// 
@@ -465,7 +457,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view1
 		onView = onViews.get(0);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view1"), onView.getView());
+		assertEquals(view1, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 
@@ -482,7 +474,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view2
 		onView = onViews.get(1);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view2"), onView.getView());
+		assertEquals(view2, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(18, variants.size());
 
@@ -579,13 +571,13 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view3
 		onView = onViews.get(2);
 		assertTrue(onView.isInvariant());
-		assertEquals(schema.getView("view3"), onView.getView());
+		assertEquals(view3, onView.getView());
 		assertEquals(0, onView.getVariants().size());
 		
 		// view4
 		onView = onViews.get(3);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view4"), onView.getView());
+		assertEquals(view4, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 
@@ -622,7 +614,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view5
 		onView = onViews.get(4);
 		assertTrue(onView.isInvariant());
-		assertEquals(schema.getView("view5"), onView.getView());
+		assertEquals(view5, onView.getView());
 		assertEquals(0, onView.getVariants().size());
 
 		// 
@@ -634,7 +626,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view1
 		onView = onViews.get(0);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view1"), onView.getView());
+		assertEquals(view1, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(18, variants.size());
 
@@ -731,13 +723,13 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view2
 		onView = onViews.get(1);
 		assertTrue(onView.isInvariant());
-		assertEquals(schema.getView("view2"), onView.getView());
+		assertEquals(view2, onView.getView());
 		assertEquals(0, onView.getVariants().size());
 
 		// view3
 		onView = onViews.get(2);
 		assertFalse(onView.isInvariant());
-		assertEquals(schema.getView("view3"), onView.getView());
+		assertEquals(view3, onView.getView());
 		variants = onView.getVariants();
 		assertEquals(18, variants.size());
 
@@ -835,7 +827,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view2
 		onView = onViews.get(3);
 		assertTrue(onView.isInvariant());
-		assertEquals(schema.getView("view5"), onView.getView());
+		assertEquals(view5, onView.getView());
 		assertEquals(0, onView.getVariants().size());
 
 	}

@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.conf.ApplicationProperties;
-import com.variant.core.schema.impl.ParserError;
+import com.variant.core.error.ParserError;
 
 /**
  * Common utility methods for all JUnit tests.

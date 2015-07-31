@@ -1,3 +1,18 @@
+//
+// All Tests:
+// Tests Views
+//       1 2 3 4 5
+// test1   + + - -
+// test2 - + + +  
+// test3 - + - + 
+// test4 + +   - -
+// test5 + + - + -
+// test6 + - +   -
+// blank: not instrumented, -: invariant, +: has variants.
+// 
+// T1, T2, T3(T2), T4(T1), T5(T2,T4), T6(T1,T2,T5,T4)
+ 
+ 
 {                                                                                
    'views':[                                                             
      {  'name':'view1',                                                  
@@ -16,9 +31,10 @@
         'path':'/path/to/view5'                                          
      }                                                                   
   ],                                                                     
-  'tests':[                                                              
+  'tests':[  
+     // TEST 1 Comment.                                                            
      {                                                                   
-        'name':'test1',                                                  
+        'name':'test1',/// Another comment                                                  
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -402,7 +418,7 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'path':'/path/to/view2/test4.B+test5.B'              
+                    'path':'/path/to/view1/test4.B+test5.B'              
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -412,7 +428,7 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'path':'/path/to/view2/test4.C+test5.B'              
+                    'path':'/path/to/view1/test4.C+test5.B'              
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -422,7 +438,7 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'path':'/path/to/view2/test4.B+test5.B'              
+                    'path':'/path/to/view1/test4.B+test5.B'              
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -432,7 +448,7 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'path':'/path/to/view2/test4.C+test5.B'              
+                    'path':'/path/to/view1/test4.C+test5.C'              
                  }                                                       
               ]                                                          
            },                                                            

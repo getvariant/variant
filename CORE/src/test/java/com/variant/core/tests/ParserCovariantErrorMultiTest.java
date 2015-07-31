@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.variant.core.ParserResponse;
+import com.variant.core.error.ParserError;
 import com.variant.core.error.Severity;
-import com.variant.core.schema.impl.ParserError;
 import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
 

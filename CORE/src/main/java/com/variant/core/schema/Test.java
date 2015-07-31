@@ -41,6 +41,12 @@ public interface Test {
 	public List<OnView> getOnViews();
 
 	/**
+	 * The view instrumentation for this Test, on a particular view.
+	 * @return the OnView object or null if this test is not instrumented on this view.
+	 */
+	public OnView getOnView(View view);
+
+	/**
 	 * Is this test disjoint with the other test?
 	 * This is to say that there does not exist a view on which both
 	 * this and the other test are instrumented. It is illegal if this.equal(other) is true;

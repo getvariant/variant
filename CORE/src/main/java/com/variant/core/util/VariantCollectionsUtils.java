@@ -11,6 +11,8 @@ import java.util.List;
  */
 public class VariantCollectionsUtils {
 
+	public static final List<?> EMPTY_LIST = list();
+	
 	/**
 	 * Create a new List with the given elements.
 	 * @param elems

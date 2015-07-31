@@ -6,7 +6,9 @@ import java.util.List;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.error.ErrorTemplate;
+import com.variant.core.error.ParserError;
 import com.variant.core.error.Severity;
+import com.variant.core.error.SyntaxError;
 
 public class ParserResponseImpl implements ParserResponse {
 

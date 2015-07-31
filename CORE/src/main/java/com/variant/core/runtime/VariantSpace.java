@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantRuntimeException;
@@ -18,13 +17,7 @@ import com.variant.core.util.VariantStringUtils;
 /**
  * Variant Space is a cartesian space with the basis given by a list of tests,
  * coordinates are a list of experiences, exactly one for each basis test,
- * and value an instance of Test.OnView.Variant. The basis is a list of the
- * form (Tl, Tc...) where T is some test ("local") and Tc... its covariant tests 
- * in the order given in its covariantTestRefs clause. The value objects of type
- * Test.OnView.Variant come from the same Test.OnView instance which in turn
- * is part of the same local test Tl and some View V. Therefore, a VaraintSpace
- * instance has implicit relation to a particula test and a particular View,
- * i.e. some (Tl, V) pair.
+ * and value an instance of Test.OnView.Variant. 
  * 
  * @author Igor
  *
@@ -40,19 +33,20 @@ public class VariantSpace {
 	
 	/**
 	 * Crate the variant space for a particular Test.OnView object. 
-	 * Checks that there are no duplicates, but does not assume runtime scope,
-	 * i.e. does not look in current schema for anything.
+	 * Assumes that the testOnViewImpl object is fully formed, but does not
+	 * assume anything else of the schema.  This is critical because this is called
+	 * in the middle of the new schema construction, where the existing publically visible
+	 * schema is obsolete, but the new schema doesn't yet exist.
 	 * 
 	 * @param basis
 	 * @throws VariantRuntimeException 
 	 */
-	public VariantSpace(TestOnViewImpl tovImpl) throws VariantRuntimeException {
+	public VariantSpace(TestOnViewImpl tovImpl)  {
 		
 		if (tovImpl.isInvariant()) 
 			throw new VariantInternalException("Cannot crate VariantSpace for an invariant Test.OnView instance");
 		
-		// Build basis.  The local test, i.e. the one this Test.OnView instance belongs to
-		// is always first and often the only test in the basis.
+		// Build basis sorted in ordinal order.
 		basis = new LinkedHashSet<Test>();
 		basis.add(tovImpl.getTest());
 		basis.addAll(tovImpl.getTest().getCovariantTests());
@@ -61,8 +55,9 @@ public class VariantSpace {
 		for (Test t: basis) {
 			
 			// HashTable.keySet() returns a view, which will change if we modify the table.
-			// To take a snapshot, we crate a new collection;
+			// To take a static snapshot, we crate a new collection;
 			ArrayList<Coordinates> oldKeys = new ArrayList<Coordinates>(table.keySet());
+			
 			
 			if (oldKeys.size() == 0) {
 				// First test is the local test - add all non-control experiences.
@@ -133,12 +128,30 @@ public class VariantSpace {
 	}
 	
 	/**
-	 * TODO: will prob. need this for run time lookup.
-	public Point get(List<Experience> experiences) {
+	 * Lookup a variant for an experience vector
+	 * Caller insures that all experiences are not control.
+	 */
+	public Variant get(List<Experience> vector) {
 		
-		return table.get(new Coordinates(experiences));
+		// resort vector in basis order.
+		ArrayList<Experience> sortedVector = new ArrayList<Experience>(vector.size());
+		for (Test basisTest: basis) {
+			for (Experience e: vector) {
+				if (basisTest.equals(e.getTest())) {
+					sortedVector.add(e);
+					break;
+				}
+			}
+		}
+
+		// If there are expereinces in the input vector whose tests
+		// were not found in basis, the input vector is not in this space.
+		if (vector.size() > sortedVector.size()) return null;
+		
+		Point result = table.get(new Coordinates(sortedVector));
+		return result.variant;
 	}
-	*/
+
 	
 	/**
 	 * Point of this space is gien by its coordinates and has Variant as value.

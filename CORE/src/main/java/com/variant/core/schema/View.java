@@ -43,5 +43,5 @@ public interface View {
 	 * @return
 	 * @throws VariantRuntimeException if this view is not instrumented by the given test.
 	 */
-	public boolean isInvariantIn(Test test) throws VariantRuntimeException;
+	public boolean isInvariantIn(Test test);
 }

@@ -12,6 +12,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
+import com.variant.core.schema.impl.TestOnViewImpl;
 import com.variant.core.util.VariantCollectionsUtils;
 
 /**
@@ -75,6 +76,53 @@ public class VariantRuntime {
 	}
 
 	/**
+	 * Find a view variant for a given set of experiences;
+	 * 1. Resort the experience vector in ordinal order. 
+	 * 2. As we go, remove experiences that are either control in their test, or their test
+	 * 3  is not instrumented on the given view.
+	 * 4. In the sorted list, the last experience corresponds to the highest order test Th.
+	 * 5. Find the Test.OnView object corresponding to Th and the given view.  If does not
+	 *    exist, return null.
+	 * 6. Find the Test.OnView.Variant object there.  If does not exist, return null;
+	 * 
+	 * @param view
+	 * @param vector
+	 * @return
+	 */
+	public static Test.OnView.Variant findViewVariant(View view, Collection<Experience> vector) {
+		
+		if (vector.size() == 0) 
+			throw new VariantInternalException("No experiences in vector");
+		
+		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
+		for (Test t: Variant.getSchema().getTests()) {
+			boolean found = false;
+			for (Experience e: vector) {
+				if (e.getTest().equals(t)) {
+					if (found) {
+						throw new VariantInternalException("Duplicate test [" + t + "] in input");
+					}
+					else {
+						found = true;
+						if (!e.isControl() && view.isInstrumentedBy(e.getTest()) && !view.isInvariantIn(e.getTest())) 
+							sortedList.add(e);
+					}
+				}
+			}
+		}
+
+		// All experiences were control?
+		if (sortedList.size() == 0) return null;
+		
+		Test highOrderTest = sortedList.get(sortedList.size() - 1).getTest();
+		TestOnViewImpl tov = (TestOnViewImpl) highOrderTest.getOnView(view);
+		
+		if (tov == null) return null;
+		
+		return tov.variantSpace().get(sortedList);
+	}
+
+	/**
 	 * A list of tests co-varaint with a given test.  This is different from <code>Test.getCovariantTests()</code>
 	 * because each test returned by this method is either mentioned in the given test's covariantTestRefs
 	 * (and hence will also be returned by <code>Test.getCovariantTests()</code>), or mentions this test in its 
@@ -109,7 +157,7 @@ public class VariantRuntime {
 		return (List<TestImpl>) Collections.unmodifiableList((List<TestImpl>)cachedResult);
 	}
 	*/
-
+	
 	/**
 	 * Find the maximal resolvable subvector.
 	 * A given vector is resolvable is we are able to resolve it for every view where it is relevant.
@@ -133,9 +181,15 @@ public class VariantRuntime {
 	 * In other words, does current schema has a variant for every experience permutation on every view
 	 * where the constituent tests are instrumented?
 	 * 
-	 * 1. Find the test Tk with the highest ordinal number from all in the input set. 
-	 * 2. The given set {T} is resolvable if {T}\Tk is a subset of Tk's covariance set. 
-	 *  
+	 * 1. If input arity = 1, return true.
+	 * 1. Else, find the test T' with the highest ordinal number from all in the input set.
+	 *    Let R denote the remainder set of input minus T'
+	 * 2. Is T' pairwise disjoint with all the tests in the remainder set R? 
+	 * 3. If so, repeat from step 1 for R.
+	 * 4. Else, is R contained in T''s covariance set?
+	 * 5. If
+	 * 
+	 * TODO: GETME.
 	 * @param test set of tests.  We require set to guarantee no duplicates.
 	 * @return
 	 */

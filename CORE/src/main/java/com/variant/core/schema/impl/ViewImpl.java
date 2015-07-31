@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.variant.core.Variant;
-import com.variant.core.VariantInternalException;
 import com.variant.core.VariantRuntimeException;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.schema.Test;
@@ -82,7 +81,7 @@ class ViewImpl implements View {
 	}		
 
 	@Override
-	public boolean isInvariantIn(Test test) throws VariantRuntimeException {
+	public boolean isInvariantIn(Test test) {
 
 		for (Test.OnView tov: test.getOnViews()) {
 			if (tov.getView().equals(this)) return tov.isInvariant();

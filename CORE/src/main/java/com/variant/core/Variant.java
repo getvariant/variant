@@ -180,9 +180,30 @@ public class Variant {
 		stateCheck();
 		long now = System.currentTimeMillis();
 		ParserResponseImpl response;
+
+		// Lose comments, i.e. from // to eol.
+		StringBuilder schemaAsStringNoComments = new StringBuilder();
+		String lines[] = schemaAsString.split("\n");
+		for (String line: lines) {
+			
+			int commentIndex = line.indexOf("//");
+			
+			if (commentIndex == 0) {
+				// full line - skip.
+				continue;
+			}
+			else if (commentIndex >= 0) {
+				// partial line: remove from // to eol.
+				schemaAsStringNoComments.append(line.substring(0, commentIndex));
+			}
+			else {
+				schemaAsStringNoComments.append(line);
+			}
+			schemaAsStringNoComments.append("\n");
+		}
 		
 		try {
-			response = SchemaParser.parse(schemaAsString);
+			response = SchemaParser.parse(schemaAsStringNoComments.toString());
 		}
 		catch (Throwable t) {
 			Variant.getLogger().error(t.getMessage(), t);
