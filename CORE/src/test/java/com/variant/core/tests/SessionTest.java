@@ -51,6 +51,6 @@ public class SessionTest {
 		assertNull(bar.getTargetingPersister());
 		bar.initTargetingPersister();
 		TargetingPersister tp = bar.getTargetingPersister();
-		assertEquals(0, tp.readAll().size());
+		assertEquals(0, tp.getAll().size());
 	}
 }

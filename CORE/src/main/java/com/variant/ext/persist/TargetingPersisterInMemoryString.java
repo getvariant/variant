@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import com.variant.core.VariantInternalException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.TargetingPersister;
@@ -45,10 +46,18 @@ public class TargetingPersisterInMemoryString implements TargetingPersister {
 	 * @return
 	 */
 	@Override
-	public Collection<Test.Experience> readAll() {
-		ArrayList<Test.Experience> result = new ArrayList<Test.Experience>(entries.size());
-		for (Entry e: entries) 
-			result.add(e.experience);
+	public Collection<Experience> getAll() {
+		ArrayList<Experience> result = new ArrayList<Test.Experience>();
+		for (Entry entry: entries) {
+			for (Experience e: result) {
+				if (entry.experience.getTest().equals(e.getTest())) {
+					throw new VariantInternalException(
+							"Cannoet add experience [" + entry.experience +
+							"] because experience [" + e + "] already added");
+				}
+			}
+			result.add(entry.experience);
+		}
 		return Collections.unmodifiableCollection(result);
 	}
 
@@ -58,7 +67,7 @@ public class TargetingPersisterInMemoryString implements TargetingPersister {
 	 * @return
 	 */
 	@Override
-	public Experience read(Test test) {
+	public Experience get(Test test) {
 		for (Entry e: entries) 
 			if(e.experience.getTest().equals(test)) return e.experience;
 		return null;
@@ -88,7 +97,7 @@ public class TargetingPersisterInMemoryString implements TargetingPersister {
 	 * @return
 	 */
 	@Override
-	public Experience write(Experience experience) {
+	public Experience add(Experience experience) {
 		Experience result = remove(experience.getTest());
 		entries.add(new Entry(experience));
 		return result;

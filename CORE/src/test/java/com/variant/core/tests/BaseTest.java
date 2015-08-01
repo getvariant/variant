@@ -4,8 +4,10 @@ import java.io.InputStream;
 import java.util.function.Consumer;
 
 import com.variant.core.ParserResponse;
+import com.variant.core.Variant;
 import com.variant.core.conf.ApplicationProperties;
 import com.variant.core.error.ParserError;
+import com.variant.core.schema.Test.Experience;
 
 /**
  * Common utility methods for all JUnit tests.
@@ -40,5 +42,15 @@ public class BaseTest {
 			throw new RuntimeException("Classpath resource '" + name + "' does not exist.");
 		}
 		return result;
+	}
+	
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
+	static protected Experience experience(String name) {
+		String[] tokens = name.split("\\.");
+		return Variant.getSchema().getTest(tokens[0]).getExperience(tokens[1]);
 	}
 }

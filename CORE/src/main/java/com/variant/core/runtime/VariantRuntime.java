@@ -2,8 +2,8 @@ package com.variant.core.runtime;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
@@ -11,9 +11,9 @@ import com.variant.core.VariantSession;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Test.OnView;
 import com.variant.core.schema.View;
 import com.variant.core.schema.impl.TestOnViewImpl;
-import com.variant.core.util.VariantCollectionsUtils;
 
 /**
  * Entry point into the runtime.
@@ -46,13 +46,13 @@ public class VariantRuntime {
      *    on the view's list in the order they were defined, and target each test via the regular 
      *    targeting mechanism.
      * 5. If we're unable to resolve the pre-targeted cell, remove all its experience from the
-     *    tergeting persister, i.e. make it equivalent to there being no pre-targed tests at all
+     *    targeting persister, i.e. make it equivalent to there being no pre-targed tests at all
      *    and target all tests, in the order they were defined, regularly.
 	 * 
 	 * @param config
 	 * @param viewPath
 	 */
-	public static void targetSession(VariantSession ssn, View view) {
+	public static void targetSessionForView(VariantSession ssn, View view) {
 
 		Schema schema = Variant.getSchema();
 
@@ -61,35 +61,142 @@ public class VariantRuntime {
 		if (System.identityHashCode(schemaView) != System.identityHashCode(view)) 
 			throw new VariantInternalException("View [" + view.getName() + "] is not in schema");
 
+		// 
+		Collection<Experience> alreadyTargetedExperiences = ssn.getTargetingPersister().getAll();
+		
 		// Tests that are instrumented on this page.
 		List<Test> testList = view.getInstrumentedTests();
-		
-		// Of those, experiences that are already targeted.
-		List<Experience> alreadyTargetedTestList = new ArrayList<Experience>(testList.size());
 
-		for (Test test: testList) {
-			Experience e = ssn.getTargetingPersister().read(test);
-			if (e != null) alreadyTargetedTestList.add(e);
-		}
 
 		// 
 	}
 
 	/**
-	 * Find a view variant for a given set of experiences;
+	 * Find the shortest sub-vector V' of the input vector V, so that V\V' is resolvable.
+	 * A vector is resolvable if the current schema contains a variant for every view where it is relevant.
+	 * A vector is relevant to a view if at least one of its experiences is instrumented.
+     *
+	 * 1. Build a set of views relevant to the input.
+	 * 2. For each relevant view, try to resolve the input vector.
+	 * 3. As we go, maintain a set of views which failed to resolve, Sv
+	 * 4. If the size of Sv is 0, return empty list.
+	 * 5. Otherwise, create a list of tests St instrumented on Sv.
+	 * 6. For each test T in St: remove it from the input vector and cal
+	 *    this method recursively with the resulting vector.
+	 * 7. Find the shortest result (take any if there's more than one) and
+	 *    add to it the corresponding T. Return that collection.
+	 * 
+	 * Package scope for testing.
+	 * 
+	 * TODO: GETME.
+	 * 
+	 * @param coordinates
+	 * @return the list of experiences from the input vector.
+	 */
+	static Collection<Experience> minUnresolvableSubvector(Collection<Experience> vector) {
+		
+		Collection<Experience> result = new ArrayList<Experience>();
+			
+		// 1. Build a set of all instrumented views.
+		HashSet<View> instrumentedViews = new HashSet<View>();
+		for (Experience e: vector) {
+			for (OnView tov: e.getTest().getOnViews()) {
+				if (!tov.getView().isInvariantIn(e.getTest())) {
+					instrumentedViews.add(tov.getView());
+				}
+			}
+		}
+			
+		// 2,3. Try to resolve them all.
+		ArrayList<View> unresolvedViews = new ArrayList<View>();
+		for (View view: instrumentedViews) {
+			if (resolveViewPath(view, vector) == null) {
+				unresolvedViews.add(view);
+			}
+		}
+				
+		// 4.
+		if (unresolvedViews.isEmpty()) return result;
+		
+		// 5. Build the set of tests instrumented on any of the unresolved views.
+		HashSet<Test> testsInstumentedOnUnresolvedViews = new HashSet<Test>();  
+		for (View uv: unresolvedViews) {
+			for (Test t: uv.getInstrumentedTests()) {
+				if (!uv.isInvariantIn(t)) testsInstumentedOnUnresolvedViews.add(t);
+			}
+		}
+		
+		// 6. 
+		int shortestLength = vector.size();
+		Experience shortestExperience = null;
+		Collection<Experience> shortestSubvector = null;
+		
+		for (Experience inputExperience: vector) {
+		
+			if (!testsInstumentedOnUnresolvedViews.contains(inputExperience.getTest())) continue;
+			
+			Collection<Experience> newInputVector = new ArrayList<Experience>(vector);
+			newInputVector.remove(inputExperience);
+			Collection<Experience> newMinUnresolvableSubvector = minUnresolvableSubvector(newInputVector);
+			if (shortestLength > newMinUnresolvableSubvector.size()) {
+				shortestLength = newMinUnresolvableSubvector.size();
+				shortestExperience = inputExperience;
+				shortestSubvector = newMinUnresolvableSubvector;
+			}
+		}
+	
+		result.add(shortestExperience);
+		result.addAll(shortestSubvector);
+		return result;
+	}
+
+	/**
+	 * Is a set of test experiences resolvable in the current schema?
+	 * 
+	 * @param test set of tests.  We require set to guarantee no duplicates.
+	 * @return
+	 *
+	static boolean isResolvable(Collection<Experience> tests) {
+		
+		Schema schema = Variant.getSchema();
+		
+		ArrayList<Test> sortedTests = new ArrayList<Test>(tests.size());
+		Test rightMostTest = null;
+		for (Test t: schema.getTests()) {
+			if (tests.contains(t)) {
+				rightMostTest = t;
+			}
+		}
+		
+		sortedTests.remove(rightMostTest);
+		
+		return VariantCollectionsUtils.contains(rightMostTest.getCovariantTests(), sortedTests);
+		
+	}
+	*/
+	/**
+	 * Find a view variant for a given set of experiences. It is caller's responsibility
+	 * to ensure that all experiences are independent, i.e. the input vector does not contain
+	 * a pair e1,e2 such that <code>e1.getTest().equals(e2.getTest())</code>
+	 * 
+	 * 0. Verify that vector has at least 1 experience. 
 	 * 1. Resort the experience vector in ordinal order. 
 	 * 2. As we go, remove experiences that are either control in their test, or their test
-	 * 3  is not instrumented on the given view.
+	 *    is not instrumented on the given view.
+	 * 3. Keep track if any of the experiences in vector were discarded in step 2.
 	 * 4. In the sorted list, the last experience corresponds to the highest order test Th.
 	 * 5. Find the Test.OnView object corresponding to Th and the given view.  If does not
 	 *    exist, return null.
 	 * 6. Find the Test.OnView.Variant object there.  If does not exist, return null;
 	 * 
+	 * TODO: GETME.
+	 * Package scope for testing
+	 * 
 	 * @param view
 	 * @param vector
-	 * @return
+	 * @return path
 	 */
-	public static Test.OnView.Variant findViewVariant(View view, Collection<Experience> vector) {
+	static String resolveViewPath(View view, Collection<Experience> vector) {
 		
 		if (vector.size() == 0) 
 			throw new VariantInternalException("No experiences in vector");
@@ -111,15 +218,16 @@ public class VariantRuntime {
 			}
 		}
 
-		// All experiences were control?
-		if (sortedList.size() == 0) return null;
+		// All experiences were control or uninstumented?
+		if (sortedList.size() == 0) return view.getPath();
 		
 		Test highOrderTest = sortedList.get(sortedList.size() - 1).getTest();
 		TestOnViewImpl tov = (TestOnViewImpl) highOrderTest.getOnView(view);
 		
 		if (tov == null) return null;
 		
-		return tov.variantSpace().get(sortedList);
+		Test.OnView.Variant variant = tov.variantSpace().get(sortedList);
+		return variant == null ? null : variant.getPath();
 	}
 
 	/**
@@ -158,58 +266,4 @@ public class VariantRuntime {
 	}
 	*/
 	
-	/**
-	 * Find the maximal resolvable subvector.
-	 * A given vector is resolvable is we are able to resolve it for every view where it is relevant.
-	 * A max resolvable subvector is one that is as close as possible to the original vector and is resolvable,
-	 * while the original vector is not.
-	 * 1. Sort vector in ordinal order.
-	 * 2. 
-	 * 
-	 * 
-	 * TODO: GETME.
-	 * 
-	 * @param coordinates
-	 * @return
-	 */
-	private static Collection<Experience> maxResolvableSubvector(Collection<Experience> vector) {
-		return null;
-	}
-	
-	/**
-	 * Is a set of tests resolvable in the current schema?
-	 * In other words, does current schema has a variant for every experience permutation on every view
-	 * where the constituent tests are instrumented?
-	 * 
-	 * 1. If input arity = 1, return true.
-	 * 1. Else, find the test T' with the highest ordinal number from all in the input set.
-	 *    Let R denote the remainder set of input minus T'
-	 * 2. Is T' pairwise disjoint with all the tests in the remainder set R? 
-	 * 3. If so, repeat from step 1 for R.
-	 * 4. Else, is R contained in T''s covariance set?
-	 * 5. If
-	 * 
-	 * TODO: GETME.
-	 * @param test set of tests.  We require set to guarantee no duplicates.
-	 * @return
-	 */
-	static boolean isResolvable(Set<Test> tests) {
-		
-		Schema schema = Variant.getSchema();
-		
-		ArrayList<Test> sortedTests = new ArrayList<Test>(tests.size());
-		Test rightMostTest = null;
-		for (Test t: schema.getTests()) {
-			if (tests.contains(t)) {
-				rightMostTest = t;
-			}
-		}
-		
-		sortedTests.remove(rightMostTest);
-		
-		return VariantCollectionsUtils.contains(rightMostTest.getCovariantTests(), sortedTests);
-		
-	}
-	
-
 }

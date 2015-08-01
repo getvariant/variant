@@ -3,6 +3,7 @@ package com.variant.core.session;
 import java.util.Collection;
 
 import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 
 public interface TargetingPersister {
 	
@@ -10,29 +11,33 @@ public interface TargetingPersister {
 	
 	/**
 	 * Read all persisted experiences;
+	 * Implementation must guarantee that all experiences are pairwise independent,
+	 * i.e. there are no two experiences in the returned collection that belong
+	 * to the same test.
+	 * 
 	 * @return Collection of <code>Test.Experience</code> corresponding to all text experiences
 	 *         currently persisted by this object.
 	 */
-	Collection<Test.Experience> readAll();
+	public Collection<Experience> getAll();
 	
 	/**
 	 * Read a test experience corresponding to a test
 	 * @param test
 	 * @return
 	 */
-	Test.Experience read(Test test);
+	public Experience get(Test test);
 		
 	/**
 	 * Delete the entry corresponding to a test. If the entry existed, the experience will be returned.
 	 * @param experience
 	 */
-	Test.Experience remove(Test test);
+	public Experience remove(Test test);
 
 	/**
 	 * Save an experience. Will replace a currently persisted experience of one existed for this test.
 	 * @param experience
 	 */
-	Test.Experience write(Test.Experience experience);
+	public Experience add(Experience experience);
 	
 	/**
 	 * Configuration object

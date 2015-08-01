@@ -308,7 +308,7 @@ public class Variant {
 			throw new VariantRuntimeException(ErrorTemplate.RUN_TP_NOT_INITIALIZED);
 		}
 		
-		VariantRuntime.targetSession(session, view);		
+		VariantRuntime.targetSessionForView(session, view);		
 	}
 	
 	/**
