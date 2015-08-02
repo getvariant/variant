@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
@@ -14,6 +16,7 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.Test.OnView;
 import com.variant.core.schema.View;
 import com.variant.core.schema.impl.TestOnViewImpl;
+import com.variant.core.session.TargetingPersister;
 
 /**
  * Entry point into the runtime.
@@ -35,19 +38,20 @@ public class VariantRuntime {
 	 * 
 	 * 1. Find all the tests instrumented on this view - the view's test list,
 	 *    i.e. the list of tests that must be targeted before we can resolve the view.
-	 * 2. Some of these tests may be already targeted via the experience stability mechanism.
+	 * 2. Some of these tests may be already targeted via the experience persistence mechanism.
 	 *    Determine this already targeted subset.
      * 3. If such a subset exists, confirm that we are still able to resolve this test cell. 
      *    The reason we may not is, e.g., if two tests used to be covariant and the experience
      *    persister reports two already targeted variant experiences, but in a recent config 
      *    change these two tests are no longer covariant and hence we don't know how to resolve
      *    this test cell.
-     * 4. If we're still able to resolve the pre-targeted cell, continue with the rest of the tests 
+     * 4. If we're still able to resolve the pre-targeted vector, continue with the rest of the tests 
      *    on the view's list in the order they were defined, and target each test via the regular 
      *    targeting mechanism.
-     * 5. If we're unable to resolve the pre-targeted cell, remove all its experience from the
-     *    targeting persister, i.e. make it equivalent to there being no pre-targed tests at all
-     *    and target all tests, in the order they were defined, regularly.
+     * 5. If we're unable to resolve the pre-targeted vector, compute the minimal unresolvable subset
+     *    and remove those experiences from the experience persistence.
+     * 6. Given the new pre-targeted experience set, target the rest of the tests instrumented on
+     *    this view via each test's regular targeting mechanism, in ordinal order.
 	 * 
 	 * @param config
 	 * @param viewPath
@@ -55,20 +59,38 @@ public class VariantRuntime {
 	public static void targetSessionForView(VariantSession ssn, View view) {
 
 		Schema schema = Variant.getSchema();
-
+		TargetingPersister tp = ssn.getTargetingPersister();
+		
 		// It is illegal to call this with a view that is not in schema, e.g. before runtime.
 		View schemaView = schema.getView(view.getName());
 		if (System.identityHashCode(schemaView) != System.identityHashCode(view)) 
 			throw new VariantInternalException("View [" + view.getName() + "] is not in schema");
 
-		// 
-		Collection<Experience> alreadyTargetedExperiences = ssn.getTargetingPersister().getAll();
+		// Pre-targeted experiences from the targeting persister.
+		Collection<Experience> alreadyTargetedExperiences = tp.getAll();
 		
-		// Tests that are instrumented on this page.
-		List<Test> testList = view.getInstrumentedTests();
+		if (!alreadyTargetedExperiences.isEmpty()) {
 
+			Collection<Experience> minUnresolvableSubvector = 
+					minUnresolvableSubvector(alreadyTargetedExperiences);
+			
+			if (!minUnresolvableSubvector.isEmpty()) tp.removeAll(minUnresolvableSubvector);
+		
+		}
 
-		// 
+		// Targeting persister now has all currently targeted experiences.
+		// Tests that are instrumented on this page need to be targeted, unless already targeted.
+		for (Test test: view.getInstrumentedTests()) {
+			if (view.isInstrumentedBy(test) && tp.get(test) != null) {
+				if (isTargetable(test, tp.getAll())) {
+					
+				}
+				else {
+					tp.add(test.getControlExperience());
+				}
+			}
+		}
+		
 	}
 
 	/**
@@ -151,29 +173,43 @@ public class VariantRuntime {
 	}
 
 	/**
-	 * Is a set of test experiences resolvable in the current schema?
+	 * Can a test be targeted to a variant experience, given a set of already targeted experiences.
+	 * 
+	 * 1. Confirm that the already targeted set is resolvable.
+	 * 2. Confirm that the input test isn't yet targeted.
+	 * 3. Create a vector containing the already targeted experiences and add to it an arbitrary
+	 *    variant experience from the input test.
+	 * 4. return true if new vector is resolvable.
 	 * 
 	 * @param test set of tests.  We require set to guarantee no duplicates.
 	 * @return
-	 *
-	static boolean isResolvable(Collection<Experience> tests) {
+	 */
+	static boolean isTargetable(Test test, Collection<Experience> alreadyTargetedExperiences) {
 		
-		Schema schema = Variant.getSchema();
+		for (Experience e: alreadyTargetedExperiences) {
+			if (test.equals(e.getTest())) 
+				throw new VariantInternalException("Input test [" + test + "] is already targeted");
+		}
 		
-		ArrayList<Test> sortedTests = new ArrayList<Test>(tests.size());
-		Test rightMostTest = null;
-		for (Test t: schema.getTests()) {
-			if (tests.contains(t)) {
-				rightMostTest = t;
+		if (!minUnresolvableSubvector(alreadyTargetedExperiences).isEmpty()) {
+			throw new VariantInternalException(
+					"Input set [" +
+				    StringUtils.join(alreadyTargetedExperiences, ",") +
+				    "] is already unresolvable");
+		}
+		
+		ArrayList<Experience> vector = new ArrayList<Experience>(alreadyTargetedExperiences);
+		
+		for (Experience e: test.getExperiences()) {
+			if (!e.isControl()) {
+				vector.add(e);
+				break;
 			}
 		}
 		
-		sortedTests.remove(rightMostTest);
-		
-		return VariantCollectionsUtils.contains(rightMostTest.getCovariantTests(), sortedTests);
-		
+		return minUnresolvableSubvector(vector).isEmpty();
 	}
-	*/
+
 	/**
 	 * Find a view variant for a given set of experiences. It is caller's responsibility
 	 * to ensure that all experiences are independent, i.e. the input vector does not contain

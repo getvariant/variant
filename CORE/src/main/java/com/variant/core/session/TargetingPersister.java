@@ -30,8 +30,14 @@ public interface TargetingPersister {
 	/**
 	 * Delete the entry corresponding to a test. If the entry existed, the experience will be returned.
 	 * @param experience
-	 */
+	 *
 	public Experience remove(Test test);
+
+	/**
+	 * Delete entries.
+	 * @param experience
+	 */
+	public void removeAll(Collection<Experience> entries);
 
 	/**
 	 * Save an experience. Will replace a currently persisted experience of one existed for this test.

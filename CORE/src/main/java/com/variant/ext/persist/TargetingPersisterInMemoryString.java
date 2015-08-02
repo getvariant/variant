@@ -75,15 +75,15 @@ public class TargetingPersisterInMemoryString implements TargetingPersister {
 
 	/**
 	 * 
-	 * @param test
+	 * @param experience
 	 * @return
 	 */
-	@Override
-	public Experience remove(Test test) {
+	//@Override
+	public Experience remove(Experience experience) {
 		Iterator<Entry> iter = entries.iterator();
 		while (iter.hasNext()) {
 			Entry e = iter.next();
-			if (e.experience.getTest().equals(test)) {
+			if (e.experience.equals(experience)) {
 				iter.remove();
 				return e.experience;
 			}
@@ -97,8 +97,18 @@ public class TargetingPersisterInMemoryString implements TargetingPersister {
 	 * @return
 	 */
 	@Override
+	public void removeAll(Collection<Experience> entries) {
+		for (Experience e: entries) remove(e);
+	}
+
+	/**
+	 * 
+	 * @param experience
+	 * @return
+	 */
+	@Override
 	public Experience add(Experience experience) {
-		Experience result = remove(experience.getTest());
+		Experience result = remove(experience);
 		entries.add(new Entry(experience));
 		return result;
 	}

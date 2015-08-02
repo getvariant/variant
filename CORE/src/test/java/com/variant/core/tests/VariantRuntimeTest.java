@@ -633,7 +633,7 @@ public class VariantRuntimeTest extends BaseTest {
 								experience("test3.C"),
 								experience("test4.B")));
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test4.B")), subVector);
-//
+
 		subVector = 
 				VariantRuntimeTestFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
@@ -727,6 +727,145 @@ public class VariantRuntimeTest extends BaseTest {
 								experience("test4.C")));
 		assertTrue(subVector.isEmpty());
 
+		//
+		// Test targetability
+		//
+		
+		thrown = false;
+		try{
+			VariantRuntimeTestFacade.isTargetable(
+				test5, 
+				VariantCollectionsUtils.list(
+						experience("test1.A"),
+						experience("test3.B"),
+						experience("test5.A"),
+						experience("test6.A")));
+		}
+		catch (VariantInternalException e) {
+			thrown = true;
+			assertEquals("Input test [test5] is already targeted", e.getMessage());
+		}
+		assertTrue(thrown);
+		
+		thrown = false;
+		try{
+			VariantRuntimeTestFacade.isTargetable(
+				test6, 
+				VariantCollectionsUtils.list(
+						experience("test1.C"), 
+						experience("test2.A"), 
+						experience("test3.C"),
+						experience("test5.B"),
+						experience("test4.A")));
+		}
+		catch (VariantInternalException e) {
+			thrown = true;
+			assertEquals("Input set [test1.C,test2.A,test3.C,test5.B,test4.A] is already unresolvable", e.getMessage());
+		}
+		assertTrue(thrown);
+
+		assertTrue(VariantRuntimeTestFacade.isTargetable(
+				test1, 
+				VariantCollectionsUtils.list(experience("test2.A"))));
+
+		assertFalse(VariantRuntimeTestFacade.isTargetable(
+				test1, 
+				VariantCollectionsUtils.list(experience("test2.B"))));
+
+		assertFalse(VariantRuntimeTestFacade.isTargetable(
+				test1,
+				VariantCollectionsUtils.list(
+						experience("test2.A"), 
+						experience("test3.C"),
+						experience("test5.A"),
+						experience("test4.A"))));
+
+		assertFalse(VariantRuntimeTestFacade.isTargetable(
+				test1,
+				VariantCollectionsUtils.list(
+						experience("test6.C"), 
+						experience("test2.B"), 
+						experience("test3.C"),
+						experience("test5.A"),
+						experience("test4.A"))));
+
+		assertTrue(VariantRuntimeTestFacade.isTargetable(
+				test2,
+				VariantCollectionsUtils.list(
+						experience("test6.C"), 
+						experience("test3.C"),
+						experience("test5.A"),
+						experience("test4.A"))));
+
+		assertTrue(VariantRuntimeTestFacade.isTargetable(
+				test3,
+				VariantCollectionsUtils.list(
+						experience("test6.C"), 
+						experience("test2.B"), 
+						experience("test5.A"),
+						experience("test4.A"))));
+
+		assertTrue(VariantRuntimeTestFacade.isTargetable(
+				test6,
+				VariantCollectionsUtils.list(
+						experience("test2.B"), 
+						experience("test3.C"),
+						experience("test5.A"),
+						experience("test4.A"))));
+		
+		assertFalse(VariantRuntimeTestFacade.isTargetable(
+				test1,
+				VariantCollectionsUtils.list(
+						experience("test6.C"), 
+						experience("test2.B"), 
+						experience("test3.C"),
+						experience("test5.A"))));
+
+		assertTrue(VariantRuntimeTestFacade.isTargetable(
+				test6,
+				VariantCollectionsUtils.list(
+						experience("test1.A"), 
+						experience("test2.B"), 
+						experience("test3.A"),
+						experience("test5.B"),
+						experience("test4.C"))));
+
+		assertTrue(VariantRuntimeTestFacade.isTargetable(
+				test2,
+				VariantCollectionsUtils.list(
+						experience("test6.C"), 
+						experience("test1.A"), 
+						experience("test3.A"),
+						experience("test5.B"),
+						experience("test4.C"))));
+
+		assertTrue(VariantRuntimeTestFacade.isTargetable(
+				test4,
+				VariantCollectionsUtils.list(
+						experience("test6.C"), 
+						experience("test1.A"), 
+						experience("test2.B"), 
+						experience("test3.A"),
+						experience("test5.B"))));
+
+		assertFalse(VariantRuntimeTestFacade.isTargetable(
+				test5,
+				VariantCollectionsUtils.list(
+						experience("test6.C"), 
+						experience("test1.B"), 
+						experience("test2.A"), 
+						experience("test3.A"),
+						experience("test4.C"))));
+
+		assertFalse(VariantRuntimeTestFacade.isTargetable(
+				test3,
+				VariantCollectionsUtils.list(
+						experience("test6.C"), 
+						experience("test2.B"), 
+						experience("test5.B"),
+						experience("test4.C"))));
+
+		
 	}
 	
 }
