@@ -6,14 +6,14 @@ class TestExperienceImpl implements Test.Experience  {
 
 	private String name;
 	private Test test;
-	private float weight;
+	private double weight;
 	boolean isControl;
 	
 	/**
 	 * Instantiation.
 	 * @param name
 	 */
-	TestExperienceImpl(String name, float weight, boolean isControl) {
+	TestExperienceImpl(String name, double weight, boolean isControl) {
 		this.name = name;
 		this.weight = weight;
 		this.isControl = isControl;
@@ -43,7 +43,7 @@ class TestExperienceImpl implements Test.Experience  {
 		return isControl;
 	}
 
-	public float getWeight() {
+	public double getWeight() {
 		return weight;
 	}
 

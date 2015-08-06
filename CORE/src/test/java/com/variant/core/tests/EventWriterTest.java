@@ -17,7 +17,7 @@ import com.variant.core.event.ViewServeEventTestFacade;
 import com.variant.core.jdbc.JdbcUtil;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
-import com.variant.ext.session.SessionKeyResolverJunit;
+import com.variant.core.util.SessionKeyResolverJunit;
 
 public class EventWriterTest extends BaseTest {
 
@@ -42,7 +42,7 @@ public class EventWriterTest extends BaseTest {
 		variantConfig.setEventPersisterClassName(VariantProperties.persisterClassName());
 		variantConfig.setEventPersisterConfig(eventPersisterConfig);
 		variantConfig.setEventWriterConfig(eventWriterConfig);
-		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.ext.session.SessionKeyResolverJunit");
+		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.core.util.SessionKeyResolverJunit");
 		
 		Variant.bootstrap(variantConfig);
 
@@ -80,7 +80,7 @@ public class EventWriterTest extends BaseTest {
 		Schema schema = Variant.getSchema();
 		com.variant.core.schema.Test test = schema.getTest("test1");
 		View view = schema.getView("view1");
-		VariantSession ssn = Variant.getSession(new SessionKeyResolverJunit.UserDataImpl("foo"));
+		VariantSession ssn = Variant.getSession(new SessionKeyResolverJunit.UserDataJunit("foo"));
 		ViewServeEventTestFacade event1 = new ViewServeEventTestFacade(view, ssn, BaseEvent.Status.SUCCESS, "viewResolvedPath");
 		ViewServeEventTestFacade event2 = new ViewServeEventTestFacade(view, ssn, BaseEvent.Status.SUCCESS, "viewResolvedPath");
 		event1.addExperience(test.getExperience("A"));

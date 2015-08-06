@@ -12,7 +12,7 @@ import com.variant.core.session.TargetingPersister.UserData;
  * @author Igor
  *
  */
-class VariantSessionImpl implements VariantSession, Serializable {
+public class VariantSessionImpl implements VariantSession, Serializable {
 	
 	///
 	private static final long serialVersionUID = 1L;
@@ -20,6 +20,43 @@ class VariantSessionImpl implements VariantSession, Serializable {
 	private String id;
 	private TargetingPersister targetingPersister;
 	
+	/**
+	 * 
+	 * @param id
+	 */
+	VariantSessionImpl(String id) {
+		this.id = id;
+	}
+
+	
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 * 
+	 */
+	@Override
+	public String getId() {
+		return id;
+	}
+
+	@Override
+	public TargetingPersister getTargetingPersister() {
+		return targetingPersister;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		try {
+			VariantSessionImpl other = (VariantSessionImpl) o;
+			return id.equals(other.id);
+		}
+		catch(ClassCastException e) {
+			return false;
+		}
+	}
+
 	/**
 	 * 
 	 */
@@ -50,40 +87,8 @@ class VariantSessionImpl implements VariantSession, Serializable {
 			);
 		}
 		
-		targetingPersister.initialized(config, userData);
+		targetingPersister.initialized(config, this, userData);
 
-	}
-
-	/**
-	 * 
-	 * @param id
-	 */
-	VariantSessionImpl(String id) {
-		this.id = id;
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public String getId() {
-		return id;
-	}
-
-	@Override
-	public TargetingPersister getTargetingPersister() {
-		return targetingPersister;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		try {
-			VariantSessionImpl other = (VariantSessionImpl) o;
-			return id.equals(other.id);
-		}
-		catch(ClassCastException e) {
-			return false;
-		}
 	}
 
 

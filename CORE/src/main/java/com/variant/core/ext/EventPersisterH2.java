@@ -1,4 +1,4 @@
-package com.variant.ext.persist;
+package com.variant.core.ext;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

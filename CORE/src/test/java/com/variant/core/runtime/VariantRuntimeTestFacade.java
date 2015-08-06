@@ -37,4 +37,5 @@ public class VariantRuntimeTestFacade {
 	public static boolean isTargetable(Test test, Collection<Experience> alreadyTargetedExperiences) {
 		return VariantRuntime.isTargetable(test, alreadyTargetedExperiences);
 	}
+
 }

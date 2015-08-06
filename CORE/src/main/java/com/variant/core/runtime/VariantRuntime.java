@@ -3,7 +3,6 @@ package com.variant.core.runtime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -15,8 +14,11 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.Test.OnView;
 import com.variant.core.schema.View;
+import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnViewImpl;
+import com.variant.core.schema.impl.ViewImpl;
 import com.variant.core.session.TargetingPersister;
+import com.variant.core.session.VariantSessionImpl;
 
 /**
  * Entry point into the runtime.
@@ -56,7 +58,7 @@ public class VariantRuntime {
 	 * @param config
 	 * @param viewPath
 	 */
-	public static void targetSessionForView(VariantSession ssn, View view) {
+	public static VariantViewRequestImpl targetSessionForView(VariantSession ssn, View view) {
 
 		Schema schema = Variant.getSchema();
 		TargetingPersister tp = ssn.getTargetingPersister();
@@ -74,23 +76,56 @@ public class VariantRuntime {
 			Collection<Experience> minUnresolvableSubvector = 
 					minUnresolvableSubvector(alreadyTargetedExperiences);
 			
-			if (!minUnresolvableSubvector.isEmpty()) tp.removeAll(minUnresolvableSubvector);
+			if (!minUnresolvableSubvector.isEmpty()) {
+
+				for (Experience e: minUnresolvableSubvector) tp.remove(e.getTest());
+
+				Variant.getLogger().info(
+						"Targeting persistor not resolvable for session [" + ssn.getId() + "]. " +
+						"Removed experiences [" + StringUtils.join(minUnresolvableSubvector.toArray()) + "].");
+			}
 		
 		}
 
 		// Targeting persister now has all currently targeted experiences.
 		// Tests that are instrumented on this page need to be targeted, unless already targeted.
 		for (Test test: view.getInstrumentedTests()) {
-			if (view.isInstrumentedBy(test) && tp.get(test) != null) {
+			if (view.isInstrumentedBy(test) && tp.get(test) == null) {
 				if (isTargetable(test, tp.getAll())) {
-					
+					Experience e = ((TestImpl) test).target(ssn);
+					tp.add(e, System.currentTimeMillis());
+					if (Variant.getLogger().isDebugEnabled()) {
+						Variant.getLogger().debug(
+								"Session [" + ssn.getId() + "] targeted for test [" + 
+								test.getName() +"] with experience [" + e.getName() + "]");
+					}
+
 				}
 				else {
-					tp.add(test.getControlExperience());
+					Experience e = test.getControlExperience();
+					tp.add(e, System.currentTimeMillis());
+					if (Variant.getLogger().isDebugEnabled()) {
+						Variant.getLogger().debug(
+								"Session [" + ssn.getId() + "] targeted for test [" + 
+								test.getName() +"] with control experience [" + e.getName() + "]");
+					}
 				}
 			}
 		}
 		
+		VariantViewRequestImpl result = new VariantViewRequestImpl((VariantSessionImpl)ssn, (ViewImpl) view);
+		String resolvedPath = resolveViewPath(view, tp.getAll());
+		
+		if (Variant.getLogger().isDebugEnabled()) {
+			Variant.getLogger().debug(
+					"Session [" + ssn.getId() + "] resolved view [" + 
+					view.getName() +"] as [" + resolvedPath + "] for experience vector [" +
+					StringUtils.join(tp.getAll().toArray(), ",") + "]");
+		}   
+
+		result.setResolvedPath(resolvedPath);
+
+		return result;
 	}
 
 	/**

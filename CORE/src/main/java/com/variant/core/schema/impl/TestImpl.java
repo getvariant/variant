@@ -1,10 +1,12 @@
 package com.variant.core.schema.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import com.variant.core.VariantInternalException;
+import com.variant.core.VariantSession;
 import com.variant.core.runtime.VariantSpace;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;
@@ -22,6 +24,7 @@ public class TestImpl implements Test {
 	private List<TestExperienceImpl> experiences;
 	private VariantSpace variantSpace;
 	private List<TestOnViewImpl> onViews;
+	private List<Targeter> customTargeters = new ArrayList<Targeter>();
 	
 	// Runtime will cache stuff in this instance.
 	private HashMap<String, Object> runtimeAttributes = new HashMap<String, Object>();
@@ -129,20 +132,6 @@ public class TestImpl implements Test {
 	}
 
 	/**
-	 * Tests are held in a HashSet, keyed by test name.
-	 */
-	@Override
-	public boolean equals(Object other) {
-		if (! (other instanceof Test)) return false;
-		return ((Test) other).getName().equalsIgnoreCase(this.getName());
-	}
-
-	@Override
-	public int hashCode() {
-		return name.hashCode();
-	}
-
-	/**
 	 * Covariant tests declared by this test.
 	 * 
 	 * @return
@@ -171,9 +160,47 @@ public class TestImpl implements Test {
 		return true;
 	}
 	
+	/**
+	 * 
+	 */
+	@Override
+	public void registerCustomTargeter(Targeter targeter) {
+		customTargeters.add(targeter);
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public List<Targeter> getCustomTargeters() {
+		return Collections.unmodifiableList(customTargeters);
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public void clearCustomTargeters() {
+		customTargeters = new ArrayList<Targeter>();
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC EXTENSION                                         //
 	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 * Tests are equal if they have the same name.
+	 */
+	@Override
+	public boolean equals(Object other) {
+		if (! (other instanceof Test)) return false;
+		return ((Test) other).getName().equalsIgnoreCase(this.getName());
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
 
 	/**
 	 * Get а runtime attribute.  These are intended to be attributes not directly contained in the
@@ -196,6 +223,22 @@ public class TestImpl implements Test {
 		return runtimeAttributes.put(key, attribute);
 	}
 
+	/**
+	 * Target this test, i.e. generate an experience.
+	 * @return
+	 */
+	public Experience target(VariantSession session) {
+		Experience result = null;
+		for (Targeter t: customTargeters) {
+			result = t.target(this, session);
+			if (result != null) break;
+		}
+		if (result == null) {
+			result = new TestTargeterDefault().target(this, session);
+		}
+		return result;
+	}
+	
 	@Override
 	public String toString() {
 		return name;

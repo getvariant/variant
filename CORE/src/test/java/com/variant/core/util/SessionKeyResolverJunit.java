@@ -1,4 +1,4 @@
-package com.variant.ext.session;
+package com.variant.core.util;
 
 import com.variant.core.session.SessionKeyResolver;
 
@@ -21,7 +21,7 @@ public class SessionKeyResolverJunit implements SessionKeyResolver {
 	public String getSessionKey(UserData...args) {
 		
 		if (args != null && args.length > 0) {
-			key = (String) ((UserDataImpl) args[0]).getData();
+			key = (String) ((UserDataJunit) args[0]).getData();
 		}
 		return key;
 	}
@@ -31,11 +31,11 @@ public class SessionKeyResolverJunit implements SessionKeyResolver {
 	 * @author Igor
 	 *
 	 */
-	public static class UserDataImpl implements UserData {
+	public static class UserDataJunit implements UserData {
 
 		private String key;
 		
-		public UserDataImpl(String key) {
+		public UserDataJunit(String key) {
 			this.key = key;
 		}
 		

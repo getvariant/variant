@@ -300,7 +300,7 @@ public class TestsParser implements Keywords {
 			}
 		}
 		
-		return new TestExperienceImpl(name, weight.floatValue(), isControl);	
+		return new TestExperienceImpl(name, weight.doubleValue(), isControl);	
 	}
 	
 	/**

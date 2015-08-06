@@ -15,6 +15,7 @@ import com.variant.core.error.Severity;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
 import com.variant.core.runtime.VariantRuntime;
+import com.variant.core.runtime.VariantViewRequestImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -299,7 +300,7 @@ public class Variant {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public static void startViewRequest(VariantSession session, View view) throws VariantRuntimeException {
+	public static VariantViewRequest startViewRequest(VariantSession session, View view) throws VariantRuntimeException {
 		
 		stateCheck();
 		
@@ -308,7 +309,9 @@ public class Variant {
 			throw new VariantRuntimeException(ErrorTemplate.RUN_TP_NOT_INITIALIZED);
 		}
 		
-		VariantRuntime.targetSessionForView(session, view);		
+		VariantViewRequestImpl request = VariantRuntime.targetSessionForView(session, view);		
+				
+		return request;
 	}
 	
 	/**
@@ -344,7 +347,7 @@ public class Variant {
 	public static class Config {
 		
 		// Default is in-memory H2.
-		private String eventPersisterClassName = "com.variant.ext.persist.EventPersisterH2";
+		private String eventPersisterClassName = "com.variant.core.ext.EventPersisterH2";
 		private EventPersister.Config eventPersisterConfig = new EventPersister.Config();
 		private TargetingPersister.Config targetingPersisterConfig = new TargetingPersister.Config();
 		private EventWriter.Config eventWriterConfig = new EventWriter.Config();

@@ -15,7 +15,7 @@ import com.variant.core.schema.View;
  * @author Igor
  *
  */
-class ViewImpl implements View {
+public class ViewImpl implements View {
 
 	private String name;
 	private String path;

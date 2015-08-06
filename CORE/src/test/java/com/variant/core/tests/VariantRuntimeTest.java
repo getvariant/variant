@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 
 import com.variant.core.ParserResponse;
