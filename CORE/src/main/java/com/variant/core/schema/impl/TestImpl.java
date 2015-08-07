@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
+import com.variant.core.conf.VariantProperties;
 import com.variant.core.runtime.VariantSpace;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;
@@ -20,6 +21,8 @@ public class TestImpl implements Test {
 
 	// As defined:
 	private String name;
+	private boolean isOn = true;
+	private int idleDaysToLive = VariantProperties.defaultIdleDaysToLive();
 	private List<TestImpl> covariantTests;
 	private List<TestExperienceImpl> experiences;
 	private VariantSpace variantSpace;
@@ -51,6 +54,22 @@ public class TestImpl implements Test {
 	 */
 	void setOnViews(List<TestOnViewImpl> onViews) {
 		this.onViews = onViews;
+	}
+	
+	/**
+	 * 
+	 * @param isOn
+	 */
+	void setIsOn(boolean isOn) {
+		this.isOn = isOn;
+	}
+	
+	/**
+	 * 
+	 * @param isOn
+	 */
+	void setIdleDaysToLive(int days) {
+		this.idleDaysToLive = days;
 	}
 	
 	/**
@@ -182,6 +201,20 @@ public class TestImpl implements Test {
 	@Override
 	public void clearCustomTargeters() {
 		customTargeters = new ArrayList<Targeter>();
+	}
+
+	/**
+	 * 
+	 */
+	public boolean isOn() {
+		return isOn;
+	}
+	
+	/**
+	 * 
+	 */
+	public int getIdleDaysToLive() {
+		return idleDaysToLive;
 	}
 
 	//---------------------------------------------------------------------------------------------//

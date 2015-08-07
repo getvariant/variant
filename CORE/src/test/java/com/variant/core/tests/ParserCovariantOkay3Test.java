@@ -40,7 +40,7 @@ public class ParserCovariantOkay3Test extends BaseTest {
 
 		// Bootstrap the Variant container with defaults.
 		Variant.Config variantConfig = new Variant.Config();
-		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.ext.session.SessionKeyResolverJunit");
+		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.core.util.SessionKeyResolverJunit");
 		Variant.bootstrap(variantConfig);
 
 	}

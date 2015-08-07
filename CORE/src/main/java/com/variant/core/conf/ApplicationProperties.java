@@ -3,6 +3,7 @@ package com.variant.core.conf;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -11,7 +12,8 @@ import org.apache.commons.lang3.ArrayUtils;
 public class ApplicationProperties {
 
 	private static List<Properties> configs = null;
-
+	private static Map<String, String> defaults = null;
+	
 	/**
 	 * Load properties file from class path.
 	 * classes can use it too.
@@ -65,6 +67,14 @@ public class ApplicationProperties {
 	}
 
 	/**
+	 * 
+	 * @param map
+	 */
+	void setDefaults(Map<String, String> map) {
+		defaults = map;
+	}
+	
+	/**
 	 * Get a property from property files.
 	 * Scan properties left to right and return first one found.
 	 * @param key
@@ -75,18 +85,29 @@ public class ApplicationProperties {
 			if ((result = config.getProperty(key)) != null) break;
 		}
 		
+		if (result == null && defaults != null) result = defaults.get(key); 
+		
 		if (result == null) throw new RuntimeException ("Unable to obtain value for property " + key);
 		
 		return result;
 	}
 	
 	/**
-	 * Clear text string value
+	 * String value
 	 * @param key
 	 * @return
 	 */
 	protected String getString(String key) {
 		return expandVariables(getProperty(key));
+	}
+
+	/**
+	 * String value
+	 * @param key
+	 * @return
+	 */
+	protected Integer getInteger(String key) {
+		return Integer.parseInt(getString(key));
 	}
 
 	/**

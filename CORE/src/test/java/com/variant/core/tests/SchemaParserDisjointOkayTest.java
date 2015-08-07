@@ -101,6 +101,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    //--------------------------------------------------------------------------//	
     	    "     {                                                                   \n" +
     	    "        'name':'test2',                                                  \n" +
+    	    "        'isOn': true,                                                    \n" +
     	    "        'experiences':[                                                  \n" +
     	    "           {                                                             \n" +
     	    "              'name':'C',                                                \n" +
@@ -177,7 +178,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 
 		// Bootstrap the Variant container with defaults.
 		Variant.Config variantConfig = new Variant.Config();
-		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.ext.session.SessionKeyResolverJunit");
+		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.core.util.SessionKeyResolverJunit");
 		Variant.bootstrap(variantConfig);
 
 	}

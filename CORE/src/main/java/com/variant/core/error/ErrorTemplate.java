@@ -28,6 +28,8 @@ public enum ErrorTemplate {
 	PARSER_TEST_NAME_MISSING                              (Severity.ERROR, "Test name is missing"), ///
 	PARSER_TEST_NAME_NOT_STRING                           (Severity.ERROR, "Test name must be a string"), ///
 	PARSER_TEST_NAME_DUPE                                 (Severity.ERROR, "Duplicate test name [%s]"), ///
+	PARSER_TEST_ISON_NOT_BOOLEAN                          (Severity.ERROR, "'tests/isOn' property must be a boolean (Test [%s])"), ///
+	PARSER_TEST_IDLE_DAYS_TO_LIVE_NOT_INT                 (Severity.ERROR, "'tests/idleDaysToLive' property must be an integer (Test [%s])"), ///
 	PARSER_TEST_UNSUPPORTED_PROPERTY                      (Severity.WARN,  "Unsupported property 'tests/%s' (Test [%s])"), ///
 	PARSER_EXPERIENCES_NOT_LIST                           (Severity.ERROR, "'tests/experiences' property must be a list (Test [%s])"), ///
 	PARSER_EXPERIENCES_LIST_EMPTY                         (Severity.ERROR, "'tests/experiences' list must contain at least one element (Test [%s])"), ///

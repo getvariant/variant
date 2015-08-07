@@ -37,6 +37,21 @@ public interface Test {
 	public Experience getControlExperience();
 	
 	/**
+	 * Is this test currently on? Tests that are not on are treated especially:
+	 * 1. Not targeted for.
+	 * 2. Existing targeting is ignored, i.e. control experience is substituted for non-control targeting.
+	 * 3. Events are not logged.
+	 * @return
+	 */
+	public boolean isOn();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public int getIdleDaysToLive();
+	
+	/**
 	 * A list of all view instrumentations for this Test, in the order they were declared.
 	 * @return
 	 */

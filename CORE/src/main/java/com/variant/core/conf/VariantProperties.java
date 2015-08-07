@@ -1,16 +1,32 @@
 package com.variant.core.conf;
 
+import java.util.HashMap;
+
 import com.variant.core.jdbc.JdbcService;
 
 public class VariantProperties {
 
 	private static ApplicationProperties props = new ApplicationProperties("/variant.props");
 
+	// Construct the map of defaults
+	static {
+		@SuppressWarnings("serial")
+		HashMap<String, String> defaults  = new HashMap<String, String>() {{
+			put("default.idle.days.to.live", "30");
+		}};
+		
+		props.setDefaults(defaults);
+	}
+	
 	/**
 	 * Static singleton
 	 */
 	protected VariantProperties() {}
 
+	/**
+	 * 
+	 * @return
+	 */
 	public static String persisterClassName() {
 		return props.getString("persister.class.name");
 	}
@@ -47,4 +63,7 @@ public class VariantProperties {
 		return props.getString("jdbc.password");
 	}
 
+	public static int defaultIdleDaysToLive() {
+		return props.getInteger("default.idle.days.to.live");
+	}
 }
