@@ -2,6 +2,7 @@ package com.variant.core.tests;
 
 import static org.junit.Assert.*;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -110,7 +111,24 @@ public class SessionTest extends BaseTest {
 		tp = ssn.getTargetingPersister();
 		assertEquals(1, tp.getAll().size());
 		assertEquals(experience("test3.C"), tp.get(schema.getTest("test3")));
-
+		assertNull(tp.get(schema.getTest("test1")));
+		boolean exceptionThrown = false;
+		try {
+			assertNull(tp.get(null));
+		}
+		catch (NullPointerException e) {
+			exceptionThrown = true;
+		}
+		assertTrue(exceptionThrown);
+		exceptionThrown = false;
+		try {
+			assertNull(tp.remove(null));
+		}
+		catch (NullPointerException e) {
+			exceptionThrown = true;
+		}
+		assertTrue(exceptionThrown);
+		
 		// 
 		// Single entry - bad
 		//
@@ -161,6 +179,16 @@ public class SessionTest extends BaseTest {
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
 		assertEquals(timestamp + ".test1.A|" + timestamp + ".test4.B",tp.toString());
 		
+		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C||" + timestamp + ".test4.B|";
+		ssn.initTargetingPersister(new UserDataFromString(persisterString));
+		assertTrue(logger.get(-1).getLevel() == VariantJunitLogger.Level.DEBUG);
+		tp = ssn.getTargetingPersister();
+		assertEquals(3, tp.getAll().size());
+		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
+		assertEquals(experience("test2.C"), tp.get(schema.getTest("test2")));
+		assertEquals(experience("test4.B"), tp.get(schema.getTest("test4")));
+		assertEquals(timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test4.B",tp.toString());
+
 		// 
 		// Multiple entries - bad
 		//
@@ -174,6 +202,50 @@ public class SessionTest extends BaseTest {
 		assertEquals(experience("test2.C"), tp.get(schema.getTest("test2")));
 		assertEquals(timestamp + ".test1.A|" + timestamp + ".test2.C",tp.toString());
 
+		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test1.B";
+		ssn.initTargetingPersister(new UserDataFromString(persisterString));
+		assertTrue(logger.get(-1).getLevel() == VariantJunitLogger.Level.DEBUG);
+		tp = ssn.getTargetingPersister();
+		assertEquals(2, tp.getAll().size());
+		assertEquals(experience("test1.B"), tp.get(schema.getTest("test1")));
+		assertEquals(experience("test2.C"), tp.get(schema.getTest("test2")));
+		assertEquals(timestamp + ".test1.B|" + timestamp + ".test2.C",tp.toString());
+
+		// 
+		// Idle Days To Live
+		//
+		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY;
+		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test3.B";
+		ssn.initTargetingPersister(new UserDataFromString(persisterString));
+		assertTrue(logger.get(-1).getLevel().lessThan(VariantJunitLogger.Level.WARN));
+		tp = ssn.getTargetingPersister();
+		assertEquals(3, tp.getAll().size());
+		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
+		assertEquals(experience("test2.C"), tp.get(schema.getTest("test2")));
+		assertEquals(experience("test3.B"), tp.get(schema.getTest("test3")));
+		assertNull(tp.get(schema.getTest("test4")));
+
+		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY - 1;
+		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test3.B";
+		ssn.initTargetingPersister(new UserDataFromString(persisterString));
+		assertEquals("Ignored idle experience [test3.B]", logger.get(-1).getMessage());
+		tp = ssn.getTargetingPersister();
+		assertEquals(2, tp.getAll().size());
+		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
+		assertEquals(experience("test2.C"), tp.get(schema.getTest("test2")));
+		assertNull(tp.get(schema.getTest("test3")));
+		assertNull(tp.get(schema.getTest("test4")));
+
+		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY * 1000;
+		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test3.B|" + timestamp + ".test4.A|";
+		ssn.initTargetingPersister(new UserDataFromString(persisterString));
+		assertEquals("Ignored idle experience [test3.B]", logger.get(-1).getMessage());
+		tp = ssn.getTargetingPersister();
+		assertEquals(3, tp.getAll().size());
+		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
+		assertEquals(experience("test2.C"), tp.get(schema.getTest("test2")));
+		assertEquals(experience("test4.A"), tp.get(schema.getTest("test4")));
+		assertNull(tp.get(schema.getTest("test3")));
 	}
 
 }

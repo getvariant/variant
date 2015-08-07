@@ -218,7 +218,7 @@ public class Variant {
 			StringBuilder msg = new StringBuilder("New schema deployed in ");
 			msg.append(DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")).append(":");
 			for (Test test: schema.getTests()) {
-				msg.append("\n   ").append(test.getName()).append("(");
+				msg.append("\n   ").append(test.getName()).append(" {");
 				boolean first = true;
 				for (Experience exp: test.getExperiences()) {
 					if (first) first = false;
@@ -226,7 +226,8 @@ public class Variant {
 					msg.append(exp.getName());
 					if (exp.isControl()) msg.append(" (control)");
 				}
-				msg.append(")");
+				msg.append("}");
+				if (!test.isOn()) msg.append(" OFF");
 			}
 			logger.info(msg.toString());
 		}

@@ -68,15 +68,15 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(test2, test4), test5.getCovariantTests());
 		assertEquals(VariantCollectionsUtils.list(test1, test2, test4, test5), test6.getCovariantTests());
 
-		// 
-		// Runtime test covariance.
 		//
-		//assertEquals(VariantCollectionsUtils.list(test4, test6), VariantRuntime.getCovariantTests(test1));
-		//assertEquals(VariantCollectionsUtils.list(test5, test6), VariantRuntime.getCovariantTests(test2));
-		//assertEquals(VariantCollectionsUtils.list(test1, test5, test6), VariantRuntime.getCovariantTests(test4));
-		//assertEquals(VariantCollectionsUtils.list(test2, test4, test6), VariantRuntime.getCovariantTests(test5));
-		//assertEquals(VariantCollectionsUtils.list(test1, test2, test4, test5), VariantRuntime.getCovariantTests(test6));
-
+		// idleDaysToLive
+		//
+		assertEquals(0, test1.getIdleDaysToLive());
+		assertEquals(0, test2.getIdleDaysToLive());
+		assertEquals(1, test3.getIdleDaysToLive());
+		assertEquals(0, test4.getIdleDaysToLive());
+		assertEquals(0, test5.getIdleDaysToLive());
+		assertEquals(0, test6.getIdleDaysToLive());
 		//
 		// Test disjointness. 
 		//

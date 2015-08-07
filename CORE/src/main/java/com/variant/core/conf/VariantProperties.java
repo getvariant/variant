@@ -12,7 +12,7 @@ public class VariantProperties {
 	static {
 		@SuppressWarnings("serial")
 		HashMap<String, String> defaults  = new HashMap<String, String>() {{
-			put("default.idle.days.to.live", "30");
+			put("default.idle.days.to.live", "0");  // Forever.
 		}};
 		
 		props.setDefaults(defaults);

@@ -53,8 +53,9 @@ public class TargetingPersisterFromString extends TargetingPersisterSupport {
 						}
 						
 						long timestamp = Long.parseLong(tokens[0]);
-						// ignore if user hasn't seen this experience for a while.
-						if (System.currentTimeMillis() - timestamp > config.getDefaultMinIdleDays() * DateUtils.MILLIS_PER_DAY) {
+						// ignore if user hasn't seen this experience for idleDaysToLive days,
+						// inless idleDaysToLive is 0, which means forever. 
+						if (test.getIdleDaysToLive() > 0 && System.currentTimeMillis() - timestamp > test.getIdleDaysToLive() * DateUtils.MILLIS_PER_DAY) {
 							if (logger.isDebugEnabled()) {
 								logger.debug("Ignored idle experience [" + tokens[1] + "." + tokens[2] + "]");
 							}

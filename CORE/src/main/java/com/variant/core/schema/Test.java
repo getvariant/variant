@@ -46,7 +46,8 @@ public interface Test {
 	public boolean isOn();
 	
 	/**
-	 * 
+	 * Number of days an entry for this test will be kept by the targeting persister since the
+	 * most recent traversal. 0 means forever - the default;
 	 * @return
 	 */
 	public int getIdleDaysToLive();

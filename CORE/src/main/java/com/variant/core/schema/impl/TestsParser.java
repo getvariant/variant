@@ -181,7 +181,12 @@ public class TestsParser implements Keywords {
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_IDLE_DAYS_TO_LIVE)) {
 				try {
 					Integer days = (Integer) entry.getValue();
-					result.setIdleDaysToLive(days);
+					if (days < 0) {
+						response.addError(PARSER_TEST_IDLE_DAYS_TO_LIVE_NEGATIVE, name);
+					}
+					else {
+						result.setIdleDaysToLive(days);
+					}
 				}
 				catch (Exception e)  {
 					response.addError(PARSER_TEST_IDLE_DAYS_TO_LIVE_NOT_INT, name);					

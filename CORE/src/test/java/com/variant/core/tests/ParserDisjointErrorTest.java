@@ -1,6 +1,5 @@
 package com.variant.core.tests;
 
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_IDLE_DAYS_TO_LIVE_NOT_INT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -376,6 +375,66 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
 		assertEquals(new ParserError(ErrorTemplate.PARSER_TEST_IDLE_DAYS_TO_LIVE_NOT_INT, "Test1").getMessage(), error.getMessage());
+	}
+
+	/**
+	 * PARSER_TEST_IDLE_DAYS_TO_LIVE_NEGATIVE
+	 * @throws Exception
+	 */
+	@Test
+	public void testTestIdleDaysToLiveNigative_Test() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "   'views':[                                                  \n" +
+			    "     {  'name':'view1',                                       \n" +
+			    "        'path':'/path/to/view1'                               \n" +
+			    "     },                                                       \n" +
+			    "     {  'path':'/path/to/view1',                              \n" +
+			    "        'name':'view2'                                        \n" +
+			    "     },                                                       \n" +
+			    "     {  'name':'view3',                                       \n" + 
+			    "        'path':'/path/to/view3'                               \n" +
+			    "     }                                                        \n" +
+			    "  ],                                                          \n" +
+				"  'tests':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'name':'Test1',                                       \n" +
+			    "        'isOn':false,                                         \n" +
+			    "        'idleDaysToLive':-8,                                  \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onViews':[                                           \n" +
+			    "           {                                                  \n" +
+			    "              'viewRef':'view1',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef':'A',                      \n" +
+			    "                    'path':'/path/to/view1/test1.A'           \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		ParserResponseImpl response = SchemaParser.parse(config);
+
+		assertTrue(response.hasErrors());
+		assertEquals(1, response.getErrors().size());
+		ParserError error = response.getErrors().get(0);
+		assertEquals(new ParserError(ErrorTemplate.PARSER_TEST_IDLE_DAYS_TO_LIVE_NEGATIVE, "Test1").getMessage(), error.getMessage());
 	}
 
 	/**

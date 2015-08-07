@@ -59,19 +59,10 @@ public interface TargetingPersister {
 	 */
 	public static class Config {
 		
-		private int defaultMinIdleDays = 30;
 		private String className = "com.variant.core.session.TargetingPersisterFromString";
 		
 		public Config() {}
-		
-		public void setDefaultMinIdleDays(int days) {
-			defaultMinIdleDays = days;
-		}
-		
-		public int getDefaultMinIdleDays() {
-			return defaultMinIdleDays;
-		}
-		
+				
 		public void setMinIdleDays(String className) {
 			this.className = className;
 		}
