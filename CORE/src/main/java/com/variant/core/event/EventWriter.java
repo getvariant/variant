@@ -15,7 +15,7 @@ public class EventWriter {
 	// The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
 	// refusing inserts that will put the queue size over the limit, but not worrying about
 	// a possible overage due to concurrency.
-	private ConcurrentLinkedQueue<BaseEvent> eventQueue = null;
+	private ConcurrentLinkedQueue<VariantEventSupport> eventQueue = null;
 
 	// Max queue size (soft).
 	private int queueSize;
@@ -39,7 +39,7 @@ public class EventWriter {
 	 * Validate that event is well-formed.
 	 * @param event
 	 */
-	private void validateEvent(BaseEvent event) {
+	private void validateEvent(VariantEventSupport event) {
 		if (event.experiences.size() == 0) 
 			throw new VariantInternalException(
 					String.format("Event [%s] [%s] has no experiences. Ignored.", event.eventName, event.eventValue));
@@ -96,7 +96,7 @@ public class EventWriter {
 		this.pctEmptySize = (int) Math.ceil(config.bufferSize * 0.1);
 		this.maxPersisterIntervalMillis = config.maxPersisterIntervalMillis;
 		
-		eventQueue = new ConcurrentLinkedQueue<BaseEvent>();
+		eventQueue = new ConcurrentLinkedQueue<VariantEventSupport>();
 		
 		persisterThread = new Thread(new PersisterThread());
 		
@@ -115,15 +115,15 @@ public class EventWriter {
 	 * @param events
 	 * @return number of elements actually written.
 	 */
-	public int write(Collection<BaseEvent> events) {
+	public int write(Collection<VariantEventSupport> events) {
 		
 		// size() is an O(n) operation - do it once.
 		int currentQueueSize = eventQueue.size();
 		int acceptCount = 0;
 		
-		Iterator<BaseEvent> iter = events.iterator();
+		Iterator<VariantEventSupport> iter = events.iterator();
 		while (currentQueueSize < queueSize && iter.hasNext()) {
-			BaseEvent event = iter.next();
+			VariantEventSupport event = iter.next();
 			validateEvent(event);
 			eventQueue.add(event);
 			currentQueueSize++;
@@ -143,8 +143,8 @@ public class EventWriter {
 	 *  
 	 * @param event
 	 */
-	public void write(BaseEvent event) {
-		ArrayList<BaseEvent> collection = new ArrayList<BaseEvent>(1);
+	public void write(VariantEventSupport event) {
+		ArrayList<VariantEventSupport> collection = new ArrayList<VariantEventSupport>(1);
 		collection.add(event);
 		write(collection);
 	}
@@ -207,9 +207,9 @@ public class EventWriter {
 		 */
 		private void flush() throws Exception {
 
-			ArrayList<BaseEvent> events = new ArrayList<BaseEvent>();
+			ArrayList<VariantEventSupport> events = new ArrayList<VariantEventSupport>();
 
-			BaseEvent event = eventQueue.poll();
+			VariantEventSupport event = eventQueue.poll();
 			while (event != null) {
 				events.add(event);
 				event = eventQueue.poll();

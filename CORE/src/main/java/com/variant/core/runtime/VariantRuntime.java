@@ -3,6 +3,7 @@ package com.variant.core.runtime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -53,7 +54,9 @@ public class VariantRuntime {
      * 5. If we're unable to resolve the pre-targeted vector, compute the minimal unresolvable subset
      *    and remove those experiences from the experience persistence.
      * 6. Given the new pre-targeted experience set, target the rest of the tests instrumented on
-     *    this view via each test's regular targeting mechanism, in ordinal order.
+     *    this view via each test's regular targeting mechanism, in ordinal order.  Do not target
+     *    tests that are OFF — default them to control experiences.
+     * 7. Resolve the path. For OFF tests, substitute non-control experiences with control ones.
 	 * 
 	 * @param config
 	 * @param viewPath
@@ -72,7 +75,8 @@ public class VariantRuntime {
 		Collection<Experience> alreadyTargetedExperiences = tp.getAll();
 		
 		if (!alreadyTargetedExperiences.isEmpty()) {
-
+			
+			// Resolvable?  If not, find smallest subset that will make it resolvable.
 			Collection<Experience> minUnresolvableSubvector = 
 					minUnresolvableSubvector(alreadyTargetedExperiences);
 			
@@ -88,14 +92,41 @@ public class VariantRuntime {
 		}
 
 		// Targeting persister now has all currently targeted experiences.
+		for (Experience e: tp.getAll()) {
+			if (e.getTest().isOn()) {
+				if (Variant.getLogger().isTraceEnabled()) {
+					Variant.getLogger().trace(
+							"Session [" + ssn.getId() + "] recognized persisted experience [" + e +"]");
+				}									
+			}
+			else {
+				if (Variant.getLogger().isTraceEnabled()) {
+					Variant.getLogger().trace(
+							"Session [" + ssn.getId() + "] recognized persisted experience [" + e +"]" +
+							" but substituted control experience [" + e.getTest().getControlExperience() + "]" +
+							" because test is OFF");
+				}													
+			}
+		}
 		// Tests that are instrumented on this page need to be targeted, unless already targeted.
 		for (Test test: view.getInstrumentedTests()) {
+			
 			if (view.isInstrumentedBy(test) && tp.get(test) == null) {
-				if (isTargetable(test, tp.getAll())) {
+				
+				if (!test.isOn()) {
+					Experience e = test.getControlExperience();
+					tp.add(e, System.currentTimeMillis());
+					if (Variant.getLogger().isTraceEnabled()) {
+						Variant.getLogger().trace(
+								"Session [" + ssn.getId() + "] temporarily targeted for OFF test [" + 
+								test.getName() +"] with control experience [" + e.getName() + "]");
+					}					
+				}
+				else if (isTargetable(test, tp.getAll())) {
 					Experience e = ((TestImpl) test).target(ssn);
 					tp.add(e, System.currentTimeMillis());
-					if (Variant.getLogger().isDebugEnabled()) {
-						Variant.getLogger().debug(
+					if (Variant.getLogger().isTraceEnabled()) {
+						Variant.getLogger().trace(
 								"Session [" + ssn.getId() + "] targeted for test [" + 
 								test.getName() +"] with experience [" + e.getName() + "]");
 					}
@@ -104,8 +135,8 @@ public class VariantRuntime {
 				else {
 					Experience e = test.getControlExperience();
 					tp.add(e, System.currentTimeMillis());
-					if (Variant.getLogger().isDebugEnabled()) {
-						Variant.getLogger().debug(
+					if (Variant.getLogger().isTraceEnabled()) {
+						Variant.getLogger().trace(
 								"Session [" + ssn.getId() + "] targeted for test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}
@@ -114,10 +145,19 @@ public class VariantRuntime {
 		}
 		
 		VariantViewRequestImpl result = new VariantViewRequestImpl((VariantSessionImpl)ssn, (ViewImpl) view);
-		String resolvedPath = resolveViewPath(view, tp.getAll());
 		
-		if (Variant.getLogger().isDebugEnabled()) {
-			Variant.getLogger().debug(
+		// TP may still contain non-control experiences for OFF tests, if they were in the persister at the top
+		// of this method and did not get reduced out due to non-resolvability.  Before resolving the view path,
+		// we substitute them with control.
+		ArrayList<Experience> vector = new ArrayList<Experience>();
+		for (Experience e: tp.getAll()) {
+			vector.add(e.getTest().isOn() ? e : e.getTest().getControlExperience());
+		}
+		
+		String resolvedPath = resolveViewPath(view, vector);
+		
+		if (Variant.getLogger().isTraceEnabled()) {
+			Variant.getLogger().trace(
 					"Session [" + ssn.getId() + "] resolved view [" + 
 					view.getName() +"] as [" + resolvedPath + "] for experience vector [" +
 					StringUtils.join(tp.getAll().toArray(), ",") + "]");
@@ -132,6 +172,7 @@ public class VariantRuntime {
 	 * Find the shortest sub-vector V' of the input vector V, so that V\V' is resolvable.
 	 * A vector is resolvable if the current schema contains a variant for every view where it is relevant.
 	 * A vector is relevant to a view if at least one of its experiences is instrumented.
+	 * We do not alter semantics for OFF tests in this algorithm.
      *
 	 * 1. Build a set of views relevant to the input.
 	 * 2. For each relevant view, try to resolve the input vector.

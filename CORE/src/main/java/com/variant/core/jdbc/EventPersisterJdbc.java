@@ -6,14 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import com.variant.core.VariantEventExperience;
 import com.variant.core.VariantInternalException;
 import com.variant.core.conf.VariantProperties;
-import com.variant.core.event.BaseEvent;
-import com.variant.core.event.EventExperience;
 import com.variant.core.event.EventPersister;
+import com.variant.core.event.VariantEventExperienceSupport;
+import com.variant.core.event.VariantEventSupport;
 
 /**
  * JDBC persisters extend this class instead of implementing the EventPersister interface. 
@@ -39,7 +41,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	 * Persist a collection of events.
 	 */
 	@Override
-	final public void persist(final Collection<BaseEvent> events) throws Exception {
+	final public void persist(final Collection<VariantEventSupport> events) throws Exception {
 
 		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
@@ -51,12 +53,20 @@ abstract public class EventPersisterJdbc implements EventPersister {
 
 		final String INSERT_EVENT_EXPERIENCES_SQL = 
 				"INSERT INTO event_experiences " +
-			    "(event_id, test_name, experience_name, is_control, is_view_invariant, view_resolved_path) " +
-			    "VALUES (?, ?, ?, ?, ?, ?)";
+			    "(id, event_id, test_name, experience_name, is_control) " +
+				(VariantProperties.jdbcVendor() == JdbcService.Vendor.POSTGRES ?
+						"VALUES (NEXTVAL('event_experiences_id_seq'), ?, ?, ?, ?)" :
+				VariantProperties.jdbcVendor() == JdbcService.Vendor.H2 ?
+						"VALUES (event_experiences_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
 
 		final String INSERT_EVENT_PARAMETERS_SQL = 
 				"INSERT INTO event_params " +
-			    "(event_id, param_key, param_value) " +
+			    "(event_id, key, value) " +
+			    "VALUES (?, ?, ?)";
+
+		final String INSERT_EVENT_EXPERIENCE_PARAMETERS_SQL = 
+				"INSERT INTO event_experience_params " +
+			    "(event_experience_id, key, value) " +
 			    "VALUES (?, ?, ?)";
 
 		JdbcService.executeUpdate(
@@ -73,9 +83,8 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					// Postgres requires Statement.RETURN_GENERATED_KEYS.
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
-					for (BaseEvent event: events) {
-
-						stmt.setString(1, event.getSessionId());
+					for (VariantEventSupport event: events) {
+						stmt.setString(1, event.getSession().getId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getEventName());
 						stmt.setString(4, event.getEventValue());
@@ -89,35 +98,36 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					// Read sequence generated event IDs and add them to the event objects.
 					// We'll need these ids when inserting into events_experiences.
-					Iterator<BaseEvent> eventsIter = events.iterator();
+					Iterator<VariantEventSupport> eventsIter = events.iterator();
 					ResultSet gennedKeys = stmt.getGeneratedKeys();
 					while(gennedKeys.next()) {
 
 						if (!eventsIter.hasNext()) 
-							throw new VariantInternalException("Received more genereated keys than inserted events.");
+							throw new VariantInternalException("Received more genereated keys than inserted event records.");
 						
-						BaseEvent event = eventsIter.next();
+						VariantEventSupport event = eventsIter.next();
 						event.setId(gennedKeys.getLong(1));
 					}
 					if (eventsIter.hasNext()) 
-						throw new VariantInternalException("Received fewer genereated keys than inserted events.");
+						throw new VariantInternalException("Received fewer genereated keys than inserted event records.");
 					
 					stmt.close();
 					
 					//
 					// 2. Insert into EVENTS_EXPERIENCES.
 					//
-					stmt = conn.prepareStatement(INSERT_EVENT_EXPERIENCES_SQL);
 					
-					for (BaseEvent event: events) {
-						for (EventExperience ee: event.getEventExperiences()) {
-
-							stmt.setLong(1, ee.getEventId());
-							stmt.setString(2, ee.getTestName());
-							stmt.setString(3, ee.getExperienceName());
-							stmt.setBoolean(4, ee.isExpereinceControl());
-							stmt.setBoolean(5, ee.isViewInvariant());
-							stmt.setString(6, ee.getViewResolvedPath());
+					ArrayList<VariantEventExperienceSupport> eventExperiences = new ArrayList<VariantEventExperienceSupport>();
+					
+					stmt = conn.prepareStatement(INSERT_EVENT_EXPERIENCES_SQL, Statement.RETURN_GENERATED_KEYS);
+					
+					for (VariantEventSupport event: events) {
+						for (VariantEventExperience ee: event.getEventExperiences()) {
+							eventExperiences.add((VariantEventExperienceSupport)ee);
+							stmt.setLong(1, ee.getEvent().getId());
+							stmt.setString(2, ee.getExperience().getTest().getName());
+							stmt.setString(3, ee.getExperience().getName());
+							stmt.setBoolean(4, ee.getExperience().isControl());
 						
 							stmt.addBatch();
 						}
@@ -125,17 +135,34 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					stmt.executeBatch();
 					
+					// Read sequence generated event IDs and add them to the event objects.
+					// We'll need these ids when inserting into events_experiences.
+					Iterator<VariantEventExperienceSupport> eventExperiencesIter = eventExperiences.iterator();
+					gennedKeys = stmt.getGeneratedKeys();
+					while(gennedKeys.next()) {
+
+						if (!eventExperiencesIter.hasNext()) 
+							throw new VariantInternalException("Received more genereated keys than inserted event experience records.");
+						
+						VariantEventExperienceSupport ee = eventExperiencesIter.next();
+						ee.setId(gennedKeys.getLong(1));
+					}
+					if (eventExperiencesIter.hasNext()) 
+						throw new VariantInternalException("Received fewer genereated keys than inserted event experience records.");
+					
+					stmt.close();
+
 					//
-					// 3. Insert into EVENTS_PARAMETERS.
+					// 3. Insert into EVENT_PARAMETERS.
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_PARAMETERS_SQL);
 					
-					for (BaseEvent event: events) {
+					for (VariantEventSupport event: events) {
 						for (String key: event.getParameterKeys()) {
 	
 							stmt.setLong(1, event.getId());
 							stmt.setString(2, key);
-							stmt.setString(3, event.getParameter(key));
+							stmt.setString(3, event.getParameter(key).toString());
 						
 							stmt.addBatch();
 						}
@@ -143,6 +170,27 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					stmt.executeBatch();
 
+					//
+					// 4. Insert into EVENT_EXPERIENCE_PARAMETERS.
+					//
+					stmt = conn.prepareStatement(INSERT_EVENT_EXPERIENCE_PARAMETERS_SQL);
+					
+					for (VariantEventExperienceSupport ee: eventExperiences) {
+						for (String key: ee.getParameterKeys()) {
+	
+							stmt.setLong(1, ee.getId());
+							stmt.setString(2, key);
+							stmt.setString(3, ee.getParameter(key).toString());
+						
+							stmt.addBatch();
+						}
+					}
+					
+					stmt.executeBatch();
+
+					stmt.close();
+
+					stmt.close();
 				}
 			}
 		);

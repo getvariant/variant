@@ -1,10 +1,11 @@
 package com.variant.core.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Random;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.variant.core.ParserResponse;
@@ -22,8 +23,8 @@ public class TargetingTest extends BaseTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
-	public void beforeEachTest() throws Exception {
+	@BeforeClass
+	public static void beforeTestCase() throws Exception {
 
 		// Bootstrap the Variant container with defaults.
 		Variant.Config variantConfig = new Variant.Config();
@@ -32,8 +33,12 @@ public class TargetingTest extends BaseTest {
 
 	}
 
+	/**
+	 * Basic targeting
+	 * @throws Exception
+	 */
 	@Test
-	public void test() throws Exception {
+	public void basicTest() throws Exception {
 
 		String config = 
 				"{                                                             \n" +

@@ -6,18 +6,25 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.regex.Pattern;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
+import com.variant.core.VariantSession;
+import com.variant.core.VariantViewRequest;
 import com.variant.core.runtime.VariantRuntimeTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
+import com.variant.core.session.TargetingPersister;
+import com.variant.core.session.TargetingPersisterFromString.UserDataFromString;
+import com.variant.core.util.SessionKeyResolverJunit.UserDataJunit;
 import com.variant.core.util.VariantCollectionsUtils;
+import com.variant.core.util.VariantJunitLogger;
 
 
 /**
@@ -29,8 +36,8 @@ public class VariantRuntimeTest extends BaseTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Before
-	public void beforeEachTest() throws Exception {
+	@BeforeClass
+	public static void beforeTestCase() throws Exception {
 
 		// Bootstrap the Variant container with defaults.
 		Variant.Config variantConfig = new Variant.Config();
@@ -43,7 +50,7 @@ public class VariantRuntimeTest extends BaseTest {
 	 * 
 	 */
 	@org.junit.Test
-	public void test() throws Exception {
+	public void pathResolution() throws Exception {
 		
 		ParserResponse response = Variant.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasErrors()) printErrors(response);
@@ -865,6 +872,256 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test4.C"))));
 
 		
+	}
+	
+	
+	/**
+	 * Targeting with OFF tests.
+	 * @throws Exception
+	 */
+	@org.junit.Test
+	public void offTestsTest() throws Exception {
+		
+		final String SCHEMA = 
+
+				"{                                                                                \n" +
+			    	    //==========================================================================//
+			    	   
+			    	    "   'views':[                                                             \n" +
+			    	    "     {  'name':'view1',                                                  \n" +
+			    	    "        'path':'/path/to/view1'                                          \n" +
+			    	    "     },                                                                  \n" +
+			    	    "     {  'NAME':'view2',                                                  \n" +
+			    	    "        'path':'/path/to/view2'                                          \n" +
+			    	    "     },                                                                  \n" +
+			    	    "     {  'nAmE':'view3',                                                  \n" +
+			    	    "        'path':'/path/to/view3'                                          \n" +
+			    	    "     },                                                                  \n" +
+			    	    "     {  'name':'view4',                                                  \n" +
+			    	    "        'path':'/path/to/view4'                                          \n" +
+			    	    "     }                                                                   \n" +
+			            "  ],                                                                     \n" +
+			    	    //=========================================================================//
+			    	    
+				        "  'tests':[                                                              \n" +
+			    	    "     {                                                                   \n" +
+			    	    "        'name':'test1',                                                  \n" +
+			    	    "        'isOn':true,                                                     \n" +
+			    	    "        'experiences':[                                                  \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'name':'A',                                                \n" +
+			    	    "              'weight':10,                                               \n" +
+			    	    "              'isControl':true                                           \n" +
+			    	    "           },                                                            \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'name':'B',                                                \n" +
+			    	    "              'weight':20                                                \n" +
+			    	    "           },                                                            \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'name':'C',                                                \n" +
+			    	    "              'weight':30                                                \n" +
+			    	    "           }                                                             \n" +
+			    	    "        ],                                                               \n" +
+			    	    "        'onViews':[                                                      \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'viewRef':'view1',                                         \n" +
+			    	    "              'variants':[                                               \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'B',                                 \n" +
+			    	    "                    'path':'/path/to/view1/test1.B'                      \n" +
+			    	    "                 },                                                      \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'C',                                 \n" +
+			    	    "                    'path':'/path/to/view1/test1.C'                      \n" +
+			    	    "                 }                                                       \n" +
+			    	    "              ]                                                          \n" +
+			    	    "           },                                                            \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'viewRef':'view2',                                         \n" +
+			    	    "              'isInvariant':true                                         \n" +
+			    	    "           },                                                             \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'viewRef':'view3',                                         \n" +
+			    	    "              'variants':[                                               \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'B',                                 \n" +
+			    	    "                    'path':'/path/to/view3/test1.B'                      \n" +
+			    	    "                 },                                                      \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'C',                                 \n" +
+			    	    "                    'path':'/path/to/view3/test1.C'                      \n" +
+			    	    "                 }                                                       \n" +
+			    	    "              ]                                                          \n" +
+			    	    "           }                                                             \n" +
+			    	    "        ]                                                                \n" +
+			    	    "     },                                                                  \n" +
+			    	    //--------------------------------------------------------------------------//	
+			    	    "     {                                                                   \n" +
+			    	    "        'name':'test2',                                                  \n" +
+			    	    "        'isOn': false,                                                   \n" +
+			    	    "        'experiences':[                                                  \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'name':'A',                                                \n" +
+			    	    "              'weight':10,                                               \n" +
+			    	    "              'isControl':true                                           \n" +
+			    	    "           },                                                            \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'name':'B',                                                \n" +
+			    	    "              'weight':20                                                \n" +
+			    	    "           },                                                            \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'name':'C',                                                \n" +
+			    	    "              'weight':30                                                \n" +
+			    	    "           }                                                             \n" +
+			    	    "        ],                                                               \n" +
+			    	    "        'onViews':[                                                      \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'viewRef':'view3',                                         \n" +
+			    	    "              'variants':[                                               \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'B',                                 \n" +
+			    	    "                    'path':'/path/to/view3/test2.B'                      \n" +
+			    	    "                 },                                                      \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'C',                                 \n" +
+			    	    "                    'path':'/path/to/view3/test2.C'                      \n" +
+			    	    "                 }                                                       \n" +
+			    	    "              ]                                                          \n" +
+			    	    "           },                                                            \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'viewRef':'view2',                                         \n" +
+			    	    "              'isInvariant':false,                                       \n" +
+			    	    "              'variants':[                                               \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'B',                                 \n" +
+			    	    "                    'path':'/path/to/view2/test2.B'                      \n" +
+			    	    "                 },                                                      \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'C',                                 \n" +
+			    	    "                    'path':'/path/to/view2/test2.C'                      \n" +
+			    	    "                 }                                                       \n" +
+			    	    "              ]                                                          \n" +
+			    	    "           },                                                            \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'viewRef':'view4',                                         \n" +
+			    	    "              'isInvariant':true                                         \n" +
+			    	    "           }                                                             \n" +
+			    	    "        ]                                                                \n" +
+			    	    "     },                                                                  \n" +
+			    	    //--------------------------------------------------------------------------//	
+			    	    "     {                                                                   \n" +
+			    	    "        'name':'test3',                                                  \n" +  
+			    	    "        'covariantTestRefs':['test1'],                                   \n" +  
+			    	    "        'experiences':[                                                  \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'name':'A',                                                \n" +
+			    	    "              'weight':10,                                               \n" +
+			    	    "              'isControl':true                                           \n" +
+			    	    "           },                                                            \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'name':'B',                                                \n" +
+			    	    "              'weight':20                                                \n" +
+			    	    "           },                                                            \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'name':'C',                                                \n" +
+			    	    "              'weight':20                                                \n" +
+			    	    "           }                                                             \n" +
+			    	    "        ],                                                               \n" +
+			    	    "        'onViews':[                                                      \n" +
+			    	    "           {                                                             \n" +
+			    	    "              'viewRef':'view1',                                         \n" +
+			    	    "              'variants':[                                               \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'B',                                 \n" +
+			    	    "                    'path':'/path/to/view1/test3.B'                      \n" +
+			    	    "                 },                                                      \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'C',                                 \n" +
+			    	    "                    'path':'/path/to/view1/test3.C'                      \n" +
+			    	    "                 },                                                      \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'B',                                 \n" +
+			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                       {                                                 \n" +
+			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'experienceRef': 'B'                           \n" +
+			    	    "                       }                                                 \n" +
+			    	    "                     ],                                                  \n" +
+			    	    "                    'path':'/path/to/view1/test1.B+test3.B'              \n" +
+			    	    "                 },                                                      \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'B',                                 \n" +
+			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                       {                                                 \n" +
+			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'experienceRef': 'C'                           \n" +
+			    	    "                       }                                                 \n" +
+			    	    "                     ],                                                  \n" +
+			    	    "                    'path':'/path/to/view1/test1.C+test3.B'              \n" +
+			    	    "                 },                                                      \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'C',                                 \n" +
+			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                       {                                                 \n" +
+			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'experienceRef': 'B'                           \n" +
+			    	    "                       }                                                 \n" +
+			    	    "                     ],                                                  \n" +
+			    	    "                    'path':'/path/to/view1/test1.B+test3.C'              \n" +
+			    	    "                 },                                                      \n" +
+			    	    "                 {                                                       \n" +
+			    	    "                    'experienceRef':'C',                                 \n" +
+			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                       {                                                 \n" +
+			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'experienceRef': 'C'                           \n" +
+			    	    "                       }                                                 \n" +
+			    	    "                     ],                                                  \n" +
+			    	    "                    'path':'/path/to/view1/test1.C+test3.C'              \n" +
+			    	    "                 }                                                       \n" +
+			    	    "              ]                                                          \n" +
+			    	    "           }                                                             \n" +
+			    	    "        ]                                                                \n" +
+			    	    "     }                                                                   \n" +
+			    	    "  ]                                                                      \n" +
+			    	    "}                                                                         ";
+
+
+		ParserResponse response = Variant.parseSchema(SCHEMA);
+		if (response.hasErrors()) printErrors(response);
+		assertFalse(response.hasErrors());
+
+		Schema schema = Variant.getSchema();
+		View view1 = schema.getView("view1");
+		VariantJunitLogger logger = (VariantJunitLogger) Variant.getLogger();		
+		VariantSession ssn = Variant.getSession(new UserDataJunit("key1"));
+		long timestamp = System.currentTimeMillis();
+		String persisterString = timestamp + ".test2.B";
+		ssn.initTargetingPersister(new UserDataFromString(persisterString));
+		TargetingPersister tp = ssn.getTargetingPersister();
+		assertEquals(1, tp.getAll().size());
+		VariantViewRequest req = Variant.startViewRequest(ssn, view1);
+
+		// test2 is off, but TP has a variant experience for it, which will be substituted for the purposes of lookup with control.
+		assertEquals("Session [key1] recognized persisted experience [test2.B] but substituted control experience [test2.A] because test is OFF",
+				logger.get(-4).getMessage());
+		// test1 is disjoint with test2, so has to default to control.
+		assertEquals("Session [key1] targeted for test [test1] with control experience [A]",
+				logger.get(-3).getMessage());
+		// test3 is covariant with test1, so it is targeted unconstrained.
+		assertMatches("Session \\[key1\\] targeted for test \\[test3\\] with experience \\[[A,B,C]\\]",
+				logger.get(-2).getMessage());
+		// test3 is covariant with test1, so it is targeted unconstrained.
+		assertMatches("Session \\[key1\\] resolved view \\[view1\\] as \\[.*\\] for experience vector \\[test2\\.B\\,test1\\.A\\,test3\\.[A,B,C]\\]",
+				logger.get(-1).getMessage());
+		assertEquals(3, tp.getAll().size());
+		// We didn't touch test2.B entry in the TP, even though we used control for resolution.
+		assertEquals(experience("test2.B"), tp.get(schema.getTest("test2")));
+		System.out.println(req.resolvedViewPath());
+		assertMatches("/path/to/view1(/test3\\.[B,C])?", req.resolvedViewPath());
+		assertEquals(ssn, req.getSession());
+		assertEquals(view1, req.getView());
+				
 	}
 	
 }

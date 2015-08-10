@@ -39,12 +39,19 @@ public class VariantJunitLogger implements Logger {
 	private LinkedList<Entry> entries = new LinkedList<Entry>();
 	private PrintStream out;
 	
+	/**
+	 * 
+	 * @param level
+	 * @param msg
+	 * @param throwable
+	 */
 	private void addEntry(Level level, String msg, Throwable throwable) {
 		entries.add(new Entry(level, msg, throwable));
 		StringBuilder sb = new StringBuilder();
 		sb.append(level).append(": ").append(msg);
 		if (throwable != null) {
 			sb.append("\n").append(throwable.toString());
+			throwable.printStackTrace(out);
 		}
 		sb.append("\n");
 		out.println(sb.toString());
@@ -68,7 +75,8 @@ public class VariantJunitLogger implements Logger {
 		if (pos >= 0) return entries.get(pos);
 		int index = 0;
 		for (Iterator<Entry> iter = entries.descendingIterator(); iter.hasNext();) {
-			if (--index == pos) return iter.next();
+			Entry e = iter.next();
+			if (--index == pos) return e;
 		}
 		return null;
 	}

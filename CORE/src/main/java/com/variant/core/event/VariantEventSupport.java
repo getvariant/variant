@@ -1,13 +1,13 @@
 package com.variant.core.event;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.variant.core.VariantEvent;
 import com.variant.core.VariantSession;
 import com.variant.core.schema.Test;
 
@@ -17,13 +17,13 @@ import com.variant.core.schema.Test;
  * @author Igor.
  *
  */
-abstract public class BaseEvent {
+abstract public class VariantEventSupport implements VariantEvent {
 		
 	protected List<Test.Experience> experiences = new ArrayList<Test.Experience>();
-	protected Map<String, String> params = new HashMap<String, String>();
+	protected Map<String, Object> params = new HashMap<String, Object>();
 	
-	protected long id;
-	protected String sessionId;
+	protected Long id = null;
+	protected VariantSession session;
 	protected Date createDate;
 	protected Status status;
 	protected String eventName;
@@ -33,8 +33,8 @@ abstract public class BaseEvent {
 	 * Constructor
 	 * @return
 	 */
-	protected BaseEvent(VariantSession session, String eventName, String eventValue, Status status) {
-		this.sessionId = session.getId();
+	protected VariantEventSupport(VariantSession session, String eventName, String eventValue, Status status) {
+		this.session = session;
 		this.createDate = new Date();
 		this.eventName = eventName;
 		this.eventValue = eventValue;
@@ -52,73 +52,76 @@ abstract public class BaseEvent {
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-	
-	/**
-	 * Subclasses must provide a way to get to event-experiences.
-	 * @return
-	 */
-	abstract public Collection<EventExperience> getEventExperiences();
-	
-	public void setId(long id) {
-		this.id = id;
-	}
-	
-	public long getId() {
+		
+	@Override
+	public Long getId() {
 		return id;
 	}
 	
-	public String getSessionId() {
-		return sessionId;
+	@Override
+	public VariantSession getSession() {
+		return session;
 	}
 
+	@Override
 	public Date getCreateDate() {
 		return createDate;
 	}
 
+	@Override
 	public Status getStatus() {
 		return status;
 	}
 
+	@Override
 	public String getEventName() {
 		return eventName;
 	}
 
+	@Override
 	public String getEventValue() {
 		return eventValue;
 	}
 	
-	/**
-	 * Add a custom parameter as a key-value pair. Returns the old value associated with this key
-	 * if any.  See Map.put().
-	 * 
-	 * @param key
-	 * @param value
-	 * @return
-	 */
-	public String putParameter(String key, String value) {
+	@Override
+	public Object setParameter(String key, Object value) {
 		return params.put(key, value);
 	}
 	
-	/**
-	 * Get value associated with this param.  See Map.get().
-	 * @param key
-	 * @return
-	 */
-	public String getParameter(String key) {
+	@Override
+	public Object getParameter(String key) {
 		return params.get(key);
 	}
 	
-	/**
-	 * Get all parameters' keys.
-	 * @return
-	 */
+	@Override
 	public Set<String> getParameterKeys() {
 		return params.keySet();
 	}
-	
-	public static enum Status {
-		SUCCESS, 
-		EXCEPTION
+
+	//---------------------------------------------------------------------------------------------//
+	//                                        PUBLIC EXT                                           //
+	//---------------------------------------------------------------------------------------------//
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	@Override
+	public String toString() {
+		
+		return new StringBuilder()
+		.append('{')
+		.append("sessionid:'").append(session.getId()).append("', ")
+		.append("createdOn:'").append(createDate).append("', ")
+		.append("eventName:").append(eventName).append("', ")
+		.append("eventValue:").append(eventValue).append("', ")
+		.append("status:").append(status)
+		.append("}").toString();
+
 	}
 
 }

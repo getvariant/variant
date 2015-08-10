@@ -56,6 +56,7 @@ public class JdbcUtil {
 		return result;
 	}
 	
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -75,17 +76,37 @@ public class JdbcUtil {
 	}
 	
 	/**
+	 * Exception parser.
+	 * @param e
+	 * @param statement
+	 * @throws SQLException
+	 */
+	private static void parseSQLException(SQLException e, String statement) throws SQLException {
+
+		final String[] SQL_STATES_OBJECT_DOES_NOT_EXIST = 
+				VariantProperties.jdbcVendor() == JdbcService.Vendor.POSTGRES ? new String[] {"42P01"} :
+				VariantProperties.jdbcVendor() == JdbcService.Vendor.H2       ? new String[] {"42S02", "90036"} : null;
+
+		String[] tokens = statement.split(" ");
+		
+		if (VariantStringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_DOES_NOT_EXIST)) {
+			Variant.getLogger().error(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Relation Does Not Exist.");
+		}
+		else {
+			Variant.getLogger().error("SQLException: " + e.getMessage());
+			throw e;
+		}
+
+	}
+	
+	/**
 	 * Drop relational schema. Ignore the table does not exist errors.
 	 * 
 	 * @param conn
 	 * @throws Exception
 	 */
 	public static void dropSchema() throws Exception {
-		
-		final String[] SQL_STATES_OBJECT_DOES_NOT_EXIST = 
-				VariantProperties.jdbcVendor() == JdbcService.Vendor.POSTGRES ? new String[] {"42P01"} :
-				VariantProperties.jdbcVendor() == JdbcService.Vendor.H2       ? new String[] {"42S02", "90036"} : null;
-		
+				
 		List<String> statements = statementsFromResourceFile("/db/drop-schema.sql");
 		Statement jdbcStmt = getConnection().createStatement();
 
@@ -97,12 +118,8 @@ public class JdbcUtil {
 				jdbcStmt.execute(stmt);
 				Variant.getLogger().debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
 			}
-			catch (SQLException e) {				
-				System.out.println(e.getSQLState());
-				if (VariantStringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_DOES_NOT_EXIST)) {
-					Variant.getLogger().debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Relation Does Not Exist.");
-				}
-				else throw e;
+			catch (SQLException e) {
+				parseSQLException(e, stmt);
 			}
 		}
 	}
@@ -118,9 +135,14 @@ public class JdbcUtil {
 		List<String> statements = statementsFromResourceFile("/db/create-schema.sql");
 		Statement jdbcStmt = getConnection().createStatement();
 		for (String stmt: statements) {
-			jdbcStmt.execute(stmt);
-			String[] tokens = stmt.split(" ");
-			Variant.getLogger().debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
+			try {
+				jdbcStmt.execute(stmt);
+				String[] tokens = stmt.split(" ");
+				Variant.getLogger().debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
+			}
+			catch (SQLException e) {
+				parseSQLException(e, stmt);
+			}
 		}
 	}
 	

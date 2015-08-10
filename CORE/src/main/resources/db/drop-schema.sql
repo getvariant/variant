@@ -2,6 +2,10 @@ DROP TABLE events CASCADE;
 
 DROP SEQUENCE events_id_seq;
  
-DROP TABLE event_experiences;
+DROP TABLE event_experiences CASCADE;
 
 DROP TABLE event_params;
+
+DROP SEQUENCE event_experiences_id_seq;
+
+DROP TABLE event_experience_params;

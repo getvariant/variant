@@ -19,7 +19,7 @@ public interface EventPersister {
 	/**
 	 * Persist a bunch of events somewhere.
 	 */
-	public void persist(Collection<BaseEvent> events) throws Exception;
+	public void persist(Collection<VariantEventSupport> events) throws Exception;
 	
 	/**
 	 * Configurator class. Its instance is passed to the initialized() method above

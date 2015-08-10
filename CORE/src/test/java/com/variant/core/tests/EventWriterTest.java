@@ -10,11 +10,11 @@ import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.conf.VariantProperties;
-import com.variant.core.event.BaseEvent;
+import com.variant.core.event.VariantEventSupport;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
-import com.variant.core.event.ViewServeEventTestFacade;
 import com.variant.core.jdbc.JdbcUtil;
+import com.variant.core.runtime.ViewServeEventTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
 import com.variant.core.util.SessionKeyResolverJunit;
@@ -66,7 +66,7 @@ public class EventWriterTest extends BaseTest {
 	public void afterEachTest() throws Exception {
 
 		// Sleep a bit to give the event writer thread a chance to flush before JUnit kills it.
-		Thread.sleep(2000);
+		Thread.sleep(200000);
 	}
 	
 	@Test
@@ -80,14 +80,14 @@ public class EventWriterTest extends BaseTest {
 		Schema schema = Variant.getSchema();
 		com.variant.core.schema.Test test = schema.getTest("test1");
 		View view = schema.getView("view1");
-		VariantSession ssn = Variant.getSession(new SessionKeyResolverJunit.UserDataJunit("foo"));
-		ViewServeEventTestFacade event1 = new ViewServeEventTestFacade(view, ssn, BaseEvent.Status.SUCCESS, "viewResolvedPath");
-		ViewServeEventTestFacade event2 = new ViewServeEventTestFacade(view, ssn, BaseEvent.Status.SUCCESS, "viewResolvedPath");
+		VariantSession ssn = Variant.getSession(new SessionKeyResolverJunit.UserDataJunit("session-key"));
+		ViewServeEventTestFacade event1 = new ViewServeEventTestFacade(view, ssn, VariantEventSupport.Status.SUCCESS, "viewResolvedPath");
+		ViewServeEventTestFacade event2 = new ViewServeEventTestFacade(view, ssn, VariantEventSupport.Status.SUCCESS, "viewResolvedPath");
 		event1.addExperience(test.getExperience("A"));
-		event1.putParameter("event1-key1", "value1");
+		event1.setParameter("event1-key1", "value1");
 		event2.addExperience(test.getExperience("B"));
-		event2.putParameter("event2-key1", "value1");
-		event2.putParameter("event2-key2", "value2");
+		event2.setParameter("event2-key1", "value1");
+		event2.setParameter("event2-key2", "value2"); 
 		Variant.getEventWriter().write(event1);
 		Variant.getEventWriter().write(event2);
 

@@ -1,11 +1,11 @@
 package com.variant.core.tests;
 
 import java.io.InputStream;
-import java.util.Date;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
+import static org.junit.Assert.*;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
@@ -13,7 +13,6 @@ import com.variant.core.VariantTestFacade;
 import com.variant.core.conf.ApplicationProperties;
 import com.variant.core.error.ParserError;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.TargetingPersisterFromString.UserDataFromString;
 import com.variant.core.util.VariantJunitLogger;
 
 /**
@@ -78,23 +77,18 @@ public class BaseTest {
 	 * 
 	 * @param args
 	 * @return
-	 *
-	static protected UserDataFromString targetingPersisterString(Object...args) {
-		if (args.length % 2 != 0) 
-			throw new IllegalArgumentException("Must pass an even number of arguments");
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < args.length; i++) {
-			if (i % 2 == 0) {
-				// Timestamp
-				if (i > 0) result.append("|");
-				result.append(((Date)args[i]).getTime()).append(".");
-			}
-			else {
-				// Experience
-				result.append((Experience) args[i]);
-			}
-		}
-		return new UserDataFromString(result.toString());
+	 */
+	static protected void assertMatches(String pattern, String string) {
+		assertTrue(Pattern.compile(pattern).matcher(string).matches());
 	}
-	*/
+
+	/**
+	 * 
+	 * @param args
+	 * @return
+	 */
+	static protected void assertNotMatches(String pattern, String string) {
+		assertTrue(!Pattern.compile(pattern).matcher(string).matches());
+	}
+
 }

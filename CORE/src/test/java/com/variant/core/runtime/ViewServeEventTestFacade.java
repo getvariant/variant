@@ -1,6 +1,7 @@
-package com.variant.core.event;
+package com.variant.core.runtime;
 
 import com.variant.core.VariantSession;
+import com.variant.core.runtime.ViewServeEvent;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;
 
