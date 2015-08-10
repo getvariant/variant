@@ -66,7 +66,7 @@ public class EventWriterTest extends BaseTest {
 	public void afterEachTest() throws Exception {
 
 		// Sleep a bit to give the event writer thread a chance to flush before JUnit kills it.
-		Thread.sleep(200000);
+		Thread.sleep(2000);
 	}
 	
 	@Test
