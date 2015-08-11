@@ -279,7 +279,7 @@ public class Variant {
 	 * @return          
 	 * @throws VariantRuntimeException 
 	 */
-	public static VariantSession getSession(boolean create, SessionKeyResolver.UserData userData) throws VariantRuntimeException {
+	public static VariantSession getSession(boolean create, SessionKeyResolver.UserData userData) {
 		return sessionService.getSession(create, userData);
 	}
 	
@@ -292,7 +292,7 @@ public class Variant {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public static VariantSession getSession(SessionKeyResolver.UserData userData) throws VariantRuntimeException {
+	public static VariantSession getSession(SessionKeyResolver.UserData userData) {
 		return sessionService.getSession(true, userData);
 	}
 
@@ -301,26 +301,27 @@ public class Variant {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public static VariantViewRequest startViewRequest(VariantSession session, View view) throws VariantRuntimeException {
+	public static VariantViewRequest startViewRequest(VariantSession session, View view) {
 		
 		stateCheck();
-		
 		// It's caller's responsibility to init the targeting persister.
 		if (session.getTargetingPersister() == null) {
 			throw new VariantRuntimeException(ErrorTemplate.RUN_TP_NOT_INITIALIZED);
 		}
-		
-		VariantViewRequestImpl request = VariantRuntime.targetSessionForView(session, view);		
-				
-		return request;
+		return VariantRuntime.startViewRequest(session, view);
 	}
 	
 	/**
 	 * End of a view request.
 	 * @param request
 	 */
-	public static void endViewRequest(VariantViewRequest request) {
-		stateCheck();		
+	public static void commitViewRequest(VariantViewRequest request) {
+
+		stateCheck();
+		if (((VariantViewRequestImpl)request).isCommitted()) {
+			throw new IllegalStateException("Request already committed");
+		}
+		VariantRuntime.commitViewRequest(request);
 	}
 	
 	/**

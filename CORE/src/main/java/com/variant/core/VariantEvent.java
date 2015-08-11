@@ -50,6 +50,12 @@ public interface VariantEvent {
 	public Status getStatus();
 
 	/**
+	 * Set event's completion status.  Optional.
+	 * @param status
+	 */
+	public void setStatus(Status status);
+	
+	/**
 	 * Subclasses must provide a way to get to event-experiences.
 	 * @return
 	 */

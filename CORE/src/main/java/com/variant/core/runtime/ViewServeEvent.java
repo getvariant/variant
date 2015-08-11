@@ -8,6 +8,7 @@ import com.variant.core.VariantEventExperience;
 import com.variant.core.VariantSession;
 import com.variant.core.event.VariantEventSupport;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
 
 
@@ -21,8 +22,8 @@ public class ViewServeEvent extends VariantEventSupport {
 	/**
 	 * New constructor
 	 */
-	ViewServeEvent(View view, VariantSession session, Status status, String viewResolvedPath) {
-		super(session, EVENT_NAME, view.getName(), status);
+	ViewServeEvent(View view, VariantSession session, String viewResolvedPath, Collection<Experience> experiences) {
+		super(session, EVENT_NAME, view.getName(), experiences);
 		this.view = view;
 		setParameter(PARAM_NAME_VIEW_RESOLVED_PATH, viewResolvedPath);
 

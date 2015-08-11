@@ -88,7 +88,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getEventName());
 						stmt.setString(4, event.getEventValue());
-						stmt.setInt(5, event.getStatus().ordinal());
+						JdbcUtil.setNullableInt(stmt, 5, event.getStatus() == null ? null : event.getStatus().ordinal());
 
 						stmt.addBatch();
 					}

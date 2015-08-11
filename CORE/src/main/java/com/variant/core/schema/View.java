@@ -26,9 +26,8 @@ public interface View {
 
 	/**
 	 * Get all tests instrumented on this view.  Includes both, tests
-	 * that instrument this view regularly or as an invariant.  In other
-	 * words, for each test T returned in this list,
-	 * <code>isInvariant(T)</code> is guaranteed to return true;
+	 * that have variants on this view as well as those where this
+	 * view is invariant invariant.
 	 * 
 	 * @return list of tests in ordinal order
 	 */

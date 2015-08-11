@@ -1,5 +1,6 @@
 package com.variant.core;
 
+import com.variant.core.runtime.ViewServeEvent;
 import com.variant.core.schema.View;
 
 /**
@@ -27,4 +28,10 @@ public interface VariantViewRequest {
 	 * @return
 	 */
 	public String resolvedViewPath();
+	
+	/**
+	 * View serve event associated with this view request
+	 * @return
+	 */
+	public ViewServeEvent getViewServeEvent();
 }

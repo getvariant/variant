@@ -5,9 +5,8 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.variant.core.runtime.VariantSpace;
-import com.variant.core.schema.Test;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.Test;
 import com.variant.core.schema.View;
 
 /**

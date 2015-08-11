@@ -2,10 +2,9 @@ package com.variant.core.runtime;
 
 import java.util.Collection;
 
-import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
-import com.variant.core.session.TargetingPersister;
 
 public class VariantRuntimeTestFacade {
 	

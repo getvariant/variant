@@ -16,6 +16,8 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	private VariantSessionImpl session;
 	private View view;
 	private String resolvedPath;
+	private ViewServeEvent event;
+	private boolean committed = false;
 	
 	/**
 	 * 
@@ -24,6 +26,10 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	VariantViewRequestImpl(VariantSessionImpl session, ViewImpl view) {
 		this.session = session;
 		this.view = view;
+	}
+
+	void setViewServeEvent(ViewServeEvent event) {
+		this.event = event;
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -48,12 +54,35 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 		return resolvedPath;
 	}
 
+	@Override
+	public ViewServeEvent getViewServeEvent() {
+		return event;
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
 
+	/**
+	 * 
+	 * @param path
+	 */
 	public void setResolvedPath(String path) {
 		this.resolvedPath = path;
 	}
 
+	/**
+	 * 
+	 */
+	public void commit() {
+		committed = true;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean isCommitted() {
+		return committed;
+	}
 }

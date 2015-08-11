@@ -1,15 +1,15 @@
 package com.variant.core.event;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.variant.core.VariantEvent;
+import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 
 /**
  * EVENTS DAO.
@@ -19,7 +19,7 @@ import com.variant.core.schema.Test;
  */
 abstract public class VariantEventSupport implements VariantEvent {
 		
-	protected List<Test.Experience> experiences = new ArrayList<Test.Experience>();
+	protected Collection<Experience> experiences;
 	protected Map<String, Object> params = new HashMap<String, Object>();
 	
 	protected Long id = null;
@@ -33,21 +33,15 @@ abstract public class VariantEventSupport implements VariantEvent {
 	 * Constructor
 	 * @return
 	 */
-	protected VariantEventSupport(VariantSession session, String eventName, String eventValue, Status status) {
+	protected VariantEventSupport(VariantSession session, String eventName, String eventValue, Collection<Experience> experiences) {
 		this.session = session;
 		this.createDate = new Date();
 		this.eventName = eventName;
 		this.eventValue = eventValue;
-		this.status = status;
+		if (experiences.size() == 0) throw new VariantInternalException("Must pass at least one experience");
+		this.experiences = experiences;
 	}
 
-	/**
-	 * 
-	 * @param experience
-	 */
-	protected void addExperience(Test.Experience experience) {
-		experiences.add(experience);
-	}
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -71,6 +65,11 @@ abstract public class VariantEventSupport implements VariantEvent {
 	@Override
 	public Status getStatus() {
 		return status;
+	}
+
+	@Override
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 
 	@Override

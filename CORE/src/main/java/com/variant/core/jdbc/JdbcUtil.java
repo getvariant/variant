@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -159,4 +161,15 @@ public class JdbcUtil {
 		
 	}
 
+	/**
+	 * Set nullable Integter
+	 * @param statement
+	 * @param pos
+	 * @param value
+	 * @throws SQLException 
+	 */
+	public static void setNullableInt(PreparedStatement statement, int index, Integer value) throws SQLException {
+		if (value == null) statement.setNull(index, Types.INTEGER);
+		else statement.setInt(index, value);
+	}
 }

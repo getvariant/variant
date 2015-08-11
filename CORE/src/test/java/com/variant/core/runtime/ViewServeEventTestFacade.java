@@ -1,8 +1,9 @@
 package com.variant.core.runtime;
 
+import java.util.Collection;
+
 import com.variant.core.VariantSession;
-import com.variant.core.runtime.ViewServeEvent;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
 
 /**
@@ -19,13 +20,9 @@ public class ViewServeEventTestFacade extends ViewServeEvent {
 	 * @param status
 	 * @param viewResolvedPath
 	 */
-	public ViewServeEventTestFacade(View view, VariantSession session, Status status, String viewResolvedPath) {
+	public ViewServeEventTestFacade(View view, VariantSession session, String viewResolvedPath, Collection<Experience> experiences) {
 
-		super(view, session, status, viewResolvedPath);
+		super(view, session, viewResolvedPath, experiences);
 	}
 
-	@Override
-	public void addExperience(Test.Experience experience) {
-		super.addExperience(experience);
-	}
 }

@@ -6,16 +6,17 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.regex.Pattern;
 
 import org.junit.BeforeClass;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
+import com.variant.core.VariantEventExperience;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.runtime.VariantRuntimeTestFacade;
+import com.variant.core.runtime.ViewServeEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -1121,7 +1122,23 @@ public class VariantRuntimeTest extends BaseTest {
 		assertMatches("/path/to/view1(/test3\\.[B,C])?", req.resolvedViewPath());
 		assertEquals(ssn, req.getSession());
 		assertEquals(view1, req.getView());
-				
+		
+		// View Serve Event.
+		ViewServeEvent event = req.getViewServeEvent();
+		assertEquals(2, event.getEventExperiences().size());
+		int index = 0;
+		for (VariantEventExperience ee: event.getEventExperiences()) {
+			if (index == 0) {
+				assertEquals(experience("test1.A"), ee.getExperience());
+			}
+			else if (index == 1) {
+				assertEqualsMulti(ee.getExperience(), experience("test3.A"), experience("test3.B"), experience("test3.C"));
+			}
+			else {
+				assertTrue(false);
+			}
+			index++;
+		}
 	}
 	
 }

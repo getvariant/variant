@@ -1,11 +1,12 @@
 package com.variant.core.tests;
 
+import static org.junit.Assert.assertTrue;
+
 import java.io.InputStream;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import org.junit.Before;
-import static org.junit.Assert.*;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
@@ -91,4 +92,19 @@ public class BaseTest {
 		assertTrue(!Pattern.compile(pattern).matcher(string).matches());
 	}
 
+	/**
+	 * Succeeds if first argument equals to one of the following arguments.
+	 * @param actual
+	 * @param expected
+	 */
+	static protected void assertEqualsMulti(Object actual, Object...expected) {
+		boolean result = false;
+		for (Object e: expected) {
+			if (actual.equals(e)) {
+				result = true;
+				break;
+			}
+		}
+		assertTrue(result);
+	}
 }

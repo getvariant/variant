@@ -3,13 +3,13 @@ package com.variant.core.runtime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
+import com.variant.core.VariantViewRequest;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -34,7 +34,6 @@ public class VariantRuntime {
 	 * Need package visibility for test facade.
 	 */
 	private VariantRuntime() {}
-	
 	
 	/**
 	 * Target this session for all active tests.
@@ -61,7 +60,7 @@ public class VariantRuntime {
 	 * @param config
 	 * @param viewPath
 	 */
-	public static VariantViewRequestImpl targetSessionForView(VariantSession ssn, View view) {
+	private static String targetSessionForView(VariantSession ssn, View view) {
 
 		Schema schema = Variant.getSchema();
 		TargetingPersister tp = ssn.getTargetingPersister();
@@ -143,9 +142,7 @@ public class VariantRuntime {
 				}
 			}
 		}
-		
-		VariantViewRequestImpl result = new VariantViewRequestImpl((VariantSessionImpl)ssn, (ViewImpl) view);
-		
+				
 		// TP may still contain non-control experiences for OFF tests, if they were in the persister at the top
 		// of this method and did not get reduced out due to non-resolvability.  Before resolving the view path,
 		// we substitute them with control.
@@ -154,18 +151,8 @@ public class VariantRuntime {
 			vector.add(e.getTest().isOn() ? e : e.getTest().getControlExperience());
 		}
 		
-		String resolvedPath = resolveViewPath(view, vector);
+		return resolveViewPath(view, vector);
 		
-		if (Variant.getLogger().isTraceEnabled()) {
-			Variant.getLogger().trace(
-					"Session [" + ssn.getId() + "] resolved view [" + 
-					view.getName() +"] as [" + resolvedPath + "] for experience vector [" +
-					StringUtils.join(tp.getAll().toArray(), ",") + "]");
-		}   
-
-		result.setResolvedPath(resolvedPath);
-
-		return result;
 	}
 
 	/**
@@ -343,39 +330,61 @@ public class VariantRuntime {
 	}
 
 	/**
-	 * A list of tests co-varaint with a given test.  This is different from <code>Test.getCovariantTests()</code>
-	 * because each test returned by this method is either mentioned in the given test's covariantTestRefs
-	 * (and hence will also be returned by <code>Test.getCovariantTests()</code>), or mentions this test in its 
-	 * covarainttestRefs. In other words, relationship of covariance is commutative: if A is covariant with B, 
-	 * then B is also covariant with A, and this method computes and returns closure over this relationship.
-     *
-	 * *** DOESN'T LOOK LIKE THIS IS NEEDED. Remove TestImpl.get/putRuntimeAttribute() as well ***
-	@SuppressWarnings("unchecked")
-	public static List<TestImpl> getCovariantTests(Test test) {
-
-		Schema schema = Variant.getSchema();
-				
-		// This is called on each view hit, so we cache it inside the test object.
-		Object cachedResult = ((TestImpl)test).getRuntimeAttribute("fullCovarList");
-		if (cachedResult == null) { 
-			List<Test> newResult = new ArrayList<Test>();
-			newResult.addAll(test.getCovariantTests());
-			// 2. Any other test whose covariance list contains this test.
-			for (Test other: schema.getTests()) {
-				if (other.equals(test)) continue;
-				for (Test otherCovar: other.getCovariantTests()) {
-					if (otherCovar.equals(test)) {
-						newResult.add(other);
-						break;
-					}
-				}
-			}
-			((TestImpl)test).putRuntimeAttribute("fullCovarList", newResult);
-			cachedResult = newResult;
-		}
+	 * Experiences that are targeted for active tests.
+	 * @param view
+	 * @return
+	 */
+	private static Collection<Experience> getTargetedExperiences(VariantSession ssn, View view) {
 		
-		return (List<TestImpl>) Collections.unmodifiableList((List<TestImpl>)cachedResult);
+		ArrayList<Experience> result = new ArrayList<Experience>();
+		for (Test test: view.getInstrumentedTests()) {
+			if (!test.isOn()) continue;
+			Experience e = ssn.getTargetingPersister().get(test);
+			if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found.");
+			result.add(e);
+		}
+		return result;
 	}
-	*/
 	
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 * Implementation of <code>Variant.startViewRequest()</code>
+	 * @param ssn
+	 * @param view
+	 * @return
+	 */
+	public static VariantViewRequestImpl startViewRequest(VariantSession ssn, View view) {
+
+		// Resolve the path and get all tests instrumented on the given view targeted.
+		String resolvedPath = targetSessionForView(ssn, view);		
+		VariantViewRequestImpl result = new VariantViewRequestImpl((VariantSessionImpl)ssn, (ViewImpl) view);
+		result.setResolvedPath(resolvedPath);
+		
+		if (Variant.getLogger().isTraceEnabled()) {
+			Variant.getLogger().trace(
+					"Session [" + ssn.getId() + "] resolved view [" + 
+					view.getName() +"] as [" + resolvedPath + "] for experience vector [" +
+					StringUtils.join(ssn.getTargetingPersister().getAll().toArray(), ",") + "]");
+		}   
+		
+		// Create the view serve event.
+		ViewServeEvent event = new ViewServeEvent(view, ssn, resolvedPath, getTargetedExperiences(ssn, view));
+		result.setViewServeEvent(event);
+		
+		return result;
+
+	}
+	
+	/**
+	 * Complete a view request.
+	 * 1. Write the events.
+	 * @param request
+	 */
+	public static void commitViewRequest(VariantViewRequest request) {
+		Variant.getEventWriter().write(request.getViewServeEvent());
+		((VariantViewRequestImpl)request).commit();
+	}
 }
