@@ -2,7 +2,6 @@ package com.variant.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -10,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.conf.RuntimeService;
+import com.variant.core.conf.VariantProperties;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
 import com.variant.core.event.EventPersister;
@@ -71,12 +71,13 @@ public class Variant {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Container bootstrap from an InputStream.
+	 * Container bootstrap with default settings.
 	 * 
 	 * @param config
+	 * @throws VariantBootstrapException 
 	 */
-	public static void bootstrap(InputStreamReader config) {
-		throw new UnsupportedOperationException();
+	public static void bootstrap() throws VariantBootstrapException {
+		bootstrap(new Config());
 	}
 	
 	/**
@@ -94,35 +95,37 @@ public class Variant {
 
 		long now = System.currentTimeMillis();
 		
+		if (logger.isDebugEnabled()) {
+			logger.debug("Bootstrapping Variant with following system properties:");
+			for (VariantProperties.Keys key: VariantProperties.Keys.values()) {
+				logger.debug("  " + key.propName() + " = " + key.propValue());
+			}
+		}
+			
 		//
 		// Instantiate event persister.
 		//
-		if (config.eventPersisterClassName == null) {
-			throw new IllegalArgumentException("Property [eventPersisterClassName] must be set");
+		String eventPersisterClassName = config.getEventPersisterConfig().getEventPersisterClassName();
+		if (eventPersisterClassName == null) {
+			throw new VariantRuntimeException(ErrorTemplate.RUN_PROPERTY_NOT_SET, VariantProperties.Keys.EVENT_PERSISTER_CLASS_NAME.propName());
 		}
 		
 		EventPersister eventPersister = null;
 		try {
-			Object eventPersisterObject = Class.forName(config.eventPersisterClassName).newInstance();
+			Object eventPersisterObject = Class.forName(eventPersisterClassName).newInstance();
 			if (eventPersisterObject instanceof EventPersister) {
 				eventPersister = (EventPersister) eventPersisterObject;
 			}
 			else {
 				throw new VariantBootstrapException(
-						"Event persister class [" + 
-				config.eventPersisterClassName + 
-				"] must implement interface [" +
-				EventPersister.class.getName()
-				);
+						"Event persister class [" + eventPersisterClassName + "] must implement interface [" + EventPersister.class.getName());
 			}
 		}
 		catch (Exception e) {
 			throw new VariantBootstrapException(
-					"Unable to instantiate event persister class [" + config.eventPersisterClassName +"]",
-					e
-			);
+					"Unable to instantiate event persister class [" + config.getEventPersisterConfig().getEventPersisterClassName() +"]", e);
 		}
-		
+				
 		// Instantiate event writer.
 		eventWriter = new EventWriter(config.eventWriterConfig, eventPersister);
 		
@@ -348,8 +351,8 @@ public class Variant {
 	 */
 	public static class Config {
 		
-		// Default is in-memory H2.
-		private String eventPersisterClassName = "com.variant.core.ext.EventPersisterH2";
+		// Defaults from system properties.
+		// May still be manipulated programmatically via setters.
 		private EventPersister.Config eventPersisterConfig = new EventPersister.Config();
 		private TargetingPersister.Config targetingPersisterConfig = new TargetingPersister.Config();
 		private EventWriter.Config eventWriterConfig = new EventWriter.Config();
@@ -359,23 +362,7 @@ public class Variant {
 		 * Default values.
 		 */
 		public Config() {}
-		
-		/**
-		 * 
-		 * @param eventPersisterClassName
-		 */
-		public void setEventPersisterClassName(String eventPersisterClassName) {
-			this.eventPersisterClassName = eventPersisterClassName;
-		}
-
-		/**
-		 * 
-		 * @return
-		 */
-		public String getEventPersisterClassName() {
-			return eventPersisterClassName;
-		}
-		
+				
 		/**
 		 * 
 		 * @return

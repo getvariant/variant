@@ -46,17 +46,17 @@ abstract public class EventPersisterJdbc implements EventPersister {
 		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
 			    "(id, session_id, created_on, event_name, event_value, status) " +
-				(VariantProperties.jdbcVendor() == JdbcService.Vendor.POSTGRES ?
+				(getVendor() == Vendor.POSTGRES ?
 						"VALUES (NEXTVAL('events_id_seq'), ?, ?, ?, ?, ?)" :
-				VariantProperties.jdbcVendor() == JdbcService.Vendor.H2 ?
+				getVendor() == Vendor.H2 ?
 						"VALUES (events_id_seq.NEXTVAL, ?, ?, ?, ?, ?)" : "");
 
 		final String INSERT_EVENT_EXPERIENCES_SQL = 
 				"INSERT INTO event_experiences " +
 			    "(id, event_id, test_name, experience_name, is_control) " +
-				(VariantProperties.jdbcVendor() == JdbcService.Vendor.POSTGRES ?
+				(getVendor() == Vendor.POSTGRES ?
 						"VALUES (NEXTVAL('event_experiences_id_seq'), ?, ?, ?, ?)" :
-				VariantProperties.jdbcVendor() == JdbcService.Vendor.H2 ?
+				getVendor() == Vendor.H2 ?
 						"VALUES (event_experiences_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
 
 		final String INSERT_EVENT_PARAMETERS_SQL = 
@@ -196,6 +196,32 @@ abstract public class EventPersisterJdbc implements EventPersister {
 		);
 		
 	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Vendor getVendor() {
+		// Figure out the JDBC vendor, if we can.
+		if (this instanceof com.variant.core.ext.EventPersisterPostgres) {
+			return Vendor.POSTGRES;
+		}
+		else if (this instanceof com.variant.core.ext.EventPersisterH2) {
+			return Vendor.H2;
+		}
+		else return null;
+	}
 	
+	/**
+	 * 
+	 * @author noneofyourbusiness
+	 *
+	 */
+	public static enum Vendor {
+		POSTGRES,
+		H2
+	}
+	
+
 
 }

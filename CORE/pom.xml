@@ -16,7 +16,7 @@
     <artifactId>variant-core</artifactId>
     <name>Variant core lib</name>
     <packaging>jar</packaging>
-    <groupId>com.variant.core</groupId>
+    <groupId>com.variant</groupId>
     <version>${variant.version}</version>
     
     <dependencies>

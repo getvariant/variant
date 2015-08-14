@@ -7,14 +7,13 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
-import org.junit.BeforeClass;
-
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantEventExperience;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
+import com.variant.core.ext.SessionKeyResolverSample.UserDataSample;
 import com.variant.core.runtime.VariantRuntimeTestFacade;
 import com.variant.core.runtime.ViewServeEvent;
 import com.variant.core.schema.Schema;
@@ -23,7 +22,6 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.session.TargetingPersisterFromString.UserDataFromString;
-import com.variant.core.util.SessionKeyResolverJunit.UserDataJunit;
 import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantJunitLogger;
 
@@ -32,20 +30,6 @@ import com.variant.core.util.VariantJunitLogger;
  * @author Igor
  */
 public class VariantRuntimeTest extends BaseTest {
-
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	@BeforeClass
-	public static void beforeTestCase() throws Exception {
-
-		// Bootstrap the Variant container with defaults.
-		Variant.Config variantConfig = new Variant.Config();
-		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.core.util.SessionKeyResolverJunit");
-		Variant.bootstrap(variantConfig);
-
-	}
 
 	/**
 	 * 
@@ -1095,7 +1079,7 @@ public class VariantRuntimeTest extends BaseTest {
 		Schema schema = Variant.getSchema();
 		View view1 = schema.getView("view1");
 		VariantJunitLogger logger = (VariantJunitLogger) Variant.getLogger();		
-		VariantSession ssn = Variant.getSession(new UserDataJunit("key1"));
+		VariantSession ssn = Variant.getSession(new UserDataSample("key1"));
 		long timestamp = System.currentTimeMillis();
 		String persisterString = timestamp + ".test2.B";
 		ssn.initTargetingPersister(new UserDataFromString(persisterString));

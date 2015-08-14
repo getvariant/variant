@@ -10,7 +10,7 @@ import java.util.ArrayList;
  *
  */
 public class JdbcService {
-
+	
 	/**
 	 * SQLException has its own stacking paradigm and log4j cannot unwind it.
 	 * @param e
@@ -38,11 +38,6 @@ public class JdbcService {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	public static enum Vendor {
-		POSTGRES,
-		H2
-	}
-	
 	/**
 	 * A Query JDBC operation.
 	 * @author Igor

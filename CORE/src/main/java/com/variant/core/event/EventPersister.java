@@ -2,6 +2,8 @@ package com.variant.core.event;
 
 import java.util.Collection;
 
+import com.variant.core.conf.VariantProperties;
+
 /**
  * 
  * @author Igor
@@ -30,14 +32,25 @@ public interface EventPersister {
 		
 		private Object[] userArgs = null;
 		
-		private String jdbcUrl = null;
-		private String jdbcUser = null;
-		private String jdbcPassword = null;
+		// Defaults from system props.
+		// May still be manipulated programmatically via setters.
+		private String eventPersisterClassName = VariantProperties.eventPersisterClassName();
+		private String jdbcUrl = VariantProperties.eventPersisterJdbcUrl();
+		private String jdbcUser = VariantProperties.eventPersisterJdbcUser();
+		private String jdbcPassword = VariantProperties.eventPersisterJdbcPassword();
 		
 		public Config () {}
 		
 		public Object[] getUserArgs() {
 			return userArgs;
+		}
+
+		public void setEventPersisterClassName(String eventPersisterClassName) {
+			this.eventPersisterClassName = eventPersisterClassName;
+		}
+
+		public String getEventPersisterClassName() {
+			return eventPersisterClassName;
 		}
 
 		public void setUserArgs(Object[] userArgs) {

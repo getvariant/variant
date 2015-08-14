@@ -9,6 +9,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
+import com.variant.core.conf.VariantProperties;
 
 public class EventWriter {
 	
@@ -65,9 +66,9 @@ public class EventWriter {
 	public static class Config {
 		
 		// Defaults
-		private int bufferSize = 1000;
-		private int pctFull = 90;
-		private long maxPersisterIntervalMillis = 30 * 1000;
+		private int bufferSize = VariantProperties.getEventWriterBufferSize();
+		private int pctFull = VariantProperties.getEventWriterPercentFull();
+		private long maxPersisterIntervalMillis = VariantProperties.getEventWriterMaxDelayMillis();
 		
 		public Config() {}
 		

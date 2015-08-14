@@ -1,0 +1,14 @@
+#
+# Base properties for JUnit Tests. May be overridden in local-test.properties
+#
+
+# Postgres Event Persister
+event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
+event.persister.jdbc.vendor = postgres
+event.persister.jdbc.url = jdbc:postgresql://localhost/variant
+event.persister.jdbc.user = variant
+event.persister.jdbc.password = variant
+
+event.writer.buffer.size = 10
+event.writer.max.delay.millis = 100
+		

@@ -30,21 +30,6 @@ import com.variant.core.util.VariantCollectionsUtils;
  */
 public class ParserCovariantOkay3Test extends BaseTest {
 	
-
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	@Before
-	public void beforeEachTest() throws Exception {
-
-		// Bootstrap the Variant container with defaults.
-		Variant.Config variantConfig = new Variant.Config();
-		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.core.util.SessionKeyResolverJunit");
-		Variant.bootstrap(variantConfig);
-
-	}
-
 	/**
 	 * 
 	 */

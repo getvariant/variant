@@ -1,5 +1,7 @@
 package com.variant.core.error;
 
+import com.variant.core.conf.VariantProperties;
+
 
 /**
  * The immutable, uncontextualized part of the error.
@@ -88,8 +90,8 @@ public enum ErrorTemplate {
 	//------------------------------------------------------------------------------------------------------------------------//
 	
 	RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST                    (Severity.ERROR, "View [%s] is not instrumented for test [%s]"), ///
-	//RUN_NO_VIEW_FOR_PATH                                  (Severity.ERROR, "No view matches path [%s]"),
 	RUN_TP_NOT_INITIALIZED                                (Severity.ERROR, "Targeting persister is not initialized"),
+	RUN_PROPERTY_NOT_SET                                  (Severity.ERROR, "Property [%s] must be set"),
 	
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                   GENERAL ERRORS                                                       //

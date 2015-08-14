@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.Random;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.variant.core.ParserResponse;
@@ -19,19 +18,6 @@ public class TargetingTest extends BaseTest {
 
 	static final int TRIALS = 5000000;
 	static final float DELTA_AS_FRACTION = .01f;
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	@BeforeClass
-	public static void beforeTestCase() throws Exception {
-
-		// Bootstrap the Variant container with defaults.
-		Variant.Config variantConfig = new Variant.Config();
-		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.core.util.SessionKeyResolverJunit");
-		Variant.bootstrap(variantConfig);
-
-	}
 
 	/**
 	 * Basic targeting
@@ -178,7 +164,6 @@ public class TargetingTest extends BaseTest {
 			else if (e.getName().equals("B")) counts[1]++;
 			else if (e.getName().equals("C")) counts[2]++;
 		} 
-		System.out.println(counts[0] + " " + counts[1] + " " +counts[2]);
 		verifyCounts(counts, new float[] {50, 25, 25});
 
 	}

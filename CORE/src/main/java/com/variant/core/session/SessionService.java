@@ -3,6 +3,7 @@ package com.variant.core.session;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantRuntimeException;
 import com.variant.core.VariantSession;
+import com.variant.core.conf.VariantProperties;
 import com.variant.core.error.ErrorTemplate;
 
 public class SessionService {
@@ -80,7 +81,7 @@ public class SessionService {
 
 		// Defaults
 		SessionStore.Type type = SessionStore.Type.LOCAL;
-		String keyResolverClassName = null;
+		String keyResolverClassName = VariantProperties.getSessionKeyResolverClassName();
 
 		public void setSessionStoreType(SessionStore.Type type) {
 			this.type = type;

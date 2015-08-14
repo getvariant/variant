@@ -7,13 +7,17 @@ import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantTestFacade;
-import com.variant.core.conf.ApplicationProperties;
+import com.variant.core.conf.VariantProperties;
 import com.variant.core.error.ParserError;
+import com.variant.core.jdbc.EventPersisterJdbc;
+import com.variant.core.jdbc.JdbcUtil;
 import com.variant.core.schema.Test.Experience;
+import com.variant.core.util.PropertiesChain;
 import com.variant.core.util.VariantJunitLogger;
 
 /**
@@ -22,6 +26,29 @@ import com.variant.core.util.VariantJunitLogger;
 
 public class BaseTest {
 	
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	@BeforeClass
+	public static void beforeTestCase() throws Exception {
+
+		// Bootstrap the Variant container
+		VariantProperties.overrideFromResource("/variant-junit.props");
+		Variant.bootstrap();
+
+		// (Re)create the schema;
+		switch (((EventPersisterJdbc)Variant.getEventWriter().getEventPersister()).getVendor()) {
+		case POSTGRES: 
+			JdbcUtil.recreateSchema();
+			break;
+		case H2:
+			JdbcUtil.createSchema();  // Fresh in-memory DB.
+			break;
+		}
+
+	}
+
 	/**
 	 * 
 	 * @throws Exception
@@ -57,7 +84,7 @@ public class BaseTest {
 	 * @return
 	 */
 	static protected InputStream openResourceAsInputStream(String name) {
-		InputStream result = ApplicationProperties.class.getResourceAsStream(name);
+		InputStream result = PropertiesChain.class.getResourceAsStream(name);
 		if (result == null) {
 			throw new RuntimeException("Classpath resource '" + name + "' does not exist.");
 		}

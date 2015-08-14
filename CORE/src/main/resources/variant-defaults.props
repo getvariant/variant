@@ -1,0 +1,34 @@
+#
+# Copyright Variant, Inc. All Rights Reserved.
+#
+# Default values for all Variant system properties.
+#
+
+#
+# Event Writer config
+#
+# Max number of events held in memory queue 
+event.writer.buffer.size = 1000
+# Percent of buffer size that will trigger a flush.
+event.writer.percent.full = 90
+# Max number of milliseconds since last flush that will trigger a flush even
+# if pct full has not been reached.
+event.writer.max.delay.millis = 30000
+
+# Event Persister (H2 in memory)
+event.persister.class.name = com.variant.core.ext.EventPersisterH2
+event.persister.jdbc.url = jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;
+event.persister.jdbc.user = variant
+event.persister.jdbc.password = variant
+
+# Event Persister (Postgres on Disk)
+# event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
+# event.persister.jdbc.url = jdbc:postgresql://localhost/variant
+# event.persister.jdbc.user = variant
+# event.persister.jdbc.password = variant
+
+# Number of days targeting persister will honor an idle experience. (0 => forever)
+targeting.persister.idle.days.to.live = 0
+
+# Session key resolver implementation class name.
+session.key.resolver.class.name = com.variant.core.ext.SessionKeyResolverSample

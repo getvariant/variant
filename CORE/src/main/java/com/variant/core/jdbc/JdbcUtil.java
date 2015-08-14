@@ -15,6 +15,7 @@ import java.util.List;
 import com.variant.core.Variant;
 import com.variant.core.conf.VariantProperties;
 import com.variant.core.event.EventPersister;
+import com.variant.core.jdbc.EventPersisterJdbc.Vendor;
 import com.variant.core.util.VariantStringUtils;
 
 
@@ -85,9 +86,11 @@ public class JdbcUtil {
 	 */
 	private static void parseSQLException(SQLException e, String statement) throws SQLException {
 
+		EventPersisterJdbc.Vendor vendor = ((EventPersisterJdbc)Variant.getEventWriter().getEventPersister()).getVendor();
+		
 		final String[] SQL_STATES_OBJECT_DOES_NOT_EXIST = 
-				VariantProperties.jdbcVendor() == JdbcService.Vendor.POSTGRES ? new String[] {"42P01"} :
-				VariantProperties.jdbcVendor() == JdbcService.Vendor.H2       ? new String[] {"42S02", "90036"} : null;
+				vendor == Vendor.H2 ? new String[] {"42P01"} :
+				vendor == Vendor.H2       ? new String[] {"42S02", "90036"} : null;
 
 		String[] tokens = statement.split(" ");
 		

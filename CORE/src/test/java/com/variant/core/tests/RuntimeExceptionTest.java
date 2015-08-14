@@ -18,19 +18,6 @@ import com.variant.core.schema.View;
 public class RuntimeExceptionTest extends BaseTest {
 	
 	/**
-	 * 
-	 * @throws Exception
-	 */
-	@BeforeClass
-	public static void beforeTestCase() throws Exception {
-		
-		// Bootstrap the Variant container with defaults.
-		Variant.Config variantConfig = new Variant.Config();
-		variantConfig.getSessionServiceConfig().setKeyResolverClassName("com.variant.core.util.SessionKeyResolverJunit");
-		Variant.bootstrap(variantConfig);
-	}
-
-	/**
 	 * RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST
 	 */
 	@Test

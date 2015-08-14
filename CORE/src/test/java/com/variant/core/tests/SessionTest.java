@@ -7,35 +7,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantSession;
+import com.variant.core.ext.SessionKeyResolverSample.UserDataSample;
 import com.variant.core.schema.Schema;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.session.TargetingPersisterFromString.UserDataFromString;
-import com.variant.core.util.SessionKeyResolverJunit.UserDataJunit;
 import com.variant.core.util.VariantJunitLogger;
 
 public class SessionTest extends BaseTest {
-
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	@BeforeClass
-	public static void beforeTestCase() throws Exception {
-		
-		// Bootstrap the Variant container with all defaults
-		// and a simple session key resolver.
-		Variant.Config config = new Variant.Config();
-		config.getSessionServiceConfig().setKeyResolverClassName("com.variant.core.util.SessionKeyResolverJunit");
-		Variant.bootstrap(config);
-		
-	}
 
 	/**
 	 * 
@@ -43,17 +27,17 @@ public class SessionTest extends BaseTest {
 	@Test
 	public void sessionCreationTest() throws VariantBootstrapException {
 		
-		assertNull(Variant.getSession(false, new UserDataJunit("foo")));
-		VariantSession bar = Variant.getSession(true, new UserDataJunit("bar"));
+		assertNull(Variant.getSession(false, new UserDataSample("foo")));
+		VariantSession bar = Variant.getSession(true, new UserDataSample("bar"));
 		assertNotNull(bar);
 		
-		VariantSession bar2 = Variant.getSession(false, new UserDataJunit("bar"));
+		VariantSession bar2 = Variant.getSession(false, new UserDataSample("bar"));
 		assertEquals(bar, bar2);
 		
-		bar2 = Variant.getSession(true, new UserDataJunit("bar"));
+		bar2 = Variant.getSession(true, new UserDataSample("bar"));
 		assertEquals(bar, bar2);
 
-		bar2 = Variant.getSession(new UserDataJunit("bar"));
+		bar2 = Variant.getSession(new UserDataSample("bar"));
 		assertEquals(bar, bar2);
 	}
 	
@@ -70,7 +54,7 @@ public class SessionTest extends BaseTest {
 		Schema schema = Variant.getSchema();
 		VariantJunitLogger logger = (VariantJunitLogger) Variant.getLogger();
 		
-		VariantSession ssn = Variant.getSession(new UserDataJunit("key1"));
+		VariantSession ssn = Variant.getSession(new UserDataSample("key1"));
 		long timestamp = System.currentTimeMillis();
 		
 		// 
