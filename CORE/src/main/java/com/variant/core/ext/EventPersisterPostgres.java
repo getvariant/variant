@@ -16,10 +16,10 @@ public class EventPersisterPostgres extends EventPersisterJdbc {
 	@Override
 	public Connection getJdbcConnection() throws ClassNotFoundException, SQLException {
 	
-		String url = VariantProperties.eventPersisterJdbcUrl();
+		String url = VariantProperties.getInstance().eventPersisterJdbcUrl();
 		Properties props = new Properties();
-		props.setProperty("user", VariantProperties.eventPersisterJdbcUser());
-		props.setProperty("password", VariantProperties.eventPersisterJdbcPassword());
+		props.setProperty("user", VariantProperties.getInstance().eventPersisterJdbcUser());
+		props.setProperty("password", VariantProperties.getInstance().eventPersisterJdbcPassword());
 		return DriverManager.getConnection(url, props);		
 	}
 

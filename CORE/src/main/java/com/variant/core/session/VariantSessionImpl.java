@@ -65,7 +65,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	public void initTargetingPersister(UserData... userData) throws VariantBootstrapException {
 
 		
-		String className = VariantProperties.targetingPersisterClassName();
+		String className = VariantProperties.getInstance().targetingPersisterClassName();
 		
 		try {
 			Object object = Class.forName(className).newInstance();

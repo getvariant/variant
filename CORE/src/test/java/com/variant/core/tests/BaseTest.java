@@ -35,7 +35,7 @@ public class BaseTest {
 	public static void beforeTestCase() throws Exception {
 
 		// Bootstrap the Variant container
-		VariantProperties.override(VariantIoUtils.openResourceAsStream("/variant-junit.props"));
+		VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream("/variant-junit.props"));
 		Variant.bootstrap();
 
 		// (Re)create the schema;

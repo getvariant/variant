@@ -22,7 +22,7 @@ public class TestImpl implements Test {
 	// As defined:
 	private String name;
 	private boolean isOn = true;
-	private int idleDaysToLive = VariantProperties.targetingPersisterIdleDaysToLive();
+	private int idleDaysToLive = VariantProperties.getInstance().targetingPersisterIdleDaysToLive();
 	private List<TestImpl> covariantTests;
 	private List<TestExperienceImpl> experiences;
 	private VariantSpace variantSpace;

@@ -6,7 +6,6 @@ import java.util.Properties;
 import com.variant.core.session.SessionStore;
 import com.variant.core.util.PropertiesChain;
 import com.variant.core.util.VariantIoUtils;
-import com.variant.core.util.VariantStringUtils;
 
 /**
  * Static singleton interface to system properties.
@@ -18,16 +17,24 @@ import com.variant.core.util.VariantStringUtils;
  */
 public class VariantProperties {
 
-	private static PropertiesChain props = new PropertiesChain();
-	static {
-		override(VariantIoUtils.openResourceAsStream("/variant-defaults.props"));
-	}
+	private static VariantProperties instance = null;	
+	
+	private PropertiesChain props = new PropertiesChain();
 	
 	/**
-	 * Static singleton
+	 * 
 	 */
-	private VariantProperties() {}
+	private VariantProperties() {
+		props = new PropertiesChain();
+		override(VariantIoUtils.openResourceAsStream("/variant-defaults.props"));		
+	}
 
+	
+
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+	
 	/**
 	 * 
 	 */
@@ -65,19 +72,26 @@ public class VariantProperties {
 		 * @return
 		 */
 		public String propValue() {
-			return props.getString(propName());
+			return getInstance().props.getString(propName());
 		}
 	}
 
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
-	
+	/**
+	 * Factory
+	 * @return
+	 */
+	public static VariantProperties getInstance() {
+		if (instance == null) {
+			instance = new VariantProperties();
+		}
+		return instance;
+	}
+
 	/**
 	 * Override with properties sourced from an InputStream.
 	 * @param resourceName
 	 */
-	public static void override(InputStream is) {
+	public void override(InputStream is) {
 					
 		try {
 			Properties properties = new Properties();
@@ -88,48 +102,48 @@ public class VariantProperties {
 		}
 	}
 
-	public static String eventPersisterClassName() {
+	public String eventPersisterClassName() {
 		return props.getString(Keys.EVENT_PERSISTER_CLASS_NAME.propName());
 	}
 
-	public static String eventPersisterJdbcUrl() {
+	public String eventPersisterJdbcUrl() {
 		return props.getString(Keys.EVENT_PERSISTER_JDBC_URL.propName());
 	}
 
-	public static String eventPersisterJdbcUser() {
+	public String eventPersisterJdbcUser() {
 		return props.getString(Keys.EVENT_PERSISTER_JDBC_USER.propName());
 	}
 
-	public static String eventPersisterJdbcPassword() {
+	public String eventPersisterJdbcPassword() {
 		return props.getString(Keys.EVENT_PERSISTER_JDBC_PASSWORD.propName());
 	}
 
-	public static String targetingPersisterClassName() {
+	public String targetingPersisterClassName() {
 		return props.getString(Keys.TARGETING_PERSISTER_CLASS_NAME.propName());
 	}
 	
-	public static int targetingPersisterIdleDaysToLive() {
+	public int targetingPersisterIdleDaysToLive() {
 		return props.getInteger(Keys.TARGETING_PERSISTER_IDLE_DAYS_TO_LIVE.propName());
 	}
 
-	public static SessionStore.Type sessionStoreType() {
+	public SessionStore.Type sessionStoreType() {
 		String val = props.getString(Keys.SESSION_STORE_TYPE.propName());
 		return SessionStore.Type.valueOf(val.toUpperCase());
 	}
 	
-	public static String sessionKeyResolverClassName() {
+	public String sessionKeyResolverClassName() {
 		return props.getString(Keys.SESSION_KEY_RESOLVER_CLASS_NAME.propName());
 	}
 
-	public static int eventWriterBufferSize() {
+	public int eventWriterBufferSize() {
 		return props.getInteger(Keys.EVENT_WRITER_BUFFER_SIZE.propName());	
 	}
 
-	public static Integer eventWriterPercentFull() {
+	public Integer eventWriterPercentFull() {
 		return props.getInteger(Keys.EVENT_WRITER_PERCENT_FULL.propName());	
 	}
 
-	public static Integer eventWriterMaxDelayMillis() {
+	public Integer eventWriterMaxDelayMillis() {
 		return props.getInteger(Keys.EVENT_WRITER_MAX_DELAY_MILLIS.propName());			
 	}
 }

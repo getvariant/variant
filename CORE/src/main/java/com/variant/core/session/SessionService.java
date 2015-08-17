@@ -1,5 +1,8 @@
 package com.variant.core.session;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
+
+import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantRuntimeException;
@@ -19,10 +22,10 @@ public class SessionService {
 	public SessionService() throws VariantBootstrapException {
 		
 		// Session store directly from factory.
-		store = SessionStore.Factory.getInstance(VariantProperties.sessionStoreType());
+		store = SessionStore.Factory.getInstance(VariantProperties.getInstance().sessionStoreType());
 		
 		// Session key resolver 
-		String className = VariantProperties.sessionKeyResolverClassName();
+		String className = VariantProperties.getInstance().sessionKeyResolverClassName();
 		try {
 			Class<?> persisterClass = Class.forName(className);
 			Object persisterObject = persisterClass.newInstance();
@@ -41,6 +44,21 @@ public class SessionService {
 					e);
 		}
 
+	}
+	
+	/**
+	 * Shutdown this SessionService.
+	 * Cannot be used after this call.
+	 */
+	public void shutdown() {
+		long now = System.currentTimeMillis();
+		store.shutdown();
+		store = null;
+		keyResolver = null;
+		if (Variant.getLogger().isDebugEnabled()) {
+			Variant.getLogger().debug(
+					"Session Service shutdown in " + (DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
+		}
 	}
 	
 	/**

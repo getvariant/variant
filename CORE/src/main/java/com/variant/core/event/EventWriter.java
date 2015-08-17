@@ -64,10 +64,10 @@ public class EventWriter {
 	public EventWriter(EventPersister persisterImpl) {
 		
 		this.persisterImpl = persisterImpl;
-		this.queueSize = VariantProperties.eventWriterBufferSize();
-		this.pctFullSize = queueSize * VariantProperties.eventWriterPercentFull() / 100;
+		this.queueSize = VariantProperties.getInstance().eventWriterBufferSize();
+		this.pctFullSize = queueSize * VariantProperties.getInstance().eventWriterPercentFull() / 100;
 		this.pctEmptySize = (int) Math.ceil(queueSize * 0.1);
-		this.maxPersisterDelayMillis = VariantProperties.eventWriterMaxDelayMillis();
+		this.maxPersisterDelayMillis = VariantProperties.getInstance().eventWriterMaxDelayMillis();
 		
 		eventQueue = new ConcurrentLinkedQueue<VariantEventSupport>();
 		
@@ -79,6 +79,20 @@ public class EventWriter {
 		persisterThread.start();
 	}
 		
+	/**
+	 * Shutdown this event writer.
+	 * Cannot be used after this.
+	 */
+	public void shutdown() {
+		long now = System.currentTimeMillis();
+		persisterThread.interrupt();
+		persisterThread = null;
+		if (Variant.getLogger().isDebugEnabled()) {
+			Variant.getLogger().debug(
+					"Event Writer shutdown in " + (DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
+		}
+	}
+	
 	/**
 	 * Write collection of events to the queue.  This method never blocks:
 	 * if there's no room on the queue to hold all the events, write as many as we can in the
@@ -168,7 +182,7 @@ public class EventWriter {
 					catch (Throwable t) {
 						Variant.getLogger().error("Unexpected exception in async database event writer.", t);
 					}
-					Variant.getLogger().debug("Writer thread " + Thread.currentThread().getName() + " interrupted and exited.");
+					Variant.getLogger().debug("Persister thread " + Thread.currentThread().getName() + " interrupted and exited.");
 					return;
 				};
 			}

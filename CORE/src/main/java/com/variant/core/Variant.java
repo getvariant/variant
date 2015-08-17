@@ -33,7 +33,6 @@ import com.variant.core.session.SessionService;
 public class Variant {
 
 	private static Logger logger = LoggerFactory.getLogger("Variant");
-	//private static Config config = null;
 	private static boolean isBootstrapped = false;
 	private static Schema schema = null;
 	private static EventWriter eventWriter = null;
@@ -79,7 +78,7 @@ public class Variant {
 	 * @param config
 	 * @throws VariantBootstrapException 
 	 */
-	public static void bootstrap() throws VariantBootstrapException {
+	public static synchronized void bootstrap() throws VariantBootstrapException {
 		
 		if (isBootstrapped) throw new IllegalStateException("Variant is already bootstrapped");
 
@@ -96,7 +95,7 @@ public class Variant {
 		//
 		// Instantiate event persister.
 		//
-		String eventPersisterClassName = VariantProperties.eventPersisterClassName();
+		String eventPersisterClassName = VariantProperties.getInstance().eventPersisterClassName();
 		if (eventPersisterClassName == null) {
 			throw new VariantRuntimeException(ErrorTemplate.RUN_PROPERTY_NOT_SET, VariantProperties.Keys.EVENT_PERSISTER_CLASS_NAME.propName());
 		}
@@ -114,7 +113,7 @@ public class Variant {
 		}
 		catch (Exception e) {
 			throw new VariantBootstrapException(
-					"Unable to instantiate event persister class [" + VariantProperties.eventPersisterClassName() +"]", e);
+					"Unable to instantiate event persister class [" + VariantProperties.getInstance().eventPersisterClassName() +"]", e);
 		}
 				
 		// Instantiate event writer.
@@ -149,7 +148,7 @@ public class Variant {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public static void bootstrap(String config) throws VariantBootstrapException {
+	public static synchronized void bootstrap(String config) throws VariantBootstrapException {
 		
 		final String PROP_NAME_FILE = "varaint.config.file";
 		final String PROP_NAME_RESOURCE = "varaint.config.resource";
@@ -158,7 +157,25 @@ public class Variant {
 		
 		bootstrap();
 	}
-		
+	
+	/**
+	 * Programmatically shutdown Variant container.
+	 */
+	public static synchronized void shutdown() {
+		long now = System.currentTimeMillis();
+		stateCheck();
+		isBootstrapped = false;
+		schema = null;
+		eventWriter.shutdown();
+		eventWriter = null;
+		sessionService.shutdown();
+		sessionService = null;
+		Variant.getLogger().info(
+				String.format("Core %s shutdown in %s",
+						version(),
+						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
+	}
+	
 	/**
 	 * Parse and, if no errors, optionally deploy a new schema.
 	 * @param schemaAsString

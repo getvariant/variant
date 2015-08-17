@@ -16,9 +16,9 @@ public class EventPersisterH2 extends EventPersisterJdbc {
 	public Connection getJdbcConnection() throws ClassNotFoundException, SQLException {
 		Class.forName("org.h2.Driver");
 		return DriverManager.getConnection(
-				VariantProperties.eventPersisterJdbcUrl(), 
-				VariantProperties.eventPersisterJdbcUser(), 
-				VariantProperties.eventPersisterJdbcPassword());
+				VariantProperties.getInstance().eventPersisterJdbcUrl(), 
+				VariantProperties.getInstance().eventPersisterJdbcUser(), 
+				VariantProperties.getInstance().eventPersisterJdbcPassword());
 	}
 
 
