@@ -15,7 +15,7 @@ public interface TargetingPersister {
 	 * @param config
 	 * @param userArgs
 	 */
-	public void initialized(Config config, VariantSession ssn, UserData...userArgs);
+	public void initialized(VariantSession ssn, UserData...userArgs);
 	
 	/**
 	 * Read all persisted experiences;
@@ -52,27 +52,7 @@ public interface TargetingPersister {
 	 * @param test
 	 */
 	public void touch(Test test);
-	
-	/**
-	 * Configuration object
-	 *
-	 */
-	public static class Config {
 		
-		private String className = "com.variant.core.session.TargetingPersisterFromString";
-		
-		public Config() {}
-				
-		public void setMinIdleDays(String className) {
-			this.className = className;
-		}
-		
-		public String getClassName() {
-			return className;
-		}
-
-	}
-	
 	/**
 	 * Marker interface to denote user data to be passed to the initialized() method;
 	 * @author Igor.

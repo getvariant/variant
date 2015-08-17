@@ -30,8 +30,8 @@ abstract public class TargetingPersisterSupport implements TargetingPersister {
 			this.timestamp = timestamp;
 		}
 		
-		protected Experience getExperience() {return experience;}
-		protected long getTimestamp() {return timestamp;}
+		public Experience getExperience() {return experience;}
+		public long getTimestamp() {return timestamp;}
 	}
 
 	// Experiences are held in a map keyed by test name

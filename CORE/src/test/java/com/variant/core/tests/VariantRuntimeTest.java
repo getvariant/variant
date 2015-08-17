@@ -14,6 +14,7 @@ import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.ext.SessionKeyResolverSample.UserDataSample;
+import com.variant.core.ext.TargetingPersisterFromString.UserDataFromString;
 import com.variant.core.runtime.VariantRuntimeTestFacade;
 import com.variant.core.runtime.ViewServeEvent;
 import com.variant.core.schema.Schema;
@@ -21,7 +22,6 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
 import com.variant.core.session.TargetingPersister;
-import com.variant.core.session.TargetingPersisterFromString.UserDataFromString;
 import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantJunitLogger;
 

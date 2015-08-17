@@ -1,9 +1,9 @@
 package com.variant.core.session;
 
 import com.variant.core.VariantBootstrapException;
+import com.variant.core.VariantProperties;
 import com.variant.core.VariantRuntimeException;
 import com.variant.core.VariantSession;
-import com.variant.core.conf.VariantProperties;
 import com.variant.core.error.ErrorTemplate;
 
 public class SessionService {
@@ -16,34 +16,29 @@ public class SessionService {
 	 * @param config
 	 * @throws VariantBootstrapException 
 	 */
-	public SessionService(Config config) throws VariantBootstrapException {
+	public SessionService() throws VariantBootstrapException {
 		
 		// Session store directly from factory.
-		store = SessionStore.Factory.getInstance(config.type);
+		store = SessionStore.Factory.getInstance(VariantProperties.sessionStoreType());
 		
 		// Session key resolver 
+		String className = VariantProperties.sessionKeyResolverClassName();
 		try {
-			Class<?> persisterClass = Class.forName(config.keyResolverClassName);
+			Class<?> persisterClass = Class.forName(className);
 			Object persisterObject = persisterClass.newInstance();
 			if (persisterObject instanceof SessionKeyResolver) {
 				keyResolver = (SessionKeyResolver) persisterObject;
 			}
 			else {
 				throw new VariantBootstrapException(
-						"Session Key Resolver class [" + 
-				config.keyResolverClassName + 
-				"] must implement interface [" +
-				SessionKeyResolver.class.getName()
-				);
+						"Session Key Resolver class [" + className + "] must implement interface [" +
+						SessionKeyResolver.class.getName() + "]");
 			}
 		}
 		catch (Exception e) {
 			throw new VariantBootstrapException(
-					"Unable to instantiate Session Key Resolver class [" +
-					config.keyResolverClassName +
-					"]",
-					e
-			);
+					"Unable to instantiate Session Key Resolver class [" + className + "]",
+					e);
 		}
 
 	}
@@ -72,23 +67,4 @@ public class SessionService {
 		return result;
 	}
 	
-	/**
-	 * 
-	 * @author Igor
-	 *
-	 */
-	public static class Config {
-
-		// Defaults
-		SessionStore.Type type = SessionStore.Type.LOCAL;
-		String keyResolverClassName = VariantProperties.getSessionKeyResolverClassName();
-
-		public void setSessionStoreType(SessionStore.Type type) {
-			this.type = type;
-		}
-		
-		public void setKeyResolverClassName(String name) {
-			keyResolverClassName = name;
-		}
-	}
 }

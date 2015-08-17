@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.variant.core.Variant;
-import com.variant.core.conf.VariantProperties;
+import com.variant.core.VariantProperties;
 import com.variant.core.event.EventPersister;
 import com.variant.core.jdbc.EventPersisterJdbc.Vendor;
 import com.variant.core.util.VariantStringUtils;

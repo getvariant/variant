@@ -1,6 +1,5 @@
 package com.variant.core.util;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Properties;
@@ -65,7 +64,7 @@ public class PropertiesChain  {
 	}
 
 	/**
-	 * Find the first occurence of key, walking props chain from most recent backwards.
+	 * Find the first occurrence of key, walking props chain from most recent backwards.
 	 * @param key
 	 * @return
 	 */
@@ -95,20 +94,8 @@ public class PropertiesChain  {
 	 * @param fileName
 	 * @return
 	 */
-	public void addFromResource(String fileName) {
-		
-		InputStream is = PropertiesChain.class.getResourceAsStream(fileName);
-		if (is == null) {
-			throw new RuntimeException("Classpath resource by the name '" + fileName + "' does not exist.");
-		}
-				
-		try {
-			Properties props = new Properties();
-			props.load(is);
-			propsChain.add(props);
-		} catch (Throwable t) {
-			throw new RuntimeException("Unable to load classpath resource by the name '" + fileName + "'", t);
-		}
+	public void add(Properties props) {
+		propsChain.add(props);
 	}
 			
 	/**

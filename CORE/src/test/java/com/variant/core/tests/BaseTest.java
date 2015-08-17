@@ -11,13 +11,14 @@ import org.junit.BeforeClass;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
+import com.variant.core.VariantProperties;
 import com.variant.core.VariantTestFacade;
-import com.variant.core.conf.VariantProperties;
 import com.variant.core.error.ParserError;
 import com.variant.core.jdbc.EventPersisterJdbc;
 import com.variant.core.jdbc.JdbcUtil;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.util.PropertiesChain;
+import com.variant.core.util.VariantIoUtils;
 import com.variant.core.util.VariantJunitLogger;
 
 /**
@@ -34,7 +35,7 @@ public class BaseTest {
 	public static void beforeTestCase() throws Exception {
 
 		// Bootstrap the Variant container
-		VariantProperties.overrideFromResource("/variant-junit.props");
+		VariantProperties.override(VariantIoUtils.openResourceAsStream("/variant-junit.props"));
 		Variant.bootstrap();
 
 		// (Re)create the schema;

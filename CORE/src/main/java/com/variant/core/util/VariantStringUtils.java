@@ -65,4 +65,5 @@ public class VariantStringUtils {
 		Matcher matcher = pattern.matcher(input);
 		return matcher.find() ? matcher.group(0) : null;
 	}
+	
 }

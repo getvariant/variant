@@ -14,9 +14,9 @@ import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantSession;
 import com.variant.core.ext.SessionKeyResolverSample.UserDataSample;
+import com.variant.core.ext.TargetingPersisterFromString.UserDataFromString;
 import com.variant.core.schema.Schema;
 import com.variant.core.session.TargetingPersister;
-import com.variant.core.session.TargetingPersisterFromString.UserDataFromString;
 import com.variant.core.util.VariantJunitLogger;
 
 public class SessionTest extends BaseTest {

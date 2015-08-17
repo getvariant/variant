@@ -8,12 +8,11 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.conf.RuntimeService;
-import com.variant.core.conf.VariantProperties;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
+import com.variant.core.runtime.RuntimeService;
 import com.variant.core.runtime.VariantRuntime;
 import com.variant.core.runtime.VariantViewRequestImpl;
 import com.variant.core.schema.Schema;
@@ -24,7 +23,6 @@ import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.session.SessionKeyResolver;
 import com.variant.core.session.SessionService;
-import com.variant.core.session.TargetingPersister;
 
 /**
  * The Variant Container.
@@ -35,7 +33,7 @@ import com.variant.core.session.TargetingPersister;
 public class Variant {
 
 	private static Logger logger = LoggerFactory.getLogger("Variant");
-	private static Config config = null;
+	//private static Config config = null;
 	private static boolean isBootstrapped = false;
 	private static Schema schema = null;
 	private static EventWriter eventWriter = null;
@@ -71,29 +69,22 @@ public class Variant {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Container bootstrap with default settings.
+	 * Container bootstrap with standard configuration semantics:
+	 * 1. Defaults
+	 * 2. Command line file.
+	 * 3. Command line resource.
+	 * 4. Conventional resource.
+	 * 
 	 * 
 	 * @param config
 	 * @throws VariantBootstrapException 
 	 */
 	public static void bootstrap() throws VariantBootstrapException {
-		bootstrap(new Config());
-	}
-	
-	/**
-	 * Variant container bootstrap from a data structure.\
-	 * This must be the first call to Variant, before any other methods may be called.
-	 * Calling this 2nd time over the life of the JVM will throw an IllegalStateException.
-	 * 
-	 * @param config
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 */
-	public static void bootstrap(Config config) throws VariantBootstrapException {
 		
-		if (isBootstrapped) throw new IllegalStateException("Variant is already initialized");
+		if (isBootstrapped) throw new IllegalStateException("Variant is already bootstrapped");
 
 		long now = System.currentTimeMillis();
+		
 		
 		if (logger.isDebugEnabled()) {
 			logger.debug("Bootstrapping Variant with following system properties:");
@@ -105,7 +96,7 @@ public class Variant {
 		//
 		// Instantiate event persister.
 		//
-		String eventPersisterClassName = config.getEventPersisterConfig().getEventPersisterClassName();
+		String eventPersisterClassName = VariantProperties.eventPersisterClassName();
 		if (eventPersisterClassName == null) {
 			throw new VariantRuntimeException(ErrorTemplate.RUN_PROPERTY_NOT_SET, VariantProperties.Keys.EVENT_PERSISTER_CLASS_NAME.propName());
 		}
@@ -123,21 +114,19 @@ public class Variant {
 		}
 		catch (Exception e) {
 			throw new VariantBootstrapException(
-					"Unable to instantiate event persister class [" + config.getEventPersisterConfig().getEventPersisterClassName() +"]", e);
+					"Unable to instantiate event persister class [" + VariantProperties.eventPersisterClassName() +"]", e);
 		}
 				
 		// Instantiate event writer.
-		eventWriter = new EventWriter(config.eventWriterConfig, eventPersister);
+		eventWriter = new EventWriter(eventPersister);
 		
 		// Pass the config to the new object.
-		eventPersister.initialized(config.eventPersisterConfig);
+		eventPersister.initialized();
 		
 		//
 		// Instantiate session service.
 		//
-		sessionService = new SessionService(config.sessionServiceConfig);
-
-		Variant.config = config;
+		sessionService = new SessionService();
 		
 		isBootstrapped = true;
 		
@@ -145,16 +134,31 @@ public class Variant {
 				String.format("Core %s bootstrapped in %s",
 						version(),
 						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
+
 	}
 	
 	/**
-	 * Container configuration.
-	 * @return
+	 * Container bootstrap with default override configuration semantics:
+	 * 1. Defaults
+	 * 2. Values from the config argument override the defaults.
+	 * 3. Command line file.
+	 * 4. Command line resource.
+	 * 5. Conventional resource.
+	 * 
+	 * @param config
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
 	 */
-	public static Config getConfig() {
-		return config;
+	public static void bootstrap(String config) throws VariantBootstrapException {
+		
+		final String PROP_NAME_FILE = "varaint.config.file";
+		final String PROP_NAME_RESOURCE = "varaint.config.resource";
+
+		if (isBootstrapped) throw new IllegalStateException("Variant is already bootstrapped");
+		
+		bootstrap();
 	}
-	
+		
 	/**
 	 * Parse and, if no errors, optionally deploy a new schema.
 	 * @param schemaAsString
@@ -344,89 +348,4 @@ public class Variant {
 		return eventWriter;
 	}
 	
- 	/**
-	 * For programmatic configuration.
-	 * @author Igor
-	 *
-	 */
-	public static class Config {
-		
-		// Defaults from system properties.
-		// May still be manipulated programmatically via setters.
-		private EventPersister.Config eventPersisterConfig = new EventPersister.Config();
-		private TargetingPersister.Config targetingPersisterConfig = new TargetingPersister.Config();
-		private EventWriter.Config eventWriterConfig = new EventWriter.Config();
-		private SessionService.Config sessionServiceConfig = new SessionService.Config();
-		
-		/**
-		 * Default values.
-		 */
-		public Config() {}
-				
-		/**
-		 * 
-		 * @return
-		 */
-		public void setEventPersisterConfig(EventPersister.Config config) {
-			this.eventPersisterConfig = config;
-		}
-		
-		/**
-		 * 
-		 * @return
-		 */
-		public EventPersister.Config getEventPersisterConfig() {
-			return eventPersisterConfig;
-		}
-		
-		/**
-		 * 
-		 * @param config
-		 */
-		public void setEventWriterConfig(EventWriter.Config config) {
-			this.eventWriterConfig = config;
-		}
-
-		/**
-		 * 
-		 * @return
-		 */
-		public EventWriter.Config getEventWriterConfig() {
-			return eventWriterConfig;
-		}
-		
-		/**
-		 * 
-		 * @param config
-		 */
-		public void setSessioinServiceConfig(SessionService.Config config) {
-			this.sessionServiceConfig = config;
-		}
-
-		/**
-		 * 
-		 * @return
-		 */
-		public SessionService.Config getSessionServiceConfig() {
-			return sessionServiceConfig;
-		}
-		
-		/**
-		 * 
-		 * @return
-		 */
-		public TargetingPersister.Config getTargetingPersisterConfig() {
-			return targetingPersisterConfig;
-		}
-
-		/**
-		 * 
-		 * @param targetingPersisterConfig
-		 */
-		public void setTargetingPersisterConfig(
-				TargetingPersister.Config targetingPersisterConfig) {
-			this.targetingPersisterConfig = targetingPersisterConfig;
-		}
-
-	}
 }

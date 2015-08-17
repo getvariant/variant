@@ -9,7 +9,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
-import com.variant.core.conf.VariantProperties;
+import com.variant.core.VariantProperties;
 
 public class EventWriter {
 	
@@ -28,7 +28,7 @@ public class EventWriter {
 	private int pctEmptySize;
 	
 	// The persister thread will wake up at least this frequently and flush the queue.
-	private long maxPersisterIntervalMillis;
+	private long maxPersisterDelayMillis;
 		
 	// Asynchronous persister thread consumes events from the holding queue.
 	private Thread persisterThread;
@@ -57,45 +57,17 @@ public class EventWriter {
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-
-	/**
-	 * Event writer configurator.
-	 * @author Igor.
-	 *
-	 */
-	public static class Config {
-		
-		// Defaults
-		private int bufferSize = VariantProperties.getEventWriterBufferSize();
-		private int pctFull = VariantProperties.getEventWriterPercentFull();
-		private long maxPersisterIntervalMillis = VariantProperties.getEventWriterMaxDelayMillis();
-		
-		public Config() {}
-		
-		public void setBufferSize(int size) {
-			this.bufferSize = size;
-		}
-
-		public void setPctFull(int pctFull) {
-			this.pctFull = pctFull;
-		}
-
-		public void setMaxPersisterIntervalMillis(long maxPersisterIntervalMillis) {
-			this.maxPersisterIntervalMillis = maxPersisterIntervalMillis;
-		}
-
-	}
 	
 	/**
 	 * Constructor
 	 */
-	public EventWriter(Config config, EventPersister persisterImpl) {
+	public EventWriter(EventPersister persisterImpl) {
 		
 		this.persisterImpl = persisterImpl;
-		this.queueSize = config.bufferSize;
-		this.pctFullSize = config.bufferSize * config.pctFull / 100;
-		this.pctEmptySize = (int) Math.ceil(config.bufferSize * 0.1);
-		this.maxPersisterIntervalMillis = config.maxPersisterIntervalMillis;
+		this.queueSize = VariantProperties.eventWriterBufferSize();
+		this.pctFullSize = queueSize * VariantProperties.eventWriterPercentFull() / 100;
+		this.pctEmptySize = (int) Math.ceil(queueSize * 0.1);
+		this.maxPersisterDelayMillis = VariantProperties.eventWriterMaxDelayMillis();
 		
 		eventQueue = new ConcurrentLinkedQueue<VariantEventSupport>();
 		
@@ -178,7 +150,7 @@ public class EventWriter {
 										
 					// Block until the queue is over pctFull again, but with timeout.
 					synchronized (eventQueue) {
-						eventQueue.wait(maxPersisterIntervalMillis);
+						eventQueue.wait(maxPersisterDelayMillis);
 					}
 
 				}

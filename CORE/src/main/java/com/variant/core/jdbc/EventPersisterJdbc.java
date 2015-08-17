@@ -12,7 +12,7 @@ import java.util.Iterator;
 
 import com.variant.core.VariantEventExperience;
 import com.variant.core.VariantInternalException;
-import com.variant.core.conf.VariantProperties;
+import com.variant.core.VariantProperties;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEventExperienceSupport;
 import com.variant.core.event.VariantEventSupport;

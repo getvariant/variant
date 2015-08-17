@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.variant.core.VariantInternalException;
+import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
-import com.variant.core.conf.VariantProperties;
 import com.variant.core.runtime.VariantSpace;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;

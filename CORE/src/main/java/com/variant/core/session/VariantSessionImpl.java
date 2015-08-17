@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
+import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.session.TargetingPersister.UserData;
 
@@ -63,31 +64,26 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	@Override
 	public void initTargetingPersister(UserData... userData) throws VariantBootstrapException {
 
-		TargetingPersister.Config config = Variant.getConfig().getTargetingPersisterConfig();
 		
-		if (config.getClassName() == null) {
-			throw new IllegalArgumentException("Property [className] must be set");
-		}
+		String className = VariantProperties.targetingPersisterClassName();
 		
 		try {
-			Object object = Class.forName(config.getClassName()).newInstance();
+			Object object = Class.forName(className).newInstance();
 			if (object instanceof TargetingPersister) {
 				targetingPersister = (TargetingPersister) object;
 			}
 			else {
 				throw new VariantBootstrapException(
-						"Targeting persister class [" + config.getClassName() + 
+						"Targeting persister class [" + className + 
 						"] must implement interface [" + TargetingPersister.class.getName() + "]");
 			}
 		}
 		catch (Exception e) {
 			throw new VariantBootstrapException(
-					"Unable to instantiate targeting persister class [" + config.getClassName() +"]",
-					e
-			);
+					"Unable to instantiate targeting persister class [" + className +"]", e);
 		}
 		
-		targetingPersister.initialized(config, this, userData);
+		targetingPersister.initialized(this, userData);
 
 	}
 
