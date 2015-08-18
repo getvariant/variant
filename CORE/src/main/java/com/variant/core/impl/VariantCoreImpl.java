@@ -26,7 +26,6 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
 import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
-import com.variant.core.session.SessionKeyResolver;
 import com.variant.core.session.SessionService;
 import com.variant.core.util.VariantIoUtils;
 
@@ -321,7 +320,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public VariantSession getSession(boolean create, SessionKeyResolver.UserData userData) {
+	public VariantSession getSession(boolean create, Object userData) {
 		return sessionService.getSession(create, userData);
 	}
 	
@@ -329,7 +328,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public VariantSession getSession(SessionKeyResolver.UserData userData) {
+	public VariantSession getSession(Object userData) {
 		return sessionService.getSession(true, userData);
 	}
 

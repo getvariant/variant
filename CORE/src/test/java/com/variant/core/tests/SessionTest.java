@@ -12,7 +12,6 @@ import org.junit.Test;
 import com.variant.core.ParserResponse;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantSession;
-import com.variant.core.ext.SessionKeyResolverSample.UserDataSample;
 import com.variant.core.ext.TargetingPersisterFromString.UserDataFromString;
 import com.variant.core.schema.Schema;
 import com.variant.core.session.TargetingPersister;
@@ -26,17 +25,17 @@ public class SessionTest extends BaseTest {
 	@Test
 	public void sessionCreationTest() throws VariantBootstrapException {
 		
-		assertNull(engine.getSession(false, new UserDataSample("foo")));
-		VariantSession bar = engine.getSession(true, new UserDataSample("bar"));
+		assertNull(engine.getSession(false, "foo"));
+		VariantSession bar = engine.getSession(true, "bar");
 		assertNotNull(bar);
 		
-		VariantSession bar2 = engine.getSession(false, new UserDataSample("bar"));
+		VariantSession bar2 = engine.getSession(false, "bar");
 		assertEquals(bar, bar2);
 		
-		bar2 = engine.getSession(true, new UserDataSample("bar"));
+		bar2 = engine.getSession(true, "bar");
 		assertEquals(bar, bar2);
 
-		bar2 = engine.getSession(new UserDataSample("bar"));
+		bar2 = engine.getSession("bar");
 		assertEquals(bar, bar2);
 	}
 	
@@ -53,7 +52,7 @@ public class SessionTest extends BaseTest {
 		Schema schema = engine.getSchema();
 		VariantJunitLogger logger = (VariantJunitLogger) engine.getLogger();
 		
-		VariantSession ssn = engine.getSession(new UserDataSample("key1"));
+		VariantSession ssn = engine.getSession("key1");
 		long timestamp = System.currentTimeMillis();
 		
 		// 

@@ -5,7 +5,6 @@ import java.io.InputStream;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
-import com.variant.core.session.SessionKeyResolver;
 
 /**
  * The Variant CORE API.
@@ -93,7 +92,7 @@ public interface Variant {
 	 *                 In an environment like servlet container, this will be http request.
 	 * @return          
 	 */
-	public VariantSession getSession(boolean create, SessionKeyResolver.UserData userData);
+	public VariantSession getSession(boolean create, Object userData);
 	
 	/**
 	 * Get user's Variant session. 
@@ -103,7 +102,7 @@ public interface Variant {
 	 *                 In an environment like servlet container, this will be http request.
 	 * @return
 	 */
-	public VariantSession getSession(SessionKeyResolver.UserData userData);
+	public VariantSession getSession(Object userData);
 	
 	/**
      * Start view Request 

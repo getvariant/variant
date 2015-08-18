@@ -14,7 +14,7 @@ import com.variant.core.impl.VariantCoreImpl;
 public class SessionService {
 
 	private Logger logger = ((VariantCoreImpl) Variant.Factory.getInstance()).getLogger();
-	private SessionKeyResolver keyResolver = null;
+	private SessionIdResolver keyResolver = null;
 	private SessionStore store = null;
 	
 	/**
@@ -32,13 +32,13 @@ public class SessionService {
 		try {
 			Class<?> persisterClass = Class.forName(className);
 			Object persisterObject = persisterClass.newInstance();
-			if (persisterObject instanceof SessionKeyResolver) {
-				keyResolver = (SessionKeyResolver) persisterObject;
+			if (persisterObject instanceof SessionIdResolver) {
+				keyResolver = (SessionIdResolver) persisterObject;
 			}
 			else {
 				throw new VariantBootstrapException(
 						"Session Key Resolver class [" + className + "] must implement interface [" +
-						SessionKeyResolver.class.getName() + "]");
+						SessionIdResolver.class.getName() + "]");
 			}
 		}
 		catch (Exception e) {
@@ -70,9 +70,9 @@ public class SessionService {
 	 * 
 	 * @return user session if exists or null if doesn't and create is false.
 	 */
-	public VariantSession getSession(boolean create, SessionKeyResolver.UserData...userArgs) throws VariantRuntimeException {
+	public VariantSession getSession(boolean create, Object userData) throws VariantRuntimeException {
 		
-		String key = keyResolver.getSessionKey(userArgs);
+		String key = keyResolver.getSessionId(userData);
 		
 		if (key == null) 
 			throw new VariantRuntimeException(
