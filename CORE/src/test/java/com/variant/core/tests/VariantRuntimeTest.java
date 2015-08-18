@@ -8,15 +8,14 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 
 import com.variant.core.ParserResponse;
-import com.variant.core.Variant;
 import com.variant.core.VariantEventExperience;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.ext.SessionKeyResolverSample.UserDataSample;
 import com.variant.core.ext.TargetingPersisterFromString.UserDataFromString;
-import com.variant.core.runtime.VariantRuntimeTestFacade;
-import com.variant.core.runtime.ViewServeEvent;
+import com.variant.core.impl.VariantRuntimeTestFacade;
+import com.variant.core.impl.ViewServeEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -37,11 +36,11 @@ public class VariantRuntimeTest extends BaseTest {
 	@org.junit.Test
 	public void pathResolution() throws Exception {
 		
-		ParserResponse response = Variant.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		ParserResponse response = engine.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
 
-		Schema schema = Variant.getSchema();
+		Schema schema = engine.getSchema();
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");
@@ -1072,20 +1071,20 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "}                                                                         ";
 
 
-		ParserResponse response = Variant.parseSchema(SCHEMA);
+		ParserResponse response = engine.parseSchema(SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
 
-		Schema schema = Variant.getSchema();
+		Schema schema = engine.getSchema();
 		View view1 = schema.getView("view1");
-		VariantJunitLogger logger = (VariantJunitLogger) Variant.getLogger();		
-		VariantSession ssn = Variant.getSession(new UserDataSample("key1"));
+		VariantJunitLogger logger = (VariantJunitLogger) engine.getLogger();		
+		VariantSession ssn = engine.getSession(new UserDataSample("key1"));
 		long timestamp = System.currentTimeMillis();
 		String persisterString = timestamp + ".test2.B";
 		ssn.initTargetingPersister(new UserDataFromString(persisterString));
 		TargetingPersister tp = ssn.getTargetingPersister();
 		assertEquals(1, tp.getAll().size());
-		VariantViewRequest req = Variant.startViewRequest(ssn, view1);
+		VariantViewRequest req = engine.startViewRequest(ssn, view1);
 
 		// test2 is off, but TP has a variant experience for it, which will be substituted for the purposes of lookup with control.
 		assertEquals("Session [key1] recognized persisted experience [test2.B] but substituted control experience [test2.A] because test is OFF",

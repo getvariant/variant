@@ -6,10 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.junit.Before;
-
 import com.variant.core.ParserResponse;
-import com.variant.core.Variant;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.util.VariantCollectionsUtils;
@@ -371,11 +368,11 @@ public class ParserCovariantOkay3Test extends BaseTest {
 	     	    "  ]                                                                      \n" +
 	    	    "}                                                                         ";
 
-		ParserResponse response = Variant.parseSchema(SCHEMA);
+		ParserResponse response = engine.parseSchema(SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
 
-		Schema schema = Variant.getSchema();
+		Schema schema = engine.getSchema();
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");

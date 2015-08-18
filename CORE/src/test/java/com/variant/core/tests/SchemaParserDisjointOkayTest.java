@@ -9,11 +9,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.variant.core.ParserResponse;
-import com.variant.core.Variant;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
 
@@ -180,7 +178,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 	@Test
 	public void happyPathTest() throws Exception {
 		
-		ParserResponse response = Variant.parseSchema(SCHEMA);
+		ParserResponse response = engine.parseSchema(SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
 
@@ -203,7 +201,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 						
 		};
 
-		final Schema schema = Variant.getSchema();
+		final Schema schema = engine.getSchema();
 		
 		// Verify views returned as a list.
 		List<View> actualViews = schema.getViews();

@@ -2,7 +2,6 @@ package com.variant.core.session;
 
 import java.io.Serializable;
 
-import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;

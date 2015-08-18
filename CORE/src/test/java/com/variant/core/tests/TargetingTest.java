@@ -8,7 +8,6 @@ import java.util.Random;
 import org.junit.Test;
 
 import com.variant.core.ParserResponse;
-import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
@@ -73,11 +72,11 @@ public class TargetingTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = Variant.parseSchema(config);
+		ParserResponse response = engine.parseSchema(config);
 
 		assertFalse(response.hasErrors());
 
-		Schema schema = Variant.getSchema();
+		Schema schema = engine.getSchema();
 		TestImpl test1 = (TestImpl) schema.getTest("test1");
 
 		//

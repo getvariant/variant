@@ -1,6 +1,6 @@
 package com.variant.core;
 
-import com.variant.core.runtime.ViewServeEvent;
+import com.variant.core.impl.ViewServeEvent;
 import com.variant.core.schema.View;
 
 /**

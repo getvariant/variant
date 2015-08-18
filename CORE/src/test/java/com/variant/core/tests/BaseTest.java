@@ -12,8 +12,9 @@ import org.junit.BeforeClass;
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
-import com.variant.core.VariantTestFacade;
 import com.variant.core.error.ParserError;
+import com.variant.core.impl.VariantCoreImpl;
+import com.variant.core.impl.VariantCoreImplTestFacade;
 import com.variant.core.jdbc.EventPersisterJdbc;
 import com.variant.core.jdbc.JdbcUtil;
 import com.variant.core.schema.Test.Experience;
@@ -27,6 +28,8 @@ import com.variant.core.util.VariantJunitLogger;
 
 public class BaseTest {
 	
+	protected static VariantCoreImpl engine = (VariantCoreImpl) Variant.Factory.getInstance();
+
 	/**
 	 * 
 	 * @throws Exception
@@ -36,10 +39,10 @@ public class BaseTest {
 
 		// Bootstrap the Variant container
 		VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream("/variant-junit.props"));
-		Variant.bootstrap();
+		engine.bootstrap();
 
 		// (Re)create the schema;
-		switch (((EventPersisterJdbc)Variant.getEventWriter().getEventPersister()).getVendor()) {
+		switch (((EventPersisterJdbc)engine.getEventWriter().getEventPersister()).getVendor()) {
 		case POSTGRES: 
 			JdbcUtil.recreateSchema();
 			break;
@@ -59,7 +62,7 @@ public class BaseTest {
 		
 		// Replace the logger with the in-memory implementation that we can
 		// introspect into.
-		VariantTestFacade.setLogger(new VariantJunitLogger(System.out));
+		VariantCoreImplTestFacade.setLogger(new VariantJunitLogger(System.out));
 		
 	}
 
@@ -99,7 +102,7 @@ public class BaseTest {
 	 */
 	static protected Experience experience(String name) {
 		String[] tokens = name.split("\\.");
-		return Variant.getSchema().getTest(tokens[0]).getExperience(tokens[1]);
+		return engine.getSchema().getTest(tokens[0]).getExperience(tokens[1]);
 	}
 
 	/**

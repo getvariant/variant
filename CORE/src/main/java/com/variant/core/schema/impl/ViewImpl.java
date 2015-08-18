@@ -63,7 +63,7 @@ public class ViewImpl implements View {
 		
 		ArrayList<Test> result = new ArrayList<Test>();
 		
-		for (Test test: Variant.getSchema().getTests()) {
+		for (Test test: Variant.Factory.getInstance().getSchema().getTests()) {
 			for (Test.OnView tov: test.getOnViews()) {
 				if (tov.getView().equals(this)) result.add(test);
 			}

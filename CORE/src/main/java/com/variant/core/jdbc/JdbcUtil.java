@@ -12,15 +12,19 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+
 import com.variant.core.Variant;
-import com.variant.core.VariantProperties;
-import com.variant.core.event.EventPersister;
+import com.variant.core.event.EventWriter;
+import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.jdbc.EventPersisterJdbc.Vendor;
 import com.variant.core.util.VariantStringUtils;
 
 
 public class JdbcUtil {
 
+	private static Logger logger = ((VariantCoreImpl) Variant.Factory.getInstance()).getLogger();
+	
 	/**
 	 * Read a SQL script from a resource file, discard comments and parse it out into
 	 * individual statements that can be executed via JDBC.
@@ -59,7 +63,14 @@ public class JdbcUtil {
 		return result;
 	}
 	
-	
+	/**
+	 * 
+	 * @return
+	 */
+	private static EventPersisterJdbc getEventPersister() {
+		EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
+		return (EventPersisterJdbc) ew.getEventPersister();		
+	}
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -72,10 +83,7 @@ public class JdbcUtil {
 	 * @throws SQLException
 	 */
 	public static Connection getConnection() throws ClassNotFoundException, SQLException {
-	
-		EventPersister ep = Variant.getEventWriter().getEventPersister();
-		return ((EventPersisterJdbc) ep).getJdbcConnection();
-
+		return getEventPersister().getJdbcConnection();
 	}
 	
 	/**
@@ -86,7 +94,7 @@ public class JdbcUtil {
 	 */
 	private static void parseSQLException(SQLException e, String statement) throws SQLException {
 
-		EventPersisterJdbc.Vendor vendor = ((EventPersisterJdbc)Variant.getEventWriter().getEventPersister()).getVendor();
+		EventPersisterJdbc.Vendor vendor = getEventPersister().getVendor();
 		
 		final String[] SQL_STATES_OBJECT_DOES_NOT_EXIST = 
 				vendor == Vendor.H2 ? new String[] {"42P01"} :
@@ -95,10 +103,10 @@ public class JdbcUtil {
 		String[] tokens = statement.split(" ");
 		
 		if (VariantStringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_DOES_NOT_EXIST)) {
-			Variant.getLogger().error(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Relation Does Not Exist.");
+			logger.error(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Relation Does Not Exist.");
 		}
 		else {
-			Variant.getLogger().error("SQLException: " + e.getMessage());
+			logger.error("SQLException: " + e.getMessage());
 			throw e;
 		}
 
@@ -121,7 +129,7 @@ public class JdbcUtil {
 			
 			try {
 				jdbcStmt.execute(stmt);
-				Variant.getLogger().debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
+				logger.debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
 			}
 			catch (SQLException e) {
 				parseSQLException(e, stmt);
@@ -143,7 +151,7 @@ public class JdbcUtil {
 			try {
 				jdbcStmt.execute(stmt);
 				String[] tokens = stmt.split(" ");
-				Variant.getLogger().debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
+				logger.debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
 			}
 			catch (SQLException e) {
 				parseSQLException(e, stmt);

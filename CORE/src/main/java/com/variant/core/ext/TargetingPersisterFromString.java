@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
+import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.TargetingPersisterSupport;
@@ -22,7 +23,7 @@ import com.variant.core.session.TargetingPersisterSupport;
  */
 public class TargetingPersisterFromString extends TargetingPersisterSupport {
 
-	private Logger logger = Variant.getLogger();
+	private Logger logger = ((VariantCoreImpl)Variant.Factory.getInstance()).getLogger();
 		
 	private void parseFromString(String input, VariantSession ssn) {
 				
@@ -36,7 +37,7 @@ public class TargetingPersisterFromString extends TargetingPersisterSupport {
 				String[] tokens = entry.split("\\.");
 				if (tokens.length == 3) {
 					try {
-						Test test = Variant.getSchema().getTest(tokens[1]);
+						Test test = Variant.Factory.getInstance().getSchema().getTest(tokens[1]);
 						if (test == null) {
 							if (logger.isDebugEnabled()) {
 								logger.debug("Ignored non-existent test [" + tokens[1] + "]");

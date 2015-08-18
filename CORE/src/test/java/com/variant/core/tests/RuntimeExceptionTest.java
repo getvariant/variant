@@ -4,11 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.variant.core.ParserResponse;
-import com.variant.core.Variant;
 import com.variant.core.VariantRuntimeException;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.schema.Schema;
@@ -23,10 +21,10 @@ public class RuntimeExceptionTest extends BaseTest {
 	@Test
 	public void runViewNotInstrumentedForTest_Test() throws Exception {
 		
-		ParserResponse response = Variant.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
-		final Schema schema = Variant.getSchema();
+		final Schema schema = engine.getSchema();
 		
 		View view = schema.getView("view1");
 		try {
@@ -79,10 +77,10 @@ public class RuntimeExceptionTest extends BaseTest {
 	@Test
 	public void runNoViewForPath_Test() throws Exception {
 
-		ParserResponse response = Variant.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
-		final Schema schema = Variant.getSchema();		
+		final Schema schema = engine.getSchema();		
 		assertNull(schema.getView("non-existent"));
 
 	}

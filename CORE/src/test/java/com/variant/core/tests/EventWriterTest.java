@@ -6,11 +6,10 @@ import org.junit.After;
 import org.junit.Test;
 
 import com.variant.core.ParserResponse;
-import com.variant.core.Variant;
 import com.variant.core.VariantEvent.Status;
 import com.variant.core.VariantSession;
 import com.variant.core.ext.SessionKeyResolverSample.UserDataSample;
-import com.variant.core.runtime.ViewServeEventTestFacade;
+import com.variant.core.impl.ViewServeEventTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
 import com.variant.core.util.VariantCollectionsUtils;
@@ -32,22 +31,22 @@ public class EventWriterTest extends BaseTest {
 	public void performanceTest() throws Exception {
 
 		
-		ParserResponse response = Variant.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasErrors()) printErrors(response);
 		assertFalse(response.hasErrors());
 
-		Schema schema = Variant.getSchema();
+		Schema schema = engine.getSchema();
 		com.variant.core.schema.Test test = schema.getTest("test1");
 		View view = schema.getView("view1");
-		VariantSession ssn = Variant.getSession(new UserDataSample("session-key"));
+		VariantSession ssn = engine.getSession(new UserDataSample("session-key"));
 		ViewServeEventTestFacade event1 = new ViewServeEventTestFacade(view, ssn, "viewResolvedPath", VariantCollectionsUtils.list(test.getExperience("A")));
 		ViewServeEventTestFacade event2 = new ViewServeEventTestFacade(view, ssn, "viewResolvedPath", VariantCollectionsUtils.list(test.getExperience("B")));
 		event1.setParameter("event1-key1", "value1");
 		event2.setParameter("event2-key1", "value1");
 		event2.setParameter("event2-key2", "value2"); 
 		event2.setStatus(Status.SUCCESS);
-		Variant.getEventWriter().write(event1);
-		Variant.getEventWriter().write(event2);
+		engine.getEventWriter().write(event1);
+		engine.getEventWriter().write(event2);
 
 	}
 	

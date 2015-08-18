@@ -1,6 +1,5 @@
 package com.variant.core.error;
 
-import com.variant.core.VariantProperties;
 
 
 /**

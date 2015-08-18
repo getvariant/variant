@@ -1,6 +1,7 @@
 package com.variant.core.session;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.slf4j.Logger;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
@@ -8,9 +9,11 @@ import com.variant.core.VariantProperties;
 import com.variant.core.VariantRuntimeException;
 import com.variant.core.VariantSession;
 import com.variant.core.error.ErrorTemplate;
+import com.variant.core.impl.VariantCoreImpl;
 
 public class SessionService {
 
+	private Logger logger = ((VariantCoreImpl) Variant.Factory.getInstance()).getLogger();
 	private SessionKeyResolver keyResolver = null;
 	private SessionStore store = null;
 	
@@ -55,8 +58,8 @@ public class SessionService {
 		store.shutdown();
 		store = null;
 		keyResolver = null;
-		if (Variant.getLogger().isDebugEnabled()) {
-			Variant.getLogger().debug(
+		if (logger.isDebugEnabled()) {
+			logger.debug(
 					"Session Service shutdown in " + (DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
 		}
 	}

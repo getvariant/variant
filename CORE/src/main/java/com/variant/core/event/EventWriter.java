@@ -6,10 +6,12 @@ import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.slf4j.Logger;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantProperties;
+import com.variant.core.impl.VariantCoreImpl;
 
 public class EventWriter {
 	
@@ -35,6 +37,9 @@ public class EventWriter {
 	
 	// The actual event persister passed to the constructor by client code.
 	private EventPersister persisterImpl = null;
+	
+	// Logger
+	private Logger logger = ((VariantCoreImpl)Variant.Factory.getInstance()).getLogger();
 	
 	/**
 	 * Validate that event is well-formed.
@@ -87,8 +92,8 @@ public class EventWriter {
 		long now = System.currentTimeMillis();
 		persisterThread.interrupt();
 		persisterThread = null;
-		if (Variant.getLogger().isDebugEnabled()) {
-			Variant.getLogger().debug(
+		if (logger.isDebugEnabled()) {
+			logger.debug(
 					"Event Writer shutdown in " + (DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
 		}
 	}
@@ -148,7 +153,7 @@ public class EventWriter {
 		@Override
 		public void run() {
 
-			Variant.getLogger().debug("Event persister thread " + Thread.currentThread().getName() + " created.");
+			logger.debug("Event persister thread " + Thread.currentThread().getName() + " created.");
 			
 			boolean InterruptedExceptionThrown = false;
 			
@@ -172,7 +177,7 @@ public class EventWriter {
 					InterruptedExceptionThrown = true;
 				}
 				catch (Throwable t) {
-					Variant.getLogger().error("Unexpected exception in async database event writer.", t);
+					logger.error("Unexpected exception in async database event writer.", t);
 				}
 				
 				if (InterruptedExceptionThrown || Thread.currentThread().isInterrupted()) {
@@ -180,9 +185,9 @@ public class EventWriter {
 						flush();
 					}
 					catch (Throwable t) {
-						Variant.getLogger().error("Unexpected exception in async database event writer.", t);
+						logger.error("Unexpected exception in async database event writer.", t);
 					}
-					Variant.getLogger().debug("Persister thread " + Thread.currentThread().getName() + " interrupted and exited.");
+					logger.debug("Persister thread " + Thread.currentThread().getName() + " interrupted and exited.");
 					return;
 				};
 			}
@@ -206,7 +211,7 @@ public class EventWriter {
 			
 			long now = System.currentTimeMillis();
 			persisterImpl.persist(events);		
-			Variant.getLogger().debug("Wrote " + events.size() + " events in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
+			logger.debug("Wrote " + events.size() + " events in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
 		}
 	}
 }
