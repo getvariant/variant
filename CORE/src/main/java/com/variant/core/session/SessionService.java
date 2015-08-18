@@ -14,7 +14,7 @@ import com.variant.core.impl.VariantCoreImpl;
 public class SessionService {
 
 	private Logger logger = ((VariantCoreImpl) Variant.Factory.getInstance()).getLogger();
-	private SessionIdResolver keyResolver = null;
+	private SessionIdResolver sidResolver = null;
 	private SessionStore store = null;
 	
 	/**
@@ -33,7 +33,7 @@ public class SessionService {
 			Class<?> persisterClass = Class.forName(className);
 			Object persisterObject = persisterClass.newInstance();
 			if (persisterObject instanceof SessionIdResolver) {
-				keyResolver = (SessionIdResolver) persisterObject;
+				sidResolver = (SessionIdResolver) persisterObject;
 			}
 			else {
 				throw new VariantBootstrapException(
@@ -57,7 +57,7 @@ public class SessionService {
 		long now = System.currentTimeMillis();
 		store.shutdown();
 		store = null;
-		keyResolver = null;
+		sidResolver = null;
 		if (logger.isDebugEnabled()) {
 			logger.debug(
 					"Session Service shutdown in " + (DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
@@ -72,12 +72,12 @@ public class SessionService {
 	 */
 	public VariantSession getSession(boolean create, Object userData) throws VariantRuntimeException {
 		
-		String key = keyResolver.getSessionId(userData);
+		String key = sidResolver.getSessionId(userData);
 		
 		if (key == null) 
 			throw new VariantRuntimeException(
 					ErrorTemplate.INTERNAL, 
-					"Unable to obtain session key from resolver [" + keyResolver.getClass().getSimpleName() + "]");
+					"Unable to obtain session key from resolver [" + sidResolver.getClass().getSimpleName() + "]");
 		
 		VariantSession result = store.get(key);
 

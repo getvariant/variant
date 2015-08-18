@@ -88,14 +88,8 @@ public class TargetingPersisterFromString extends TargetingPersisterSupport {
 	 * 
 	 */
 	@Override
-	public void initialized(VariantSession ssn, UserData... userArgs) {
-
-		if (userArgs.length != 1) 
-			throw new VariantInternalException("Expected 1 user argument, but got [" + userArgs.length + "]");
- 
-		// first user data is the input string.  Parse it.
-		String stringInput = ((UserDataFromString) userArgs[0]).stringInput;
-		parseFromString(stringInput, ssn);
+	public void initialized(VariantSession ssn, Object userData) { 
+		parseFromString((String) userData, ssn);
 	}
 
 	@Override
@@ -110,11 +104,4 @@ public class TargetingPersisterFromString extends TargetingPersisterSupport {
 		return sb.toString();
 	}
 	
-	/**
-	 * 
-	 */
-	public static class UserDataFromString implements UserData {
-		private String stringInput;
-		public UserDataFromString(String stringInput) { this.stringInput = stringInput;}
-	}
 }

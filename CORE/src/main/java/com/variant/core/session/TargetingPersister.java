@@ -13,9 +13,9 @@ public interface TargetingPersister {
 	 * after it has been initialized by the container.
 	 * 
 	 * @param config
-	 * @param userArgs
+	 * @param userData
 	 */
-	public void initialized(VariantSession ssn, UserData...userArgs);
+	public void initialized(VariantSession ssn, Object userData);
 	
 	/**
 	 * Read all persisted experiences;
@@ -53,10 +53,4 @@ public interface TargetingPersister {
 	 */
 	public void touch(Test test);
 		
-	/**
-	 * Marker interface to denote user data to be passed to the initialized() method;
-	 * @author Igor.
-	 *
-	 */
-	public static interface UserData {};
 }

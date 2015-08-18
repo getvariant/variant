@@ -12,7 +12,6 @@ import com.variant.core.VariantEventExperience;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
-import com.variant.core.ext.TargetingPersisterFromString.UserDataFromString;
 import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.impl.ViewServeEvent;
 import com.variant.core.schema.Schema;
@@ -1080,7 +1079,7 @@ public class VariantRuntimeTest extends BaseTest {
 		VariantSession ssn = engine.getSession("key1");
 		long timestamp = System.currentTimeMillis();
 		String persisterString = timestamp + ".test2.B";
-		ssn.initTargetingPersister(new UserDataFromString(persisterString));
+		ssn.initTargetingPersister(persisterString);
 		TargetingPersister tp = ssn.getTargetingPersister();
 		assertEquals(1, tp.getAll().size());
 		VariantViewRequest req = engine.startViewRequest(ssn, view1);

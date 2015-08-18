@@ -5,7 +5,6 @@ import java.io.Serializable;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
-import com.variant.core.session.TargetingPersister.UserData;
 
 /**
  * 
@@ -61,7 +60,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	 * 
 	 */
 	@Override
-	public void initTargetingPersister(UserData... userData) throws VariantBootstrapException {
+	public void initTargetingPersister(Object userData) throws VariantBootstrapException {
 
 		
 		String className = VariantProperties.getInstance().targetingPersisterClassName();
