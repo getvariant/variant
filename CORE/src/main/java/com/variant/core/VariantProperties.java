@@ -17,20 +17,50 @@ import com.variant.core.util.VariantIoUtils;
  */
 public class VariantProperties {
 
+	public static final String RUNTIME_PROPS_RESOURCE_NAME = "varaint.props.resource";
+	public static final String RUNTIME_PROPS_FILE_NAME = "varaint.props.file";
+
 	private static VariantProperties instance = null;	
 	
 	private PropertiesChain props = new PropertiesChain();
-	
+
 	/**
 	 * 
 	 */
-	private VariantProperties() {
+	VariantProperties() {
 		props = new PropertiesChain();
 		override(VariantIoUtils.openResourceAsStream("/variant-defaults.props"));		
 	}
 
-	
+	/**
+	 * Integer value
+	 * @param key
+	 * @return
+	 */
+	private int getInteger(String key) {
+		return Integer.parseInt(getString(key));
+	}
 
+	/**
+	 * Boolean value
+	 * @param key
+	 * @return
+	 *
+	private boolean getBoolean(String key) {
+		return Boolean.parseBoolean(getString(key));
+	}*/
+	
+	/**
+	 * Open direct access to Property chain for junits.
+	 * @param name
+	 * @return
+	 */
+	String getString(String key) {
+		String result = props.getProperty(key);
+		if (result == null) throw new VariantInternalException("Undefined system property [" + key + "]");
+		return result;
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -72,7 +102,7 @@ public class VariantProperties {
 		 * @return
 		 */
 		public String propValue() {
-			return getInstance().props.getString(propName());
+			return getInstance().getString(propName());
 		}
 	}
 
@@ -103,47 +133,46 @@ public class VariantProperties {
 	}
 
 	public String eventPersisterClassName() {
-		return props.getString(Keys.EVENT_PERSISTER_CLASS_NAME.propName());
+		return getString(Keys.EVENT_PERSISTER_CLASS_NAME.propName());
 	}
 
 	public String eventPersisterJdbcUrl() {
-		return props.getString(Keys.EVENT_PERSISTER_JDBC_URL.propName());
+		return getString(Keys.EVENT_PERSISTER_JDBC_URL.propName());
 	}
 
 	public String eventPersisterJdbcUser() {
-		return props.getString(Keys.EVENT_PERSISTER_JDBC_USER.propName());
+		return getString(Keys.EVENT_PERSISTER_JDBC_USER.propName());
 	}
 
 	public String eventPersisterJdbcPassword() {
-		return props.getString(Keys.EVENT_PERSISTER_JDBC_PASSWORD.propName());
+		return getString(Keys.EVENT_PERSISTER_JDBC_PASSWORD.propName());
 	}
 
 	public String targetingPersisterClassName() {
-		return props.getString(Keys.TARGETING_PERSISTER_CLASS_NAME.propName());
+		return getString(Keys.TARGETING_PERSISTER_CLASS_NAME.propName());
 	}
 	
 	public int targetingPersisterIdleDaysToLive() {
-		return props.getInteger(Keys.TARGETING_PERSISTER_IDLE_DAYS_TO_LIVE.propName());
+		return getInteger(Keys.TARGETING_PERSISTER_IDLE_DAYS_TO_LIVE.propName());
 	}
 
 	public SessionStore.Type sessionStoreType() {
-		String val = props.getString(Keys.SESSION_STORE_TYPE.propName());
-		return SessionStore.Type.valueOf(val.toUpperCase());
+		return SessionStore.Type.valueOf(getString(Keys.SESSION_STORE_TYPE.propName()).toUpperCase());
 	}
 	
 	public String sessionKeyResolverClassName() {
-		return props.getString(Keys.SESSION_KEY_RESOLVER_CLASS_NAME.propName());
+		return getString(Keys.SESSION_KEY_RESOLVER_CLASS_NAME.propName());
 	}
 
 	public int eventWriterBufferSize() {
-		return props.getInteger(Keys.EVENT_WRITER_BUFFER_SIZE.propName());	
+		return getInteger(Keys.EVENT_WRITER_BUFFER_SIZE.propName());	
 	}
 
-	public Integer eventWriterPercentFull() {
-		return props.getInteger(Keys.EVENT_WRITER_PERCENT_FULL.propName());	
+	public int eventWriterPercentFull() {
+		return getInteger(Keys.EVENT_WRITER_PERCENT_FULL.propName());	
 	}
 
-	public Integer eventWriterMaxDelayMillis() {
-		return props.getInteger(Keys.EVENT_WRITER_MAX_DELAY_MILLIS.propName());			
+	public int eventWriterMaxDelayMillis() {
+		return getInteger(Keys.EVENT_WRITER_MAX_DELAY_MILLIS.propName());			
 	}
 }

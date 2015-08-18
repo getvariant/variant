@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Properties;
 
-import com.variant.core.VariantInternalException;
-
 /**
  * 
  * @author Igor
@@ -22,15 +20,18 @@ public class PropertiesChain  {
 	 * @param string
 	 * @return
 	 */
-	private String expandVariables(String string) {
+	private String expandVariables(String input) {
+		
+		if (input == null) return null;
+		
 		StringBuilder result = new StringBuilder();
 		
 		StringBuilder var = null;
 		boolean inPattern = false;
 		
-		for (int i = 0; i < string.length(); i++) {
+		for (int i = 0; i < input.length(); i++) {
 			
-			char c = string.charAt(i);
+			char c = input.charAt(i);
 			
 			if (inPattern) {
 				if (c == '}') {
@@ -46,7 +47,7 @@ public class PropertiesChain  {
 				}
 			}
 			else {
-				if (c == '$' && i < string.length() - 1 && string.charAt(i+1) == '{') {
+				if (c == '$' && i < input.length() - 1 && input.charAt(i+1) == '{') {
 					inPattern = true;
 					i++;
 					var = new StringBuilder();
@@ -58,26 +59,9 @@ public class PropertiesChain  {
 			}
 		}
 		
-		if (inPattern) throw new RuntimeException("Unable to expand property value '" + string + "'");
+		if (inPattern) throw new RuntimeException("Unable to expand property value '" + input + "'");
 		
 		return result.toString();
-	}
-
-	/**
-	 * Find the first occurrence of key, walking props chain from most recent backwards.
-	 * @param key
-	 * @return
-	 */
-	private String getProperty(String key) {
-
-		if (propsChain.size() == 0) throw new IllegalStateException("Empty properties chain.");
-
-		String result = null;
-		ListIterator<Properties> iter = propsChain.listIterator(propsChain.size());
-		while (iter.hasPrevious()) {
-			if ((result = iter.previous().getProperty(key)) != null) break;
-		}
-		return result;
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -97,35 +81,23 @@ public class PropertiesChain  {
 	public void add(Properties props) {
 		propsChain.add(props);
 	}
-			
+	
 	/**
-	 * String value
+	 * Find the first occurrence of key, walking props chain from most recent backwards.
 	 * @param key
 	 * @return
 	 */
-	public String getString(String key) {
-		String result = getProperty(key);
-		if (result == null) throw new VariantInternalException("Undefined system property [" + key + "]");
+	public String getProperty(String key) {
+
+		if (propsChain.size() == 0) throw new IllegalStateException("Empty properties chain.");
+
+		String result = null;
+		ListIterator<Properties> iter = propsChain.listIterator(propsChain.size());
+		while (iter.hasPrevious()) {
+			if ((result = iter.previous().getProperty(key)) != null) break;
+		}
+		
 		return expandVariables(result);
 	}
-
-	/**
-	 * Integer value
-	 * @param key
-	 * @return
-	 */
-	public Integer getInteger(String key) {
-		return Integer.parseInt(getString(key));
-	}
-
-	/**
-	 * Boolean value
-	 * @param key
-	 * @return
-	 */
-	public Boolean getBoolean(String key) {
-		return Boolean.parseBoolean(getString(key));
-	}
-		
 
 }

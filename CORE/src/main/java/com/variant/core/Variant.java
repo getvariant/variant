@@ -23,6 +23,7 @@ import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.session.SessionKeyResolver;
 import com.variant.core.session.SessionService;
+import com.variant.core.util.VariantIoUtils;
 
 /**
  * The Variant Container.
@@ -63,6 +64,49 @@ public class Variant {
 		return "V. " + version + " (Alpha), Copyright (C) 2015 getvariant.com";
 	}
 	
+	/**
+	 * Setup system properties.
+	 * 
+	 * 1. if argument not null, override the defautl with it.
+	 * 2. Look for props as a resource
+	 * 3. Look for props as a file
+	 * 
+	 * @param resourceName
+	 */
+	private static void setupSystemProperties(String resourceName) {
+
+		if (resourceName != null) {
+			System.out.println(resourceName);
+			try {
+				VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream(resourceName));
+			}
+			catch (Exception e) {
+				throw new RuntimeException("Unable to read resurce [" + resourceName + "]");
+			}
+		}
+		
+		String runTimePropsResourceName = System.getProperty(VariantProperties.RUNTIME_PROPS_RESOURCE_NAME);
+		if (runTimePropsResourceName != null) {
+			try {
+				VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream(runTimePropsResourceName));
+			}
+			catch (Exception e) {
+				throw new RuntimeException("Unable to read resurce [" + runTimePropsResourceName + "]", e);
+			}			
+		}
+		
+		String runTimePropsFileName = System.getProperty(VariantProperties.RUNTIME_PROPS_FILE_NAME);
+		if (runTimePropsFileName != null) {
+			try {
+				VariantProperties.getInstance().override(VariantIoUtils.openFileAsStream(runTimePropsFileName));
+			}
+			catch (Exception e) {
+				throw new RuntimeException("Unable to read file [" + runTimePropsFileName + "]", e);
+			}			
+		}
+
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -79,11 +123,29 @@ public class Variant {
 	 * @throws VariantBootstrapException 
 	 */
 	public static synchronized void bootstrap() throws VariantBootstrapException {
+		bootstrap(null);
+	}
+	
+	/**
+	 * Container bootstrap with default override configuration semantics:
+	 * 1. Defaults
+	 * 2. Values from the config argument override the defaults.
+	 * 3. Command line file.
+	 * 4. Command line resource.
+	 * 5. Conventional resource.
+	 * 
+	 * @param config
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	public static synchronized void bootstrap(String resourceName) throws VariantBootstrapException {
 		
+
 		if (isBootstrapped) throw new IllegalStateException("Variant is already bootstrapped");
 
 		long now = System.currentTimeMillis();
-		
+
+		setupSystemProperties(resourceName);
 		
 		if (logger.isDebugEnabled()) {
 			logger.debug("Bootstrapping Variant with following system properties:");
@@ -133,29 +195,6 @@ public class Variant {
 				String.format("Core %s bootstrapped in %s",
 						version(),
 						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
-
-	}
-	
-	/**
-	 * Container bootstrap with default override configuration semantics:
-	 * 1. Defaults
-	 * 2. Values from the config argument override the defaults.
-	 * 3. Command line file.
-	 * 4. Command line resource.
-	 * 5. Conventional resource.
-	 * 
-	 * @param config
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
-	 */
-	public static synchronized void bootstrap(String config) throws VariantBootstrapException {
-		
-		final String PROP_NAME_FILE = "varaint.config.file";
-		final String PROP_NAME_RESOURCE = "varaint.config.resource";
-
-		if (isBootstrapped) throw new IllegalStateException("Variant is already bootstrapped");
-		
-		bootstrap();
 	}
 	
 	/**
