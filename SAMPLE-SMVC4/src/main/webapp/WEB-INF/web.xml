@@ -121,6 +121,20 @@ see here: http://static.springsource.org/spring/docs/current/spring-framework-re
         <url-pattern>/*</url-pattern>
      </filter-mapping>
     
+     <!-- Variant Filter -->
+     <filter>
+        <filter-name>variantFilter</filter-name>
+        <filter-class>com.variant.sample.VariantFilter</filter-class>
+        <init-param>
+           <param-name>schema</param-name>
+           <param-value>/variant/schema.json</param-value>
+        </init-param>
+     </filter>
+     <filter-mapping>
+        <filter-name>variantFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+     </filter-mapping>
+
     <!--  	No need for welcome-file declaration here.
     		See inside spring/mvc-core-config.xml : 
     		<mvc:view-controller path="/" view-name="welcome" /> 

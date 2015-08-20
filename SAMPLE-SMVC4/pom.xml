@@ -39,6 +39,7 @@
 		<dandelion.version>1.0.1</dandelion.version>
 
 		<cobertura.version>2.7</cobertura.version>
+		<variant.version>0.5</variant.version>
 
 	</properties>
 
@@ -260,6 +261,20 @@
 			<artifactId>datatables-export-itext</artifactId>
 			<version>${dandelion.version}</version>
 		</dependency>
+		
+		<!-- Variant Dependencies -->        
+        <dependency>
+			<groupId>com.variant</groupId>
+			<artifactId>variant-core</artifactId>
+			<version>${variant.version}</version>
+		</dependency>
+
+        <dependency>
+			<groupId>com.variant</groupId>
+			<artifactId>variant-web</artifactId>
+			<version>${variant.version}</version>
+		</dependency>
+		
 	</dependencies>
 
 	<!-- Maven plugin versions are mentioned in order to guarantee the build reproducibility in the long term -->

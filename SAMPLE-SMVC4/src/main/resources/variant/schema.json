@@ -1,0 +1,43 @@
+{                                                           
+   'views':[                                                
+     {  'name':'newOwner',                                     
+        'path':'/petclinic/owners/new'
+     }                                                     
+   ],                                                        
+   'tests':[                                                 
+      {                                                      
+         'name':'NewOwnerTest',                                     
+         'experiences':[                                     
+            {                                                
+               'name':'outOfTheBox',                                   
+               'weight':5,                                  
+               'isControl':true                              
+            },                                               
+            {                                                
+               'name':'tosCheckbox',                                   
+               'weight':1                                   
+            },                                               
+            {                                                
+               'name':'tos&mailCheckbox',                                   
+               'weight':1                                   
+            }                                               
+         ],                                                  
+         'onViews':[                                         
+            {                                                
+               'viewRef':'newOwner',                            
+               'variants':[                                  
+                  {                                          
+                     'experienceRef': 'tosCheckbox',                   
+                     'path':'/petclinic/owners/new/variant/newOwnerTest.tosCheckbox'         
+                  },                                         
+                  {                                          
+                     'experienceRef': 'tos&mailCheckbox',                   
+                     'path':'/petclinic/owners/new/variant/newOwnerTest.tosAndMailCheckbox'         
+                  }                                          
+               ]                                             
+            }                                                
+         ]                                                   
+      }                                                     
+   ]                                                         
+}                         
+		
