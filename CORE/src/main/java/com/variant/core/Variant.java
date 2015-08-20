@@ -87,22 +87,20 @@ public interface Variant {
 	 *  Get user's Variant session. 
 	 *  
 	 * @param create   Whether or not create the session if does not exist.
-	 * @param userData Client code can supply runtime details that will be passed without
-	 *                 interpretation to <code>SessionKeyResolver.getSessionKey()</code>
-	 *                 In an environment like servlet container, this will be http request.
+	 * @param sessionIdPersisterUserData Opaque object that will be passed without
+	 *                 interpretation to <code>SessionIdPersister.get()</code>.
 	 * @return          
 	 */
-	public VariantSession getSession(boolean create, Object userData);
+	public VariantSession getSession(boolean create, Object sessionIdPersisterUserData);
 	
 	/**
 	 * Get user's Variant session. 
 	 * 
-	 * @param userArgs Client code can supply runtime details that will be passed without
-	 *                 interpretation to <code>SessionKeyResolver.getSessionKey()</code>
-	 *                 In an environment like servlet container, this will be http request.
+	 * @param sessionIdPersisterUserData Opaque object that will be passed without
+	 *                 interpretation to <code>SessionIdPersister.get()</code>.
 	 * @return
 	 */
-	public VariantSession getSession(Object userData);
+	public VariantSession getSession(Object sessionIdPersisterUserData);
 	
 	/**
      * Start view Request 
@@ -115,8 +113,11 @@ public interface Variant {
 	 * Commit of a view request.
 	 * @param request
 	 */
-	public void commitViewRequest(VariantViewRequest request);
+	public void commitViewRequest(VariantViewRequest request, Object sessionIdPersisterUserData);
 	
+	/**
+	 * Factory singleton class.
+	 */
 	public static class Factory {
 		private static Variant instance = null;
 		public static Variant getInstance() {

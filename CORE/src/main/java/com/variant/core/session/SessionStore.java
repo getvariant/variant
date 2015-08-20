@@ -76,7 +76,7 @@ public interface SessionStore {
 		 * Remote implementation.  TODO
 		 * @author Igor.
 		 *
-		 */
+		 *
 		private static class Remote implements SessionStore {
 
 			private HazelcastInstance instance = null;
@@ -101,7 +101,7 @@ public interface SessionStore {
 				throw new UnsupportedOperationException("Cannot shutdown remote Hazelcast server");
 			}
 		}
-
+        */
 	}
 	
 }

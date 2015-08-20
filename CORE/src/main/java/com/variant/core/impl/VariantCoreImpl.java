@@ -1,5 +1,10 @@
 package com.variant.core.impl;
 
+import static com.variant.core.error.ErrorTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
+import static com.variant.core.error.ErrorTemplate.INTERNAL;
+import static com.variant.core.error.ErrorTemplate.RUN_PROPERTY_NOT_SET;
+import static com.variant.core.error.ErrorTemplate.RUN_TP_NOT_INITIALIZED;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -10,13 +15,11 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
-import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantRuntimeException;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
-import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
@@ -116,7 +119,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public synchronized void bootstrap() throws VariantBootstrapException {
+	public synchronized void bootstrap() {
 		bootstrap(null);
 	}
 
@@ -124,7 +127,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public synchronized void bootstrap(String resourceName) throws VariantBootstrapException {
+	public synchronized void bootstrap(String resourceName) {
 		
 
 		if (isBootstrapped) throw new IllegalStateException("Variant is already bootstrapped");
@@ -145,7 +148,7 @@ public class VariantCoreImpl implements Variant {
 		//
 		String eventPersisterClassName = VariantProperties.getInstance().eventPersisterClassName();
 		if (eventPersisterClassName == null) {
-			throw new VariantRuntimeException(ErrorTemplate.RUN_PROPERTY_NOT_SET, VariantProperties.Keys.EVENT_PERSISTER_CLASS_NAME.propName());
+			throw new VariantRuntimeException(RUN_PROPERTY_NOT_SET, VariantProperties.Keys.EVENT_PERSISTER_CLASS_NAME.propName());
 		}
 		
 		EventPersister eventPersister = null;
@@ -155,12 +158,11 @@ public class VariantCoreImpl implements Variant {
 				eventPersister = (EventPersister) eventPersisterObject;
 			}
 			else {
-				throw new VariantBootstrapException(
-						"Event persister class [" + eventPersisterClassName + "] must implement interface [" + EventPersister.class.getName());
+				throw new VariantRuntimeException (BOOT_EVENT_PERSISTER_NO_INTERFACE, eventPersisterClassName, EventPersister.class.getName());
 			}
 		}
 		catch (Exception e) {
-			throw new VariantBootstrapException(
+			throw new VariantInternalException(
 					"Unable to instantiate event persister class [" + VariantProperties.getInstance().eventPersisterClassName() +"]", e);
 		}
 				
@@ -258,7 +260,7 @@ public class VariantCoreImpl implements Variant {
 		catch (Throwable t) {
 			logger.error(t.getMessage(), t);
 			response = new ParserResponseImpl();
-			response.addError(ErrorTemplate.INTERNAL, t.getMessage() + ". See log for details.");
+			response.addError(INTERNAL, t.getMessage() + ". See log for details.");
 		}
 
 		// Only replace the schema if no ERROR or higher level errors.
@@ -341,7 +343,7 @@ public class VariantCoreImpl implements Variant {
 		stateCheck();
 		// It's caller's responsibility to init the targeting persister.
 		if (session.getTargetingPersister() == null) {
-			throw new VariantRuntimeException(ErrorTemplate.RUN_TP_NOT_INITIALIZED);
+			throw new VariantRuntimeException(RUN_TP_NOT_INITIALIZED);
 		}
 		return VariantRuntime.startViewRequest(session, view);
 	}
@@ -350,12 +352,15 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public void commitViewRequest(VariantViewRequest request) {
+	public void commitViewRequest(VariantViewRequest request, Object sessionIdPersisterUserData) {
 
 		stateCheck();
+		
 		if (((VariantViewRequestImpl)request).isCommitted()) {
 			throw new IllegalStateException("Request already committed");
 		}
+		
+		sessionService.persistSessionId(request.getSession(), sessionIdPersisterUserData);
 		VariantRuntime.commitViewRequest(request);
 	}
 	

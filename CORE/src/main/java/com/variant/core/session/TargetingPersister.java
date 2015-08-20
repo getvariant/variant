@@ -52,5 +52,11 @@ public interface TargetingPersister {
 	 * @param test
 	 */
 	public void touch(Test test);
+	
+	/**
+	 * Persist the state of this object where it can be retrieved from again.
+	 * @param userData
+	 */
+	public void persist(Object userData);
 		
 }

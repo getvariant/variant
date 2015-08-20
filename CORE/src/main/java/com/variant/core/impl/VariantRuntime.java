@@ -390,7 +390,7 @@ public class VariantRuntime {
 	 */
 	public static void commitViewRequest(VariantViewRequest request) {
 		EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
-		ew.write(request.getViewServeEvent());
+		ew.write(request.getViewServeEvent());		
 		((VariantViewRequestImpl)request).commit();
 	}
 }

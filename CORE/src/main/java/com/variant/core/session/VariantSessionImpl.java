@@ -1,8 +1,11 @@
 package com.variant.core.session;
 
+import static com.variant.core.error.ErrorTemplate.BOOT_TARGETING_PERSISTER_NO_INTERFACE;
+
 import java.io.Serializable;
 
 import com.variant.core.VariantBootstrapException;
+import com.variant.core.VariantInternalException;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 
@@ -60,7 +63,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	 * 
 	 */
 	@Override
-	public void initTargetingPersister(Object userData) throws VariantBootstrapException {
+	public void initTargetingPersister(Object userData) {
 
 		
 		String className = VariantProperties.getInstance().targetingPersisterClassName();
@@ -71,14 +74,11 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 				targetingPersister = (TargetingPersister) object;
 			}
 			else {
-				throw new VariantBootstrapException(
-						"Targeting persister class [" + className + 
-						"] must implement interface [" + TargetingPersister.class.getName() + "]");
+				throw new VariantBootstrapException(BOOT_TARGETING_PERSISTER_NO_INTERFACE, className, TargetingPersister.class.getName());
 			}
 		}
 		catch (Exception e) {
-			throw new VariantBootstrapException(
-					"Unable to instantiate targeting persister class [" + className +"]", e);
+			throw new VariantInternalException("Unable to instantiate targeting persister class [" + className +"]", e);
 		}
 		
 		targetingPersister.initialized(this, userData);

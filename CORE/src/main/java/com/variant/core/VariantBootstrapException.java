@@ -1,29 +1,33 @@
 package com.variant.core;
 
-/**
- * 
- * @author Igor
- *
- */
-public class VariantBootstrapException extends Exception {
+import com.variant.core.error.ErrorTemplate;
+import com.variant.core.error.Severity;
+
+public class VariantBootstrapException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
-
+	private ErrorTemplate template;
+	private String[] args;
+	
+	public VariantBootstrapException(ErrorTemplate template, String...args) {
+		this.template = template;
+		this.args = args;
+	}
+	
 	/**
 	 * 
-	 * @param msg
+	 * @return
 	 */
-	public VariantBootstrapException(String msg) {
-		super(msg);
+	public Severity getSeverity() {
+		return template.getSeverity();
 	}
-
+	
 	/**
 	 * 
-	 * @param msg
-	 * @param t
+	 * @return
 	 */
-	public VariantBootstrapException(String msg, Throwable t) {
-		super(msg, t);
+	@Override
+	public String getMessage() {
+		return String.format(template.getFormat(), (Object[]) args);
 	}
-
 }
