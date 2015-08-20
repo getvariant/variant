@@ -1,0 +1,8 @@
+#
+# Copyright Variant, Inc. All Rights Reserved.
+#
+# Variant WEB system property overrides.
+#
+
+# Session key resolver implementation class name.
+session.key.resolver.class.name = com.variant.web.SessionIdPersisterHttpCookie
