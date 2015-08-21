@@ -2,10 +2,10 @@ package com.variant.core.ext;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
-import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.TargetingPersisterSupport;
@@ -22,7 +22,7 @@ import com.variant.core.session.TargetingPersisterSupport;
  */
 public class TargetingPersisterString extends TargetingPersisterSupport {
 
-	private Logger logger = ((VariantCoreImpl)Variant.Factory.getInstance()).getLogger();
+	private Logger LOG = LoggerFactory.getLogger(TargetingPersisterString.class);
 		
 	private void parseFromString(String input, VariantSession ssn) {
 				
@@ -38,15 +38,15 @@ public class TargetingPersisterString extends TargetingPersisterSupport {
 					try {
 						Test test = Variant.Factory.getInstance().getSchema().getTest(tokens[1]);
 						if (test == null) {
-							if (logger.isDebugEnabled()) {
-								logger.debug("Ignored non-existent test [" + tokens[1] + "]");
+							if (LOG.isDebugEnabled()) {
+								LOG.debug("Ignored non-existent test [" + tokens[1] + "]");
 							}
 							continue;
 						}
 						Experience experience = test.getExperience(tokens[2]);
 						if (experience == null) {
-							if (logger.isDebugEnabled()) {
-								logger.debug("Ignored non-existent experience [" + tokens[1] + "." + tokens[2] + "]");
+							if (LOG.isDebugEnabled()) {
+								LOG.debug("Ignored non-existent experience [" + tokens[1] + "." + tokens[2] + "]");
 							}
 							continue;
 						}
@@ -55,8 +55,8 @@ public class TargetingPersisterString extends TargetingPersisterSupport {
 						// ignore if user hasn't seen this experience for idleDaysToLive days,
 						// inless idleDaysToLive is 0, which means forever. 
 						if (test.getIdleDaysToLive() > 0 && System.currentTimeMillis() - timestamp > test.getIdleDaysToLive() * DateUtils.MILLIS_PER_DAY) {
-							if (logger.isDebugEnabled()) {
-								logger.debug("Ignored idle experience [" + tokens[1] + "." + tokens[2] + "]");
+							if (LOG.isDebugEnabled()) {
+								LOG.debug("Ignored idle experience [" + tokens[1] + "." + tokens[2] + "]");
 							}
 							continue;
 						}
@@ -65,14 +65,14 @@ public class TargetingPersisterString extends TargetingPersisterSupport {
 					}
 					catch (Exception e) {
 						// any parsing error is due to end user's mucking with the string...
-						if (logger.isDebugEnabled()) {
-							logger.debug("Unable to parse entry [" + entry + "] for session [" + ssn.getId() + "]", e);
+						if (LOG.isDebugEnabled()) {
+							LOG.debug("Unable to parse entry [" + entry + "] for session [" + ssn.getId() + "]", e);
 						}
 					}
 				}
 				else {
-					if (logger.isDebugEnabled()) {
-						logger.debug("Unable to parse entry [" + entry + "] for session [" + ssn.getId() + "]");
+					if (LOG.isDebugEnabled()) {
+						LOG.debug("Unable to parse entry [" + entry + "] for session [" + ssn.getId() + "]");
 					}					
 				}
 			}

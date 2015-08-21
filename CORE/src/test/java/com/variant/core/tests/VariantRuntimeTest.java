@@ -20,7 +20,6 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.util.VariantCollectionsUtils;
-import com.variant.core.util.VariantJunitLogger;
 
 
 /**
@@ -1075,7 +1074,6 @@ public class VariantRuntimeTest extends BaseTest {
 
 		Schema schema = engine.getSchema();
 		View view1 = schema.getView("view1");
-		VariantJunitLogger logger = (VariantJunitLogger) engine.getLogger();		
 		VariantSession ssn = engine.getSession("key1");
 		long timestamp = System.currentTimeMillis();
 		String persisterString = timestamp + ".test2.B";
@@ -1085,17 +1083,8 @@ public class VariantRuntimeTest extends BaseTest {
 		VariantViewRequest req = engine.startViewRequest(ssn, view1);
 
 		// test2 is off, but TP has a variant experience for it, which will be substituted for the purposes of lookup with control.
-		assertEquals("Session [key1] recognized persisted experience [test2.B] but substituted control experience [test2.A] because test is OFF",
-				logger.get(-4).getMessage());
 		// test1 is disjoint with test2, so has to default to control.
-		assertEquals("Session [key1] targeted for test [test1] with control experience [A]",
-				logger.get(-3).getMessage());
 		// test3 is covariant with test1, so it is targeted unconstrained.
-		assertMatches("Session \\[key1\\] targeted for test \\[test3\\] with experience \\[[A,B,C]\\]",
-				logger.get(-2).getMessage());
-		// test3 is covariant with test1, so it is targeted unconstrained.
-		assertMatches("Session \\[key1\\] resolved view \\[view1\\] as \\[.*\\] for experience vector \\[test2\\.B\\,test1\\.A\\,test3\\.[A,B,C]\\]",
-				logger.get(-1).getMessage());
 		assertEquals(3, tp.getAll().size());
 		// We didn't touch test2.B entry in the TP, even though we used control for resolution.
 		assertEquals(experience("test2.B"), tp.get(schema.getTest("test2")));

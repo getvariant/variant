@@ -6,6 +6,7 @@ import java.util.HashSet;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
@@ -32,7 +33,7 @@ import com.variant.core.session.VariantSessionImpl;
 public class VariantRuntime {
 
 	// Logger
-	private static Logger logger = ((VariantCoreImpl)Variant.Factory.getInstance()).getLogger();
+	private static final Logger LOG = LoggerFactory.getLogger(VariantRuntime.class);
 
 	/**
 	 * Static singleton.
@@ -88,7 +89,7 @@ public class VariantRuntime {
 
 				for (Experience e: minUnresolvableSubvector) tp.remove(e.getTest());
 
-				logger.info(
+				LOG.info(
 						"Targeting persistor not resolvable for session [" + ssn.getId() + "]. " +
 						"Removed experiences [" + StringUtils.join(minUnresolvableSubvector.toArray()) + "].");
 			}
@@ -98,14 +99,14 @@ public class VariantRuntime {
 		// Targeting persister now has all currently targeted experiences.
 		for (Experience e: tp.getAll()) {
 			if (e.getTest().isOn()) {
-				if (logger.isTraceEnabled()) {
-					logger.trace(
+				if (LOG.isTraceEnabled()) {
+					LOG.trace(
 							"Session [" + ssn.getId() + "] recognized persisted experience [" + e +"]");
 				}									
 			}
 			else {
-				if (logger.isTraceEnabled()) {
-					logger.trace(
+				if (LOG.isTraceEnabled()) {
+					LOG.trace(
 							"Session [" + ssn.getId() + "] recognized persisted experience [" + e +"]" +
 							" but substituted control experience [" + e.getTest().getControlExperience() + "]" +
 							" because test is OFF");
@@ -120,8 +121,8 @@ public class VariantRuntime {
 				if (!test.isOn()) {
 					Experience e = test.getControlExperience();
 					tp.add(e, System.currentTimeMillis());
-					if (logger.isTraceEnabled()) {
-						logger.trace(
+					if (LOG.isTraceEnabled()) {
+						LOG.trace(
 								"Session [" + ssn.getId() + "] temporarily targeted for OFF test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}					
@@ -129,8 +130,8 @@ public class VariantRuntime {
 				else if (isTargetable(test, tp.getAll())) {
 					Experience e = ((TestImpl) test).target(ssn);
 					tp.add(e, System.currentTimeMillis());
-					if (logger.isTraceEnabled()) {
-						logger.trace(
+					if (LOG.isTraceEnabled()) {
+						LOG.trace(
 								"Session [" + ssn.getId() + "] targeted for test [" + 
 								test.getName() +"] with experience [" + e.getName() + "]");
 					}
@@ -139,8 +140,8 @@ public class VariantRuntime {
 				else {
 					Experience e = test.getControlExperience();
 					tp.add(e, System.currentTimeMillis());
-					if (logger.isTraceEnabled()) {
-						logger.trace(
+					if (LOG.isTraceEnabled()) {
+						LOG.trace(
 								"Session [" + ssn.getId() + "] targeted for test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}
@@ -368,8 +369,8 @@ public class VariantRuntime {
 		VariantViewRequestImpl result = new VariantViewRequestImpl((VariantSessionImpl)ssn, (ViewImpl) view);
 		result.setResolvedPath(resolvedPath);
 		
-		if (logger.isTraceEnabled()) {
-			logger.trace(
+		if (LOG.isTraceEnabled()) {
+			LOG.trace(
 					"Session [" + ssn.getId() + "] resolved view [" + 
 					view.getName() +"] as [" + resolvedPath + "] for experience vector [" +
 					StringUtils.join(ssn.getTargetingPersister().getAll().toArray(), ",") + "]");

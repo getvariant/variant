@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.variant.core.Variant;
 import com.variant.core.event.EventWriter;
@@ -23,7 +24,7 @@ import com.variant.core.util.VariantStringUtils;
 
 public class JdbcUtil {
 
-	private static Logger logger = ((VariantCoreImpl) Variant.Factory.getInstance()).getLogger();
+	private static final Logger LOG = LoggerFactory.getLogger(JdbcUtil.class);
 	
 	/**
 	 * Read a SQL script from a resource file, discard comments and parse it out into
@@ -103,10 +104,10 @@ public class JdbcUtil {
 		String[] tokens = statement.split(" ");
 		
 		if (VariantStringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_DOES_NOT_EXIST)) {
-			logger.error(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Relation Does Not Exist.");
+			LOG.error(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Relation Does Not Exist.");
 		}
 		else {
-			logger.error("SQLException: " + e.getMessage());
+			LOG.error("SQLException: " + e.getMessage());
 			throw e;
 		}
 
@@ -129,7 +130,7 @@ public class JdbcUtil {
 			
 			try {
 				jdbcStmt.execute(stmt);
-				logger.debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
+				LOG.debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
 			}
 			catch (SQLException e) {
 				parseSQLException(e, stmt);
@@ -151,7 +152,7 @@ public class JdbcUtil {
 			try {
 				jdbcStmt.execute(stmt);
 				String[] tokens = stmt.split(" ");
-				logger.debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
+				LOG.debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
 			}
 			catch (SQLException e) {
 				parseSQLException(e, stmt);

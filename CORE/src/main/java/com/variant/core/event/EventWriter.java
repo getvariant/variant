@@ -7,14 +7,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantProperties;
-import com.variant.core.impl.VariantCoreImpl;
 
 public class EventWriter {
 	
+	// Logger
+	private static final Logger LOG = LoggerFactory.getLogger(EventWriter.class);
+
 	// The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
 	// refusing inserts that will put the queue size over the limit, but not worrying about
 	// a possible overage due to concurrency.
@@ -37,10 +39,7 @@ public class EventWriter {
 	
 	// The actual event persister passed to the constructor by client code.
 	private EventPersister persisterImpl = null;
-	
-	// Logger
-	private Logger logger = ((VariantCoreImpl)Variant.Factory.getInstance()).getLogger();
-	
+		
 	/**
 	 * Validate that event is well-formed.
 	 * @param event
@@ -92,8 +91,8 @@ public class EventWriter {
 		long now = System.currentTimeMillis();
 		persisterThread.interrupt();
 		persisterThread = null;
-		if (logger.isDebugEnabled()) {
-			logger.debug(
+		if (LOG.isDebugEnabled()) {
+			LOG.debug(
 					"Event Writer shutdown in " + (DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
 		}
 	}
@@ -153,7 +152,7 @@ public class EventWriter {
 		@Override
 		public void run() {
 
-			logger.debug("Event persister thread " + Thread.currentThread().getName() + " created.");
+			LOG.debug("Event persister thread " + Thread.currentThread().getName() + " created.");
 			
 			boolean InterruptedExceptionThrown = false;
 			
@@ -177,7 +176,7 @@ public class EventWriter {
 					InterruptedExceptionThrown = true;
 				}
 				catch (Throwable t) {
-					logger.error("Unexpected exception in async database event writer.", t);
+					LOG.error("Unexpected exception in async database event writer.", t);
 				}
 				
 				if (InterruptedExceptionThrown || Thread.currentThread().isInterrupted()) {
@@ -185,9 +184,9 @@ public class EventWriter {
 						flush();
 					}
 					catch (Throwable t) {
-						logger.error("Unexpected exception in async database event writer.", t);
+						LOG.error("Unexpected exception in async database event writer.", t);
 					}
-					logger.debug("Persister thread " + Thread.currentThread().getName() + " interrupted and exited.");
+					LOG.debug("Persister thread " + Thread.currentThread().getName() + " interrupted and exited.");
 					return;
 				};
 			}
@@ -211,7 +210,7 @@ public class EventWriter {
 			
 			long now = System.currentTimeMillis();
 			persisterImpl.persist(events);		
-			logger.debug("Wrote " + events.size() + " events in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
+			LOG.debug("Wrote " + events.size() + " events in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
 		}
 	}
 }

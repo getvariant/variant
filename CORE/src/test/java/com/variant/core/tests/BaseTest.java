@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 
 import com.variant.core.ParserResponse;
@@ -14,13 +13,11 @@ import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
 import com.variant.core.error.ParserError;
 import com.variant.core.impl.VariantCoreImpl;
-import com.variant.core.impl.VariantCoreImplTestFacade;
 import com.variant.core.jdbc.EventPersisterJdbc;
 import com.variant.core.jdbc.JdbcUtil;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.util.PropertiesChain;
 import com.variant.core.util.VariantIoUtils;
-import com.variant.core.util.VariantJunitLogger;
 
 /**
  * Common utility methods for all JUnit tests.
@@ -50,20 +47,6 @@ public class BaseTest {
 			JdbcUtil.createSchema();  // Fresh in-memory DB.
 			break;
 		}
-
-	}
-
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	@Before
-	public void beforeTest() throws Exception {
-		
-		// Replace the logger with the in-memory implementation that we can
-		// introspect into.
-		VariantCoreImplTestFacade.setLogger(new VariantJunitLogger(System.out));
-		
 	}
 
 	/**

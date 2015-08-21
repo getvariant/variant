@@ -1,22 +1,21 @@
 package com.variant.core.session;
 
+import static com.variant.core.error.ErrorTemplate.BOOT_SID_PERSISTER_NO_INTERFACE;
+import static com.variant.core.error.ErrorTemplate.INTERNAL;
+
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantRuntimeException;
 import com.variant.core.VariantSession;
 
-import static com.variant.core.error.ErrorTemplate.*;
-
-import com.variant.core.impl.VariantCoreImpl;
-
 public class SessionService {
 
-	private Logger logger = ((VariantCoreImpl) Variant.Factory.getInstance()).getLogger();
+	private static final Logger LOG  = LoggerFactory.getLogger(SessionService.class);
 	private SessionIdPersister sidPersister = null;
 	private SessionStore store = null;
 	
@@ -57,8 +56,8 @@ public class SessionService {
 		store.shutdown();
 		store = null;
 		sidPersister = null;
-		if (logger.isDebugEnabled()) {
-			logger.debug(
+		if (LOG.isDebugEnabled()) {
+			LOG.debug(
 					"Session Service shutdown in " + (DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
 		}
 	}

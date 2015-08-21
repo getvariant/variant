@@ -14,7 +14,6 @@ import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantSession;
 import com.variant.core.schema.Schema;
 import com.variant.core.session.TargetingPersister;
-import com.variant.core.util.VariantJunitLogger;
 
 public class SessionTest extends BaseTest {
 
@@ -49,7 +48,6 @@ public class SessionTest extends BaseTest {
 		assertFalse(response.hasErrors());
 		
 		Schema schema = engine.getSchema();
-		VariantJunitLogger logger = (VariantJunitLogger) engine.getLogger();
 		
 		VariantSession ssn = engine.getSession("key1");
 		long timestamp = System.currentTimeMillis();
@@ -61,14 +59,12 @@ public class SessionTest extends BaseTest {
 		ssn.initTargetingPersister("");
 		TargetingPersister tp = ssn.getTargetingPersister();
 		assertEquals(0, tp.getAll().size());
-		assertTrue(logger.get(-1).getLevel().lessThan(VariantJunitLogger.Level.WARN));
 		
 		// 
 		// Single entry - good
 		//
 		String persisterString = timestamp + ".test1.A";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel().lessThan(VariantJunitLogger.Level.WARN));
 		tp = ssn.getTargetingPersister();
 		assertEquals(1, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -78,21 +74,18 @@ public class SessionTest extends BaseTest {
 
 		persisterString = timestamp + ".test1.A|";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel().lessThan(VariantJunitLogger.Level.WARN));
 		tp = ssn.getTargetingPersister();
 		assertEquals(1, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
 
 		persisterString = "|" + timestamp + ".test2.B";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel().lessThan(VariantJunitLogger.Level.WARN));
 		tp = ssn.getTargetingPersister();
 		assertEquals(1, tp.getAll().size());
 		assertEquals(experience("test2.B"), tp.get(schema.getTest("test2")));
 
 		persisterString = "|" + timestamp + ".test3.C|";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel().lessThan(VariantJunitLogger.Level.WARN));
 		tp = ssn.getTargetingPersister();
 		assertEquals(1, tp.getAll().size());
 		assertEquals(experience("test3.C"), tp.get(schema.getTest("test3")));
@@ -119,30 +112,21 @@ public class SessionTest extends BaseTest {
 		//
 		persisterString = "|test2.B";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel() == VariantJunitLogger.Level.DEBUG);
-		assertEquals("Unable to parse entry [test2.B] for session [key1]", logger.get(-1).getMessage());
 		tp = ssn.getTargetingPersister();
 		assertEquals(0, tp.getAll().size());
 
 		persisterString = timestamp + ".badTestName.B";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel() == VariantJunitLogger.Level.DEBUG);
-		assertEquals("Ignored non-existent test [badTestName]", logger.get(-1).getMessage());
 		tp = ssn.getTargetingPersister();
 		assertEquals(0, tp.getAll().size());
 
 		persisterString = "|" + timestamp + ".test3.badExperienceName|";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel() == VariantJunitLogger.Level.DEBUG);
-		assertEquals("Ignored non-existent experience [test3.badExperienceName]", logger.get(-1).getMessage());
 		tp = ssn.getTargetingPersister();
 		assertEquals(0, tp.getAll().size());
 
 		persisterString = "notANumber.test3.C|";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel() == VariantJunitLogger.Level.DEBUG);
-		assertEquals("Unable to parse entry [notANumber.test3.C] for session [key1]", logger.get(-1).getMessage());
-		assertTrue(logger.get(-1).getThrowable() instanceof NumberFormatException);
 		tp = ssn.getTargetingPersister();
 		assertEquals(0, tp.getAll().size());
 
@@ -151,7 +135,6 @@ public class SessionTest extends BaseTest {
 		//
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test4.B";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel().lessThan(VariantJunitLogger.Level.WARN));
 		tp = ssn.getTargetingPersister();
 		assertEquals(3, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -166,7 +149,6 @@ public class SessionTest extends BaseTest {
 		
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C||" + timestamp + ".test4.B|";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel() == VariantJunitLogger.Level.DEBUG);
 		tp = ssn.getTargetingPersister();
 		assertEquals(3, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -179,8 +161,6 @@ public class SessionTest extends BaseTest {
 		//
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test4..B";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel() == VariantJunitLogger.Level.DEBUG);
-		assertEquals("Unable to parse entry [" + timestamp + ".test4..B] for session [key1]", logger.get(-1).getMessage());
 		tp = ssn.getTargetingPersister();
 		assertEquals(2, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -189,7 +169,6 @@ public class SessionTest extends BaseTest {
 
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test1.B";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel() == VariantJunitLogger.Level.DEBUG);
 		tp = ssn.getTargetingPersister();
 		assertEquals(2, tp.getAll().size());
 		assertEquals(experience("test1.B"), tp.get(schema.getTest("test1")));
@@ -202,7 +181,6 @@ public class SessionTest extends BaseTest {
 		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY;
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test3.B";
 		ssn.initTargetingPersister(persisterString);
-		assertTrue(logger.get(-1).getLevel().lessThan(VariantJunitLogger.Level.WARN));
 		tp = ssn.getTargetingPersister();
 		assertEquals(3, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -213,7 +191,6 @@ public class SessionTest extends BaseTest {
 		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY - 1;
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test3.B";
 		ssn.initTargetingPersister(persisterString);
-		assertEquals("Ignored idle experience [test3.B]", logger.get(-1).getMessage());
 		tp = ssn.getTargetingPersister();
 		assertEquals(2, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -224,7 +201,6 @@ public class SessionTest extends BaseTest {
 		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY * 1000;
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test3.B|" + timestamp + ".test4.A|";
 		ssn.initTargetingPersister(persisterString);
-		assertEquals("Ignored idle experience [test3.B]", logger.get(-1).getMessage());
 		tp = ssn.getTargetingPersister();
 		assertEquals(3, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));

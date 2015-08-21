@@ -40,17 +40,13 @@ import com.variant.core.util.VariantIoUtils;
  */
 public class VariantCoreImpl implements Variant {
 
-	private Logger logger = LoggerFactory.getLogger("Variant");
+	private static final Logger LOG = LoggerFactory.getLogger(VariantCoreImpl.class);
+	
 	private boolean isBootstrapped = false;
 	private Schema schema = null;
 	private EventWriter eventWriter = null;
 	private SessionService sessionService = null;
-	
-	// Tests will call this to replace logger implementation.
-	void setLogger(Logger logger) {
-		this.logger = logger;
-	}
-		
+			
 	private static String version() {
 		String version = RuntimeService.getVersion();
 		if (version == null) version = "?";
@@ -136,10 +132,10 @@ public class VariantCoreImpl implements Variant {
 
 		setupSystemProperties(resourceName);
 		
-		if (logger.isDebugEnabled()) {
-			logger.debug("Bootstrapping Variant with following system properties:");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("Bootstrapping Variant with following system properties:");
 			for (VariantProperties.Keys key: VariantProperties.Keys.values()) {
-				logger.debug("  " + key.propName() + " = " + key.propValue());
+				LOG.debug("  " + key.propName() + " = " + key.propValue());
 			}
 		}
 			
@@ -179,7 +175,7 @@ public class VariantCoreImpl implements Variant {
 		
 		isBootstrapped = true;
 		
-		logger.info(
+		LOG.info(
 				String.format("Core %s bootstrapped in %s",
 						version(),
 						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
@@ -198,7 +194,7 @@ public class VariantCoreImpl implements Variant {
 		eventWriter = null;
 		sessionService.shutdown();
 		sessionService = null;
-		logger.info(
+		LOG.info(
 				String.format("Core %s shutdown in %s",
 						version(),
 						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
@@ -258,7 +254,7 @@ public class VariantCoreImpl implements Variant {
 			response = SchemaParser.parse(schemaAsStringNoComments.toString());
 		}
 		catch (Throwable t) {
-			logger.error(t.getMessage(), t);
+			LOG.error(t.getMessage(), t);
 			response = new ParserResponseImpl();
 			response.addError(INTERNAL, t.getMessage() + ". See log for details.");
 		}
@@ -280,10 +276,10 @@ public class VariantCoreImpl implements Variant {
 				msg.append("}");
 				if (!test.isOn()) msg.append(" OFF");
 			}
-			logger.info(msg.toString());
+			LOG.info(msg.toString());
 		}
 		else {
-			logger.error("New schema was not deployed due to parser error(s).");
+			LOG.error("New schema was not deployed due to parser error(s).");
 		}
 		
 		return response;
@@ -367,14 +363,6 @@ public class VariantCoreImpl implements Variant {
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
-
-	/**
-	 * Variant logger.
-	 * @return
-	 */
-	public Logger getLogger() {
-		return logger;
-	}
 	
 	/**
 	 * 
