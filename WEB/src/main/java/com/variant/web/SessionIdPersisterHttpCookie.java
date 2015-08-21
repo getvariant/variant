@@ -1,9 +1,15 @@
 package com.variant.web;
 
+import java.util.Random;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.variant.core.session.SessionIdPersister;
+import com.variant.core.util.VariantStringUtils;
 import com.variant.web.util.VariantCookie;
 
 
@@ -15,13 +21,28 @@ import com.variant.web.util.VariantCookie;
  */
 public class SessionIdPersisterHttpCookie implements SessionIdPersister {
 		
+	private static final Logger LOG = LoggerFactory.getLogger(SessionIdPersisterHttpCookie.class);
+	private static final Random rand = new Random(System.currentTimeMillis());
+	
 	/**
 	 * We expect caller to pass 1 argument of type <code>HttpServletRequest</code>
 	 * @return session Id, if existed, or null otherwise.
 	 */
 	public String get(Object userData) {
 		HttpServletRequest request = (HttpServletRequest) userData;
-		return new SsnIdCookie(request).getValue();
+		String result = new SsnIdCookie(request).getValue();
+		if (result == null) {
+			result = VariantStringUtils.random128BitString(rand);
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Created new variant session ID [" + result + "] for HTTP session [" + request.getSession().getId());
+			}
+		}
+		else {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Retrieved existing variant session ID [" + result + "] for HTTP session [" + request.getSession().getId());
+			}			
+		}
+		return result;
 	}
 
 	/**

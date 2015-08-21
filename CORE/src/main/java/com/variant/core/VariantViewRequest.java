@@ -30,6 +30,14 @@ public interface VariantViewRequest {
 	public String resolvedViewPath();
 	
 	/**
+	 * Is this request's resolved path different from the reqeusted path?
+	 * In other words, this is equivalent to 
+	 * <code>!resolvedPath().equalsIgnoreCase(getView().getPath())</code>
+	 * @return
+	 */
+	public boolean isForwarding();
+	
+	/**
 	 * View serve event associated with this view request
 	 * @return
 	 */

@@ -65,7 +65,7 @@ public class OwnerController {
         return "owners/createOrUpdateOwnerForm";
     }
 
-    /// BEGIN Variant instrumentation ///
+    ///-------- BEGIN Variant instrumentation ---------///
     @RequestMapping(value = "/owners/new/variant/newOwnerTest.tosCheckbox", method = RequestMethod.GET)
     public String initCreationForm__newOwner_tosCheckbox(Map<String, Object> model) {
         Owner owner = new Owner();
@@ -79,7 +79,7 @@ public class OwnerController {
         model.put("owner", owner);
         return "owners/createOrUpdateOwnerForm__newOwnerTest.tosAndMailCheckbox";
     }
-    /// END Variant instrumentation ///
+    ///--------- END Variant instrumentation ---------///
 
     @RequestMapping(value = "/owners/new", method = RequestMethod.POST)
     public String processCreationForm(@Valid Owner owner, BindingResult result, SessionStatus status) {

@@ -55,6 +55,11 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	}
 
 	@Override
+	public boolean isForwarding() {
+		return ! resolvedPath.equalsIgnoreCase(view.getPath());
+	}
+	
+	@Override
 	public ViewServeEvent getViewServeEvent() {
 		return event;
 	}
