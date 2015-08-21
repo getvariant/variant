@@ -9,4 +9,6 @@ Variant Related Changes:
   3.2. Add 2 corresponding JSP files in src/main/webapp/WEB-INF/jsp/owners
 
 4. Create a new Serlet Filter VariantFilter
+5. Add <logger name="com.variant" level="debug"/> to logback.xml. (Optional)
+
 ?. web.xml: add VariantFilter in com.variant.sample.VariantFilter

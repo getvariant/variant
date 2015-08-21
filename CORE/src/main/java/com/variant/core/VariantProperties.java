@@ -78,7 +78,7 @@ public class VariantProperties {
 		EVENT_WRITER_MAX_DELAY_MILLIS,
 		EVENT_WRITER_PERCENT_FULL,
 		SESSION_STORE_TYPE,
-		SESSION_KEY_RESOLVER_CLASS_NAME,
+		SESSION_ID_PERSISTER_CLASS_NAME,
 		TARGETING_PERSISTER_CLASS_NAME,
 		TARGETING_PERSISTER_IDLE_DAYS_TO_LIVE,
 		;
@@ -160,8 +160,8 @@ public class VariantProperties {
 		return SessionStore.Type.valueOf(getString(Keys.SESSION_STORE_TYPE.propName()).toUpperCase());
 	}
 	
-	public String sessionKeyResolverClassName() {
-		return getString(Keys.SESSION_KEY_RESOLVER_CLASS_NAME.propName());
+	public String sessionIdPersisterClassName() {
+		return getString(Keys.SESSION_ID_PERSISTER_CLASS_NAME.propName());
 	}
 
 	public int eventWriterBufferSize() {

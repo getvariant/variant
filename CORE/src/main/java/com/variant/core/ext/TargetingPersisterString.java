@@ -24,6 +24,11 @@ public class TargetingPersisterString extends TargetingPersisterSupport {
 
 	private Logger LOG = LoggerFactory.getLogger(TargetingPersisterString.class);
 		
+	/**
+	 * Parse the content from an input string.
+	 * @param input
+	 * @param ssn
+	 */
 	private void parseFromString(String input, VariantSession ssn) {
 				
 		for (String entry: input.split("\\|")) {

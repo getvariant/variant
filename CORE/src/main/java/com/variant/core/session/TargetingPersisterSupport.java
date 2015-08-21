@@ -5,12 +5,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
+import com.variant.core.VariantSession;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
  * Basic implementation of a targeting persister as a list in memory.
- * Implements basic operations only.
+ * Implements all operations except for initialized() and persist(),
+ * which are the input and the output for this implementation and are
+ * external of it.
  * 
  * @author Igor
  *
@@ -36,6 +39,12 @@ abstract public class TargetingPersisterSupport implements TargetingPersister {
 
 	// Experiences are held in a map keyed by test name
 	protected LinkedHashMap<String, Entry> entryMap = new LinkedHashMap<String, Entry>();
+	
+	// Concrete subclasses will initialize the entry map here.
+	abstract public void initialized(VariantSession ssn, Object userData);
+	
+	// Concrete sublasses will flush in memory content to a persistence mechanism here.
+	abstract public void persist(Object userData);
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //

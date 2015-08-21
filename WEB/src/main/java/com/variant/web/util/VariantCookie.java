@@ -52,6 +52,8 @@ abstract public class VariantCookie {
 	 */
 	public void send(HttpServletResponse response) {
 		Cookie cookie = new Cookie(name, value);
+		cookie.setPath("/");
+		cookie.setHttpOnly(true);
 		cookie.setMaxAge(getMaxAge());
 		response.addCookie(cookie);
 	}

@@ -16,7 +16,7 @@ public interface VariantSession {
 	 * 
 	 * @param userData
 	 */
-	public void initTargetingPersister(Object userData) throws VariantBootstrapException;
+	public void initTargetingPersister(Object userData);
 	
 	public TargetingPersister getTargetingPersister();
 

@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.Variant;
 import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
-import com.variant.core.VariantViewRequest;
-import com.variant.core.event.EventWriter;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -99,14 +97,14 @@ public class VariantRuntime {
 		// Targeting persister now has all currently targeted experiences.
 		for (Experience e: tp.getAll()) {
 			if (e.getTest().isOn()) {
-				if (LOG.isTraceEnabled()) {
-					LOG.trace(
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(
 							"Session [" + ssn.getId() + "] recognized persisted experience [" + e +"]");
 				}									
 			}
 			else {
-				if (LOG.isTraceEnabled()) {
-					LOG.trace(
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(
 							"Session [" + ssn.getId() + "] recognized persisted experience [" + e +"]" +
 							" but substituted control experience [" + e.getTest().getControlExperience() + "]" +
 							" because test is OFF");
@@ -121,8 +119,8 @@ public class VariantRuntime {
 				if (!test.isOn()) {
 					Experience e = test.getControlExperience();
 					tp.add(e, System.currentTimeMillis());
-					if (LOG.isTraceEnabled()) {
-						LOG.trace(
+					if (LOG.isDebugEnabled()) {
+						LOG.debug(
 								"Session [" + ssn.getId() + "] temporarily targeted for OFF test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}					
@@ -130,8 +128,8 @@ public class VariantRuntime {
 				else if (isTargetable(test, tp.getAll())) {
 					Experience e = ((TestImpl) test).target(ssn);
 					tp.add(e, System.currentTimeMillis());
-					if (LOG.isTraceEnabled()) {
-						LOG.trace(
+					if (LOG.isDebugEnabled()) {
+						LOG.debug(
 								"Session [" + ssn.getId() + "] targeted for test [" + 
 								test.getName() +"] with experience [" + e.getName() + "]");
 					}
@@ -140,8 +138,8 @@ public class VariantRuntime {
 				else {
 					Experience e = test.getControlExperience();
 					tp.add(e, System.currentTimeMillis());
-					if (LOG.isTraceEnabled()) {
-						LOG.trace(
+					if (LOG.isDebugEnabled()) {
+						LOG.debug(
 								"Session [" + ssn.getId() + "] targeted for test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}
@@ -384,14 +382,4 @@ public class VariantRuntime {
 
 	}
 	
-	/**
-	 * Complete a view request.
-	 * 1. Write the events.
-	 * @param request
-	 */
-	public static void commitViewRequest(VariantViewRequest request) {
-		EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
-		ew.write(request.getViewServeEvent());		
-		((VariantViewRequestImpl)request).commit();
-	}
 }

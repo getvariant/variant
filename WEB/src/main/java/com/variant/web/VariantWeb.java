@@ -102,7 +102,9 @@ public class VariantWeb {
 	 * @return          
 	 */
 	public static VariantSession getSession(boolean create, HttpServletRequest request) {
-		return engine.getSession(create, request);
+		VariantSession result = engine.getSession(create, request);
+		result.initTargetingPersister(request);
+		return result;
 	}
 	
 	/**
@@ -112,7 +114,7 @@ public class VariantWeb {
 	 * @return
 	 */
 	public static VariantSession getSession(HttpServletRequest request) {
-		return engine.getSession(true, request);
+		return getSession(true, request);
 	}
 
 	/**

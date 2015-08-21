@@ -69,12 +69,13 @@ public class VariantFilter implements Filter {
 	}
 
 	/**
-	 * 
+	 * TODO This can be done asynchronously.
 	 * @param request
 	 * @return
 	 */
-	private void doAfterFilter(VariantViewRequest varuiantRequest, HttpServletResponse httpResponse) {
+	private void doAfterFilter(VariantViewRequest viewRequest, HttpServletResponse httpResponse) {
 		
+		VariantWeb.commitViewRequest(viewRequest, httpResponse);   
 
 	}
 
@@ -115,7 +116,6 @@ public class VariantFilter implements Filter {
 				}
 			}
 		}
-		LOG.debug("************************");
 	}
 
 	/**
@@ -145,7 +145,7 @@ public class VariantFilter implements Filter {
 								"Variant dispatcher for path [" + variantRequest.getView().getPath() +
 								"] completed in " + DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS") +". ";
 						if (variantRequest.isForwarding()) {
-							msg += "Forward to path [" + variantRequest.resolvedViewPath() + "].";
+							msg += "Forwarding to path [" + variantRequest.resolvedViewPath() + "].";
 						}
 						else {
 							msg += "Falling through to requested URL";

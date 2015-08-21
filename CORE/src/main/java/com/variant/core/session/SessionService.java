@@ -29,8 +29,8 @@ public class SessionService {
 		// Session store directly from factory.
 		store = SessionStore.Factory.getInstance(VariantProperties.getInstance().sessionStoreType());
 		
-		// Session key resolver 
-		String className = VariantProperties.getInstance().sessionKeyResolverClassName();
+		// Session ID persister 
+		String className = VariantProperties.getInstance().sessionIdPersisterClassName();
 		try {
 			Class<?> persisterClass = Class.forName(className);
 			Object persisterObject = persisterClass.newInstance();

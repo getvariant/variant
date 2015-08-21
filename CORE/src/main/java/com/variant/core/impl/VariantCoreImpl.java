@@ -132,13 +132,15 @@ public class VariantCoreImpl implements Variant {
 
 		setupSystemProperties(resourceName);
 		
+		/* Don't -- puts password in the log.
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("Bootstrapping Variant with following system properties:");
 			for (VariantProperties.Keys key: VariantProperties.Keys.values()) {
 				LOG.debug("  " + key.propName() + " = " + key.propValue());
 			}
 		}
-			
+		*/
+		
 		//
 		// Instantiate event persister.
 		//
@@ -348,7 +350,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public void commitViewRequest(VariantViewRequest request, Object sessionIdPersisterUserData) {
+	public void commitViewRequest(VariantViewRequest request, Object userData) {
 
 		stateCheck();
 		
@@ -356,8 +358,17 @@ public class VariantCoreImpl implements Variant {
 			throw new IllegalStateException("Request already committed");
 		}
 		
-		sessionService.persistSessionId(request.getSession(), sessionIdPersisterUserData);
-		VariantRuntime.commitViewRequest(request);
+		// Persist session Id.
+		sessionService.persistSessionId(request.getSession(), userData);
+		
+		// Persist targeting info.  Note that we expect the userData to apply to both!
+		request.getSession().getTargetingPersister().persist(userData);
+		
+		// Save the events.
+		EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
+		ew.write(request.getViewServeEvent());		
+		((VariantViewRequestImpl)request).commit();
+		
 	}
 	
 	//---------------------------------------------------------------------------------------------//

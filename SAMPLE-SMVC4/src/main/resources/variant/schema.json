@@ -28,11 +28,11 @@
                'variants':[                                  
                   {                                          
                      'experienceRef': 'tosCheckbox',                   
-                     'path':'/petclinic/owners/new/variant/newOwnerTest.tosCheckbox'         
+                     'path':'/owners/new/variant/newOwnerTest.tosCheckbox'         
                   },                                         
                   {                                          
                      'experienceRef': 'tos&mailCheckbox',                   
-                     'path':'/petclinic/owners/new/variant/newOwnerTest.tosAndMailCheckbox'         
+                     'path':'/owners/new/variant/newOwnerTest.tosAndMailCheckbox'         
                   }                                          
                ]                                             
             }                                                

@@ -33,5 +33,5 @@ targeting.persister.idle.days.to.live = 0
 
 # Session service type
 session.store.type = local
-# Session key resolver implementation class name.
-session.key.resolver.class.name = com.variant.core.ext.SessionIdPersisterString
+# Session ID persister implementation class name.
+session.id.persister.class.name = com.variant.core.ext.SessionIdPersisterString
