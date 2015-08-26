@@ -8,6 +8,7 @@ import java.util.List;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;
+import com.variant.core.schema.ViewSelectorByPath;
 
 /**
  * @author Igor
@@ -15,11 +16,17 @@ import com.variant.core.schema.View;
 public class SchemaImpl implements Schema {
 
 	// Views are keyed by name
-	LinkedHashSet<View> views = new LinkedHashSet<View>();
+	private LinkedHashSet<View> views = new LinkedHashSet<View>();
 	
 	// Tests are keyed by name
-	LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
+	private LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
 	
+	// Caller may pass a custom view selector.
+	private ViewSelectorByPath viewSelector = new ViewSelectorByPath.Default();
+	
+	/**
+	 * Package instantiation.
+	 */
 	SchemaImpl() {}
 	
 	/**
@@ -89,5 +96,24 @@ public class SchemaImpl implements Schema {
 		return null;
 	}
 
+	/**
+	 * 
+	 */
+	@Override
+	public View matchViewByPath(String path) {
+		
+		return viewSelector.select(path, views);
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public void registerCustomViewSelectorByPath(ViewSelectorByPath selector) {
+		
+		if (selector == null) 
+			throw new IllegalArgumentException("Selector cannot be null");
+		viewSelector = selector;
+	}
 	
 }

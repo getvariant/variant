@@ -21,7 +21,14 @@ public interface Schema {
 	 * @return View or null if not found.
 	 */
 	public View getView(String name);
-	
+
+	/**
+	 * Find the best match by the actual path.
+	 * @param path
+	 * @return
+	 */
+	public View matchViewByPath(String path);
+
 	/**
 	 * Get a list of all tests in the order they were declared.
 	 * @return
@@ -34,4 +41,14 @@ public interface Schema {
 	 * @return
 	 */
 	public Test getTest(String name);
+	
+	/**
+	 * Callers may register custom view selectors that know more about the nature of the PATH.
+	 * If such selector is registered, it will be used by the <code>matchViewByPath()</code> call
+	 * above.
+	 * 
+	 * @param selector
+	 */
+	public void registerCustomViewSelectorByPath(ViewSelectorByPath selector);
+
 }

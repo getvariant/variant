@@ -114,7 +114,7 @@ public interface Variant {
 	 * @param request
 	 */
 	public void commitViewRequest(VariantViewRequest request, Object sessionIdPersisterUserData);
-	
+		
 	/**
 	 * Factory singleton class.
 	 */
