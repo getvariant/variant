@@ -1,19 +1,6 @@
 package com.variant.core.tests;
 
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_INVARIANT;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TEST_DISJOINT;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_MISSING;
+import static com.variant.core.error.ErrorTemplate.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -482,7 +469,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "        'onViews':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view2',                              \n" +
@@ -582,7 +569,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -646,7 +633,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "        'onViews':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view2',                              \n" +
@@ -746,7 +733,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -811,7 +798,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "        'onViews':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view2',                              \n" +
@@ -916,7 +903,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -983,7 +970,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "        'onViews':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view2',                              \n" +
@@ -1088,7 +1075,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -1154,7 +1141,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "        'onViews':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view2',                              \n" +
@@ -1259,7 +1246,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -1323,7 +1310,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "        'onViews':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view2',                              \n" +
@@ -1397,7 +1384,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -1417,12 +1404,12 @@ public class ParserCovariantErrorTest extends BaseTest {
 	}
 
 	/**
-	 * PARSER_COVARIANT_EXPERIENCE_TEST_REF_INVARIANT
+	 * PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT
 	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void covariantExperienceTestRefInvariant_Test() throws Exception {
+	public void covariantExperienceTestRefNonvariant_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
@@ -1458,7 +1445,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "        'onViews':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view2',                              \n" +
@@ -1505,7 +1492,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 	    	    "                 {                                            \n" +
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    // Invalid because view1 is invariant in test1.
+	    	    // Invalid because view1 is nonvariant in test1.
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -1574,7 +1561,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -1588,7 +1575,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_EXPERIENCE_TEST_REF_INVARIANT, "test1", "test2", "view1", "B").getMessage(), error.getMessage());
+		assertEquals(new ParserError(PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT, "test1", "test2", "view1", "B").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1637,7 +1624,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "        'onViews':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view2',                              \n" +
@@ -1701,7 +1688,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     },                                                       \n" +
@@ -1986,7 +1973,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +

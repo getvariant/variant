@@ -27,7 +27,7 @@ public interface View {
 	/**
 	 * Get all tests instrumented on this view.  Includes both, tests
 	 * that have variants on this view as well as those where this
-	 * view is invariant invariant.
+	 * view is nonvariant.
 	 * 
 	 * @return list of tests in ordinal order
 	 */
@@ -41,10 +41,10 @@ public interface View {
 	public boolean isInstrumentedBy(Test test);
 
 	/**
-	 * Does this view have variants (not isInvariant) in a particular test?
+	 * Is this view nonvariant in a particular test?
 	 * @param test
 	 * @return
 	 * @throws VariantRuntimeException if this view is not instrumented by the given test.
 	 */
-	public boolean isInvariantIn(Test test);
+	public boolean isNonvariantIn(Test test);
 }

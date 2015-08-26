@@ -1,44 +1,6 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.error.ErrorTemplate.INTERNAL;
-import static com.variant.core.error.ErrorTemplate.PARSER_CONTROL_EXPERIENCE_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTREF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TESTS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_TEST_DISJOINT;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCES_LIST_EMPTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCES_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NAME_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NAME_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_NOT_OBJECT;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_ISCONTROL_NOT_BOOLEAN;
-import static com.variant.core.error.ErrorTemplate.PARSER_ISINVARIANT_NOT_BOOLEAN;
-import static com.variant.core.error.ErrorTemplate.PARSER_IS_CONTROL_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_NO_TESTS;
-import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEWS_LIST_EMPTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEWS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_ONVIEW_NOT_OBJECT;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_IDLE_DAYS_TO_LIVE_NEGATIVE;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_IDLE_DAYS_TO_LIVE_NOT_INT;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_ISON_NOT_BOOLEAN;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_NAME_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_TEST_UNSUPPORTED_PROPERTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_INCOMPATIBLE;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_XOR;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_LIST_EMPTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_VIEWREF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_WEIGHT_NOT_NUMBER;
+import static com.variant.core.error.ErrorTemplate.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -419,15 +381,15 @@ public class TestsParser implements Keywords {
 		for (Map.Entry<String, Object> entry: rawTestOnView.entrySet()) {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_VIEW_REF)) continue;
 			
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_IS_INVARIANT)) {
-				boolean isInvariant = false;
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_IS_NONVARIANT)) {
+				boolean isNonvariant = false;
 				try {
-					isInvariant = (Boolean) entry.getValue();
+					isNonvariant = (Boolean) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addError(PARSER_ISINVARIANT_NOT_BOOLEAN, test.getName(), viewRef);
+					response.addError(PARSER_ISNONVARIANT_NOT_BOOLEAN, test.getName(), viewRef);
 				}
-				tov.setInvariant(isInvariant);
+				tov.setNonvariant(isNonvariant);
 			}
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_VARIANTS)) {
 				try {
@@ -476,18 +438,18 @@ public class TestsParser implements Keywords {
 			}
 		}
 		
-		// 'isInvariant' is incompatible with 'variants', but one or the other is required.
-		if (tov.isInvariant()) {
+		// 'isNonvariant' is incompatible with 'variants', but one or the other is required.
+		if (tov.isNonvariant()) {
 			if (tov.getVariants().isEmpty()) {
 				return tov;
 			}
 			else {
-				response.addError(PARSER_VARIANTS_ISINVARIANT_INCOMPATIBLE, test.getName(), viewRef);
+				response.addError(PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE, test.getName(), viewRef);
 				return null;
 			}
 		}
 		else if (rawVariants == null || rawVariants.size() == 0) {
-			response.addError(PARSER_VARIANTS_ISINVARIANT_XOR, test.getName(), viewRef);
+			response.addError(PARSER_VARIANTS_ISNONVARIANT_XOR, test.getName(), viewRef);
 			return null;
 		}
 		
@@ -506,55 +468,6 @@ public class TestsParser implements Keywords {
 			}
 		}
 		
-/*
-		for (Test.Experience e: test.getExperiences()) {
-			
-			if (e.isControl()) continue;
-			boolean found = false;
-			for (Test.OnView.Variant v: tov.getVariants()) {
-				if (e.equals(v.getExperience())) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				response.addError(PARSER_VARIANT_MISSING, e.getName(), test.getName(), viewRef);
-			}
-		}
-
-		// Must define a covariant variant for each covariance vector,
-		// for each local experience, unless the remote variant is invariant.
-		for (Test covarTest: test.getCovariantTests()) {
-			
-			try {
-				if (refView.isInvariantIn(covarTest)) continue;
-			}
-			catch (VariantRuntimeException vre) {
-				// refView is not instrumented by covarTest.
-				continue;
-			}
-			
-			for (Test.Experience covarExperience: covarTest.getExperiences()) {
-				if (covarExperience.isControl()) continue;
-				for (Test.Experience localExperience: tov.getTest().getExperiences()) {
-					if (localExperience.isControl()) continue;
-					boolean found = false;
-					for (Test.OnView.Variant variant: tov.getVariants()) {
-						if (localExperience.equals(variant.getExperience()) && 
-						    variant.getCovariantExperiences().contains(covarExperience)) {
-							found = true;
-							break;
-						}
-					}
-					if (!found) {
-						response.addError(
-								PARSER_COVARIANT_VARIANT_MISSING, 
-								covarExperience.getTest().getName(), covarExperience.getName(), test.getName(), viewRef, localExperience.getName());
-					}
-				}
-			}
-		}
-*/
 		return tov;
 	}
 	

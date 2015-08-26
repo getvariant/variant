@@ -1747,7 +1747,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "        'ONVIEWS':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'View1',                              \n" +
-			    "              'isInvariant': false,                           \n" +
+			    "              'isNonvariant': false,                           \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
@@ -1772,11 +1772,11 @@ public class ParserDisjointErrorTest extends BaseTest {
 	}
 
 	/**
-	 * ISINVARIANT_NOT_BOOLEAN
+	 * ISNONVARIANT_NOT_BOOLEAN
 	 * @throws Exception
 	 */
 	@Test
-	public void isInvariantNotBoolean_Test() throws Exception {
+	public void isNonvariantNotBoolean_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
@@ -1805,7 +1805,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "        'ONVIEWS':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'ISInvariant': 'false',                         \n" +
+			    "              'ISNonvariant': 'false',                         \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
@@ -1825,7 +1825,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ErrorTemplate.PARSER_ISINVARIANT_NOT_BOOLEAN, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserError(ErrorTemplate.PARSER_ISNONVARIANT_NOT_BOOLEAN, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1863,7 +1863,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "        'ONVIEWS':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'ISInvariant': false,                           \n" +
+			    "              'ISNonvariant': false,                           \n" +
 			    "              'variants':                                     \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
@@ -2000,11 +2000,11 @@ public class ParserDisjointErrorTest extends BaseTest {
 	}
 
 	/**
-	 * VARIANTS_ISINVARIANT_INCOMPATIBLE
+	 * VARIANTS_ISNONVARIANT_INCOMPATIBLE
 	 * @throws Exception
 	 */
 	@Test
-	public void variantsIsInvariantIncompatible_Test() throws Exception {
+	public void variantsIsNonvariantIncompatible_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
@@ -2033,7 +2033,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "        'ONVIEWS':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewref':'view1',                              \n" +
-			    "               'ISINVARIANT': true,                           \n" +
+			    "               'ISNONVARIANT': true,                           \n" +
 			    "              'VARIANTS':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
@@ -2053,16 +2053,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_INCOMPATIBLE, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
 	/**
-	 * VARIANTS_ISINVARIANT_XOR
+	 * VARIANTS_ISNONVARIANT_XOR
 	 * @throws Exception
 	 */
 	@Test
-	public void variantsIsInvariantXor_Test() throws Exception {
+	public void variantsIsNonvariantXor_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
@@ -2104,7 +2104,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestErrorSeverity());
 		assertEquals(1, response.getErrors().size());
 		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANTS_ISINVARIANT_XOR, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserError(ErrorTemplate.PARSER_VARIANTS_ISNONVARIANT_XOR, "test1", "view1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 

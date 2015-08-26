@@ -77,7 +77,7 @@ public class VariantRuntimeTest extends BaseTest {
 				view1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
-						experience("test2.A")   // invariant.
+						experience("test2.A")   // nonvariant.
 				)
 		);
 		assertEquals("/path/to/view1", path);
@@ -86,7 +86,7 @@ public class VariantRuntimeTest extends BaseTest {
 				view1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
-						experience("test2.B")   // invariant
+						experience("test2.B")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view1", path);
@@ -95,8 +95,8 @@ public class VariantRuntimeTest extends BaseTest {
 				view1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
-						experience("test2.B"),  // invariant
-						experience("test3.A")   // invariant
+						experience("test2.B"),  // nonvariant
+						experience("test3.A")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view1", path);
@@ -107,8 +107,8 @@ public class VariantRuntimeTest extends BaseTest {
 					view1, 
 					VariantCollectionsUtils.list(
 							experience("test1.A"),  // not instrumented
-							experience("test2.B"),  // invariant
-							experience("test3.A"),  // invariant
+							experience("test2.B"),  // nonvariant
+							experience("test3.A"),  // nonvariant
 							experience("test1.B")   // dupe test
 					)
 			);
@@ -123,8 +123,8 @@ public class VariantRuntimeTest extends BaseTest {
 				view1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // not instrumented
-						experience("test2.B"),  // invariant
-						experience("test3.A"),  // invariant
+						experience("test2.B"),  // nonvariant
+						experience("test3.A"),  // nonvariant
 						experience("test4.B")   // variant
 				)
 		);
@@ -134,9 +134,9 @@ public class VariantRuntimeTest extends BaseTest {
 				view1, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
-						experience("test2.B"),  // invariant
+						experience("test2.B"),  // nonvariant
 						experience("test1.A"),  // control
-						experience("test3.A")   // control, invariant
+						experience("test3.A")   // control, nonvariant
 				)
 		);
 		assertEquals("/path/to/view1/test4.B", path);
@@ -145,10 +145,10 @@ public class VariantRuntimeTest extends BaseTest {
 				view1, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
-						experience("test2.B"),  // invariant
+						experience("test2.B"),  // nonvariant
 						experience("test1.A"),  // control
 						experience("test6.C"),  // variant
-						experience("test3.A")   // control, invariant
+						experience("test3.A")   // control, nonvariant
 				)
 		);
 		assertEquals("/path/to/view1/test4.B+test6.C", path);
@@ -157,10 +157,10 @@ public class VariantRuntimeTest extends BaseTest {
 				view1, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
-						experience("test2.B"),  // invariant
-						experience("test1.C"),  // invariant
+						experience("test2.B"),  // nonvariant
+						experience("test1.C"),  // nonvariant
 						experience("test6.B"),  // variant
-						experience("test3.A")   // control, invariant
+						experience("test3.A")   // control, nonvariant
 				)
 		);
 		assertEquals("/path/to/view1/test4.B+test6.B", path);
@@ -169,9 +169,9 @@ public class VariantRuntimeTest extends BaseTest {
 				view1, 
 				VariantCollectionsUtils.list(
 						experience("test4.A"),  // control
-						experience("test2.B"),  // invariant
+						experience("test2.B"),  // nonvariant
 						experience("test5.C"),  // variant
-						experience("test3.B")   // invariant
+						experience("test3.B")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view1/test5.C", path);
@@ -180,9 +180,9 @@ public class VariantRuntimeTest extends BaseTest {
 				view1, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // variant
-						experience("test2.B"),  // invariant
+						experience("test2.B"),  // nonvariant
 						experience("test5.C"),  // variant
-						experience("test3.B")   // invariant
+						experience("test3.B")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view1/test4.C+test5.C", path);
@@ -192,7 +192,7 @@ public class VariantRuntimeTest extends BaseTest {
 				VariantCollectionsUtils.list(
 						experience("test6.A"),  // control
 						experience("test4.C"),  // variant
-						experience("test2.B"),  // invariant
+						experience("test2.B"),  // nonvariant
 						experience("test5.C"),  // variant
 						experience("test3.B")   // variant
 				)
@@ -204,9 +204,9 @@ public class VariantRuntimeTest extends BaseTest {
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // variant
 						experience("test6.B"),  // variant
-						experience("test2.B"),  // invariant
+						experience("test2.B"),  // nonvariant
 						experience("test5.C"),  // variant
-						experience("test3.B")   // invariant
+						experience("test3.B")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view1/test4.C+test5.C+test6.B", path);
@@ -264,8 +264,8 @@ public class VariantRuntimeTest extends BaseTest {
 					view2, 
 					VariantCollectionsUtils.list(
 							experience("test1.A"),  // control
-							experience("test2.B"),  // invariant
-							experience("test3.A"),  // control, invariant
+							experience("test2.B"),  // nonvariant
+							experience("test3.A"),  // control, nonvariant
 							experience("test3.A")   // dupe test
 					)
 			);
@@ -304,7 +304,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test4.B"),  // variant
 						experience("test2.A"),  // control
 						experience("test1.C"),  // variant
-						experience("test6.C"),  // invariant
+						experience("test6.C"),  // nonvariant
 						experience("test3.A")   // control
 				)
 		);
@@ -316,7 +316,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test4.B"),  // variant
 						experience("test2.A"),  // control
 						experience("test1.C"),  // variant
-						experience("test6.B"),  // invariant
+						experience("test6.B"),  // nonvariant
 						experience("test3.A")   // control
 				)
 		);
@@ -360,7 +360,7 @@ public class VariantRuntimeTest extends BaseTest {
 				view2, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // variant
-						experience("test6.B"),  // invariant
+						experience("test6.B"),  // nonvariant
 						experience("test2.B"),  // variant
 						experience("test5.C"),  // variant
 						experience("test3.A")   // control
@@ -389,7 +389,7 @@ public class VariantRuntimeTest extends BaseTest {
 		path = VariantRuntimeTestFacade.resolveViewPath(
 				view3, 
 				VariantCollectionsUtils.list(
-						experience("test3.B")   // invariant
+						experience("test3.B")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view3", path);
@@ -425,7 +425,7 @@ public class VariantRuntimeTest extends BaseTest {
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
 						experience("test2.B"),  // variant
-						experience("test3.A")   // invariant
+						experience("test3.A")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view2/test2.B", path);
@@ -437,7 +437,7 @@ public class VariantRuntimeTest extends BaseTest {
 					VariantCollectionsUtils.list(
 							experience("test1.A"),  // control
 							experience("test2.B"),  // variant
-							experience("test3.A"),  // invariant
+							experience("test3.A"),  // nonvariant
 							experience("test2.A")   // dupe test
 					)
 			);
@@ -453,7 +453,7 @@ public class VariantRuntimeTest extends BaseTest {
 				VariantCollectionsUtils.list(
 						experience("test1.C"),  // variant
 						experience("test2.B"),  // variant, unsupported
-						experience("test3.A"),  // invariant
+						experience("test3.A"),  // nonvariant
 						experience("test4.B")   // uninstrumented
 				)
 		);
@@ -465,7 +465,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test4.B"),  // uninstrumented
 						experience("test2.B"),  // variant
 						experience("test1.A"),  // control
-						experience("test3.C")   // invariant
+						experience("test3.C")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view3/test2.B", path);
@@ -477,7 +477,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test2.A"),  // control
 						experience("test1.C"),  // variant
 						experience("test6.C"),  // variant
-						experience("test3.A")   // invariant
+						experience("test3.A")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view3/test1.C+test6.C", path);
@@ -489,7 +489,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test2.B"),  // variant
 						experience("test1.C"),  // variant
 						experience("test6.B"),  // variant
-						experience("test3.A")   // invariant
+						experience("test3.A")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view3/test1.C+test2.B+test6.B", path);
@@ -499,8 +499,8 @@ public class VariantRuntimeTest extends BaseTest {
 				VariantCollectionsUtils.list(
 						experience("test4.A"),  // uninstrumented
 						experience("test2.B"),  // variant
-						experience("test5.C"),  // invariant
-						experience("test3.B")   // invariant
+						experience("test5.C"),  // nonvariant
+						experience("test3.B")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view3/test2.B", path);
@@ -510,7 +510,7 @@ public class VariantRuntimeTest extends BaseTest {
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // uninstrumented
 						experience("test2.B"),  // variant
-						experience("test5.C"),  // invariant
+						experience("test5.C"),  // nonvariant
 						experience("test1.A")   // control
 				)
 		);
@@ -522,7 +522,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test6.A"),  // control
 						experience("test4.C"),  // uninstrumented
 						experience("test2.B"),  // variant, unsupported
-						experience("test5.C"),  // invariant
+						experience("test5.C"),  // nonvariant
 						experience("test1.B")   // variant
 				)
 		);
@@ -535,7 +535,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test6.B"),  // variant
 						experience("test2.B"),  // variant
 						experience("test5.C"),  // uninstrumented
-						experience("test3.A")   // invariant
+						experience("test3.A")   // nonvariant
 				)
 		);
 		assertEquals("/path/to/view3/test2.B+test6.B", path);
@@ -919,7 +919,7 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'viewRef':'view2',                                         \n" +
-			    	    "              'isInvariant':true                                         \n" +
+			    	    "              'isNonvariant':true                                         \n" +
 			    	    "           },                                                             \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'viewRef':'view3',                                         \n" +
@@ -971,7 +971,7 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'viewRef':'view2',                                         \n" +
-			    	    "              'isInvariant':false,                                       \n" +
+			    	    "              'isNonvariant':false,                                       \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -985,7 +985,7 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'viewRef':'view4',                                         \n" +
-			    	    "              'isInvariant':true                                         \n" +
+			    	    "              'isNonvariant':true                                         \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ]                                                                \n" +
 			    	    "     },                                                                  \n" +

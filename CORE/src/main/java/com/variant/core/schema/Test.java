@@ -154,14 +154,14 @@ public interface Test {
 		public Test getTest();
 		
 		/**
-		 * Is this instrumentation invariant, i.e. has no variants property.
+		 * Is this instrumentation nonvariant, i.e. has no variants property.
 		 * @return
 		 */
-		boolean isInvariant();
+		boolean isNonvariant();
 		
 		/**
 		 * A list of all test variants for this instrumentation. 
-		 * @return null if this is an invariant instrumentation.
+		 * @return null if this is an nonvariant instrumentation.
 		 */
 		public List<Variant> getVariants();
 

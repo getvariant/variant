@@ -19,7 +19,7 @@ import com.variant.core.util.VariantCollectionsUtils;
  * test1   + + - -
  * test2 - + + +  
  * test3 + + - - -
- * blank: not instrumented, -: invariant, +: has variants.
+ * blank: not instrumented, -: nonvariant, +: has variants.
  * 
  * T1, T2, T3(T1)
  * 
@@ -105,11 +105,11 @@ public class ParserCovariantOkay2Test extends BaseTest {
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'viewRef':'view4',                                         \n" +
-	    	    "              'isInvariant':true                                         \n" +
+	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'viewRef':'view5',                                         \n" +
-	    	    "              'isInvariant':true                                         \n" +
+	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     },                                                                  \n" +
@@ -134,7 +134,7 @@ public class ParserCovariantOkay2Test extends BaseTest {
 	    	    "        'onViews':[                                                      \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'viewRef':'view1',                                         \n" +
-	    	    "              'isInvariant':true                                         \n" +
+	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'viewRef':'view2',                                         \n" +
@@ -266,15 +266,15 @@ public class ParserCovariantOkay2Test extends BaseTest {
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'viewRef':'view3',                                         \n" +
-	    	    "              'isInvariant':true                                         \n" +
+	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'viewRef':'view4',                                         \n" +
-	    	    "              'isInvariant':true                                         \n" +
+	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'viewRef':'view5',                                         \n" +
-	    	    "              'isInvariant':true                                         \n" +
+	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     }                                                                   \n" +
@@ -313,7 +313,7 @@ public class ParserCovariantOkay2Test extends BaseTest {
 		
 		// view2
 		Test.OnView onView = onViews.get(0);
-		assertFalse(onView.isInvariant());
+		assertFalse(onView.isNonvariant());
 		assertEquals(schema.getView("view2"), onView.getView());
 		List<Test.OnView.Variant> variants = onView.getVariants();
 		assertEquals(2, variants.size());
@@ -330,7 +330,7 @@ public class ParserCovariantOkay2Test extends BaseTest {
 
 		// view3
 		onView = onViews.get(1);
-		assertFalse(onView.isInvariant());
+		assertFalse(onView.isNonvariant());
 		assertEquals(schema.getView("view3"), onView.getView());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
@@ -347,14 +347,14 @@ public class ParserCovariantOkay2Test extends BaseTest {
 
 		// view4
 		onView = onViews.get(2);
-		assertTrue(onView.isInvariant());
+		assertTrue(onView.isNonvariant());
 		assertEquals(schema.getView("view4"), onView.getView());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
 		// view5
 		onView = onViews.get(3);
-		assertTrue(onView.isInvariant());
+		assertTrue(onView.isNonvariant());
 		assertEquals(schema.getView("view5"), onView.getView());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
@@ -367,13 +367,13 @@ public class ParserCovariantOkay2Test extends BaseTest {
 		
 		// view1
 		onView = onViews.get(0);
-		assertTrue(onView.isInvariant());
+		assertTrue(onView.isNonvariant());
 		assertTrue(onView.getVariants().isEmpty());
 		assertEquals(schema.getView("view1"), onView.getView());
 
 		// view2
 		onView = onViews.get(1);
-		assertFalse(onView.isInvariant());
+		assertFalse(onView.isNonvariant());
 		assertEquals(schema.getView("view2"), onView.getView());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
@@ -390,7 +390,7 @@ public class ParserCovariantOkay2Test extends BaseTest {
 
 		// view3
 		onView = onViews.get(2);
-		assertFalse(onView.isInvariant());
+		assertFalse(onView.isNonvariant());
 		assertEquals(schema.getView("view3"), onView.getView());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
@@ -407,7 +407,7 @@ public class ParserCovariantOkay2Test extends BaseTest {
 
 		// view4
 		onView = onViews.get(3);
-		assertFalse(onView.isInvariant());
+		assertFalse(onView.isNonvariant());
 		assertEquals(schema.getView("view4"), onView.getView());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
@@ -430,7 +430,7 @@ public class ParserCovariantOkay2Test extends BaseTest {
 		
 		// view1
 		onView = onViews.get(0);
-		assertFalse(onView.isInvariant());
+		assertFalse(onView.isNonvariant());
 		assertEquals(schema.getView("view1"), onView.getView());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
@@ -447,7 +447,7 @@ public class ParserCovariantOkay2Test extends BaseTest {
 
 		// view2
 		onView = onViews.get(1);
-		assertFalse(onView.isInvariant());
+		assertFalse(onView.isNonvariant());
 		assertEquals(schema.getView("view2"), onView.getView());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
@@ -488,21 +488,21 @@ public class ParserCovariantOkay2Test extends BaseTest {
 
 		// view3
 		onView = onViews.get(2);
-		assertTrue(onView.isInvariant());
+		assertTrue(onView.isNonvariant());
 		assertEquals(schema.getView("view3"), onView.getView());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
 		// view4
 		onView = onViews.get(3);
-		assertTrue(onView.isInvariant());
+		assertTrue(onView.isNonvariant());
 		assertEquals(schema.getView("view4"), onView.getView());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
 		// view5
 		onView = onViews.get(4);
-		assertTrue(onView.isInvariant());
+		assertTrue(onView.isNonvariant());
 		assertEquals(schema.getView("view5"), onView.getView());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());

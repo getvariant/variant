@@ -1,21 +1,6 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_INVARIANT;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_MISSING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_PATH_NOT_STRING;
-import static com.variant.core.error.ErrorTemplate.PARSER_EXPERIENCEREF_UNDEFINED;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY;
-import static com.variant.core.error.ErrorTemplate.PARSER_VARIANT_NOT_OBJECT;
+import static com.variant.core.error.ErrorTemplate.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,9 +119,9 @@ public class VariantParser implements Keywords {
 						return null;
 					}
 					
-					// Current view cannot be invariant in the covar test.
-					if (tov.getView().isInvariantIn(covarTest)) {
-						response.addError(PARSER_COVARIANT_EXPERIENCE_TEST_REF_INVARIANT, covarTestRef, tov.getTest().getName(), tov.getView().getName(), experienceRef);
+					// Current view cannot be nonvariant in the covar test.
+					if (tov.getView().isNonvariantIn(covarTest)) {
+						response.addError(PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT, covarTestRef, tov.getTest().getName(), tov.getView().getName(), experienceRef);
 						return null;						
 					}
 					

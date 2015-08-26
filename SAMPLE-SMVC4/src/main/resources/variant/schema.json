@@ -2,6 +2,9 @@
    'views':[                                                
      {  'name':'newOwner',                                     
         'path':'/petclinic/owners/new'
+     },                                                    
+     {  'name':'оwnerDetail',                                     
+        'path':'/petclinic/owners/new'
      }                                                     
    ],                                                        
    'tests':[                                                 

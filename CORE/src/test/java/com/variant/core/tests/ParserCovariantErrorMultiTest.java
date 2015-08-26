@@ -62,7 +62,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "        'onViews':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view2',                              \n" +
@@ -126,7 +126,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     },                                                       \n" +
@@ -426,7 +426,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -487,7 +487,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "        'onViews':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view1',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view2',                              \n" +
@@ -551,7 +551,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     },                                                       \n" +
@@ -836,7 +836,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'viewRef':'view3',                              \n" +
-			    "              'isInvariant':true                              \n" +
+			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +

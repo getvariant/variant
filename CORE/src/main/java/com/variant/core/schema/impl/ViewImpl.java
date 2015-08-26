@@ -81,10 +81,10 @@ public class ViewImpl implements View {
 	}		
 
 	@Override
-	public boolean isInvariantIn(Test test) {
+	public boolean isNonvariantIn(Test test) {
 
 		for (Test.OnView tov: test.getOnViews()) {
-			if (tov.getView().equals(this)) return tov.isInvariant();
+			if (tov.getView().equals(this)) return tov.isNonvariant();
 		}
 		throw new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, name, test.getName());
 	}

@@ -16,7 +16,7 @@ public class TestOnViewImpl implements Test.OnView {
 
 	private ViewImpl view;
 	private TestImpl test;
-	private boolean isInvariant = false;
+	private boolean isNonvariant = false;
 	private List<Variant> variants = new ArrayList<Variant>();
 	private VariantSpace variantSpace;
 
@@ -30,10 +30,10 @@ public class TestOnViewImpl implements Test.OnView {
 	
 	/**
 	 * 
-	 * @param isInvariant
+	 * @param isNonvariant
 	 */
-	void setInvariant(boolean isInvariant) {
-		this.isInvariant = isInvariant;
+	void setNonvariant(boolean isNonvariant) {
+		this.isNonvariant = isNonvariant;
 	}
 	
 	/**
@@ -52,6 +52,7 @@ public class TestOnViewImpl implements Test.OnView {
 	 * 
 	 * @return
 	 */
+	@Override
 	public View getView() {
 		return view;
 	}
@@ -64,14 +65,16 @@ public class TestOnViewImpl implements Test.OnView {
 	 * 
 	 * @return
 	 */
-	public boolean isInvariant() {
-		return isInvariant;
+	@Override
+	public boolean isNonvariant() {
+		return isNonvariant;
 	}
 	
 	/**
 	 * 
 	 * @return
 	 */
+	@Override
 	public List<Variant> getVariants() {
 		return variants;
 	}

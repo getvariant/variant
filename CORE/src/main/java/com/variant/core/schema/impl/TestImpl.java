@@ -170,9 +170,9 @@ public class TestImpl implements Test {
 		if (this.equals(other)) throw new IllegalArgumentException("Argument cannot be equal to this");
 		
 		for (OnView thisOnView: getOnViews()) {
-			if (thisOnView.isInvariant()) continue;
+			if (thisOnView.isNonvariant()) continue;
 			for (OnView otherOnView: other.getOnViews()) {
-				if (otherOnView.isInvariant()) continue;
+				if (otherOnView.isNonvariant()) continue;
 				if (thisOnView.getView().equals(otherOnView.getView())) return false;
 			}
 		}

@@ -190,7 +190,7 @@ public class VariantRuntime {
 		HashSet<View> instrumentedViews = new HashSet<View>();
 		for (Experience e: vector) {
 			for (OnView tov: e.getTest().getOnViews()) {
-				if (!tov.getView().isInvariantIn(e.getTest())) {
+				if (!tov.getView().isNonvariantIn(e.getTest())) {
 					instrumentedViews.add(tov.getView());
 				}
 			}
@@ -211,7 +211,7 @@ public class VariantRuntime {
 		HashSet<Test> testsInstumentedOnUnresolvedViews = new HashSet<Test>();  
 		for (View uv: unresolvedViews) {
 			for (Test t: uv.getInstrumentedTests()) {
-				if (!uv.isInvariantIn(t)) testsInstumentedOnUnresolvedViews.add(t);
+				if (!uv.isNonvariantIn(t)) testsInstumentedOnUnresolvedViews.add(t);
 			}
 		}
 		
@@ -314,7 +314,7 @@ public class VariantRuntime {
 					}
 					else {
 						found = true;
-						if (!e.isControl() && view.isInstrumentedBy(e.getTest()) && !view.isInvariantIn(e.getTest())) 
+						if (!e.isControl() && view.isInstrumentedBy(e.getTest()) && !view.isNonvariantIn(e.getTest())) 
 							sortedList.add(e);
 					}
 				}

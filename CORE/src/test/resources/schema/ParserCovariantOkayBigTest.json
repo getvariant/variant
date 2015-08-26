@@ -8,7 +8,7 @@
 // test4 + +   - -
 // test5 + + - + -
 // test6 + - +   -
-// blank: not instrumented, -: invariant, +: has variants.
+// blank: not instrumented, -: nonvariant, +: has variants.
 // 
 // T1, T2, T3(T2), T4(T1), T5(T2,T4), T6(T1,T2,T5,T4)
  
@@ -79,11 +79,11 @@
            },                                                            
            {                                                             
               'viewRef':'view4',                                         
-              'isInvariant':true                                         
+              'isNonvariant':true                                         
            },                                                            
            {                                                             
               'viewRef':'view5',                                         
-              'isInvariant':true                                         
+              'isNonvariant':true                                         
            }                                                             
         ]                                                                
      },                                                                  
@@ -107,7 +107,7 @@
         'onViews':[                                                      
            {                                                             
               'viewRef':'view1',                                         
-              'isInvariant':true                                         
+              'isNonvariant':true                                         
            },                                                            
            {                                                             
               'viewRef':'view2',                                         
@@ -172,7 +172,7 @@
         'onViews':[                                                      
            {                                                             
               'viewRef':'view1',                                         
-              'isInvariant':true                                         
+              'isNonvariant':true                                         
            },                                                            
            {                                                             
               'viewRef':'view2',                                         
@@ -229,7 +229,7 @@
            },                                                            
            {                                                             
               'viewRef':'view3',                                         
-              'isInvariant':true                                               
+              'isNonvariant':true                                               
            },                                                            
            {                                                             
               'viewRef':'view4',                                         
@@ -374,11 +374,11 @@
            },                                                            
            {                                                             
               'viewRef':'view4',                                         
-              'isInvariant':true                                         
+              'isNonvariant':true                                         
            },                                                            
            {                                                             
               'viewRef':'view5',                                         
-              'isInvariant':true                                         
+              'isNonvariant':true                                         
            }                                                             
         ]                                                                
      },                                                                  
@@ -661,7 +661,7 @@
            },                                                            
            {                                                             
               'viewRef':'view3',                                         
-              'isInvariant':true                                         
+              'isNonvariant':true                                         
            },                                                            
            {                                                             
               'viewRef':'view4',                                         
@@ -718,7 +718,7 @@
            },                                                            
            {                                                             
               'viewRef':'view5',                                         
-              'isInvariant':true                                         
+              'isNonvariant':true                                         
            }                                                             
         ]                                                                
      },                                                                  
@@ -948,7 +948,7 @@
            },                                                            
            {                                                             
               'viewRef':'view2',                                         
-              'isInvariant':true                                         
+              'isNonvariant':true                                         
            },                                                            
            {                                                             
               'viewRef':'view3',                                         
@@ -1157,7 +1157,7 @@
            },                                                            
            {                                                             
               'viewRef':'view5',                                         
-              'isInvariant':true                                         
+              'isNonvariant':true                                         
            }                                                             
         ]                                                                
      }                                                                   

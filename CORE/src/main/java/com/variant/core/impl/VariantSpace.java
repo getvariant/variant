@@ -43,8 +43,8 @@ public class VariantSpace {
 	 */
 	public VariantSpace(TestOnViewImpl tovImpl)  {
 		
-		if (tovImpl.isInvariant()) 
-			throw new VariantInternalException("Cannot crate VariantSpace for an invariant Test.OnView instance");
+		if (tovImpl.isNonvariant()) 
+			throw new VariantInternalException("Cannot crate VariantSpace for an nonvariant Test.OnView instance");
 		
 		// Build basis sorted in ordinal order.
 		basis = new LinkedHashSet<Test>();
@@ -69,9 +69,9 @@ public class VariantSpace {
 				}
 			}
 			else {
-				// 2nd and on test is a covariant test.  Skip it if it's not instrumented on this view or is invariant on this view.
+				// 2nd and on test is a covariant test.  Skip it if it's not instrumented on this view or is nonvariant on this view.
 				// Otherwise, compute the cartеsian product of what's already in the table and this current tests's experience list.
-				if (!tovImpl.getView().isInstrumentedBy(t) || tovImpl.getView().isInvariantIn(t)) continue;
+				if (!tovImpl.getView().isInstrumentedBy(t) || tovImpl.getView().isNonvariantIn(t)) continue;
 				for (Experience exp: t.getExperiences()) {
 					if (exp.isControl()) continue;
 					for (Coordinates oldKey: oldKeys) {

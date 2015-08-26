@@ -28,12 +28,12 @@ public class RuntimeExceptionTest extends BaseTest {
 		
 		View view = schema.getView("view1");
 		try {
-			assertFalse(view.isInvariantIn(schema.getTest("non-existent")));
+			assertFalse(view.isNonvariantIn(schema.getTest("non-existent")));
 		}
 		catch (NullPointerException npe ) { /* expected */ }
 
 		try {
-			assertFalse(view.isInvariantIn(schema.getTest("test2")));
+			assertFalse(view.isNonvariantIn(schema.getTest("test2")));
 		}
 		catch (VariantRuntimeException vre ) { 
 			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view1", "test2").getMessage(), vre.getMessage());
@@ -41,13 +41,13 @@ public class RuntimeExceptionTest extends BaseTest {
 
 		view = schema.getView("view2");
 		try {
-			assertFalse(view.isInvariantIn(schema.getTest("test1")));
+			assertFalse(view.isNonvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
 			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view2", "test1").getMessage(), vre.getMessage());
 		}
 		try {
-			assertFalse(view.isInvariantIn(schema.getTest("Test1")));
+			assertFalse(view.isNonvariantIn(schema.getTest("Test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
 			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view2", "Test1").getMessage(), vre.getMessage());
@@ -55,7 +55,7 @@ public class RuntimeExceptionTest extends BaseTest {
 
 		view = schema.getView("view4");
 		try {
-			assertFalse(view.isInvariantIn(schema.getTest("test1")));
+			assertFalse(view.isNonvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
 			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view4", "test1").getMessage(), vre.getMessage());
@@ -63,7 +63,7 @@ public class RuntimeExceptionTest extends BaseTest {
 		
 		view = schema.getView("view5");
 		try {
-			assertFalse(view.isInvariantIn(schema.getTest("test1")));
+			assertFalse(view.isNonvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
 			assertEquals(new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view5", "test1").getMessage(), vre.getMessage());
