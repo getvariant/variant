@@ -2,9 +2,12 @@ package com.variant.core;
 
 import java.io.InputStream;
 
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.TestParsedEventListener;
 import com.variant.core.schema.View;
+import com.variant.core.schema.ViewParsedEventListener;
 
 /**
  * The Variant CORE API.
@@ -47,6 +50,24 @@ public interface Variant {
 	 */
 	public void shutdown();
 	
+	/**
+	 * Clients may add additional parse semantics via parse listeners.
+	 * Each time the core parser successfully completes parsing of a Test object,
+	 * this listener will be invoked in the same thread.
+	 * 
+	 * @param listener
+	 */
+	public void addListener(TestParsedEventListener listener);
+	
+	/**
+	 * Clients may add additional parse semantics via parse listeners.
+	 * Each time the core parser successfully completes parsing of a View object,
+	 * this listener will be invoked in the same thread.
+	 * 
+	 * @param listener
+	 */
+	public void addListener(ViewParsedEventListener listener);
+
 	/**
 	 * Parse and, if no errors, optionally deploy a new schema.
 	 * @param stream

@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.variant.core.VariantEvent;
-import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test.Experience;
 
 /**

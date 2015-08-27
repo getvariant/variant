@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.Variant;
-import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;

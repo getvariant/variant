@@ -3,6 +3,7 @@ package com.variant.core;
 import java.io.InputStream;
 import java.util.Properties;
 
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.session.SessionStore;
 import com.variant.core.util.PropertiesChain;
 import com.variant.core.util.VariantIoUtils;

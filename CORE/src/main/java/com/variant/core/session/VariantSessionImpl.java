@@ -5,9 +5,9 @@ import static com.variant.core.error.ErrorTemplate.BOOT_TARGETING_PERSISTER_NO_I
 import java.io.Serializable;
 
 import com.variant.core.VariantBootstrapException;
-import com.variant.core.VariantInternalException;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
+import com.variant.core.exception.VariantInternalException;
 
 /**
  * 

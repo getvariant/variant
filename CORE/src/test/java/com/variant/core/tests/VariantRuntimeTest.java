@@ -9,9 +9,9 @@ import java.util.Collection;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.VariantEventExperience;
-import com.variant.core.VariantInternalException;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.impl.ViewServeEvent;
 import com.variant.core.schema.Schema;

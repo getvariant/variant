@@ -9,8 +9,8 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantInternalException;
 import com.variant.core.VariantProperties;
+import com.variant.core.exception.VariantInternalException;
 
 public class EventWriter {
 	

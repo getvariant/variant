@@ -8,10 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantBootstrapException;
-import com.variant.core.VariantInternalException;
 import com.variant.core.VariantProperties;
-import com.variant.core.VariantRuntimeException;
 import com.variant.core.VariantSession;
+import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.VariantRuntimeException;
 
 public class SessionService {
 

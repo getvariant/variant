@@ -7,6 +7,7 @@ import static com.variant.core.error.ErrorTemplate.RUN_TP_NOT_INITIALIZED;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -15,18 +16,20 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
-import com.variant.core.VariantInternalException;
 import com.variant.core.VariantProperties;
-import com.variant.core.VariantRuntimeException;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.error.Severity;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
+import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.TestParsedEventListener;
 import com.variant.core.schema.View;
+import com.variant.core.schema.ViewParsedEventListener;
 import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.session.SessionService;
@@ -46,6 +49,8 @@ public class VariantCoreImpl implements Variant {
 	private Schema schema = null;
 	private EventWriter eventWriter = null;
 	private SessionService sessionService = null;
+	private ArrayList<TestParsedEventListener> testParsedEventListeners = new ArrayList<TestParsedEventListener>();
+	private ArrayList<ViewParsedEventListener> viewParsedEventListeners = new ArrayList<ViewParsedEventListener>();
 			
 	private static String version() {
 		String version = RuntimeService.getVersion();
@@ -175,6 +180,11 @@ public class VariantCoreImpl implements Variant {
 		//
 		sessionService = new SessionService();
 		
+		//
+		// Discover and process all annotations.
+		//
+		AnnotationProcessor.process();
+		
 		isBootstrapped = true;
 		
 		LOG.info(
@@ -192,6 +202,8 @@ public class VariantCoreImpl implements Variant {
 		stateCheck();
 		isBootstrapped = false;
 		schema = null;
+		viewParsedEventListeners.clear();
+		testParsedEventListeners.clear();
 		eventWriter.shutdown();
 		eventWriter = null;
 		sessionService.shutdown();
@@ -253,7 +265,7 @@ public class VariantCoreImpl implements Variant {
 		}
 		
 		try {
-			response = SchemaParser.parse(schemaAsStringNoComments.toString());
+			response = SchemaParser.parse(schemaAsStringNoComments.toString(), viewParsedEventListeners, testParsedEventListeners);
 		}
 		catch (Throwable t) {
 			LOG.error(t.getMessage(), t);
@@ -371,6 +383,20 @@ public class VariantCoreImpl implements Variant {
 		
 	}
 	
+	@Override
+	public void addListener(TestParsedEventListener listener) {
+		stateCheck();		
+		if (listener == null) throw new IllegalArgumentException("Argument cannot be null");
+		testParsedEventListeners.add(listener);
+	}
+
+	@Override
+	public void addListener(ViewParsedEventListener listener) {
+		stateCheck();		
+		if (listener == null) throw new IllegalArgumentException("Argument cannot be null");
+		viewParsedEventListeners.add(listener);
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//

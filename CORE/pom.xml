@@ -95,6 +95,13 @@
             <version>3.4</version>
         </dependency>
 
+		<!-- Annovention annotation discovery lib -->
+		<dependency>
+			<groupId>tv.cntt</groupId>
+			<artifactId>annovention</artifactId>
+			<version>1.7</version>
+		</dependency>
+	
 	</dependencies>
 	
     <build>

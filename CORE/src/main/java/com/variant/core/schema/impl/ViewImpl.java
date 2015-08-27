@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.variant.core.Variant;
-import com.variant.core.VariantRuntimeException;
 import com.variant.core.error.ErrorTemplate;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;
 

@@ -3,7 +3,7 @@ package com.variant.core.schema.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.variant.core.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;

@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import com.variant.core.VariantInternalException;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;

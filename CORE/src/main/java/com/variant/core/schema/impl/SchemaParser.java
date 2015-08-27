@@ -1,14 +1,19 @@
 package com.variant.core.schema.impl;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.VariantRuntimeException;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
+import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.TestParsedEventListener;
+import com.variant.core.schema.View;
+import com.variant.core.schema.ViewParsedEventListener;
 import com.variant.core.util.VariantStringUtils;
 
 public class SchemaParser {
@@ -41,8 +46,32 @@ public class SchemaParser {
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-
-	public static ParserResponseImpl parse(String configAsJsonString) throws VariantRuntimeException {
+	
+	/**
+	 * 
+	 * @param configAsJsonString
+	 * @return
+	 * @throws VariantRuntimeException
+	 */
+	public static ParserResponseImpl parse(String configAsJsonString)
+	throws VariantRuntimeException {
+		return parse(configAsJsonString, null, null);
+	}
+	
+	/**
+	 * 
+	 * @param configAsJsonString
+	 * @param viewParsedEventListeners
+	 * @param testParsedEventListeners
+	 * @return
+	 * @throws VariantRuntimeException
+	 */
+	@SuppressWarnings("unchecked")
+	public static ParserResponseImpl parse(
+			String configAsJsonString,
+			List<ViewParsedEventListener> viewParsedEventListeners,
+			List<TestParsedEventListener> testParsedEventListeners) 
+	throws VariantRuntimeException {
 		
 		ParserResponseImpl response = new ParserResponseImpl();
 		
@@ -64,7 +93,7 @@ public class SchemaParser {
 		
 		if (response.highestErrorSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
 		
-		// Cean map will contain only entries with expected clauses with keys uppercased 
+		// Clean map will contain only entries with expected clauses with keys uppercased 
 		Map<String, Object> cleanMap = new LinkedHashMap<String, Object>();
 		
 		// Pass 1. Uppercase all the expected clauses to support case insensitive key words.
@@ -84,6 +113,13 @@ public class SchemaParser {
 		}
 		else {
 			ViewsParser.parseViews(views, response);
+			if (viewParsedEventListeners != null) {
+				for (ViewParsedEventListener listener: viewParsedEventListeners) {
+					for (View view: response.getSchema().getViews()) {
+						listener.viewParsed(view);
+					}
+				}
+			}
 		}
 
 		if (response.highestErrorSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
@@ -94,6 +130,13 @@ public class SchemaParser {
 		}
 		else {
 			TestsParser.parseTests(tests, response);
+			if (testParsedEventListeners != null) {
+				for (TestParsedEventListener listener: testParsedEventListeners) {
+					for (Test test: response.getSchema().getTests()) {
+						listener.testParsed(test);
+					}
+				}
+			}
 		}
 				
 		return response;

@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
-import com.variant.core.VariantRuntimeException;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
 

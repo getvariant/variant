@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.variant.core.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Test;
 import com.variant.core.util.VariantStringUtils;

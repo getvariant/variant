@@ -1,9 +1,9 @@
-package com.variant.core;
+package com.variant.core.exception;
 
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
 
-public class VariantRuntimeException extends RuntimeException {
+public class VariantRuntimeException extends VariantException {
 
 	private static final long serialVersionUID = 1L;
 	private ErrorTemplate template;
