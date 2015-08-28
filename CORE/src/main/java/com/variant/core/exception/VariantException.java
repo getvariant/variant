@@ -6,14 +6,14 @@ package com.variant.core.exception;
  * @author Igor
  *
  */
-abstract public class VariantException extends RuntimeException {
+public class VariantException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * 
 	 */
-	protected VariantException() {
+	public VariantException() {
 		super();
 	}
 	
@@ -21,7 +21,7 @@ abstract public class VariantException extends RuntimeException {
 	 * 
 	 * @param msg
 	 */
-	protected VariantException(String msg) {
+	public VariantException(String msg) {
 		super(msg);
 	}
 	
@@ -30,7 +30,7 @@ abstract public class VariantException extends RuntimeException {
 	 * @param msg
 	 * @param t
 	 */
-	protected VariantException(String msg, Throwable t) {
+	public VariantException(String msg, Throwable t) {
 		super(msg, t);
 	}
 

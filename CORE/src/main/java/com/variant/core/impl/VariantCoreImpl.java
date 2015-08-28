@@ -179,12 +179,7 @@ public class VariantCoreImpl implements Variant {
 		// Instantiate session service.
 		//
 		sessionService = new SessionService();
-		
-		//
-		// Discover and process all annotations.
-		//
-		AnnotationProcessor.process();
-		
+				
 		isBootstrapped = true;
 		
 		LOG.info(
@@ -240,7 +235,12 @@ public class VariantCoreImpl implements Variant {
 	public ParserResponse parseSchema(String string, boolean deploy) {
 
 		stateCheck();
+		
 		long now = System.currentTimeMillis();
+		
+		// (Re)discover and process all annotations.
+		AnnotationProcessor.process();
+
 		ParserResponseImpl response;
 
 		// Lose comments, i.e. from // to eol.

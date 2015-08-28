@@ -3,7 +3,7 @@
      {  'name':'newOwner',                                     
         'path':'/petclinic/owners/new'
      },                                                    
-     {  'name':'оwnerDetail',                                     
+     {  'name':'ownerDetail',                                     
         'path':'/petclinic/owners/new'
      }                                                     
    ],                                                        

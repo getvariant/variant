@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.error.ErrorTemplate;
 import com.variant.core.error.Severity;
+import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.TestParsedEventListener;
@@ -116,7 +117,12 @@ public class SchemaParser {
 			if (viewParsedEventListeners != null) {
 				for (ViewParsedEventListener listener: viewParsedEventListeners) {
 					for (View view: response.getSchema().getViews()) {
-						listener.viewParsed(view);
+						try {
+							listener.viewParsed(view);
+						}
+						catch (VariantException e) {
+							response.addError(ErrorTemplate.BOOT_PARSER_LISTENER_EXCEPTION, listener.getClass().getName(), e.getMessage(), view.getName());
+						}
 					}
 				}
 			}

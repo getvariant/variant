@@ -17,6 +17,7 @@ public enum ErrorTemplate {
 	BOOT_SID_PERSISTER_NO_INTERFACE                       (Severity.FATAL, "Session ID persister class [%s] must implement interface [%s]"),
 	BOOT_TARGETING_PERSISTER_NO_INTERFACE                 (Severity.FATAL, "Targeting persister class [%s] must implement interface [%s]"),
 	BOOT_PARSER_LISTENER_NO_INTERFACE                     (Severity.FATAL, "Class [%s], annotated as [%s] must implement interface [%s]"),
+	BOOT_PARSER_LISTENER_EXCEPTION                        (Severity.FATAL, "Perser event listener [%s] threw an exception [%s] for target [%s]"),
 	
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                   PARSER ERRORS                                                        //
