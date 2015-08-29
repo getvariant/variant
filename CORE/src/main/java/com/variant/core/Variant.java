@@ -16,34 +16,13 @@ import com.variant.core.schema.ViewParsedEventListener;
  *
  */
 public interface Variant {
-
-
-	/**
-	 * Engine bootstrap with standard configuration semantics:
-	 * 1. Defaults
-	 * 2. Command line file.
-	 * 3. Command line resource.
-	 * 4. Conventional resource.
-	 * 
-	 * 
-	 * @param config
-	 * @throws VariantBootstrapException 
-	 */
-	public void bootstrap() throws VariantBootstrapException;
 	
 	/**
-	 * Engine bootstrap with default override configuration semantics:
-	 * 1. Defaults
-	 * 2. Values from the config argument override the defaults.
-	 * 3. Command line file.
-	 * 4. Command line resource.
-	 * 5. Conventional resource.
-	 * 
-	 * @param config
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * Engine bootstrap. Takes 0 or more number of properties files as resource names.
+	 * If supplied, they are scanned at run time left to right until first match.
+	 * Can be overridden at run time.
 	 */
-	public void bootstrap(String resourceName) throws VariantBootstrapException;	
+	public void bootstrap(String...resourceNames) throws VariantBootstrapException;	
 
 	/**
 	 * Programmatically shutdown Variant engine.

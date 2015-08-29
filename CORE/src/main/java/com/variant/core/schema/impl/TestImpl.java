@@ -227,7 +227,7 @@ public class TestImpl implements Test {
 	@Override
 	public boolean equals(Object other) {
 		if (! (other instanceof Test)) return false;
-		return ((Test) other).getName().equalsIgnoreCase(this.getName());
+		return ((Test) other).getName().equals(this.getName());
 	}
 
 	@Override

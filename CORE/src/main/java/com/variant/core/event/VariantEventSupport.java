@@ -25,7 +25,6 @@ abstract public class VariantEventSupport implements VariantEvent {
 	protected Long id = null;
 	protected VariantSession session;
 	protected Date createDate;
-	protected Status status;
 	protected String eventName;
 	protected String eventValue;
 	
@@ -60,16 +59,6 @@ abstract public class VariantEventSupport implements VariantEvent {
 	@Override
 	public Date getCreateDate() {
 		return createDate;
-	}
-
-	@Override
-	public Status getStatus() {
-		return status;
-	}
-
-	@Override
-	public void setStatus(Status status) {
-		this.status = status;
 	}
 
 	@Override
@@ -118,7 +107,6 @@ abstract public class VariantEventSupport implements VariantEvent {
 		.append("createdOn:'").append(createDate).append("', ")
 		.append("eventName:").append(eventName).append("', ")
 		.append("eventValue:").append(eventValue).append("', ")
-		.append("status:").append(status)
 		.append("}").toString();
 
 	}

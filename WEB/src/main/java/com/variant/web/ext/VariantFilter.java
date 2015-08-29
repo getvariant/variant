@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.ParserResponse;
+import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.error.ParserError;
@@ -90,16 +91,19 @@ public class VariantFilter implements Filter {
 	@Override
 	public void init(FilterConfig config) throws ServletException {
 
-		VariantWeb.bootstrap();
-
-		String path = config.getInitParameter("schemaResourcePath");
-		if (path == null) throw new ServletException("Init parameter 'schema' must be supplied");
-		InputStream is = VariantIoUtils.class.getResourceAsStream(path);
+		String name = config.getInitParameter("propsResourceName");
+		if (name != null) VariantWeb.bootstrap(name);
+		else VariantWeb.bootstrap();
+			
+		name = config.getInitParameter("schemaResourceName");
 		
+		if (name == null) throw new ServletException("Init parameter 'schemaResourceName' must be supplied");
+		
+		InputStream is = VariantIoUtils.class.getResourceAsStream(name);
 		if (is == null) {
-			throw new RuntimeException("Classpath resource by the name [" + path + "] does not exist.");
+			throw new RuntimeException("Classpath resource by the name [" + name + "] does not exist.");
 		}
-				
+						
 		ParserResponse resp = VariantWeb.parseSchema(is);
 		if (resp.highestErrorSeverity().greaterOrEqualThan(Severity.ERROR)) {
 			LOG.error("Unable to parse Variant test schema due to following parser error(s):");

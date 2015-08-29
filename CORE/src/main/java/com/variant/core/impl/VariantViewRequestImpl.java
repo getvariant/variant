@@ -15,6 +15,7 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 
 	private VariantSessionImpl session;
 	private View view;
+	private Status status = Status.OK;
 	private String resolvedPath;
 	private ViewServeEvent event;
 	private boolean committed = false;
@@ -36,9 +37,6 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	/**
-	 * 
-	 */
 	@Override
 	public VariantSession getSession() {
 		return session;
@@ -64,6 +62,11 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 		return event;
 	}
 
+	@Override
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
@@ -89,5 +92,13 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	 */
 	public boolean isCommitted() {
 		return committed;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Status getStatus() {
+		return status;
 	}
 }

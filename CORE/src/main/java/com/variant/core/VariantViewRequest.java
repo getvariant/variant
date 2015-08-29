@@ -42,4 +42,13 @@ public interface VariantViewRequest {
 	 * @return
 	 */
 	public ViewServeEvent getViewServeEvent();
+
+	public void setStatus(Status status);
+	
+	/**
+	 * 
+	 */
+	public static enum Status {
+		OK, FAIL
+	}
 }

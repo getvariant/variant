@@ -34,9 +34,12 @@ public class VariantWeb {
 	 * 
 	 * @throws VariantBootstrapException
 	 */
-	public static void bootstrap() {
-		
-		engine.bootstrap("/variant-web.props");
+	public static void bootstrap(String...resourceNames) {
+	
+		String[] newArgs = new String[resourceNames.length + 1];
+		for (int i = 0; i < resourceNames.length; i++) newArgs[i] = resourceNames[i];
+		newArgs[resourceNames.length] = "/variant-web.props";
+		engine.bootstrap(newArgs);
 	}
 	
 	/**

@@ -1,9 +1,6 @@
 package com.variant.core.impl;
 
-import static com.variant.core.error.ErrorTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
-import static com.variant.core.error.ErrorTemplate.INTERNAL;
-import static com.variant.core.error.ErrorTemplate.RUN_PROPERTY_NOT_SET;
-import static com.variant.core.error.ErrorTemplate.RUN_TP_NOT_INITIALIZED;
+import static com.variant.core.error.ErrorTemplate.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,33 +64,45 @@ public class VariantCoreImpl implements Variant {
 		
 	/**
 	 * Setup system properties.
-	 * 
-	 * 1. if argument not null, override the defautl with it.
-	 * 2. Look for props as a resource
-	 * 3. Look for props as a file
+	 * 3. Process command line args.
 	 * 
 	 * @param resourceName
 	 */
-	private void setupSystemProperties(String resourceName) {
+	private void setupSystemProperties(String...resourceNames) {
 
-		if (resourceName != null) {
-			System.out.println(resourceName);
+		// Override system props in left-to-right scan.
+		for (int i = resourceNames.length - 1; i >= 0; i--) {
+			String name = resourceNames[i];
 			try {
-				VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream(resourceName));
+				VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream(name));
 			}
 			catch (Exception e) {
-				throw new RuntimeException("Unable to read resurce [" + resourceName + "]");
+				throw new RuntimeException("Unable to read resurce [" + name + "]");
 			}
 		}
 		
+		// Override with /variant.props if supplied on classpath.
+		try {
+			VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream("/variant.props"));
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Processed application properties resource file [/variant.props]]");
+			}
+		}
+		catch (Exception e) {}  // Not an error if wasn't found.
+
 		String runTimePropsResourceName = System.getProperty(VariantProperties.RUNTIME_PROPS_RESOURCE_NAME);
 		String runTimePropsFileName = System.getProperty(VariantProperties.RUNTIME_PROPS_FILE_NAME);
+		
+		if (runTimePropsResourceName != null && runTimePropsFileName!= null) {
+			throw new VariantRuntimeException(BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN);
+		}
+		
 		if (runTimePropsResourceName != null) {
 			try {
 				VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream(runTimePropsResourceName));
 			}
 			catch (Exception e) {
-				throw new RuntimeException("Unable to read resurce [" + runTimePropsResourceName + "]", e);
+				throw new VariantRuntimeException(BOOT_CONFIG_RESOURCE_NOT_FOUND, e, runTimePropsResourceName);
 			}			
 		}
 		else if (runTimePropsFileName != null) {
@@ -101,14 +110,8 @@ public class VariantCoreImpl implements Variant {
 				VariantProperties.getInstance().override(VariantIoUtils.openFileAsStream(runTimePropsFileName));
 			}
 			catch (Exception e) {
-				throw new RuntimeException("Unable to read file [" + runTimePropsFileName + "]", e);
+				throw new VariantRuntimeException(BOOT_CONFIG_FILE_NOT_FOUND, e, runTimePropsFileName);
 			}			
-		}
-		else {
-			try {
-				VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream("/variant.props"));
-			}
-			catch (Exception e) {}  // Not an error if wasn't found.
 		}
 	}
 	
@@ -120,31 +123,22 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public synchronized void bootstrap() {
-		bootstrap(null);
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public synchronized void bootstrap(String resourceName) {
+	public synchronized void bootstrap(String...resourceNames) {
 		
 
 		if (isBootstrapped) throw new IllegalStateException("Variant is already bootstrapped");
 
 		long now = System.currentTimeMillis();
 
-		setupSystemProperties(resourceName);
+		setupSystemProperties(resourceNames);
 		
-		/* Don't -- puts password in the log.
 		if (LOG.isDebugEnabled()) {
+			LOG.debug("*** Do not use on a production system ***");
 			LOG.debug("Bootstrapping Variant with following system properties:");
 			for (VariantProperties.Keys key: VariantProperties.Keys.values()) {
 				LOG.debug("  " + key.propName() + " = " + key.propValue());
 			}
 		}
-		*/
 		
 		//
 		// Instantiate event persister.

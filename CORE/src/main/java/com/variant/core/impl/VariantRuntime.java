@@ -375,7 +375,7 @@ public class VariantRuntime {
 		}   
 		
 		// Create the view serve event.
-		ViewServeEvent event = new ViewServeEvent(view, ssn, resolvedPath, getTargetedExperiences(ssn, view));
+		ViewServeEvent event = new ViewServeEvent(result, resolvedPath, getTargetedExperiences(ssn, view));
 		result.setViewServeEvent(event);
 		
 		return result;

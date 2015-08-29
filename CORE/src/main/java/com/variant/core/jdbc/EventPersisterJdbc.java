@@ -44,11 +44,11 @@ abstract public class EventPersisterJdbc implements EventPersister {
 
 		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
-			    "(id, session_id, created_on, event_name, event_value, status) " +
+			    "(id, session_id, created_on, event_name, event_value) " +
 				(getVendor() == Vendor.POSTGRES ?
-						"VALUES (NEXTVAL('events_id_seq'), ?, ?, ?, ?, ?)" :
+						"VALUES (NEXTVAL('events_id_seq'), ?, ?, ?, ?)" :
 				getVendor() == Vendor.H2 ?
-						"VALUES (events_id_seq.NEXTVAL, ?, ?, ?, ?, ?)" : "");
+						"VALUES (events_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
 
 		final String INSERT_EVENT_EXPERIENCES_SQL = 
 				"INSERT INTO event_experiences " +
@@ -87,7 +87,6 @@ abstract public class EventPersisterJdbc implements EventPersister {
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getEventName());
 						stmt.setString(4, event.getEventValue());
-						JdbcUtil.setNullableInt(stmt, 5, event.getStatus() == null ? null : event.getStatus().ordinal());
 
 						stmt.addBatch();
 					}

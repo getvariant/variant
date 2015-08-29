@@ -3,7 +3,6 @@ package com.variant.web;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.View;
 import com.variant.core.schema.ViewSelectorByPath;
 
@@ -15,6 +14,7 @@ import com.variant.core.schema.ViewSelectorByPath;
 public class ViewSelectorByRequestPath implements ViewSelectorByPath {
 
 	/**
+	 * This implements the whole path matching logic.
 	 * Package visibility to expose to tests.
 	 */
 	static boolean match(String pattern, String string) {
@@ -51,6 +51,9 @@ public class ViewSelectorByRequestPath implements ViewSelectorByPath {
 	//                                    PUBLIC INTERFACE                                         //
 	//---------------------------------------------------------------------------------------------//
 
+	/**
+	 * Return the first matching.
+	 */
 	@Override
 	public View select(String path, Collection<View> views) {
 		for (View view: views) {

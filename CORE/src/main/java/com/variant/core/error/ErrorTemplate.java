@@ -12,7 +12,10 @@ public enum ErrorTemplate {
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                 BOOTSTRAP ERRORS                                                       //
 	//------------------------------------------------------------------------------------------------------------------------//
-
+ 
+	BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN              (Severity.FATAL, "Cannot pass both -Dvariant.config.resource and -Dvariant.config.file parameters"), 
+	BOOT_CONFIG_RESOURCE_NOT_FOUND                        (Severity.FATAL, "Class path resource [%s] is not found"), 
+	BOOT_CONFIG_FILE_NOT_FOUND                            (Severity.FATAL, "OS file [%s] is not found"), 
 	BOOT_EVENT_PERSISTER_NO_INTERFACE                     (Severity.FATAL, "Event persister class [%s] must implement interface [%s]"), 
 	BOOT_SID_PERSISTER_NO_INTERFACE                       (Severity.FATAL, "Session ID persister class [%s] must implement interface [%s]"),
 	BOOT_TARGETING_PERSISTER_NO_INTERFACE                 (Severity.FATAL, "Targeting persister class [%s] must implement interface [%s]"),

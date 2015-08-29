@@ -10,10 +10,17 @@ public class VariantRuntimeException extends VariantException {
 	private String[] args;
 	
 	public VariantRuntimeException(ErrorTemplate template, String...args) {
+		super();
 		this.template = template;
 		this.args = args;
 	}
-	
+
+	public VariantRuntimeException(ErrorTemplate template, Throwable t, String...args) {
+		super(t);
+		this.template = template;
+		this.args = args;
+	}
+
 	/**
 	 * 
 	 * @return

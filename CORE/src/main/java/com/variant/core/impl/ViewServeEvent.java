@@ -5,36 +5,34 @@ import java.util.Collection;
 import java.util.Collections;
 
 import com.variant.core.VariantEventExperience;
-import com.variant.core.VariantSession;
 import com.variant.core.event.VariantEventSupport;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.View;
 
 
 public class ViewServeEvent extends VariantEventSupport {
 
 	private static final String EVENT_NAME = "VIEW_SERVE";
 	private static final String PARAM_NAME_VIEW_RESOLVED_PATH = "VIEW_RESOLVED_PATH";
+	private static final String PARAM_NAME_REQUEST_STATUS = "VIEW_REQUEST_STAUTS";
 	
-	private View view;
+	private VariantViewRequestImpl request;
 	
 	/**
 	 * New constructor
 	 */
-	ViewServeEvent(View view, VariantSession session, String viewResolvedPath, Collection<Experience> experiences) {
-		super(session, EVENT_NAME, view.getName(), experiences);
-		this.view = view;
+	ViewServeEvent(VariantViewRequestImpl request, String viewResolvedPath, Collection<Experience> experiences) {
+		super(request.getSession(), EVENT_NAME, request.getView().getName(), experiences);
+		this.request = request;
 		setParameter(PARAM_NAME_VIEW_RESOLVED_PATH, viewResolvedPath);
-
+		setParameter(PARAM_NAME_REQUEST_STATUS, request.getStatus().ordinal());
 	}
 	
 	/**
-	 * 
 	 * @return
 	 */
-	public View getView() {
-		return view;
+	public VariantViewRequestImpl getViewRequest() {
+		return request;
 	}
 	
 	/**

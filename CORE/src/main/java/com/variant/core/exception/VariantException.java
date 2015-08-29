@@ -19,6 +19,13 @@ public class VariantException extends RuntimeException {
 	
 	/**
 	 * 
+	 */
+	public VariantException(Throwable t) {
+		super(t);
+	}
+
+	/**
+	 * 
 	 * @param msg
 	 */
 	public VariantException(String msg) {

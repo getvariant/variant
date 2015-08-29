@@ -2,10 +2,8 @@ package com.variant.core.impl;
 
 import java.util.Collection;
 
-import com.variant.core.VariantSession;
-import com.variant.core.impl.ViewServeEvent;
+import com.variant.core.VariantViewRequest;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.View;
 
 /**
  * Exposes package methods to tests.
@@ -21,9 +19,9 @@ public class ViewServeEventTestFacade extends ViewServeEvent {
 	 * @param status
 	 * @param viewResolvedPath
 	 */
-	public ViewServeEventTestFacade(View view, VariantSession session, String viewResolvedPath, Collection<Experience> experiences) {
+	public ViewServeEventTestFacade(VariantViewRequest request, String viewResolvedPath, Collection<Experience> experiences) {
 
-		super(view, session, viewResolvedPath, experiences);
+		super((VariantViewRequestImpl)request, viewResolvedPath, experiences);
 	}
 
 }

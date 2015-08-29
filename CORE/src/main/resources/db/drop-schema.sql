@@ -1,3 +1,5 @@
+DROP VIEW events_v;
+
 DROP TABLE events CASCADE;
 
 DROP SEQUENCE events_id_seq;

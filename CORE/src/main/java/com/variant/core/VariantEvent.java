@@ -42,18 +42,6 @@ public interface VariantEvent {
 	 * @return
 	 */
 	public Date getCreateDate();
-
-	/**
-	 * Event's completion status.
-	 * @return
-	 */
-	public Status getStatus();
-
-	/**
-	 * Set event's completion status.  Optional.
-	 * @param status
-	 */
-	public void setStatus(Status status);
 	
 	/**
 	 * Subclasses must provide a way to get to event-experiences.
@@ -83,13 +71,5 @@ public interface VariantEvent {
 	 * @return
 	 */
 	public Set<String> getParameterKeys();
-
-	/**
-	 * 
-	 */
-	public static enum Status {
-		SUCCESS, 
-		EXCEPTION
-	}
 
 }
