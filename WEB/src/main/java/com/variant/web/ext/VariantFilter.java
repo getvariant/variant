@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.ParserResponse;
-import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.error.ParserError;
@@ -43,43 +42,8 @@ public class VariantFilter implements Filter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantFilter.class);
 	
-	boolean isEngineUsable = false;
+	private boolean isEngineUsable = false;
 	
-	
-	/**
-	 * 
-	 * @param request
-	 * @return a VariantViewRequest object, if the request url is mapped in Variant schema,
-	 *         or null otherwise.
-	 */
-	private VariantViewRequest doPreFilter(HttpServletRequest request) {
-				
-		// is this request's path mapped in Varianit?
-		String path = VariantWebUtils.requestUrl(request);
-		View view = null;
-		for (View v: VariantWeb.getSchema().getViews()) {
-			if (v.getPath().equalsIgnoreCase(path)) {
-				view = v;
-				break;
-			}
-		}
-		
-		if (view == null) return null;
-		VariantSession session = VariantWeb.getSession(request);
-		return VariantWeb.startViewRequest(session, view);
-	}
-
-	/**
-	 * TODO This can be done asynchronously.
-	 * @param request
-	 * @return
-	 */
-	private void doAfterFilter(VariantViewRequest viewRequest, HttpServletResponse httpResponse) {
-		
-		VariantWeb.commitViewRequest(viewRequest, httpResponse);   
-
-	}
-
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -140,10 +104,25 @@ public class VariantFilter implements Filter {
 			long start = System.currentTimeMillis();
 			try {
 
-				// If requested path is not instrumented, variantRequest will be null.
-				variantRequest = doPreFilter(httpRequest);
+				// Is this request's URI mapped in Variant?
+				String url = VariantWebUtils.requestUrl(httpRequest);
+				View view = VariantWeb.getSchema().matchViewByPath(url);
 				
-				if (variantRequest != null ) {
+				if (view == null) {
+					
+					if (LOG.isDebugEnabled()) {
+						LOG.debug("Path [" + url + "] is not instrumented");
+					}
+					// No, we don't know about this path.
+					chain.doFilter(request, response);					
+				
+				}
+				else {
+				
+					// Yes, this path is mapped in Variant.
+					VariantSession session = VariantWeb.getSession(httpRequest);
+					variantRequest = VariantWeb.startViewRequest(session, view);
+
 					if (LOG.isDebugEnabled()) {
 						String msg = 
 								"Variant dispatcher for path [" + variantRequest.getView().getPath() +
@@ -159,26 +138,20 @@ public class VariantFilter implements Filter {
 					
 					if (variantRequest.isForwarding()) {
 						request.getRequestDispatcher(variantRequest.resolvedViewPath()).forward(request, response);
-						return;
+					}
+					else {
+						chain.doFilter(request, response);							
+					}
+					
+					if (isEngineUsable && variantRequest != null) {
+						VariantWeb.commitViewRequest(variantRequest, httpResponse);   
 					}
 				}
 			}
 			catch (Throwable t) {
 				LOG.error("Unhandled exception in Variant for path [" + VariantWebUtils.requestUrl(httpRequest) + "]", t);
 			}
-		}
-				
-		chain.doFilter(request, response);	
-	
-		if (isEngineUsable && variantRequest != null) {
-			try {
-				doAfterFilter(variantRequest, httpResponse);
-			}
-			catch (Throwable t) {
-				LOG.error("Unhandled exception in Variant for path [" + VariantWebUtils.requestUrl(httpRequest) + "]", t);
-			}
-			
-		}
+		}	
 	}
 
 	/**

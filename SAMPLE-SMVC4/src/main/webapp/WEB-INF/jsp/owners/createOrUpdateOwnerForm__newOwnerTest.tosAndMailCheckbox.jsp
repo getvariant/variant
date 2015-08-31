@@ -21,7 +21,7 @@
     </c:choose>
 
     <h2>
-        <c:if test="${owner['new']}">New </c:if> Owner TOS & Mail
+        <c:if test="${owner['new']}">New </c:if> Owner TOS + Mail
     </h2>
     <form:form modelAttribute="owner" method="${method}" class="form-horizontal" id="add-owner-form">
         <petclinic:inputField label="First Name" name="firstName"/>
