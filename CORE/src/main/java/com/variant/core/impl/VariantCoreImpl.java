@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
+import com.variant.core.VariantBootstrapException;
+import com.variant.core.VariantEvent;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
@@ -30,6 +32,7 @@ import com.variant.core.schema.ViewParsedEventListener;
 import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.session.SessionService;
+import com.variant.core.session.TargetingPersister;
 import com.variant.core.util.VariantIoUtils;
 
 /**
@@ -321,15 +324,7 @@ public class VariantCoreImpl implements Variant {
 		return schema;
 	
 	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public VariantSession getSession(boolean create, Object userData) {
-		return sessionService.getSession(create, userData);
-	}
-	
+		
 	/**
 	 * 
 	 */
@@ -342,14 +337,33 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public VariantViewRequest startViewRequest(VariantSession session, View view) {
+	public VariantViewRequest startViewRequest(View view, Object userData) {
 		
 		stateCheck();
-		// It's caller's responsibility to init the targeting persister.
-		if (session.getTargetingPersister() == null) {
-			throw new VariantRuntimeException(RUN_TP_NOT_INITIALIZED);
+
+		// get the session.
+		VariantSession session = getSession(userData);
+		
+		// init Targeting Persister with the same user data.
+		TargetingPersister tp = null;
+		String className = VariantProperties.getInstance().targetingPersisterClassName();
+		
+		try {
+			Object object = Class.forName(className).newInstance();
+			if (object instanceof TargetingPersister) {
+				tp = (TargetingPersister) object;
+			}
+			else {
+				throw new VariantBootstrapException(BOOT_TARGETING_PERSISTER_NO_INTERFACE, className, TargetingPersister.class.getName());
+			}
 		}
-		return VariantRuntime.startViewRequest(session, view);
+		catch (Exception e) {
+			throw new VariantInternalException("Unable to instantiate targeting persister class [" + className +"]", e);
+		}
+			
+		tp.initialized(session, userData);
+
+		return VariantRuntime.startViewRequest(session, view, tp);
 	}
 	
 	/**
@@ -368,11 +382,16 @@ public class VariantCoreImpl implements Variant {
 		sessionService.persistSessionId(request.getSession(), userData);
 		
 		// Persist targeting info.  Note that we expect the userData to apply to both!
-		request.getSession().getTargetingPersister().persist(userData);
+		request.getTargetingPersister().persist(userData);
 		
-		// Save the events.
-		EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
-		ew.write(request.getViewServeEvent());		
+		// Save the view serve event, if any. There may not be any if we hit a known view that did not have
+		// any tests instrumented on it.
+		ViewServeEvent event = request.getViewServeEvent();
+		if (event != null) {
+			EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
+			ew.write(event);		
+		}
+		
 		((VariantViewRequestImpl)request).commit();
 		
 	}

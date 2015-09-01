@@ -102,7 +102,6 @@ public enum ErrorTemplate {
 	//------------------------------------------------------------------------------------------------------------------------//
 	
 	RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST                    (Severity.ERROR, "View [%s] is not instrumented for test [%s]"), 
-	RUN_TP_NOT_INITIALIZED                                (Severity.ERROR, "Targeting persister is not initialized"),
 	RUN_PROPERTY_NOT_SET                                  (Severity.ERROR, "Property [%s] must be set"),
 	
 	//------------------------------------------------------------------------------------------------------------------------//

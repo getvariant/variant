@@ -2,6 +2,7 @@ package com.variant.core;
 
 import com.variant.core.impl.ViewServeEvent;
 import com.variant.core.schema.View;
+import com.variant.core.session.TargetingPersister;
 
 /**
  * Encapsulates state relevant to a single view request.
@@ -43,6 +44,16 @@ public interface VariantViewRequest {
 	 */
 	public ViewServeEvent getViewServeEvent();
 
+	/**
+	 * 
+	 * @return
+	 */
+	public TargetingPersister getTargetingPersister();
+
+	/**
+	 * 
+	 * @param status
+	 */
 	public void setStatus(Status status);
 	
 	/**

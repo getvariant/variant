@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.ParserResponse;
-import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.error.ParserError;
 import com.variant.core.error.Severity;
@@ -120,10 +119,10 @@ public class VariantFilter implements Filter {
 				else {
 				
 					// Yes, this path is mapped in Variant.
-					VariantSession session = VariantWeb.getSession(httpRequest);
-					variantRequest = VariantWeb.startViewRequest(session, view);
+					variantRequest = VariantWeb.startViewRequest(view, httpRequest);
 
 					if (LOG.isDebugEnabled()) {
+
 						String msg = 
 								"Variant dispatcher for path [" + variantRequest.getView().getPath() +
 								"] completed in " + DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS") +". ";

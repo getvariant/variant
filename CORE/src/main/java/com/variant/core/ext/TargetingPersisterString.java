@@ -97,8 +97,8 @@ public class TargetingPersisterString extends TargetingPersisterSupport {
 	 * 
 	 */
 	@Override
-	public void initialized(VariantSession ssn, Object userData) { 
-		parseFromString((String) userData, ssn);
+	public void initialized(VariantSession session, Object userData) { 
+		parseFromString((String) userData, session);
 	}
 
 	@Override

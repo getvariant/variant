@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Test;
 
 import com.variant.core.ParserResponse;
-import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.impl.ViewServeEventTestFacade;
 import com.variant.core.schema.Schema;
@@ -37,9 +36,7 @@ public class EventWriterTest extends BaseTest {
 		Schema schema = engine.getSchema();
 		com.variant.core.schema.Test test = schema.getTest("test1");
 		View view = schema.getView("view1");
-		VariantSession ssn = engine.getSession("session-key");
-		ssn.initTargetingPersister("");
-		VariantViewRequest request = engine.startViewRequest(ssn, view);
+		VariantViewRequest request = engine.startViewRequest(view, "");
 		request.setStatus(VariantViewRequest.Status.FAIL);
 		ViewServeEventTestFacade event1 = new ViewServeEventTestFacade(request, "viewResolvedPath", VariantCollectionsUtils.list(test.getExperience("A")));
 		ViewServeEventTestFacade event2 = new ViewServeEventTestFacade(request, "viewResolvedPath", VariantCollectionsUtils.list(test.getExperience("B")));

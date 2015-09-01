@@ -12,7 +12,7 @@ public interface TargetingPersister {
 	 * Mechanism for passing user data to an instance of this class,
 	 * after it has been initialized by the container.
 	 * 
-	 * @param config
+	 * @param request
 	 * @param userData
 	 */
 	public void initialized(VariantSession ssn, Object userData);

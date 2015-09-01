@@ -41,7 +41,7 @@ abstract public class TargetingPersisterSupport implements TargetingPersister {
 	protected LinkedHashMap<String, Entry> entryMap = new LinkedHashMap<String, Entry>();
 	
 	// Concrete subclasses will initialize the entry map here.
-	abstract public void initialized(VariantSession ssn, Object userData);
+	abstract public void initialized(VariantSession session, Object userData);
 	
 	// Concrete sublasses will flush in memory content to a persistence mechanism here.
 	abstract public void persist(Object userData);

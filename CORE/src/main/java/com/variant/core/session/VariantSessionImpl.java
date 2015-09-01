@@ -1,13 +1,8 @@
 package com.variant.core.session;
 
-import static com.variant.core.error.ErrorTemplate.BOOT_TARGETING_PERSISTER_NO_INTERFACE;
-
 import java.io.Serializable;
 
-import com.variant.core.VariantBootstrapException;
-import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
-import com.variant.core.exception.VariantInternalException;
 
 /**
  * 
@@ -20,7 +15,6 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String id;
-	private TargetingPersister targetingPersister;
 	
 	/**
 	 * 
@@ -44,11 +38,6 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	}
 
 	@Override
-	public TargetingPersister getTargetingPersister() {
-		return targetingPersister;
-	}
-
-	@Override
 	public boolean equals(Object o) {
 		try {
 			VariantSessionImpl other = (VariantSessionImpl) o;
@@ -58,32 +47,5 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 			return false;
 		}
 	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public void initTargetingPersister(Object userData) {
-
-		
-		String className = VariantProperties.getInstance().targetingPersisterClassName();
-		
-		try {
-			Object object = Class.forName(className).newInstance();
-			if (object instanceof TargetingPersister) {
-				targetingPersister = (TargetingPersister) object;
-			}
-			else {
-				throw new VariantBootstrapException(BOOT_TARGETING_PERSISTER_NO_INTERFACE, className, TargetingPersister.class.getName());
-			}
-		}
-		catch (Exception e) {
-			throw new VariantInternalException("Unable to instantiate targeting persister class [" + className +"]", e);
-		}
-		
-		targetingPersister.initialized(this, userData);
-
-	}
-
 
 }

@@ -4,6 +4,7 @@ import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.schema.View;
 import com.variant.core.schema.impl.ViewImpl;
+import com.variant.core.session.TargetingPersister;
 import com.variant.core.session.VariantSessionImpl;
 
 /**
@@ -19,6 +20,7 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	private String resolvedPath;
 	private ViewServeEvent event;
 	private boolean committed = false;
+	private TargetingPersister targetingPersister = null;
 	
 	/**
 	 * 
@@ -31,6 +33,10 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 
 	void setViewServeEvent(ViewServeEvent event) {
 		this.event = event;
+	}
+	
+	void setTargetingPersister(TargetingPersister targetingPersister) {
+		this.targetingPersister = targetingPersister;
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -60,6 +66,12 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	@Override
 	public ViewServeEvent getViewServeEvent() {
 		return event;
+	}
+
+
+	@Override
+	public TargetingPersister getTargetingPersister() {
+		return targetingPersister;
 	}
 
 	@Override
@@ -101,4 +113,5 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	public Status getStatus() {
 		return status;
 	}
+
 }

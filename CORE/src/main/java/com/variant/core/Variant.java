@@ -82,19 +82,9 @@ public interface Variant {
 	 * @return Current test schema or null, if none has been deployed yet.
 	 */
 	public Schema getSchema();
-	
+		
 	/**
-	 *  Get user's Variant session. 
-	 *  
-	 * @param create   Whether or not create the session if does not exist.
-	 * @param sessionIdPersisterUserData Opaque object that will be passed without
-	 *                 interpretation to <code>SessionIdPersister.get()</code>.
-	 * @return          
-	 */
-	public VariantSession getSession(boolean create, Object sessionIdPersisterUserData);
-	
-	/**
-	 * Get user's Variant session. 
+	 * Get user's Variant session. Will be created if doesn't yet exist;
 	 * 
 	 * @param sessionIdPersisterUserData Opaque object that will be passed without
 	 *                 interpretation to <code>SessionIdPersister.get()</code>.
@@ -107,7 +97,7 @@ public interface Variant {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public VariantViewRequest startViewRequest(VariantSession session, View view);
+	public VariantViewRequest startViewRequest(View view, Object sessionIdPersisterUserData);
 	
 	/**
 	 * Commit of a view request.

@@ -104,29 +104,18 @@ public class VariantWeb {
 	 * @param request Active <code>HttpServletRequest</code> object.
 	 * @return          
 	 */
-	public static VariantSession getSession(boolean create, HttpServletRequest request) {
-		VariantSession result = engine.getSession(create, request);
-		result.initTargetingPersister(request);
-		return result;
+	public static VariantSession getSession(HttpServletRequest request) {
+		return engine.getSession(request);
 	}
 	
-	/**
-	 * Get user's Variant session. 
-	 * 
-	 * @param request Active <code>HttpServletRequest</code> object.
-	 * @return
-	 */
-	public static VariantSession getSession(HttpServletRequest request) {
-		return getSession(true, request);
-	}
-
 	/**
      * Start view Request 
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public static VariantViewRequest startViewRequest(VariantSession session, View view) {
-		return engine.startViewRequest(session, view);
+	public static VariantViewRequest startViewRequest(View view, HttpServletRequest request) {
+		getSchema().registerCustomViewSelectorByPath(new ViewSelectorByRequestPath());
+		return engine.startViewRequest(view, request);
 	}
 	
 	/**

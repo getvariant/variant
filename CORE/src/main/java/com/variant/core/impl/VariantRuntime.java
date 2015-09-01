@@ -64,10 +64,9 @@ public class VariantRuntime {
 	 * @param config
 	 * @param viewPath
 	 */
-	private static String targetSessionForView(VariantSession ssn, View view) {
+	private static String targetSessionForView(VariantSession ssn, View view, TargetingPersister targetingPersister) {
 
 		Schema schema = Variant.Factory.getInstance().getSchema();
-		TargetingPersister tp = ssn.getTargetingPersister();
 		
 		// It is illegal to call this with a view that is not in schema, e.g. before runtime.
 		View schemaView = schema.getView(view.getName());
@@ -75,7 +74,7 @@ public class VariantRuntime {
 			throw new VariantInternalException("View [" + view.getName() + "] is not in schema");
 
 		// Pre-targeted experiences from the targeting persister.
-		Collection<Experience> alreadyTargetedExperiences = tp.getAll();
+		Collection<Experience> alreadyTargetedExperiences = targetingPersister.getAll();
 		
 		if (!alreadyTargetedExperiences.isEmpty()) {
 			
@@ -85,7 +84,7 @@ public class VariantRuntime {
 			
 			if (!minUnresolvableSubvector.isEmpty()) {
 
-				for (Experience e: minUnresolvableSubvector) tp.remove(e.getTest());
+				for (Experience e: minUnresolvableSubvector) targetingPersister.remove(e.getTest());
 
 				LOG.info(
 						"Targeting persistor not resolvable for session [" + ssn.getId() + "]. " +
@@ -95,7 +94,7 @@ public class VariantRuntime {
 		}
 
 		// Targeting persister now has all currently targeted experiences.
-		for (Experience e: tp.getAll()) {
+		for (Experience e: targetingPersister.getAll()) {
 			if (e.getTest().isOn()) {
 				if (LOG.isDebugEnabled()) {
 					LOG.debug(
@@ -114,20 +113,20 @@ public class VariantRuntime {
 		// Tests that are instrumented on this page need to be targeted, unless already targeted.
 		for (Test test: view.getInstrumentedTests()) {
 			
-			if (view.isInstrumentedBy(test) && tp.get(test) == null) {
+			if (view.isInstrumentedBy(test) && targetingPersister.get(test) == null) {
 				
 				if (!test.isOn()) {
 					Experience e = test.getControlExperience();
-					tp.add(e, System.currentTimeMillis());
+					targetingPersister.add(e, System.currentTimeMillis());
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(
 								"Session [" + ssn.getId() + "] temporarily targeted for OFF test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}					
 				}
-				else if (isTargetable(test, tp.getAll())) {
+				else if (isTargetable(test, targetingPersister.getAll())) {
 					Experience e = ((TestImpl) test).target(ssn);
-					tp.add(e, System.currentTimeMillis());
+					targetingPersister.add(e, System.currentTimeMillis());
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(
 								"Session [" + ssn.getId() + "] targeted for test [" + 
@@ -137,7 +136,7 @@ public class VariantRuntime {
 				}
 				else {
 					Experience e = test.getControlExperience();
-					tp.add(e, System.currentTimeMillis());
+					targetingPersister.add(e, System.currentTimeMillis());
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(
 								"Session [" + ssn.getId() + "] targeted for test [" + 
@@ -151,7 +150,7 @@ public class VariantRuntime {
 		// of this method and did not get reduced out due to non-resolvability.  Before resolving the view path,
 		// we substitute them with control.
 		ArrayList<Experience> vector = new ArrayList<Experience>();
-		for (Experience e: tp.getAll()) {
+		for (Experience e: targetingPersister.getAll()) {
 			vector.add(e.getTest().isOn() ? e : e.getTest().getControlExperience());
 		}
 		
@@ -338,12 +337,12 @@ public class VariantRuntime {
 	 * @param view
 	 * @return
 	 */
-	private static Collection<Experience> getTargetedExperiences(VariantSession ssn, View view) {
+	private static Collection<Experience> getTargetedExperiences(VariantSession ssn, View view, TargetingPersister targetingPersister) {
 		
 		ArrayList<Experience> result = new ArrayList<Experience>();
 		for (Test test: view.getInstrumentedTests()) {
 			if (!test.isOn()) continue;
-			Experience e = ssn.getTargetingPersister().get(test);
+			Experience e = targetingPersister.get(test);
 			if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found.");
 			result.add(e);
 		}
@@ -360,24 +359,36 @@ public class VariantRuntime {
 	 * @param view
 	 * @return
 	 */
-	public static VariantViewRequestImpl startViewRequest(VariantSession ssn, View view) {
+	public static VariantViewRequestImpl startViewRequest(VariantSession ssn, View view, TargetingPersister targetingPersister) {
 
 		// Resolve the path and get all tests instrumented on the given view targeted.
-		String resolvedPath = targetSessionForView(ssn, view);		
+		String resolvedPath = targetSessionForView(ssn, view, targetingPersister);		
 		VariantViewRequestImpl result = new VariantViewRequestImpl((VariantSessionImpl)ssn, (ViewImpl) view);
 		result.setResolvedPath(resolvedPath);
 		
-		if (LOG.isTraceEnabled()) {
-			LOG.trace(
+		if (LOG.isDebugEnabled()) {
+			LOG.debug(
 					"Session [" + ssn.getId() + "] resolved view [" + 
 					view.getName() +"] as [" + resolvedPath + "] for experience vector [" +
-					StringUtils.join(ssn.getTargetingPersister().getAll().toArray(), ",") + "]");
+					StringUtils.join(targetingPersister.getAll().toArray(), ",") + "]");
 		}   
+	
+		result.setTargetingPersister(targetingPersister);
 		
-		// Create the view serve event.
-		ViewServeEvent event = new ViewServeEvent(result, resolvedPath, getTargetedExperiences(ssn, view));
-		result.setViewServeEvent(event);
-		
+		// Create the view serve event if there are any tests instrumented on this view.
+		if (view.getInstrumentedTests().isEmpty()) {
+			
+			if (LOG.isDebugEnabled()) {
+				LOG.debug(
+						"Session [" + ssn.getId() + "] requested view [" + 
+						view.getName() +"] that does not have any instrumented tests");
+			}   
+		}
+		else {
+			ViewServeEvent event = new ViewServeEvent(result, resolvedPath, getTargetedExperiences(ssn, view, targetingPersister));
+			result.setViewServeEvent(event);
+		}
+	
 		return result;
 
 	}
