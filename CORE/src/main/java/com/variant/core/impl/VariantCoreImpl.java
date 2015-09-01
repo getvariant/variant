@@ -1,6 +1,12 @@
 package com.variant.core.impl;
 
-import static com.variant.core.error.ErrorTemplate.*;
+import static com.variant.core.error.ErrorTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
+import static com.variant.core.error.ErrorTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
+import static com.variant.core.error.ErrorTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
+import static com.variant.core.error.ErrorTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
+import static com.variant.core.error.ErrorTemplate.BOOT_TARGETING_PERSISTER_NO_INTERFACE;
+import static com.variant.core.error.ErrorTemplate.INTERNAL;
+import static com.variant.core.error.ErrorTemplate.RUN_PROPERTY_NOT_SET;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
-import com.variant.core.VariantEvent;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;

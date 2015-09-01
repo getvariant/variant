@@ -38,7 +38,12 @@
                      'path':'/owners/new/variant/newOwnerTest.tosAndMailCheckbox'         
                   }                                          
                ]                                             
+            },
+            {                                                
+               'viewRef':'ownerDetail',                            
+               'isNonvariant': true
             }                                                
+            
          ]                                                   
       }                                                     
    ]                                                         
