@@ -6,10 +6,10 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import com.variant.core.ParserResponse;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.VariantCollectionsUtils;
 
 
@@ -25,8 +25,8 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 	public void test() throws Exception {
 		
 		ParserResponse response = engine.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
-		if (response.hasErrors()) printErrors(response);
-		assertFalse(response.hasErrors());
+		if (response.hasMessages()) printErrors(response);
+		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();
 		final Test test1 = schema.getTest("test1");

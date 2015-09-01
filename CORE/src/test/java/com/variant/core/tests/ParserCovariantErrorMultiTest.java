@@ -1,17 +1,17 @@
 package com.variant.core.tests;
 
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_DUPE;
-import static com.variant.core.error.ErrorTemplate.PARSER_COVARIANT_VARIANT_MISSING;
+import static com.variant.core.schema.parser.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
+import static com.variant.core.schema.parser.MessageTemplate.PARSER_COVARIANT_VARIANT_DUPE;
+import static com.variant.core.schema.parser.MessageTemplate.PARSER_COVARIANT_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.variant.core.ParserResponse;
-import com.variant.core.error.ParserError;
-import com.variant.core.error.Severity;
 import com.variant.core.schema.impl.SchemaParser;
+import com.variant.core.schema.parser.ParserMessage;
+import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.parser.Severity;
 
 /**
  * Parse time exceptions
@@ -436,11 +436,11 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 		
 		ParserResponse response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(1, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_DUPE, "test1.B, test2.B", "test3", "view2", "C").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(1, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_DUPE, "test1.B, test2.B", "test3", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -846,14 +846,14 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 		
 		ParserResponse response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(2, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "view2", "C").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(2, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(1);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_MISSING, "test1.B,test2.B", "test3", "view2", "C").getMessage(), error.getMessage());
+		error = response.getMessages().get(1);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_MISSING, "test1.B,test2.B", "test3", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}

@@ -16,11 +16,12 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.ParserResponse;
 import com.variant.core.VariantViewRequest;
-import com.variant.core.error.ParserError;
-import com.variant.core.error.Severity;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.View;
+import com.variant.core.schema.parser.ParserMessage;
+import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.parser.Severity;
 import com.variant.core.util.VariantIoUtils;
 import com.variant.web.VariantWeb;
 import com.variant.web.util.VariantWebUtils;
@@ -40,8 +41,6 @@ import com.variant.web.util.VariantWebUtils;
 public class VariantFilter implements Filter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantFilter.class);
-	
-	private boolean isEngineUsable = false;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -68,18 +67,17 @@ public class VariantFilter implements Filter {
 		}
 						
 		ParserResponse resp = VariantWeb.parseSchema(is);
-		if (resp.highestErrorSeverity().greaterOrEqualThan(Severity.ERROR)) {
+		if (resp.highestMessageSeverity().greaterOrEqualThan(Severity.ERROR)) {
 			LOG.error("Unable to parse Variant test schema due to following parser error(s):");
-			for (ParserError error: resp.getErrors()) {
-				LOG.error(error.toString());
+			for (ParserMessage msg: resp.getMessages()) {
+				LOG.error(msg.toString());
 			}
 		}
 		else {
-			isEngineUsable = true;
-			if (resp.hasErrors()) {
-				LOG.warn("Variant test schema parsed with following warning(s):");
-				for (ParserError error: resp.getErrors()) {
-					LOG.error(error.toString());
+			if (resp.hasMessages()) {
+				LOG.warn("Variant test schema parsed with following message(s):");
+				for (ParserMessage msg: resp.getMessages()) {
+					LOG.error(msg.toString());
 				}
 			}
 		}
@@ -98,9 +96,12 @@ public class VariantFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		VariantViewRequest variantRequest = null;
+		String forwardUrl = null;
 		
-		if (isEngineUsable) {
+		if (VariantWeb.isBootstrapped()) {
+			
 			long start = System.currentTimeMillis();
+			
 			try {
 
 				// Is this request's URI mapped in Variant?
@@ -108,12 +109,11 @@ public class VariantFilter implements Filter {
 				View view = VariantWeb.getSchema().matchViewByPath(url);
 				
 				if (view == null) {
-					
+
+					// We don't know about this path.
 					if (LOG.isDebugEnabled()) {
 						LOG.debug("Path [" + url + "] is not instrumented");
 					}
-					// No, we don't know about this path.
-					chain.doFilter(request, response);					
 				
 				}
 				else {
@@ -136,21 +136,44 @@ public class VariantFilter implements Filter {
 					}
 					
 					if (variantRequest.isForwarding()) {
-						request.getRequestDispatcher(variantRequest.resolvedViewPath()).forward(request, response);
-					}
-					else {
-						chain.doFilter(request, response);							
-					}
-					
-					if (isEngineUsable && variantRequest != null) {
-						VariantWeb.commitViewRequest(variantRequest, httpResponse);   
+						forwardUrl = variantRequest.resolvedViewPath();
+						if (forwardUrl == null) {
+							throw new VariantInternalException("Resovled path cannot be null for session [" + variantRequest.getSession().getId() + "]");
+						}
 					}
 				}
 			}
 			catch (Throwable t) {
-				LOG.error("Unhandled exception in Variant for path [" + VariantWebUtils.requestUrl(httpRequest) + "]", t);
+				LOG.error("Unhandled exception in Variant for path [" + 
+						VariantWebUtils.requestUrl(httpRequest) + 
+						"] and session [" + variantRequest.getSession().getId() + "]", t);
+				// null out variant request object so we don't attempt to do anything with it.
+				variantRequest = null;
 			}
-		}	
+
+			if (forwardUrl == null) {
+				chain.doFilter(request, response);							
+			}				
+			else {
+				request.getRequestDispatcher(forwardUrl).forward(request, response);
+			}
+								
+			if (VariantWeb.isBootstrapped() && variantRequest != null) {
+				try {
+					variantRequest.getViewServeEvent().setParameter("HTTP_STATUS", httpResponse.getStatus());
+					VariantWeb.commitViewRequest(variantRequest, httpResponse);   
+				}
+				catch (Throwable t) {
+					LOG.error("Unhandled exception in Variant for path [" + 
+							VariantWebUtils.requestUrl(httpRequest) + 
+							"] and session [" + variantRequest.getSession().getId() + "]", t);
+				}
+			}
+		}
+		else {
+			LOG.info("Variant is not bootstrapped.");
+			chain.doFilter(request, response);
+		}
 	}
 
 	/**

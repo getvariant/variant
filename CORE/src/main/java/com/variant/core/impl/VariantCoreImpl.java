@@ -1,12 +1,12 @@
 package com.variant.core.impl;
 
-import static com.variant.core.error.ErrorTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
-import static com.variant.core.error.ErrorTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
-import static com.variant.core.error.ErrorTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
-import static com.variant.core.error.ErrorTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
-import static com.variant.core.error.ErrorTemplate.BOOT_TARGETING_PERSISTER_NO_INTERFACE;
-import static com.variant.core.error.ErrorTemplate.INTERNAL;
-import static com.variant.core.error.ErrorTemplate.RUN_PROPERTY_NOT_SET;
+import static com.variant.core.schema.parser.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
+import static com.variant.core.schema.parser.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
+import static com.variant.core.schema.parser.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
+import static com.variant.core.schema.parser.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
+import static com.variant.core.schema.parser.MessageTemplate.BOOT_TARGETING_PERSISTER_NO_INTERFACE;
+import static com.variant.core.schema.parser.MessageTemplate.INTERNAL;
+import static com.variant.core.schema.parser.MessageTemplate.RUN_PROPERTY_NOT_SET;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,13 +17,11 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
-import com.variant.core.error.Severity;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
 import com.variant.core.exception.VariantInternalException;
@@ -31,11 +29,13 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.TestParsedEventListener;
 import com.variant.core.schema.View;
-import com.variant.core.schema.ViewParsedEventListener;
 import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
+import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.parser.Severity;
+import com.variant.core.schema.parser.TestParsedEventListener;
+import com.variant.core.schema.parser.ViewParsedEventListener;
 import com.variant.core.session.SessionService;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.util.VariantIoUtils;
@@ -194,6 +194,14 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
+	public boolean isBootstrapped() {
+		return isBootstrapped;
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
 	public synchronized void shutdown() {
 		long now = System.currentTimeMillis();
 		stateCheck();
@@ -276,7 +284,7 @@ public class VariantCoreImpl implements Variant {
 		}
 
 		// Only replace the schema if no ERROR or higher level errors.
-		if (response.highestErrorSeverity().lessThan(Severity.ERROR)) {
+		if (response.highestMessageSeverity().lessThan(Severity.ERROR)) {
 			schema = response.getSchema();
 			StringBuilder msg = new StringBuilder("New schema deployed in ");
 			msg.append(DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")).append(":");

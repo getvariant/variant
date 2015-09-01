@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.variant.core.ParserResponse;
-import com.variant.core.error.ErrorTemplate;
-import com.variant.core.error.ParserError;
-import com.variant.core.error.Severity;
-import com.variant.core.error.SyntaxError;
+import com.variant.core.schema.parser.MessageTemplate;
+import com.variant.core.schema.parser.ParserMessage;
+import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.parser.Severity;
+import com.variant.core.schema.parser.SyntaxError;
 
 public class ParserResponseImpl implements ParserResponse {
 
-	private ArrayList<ParserError> errors = new ArrayList<ParserError>();
+	private ArrayList<ParserMessage> messages = new ArrayList<ParserMessage>();
 	private SchemaImpl config = new SchemaImpl();
 	
 	//---------------------------------------------------------------------------------------------//
@@ -30,37 +30,44 @@ public class ParserResponseImpl implements ParserResponse {
 
 	/**
 	 * 
-	 * @return Highest severity if there are errors or null otherwise.
+	 * @return Highest severity if there are any messages, or null otherwise.
 	 */
 	@Override
-	public Severity highestErrorSeverity() {
+	public Severity highestMessageSeverity() {
 		
 		Severity result = Severity.NONE;
-		for (ParserError error: errors) {
+		for (ParserMessage error: messages) {
 			if (result.compareTo(error.getSeverity()) < 0)
 				result = error.getSeverity();					
 		}
 		return result;
 	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean hasErrors() {
-		return errors.size() > 0;
-	}
 	
 	/**
-	 * All parse errors in order they were produced as an unmodifiable list.
 	 * @return
 	 */
 	@Override
-	public List<ParserError> getErrors() {
-		return Collections.unmodifiableList(errors);
+	public List<ParserMessage> getMessages() {
+		return Collections.unmodifiableList(messages);
 	}
 
+	/**
+	 * @return
+	 */
+	@Override
+	public List<ParserMessage> getMessages(Severity severity) {
+		ArrayList<ParserMessage> response = new ArrayList<ParserMessage>();
+		for (ParserMessage msg: messages) {
+			if (msg.getSeverity().greaterOrEqualThan(severity)) response.add(msg);
+		}
+		return Collections.unmodifiableList(response);
+	}
+
+	@Override 
+	public boolean hasMessages() {
+		return ! messages.isEmpty();
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC EXTENDED                                          //
 	//---------------------------------------------------------------------------------------------//
@@ -69,12 +76,12 @@ public class ParserResponseImpl implements ParserResponse {
 	 * 
 	 * @param error
 	 */
-	public void addError(ErrorTemplate template, int line, int column, String...args) {
-		if (template.equals(ErrorTemplate.PARSER_JSON_PARSE)) {
-			errors.add(new SyntaxError(template, line, column, args));
+	public void addError(MessageTemplate template, int line, int column, String...args) {
+		if (template.equals(MessageTemplate.PARSER_JSON_PARSE)) {
+			messages.add(new SyntaxError(template, line, column, args));
 		}
 		else {
-			errors.add(new ParserError(template, line, column, args));
+			messages.add(new ParserMessage(template, line, column, args));
 		}
 	}
 	
@@ -82,8 +89,8 @@ public class ParserResponseImpl implements ParserResponse {
 	 * 
 	 * @param error
 	 */
-	public void addError(ErrorTemplate template, String...args) {
-		errors.add(new ParserError(template, args));
+	public void addError(MessageTemplate template, String...args) {
+		messages.add(new ParserMessage(template, args));
 	}
 
 }

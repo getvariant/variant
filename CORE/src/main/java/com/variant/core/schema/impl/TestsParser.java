@@ -1,6 +1,6 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.error.ErrorTemplate.*;
+import static com.variant.core.schema.parser.MessageTemplate.*;
 
 import java.util.ArrayList;
 import java.util.List;

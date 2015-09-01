@@ -1,4 +1,4 @@
-package com.variant.core.error;
+package com.variant.core.schema.parser;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
  * 
  * @author Igor
  */
-public class SyntaxError extends ParserError {
+public class SyntaxError extends ParserMessage {
 	
 	String rawInput;
 	
@@ -18,7 +18,7 @@ public class SyntaxError extends ParserError {
 	 * @param column
 	 * @param args
 	 */
-	public SyntaxError(ErrorTemplate template, int line, int column, String...args) {
+	public SyntaxError(MessageTemplate template, int line, int column, String...args) {
 		super(template, line, column, args);
 		rawInput = args[1];
 	}

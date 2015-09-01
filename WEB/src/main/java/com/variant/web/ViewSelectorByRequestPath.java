@@ -3,9 +3,9 @@ package com.variant.web;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
+import com.variant.core.ViewSelectorByPath;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.View;
-import com.variant.core.schema.ViewSelectorByPath;
 
 /**
  * 

@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
-import com.variant.core.ParserResponse;
 import com.variant.core.VariantEventExperience;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
@@ -18,6 +17,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.util.VariantCollectionsUtils;
 
@@ -34,8 +34,8 @@ public class VariantRuntimeTest extends BaseTest {
 	public void pathResolution() throws Exception {
 		
 		ParserResponse response = engine.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
-		if (response.hasErrors()) printErrors(response);
-		assertFalse(response.hasErrors());
+		if (response.hasMessages()) printErrors(response);
+		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();
 		final Test test1 = schema.getTest("test1");
@@ -1069,8 +1069,8 @@ public class VariantRuntimeTest extends BaseTest {
 
 
 		ParserResponse response = engine.parseSchema(SCHEMA);
-		if (response.hasErrors()) printErrors(response);
-		assertFalse(response.hasErrors());
+		if (response.hasMessages()) printErrors(response);
+		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();
 		View view1 = schema.getView("view1");

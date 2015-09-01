@@ -5,7 +5,6 @@ import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantSession;
@@ -13,6 +12,7 @@ import com.variant.core.VariantViewRequest;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
+import com.variant.core.schema.parser.ParserResponse;
 
 
 /**
@@ -40,6 +40,14 @@ public class VariantWeb {
 		for (int i = 0; i < resourceNames.length; i++) newArgs[i] = resourceNames[i];
 		newArgs[resourceNames.length] = "/variant-web.props";
 		engine.bootstrap(newArgs);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static boolean isBootstrapped() {
+		return engine.isBootstrapped();
 	}
 	
 	/**

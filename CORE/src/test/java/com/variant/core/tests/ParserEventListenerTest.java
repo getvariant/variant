@@ -6,12 +6,12 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import com.variant.core.ParserResponse;
 import com.variant.core.Variant;
 import com.variant.core.exception.VariantException;
-import com.variant.core.schema.TestParsedEventListener;
 import com.variant.core.schema.View;
-import com.variant.core.schema.ViewParsedEventListener;
+import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.parser.TestParsedEventListener;
+import com.variant.core.schema.parser.ViewParsedEventListener;
 
 /**
  * TODO: Need to also test annotations.
@@ -26,8 +26,8 @@ public class ParserEventListenerTest extends BaseTest {
 		ViewParsedEventListenerImpl listener = new ViewParsedEventListenerImpl();
 		variant.addListener(listener);
 		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
-		if (response.hasErrors()) printErrors(response);
-		assertFalse(response.hasErrors());
+		if (response.hasMessages()) printErrors(response);
+		assertFalse(response.hasMessages());
 		assertEquals(variant.getSchema().getViews(), listener.viewList);
 		
 	}
@@ -38,8 +38,8 @@ public class ParserEventListenerTest extends BaseTest {
 		TestParsedEventListenerImpl listener = new TestParsedEventListenerImpl();
 		variant.addListener(listener);
 		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
-		if (response.hasErrors()) printErrors(response);
-		assertFalse(response.hasErrors());
+		if (response.hasMessages()) printErrors(response);
+		assertFalse(response.hasMessages());
 		assertEquals(variant.getSchema().getTests(), listener.testList);
 		
 	}

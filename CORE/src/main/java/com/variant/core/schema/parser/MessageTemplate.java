@@ -1,16 +1,16 @@
-package com.variant.core.error;
+package com.variant.core.schema.parser;
 
 
 
 /**
- * The immutable, uncontextualized part of the error.
+ * The immutable, uncontextualized part of a system message.
  * 
  * @author Igor
  */
-public enum ErrorTemplate {
+public enum MessageTemplate {
 	
 	//------------------------------------------------------------------------------------------------------------------------//
-	//                                                 BOOTSTRAP ERRORS                                                       //
+	//                                                BOOTSTRAP MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//
  
 	BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN              (Severity.FATAL, "Cannot pass both -Dvariant.config.resource and -Dvariant.config.file parameters"), 
@@ -23,7 +23,7 @@ public enum ErrorTemplate {
 	BOOT_PARSER_LISTENER_EXCEPTION                        (Severity.FATAL, "Perser event listener [%s] threw an exception [%s] for target [%s]"),
 	
 	//------------------------------------------------------------------------------------------------------------------------//
-	//                                                   PARSER ERRORS                                                        //
+	//                                                  PARSER MESSAGES                                                       //
 	//------------------------------------------------------------------------------------------------------------------------//
 
 	// View related errors
@@ -67,12 +67,12 @@ public enum ErrorTemplate {
 	PARSER_VIEWREF_MISSING                                (Severity.ERROR, "'tests/onViews/viewRef' property is missing (Test [%s])"), 
 	PARSER_VIEWREF_DUPE                                   (Severity.ERROR, "Duplicate property 'tests/onViews/viewRef' [%s] (Test [%s])"), 
 	PARSER_VIEWREF_UNDEFINED                              (Severity.ERROR, "'tests/onViews/viewRef' property [%s] references an undefined view (Test [%s])"), 
-	PARSER_ISNONVARIANT_NOT_BOOLEAN                        (Severity.ERROR, "'tests/onViews/isNonvariant' property must be a boolean (Test [%s], ViewRef [%s])"), 
+	PARSER_ISNONVARIANT_NOT_BOOLEAN                       (Severity.ERROR, "'tests/onViews/isNonvariant' property must be a boolean (Test [%s], ViewRef [%s])"), 
 	PARSER_VARIANTS_NOT_LIST                              (Severity.ERROR, "'tests/onViews/variants' property must be a list (Test [%s], ViewRef [%s])"), 
 	PARSER_VARIANTS_LIST_EMPTY                            (Severity.ERROR, "'tests/onViews/variants' list must contain at least one element (Test [%s], ViewRef [%s])"), 
 	PARSER_VARIANTS_UNSUPPORTED_PROPERTY                  (Severity.ERROR, "Unsupported property 'tests/onViews/variants/[%s]' (Test [%s], ViewRef [%s])"), 
-	PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE              (Severity.ERROR, "Property 'tests/onViews' cannot be nonvariant and have variants (Test [%s], ViewRef [%s])"), 
-	PARSER_VARIANTS_ISNONVARIANT_XOR                       (Severity.ERROR, "Property 'tests/onViews' must specify one of: 'isNonvariant' or 'variants' (Test [%s], ViewRef [%s])"), 
+	PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE             (Severity.ERROR, "Property 'tests/onViews' cannot be nonvariant and have variants (Test [%s], ViewRef [%s])"), 
+	PARSER_VARIANTS_ISNONVARIANT_XOR                      (Severity.ERROR, "Property 'tests/onViews' must specify one of: 'isNonvariant' or 'variants' (Test [%s], ViewRef [%s])"), 
 	PARSER_VARIANT_NOT_OBJECT                             (Severity.ERROR, "'tests/onViews/variants' list element must be an object (Test [%s], ViewRef [%s])"), 
 	PARSER_VARIANT_DUPE                                   (Severity.ERROR, "Duplicate list element 'tests/onViews/variants' references experience [%s] (Test [%s], ViewRef [%s])"), 
 	PARSER_COVARIANT_VARIANT_DUPE                         (Severity.ERROR, "Duplicate list element 'tests/onViews/variants' references covariant experiences [%s] (Test [%s], ViewRef [%s], Experience [%s])"), 
@@ -84,7 +84,7 @@ public enum ErrorTemplate {
 	PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING       (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs/testRef' property must be a string (Test [%s], ViewRef [%s], ExperienceRef [%s])"), 
 	PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs/experienceRefs' property must be a string (Test [%s], ViewRef [%s], ExperienceRef [%s])"), 
 	PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED        (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs/testRef' references an undefined test [%s] (Test [%s], ViewRef [%s], ExperienceRef [%s])"), 
-	PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT        (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs/testRef' cannot reference test [%s] which is nonvariant on this view (Test [%s], ViewRef [%s], ExperienceRef [%s])"), 
+	PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT       (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs/testRef' cannot reference test [%s] which is nonvariant on this view (Test [%s], ViewRef [%s], ExperienceRef [%s])"), 
 	PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED  (Severity.ERROR, "'tests/onViews/variants/covariantExperienceRefs/experienceRef' references an undefined experience [%s.%s] (Test [%s], ViewRef [%s], ExperienceRef [%s])"), 
 	PARSER_COVARIANT_EXPERIENCE_DUPE                      (Severity.ERROR, "Duplicate list element 'tests/onViews/variants/covariantExperienceRefs' references experience [%s.%s] (Test [%s], ViewRef [%s], Experience [%s])"), 
 	PARSER_EXPERIENCEREF_MISSING                          (Severity.ERROR, "'tests/onViews/variants/experienceRef' property is missing (Test [%s], ViewRef [%s])"), 
@@ -98,14 +98,14 @@ public enum ErrorTemplate {
 	PARSER_JSON_PARSE                                     (Severity.FATAL, "Invalid JSON syntax: [%s]"),  
 
 	//------------------------------------------------------------------------------------------------------------------------//
-	//                                                  RUN TIME ERRORS                                                       //
+	//                                                 RUN TIME MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//
 	
 	RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST                    (Severity.ERROR, "View [%s] is not instrumented for test [%s]"), 
 	RUN_PROPERTY_NOT_SET                                  (Severity.ERROR, "Property [%s] must be set"),
 	
 	//------------------------------------------------------------------------------------------------------------------------//
-	//                                                   GENERAL ERRORS                                                       //
+	//                                                  GENERAL MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//
 
 	INTERNAL                                              (Severity.FATAL, "Unexpectged error [%s]");
@@ -115,7 +115,7 @@ public enum ErrorTemplate {
 	private Severity severity;
 	private String format;
 
-	private ErrorTemplate(Severity severity, String format) {
+	private MessageTemplate(Severity severity, String format) {
 		this.severity = severity;
 		this.format = format;
 	}

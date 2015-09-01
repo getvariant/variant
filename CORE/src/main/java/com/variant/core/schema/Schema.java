@@ -2,6 +2,8 @@ package com.variant.core.schema;
 
 import java.util.List;
 
+import com.variant.core.ViewSelectorByPath;
+
 
 /**
  * In-memory representation of the configuration instance.

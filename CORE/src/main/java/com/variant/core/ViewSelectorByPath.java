@@ -1,6 +1,8 @@
-package com.variant.core.schema;
+package com.variant.core;
 
 import java.util.Collection;
+
+import com.variant.core.schema.View;
 
 /**
  * View path matching classes must implement this.

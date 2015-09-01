@@ -1,4 +1,4 @@
-package com.variant.core.error;
+package com.variant.core.schema.parser;
 
 /**
  * Error Severity

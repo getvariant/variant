@@ -6,10 +6,10 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import com.variant.core.ParserResponse;
+import com.variant.core.ViewSelectorByPath;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
-import com.variant.core.schema.ViewSelectorByPath;
+import com.variant.core.schema.parser.ParserResponse;
 
 /**
  * 
@@ -22,8 +22,8 @@ public class CustomViewSelectorTest extends BaseTest {
 	public void nullCustomViewTest() throws Exception {
 
 		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
-		if (response.hasErrors()) printErrors(response);
-		assertFalse(response.hasErrors());
+		if (response.hasMessages()) printErrors(response);
+		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();
 		

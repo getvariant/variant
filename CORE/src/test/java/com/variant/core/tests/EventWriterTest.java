@@ -5,11 +5,11 @@ import static org.junit.Assert.assertFalse;
 import org.junit.After;
 import org.junit.Test;
 
-import com.variant.core.ParserResponse;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.impl.ViewServeEventTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.VariantCollectionsUtils;
 
 public class EventWriterTest extends BaseTest {
@@ -30,8 +30,8 @@ public class EventWriterTest extends BaseTest {
 
 		
 		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
-		if (response.hasErrors()) printErrors(response);
-		assertFalse(response.hasErrors());
+		if (response.hasMessages()) printErrors(response);
+		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();
 		com.variant.core.schema.Test test = schema.getTest("test1");

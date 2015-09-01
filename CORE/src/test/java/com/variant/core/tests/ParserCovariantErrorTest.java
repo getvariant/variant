@@ -1,15 +1,15 @@
 package com.variant.core.tests;
 
-import static com.variant.core.error.ErrorTemplate.*;
+import static com.variant.core.schema.parser.MessageTemplate.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.variant.core.error.ParserError;
-import com.variant.core.error.Severity;
 import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
+import com.variant.core.schema.parser.ParserMessage;
+import com.variant.core.schema.parser.Severity;
 
 /**
  * Parse time exceptions
@@ -111,11 +111,11 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(1, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_TESTS_NOT_LIST, "test2").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(1, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_TESTS_NOT_LIST, "test2").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -212,11 +212,11 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(1, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_TEST_DISJOINT, "test1", "test2").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(1, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_TEST_DISJOINT, "test1", "test2").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -314,14 +314,14 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(2, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_TESTREF_NOT_STRING, "test2").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(2, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_TESTREF_NOT_STRING, "test2").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(1);
-		assertEquals(new ParserError(PARSER_COVARIANT_TESTREF_NOT_STRING, "test2").getMessage(), error.getMessage());
+		error = response.getMessages().get(1);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_TESTREF_NOT_STRING, "test2").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 	
@@ -418,11 +418,11 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(1, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_TESTREF_UNDEFINED, "bad", "test2").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(1, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_TESTREF_UNDEFINED, "bad", "test2").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -579,14 +579,14 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(2, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST, "test2", "view2", "C").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(2, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST, "test2", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(1);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "view2", "C").getMessage(), error.getMessage());
+		error = response.getMessages().get(1);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -743,14 +743,14 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(2, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT, "test2", "view2", "B").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(2, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT, "test2", "view2", "B").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(1);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_MISSING, "test1.C", "test2", "view2", "B").getMessage(), error.getMessage());
+		error = response.getMessages().get(1);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_MISSING, "test1.C", "test2", "view2", "B").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -913,17 +913,17 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 		
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(3, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING, "test2", "view2", "C").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(3, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING, "test2", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(1);
-		assertEquals(new ParserError(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING, "test2", "view2", "C").getMessage(), error.getMessage());
+		error = response.getMessages().get(1);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING, "test2", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(2);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "view2", "C").getMessage(), error.getMessage());
+		error = response.getMessages().get(2);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1085,14 +1085,14 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(2, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED, "bad", "test2", "view2", "C").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(2, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED, "bad", "test2", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(1);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "view2", "C").getMessage(), error.getMessage());
+		error = response.getMessages().get(1);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1256,14 +1256,14 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(2, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "Bad", "test2", "view2", "C").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(2, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "Bad", "test2", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(1);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "view2", "C").getMessage(), error.getMessage());
+		error = response.getMessages().get(1);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "view2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1394,11 +1394,11 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(1, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT, "test1", "B", "test2", "view2", "B").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(1, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT, "test1", "B", "test2", "view2", "B").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1571,11 +1571,11 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(1, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT, "test1", "test2", "view1", "B").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(1, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT, "test1", "test2", "view1", "B").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1983,17 +1983,17 @@ public class ParserCovariantErrorTest extends BaseTest {
 		
 		ParserResponseImpl response = SchemaParser.parse(config);
 		
-		assertTrue(response.hasErrors());
-		assertEquals(Severity.ERROR, response.highestErrorSeverity());
-		assertEquals(3, response.getErrors().size());
-		ParserError error = response.getErrors().get(0);
-		assertEquals(new ParserError(PARSER_VARIANT_MISSING, "B", "test2", "view2").getMessage(), error.getMessage());
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(3, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessage(PARSER_VARIANT_MISSING, "B", "test2", "view2").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(1);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_MISSING, "test2.C", "test3", "view1", "B").getMessage(), error.getMessage());
+		error = response.getMessages().get(1);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_MISSING, "test2.C", "test3", "view1", "B").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getErrors().get(2);
-		assertEquals(new ParserError(PARSER_COVARIANT_VARIANT_MISSING, "test1.B,test2.B", "test3", "view2", "B").getMessage(), error.getMessage());
+		error = response.getMessages().get(2);
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_MISSING, "test1.B,test2.B", "test3", "view2", "B").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}

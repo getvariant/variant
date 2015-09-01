@@ -11,9 +11,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.variant.core.ParserResponse;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
+import com.variant.core.schema.parser.ParserResponse;
 
 
 public class SchemaParserDisjointOkayTest extends BaseTest {
@@ -179,8 +179,8 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 	public void happyPathTest() throws Exception {
 		
 		ParserResponse response = engine.parseSchema(SCHEMA);
-		if (response.hasErrors()) printErrors(response);
-		assertFalse(response.hasErrors());
+		if (response.hasMessages()) printErrors(response);
+		assertFalse(response.hasMessages());
 
 		//
 		// Views.

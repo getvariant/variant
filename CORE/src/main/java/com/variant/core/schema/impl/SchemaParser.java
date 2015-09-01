@@ -7,14 +7,14 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.error.ErrorTemplate;
-import com.variant.core.error.Severity;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.TestParsedEventListener;
 import com.variant.core.schema.View;
-import com.variant.core.schema.ViewParsedEventListener;
+import com.variant.core.schema.parser.MessageTemplate;
+import com.variant.core.schema.parser.Severity;
+import com.variant.core.schema.parser.TestParsedEventListener;
+import com.variant.core.schema.parser.ViewParsedEventListener;
 import com.variant.core.util.VariantStringUtils;
 
 public class SchemaParser {
@@ -39,7 +39,7 @@ public class SchemaParser {
 		String[] tokens = tail.split(",");
 		int line = Integer.parseInt(tokens[0]);
 		int column = Integer.parseInt(tokens[1]);
-		response.addError(ErrorTemplate.PARSER_JSON_PARSE, line, column, message.toString(), rawInput);
+		response.addError(MessageTemplate.PARSER_JSON_PARSE, line, column, message.toString(), rawInput);
 
 	}
 	
@@ -89,10 +89,10 @@ public class SchemaParser {
 			toParserError(parseException, configAsJsonString, response);
 		} 
 		catch (Exception exception) {
-			response.addError(ErrorTemplate.INTERNAL, exception.getMessage());
+			response.addError(MessageTemplate.INTERNAL, exception.getMessage());
 		}
 		
-		if (response.highestErrorSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
+		if (response.highestMessageSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
 		
 		// Clean map will contain only entries with expected clauses with keys uppercased 
 		Map<String, Object> cleanMap = new LinkedHashMap<String, Object>();
@@ -103,14 +103,14 @@ public class SchemaParser {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {
-				response.addError(ErrorTemplate.PARSER_UNSUPPORTED_CLAUSE, entry.getKey());
+				response.addError(MessageTemplate.PARSER_UNSUPPORTED_CLAUSE, entry.getKey());
 			}
 		}
 		
 		// Pass2. Look at all clauses.  Expected ones are already uppercased.
 		Object views = cleanMap.get("VIEWS");
 		if (views == null) {
-			response.addError(ErrorTemplate.PARSER_NO_VIEWS_CLAUSE);
+			response.addError(MessageTemplate.PARSER_NO_VIEWS_CLAUSE);
 		}
 		else {
 			ViewsParser.parseViews(views, response);
@@ -121,18 +121,18 @@ public class SchemaParser {
 							listener.viewParsed(view);
 						}
 						catch (VariantException e) {
-							response.addError(ErrorTemplate.BOOT_PARSER_LISTENER_EXCEPTION, listener.getClass().getName(), e.getMessage(), view.getName());
+							response.addError(MessageTemplate.BOOT_PARSER_LISTENER_EXCEPTION, listener.getClass().getName(), e.getMessage(), view.getName());
 						}
 					}
 				}
 			}
 		}
 
-		if (response.highestErrorSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
+		if (response.highestMessageSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
 
 		Object tests = cleanMap.get("TESTS");
 		if (tests == null) {
-			response.addError(ErrorTemplate.PARSER_NO_TESTS_CLAUSE);
+			response.addError(MessageTemplate.PARSER_NO_TESTS_CLAUSE);
 		}
 		else {
 			TestsParser.parseTests(tests, response);

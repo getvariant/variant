@@ -5,10 +5,10 @@ import java.util.Collections;
 import java.util.List;
 
 import com.variant.core.Variant;
-import com.variant.core.error.ErrorTemplate;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.View;
+import com.variant.core.schema.parser.MessageTemplate;
 
 /**
  * 
@@ -86,7 +86,7 @@ public class ViewImpl implements View {
 		for (Test.OnView tov: test.getOnViews()) {
 			if (tov.getView().equals(this)) return tov.isNonvariant();
 		}
-		throw new VariantRuntimeException(ErrorTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, name, test.getName());
+		throw new VariantRuntimeException(MessageTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, name, test.getName());
 	}
 
 }

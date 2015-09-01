@@ -1,21 +1,21 @@
 package com.variant.core.exception;
 
-import com.variant.core.error.ErrorTemplate;
-import com.variant.core.error.Severity;
+import com.variant.core.schema.parser.MessageTemplate;
+import com.variant.core.schema.parser.Severity;
 
 public class VariantRuntimeException extends VariantException {
 
 	private static final long serialVersionUID = 1L;
-	private ErrorTemplate template;
+	private MessageTemplate template;
 	private String[] args;
 	
-	public VariantRuntimeException(ErrorTemplate template, String...args) {
+	public VariantRuntimeException(MessageTemplate template, String...args) {
 		super();
 		this.template = template;
 		this.args = args;
 	}
 
-	public VariantRuntimeException(ErrorTemplate template, Throwable t, String...args) {
+	public VariantRuntimeException(MessageTemplate template, Throwable t, String...args) {
 		super(t);
 		this.template = template;
 		this.args = args;

@@ -4,7 +4,7 @@ import com.variant.core.annotations.ParserEventListener;
 import com.variant.core.exception.VariantException;
 import com.variant.core.schema.SchemaElement;
 import com.variant.core.schema.View;
-import com.variant.core.schema.ViewParsedEventListener;
+import com.variant.core.schema.parser.ViewParsedEventListener;
 
 /**
  * Additional parse checks not implemented by the core library and specific to the Servlet environment.

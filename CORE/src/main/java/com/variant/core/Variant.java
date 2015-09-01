@@ -5,9 +5,10 @@ import java.io.InputStream;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.TestParsedEventListener;
 import com.variant.core.schema.View;
-import com.variant.core.schema.ViewParsedEventListener;
+import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.parser.TestParsedEventListener;
+import com.variant.core.schema.parser.ViewParsedEventListener;
 
 /**
  * The Variant CORE API.
@@ -24,6 +25,13 @@ public interface Variant {
 	 */
 	public void bootstrap(String...resourceNames) throws VariantBootstrapException;	
 
+	/**
+	 * Is the Variant engine bootstrapped.
+	 * @return
+	 */
+	
+	public boolean isBootstrapped();
+	
 	/**
 	 * Programmatically shutdown Variant engine.
 	 */

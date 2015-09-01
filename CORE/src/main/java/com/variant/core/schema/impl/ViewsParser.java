@@ -3,8 +3,8 @@ package com.variant.core.schema.impl;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.error.ErrorTemplate;
 import com.variant.core.schema.View;
+import com.variant.core.schema.parser.MessageTemplate;
 
 /**
  * Parse the VIEWS clause.
@@ -24,17 +24,17 @@ public class ViewsParser implements Keywords {
 			rawViews = (List<Map<String, ?>>) viewsObject;
 		}
 		catch (Exception e) {
-			response.addError(ErrorTemplate.INTERNAL, e.getMessage());
+			response.addError(MessageTemplate.INTERNAL, e.getMessage());
 		}
 		
 		if (rawViews.size() == 0) {
-			response.addError(ErrorTemplate.PARSER_NO_VIEWS);
+			response.addError(MessageTemplate.PARSER_NO_VIEWS);
 		}
 		
 		for (Map<String, ?> rawView: rawViews) {
 			View view = parseView(rawView, response);
 			if (view != null && !((SchemaImpl) response.getSchema()).addView(view)) {
-				response.addError(ErrorTemplate.PARSER_VIEW_NAME_DUPE, view.getName());
+				response.addError(MessageTemplate.PARSER_VIEW_NAME_DUPE, view.getName());
 			}
 		}
 	}
@@ -56,7 +56,7 @@ public class ViewsParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addError(ErrorTemplate.PARSER_VIEW_NAME_NOT_STRING);
+					response.addError(MessageTemplate.PARSER_VIEW_NAME_NOT_STRING);
 				}
 				else {
 					name = (String) nameObject;
@@ -67,7 +67,7 @@ public class ViewsParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addError(ErrorTemplate.PARSER_VIEW_NAME_MISSING);
+				response.addError(MessageTemplate.PARSER_VIEW_NAME_MISSING);
 			}
 			return null;
 		}
@@ -81,19 +81,19 @@ public class ViewsParser implements Keywords {
 				pathFound = true;
 				Object pathObject = entry.getValue();
 				if (! (pathObject instanceof String)) {
-					response.addError(ErrorTemplate.PARSER_VIEW_PATH_NOT_STRING, name);
+					response.addError(MessageTemplate.PARSER_VIEW_PATH_NOT_STRING, name);
 				}
 				path = (String) pathObject;
 			}
 			else {
-				response.addError(ErrorTemplate.PARSER_VIEW_UNSUPPORTED_PROPERTY, entry.getKey(), name);
+				response.addError(MessageTemplate.PARSER_VIEW_UNSUPPORTED_PROPERTY, entry.getKey(), name);
 			}
 		}
 		
 		
 		if (path == null) {
 			if (!pathFound) {
-				response.addError(ErrorTemplate.PARSER_VIEW_PATH_MISSING, name);
+				response.addError(MessageTemplate.PARSER_VIEW_PATH_MISSING, name);
 			}
 			return null;
 		}

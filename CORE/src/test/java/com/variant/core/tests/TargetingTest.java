@@ -7,11 +7,11 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.variant.core.ParserResponse;
 import com.variant.core.VariantSession;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.TestImpl;
+import com.variant.core.schema.parser.ParserResponse;
 
 public class TargetingTest extends BaseTest {
 
@@ -74,7 +74,7 @@ public class TargetingTest extends BaseTest {
 		
 		ParserResponse response = engine.parseSchema(config);
 
-		assertFalse(response.hasErrors());
+		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();
 		TestImpl test1 = (TestImpl) schema.getTest("test1");

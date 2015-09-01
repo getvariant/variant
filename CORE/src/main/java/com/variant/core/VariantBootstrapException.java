@@ -1,15 +1,15 @@
 package com.variant.core;
 
-import com.variant.core.error.ErrorTemplate;
-import com.variant.core.error.Severity;
+import com.variant.core.schema.parser.MessageTemplate;
+import com.variant.core.schema.parser.Severity;
 
 public class VariantBootstrapException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
-	private ErrorTemplate template;
+	private MessageTemplate template;
 	private String[] args;
 	
-	public VariantBootstrapException(ErrorTemplate template, String...args) {
+	public VariantBootstrapException(MessageTemplate template, String...args) {
 		this.template = template;
 		this.args = args;
 	}

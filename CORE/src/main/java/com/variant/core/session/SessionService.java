@@ -1,7 +1,7 @@
 package com.variant.core.session;
 
-import static com.variant.core.error.ErrorTemplate.BOOT_SID_PERSISTER_NO_INTERFACE;
-import static com.variant.core.error.ErrorTemplate.INTERNAL;
+import static com.variant.core.schema.parser.MessageTemplate.BOOT_SID_PERSISTER_NO_INTERFACE;
+import static com.variant.core.schema.parser.MessageTemplate.INTERNAL;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;

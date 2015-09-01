@@ -6,12 +6,12 @@ import com.impetus.annovention.listener.ClassAnnotationDiscoveryListener;
 import com.variant.core.Variant;
 import com.variant.core.annotations.ParserEventListener;
 
-import static com.variant.core.error.ErrorTemplate.*;
+import static com.variant.core.schema.parser.MessageTemplate.*;
 
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.schema.TestParsedEventListener;
-import com.variant.core.schema.ViewParsedEventListener;
+import com.variant.core.schema.parser.TestParsedEventListener;
+import com.variant.core.schema.parser.ViewParsedEventListener;
 
 /**
  * Package visible annotation processor.
