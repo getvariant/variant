@@ -21,7 +21,7 @@
     </c:choose>
 
     <h2>
-        <c:if test="${owner['new']}">New </c:if> Owner TOS
+        <c:if test="${owner['new']}">New </c:if> Owner
     </h2>
     <form:form modelAttribute="owner" method="${method}" class="form-horizontal" id="add-owner-form">
         <petclinic:inputField label="First Name" name="firstName"/>
@@ -29,6 +29,8 @@
         <petclinic:inputField label="Address" name="address"/>
         <petclinic:inputField label="City" name="city"/>
         <petclinic:inputField label="Telephone" name="telephone"/>
+
+        <input type="checkbox" name="box1" value="first_checkbox"> I have read the <a href="">Terms Of Service</a> <br> 
 
         <div class="form-actions">
             <c:choose>
@@ -41,6 +43,7 @@
             </c:choose>
         </div>
     </form:form>
+    
 </div>
 <jsp:include page="../fragments/footer.jsp"/>
 </body>
