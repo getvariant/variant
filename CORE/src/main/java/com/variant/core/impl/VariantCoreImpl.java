@@ -342,20 +342,17 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public VariantSession getSession(Object userData) {
-		return sessionService.getSession(true, userData);
+	public VariantSession getSession(Object sessionIdPersisterUserData) {
+		return sessionService.getSession(true, sessionIdPersisterUserData);
 	}
 
 	/**
 	 * 
 	 */
 	@Override
-	public VariantViewRequest startViewRequest(View view, Object userData) {
+	public VariantViewRequest startViewRequest(VariantSession session, View view, Object targetingPersisterUserData) {
 		
 		stateCheck();
-
-		// get the session.
-		VariantSession session = getSession(userData);
 		
 		// init Targeting Persister with the same user data.
 		TargetingPersister tp = null;
@@ -374,7 +371,7 @@ public class VariantCoreImpl implements Variant {
 			throw new VariantInternalException("Unable to instantiate targeting persister class [" + className +"]", e);
 		}
 			
-		tp.initialized(session, userData);
+		tp.initialized(session, targetingPersisterUserData);
 
 		return VariantRuntime.startViewRequest(session, view, tp);
 	}

@@ -105,7 +105,7 @@ public interface Variant {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public VariantViewRequest startViewRequest(View view, Object sessionIdPersisterUserData);
+	public VariantViewRequest startViewRequest(VariantSession session, View view, Object targetingPersisterUserData);
 	
 	/**
 	 * Commit of a view request.

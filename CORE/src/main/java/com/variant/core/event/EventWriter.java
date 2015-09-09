@@ -39,17 +39,7 @@ public class EventWriter {
 	
 	// The actual event persister passed to the constructor by client code.
 	private EventPersister persisterImpl = null;
-		
-	/**
-	 * Validate that event is well-formed.
-	 * @param event
-	 */
-	private void validateEvent(VariantEventSupport event) {
-		if (event.experiences.size() == 0) 
-			throw new VariantInternalException(
-					String.format("Event [%s] [%s] has no experiences. Ignored.", event.eventName, event.eventValue));
-	}
-	
+			
 	/**
 	 * Expose event persister to tests via package visibility.
 	 * @return
@@ -100,25 +90,33 @@ public class EventWriter {
 	/**
 	 * Write collection of events to the queue.  This method never blocks:
 	 * if there's no room on the queue to hold all the events, write as many as we can in the
-	 * order of the collection's iterator and ignore the rest, returning back to the caller 
-	 * the number of elements that were accepted. The caller may re-attempt, drop, log, etc.
+	 * order of the collection's iterator and ignore the rest. Log ERROR dropped events.
 	 *  
 	 * @param events
 	 * @return number of elements actually written.
 	 */
-	public int write(Collection<VariantEventSupport> events) {
+	public void write(Collection<VariantEventSupport> events) {
 		
 		// size() is an O(n) operation - do it once.
+		// We don't worry about possible concurrent writes because the underlying
+		// queue implementation is unbound.  It's okay to temporarily go over the
+		// queueSize due to concurrency, so long as we eventually shrink back.
 		int currentQueueSize = eventQueue.size();
-		int acceptCount = 0;
+		int delta = events.size();
 		
 		Iterator<VariantEventSupport> iter = events.iterator();
 		while (currentQueueSize < queueSize && iter.hasNext()) {
 			VariantEventSupport event = iter.next();
-			validateEvent(event);
 			eventQueue.add(event);
 			currentQueueSize++;
-			acceptCount++;
+			delta--;
+		}
+
+		if (delta > 0) {
+			LOG.error(
+					"Memory buffer is full. Dropped [" + delta + 
+					"] events. Consider increasing event.writer.buffer.size system property (current value [" + 
+					VariantProperties.getInstance().eventWriterBufferSize() + "])");
 		}
 		
 		// Block momentarily to wake up the persister thread if the queue has reached the pctFull size.
@@ -126,7 +124,6 @@ public class EventWriter {
 			if (currentQueueSize >= pctFullSize) eventQueue.notify();
 		}
 
-		return acceptCount;
 	}
 		
 	/**

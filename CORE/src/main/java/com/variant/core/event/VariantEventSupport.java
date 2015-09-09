@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.variant.core.VariantEvent;
 import com.variant.core.VariantSession;
+import com.variant.core.VariantViewRequest;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test.Experience;
 
@@ -23,7 +24,7 @@ abstract public class VariantEventSupport implements VariantEvent {
 	protected Map<String, Object> params = new HashMap<String, Object>();
 	
 	protected Long id = null;
-	protected VariantSession session;
+	protected VariantViewRequest request;
 	protected Date createDate;
 	protected String eventName;
 	protected String eventValue;
@@ -32,13 +33,13 @@ abstract public class VariantEventSupport implements VariantEvent {
 	 * Constructor
 	 * @return
 	 */
-	protected VariantEventSupport(VariantSession session, String eventName, String eventValue, Collection<Experience> experiences) {
-		this.session = session;
+	protected VariantEventSupport(VariantViewRequest request, String eventName, String eventValue) {
+		this.request = request;
 		this.createDate = new Date();
 		this.eventName = eventName;
 		this.eventValue = eventValue;
+		this.experiences = request.getTargetedExperiences();
 		if (experiences.size() == 0) throw new VariantInternalException("Must pass at least one experience");
-		this.experiences = experiences;
 	}
 
 	
@@ -53,7 +54,7 @@ abstract public class VariantEventSupport implements VariantEvent {
 	
 	@Override
 	public VariantSession getSession() {
-		return session;
+		return request.getSession();
 	}
 
 	@Override
@@ -103,7 +104,7 @@ abstract public class VariantEventSupport implements VariantEvent {
 		
 		return new StringBuilder()
 		.append('{')
-		.append("sessionid:'").append(session.getId()).append("', ")
+		.append("sessionid:'").append(request.getSession().getId()).append("', ")
 		.append("createdOn:'").append(createDate).append("', ")
 		.append("eventName:").append(eventName).append("', ")
 		.append("eventValue:").append(eventValue).append("', ")

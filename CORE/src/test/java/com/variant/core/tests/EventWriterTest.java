@@ -5,12 +5,12 @@ import static org.junit.Assert.assertFalse;
 import org.junit.After;
 import org.junit.Test;
 
+import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.impl.ViewServeEventTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.View;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.util.VariantCollectionsUtils;
 
 public class EventWriterTest extends BaseTest {
 
@@ -33,13 +33,14 @@ public class EventWriterTest extends BaseTest {
 		if (response.hasMessages()) printErrors(response);
 		assertFalse(response.hasMessages());
 
+		long timestamp = System.currentTimeMillis();
 		Schema schema = engine.getSchema();
-		com.variant.core.schema.Test test = schema.getTest("test1");
 		View view = schema.getView("view1");
-		VariantViewRequest request = engine.startViewRequest(view, "");
-		request.setStatus(VariantViewRequest.Status.FAIL);
-		ViewServeEventTestFacade event1 = new ViewServeEventTestFacade(request, "viewResolvedPath", VariantCollectionsUtils.list(test.getExperience("A")));
-		ViewServeEventTestFacade event2 = new ViewServeEventTestFacade(request, "viewResolvedPath", VariantCollectionsUtils.list(test.getExperience("B")));
+		VariantSession ssn = engine.getSession("foo");
+		VariantViewRequest request = engine.startViewRequest(ssn, view, timestamp + ".test1.A");
+		ViewServeEventTestFacade event1 = new ViewServeEventTestFacade(request, "viewResolvedPath");
+		request = engine.startViewRequest(ssn, view, timestamp + ".test1.B");
+		ViewServeEventTestFacade event2 = new ViewServeEventTestFacade(request, "viewResolvedPath");
 		event1.setParameter("event1-key1", "value1");
 		event2.setParameter("event2-key1", "value1");
 		event2.setParameter("event2-key2", "value2"); 

@@ -35,8 +35,8 @@ public class BaseTest {
 	public static void beforeTestCase() throws Exception {
 
 		// Bootstrap the Variant container
-		VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream("/variant-junit.props"));
-		engine.bootstrap();
+		//VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream("/variant-junit.props"));
+		engine.bootstrap("/variant-junit.props");
 
 		// (Re)create the schema;
 		switch (((EventPersisterJdbc)engine.getEventWriter().getEventPersister()).getVendor()) {

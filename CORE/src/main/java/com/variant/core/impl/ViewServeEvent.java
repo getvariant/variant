@@ -2,12 +2,10 @@ package com.variant.core.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 
 import com.variant.core.VariantEventExperience;
 import com.variant.core.event.VariantEventSupport;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
 
 
 public class ViewServeEvent extends VariantEventSupport {
@@ -21,8 +19,8 @@ public class ViewServeEvent extends VariantEventSupport {
 	/**
 	 * New constructor
 	 */
-	ViewServeEvent(VariantViewRequestImpl request, String viewResolvedPath, Collection<Experience> experiences) {
-		super(request.getSession(), EVENT_NAME, request.getView().getName(), experiences);
+	ViewServeEvent(VariantViewRequestImpl request, String viewResolvedPath) {
+		super(request, EVENT_NAME, request.getView().getName());
 		this.request = request;
 		setParameter(PARAM_NAME_VIEW_RESOLVED_PATH, viewResolvedPath);
 		setParameter(PARAM_NAME_REQUEST_STATUS, request.getStatus().ordinal());
@@ -47,7 +45,7 @@ public class ViewServeEvent extends VariantEventSupport {
 			result.add(new ViewServeEventExperience(this, exp));
 		}
 		
-		return Collections.unmodifiableCollection(result);
+		return result;
 	}
 
 		

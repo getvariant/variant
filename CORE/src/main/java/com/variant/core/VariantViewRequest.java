@@ -1,6 +1,10 @@
 package com.variant.core;
 
+import java.util.Collection;
+
 import com.variant.core.impl.ViewServeEvent;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
 import com.variant.core.session.TargetingPersister;
 
@@ -49,6 +53,19 @@ public interface VariantViewRequest {
 	 * @return
 	 */
 	public TargetingPersister getTargetingPersister();
+
+	/**
+	 * Get all experience targeted in this request.
+	 * @return
+	 */
+	public Collection<Experience> getTargetedExperiences();
+
+	/**
+	 * Get the experience targeted in this request for a particular test.
+	 * @param test
+	 * @return
+	 */
+	public Experience getTargetedExperience(Test test);
 
 	/**
 	 * 

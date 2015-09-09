@@ -1076,9 +1076,9 @@ public class VariantRuntimeTest extends BaseTest {
 		View view1 = schema.getView("view1");
 		long timestamp = System.currentTimeMillis();
 		String persisterString = timestamp + ".test2.B";
+		VariantSession ssn = engine.getSession("foo-key");
 		// Core implementation makes no distinction between session udser data and targeting persister user data.
-		VariantViewRequest req = engine.startViewRequest(view1, persisterString);
-		VariantSession ssn = engine.getSession(persisterString);
+		VariantViewRequest req = engine.startViewRequest(ssn, view1, persisterString);
 		TargetingPersister tp = req.getTargetingPersister();
 
 		// test2 is off, but TP has a variant experience for it, which will be substituted for the purposes of lookup with control.

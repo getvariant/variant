@@ -19,9 +19,9 @@ public class ViewServeEventTestFacade extends ViewServeEvent {
 	 * @param status
 	 * @param viewResolvedPath
 	 */
-	public ViewServeEventTestFacade(VariantViewRequest request, String viewResolvedPath, Collection<Experience> experiences) {
+	public ViewServeEventTestFacade(VariantViewRequest request, String viewResolvedPath) {
 
-		super((VariantViewRequestImpl)request, viewResolvedPath, experiences);
+		super((VariantViewRequestImpl)request, viewResolvedPath);
 	}
 
 }

@@ -1,7 +1,13 @@
 package com.variant.core.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
+import com.variant.core.exception.VariantInternalException;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.View;
 import com.variant.core.schema.impl.ViewImpl;
 import com.variant.core.session.TargetingPersister;
@@ -79,6 +85,31 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 		this.status = status;
 	}
 	
+	@Override
+	public Collection<Experience> getTargetedExperiences() {
+			
+		ArrayList<Experience> result = new ArrayList<Experience>();
+		for (Test test: view.getInstrumentedTests()) {
+			if (!test.isOn()) continue;
+			Experience e = targetingPersister.get(test);
+			if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found.");
+			result.add(e);
+		}
+		return result;
+	}
+
+	@Override
+	public Experience getTargetedExperience(Test test) {
+		
+		for (Test t: view.getInstrumentedTests()) {
+			if (!t.isOn() || !t.equals(test)) continue;
+			Experience e = targetingPersister.get(test);
+			if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found.");
+			return e;
+		}		
+		return null;
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//

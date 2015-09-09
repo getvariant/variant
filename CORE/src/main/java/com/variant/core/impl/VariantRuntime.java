@@ -331,23 +331,6 @@ public class VariantRuntime {
 		Test.OnView.Variant variant = tov.variantSpace().get(sortedList);
 		return variant == null ? null : variant.getPath();
 	}
-
-	/**
-	 * Experiences that are targeted for active tests.
-	 * @param view
-	 * @return
-	 */
-	private static Collection<Experience> getTargetedExperiences(VariantSession ssn, View view, TargetingPersister targetingPersister) {
-		
-		ArrayList<Experience> result = new ArrayList<Experience>();
-		for (Test test: view.getInstrumentedTests()) {
-			if (!test.isOn()) continue;
-			Experience e = targetingPersister.get(test);
-			if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found.");
-			result.add(e);
-		}
-		return result;
-	}
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -385,7 +368,7 @@ public class VariantRuntime {
 			}   
 		}
 		else {
-			ViewServeEvent event = new ViewServeEvent(result, resolvedPath, getTargetedExperiences(ssn, view, targetingPersister));
+			ViewServeEvent event = new ViewServeEvent(result, resolvedPath);
 			result.setViewServeEvent(event);
 		}
 	
