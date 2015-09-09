@@ -13,7 +13,7 @@
          'experiences':[                                     
             {                                                
                'name':'outOfTheBox',                                   
-               'weight':1,                                  
+               'weight':8,                                  
                'isControl':true                              
             },                                               
             {                                                

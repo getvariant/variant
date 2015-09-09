@@ -123,7 +123,7 @@ public class VariantWeb {
 	 */
 	public static VariantViewRequest startViewRequest(View view, HttpServletRequest request) {
 		getSchema().registerCustomViewSelectorByPath(new ViewSelectorByRequestPath());
-		return engine.startViewRequest(view, request);
+		return engine.startViewRequest(getSession(request), view, request);
 	}
 	
 	/**
