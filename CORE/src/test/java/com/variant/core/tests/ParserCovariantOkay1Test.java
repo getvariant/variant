@@ -14,7 +14,7 @@ import com.variant.core.util.VariantCollectionsUtils;
 
 /**
  * All Tests:
- * Tests Views
+ * Tests States
  *       1 2 3 4 5
  * test1   + + - -
  * test2 - + + +  
@@ -38,21 +38,21 @@ public class ParserCovariantOkay1Test extends BaseTest {
 		"{                                                                                \n" +
 	    	    //==========================================================================//
 	    	   
-	    	    "   'views':[                                                             \n" +
-	    	    "     {  'name':'view1',                                                  \n" +
-	    	    "        'path':'/path/to/view1'                                          \n" +
+	    	    "   'states':[                                                            \n" +
+	    	    "     {  'name':'state1',                                                 \n" +
+	    	    "        'path':'/path/to/state1'                                         \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'NAME':'view2',                                                  \n" +
-	    	    "        'path':'/path/to/view2'                                          \n" +
+	    	    "     {  'NAME':'state2',                                                 \n" +
+	    	    "        'path':'/path/to/state2'                                         \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'nAmE':'view3',                                                  \n" +
-	    	    "        'path':'/path/to/view3'                                          \n" +
+	    	    "     {  'nAmE':'state3',                                                 \n" +
+	    	    "        'path':'/path/to/state3'                                         \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'name':'view4',                                                  \n" +
-	    	    "        'path':'/path/to/view4'                                          \n" +
+	    	    "     {  'name':'state4',                                                 \n" +
+	    	    "        'path':'/path/to/state4'                                         \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'name':'view5',                                                  \n" +
-	    	    "        'path':'/path/to/view5'                                          \n" +
+	    	    "     {  'name':'state5',                                                 \n" +
+	    	    "        'path':'/path/to/state5'                                         \n" +
 	    	    "     }                                                                   \n" +
 	            "  ],                                                                     \n" +
 	            
@@ -78,38 +78,38 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "        ],                                                               \n" +
 	    	    "        'onViews':[                                                      \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view2',                                         \n" +
+	    	    "              'viewRef':'state2',                                        \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'path':'/path/to/view2/test1.B'                      \n" +
+	    	    "                    'path':'/path/to/state2/test1.B'                     \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'path':'/path/to/view2/test1.C'                      \n" +
+	    	    "                    'path':'/path/to/state2/test1.C'                     \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view3',                                         \n" +
+	    	    "              'viewRef':'state3',                                        \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'path':'/path/to/view3/test1.B'                      \n" +
+	    	    "                    'path':'/path/to/state3/test1.B'                     \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'path':'/path/to/view3/test1.C'                      \n" +
+	    	    "                    'path':'/path/to/state3/test1.C'                     \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view4',                                         \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'viewRef':'state4',                                        \n" +
+	    	    "              'isNonvariant':true                                        \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view5',                                         \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'viewRef':'state5',                                        \n" +
+	    	    "              'isNonvariant':true                                        \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     },                                                                  \n" +
@@ -134,16 +134,16 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "        ],                                                               \n" +
 	    	    "        'onViews':[                                                      \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view1',                                         \n" +
+	    	    "              'viewRef':'state1',                                         \n" +
 	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view2',                                         \n" +
+	    	    "              'viewRef':'state2',                                         \n" +
 	    	    "              'variants':[                                               \n" +
 
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'path':'/path/to/view2/test2.B'                      \n" +
+	    	    "                    'path':'/path/to/state2/test2.B'                      \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -153,7 +153,7 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'path':'/path/to/view2/test1.B+test2.B'              \n" +
+	    	    "                    'path':'/path/to/state2/test1.B+test2.B'              \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -163,12 +163,12 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'path':'/path/to/view2/test1.C+test2.B'              \n" +
+	    	    "                    'path':'/path/to/state2/test1.C+test2.B'              \n" +
 	    	    "                 },                                                      \n" +
 
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'path':'/path/to/view2/test2.C'                      \n" +
+	    	    "                    'path':'/path/to/state2/test2.C'                      \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -178,7 +178,7 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'path':'/path/to/view2/test1.B+test2.C'              \n" +
+	    	    "                    'path':'/path/to/state2/test1.B+test2.C'              \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -188,17 +188,17 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'path':'/path/to/view2/test1.C+test2.C'              \n" +
+	    	    "                    'path':'/path/to/state2/test1.C+test2.C'              \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view3',                                         \n" +
+	    	    "              'viewRef':'state3',                                         \n" +
 	    	    "              'variants':[                                               \n" +
 
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'path':'/path/to/view3/test2.B'                      \n" +
+	    	    "                    'path':'/path/to/state3/test2.B'                      \n" +
 	    	    "                 },                                                      \n" +
 	    	    
 	    	    "                 {                                                       \n" +
@@ -209,7 +209,7 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'path':'/path/to/view3/test1.B+test2.B'              \n" +
+	    	    "                    'path':'/path/to/state3/test1.B+test2.B'              \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -219,12 +219,12 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'path':'/path/to/view3/test1.C+test2.B'              \n" +
+	    	    "                    'path':'/path/to/state3/test1.C+test2.B'              \n" +
 	    	    "                 },                                                      \n" +
 
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'path':'/path/to/view3/test2.C'                      \n" +
+	    	    "                    'path':'/path/to/state3/test2.C'                      \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -234,7 +234,7 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'path':'/path/to/view3/test1.B+test2.C'              \n" +
+	    	    "                    'path':'/path/to/state3/test1.B+test2.C'              \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -244,21 +244,21 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'path':'/path/to/view3/test1.C+test2.C'              \n" +
+	    	    "                    'path':'/path/to/state3/test1.C+test2.C'              \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view4',                                         \n" +
+	    	    "              'viewRef':'state4',                                         \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'path':'/path/to/view4/test2.B'                      \n" +
+	    	    "                    'path':'/path/to/state4/test2.B'                      \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'path':'/path/to/view4/test2.C'                      \n" +
+	    	    "                    'path':'/path/to/state4/test2.C'                      \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           }                                                            \n" +
@@ -284,41 +284,41 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "        ],                                                               \n" +
 	    	    "        'onViews':[                                                      \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view1',                                         \n" +
+	    	    "              'viewRef':'state1',                                         \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'path':'/path/to/view1/test3.B'                      \n" +
+	    	    "                    'path':'/path/to/state1/test3.B'                      \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'path':'/path/to/view1/test3.C'                      \n" +
+	    	    "                    'path':'/path/to/state1/test3.C'                      \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view2',                                         \n" +
+	    	    "              'viewRef':'state2',                                         \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'path':'/path/to/view2/test3.B'                      \n" +
+	    	    "                    'path':'/path/to/state2/test3.B'                      \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'path':'/path/to/view2/test3.C'                      \n" +
+	    	    "                    'path':'/path/to/state2/test3.C'                      \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view3',                                         \n" +
+	    	    "              'viewRef':'state3',                                         \n" +
 	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view4',                                         \n" +
+	    	    "              'viewRef':'state4',                                         \n" +
 	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'viewRef':'view5',                                         \n" +
+	    	    "              'viewRef':'state5',                                         \n" +
 	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
@@ -353,226 +353,226 @@ public class ParserCovariantOkay1Test extends BaseTest {
 		// 
 		// test1 OnView objects
 		//
-		List<Test.OnView> onViews = test1.getOnViews();
+		List<Test.OnState> onViews = test1.getOnStates();
 		assertEquals(4, onViews.size());
 		
-		// view2
-		Test.OnView onView = onViews.get(0);
+		// state2
+		Test.OnState onView = onViews.get(0);
 		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getView("view2"), onView.getView());
-		List<Test.OnView.Variant> variants = onView.getVariants();
+		assertEquals(schema.getView("state2"), onView.getState());
+		List<Test.OnState.Variant> variants = onView.getVariants();
 		assertEquals(2, variants.size());
 
-		Test.OnView.Variant variant = variants.get(0);
+		Test.OnState.Variant variant = variants.get(0);
 		assertEquals(variant.getExperience(), test1.getExperience("B"));
-		assertEquals("/path/to/view2/test1.B", variant.getPath());
+		assertEquals("/path/to/state2/test1.B", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 		
 		variant = variants.get(1);
 		assertEquals(variant.getExperience(), test1.getExperience("C"));
-		assertEquals("/path/to/view2/test1.C", variant.getPath());
+		assertEquals("/path/to/state2/test1.C", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 
-		// view3
+		// state3
 		onView = onViews.get(1);
 		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getView("view3"), onView.getView());
+		assertEquals(schema.getView("state3"), onView.getState());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 		
 		variant = variants.get(0);
 		assertEquals(variant.getExperience(), test1.getExperience("B"));
-		assertEquals("/path/to/view3/test1.B", variant.getPath());
+		assertEquals("/path/to/state3/test1.B", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 		
 		variant = variants.get(1);
 		assertEquals(variant.getExperience(), test1.getExperience("C"));
-		assertEquals("/path/to/view3/test1.C", variant.getPath());
+		assertEquals("/path/to/state3/test1.C", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 
-		// view4
+		// state4
 		onView = onViews.get(2);
 		assertTrue(onView.isNonvariant());
-		assertEquals(schema.getView("view4"), onView.getView());
+		assertEquals(schema.getView("state4"), onView.getState());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
-		// view5
+		// state5
 		onView = onViews.get(3);
 		assertTrue(onView.isNonvariant());
-		assertEquals(schema.getView("view5"), onView.getView());
+		assertEquals(schema.getView("state5"), onView.getState());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
 		// 
 		// test2 OnView objects
 		//
-		onViews = test2.getOnViews();
+		onViews = test2.getOnStates();
 		assertEquals(4, onViews.size());
 		
-		// view1
+		// state1
 		onView = onViews.get(0);
 		assertTrue(onView.isNonvariant());
 		assertTrue(onView.getVariants().isEmpty());
-		assertEquals(schema.getView("view1"), onView.getView());
+		assertEquals(schema.getView("state1"), onView.getState());
 
-		// view2
+		// state2
 		onView = onViews.get(1);
 		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getView("view2"), onView.getView());
+		assertEquals(schema.getView("state2"), onView.getState());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 		
 		variant = variants.get(0);
 		assertEquals(variant.getExperience(), test2.getExperience("B"));
-		assertEquals("/path/to/view2/test2.B", variant.getPath());
+		assertEquals("/path/to/state2/test2.B", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		variant = variants.get(1);
 		assertEquals(variant.getExperience(), test2.getExperience("B"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view2/test1.B+test2.B", variant.getPath());
+		assertEquals("/path/to/state2/test1.B+test2.B", variant.getPath());
 
 		variant = variants.get(2);
 		assertEquals(variant.getExperience(), test2.getExperience("B"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view2/test1.C+test2.B", variant.getPath());
+		assertEquals("/path/to/state2/test1.C+test2.B", variant.getPath());
 
 		variant = variants.get(3);
 		assertEquals(variant.getExperience(), test2.getExperience("C"));
-		assertEquals("/path/to/view2/test2.C", variant.getPath());
+		assertEquals("/path/to/state2/test2.C", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		variant = variants.get(4);
 		assertEquals(variant.getExperience(), test2.getExperience("C"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view2/test1.B+test2.C", variant.getPath());
+		assertEquals("/path/to/state2/test1.B+test2.C", variant.getPath());
 
 		variant = variants.get(5);
 		assertEquals(variant.getExperience(), test2.getExperience("C"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view2/test1.C+test2.C", variant.getPath());
+		assertEquals("/path/to/state2/test1.C+test2.C", variant.getPath());
 
-		// view3
+		// state3
 		onView = onViews.get(2);
 		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getView("view3"), onView.getView());
+		assertEquals(schema.getView("state3"), onView.getState());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 		
 		variant = variants.get(0);
 		assertEquals(variant.getExperience(), test2.getExperience("B"));
-		assertEquals("/path/to/view3/test2.B", variant.getPath());
+		assertEquals("/path/to/state3/test2.B", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		variant = variants.get(1);
 		assertEquals(variant.getExperience(), test2.getExperience("B"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view3/test1.B+test2.B", variant.getPath());
+		assertEquals("/path/to/state3/test1.B+test2.B", variant.getPath());
 
 		variant = variants.get(2);
 		assertEquals(variant.getExperience(), test2.getExperience("B"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view3/test1.C+test2.B", variant.getPath());
+		assertEquals("/path/to/state3/test1.C+test2.B", variant.getPath());
 
 		variant = variants.get(3);
 		assertEquals(variant.getExperience(), test2.getExperience("C"));
-		assertEquals("/path/to/view3/test2.C", variant.getPath());
+		assertEquals("/path/to/state3/test2.C", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		variant = variants.get(4);
 		assertEquals(variant.getExperience(), test2.getExperience("C"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view3/test1.B+test2.C", variant.getPath());
+		assertEquals("/path/to/state3/test1.B+test2.C", variant.getPath());
 
 		variant = variants.get(5);
 		assertEquals(variant.getExperience(), test2.getExperience("C"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals("/path/to/view3/test1.C+test2.C", variant.getPath());
+		assertEquals("/path/to/state3/test1.C+test2.C", variant.getPath());
 
-		// view4
+		// state4
 		onView = onViews.get(3);
 		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getView("view4"), onView.getView());
+		assertEquals(schema.getView("state4"), onView.getState());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 		
 		variant = variants.get(0);
 		assertEquals(variant.getExperience(), test2.getExperience("B"));
-		assertEquals("/path/to/view4/test2.B", variant.getPath());
+		assertEquals("/path/to/state4/test2.B", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		variant = variants.get(1);
 		assertEquals(variant.getExperience(), test2.getExperience("C"));
-		assertEquals("/path/to/view4/test2.C", variant.getPath());
+		assertEquals("/path/to/state4/test2.C", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		// 
 		// test3 OnView objects
 		//
-		onViews = test3.getOnViews();
+		onViews = test3.getOnStates();
 		assertEquals(5, onViews.size());
 		
-		// view1
+		// state1
 		onView = onViews.get(0);
 		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getView("view1"), onView.getView());
+		assertEquals(schema.getView("state1"), onView.getState());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 
 		variant = variants.get(0);
 		assertEquals(variant.getExperience(), test3.getExperience("B"));
-		assertEquals("/path/to/view1/test3.B", variant.getPath());
+		assertEquals("/path/to/state1/test3.B", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 		
 		variant = variants.get(1);
 		assertEquals(variant.getExperience(), test3.getExperience("C"));
-		assertEquals("/path/to/view1/test3.C", variant.getPath());
+		assertEquals("/path/to/state1/test3.C", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 
-		// view2
+		// state2
 		onView = onViews.get(1);
 		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getView("view2"), onView.getView());
+		assertEquals(schema.getView("state2"), onView.getState());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 
 		variant = variants.get(0);
 		assertEquals(variant.getExperience(), test3.getExperience("B"));
-		assertEquals("/path/to/view2/test3.B", variant.getPath());
+		assertEquals("/path/to/state2/test3.B", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 		
 		variant = variants.get(1);
 		assertEquals(variant.getExperience(), test3.getExperience("C"));
-		assertEquals("/path/to/view2/test3.C", variant.getPath());
+		assertEquals("/path/to/state2/test3.C", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
 
-		// view3
+		// state3
 		onView = onViews.get(2);
 		assertTrue(onView.isNonvariant());
-		assertEquals(schema.getView("view3"), onView.getView());
+		assertEquals(schema.getView("state3"), onView.getState());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
-		// view4
+		// state4
 		onView = onViews.get(3);
 		assertTrue(onView.isNonvariant());
-		assertEquals(schema.getView("view4"), onView.getView());
+		assertEquals(schema.getView("state4"), onView.getState());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
-		// view5
+		// state5
 		onView = onViews.get(4);
 		assertTrue(onView.isNonvariant());
-		assertEquals(schema.getView("view5"), onView.getView());
+		assertEquals(schema.getView("state5"), onView.getState());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 

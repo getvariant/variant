@@ -5,10 +5,9 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.variant.core.ViewSelectorByPath;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.View;
 
 /**
  * @author Igor
@@ -16,26 +15,23 @@ import com.variant.core.schema.View;
 public class SchemaImpl implements Schema {
 
 	// Views are keyed by name
-	private LinkedHashSet<View> views = new LinkedHashSet<View>();
+	private LinkedHashSet<State> states = new LinkedHashSet<State>();
 	
 	// Tests are keyed by name
 	private LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
-	
-	// Caller may pass a custom view selector.
-	private ViewSelectorByPath viewSelector = new ViewSelectorByPath.Default();
-	
+		
 	/**
 	 * Package instantiation.
 	 */
 	SchemaImpl() {}
 	
 	/**
-	 * Add view to the set.
-	 * @param view
+	 * Add state to the set.
+	 * @param state
 	 * @return true if element didn't exist, false if did.
 	 */
-	boolean addView(View view) {
-		return views.add(view);
+	boolean addState(State state) {
+		return states.add(state);
 	}
 
 	/**
@@ -52,23 +48,22 @@ public class SchemaImpl implements Schema {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Views in the order they were created as an immutable list.
+	 * States in the ordinal order, as an immutable list.
 	 */
 	@Override
-	public List<View> getViews() {
-		ArrayList<View> result = new ArrayList<View>(views.size());
-		for (View v: views) {
-			result.add(v);
-		}
+	public List<State> getStates() {
+		ArrayList<State> result = new ArrayList<State>(states.size());
+		result.addAll(states);
 		return Collections.unmodifiableList(result);
 	}
 
 	/**
-	 * Get a view by name
+	 * Get a state by name
 	 */
-	public View getView(String name) {
-		for (View view: views) {
-			if (view.getName().equals(name)) return view;
+	@Override
+	public State getState(String name) {
+		for (State state: states) {
+			if (state.getName().equals(name)) return state;
 		}
 		return null;
 	}
@@ -95,25 +90,4 @@ public class SchemaImpl implements Schema {
 		}
 		return null;
 	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public View matchViewByPath(String path) {
-		
-		return viewSelector.select(path, views);
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public void registerCustomViewSelectorByPath(ViewSelectorByPath selector) {
-		
-		if (selector == null) 
-			throw new IllegalArgumentException("Selector cannot be null");
-		viewSelector = selector;
-	}
-	
 }

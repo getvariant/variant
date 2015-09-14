@@ -1,11 +1,12 @@
 package com.variant.core;
 
 import java.util.Collection;
+import java.util.Map;
 
-import com.variant.core.impl.ViewServeEvent;
+import com.variant.core.impl.StateServeEvent;
+import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.View;
 import com.variant.core.session.TargetingPersister;
 
 /**
@@ -23,30 +24,24 @@ public interface VariantViewRequest {
 	public VariantSession getSession();
 	
 	/**
-	 * The view for which this request was generated.
+	 * The state for which this request was generated.
 	 * @return
 	 */
-	public View getView();
+	public State getState();
 	
 	/**
-	 * The actual path as resovled by the runtime.
-	 * @return
+	 * The parameter map to which this request resolved.
+	 * 
+	 * @return A variant's merged parameter map if resolved to a variant
+	 *         or state's parameter map, if resolved to control.
 	 */
-	public String resolvedViewPath();
-	
-	/**
-	 * Is this request's resolved path different from the reqeusted path?
-	 * In other words, this is equivalent to 
-	 * <code>!resolvedPath().equalsIgnoreCase(getView().getPath())</code>
-	 * @return
-	 */
-	public boolean isForwarding();
-	
+	public Map<String,String> getResolvedParameterMap();
+		
 	/**
 	 * View serve event associated with this view request
 	 * @return
 	 */
-	public ViewServeEvent getViewServeEvent();
+	public StateServeEvent getViewServeEvent();
 
 	/**
 	 * 

@@ -2,14 +2,15 @@ package com.variant.core.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.View;
-import com.variant.core.schema.impl.ViewImpl;
+import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.session.VariantSessionImpl;
 
@@ -21,10 +22,10 @@ import com.variant.core.session.VariantSessionImpl;
 public class VariantViewRequestImpl implements VariantViewRequest {
 
 	private VariantSessionImpl session;
-	private View view;
+	private State state;
 	private Status status = Status.OK;
-	private String resolvedPath;
-	private ViewServeEvent event;
+	private Map<String,String> resolvedParameterMap;
+	private StateServeEvent event;
 	private boolean committed = false;
 	private TargetingPersister targetingPersister = null;
 	
@@ -32,12 +33,12 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	 * 
 	 * @param session
 	 */
-	VariantViewRequestImpl(VariantSessionImpl session, ViewImpl view) {
+	VariantViewRequestImpl(VariantSessionImpl session, StateImpl state) {
 		this.session = session;
-		this.view = view;
+		this.state = state;
 	}
 
-	void setViewServeEvent(ViewServeEvent event) {
+	void setViewServeEvent(StateServeEvent event) {
 		this.event = event;
 	}
 	
@@ -55,22 +56,18 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	}
 
 	@Override
-	public View getView() {
-		return view;
+	public State getState() {
+		return state;
 	}
 
 	@Override
-	public String resolvedViewPath() {
-		return resolvedPath;
+	public Map<String,String> getResolvedParameterMap() {
+		return resolvedParameterMap;
 	}
 
-	@Override
-	public boolean isForwarding() {
-		return ! resolvedPath.equalsIgnoreCase(view.getPath());
-	}
 	
 	@Override
-	public ViewServeEvent getViewServeEvent() {
+	public StateServeEvent getViewServeEvent() {
 		return event;
 	}
 
@@ -89,7 +86,7 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	public Collection<Experience> getTargetedExperiences() {
 			
 		ArrayList<Experience> result = new ArrayList<Experience>();
-		for (Test test: view.getInstrumentedTests()) {
+		for (Test test: state.getInstrumentedTests()) {
 			if (!test.isOn()) continue;
 			Experience e = targetingPersister.get(test);
 			if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found.");
@@ -101,7 +98,7 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	@Override
 	public Experience getTargetedExperience(Test test) {
 		
-		for (Test t: view.getInstrumentedTests()) {
+		for (Test t: state.getInstrumentedTests()) {
 			if (!t.isOn() || !t.equals(test)) continue;
 			Experience e = targetingPersister.get(test);
 			if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found.");
@@ -118,8 +115,8 @@ public class VariantViewRequestImpl implements VariantViewRequest {
 	 * 
 	 * @param path
 	 */
-	public void setResolvedPath(String path) {
-		this.resolvedPath = path;
+	public void setResolvedParameters(Map<String,String> parameterMap) {
+		this.resolvedParameterMap = parameterMap;
 	}
 
 	/**

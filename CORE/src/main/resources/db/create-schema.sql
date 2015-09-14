@@ -7,6 +7,8 @@ CREATE TABLE events (
   CONSTRAINT events_pk PRIMARY KEY (id)
  );
 
+CREATE INDEX events_session_id_ix on events (session_id);
+
 CREATE SEQUENCE events_id_seq
   START WITH 1
   INCREMENT BY 1

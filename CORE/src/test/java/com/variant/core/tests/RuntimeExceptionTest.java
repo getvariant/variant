@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
 
@@ -26,7 +26,7 @@ public class RuntimeExceptionTest extends BaseTest {
 		assertFalse(response.hasMessages());
 		final Schema schema = engine.getSchema();
 		
-		View view = schema.getView("view1");
+		State view = schema.getView("view1");
 		try {
 			assertFalse(view.isNonvariantIn(schema.getTest("non-existent")));
 		}

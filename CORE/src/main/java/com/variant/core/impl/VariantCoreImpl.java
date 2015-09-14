@@ -29,7 +29,7 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.parser.ParserResponse;
@@ -350,7 +350,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public VariantViewRequest startViewRequest(VariantSession session, View view, Object targetingPersisterUserData) {
+	public VariantViewRequest startViewRequest(VariantSession session, State view, Object targetingPersisterUserData) {
 		
 		stateCheck();
 		
@@ -396,7 +396,7 @@ public class VariantCoreImpl implements Variant {
 		
 		// Save the view serve event, if any. There may not be any if we hit a known view that did not have
 		// any tests instrumented on it.
-		ViewServeEvent event = request.getViewServeEvent();
+		StateServeEvent event = request.getViewServeEvent();
 		if (event != null) {
 			EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
 			ew.write(event);		

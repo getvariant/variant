@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.MessageTemplate;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.schema.parser.TestParsedEventListener;
@@ -113,15 +113,15 @@ public class SchemaParser {
 			response.addError(MessageTemplate.PARSER_NO_VIEWS_CLAUSE);
 		}
 		else {
-			ViewsParser.parseViews(views, response);
+			StatesParser.parseViews(views, response);
 			if (viewParsedEventListeners != null) {
 				for (ViewParsedEventListener listener: viewParsedEventListeners) {
-					for (View view: response.getSchema().getViews()) {
+					for (State state: response.getSchema().getStates()) {
 						try {
-							listener.viewParsed(view);
+							listener.viewParsed(state);
 						}
 						catch (VariantException e) {
-							response.addError(MessageTemplate.BOOT_PARSER_LISTENER_EXCEPTION, listener.getClass().getName(), e.getMessage(), view.getName());
+							response.addError(MessageTemplate.BOOT_PARSER_LISTENER_EXCEPTION, listener.getClass().getName(), e.getMessage(), state.getName());
 						}
 					}
 				}

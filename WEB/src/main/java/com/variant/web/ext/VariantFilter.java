@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantViewRequest;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
@@ -106,7 +106,7 @@ public class VariantFilter implements Filter {
 
 				// Is this request's URI mapped in Variant?
 				String url = VariantWebUtils.requestUrl(httpRequest);
-				View view = VariantWeb.getSchema().matchViewByPath(url);
+				State view = VariantWeb.getSchema().matchViewByPath(url);
 				
 				if (view == null) {
 
@@ -124,7 +124,7 @@ public class VariantFilter implements Filter {
 					if (LOG.isDebugEnabled()) {
 
 						String msg = 
-								"Variant dispatcher for path [" + variantRequest.getView().getPath() +
+								"Variant dispatcher for path [" + variantRequest.getState().getPath() +
 								"] completed in " + DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS") +". ";
 						if (variantRequest.isForwarding()) {
 							msg += "Forwarding to path [" + variantRequest.resolvedViewPath() + "].";

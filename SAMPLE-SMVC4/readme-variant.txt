@@ -11,4 +11,7 @@ Variant Related Changes:
 4. Create a new Serlet Filter VariantFilter
 5. Add <logger name="com.variant" level="debug"/> to logback.xml. (Optional)
 
-?. web.xml: add VariantFilter in com.variant.sample.VariantFilter
+6. Created test com.variant.web.sample.smvc4.EventDataPopulator to simulate thousands of sessions'
+   outoput to the database.
+7. Created script exportToCsv.sh to dump the output of prev. step to a csv file. (Tableau does not
+   support DB sources.)

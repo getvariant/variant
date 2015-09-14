@@ -3,6 +3,7 @@ package com.variant.core.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -12,15 +13,16 @@ import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.Test.OnView;
-import com.variant.core.schema.View;
+import com.variant.core.schema.Test.OnState;
+import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestImpl;
-import com.variant.core.schema.impl.TestOnViewImpl;
-import com.variant.core.schema.impl.ViewImpl;
+import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.session.VariantSessionImpl;
+import com.variant.core.util.VariantStringUtils;
 
 /**
  * Entry point into the runtime.
@@ -61,17 +63,15 @@ public class VariantRuntime {
      *    tests that are OFF — default them to control experiences.
      * 7. Resolve the path. For OFF tests, substitute non-control experiences with control ones.
 	 * 
-	 * @param config
-	 * @param viewPath
 	 */
-	private static String targetSessionForView(VariantSession ssn, View view, TargetingPersister targetingPersister) {
+	private static Map<String,String> targetSessionForState(VariantSession ssn, State state, TargetingPersister targetingPersister) {
 
 		Schema schema = Variant.Factory.getInstance().getSchema();
 		
 		// It is illegal to call this with a view that is not in schema, e.g. before runtime.
-		View schemaView = schema.getView(view.getName());
-		if (System.identityHashCode(schemaView) != System.identityHashCode(view)) 
-			throw new VariantInternalException("View [" + view.getName() + "] is not in schema");
+		State schemaState = schema.getState(state.getName());
+		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
+			throw new VariantInternalException("State [" + state.getName() + "] is not in schema");
 
 		// Pre-targeted experiences from the targeting persister.
 		Collection<Experience> alreadyTargetedExperiences = targetingPersister.getAll();
@@ -110,10 +110,10 @@ public class VariantRuntime {
 				}													
 			}
 		}
-		// Tests that are instrumented on this page need to be targeted, unless already targeted.
-		for (Test test: view.getInstrumentedTests()) {
+		// Tests that are instrumented on this state need to be targeted, unless already targeted.
+		for (Test test: state.getInstrumentedTests()) {
 			
-			if (view.isInstrumentedBy(test) && targetingPersister.get(test) == null) {
+			if (/*state.isInstrumentedBy(test) && -- loop's condition insures this? -- */ targetingPersister.get(test) == null) {
 				
 				if (!test.isOn()) {
 					Experience e = test.getControlExperience();
@@ -154,7 +154,7 @@ public class VariantRuntime {
 			vector.add(e.getTest().isOn() ? e : e.getTest().getControlExperience());
 		}
 		
-		return resolveViewPath(view, vector);
+		return resolveState(state, vector);
 		
 	}
 
@@ -186,31 +186,31 @@ public class VariantRuntime {
 		Collection<Experience> result = new ArrayList<Experience>();
 			
 		// 1. Build a set of all instrumented views.
-		HashSet<View> instrumentedViews = new HashSet<View>();
+		HashSet<State> instrumentedStates = new HashSet<State>();
 		for (Experience e: vector) {
-			for (OnView tov: e.getTest().getOnViews()) {
-				if (!tov.getView().isNonvariantIn(e.getTest())) {
-					instrumentedViews.add(tov.getView());
+			for (OnState tov: e.getTest().getOnStates()) {
+				if (!tov.getState().isNonvariantIn(e.getTest())) {
+					instrumentedStates.add(tov.getState());
 				}
 			}
 		}
 			
 		// 2,3. Try to resolve them all.
-		ArrayList<View> unresolvedViews = new ArrayList<View>();
-		for (View view: instrumentedViews) {
-			if (resolveViewPath(view, vector) == null) {
-				unresolvedViews.add(view);
+		ArrayList<State> unresolvedStates = new ArrayList<State>();
+		for (State state: instrumentedStates) {
+			if (resolveState(state, vector) == null) {
+				unresolvedStates.add(state);
 			}
 		}
 				
 		// 4.
-		if (unresolvedViews.isEmpty()) return result;
+		if (unresolvedStates.isEmpty()) return result;
 		
-		// 5. Build the set of tests instrumented on any of the unresolved views.
-		HashSet<Test> testsInstumentedOnUnresolvedViews = new HashSet<Test>();  
-		for (View uv: unresolvedViews) {
+		// 5. Build the set of tests instrumented on any of the unresolved states.
+		HashSet<Test> testsInstumentedOnUnresolvedStates = new HashSet<Test>();  
+		for (State uv: unresolvedStates) {
 			for (Test t: uv.getInstrumentedTests()) {
-				if (!uv.isNonvariantIn(t)) testsInstumentedOnUnresolvedViews.add(t);
+				if (!uv.isNonvariantIn(t)) testsInstumentedOnUnresolvedStates.add(t);
 			}
 		}
 		
@@ -221,7 +221,7 @@ public class VariantRuntime {
 		
 		for (Experience inputExperience: vector) {
 		
-			if (!testsInstumentedOnUnresolvedViews.contains(inputExperience.getTest())) continue;
+			if (!testsInstumentedOnUnresolvedStates.contains(inputExperience.getTest())) continue;
 			
 			Collection<Experience> newInputVector = new ArrayList<Experience>(vector);
 			newInputVector.remove(inputExperience);
@@ -294,14 +294,14 @@ public class VariantRuntime {
 	 * TODO: GETME.
 	 * Package scope for testing
 	 * 
-	 * @param view
+	 * @param state
 	 * @param vector
-	 * @return path
+	 * @return params map
 	 */
-	static String resolveViewPath(View view, Collection<Experience> vector) {
+	static Map<String,String> resolveState(State state, Collection<Experience> vector) {
 		
 		if (vector.size() == 0) 
-			throw new VariantInternalException("No experiences in vector");
+			throw new VariantInternalException("No experiences in input vector");
 		
 		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
 		for (Test t: Variant.Factory.getInstance().getSchema().getTests()) {
@@ -313,7 +313,7 @@ public class VariantRuntime {
 					}
 					else {
 						found = true;
-						if (!e.isControl() && view.isInstrumentedBy(e.getTest()) && !view.isNonvariantIn(e.getTest())) 
+						if (!e.isControl() && state.isInstrumentedBy(e.getTest()) && !state.isNonvariantIn(e.getTest())) 
 							sortedList.add(e);
 					}
 				}
@@ -321,15 +321,16 @@ public class VariantRuntime {
 		}
 
 		// All experiences were control or uninstumented?
-		if (sortedList.size() == 0) return view.getPath();
+		if (sortedList.size() == 0) return state.getParameterMap();
 		
 		Test highOrderTest = sortedList.get(sortedList.size() - 1).getTest();
-		TestOnViewImpl tov = (TestOnViewImpl) highOrderTest.getOnView(view);
+		TestOnStateImpl tov = (TestOnStateImpl) highOrderTest.getOnView(state);
 		
 		if (tov == null) return null;
 		
-		Test.OnView.Variant variant = tov.variantSpace().get(sortedList);
-		return variant == null ? null : variant.getPath();
+		Test.OnState.Variant variant = tov.variantSpace().get(sortedList);
+		return variant == null ? null : variant.getParameterMap();	
+	
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -342,33 +343,34 @@ public class VariantRuntime {
 	 * @param view
 	 * @return
 	 */
-	public static VariantViewRequestImpl startViewRequest(VariantSession ssn, View view, TargetingPersister targetingPersister) {
+	public static VariantViewRequestImpl startViewRequest(VariantSession ssn, State state, TargetingPersister targetingPersister) {
 
 		// Resolve the path and get all tests instrumented on the given view targeted.
-		String resolvedPath = targetSessionForView(ssn, view, targetingPersister);		
-		VariantViewRequestImpl result = new VariantViewRequestImpl((VariantSessionImpl)ssn, (ViewImpl) view);
-		result.setResolvedPath(resolvedPath);
+		Map<String,String> resolvedParams = targetSessionForState(ssn, state, targetingPersister);		
+		VariantViewRequestImpl result = new VariantViewRequestImpl((VariantSessionImpl)ssn, (StateImpl) state);
+		result.setResolvedParameters(resolvedParams);
 		
 		if (LOG.isDebugEnabled()) {
-			LOG.debug(
-					"Session [" + ssn.getId() + "] resolved view [" + 
-					view.getName() +"] as [" + resolvedPath + "] for experience vector [" +
-					StringUtils.join(targetingPersister.getAll().toArray(), ",") + "]");
+			StringBuilder sb = new StringBuilder();
+			sb.append("Session [").append(ssn.getId()).append("] resolved state [").append(state.getName()).append("] as [");
+			sb.append(VariantStringUtils.toString(resolvedParams,","));
+			sb.append("] for experience vector [").append(StringUtils.join(targetingPersister.getAll().toArray(), ",")).append("]");
+			LOG.debug(sb.toString());
 		}   
 	
 		result.setTargetingPersister(targetingPersister);
 		
 		// Create the view serve event if there are any tests instrumented on this view.
-		if (view.getInstrumentedTests().isEmpty()) {
+		if (state.getInstrumentedTests().isEmpty()) {
 			
 			if (LOG.isDebugEnabled()) {
 				LOG.debug(
-						"Session [" + ssn.getId() + "] requested view [" + 
-						view.getName() +"] that does not have any instrumented tests");
+						"Session [" + ssn.getId() + "] requested state [" + 
+						state.getName() +"] that does not have any instrumented tests.");
 			}   
 		}
 		else {
-			ViewServeEvent event = new ViewServeEvent(result, resolvedPath);
+			StateServeEvent event = new StateServeEvent(result, resolvedParams);
 			result.setViewServeEvent(event);
 		}
 	

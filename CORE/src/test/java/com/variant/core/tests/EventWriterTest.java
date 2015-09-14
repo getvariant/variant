@@ -7,9 +7,9 @@ import org.junit.Test;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
-import com.variant.core.impl.ViewServeEventTestFacade;
+import com.variant.core.impl.StateServeEventTestFacade;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 
 public class EventWriterTest extends BaseTest {
@@ -35,12 +35,12 @@ public class EventWriterTest extends BaseTest {
 
 		long timestamp = System.currentTimeMillis();
 		Schema schema = engine.getSchema();
-		View view = schema.getView("view1");
+		State view = schema.getView("view1");
 		VariantSession ssn = engine.getSession("foo");
 		VariantViewRequest request = engine.startViewRequest(ssn, view, timestamp + ".test1.A");
-		ViewServeEventTestFacade event1 = new ViewServeEventTestFacade(request, "viewResolvedPath");
+		StateServeEventTestFacade event1 = new StateServeEventTestFacade(request, "viewResolvedPath");
 		request = engine.startViewRequest(ssn, view, timestamp + ".test1.B");
-		ViewServeEventTestFacade event2 = new ViewServeEventTestFacade(request, "viewResolvedPath");
+		StateServeEventTestFacade event2 = new StateServeEventTestFacade(request, "viewResolvedPath");
 		event1.setParameter("event1-key1", "value1");
 		event2.setParameter("event2-key1", "value1");
 		event2.setParameter("event2-key2", "value2"); 

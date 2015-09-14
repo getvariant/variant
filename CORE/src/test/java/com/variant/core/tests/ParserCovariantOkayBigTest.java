@@ -8,7 +8,7 @@ import java.util.List;
 
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.VariantCollectionsUtils;
 
@@ -36,11 +36,11 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		final Test test5 = schema.getTest("test5");
 		final Test test6 = schema.getTest("test6");
 
-		final View view1 = schema.getView("view1");
-		final View view2 = schema.getView("view2");
-		final View view3 = schema.getView("view3");
-		final View view4 = schema.getView("view4");
-		final View view5 = schema.getView("view5");
+		final State view1 = schema.getView("view1");
+		final State view2 = schema.getView("view2");
+		final State view3 = schema.getView("view3");
+		final State view4 = schema.getView("view4");
+		final State view5 = schema.getView("view5");
 
 		// 
 		// Declared test covariance.
@@ -139,17 +139,17 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// 
 		// test1 OnView objects
 		//
-		List<Test.OnView> onViews = test1.getOnViews();
+		List<Test.OnState> onViews = test1.getOnStates();
 		assertEquals(4, onViews.size());
 		
 		// view2
-		Test.OnView onView = onViews.get(0);
+		Test.OnState onView = onViews.get(0);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view2, onView.getView());
-		List<Test.OnView.Variant> variants = onView.getVariants();
+		assertEquals(view2, onView.getState());
+		List<Test.OnState.Variant> variants = onView.getVariants();
 		assertEquals(2, variants.size());
 
-		Test.OnView.Variant variant = variants.get(0);
+		Test.OnState.Variant variant = variants.get(0);
 		assertEquals(variant.getExperience(), test1.getExperience("B"));
 		assertEquals("/path/to/view2/test1.B", variant.getPath());
 		assertEquals(0, variant.getCovariantExperiences().size());
@@ -162,7 +162,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view3
 		onView = onViews.get(1);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view3, onView.getView());
+		assertEquals(view3, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 		
@@ -179,33 +179,33 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view4
 		onView = onViews.get(2);
 		assertTrue(onView.isNonvariant());
-		assertEquals(view4, onView.getView());
+		assertEquals(view4, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
 		// view5
 		onView = onViews.get(3);
 		assertTrue(onView.isNonvariant());
-		assertEquals(view5, onView.getView());
+		assertEquals(view5, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
 		// 
 		// test2 OnView objects
 		//
-		onViews = test2.getOnViews();
+		onViews = test2.getOnStates();
 		assertEquals(4, onViews.size());
 		
 		// view1
 		onView = onViews.get(0);
 		assertTrue(onView.isNonvariant());
 		assertTrue(onView.getVariants().isEmpty());
-		assertEquals(view1, onView.getView());
+		assertEquals(view1, onView.getState());
 
 		// view2
 		onView = onViews.get(1);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view2, onView.getView());
+		assertEquals(view2, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 		
@@ -222,7 +222,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view3
 		onView = onViews.get(2);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view3, onView.getView());
+		assertEquals(view3, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 		
@@ -239,7 +239,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view4
 		onView = onViews.get(3);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view4, onView.getView());
+		assertEquals(view4, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 		
@@ -256,20 +256,20 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// 
 		// test3 OnView objects
 		//
-		onViews = test3.getOnViews();
+		onViews = test3.getOnStates();
 		assertEquals(4, onViews.size());
 		
 		// view1
 		onView = onViews.get(0);
 		assertTrue(onView.isNonvariant());
-		assertEquals(view1, onView.getView());
+		assertEquals(view1, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
 		// view2
 		onView = onViews.get(1);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view2, onView.getView());
+		assertEquals(view2, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 
@@ -310,14 +310,14 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view3
 		onView = onViews.get(2);
 		assertTrue(onView.isNonvariant());
-		assertEquals(view3, onView.getView());
+		assertEquals(view3, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(0, variants.size());
 
 		// view4
 		onView = onViews.get(3);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view4, onView.getView());
+		assertEquals(view4, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 
@@ -359,13 +359,13 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// 
 		// test4 OnView objects
 		//
-		onViews = test4.getOnViews();
+		onViews = test4.getOnStates();
 		assertEquals(4, onViews.size());
 		
 		// view1
 		onView = onViews.get(0);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view1, onView.getView());
+		assertEquals(view1, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(2, variants.size());
 
@@ -382,7 +382,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view2
 		onView = onViews.get(1);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view2, onView.getView());
+		assertEquals(view2, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 
@@ -423,25 +423,25 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view4
 		onView = onViews.get(2);
 		assertTrue(onView.isNonvariant());
-		assertEquals(view4, onView.getView());
+		assertEquals(view4, onView.getState());
 		assertEquals(0, onView.getVariants().size());
 
 		// view5
 		onView = onViews.get(3);
 		assertTrue(onView.isNonvariant());
-		assertEquals(view5, onView.getView());
+		assertEquals(view5, onView.getState());
 		assertEquals(0, onView.getVariants().size());
 
 		// 
 		// test5 OnView objects
 		//
-		onViews = test5.getOnViews();
+		onViews = test5.getOnStates();
 		assertEquals(5, onViews.size());
 		
 		// view1
 		onView = onViews.get(0);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view1, onView.getView());
+		assertEquals(view1, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 
@@ -458,7 +458,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view2
 		onView = onViews.get(1);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view2, onView.getView());
+		assertEquals(view2, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(18, variants.size());
 
@@ -555,13 +555,13 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view3
 		onView = onViews.get(2);
 		assertTrue(onView.isNonvariant());
-		assertEquals(view3, onView.getView());
+		assertEquals(view3, onView.getState());
 		assertEquals(0, onView.getVariants().size());
 		
 		// view4
 		onView = onViews.get(3);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view4, onView.getView());
+		assertEquals(view4, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(6, variants.size());
 
@@ -598,19 +598,19 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view5
 		onView = onViews.get(4);
 		assertTrue(onView.isNonvariant());
-		assertEquals(view5, onView.getView());
+		assertEquals(view5, onView.getState());
 		assertEquals(0, onView.getVariants().size());
 
 		// 
 		// test6 OnView objects
 		//
-		onViews = test6.getOnViews();
+		onViews = test6.getOnStates();
 		assertEquals(4, onViews.size());
 		
 		// view1
 		onView = onViews.get(0);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view1, onView.getView());
+		assertEquals(view1, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(18, variants.size());
 
@@ -707,13 +707,13 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view2
 		onView = onViews.get(1);
 		assertTrue(onView.isNonvariant());
-		assertEquals(view2, onView.getView());
+		assertEquals(view2, onView.getState());
 		assertEquals(0, onView.getVariants().size());
 
 		// view3
 		onView = onViews.get(2);
 		assertFalse(onView.isNonvariant());
-		assertEquals(view3, onView.getView());
+		assertEquals(view3, onView.getState());
 		variants = onView.getVariants();
 		assertEquals(18, variants.size());
 
@@ -811,7 +811,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		// view2
 		onView = onViews.get(3);
 		assertTrue(onView.isNonvariant());
-		assertEquals(view5, onView.getView());
+		assertEquals(view5, onView.getState());
 		assertEquals(0, onView.getVariants().size());
 
 	}

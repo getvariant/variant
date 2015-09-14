@@ -26,19 +26,20 @@ public enum MessageTemplate {
 	//                                                  PARSER MESSAGES                                                       //
 	//------------------------------------------------------------------------------------------------------------------------//
 
-	// View related errors
-	PARSER_NO_VIEWS_CLAUSE                                (Severity.INFO, "VIEWS clause is not found"),
-	PARSER_NO_VIEWS                                       (Severity.INFO, "No views found"), 
-	PARSER_VIEW_NAME_MISSING                              (Severity.ERROR, "View name is missing"), 
-	PARSER_VIEW_NAME_NOT_STRING                           (Severity.ERROR, "View name must be a string"), 
-	PARSER_VIEW_NAME_DUPE                                 (Severity.ERROR, "Duplicate view name [%s]"), 
-	PARSER_VIEW_PATH_MISSING                              (Severity.ERROR, "'view/path' property is missing (View [%s])"), 
-	PARSER_VIEW_PATH_NOT_STRING                           (Severity.ERROR, "'view/path' property must be a string (View [%s])"), 
-	PARSER_VIEW_UNSUPPORTED_PROPERTY                      (Severity.WARN,  "Unsupported property 'view/%s' (View [%s])"), 
+	// State related errors
+	PARSER_NO_VIEWS_CLAUSE                                (Severity.INFO,  "STATES clause is not found"),
+	PARSER_NO_STATES                                      (Severity.INFO,  "No states found"), 
+	PARSER_STATE_NAME_MISSING                             (Severity.ERROR, "State name is missing"), 
+	PARSER_STATE_NAME_NOT_STRING                          (Severity.ERROR, "State name must be a string"), 
+	PARSER_STATE_NAME_DUPE                                (Severity.ERROR, "Duplicate state name [%s]"), 
+	PARSER_STATE_PARAMS_MISSING                           (Severity.ERROR, "'view/parameters' property is missing (State [%s])"), 
+	PARSER_STATE_PARAMS_EMPTY                             (Severity.ERROR, "'view/parameters' property must contain at least one element (State [%s])"), 
+	PARSER_STATE_PARAMS_NOT_OBJECT                        (Severity.ERROR, "'view/parameters' property must be an object (State [%s])"), 
+	PARSER_STATE_UNSUPPORTED_PROPERTY                     (Severity.WARN,  "Unsupported property 'state/%s' (State [%s])"), 
 	
 	// Test related errors
-	PARSER_NO_TESTS_CLAUSE                                (Severity.INFO, "'tests' clause is missing"), 
-	PARSER_NO_TESTS                                       (Severity.INFO, "No tests found"), 
+	PARSER_NO_TESTS_CLAUSE                                (Severity.INFO,  "'tests' clause is missing"), 
+	PARSER_NO_TESTS                                       (Severity.INFO,  "No tests found"), 
 	PARSER_TEST_NAME_MISSING                              (Severity.ERROR, "Test name is missing"), 
 	PARSER_TEST_NAME_NOT_STRING                           (Severity.ERROR, "Test name must be a string"), 
 	PARSER_TEST_NAME_DUPE                                 (Severity.ERROR, "Duplicate test name [%s]"), 
@@ -91,7 +92,7 @@ public enum MessageTemplate {
 	PARSER_EXPERIENCEREF_NOT_STRING                       (Severity.ERROR, "'tests/onViews/variants/experienceRef' property must be a string (Test [%s], ViewRef [%s])"), 
 	PARSER_EXPERIENCEREF_UNDEFINED                        (Severity.ERROR, "'tests/onViews/variants/experienceRef' property [%s] references an undefined expereince (Test [%s], ViewRef [%s])"), 
 	PARSER_EXPERIENCEREF_ISCONTROL                        (Severity.ERROR, "'tests/onViews/variants/experienceRef' property [%s] cannot reference a control expereince (Test [%s], ViewRef [%s])"), 
-	PARSER_EXPERIENCEREF_PATH_NOT_STRING                  (Severity.ERROR, "'tests/onViews/variants/path' property must be a string (Test [%s], ViewRef [%s], ExperienceRef [%s])"),
+	PARSER_EXPERIENCEREF_PARAMS_NOT_OBJECT                (Severity.ERROR, "'tests/onViews/variants/parameters' property must be an object (Test [%s], ViewRef [%s], ExperienceRef [%s])"),
 
 	// General errors
 	PARSER_UNSUPPORTED_CLAUSE                             (Severity.WARN,  "Unsupported clause [%s]"), 

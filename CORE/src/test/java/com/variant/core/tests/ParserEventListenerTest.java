@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import com.variant.core.Variant;
 import com.variant.core.exception.VariantException;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.TestParsedEventListener;
 import com.variant.core.schema.parser.ViewParsedEventListener;
@@ -49,10 +49,10 @@ public class ParserEventListenerTest extends BaseTest {
 	 */
 	private static class ViewParsedEventListenerImpl implements ViewParsedEventListener {
 
-		private ArrayList<View> viewList = new ArrayList<View>();
+		private ArrayList<State> viewList = new ArrayList<State>();
 		
 		@Override
-		public void viewParsed(View view) throws VariantException {
+		public void viewParsed(State view) throws VariantException {
 			viewList.add(view);
 		}		
 	}

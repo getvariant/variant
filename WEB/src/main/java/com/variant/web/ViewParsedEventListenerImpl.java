@@ -3,7 +3,7 @@ package com.variant.web;
 import com.variant.core.annotations.ParserEventListener;
 import com.variant.core.exception.VariantException;
 import com.variant.core.schema.SchemaElement;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ViewParsedEventListener;
 
 /**
@@ -15,7 +15,7 @@ import com.variant.core.schema.parser.ViewParsedEventListener;
 public class ViewParsedEventListenerImpl implements ViewParsedEventListener{
 
 	@Override
-	public void viewParsed(View view) {
+	public void viewParsed(State view) {
 		if (!view.getPath().startsWith("/")) {
 			throw new VariantException("View path must start with a '/' in View [" + view.getName() + "]");
 		}

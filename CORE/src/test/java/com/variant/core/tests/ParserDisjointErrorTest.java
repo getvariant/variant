@@ -197,7 +197,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(2, response.getMessages().size());
 
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_NO_VIEWS).getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_NO_STATES).getMessage(), error.getMessage());
 		assertEquals(Severity.INFO, error.getSeverity());
 
 		error = response.getMessages().get(1);
@@ -256,7 +256,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VIEW_NAME_MISSING).getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATE_NAME_MISSING).getMessage(), error.getMessage());
 	}
 
 	/**
@@ -314,7 +314,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VIEW_NAME_NOT_STRING).getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATE_NAME_NOT_STRING).getMessage(), error.getMessage());
 	}
 	
 	/**
@@ -552,7 +552,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VIEW_NAME_DUPE, "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATE_NAME_DUPE, "view1").getMessage(), error.getMessage());
 	}
 
 	/**
@@ -609,7 +609,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VIEW_PATH_MISSING, "view3").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATE_PATH_MISSING, "view3").getMessage(), error.getMessage());
 	}
 
 	/**
@@ -725,7 +725,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessage(MessageTemplate.PARSER_UNSUPPORTED_CLAUSE, "invalid clause").getMessage(), error.getMessage());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VIEW_UNSUPPORTED_PROPERTY, "invalid property", "view2").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATE_UNSUPPORTED_PROPERTY, "invalid property", "view2").getMessage(), error.getMessage());
 	}
 
 	/**

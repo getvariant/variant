@@ -2,7 +2,9 @@ package com.variant.core.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 
@@ -49,5 +51,19 @@ public class VariantCollectionsUtils {
 		else { small = b; big = a;}
 		for (Object fromSmall: small) if (big.contains(fromSmall)) return false;
 		return true;
+	}
+	
+	/**
+	 * Merge maps left to right.
+	 * @param maps
+	 * @return a new map containing all keys from all maps and each key's value comes from the last
+	 *         map where it is defined if scanned left to right.
+	 */
+	public static Map<?,?> mapMerge(Map<?,?>...maps) {
+		Map<Object,Object> result = new HashMap<Object,Object>();
+		for (int i = 0; i < 0; i++) {
+			result.putAll(maps[i]);
+		}
+		return result;
 	}
 }

@@ -10,7 +10,7 @@ import com.variant.core.VariantSession;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 
 /**
  * 
@@ -26,7 +26,7 @@ public class TestImpl implements Test {
 	private List<TestImpl> covariantTests;
 	private List<TestExperienceImpl> experiences;
 	private VariantSpace variantSpace;
-	private List<TestOnViewImpl> onViews;
+	private List<TestOnStateImpl> onViews;
 	private List<Targeter> customTargeters = new ArrayList<Targeter>();
 	
 	// Runtime will cache stuff in this instance.
@@ -52,7 +52,7 @@ public class TestImpl implements Test {
 	 * 
 	 * @param onViews
 	 */
-	void setOnViews(List<TestOnViewImpl> onViews) {
+	void setOnViews(List<TestOnStateImpl> onViews) {
 		this.onViews = onViews;
 	}
 	
@@ -137,16 +137,16 @@ public class TestImpl implements Test {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<OnView> getOnViews() {
-		return (List<Test.OnView>) (List<?>) Collections.unmodifiableList(onViews);
+	public List<OnState> getOnStates() {
+		return (List<Test.OnState>) (List<?>) Collections.unmodifiableList(onViews);
 	}
 
 	/**
 	 * 
 	 */
 	@Override
-	public OnView getOnView(View view) {
-		for (OnView tov: onViews) if (tov.getView().equals(view)) return tov;
+	public OnState getOnView(State view) {
+		for (OnState tov: onViews) if (tov.getState().equals(view)) return tov;
 		return null;
 	}
 
@@ -169,11 +169,11 @@ public class TestImpl implements Test {
 		
 		if (this.equals(other)) throw new IllegalArgumentException("Argument cannot be equal to this");
 		
-		for (OnView thisOnView: getOnViews()) {
+		for (OnState thisOnView: getOnStates()) {
 			if (thisOnView.isNonvariant()) continue;
-			for (OnView otherOnView: other.getOnViews()) {
+			for (OnState otherOnView: other.getOnStates()) {
 				if (otherOnView.isNonvariant()) continue;
-				if (thisOnView.getView().equals(otherOnView.getView())) return false;
+				if (thisOnView.getState().equals(otherOnView.getState())) return false;
 			}
 		}
 		return true;

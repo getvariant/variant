@@ -12,7 +12,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 
 
@@ -204,7 +204,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		final Schema schema = engine.getSchema();
 		
 		// Verify views returned as a list.
-		List<View> actualViews = schema.getViews();
+		List<State> actualViews = schema.getViews();
 		assertEquals(expectedViews.length, actualViews.size());
 		verifyView(expectedViews[0], actualViews.get(0));
 		verifyView(expectedViews[1], actualViews.get(1));
@@ -231,7 +231,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		}
 		
 		// Instrumented tests.
-		View view = schema.getView("view1");
+		State view = schema.getView("view1");
 		ArrayList<com.variant.core.schema.Test> expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
 			add(schema.getTest("test1"));
 			add(schema.getTest("Test1"));
@@ -292,7 +292,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 	 * @param expectedView
 	 * @param actualView
 	 */
-	private static void verifyView(String[] expectedView, View actualView) {
+	private static void verifyView(String[] expectedView, State actualView) {
 		assertNotNull(actualView);
 		assertEquals(expectedView[0], actualView.getName());
 		assertEquals(expectedView[1], actualView.getPath());		
@@ -330,16 +330,16 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertEquals(test, exp.getTest());
 		
 		// OnViews
-		List<com.variant.core.schema.Test.OnView> actualOnViews = test.getOnViews();
+		List<com.variant.core.schema.Test.OnState> actualOnViews = test.getOnStates();
 		assertEquals(1, actualOnViews.size());
 
-		com.variant.core.schema.Test.OnView tov = actualOnViews.get(0);
+		com.variant.core.schema.Test.OnState tov = actualOnViews.get(0);
 		assertEquals(test, tov.getTest());
-		assertEquals(config.getView("view1"), tov.getView());
+		assertEquals(config.getView("view1"), tov.getState());
 		assertFalse(tov.isNonvariant());
-		List<com.variant.core.schema.Test.OnView.Variant> actualVariants =  tov.getVariants();
+		List<com.variant.core.schema.Test.OnState.Variant> actualVariants =  tov.getVariants();
 		assertEquals(2, actualVariants.size());
-		com.variant.core.schema.Test.OnView.Variant variant = actualVariants.get(0);
+		com.variant.core.schema.Test.OnState.Variant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("B"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
 		assertEquals("/path/to/view1/test1.B", variant.getPath());
@@ -378,23 +378,23 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertEquals(test, exp.getTest());
 		
 		// OnViews
-		List<com.variant.core.schema.Test.OnView> actualOnViews = test.getOnViews();
+		List<com.variant.core.schema.Test.OnState> actualOnViews = test.getOnStates();
 		assertEquals(3, actualOnViews.size());
 
-		com.variant.core.schema.Test.OnView tov = actualOnViews.get(0);
+		com.variant.core.schema.Test.OnState tov = actualOnViews.get(0);
 		assertEquals(test, tov.getTest());
-		assertEquals(config.getView("view3"), tov.getView());
+		assertEquals(config.getView("view3"), tov.getState());
 		assertFalse(tov.isNonvariant());
-		List<com.variant.core.schema.Test.OnView.Variant> actualVariants =  tov.getVariants();
+		List<com.variant.core.schema.Test.OnState.Variant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
-		com.variant.core.schema.Test.OnView.Variant variant = actualVariants.get(0);
+		com.variant.core.schema.Test.OnState.Variant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("D"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
 		assertEquals("/path/to/view3/test2.D", variant.getPath());
 
 		tov = actualOnViews.get(1);
 		assertEquals(test, tov.getTest());
-		assertEquals(config.getView("view2"), tov.getView());
+		assertEquals(config.getView("view2"), tov.getState());
 		assertFalse(tov.isNonvariant());
 		actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
@@ -405,7 +405,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		
 		tov = actualOnViews.get(2);
 		assertEquals(test, tov.getTest());
-		assertEquals(config.getView("view4"), tov.getView());
+		assertEquals(config.getView("view4"), tov.getState());
 		assertTrue(tov.isNonvariant());
 		assertTrue(tov.getVariants().isEmpty());
 
@@ -438,16 +438,16 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertEquals(test, exp.getTest());
 		
 		// OnViews
-		List<com.variant.core.schema.Test.OnView> actualOnViews = test.getOnViews();
+		List<com.variant.core.schema.Test.OnState> actualOnViews = test.getOnStates();
 		assertEquals(1, actualOnViews.size());
 
-		com.variant.core.schema.Test.OnView tov = actualOnViews.get(0);
+		com.variant.core.schema.Test.OnState tov = actualOnViews.get(0);
 		assertEquals(test, tov.getTest());
-		assertEquals(config.getView("view1"), tov.getView());
+		assertEquals(config.getView("view1"), tov.getState());
 		assertFalse(tov.isNonvariant());
-		List<com.variant.core.schema.Test.OnView.Variant> actualVariants =  tov.getVariants();
+		List<com.variant.core.schema.Test.OnState.Variant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
-		com.variant.core.schema.Test.OnView.Variant variant = actualVariants.get(0);
+		com.variant.core.schema.Test.OnState.Variant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("A"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
 		assertEquals("/path/to/view1/Test1.A", variant.getPath());

@@ -17,7 +17,7 @@ interface Keywords {
 	static String KEYWORD_IS_NONVARIANT             = "isNonvariant";
 	static String KEYWORD_IS_ON                     = "isOn";
 	static String KEYWORD_ON_VIEWS                  = "onViews";
-	static String KEYWORD_PATH                      = "path";
+	static String KEYWORD_PARAMETERS                = "parameters";
 	static String KEYWORD_TEST                      = "test";
 	static String KEYWORD_TEST_REF                  = "testRef";
 	static String KEYWORD_VARIANTS                  = "variants";

@@ -1,11 +1,12 @@
 package com.variant.core.impl;
 
 import java.util.Collection;
+import java.util.Map;
 
 import com.variant.core.impl.VariantRuntime;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 
 public class VariantRuntimeTestFacade {
 	
@@ -15,8 +16,8 @@ public class VariantRuntimeTestFacade {
 	 * @param vector
 	 * @return
 	 */
-	public static String resolveViewPath(View view, Collection<Experience> vector) {
-		return VariantRuntime.resolveViewPath(view, vector);
+	public static Map<String,String> resolveViewPath(State state, Collection<Experience> vector) {
+		return VariantRuntime.resolveState(state, vector);
 	}
 	
 	/**

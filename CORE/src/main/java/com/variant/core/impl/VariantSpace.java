@@ -10,8 +10,8 @@ import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.Test.OnView.Variant;
-import com.variant.core.schema.impl.TestOnViewImpl;
+import com.variant.core.schema.Test.OnState.Variant;
+import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -41,7 +41,7 @@ public class VariantSpace {
 	 * @param basis
 	 * @throws VariantRuntimeException 
 	 */
-	public VariantSpace(TestOnViewImpl tovImpl)  {
+	public VariantSpace(TestOnStateImpl tovImpl)  {
 		
 		if (tovImpl.isNonvariant()) 
 			throw new VariantInternalException("Cannot crate VariantSpace for an nonvariant Test.OnView instance");
@@ -71,7 +71,7 @@ public class VariantSpace {
 			else {
 				// 2nd and on test is a covariant test.  Skip it if it's not instrumented on this view or is nonvariant on this view.
 				// Otherwise, compute the cartеsian product of what's already in the table and this current tests's experience list.
-				if (!tovImpl.getView().isInstrumentedBy(t) || tovImpl.getView().isNonvariantIn(t)) continue;
+				if (!tovImpl.getState().isInstrumentedBy(t) || tovImpl.getState().isNonvariantIn(t)) continue;
 				for (Experience exp: t.getExperiences()) {
 					if (exp.isControl()) continue;
 					for (Coordinates oldKey: oldKeys) {
@@ -84,7 +84,7 @@ public class VariantSpace {
 		}
 		
 		// Pass 2. Add variants.
-		for (Test.OnView.Variant variant: tovImpl.getVariants()) {
+		for (Test.OnState.Variant variant: tovImpl.getVariants()) {
 
 			// Build coordinate experience list. Must be concurrent with the basis.
 			List<Experience> coordinateExperiences = new ArrayList<Experience>(basis.size());
@@ -111,7 +111,7 @@ public class VariantSpace {
 			if (p == null) {
 				throw new VariantInternalException(
 						"No point for coordinates [" + VariantStringUtils.toString(coordinateExperiences, ", ") + 
-						"] in test [" + variant.getTest().getName() + "] and view [" + variant.getOnView().getView().getName() + "]");
+						"] in test [" + variant.getTest().getName() + "] and view [" + variant.getOnState().getState().getName() + "]");
 			}
 			if (p.variant != null)
 				throw new VariantInternalException("Variant already added");

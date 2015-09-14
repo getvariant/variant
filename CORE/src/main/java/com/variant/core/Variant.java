@@ -5,7 +5,7 @@ import java.io.InputStream;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.TestParsedEventListener;
 import com.variant.core.schema.parser.ViewParsedEventListener;
@@ -105,7 +105,7 @@ public interface Variant {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public VariantViewRequest startViewRequest(VariantSession session, View view, Object targetingPersisterUserData);
+	public VariantViewRequest startViewRequest(VariantSession session, State view, Object targetingPersisterUserData);
 	
 	/**
 	 * Commit of a view request.

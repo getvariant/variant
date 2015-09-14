@@ -11,7 +11,7 @@ import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 
 
@@ -121,7 +121,7 @@ public class VariantWeb {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public static VariantViewRequest startViewRequest(View view, HttpServletRequest request) {
+	public static VariantViewRequest startViewRequest(State view, HttpServletRequest request) {
 		getSchema().registerCustomViewSelectorByPath(new ViewSelectorByRequestPath());
 		return engine.startViewRequest(getSession(request), view, request);
 	}

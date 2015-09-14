@@ -1,6 +1,7 @@
 package com.variant.core.schema;
 
 import java.util.List;
+import java.util.Map;
 
 import com.variant.core.VariantSession;
 
@@ -12,7 +13,7 @@ import com.variant.core.VariantSession;
 public interface Test {
 
 	/**
-	 * View's declared name
+	 * Test name
 	 * @return
 	 */
 	public String getName();	
@@ -53,16 +54,16 @@ public interface Test {
 	public int getIdleDaysToLive();
 	
 	/**
-	 * A list of all view instrumentations for this Test, in the order they were declared.
+	 * A list of all state instrumentations for this Test, in the order they were declared.
 	 * @return
 	 */
-	public List<OnView> getOnViews();
+	public List<OnState> getOnStates();
 
 	/**
 	 * The view instrumentation for this Test, on a particular view.
 	 * @return the OnView object or null if this test is not instrumented on this view.
 	 */
-	public OnView getOnView(View view);
+	public OnState getOnView(State view);
 
 	/**
 	 * Is this test disjoint with the other test?
@@ -133,19 +134,19 @@ public interface Test {
 	}
 
 	/**
-	 * In-memory representation of a test instrumentation on a particular view.
-	 * Corresponds to an element of the test/onViews configuration list.
+	 * In-memory representation of a test instrumentation on a particular state.
+	 * Corresponds to an element of the test/onStates configuration list.
 	 * 
 	 * @author Igor
 	 *
 	 */
-	public static interface OnView {
+	public static interface OnState {
 		
 		/**
-		 * The view this instrumentation is on.
+		 * The state this instrumentation is on.
 		 * @return
 		 */
-		public View getView();
+		public State getState();
 		
 		/**
 		 * The test this instrumentation is for.
@@ -167,22 +168,20 @@ public interface Test {
 
 		/**
 		 * In-memory representation of an instrumentation variant.
-		 * Corresponds to an element of the test/onViews/variants configuration list.
-		 * 
-		 * @author Igor
+		 * Corresponds to an element of the test/onStates/variants configuration list.
 		 *
 		 */
 		public static interface Variant {
 			
 			/**
-			 * The Test.OnView object this Variant belongs to.
+			 * The Test.OnState object this Variant belongs to.
 			 * @return
 			 */
-			public OnView getOnView();
+			public OnState getOnState();
 
 			/**
 			 * The test within which this variant is defined. Equivalent to calling
-			 * <code>getOnView().getTest()</code>
+			 * <code>getOnState().getTest()</code>
 			 * @return
 			 */
 			public Test getTest();
@@ -204,14 +203,13 @@ public interface Test {
 			 * Resource path corresponding to this test variant.
 			 * @return
 			 */
-			public String getPath();
-		}
+			public Map<String,String> getParameterMap();
+		
+		}	
 	}
 	
 	/**
 	 * Custom targeter implements this interface.
-	 * @author Igor
-	 * 
 	 */
 	public static interface Targeter {
 		

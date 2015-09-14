@@ -2,29 +2,30 @@ package com.variant.core.schema.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.Test.OnView;
+import com.variant.core.schema.Test.OnState;
 
 
-class TestOnViewVariantImpl implements Test.OnView.Variant{
+class TestOnViewVariantImpl implements Test.OnState.Variant{
 
-	private TestOnViewImpl onViewImpl;
+	private TestOnStateImpl onViewImpl;
 	private TestExperienceImpl ownExperience;
 	private List<TestExperienceImpl> covarExperiences;
-	private String path;
+	private Map<String,String> params;
 	
 	/**
 	 * @param onView
 	 * @param experiences
 	 * @param path
 	 */
-	TestOnViewVariantImpl(TestOnViewImpl onViewImpl, TestExperienceImpl ownExperience, List<TestExperienceImpl> covarExperiences, String path) {
+	TestOnViewVariantImpl(TestOnStateImpl onViewImpl, TestExperienceImpl ownExperience, List<TestExperienceImpl> covarExperiences, Map<String,String> params) {
 		this.onViewImpl = onViewImpl;
 		this.ownExperience = ownExperience;
 		this.covarExperiences = covarExperiences;
-		this.path = path;
+		this.params = params;
 	}
 
 	/**
@@ -44,7 +45,7 @@ class TestOnViewVariantImpl implements Test.OnView.Variant{
 	 * @return
 	 */
 	@Override
-	public OnView getOnView() {
+	public OnState getOnState() {
 		return onViewImpl;
 	}
 
@@ -61,8 +62,8 @@ class TestOnViewVariantImpl implements Test.OnView.Variant{
 	 * @return
 	 */
 	@Override
-	public String getPath() {
-		return path;
+	public Map<String, String> getParameterMap() {
+		return params;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -78,4 +79,5 @@ class TestOnViewVariantImpl implements Test.OnView.Variant{
 	public Experience getExperience() {
 		return ownExperience;
 	}
+
 }

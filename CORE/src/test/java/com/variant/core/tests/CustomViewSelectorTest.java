@@ -6,9 +6,9 @@ import java.util.Collection;
 
 import org.junit.Test;
 
-import com.variant.core.ViewSelectorByPath;
+import com.variant.core.StateSelector;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 
 /**
@@ -50,11 +50,11 @@ public class CustomViewSelectorTest extends BaseTest {
 	/**
 	 * 
 	 */
-	private static class CaseInsensitiveMatcher implements ViewSelectorByPath {
+	private static class CaseInsensitiveMatcher implements StateSelector {
 
 		@Override
-		public View select(String path, Collection<View> views) {
-			for (View v: views) {
+		public State select(String path, Collection<State> views) {
+			for (State v: views) {
 				if (v.getPath().equalsIgnoreCase(path)) return v;
 			}
 			return null;

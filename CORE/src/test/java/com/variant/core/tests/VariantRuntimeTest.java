@@ -12,11 +12,11 @@ import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantRuntimeTestFacade;
-import com.variant.core.impl.ViewServeEvent;
+import com.variant.core.impl.StateServeEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.util.VariantCollectionsUtils;
@@ -45,11 +45,11 @@ public class VariantRuntimeTest extends BaseTest {
 		final Test test5 = schema.getTest("test5");
 		final Test test6 = schema.getTest("test6");
 
-		final View view1 = schema.getView("view1");
-		final View view2 = schema.getView("view2");
-		final View view3 = schema.getView("view3");
-		final View view4 = schema.getView("view4");
-		final View view5 = schema.getView("view5");
+		final State view1 = schema.getView("view1");
+		final State view2 = schema.getView("view2");
+		final State view3 = schema.getView("view3");
+		final State view4 = schema.getView("view4");
+		final State view5 = schema.getView("view5");
 
 		//
 		// View resolutions
@@ -1073,7 +1073,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();
-		View view1 = schema.getView("view1");
+		State view1 = schema.getView("view1");
 		long timestamp = System.currentTimeMillis();
 		String persisterString = timestamp + ".test2.B";
 		VariantSession ssn = engine.getSession("foo-key");
@@ -1090,10 +1090,10 @@ public class VariantRuntimeTest extends BaseTest {
 		System.out.println(req.resolvedViewPath());
 		assertMatches("/path/to/view1(/test3\\.[B,C])?", req.resolvedViewPath());
 		assertEquals(ssn, req.getSession());
-		assertEquals(view1, req.getView());
+		assertEquals(view1, req.getState());
 		
 		// View Serve Event.
-		ViewServeEvent event = req.getViewServeEvent();
+		StateServeEvent event = req.getViewServeEvent();
 		assertEquals(2, event.getEventExperiences().size());
 		int index = 0;
 		for (VariantEventExperience ee: event.getEventExperiences()) {

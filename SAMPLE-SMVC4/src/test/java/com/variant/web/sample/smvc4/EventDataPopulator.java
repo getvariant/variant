@@ -11,14 +11,14 @@ import com.variant.core.VariantSession;
 import com.variant.core.VariantViewRequest;
 import com.variant.core.jdbc.JdbcUtil;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.web.VariantWeb;
 
 public class EventDataPopulator {
 
-	private static final int SESSION_COUNT = 1000;
+	private static final int COUNT = 10000;
 	
 	@Test
 	public void populate() throws Exception {
@@ -38,26 +38,32 @@ public class EventDataPopulator {
 		Schema schema = VariantWeb.getSchema();
 		com.variant.core.schema.Test test = schema.getTest("NewOwnerTest");
 		assertNotNull(test);
-		View newOwnerView = schema.getView("newOwner");
+		State newOwnerView = schema.getView("newOwner");
 		assertNotNull(newOwnerView);
-		View ownerDetailView = schema.getView("ownerDetail");
+		State ownerDetailView = schema.getView("ownerDetail");
 		assertNotNull(ownerDetailView);
-
-		for (int i= 0; i < SESSION_COUNT; i++) {
+		int ssnId = 1;
+		for (int i = 0; i < COUNT; i++) {
 			
-			VariantSession ssn = Variant.Factory.getInstance().getSession(String.valueOf(i));
+			VariantSession ssn = Variant.Factory.getInstance().getSession(String.valueOf(ssnId++));
 			
 			// Everyone gets to the first page... Emulating new visits.
 			VariantViewRequest request = Variant.Factory.getInstance().startViewRequest(ssn, newOwnerView, "");
 			Variant.Factory.getInstance().commitViewRequest(request, null);
 			
-			// Some variant experiences don't get to the next page, simulating drop-off.
-			if (nextBoolean(0.95)) {
+			// Some experiences don't get to the next page, simulating drop-off.
+			com.variant.core.schema.Test.Experience exp = request.getTargetedExperience(test);
+			boolean skip = false;
+			if      (exp.getName().equals("outOfTheBox"))      skip = nextBoolean(0.05);
+			else if (exp.getName().equals("tosCheckbox"))      skip = nextBoolean(0.1);
+			else if (exp.getName().equals("tos&mailCheckbox")) skip = nextBoolean(0.15);
+			
+			if (!skip) {
 				request = Variant.Factory.getInstance().startViewRequest(ssn, ownerDetailView, request.getTargetingPersister().toString());
 				Variant.Factory.getInstance().commitViewRequest(request, null);
 			}
+			Thread.sleep(rand.nextInt(10));
 		}
-		
 		
 		
 		// Hang on a bit so that Junit doesn't kill the writer thread when this method is over.

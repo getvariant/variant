@@ -3,16 +3,16 @@ package com.variant.web;
 import java.util.Collection;
 import java.util.regex.Pattern;
 
-import com.variant.core.ViewSelectorByPath;
+import com.variant.core.StateSelector;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.schema.View;
+import com.variant.core.schema.State;
 
 /**
  * 
  * @author Igor
  *
  */
-public class ViewSelectorByRequestPath implements ViewSelectorByPath {
+public class ViewSelectorByRequestPath implements StateSelector {
 
 	/**
 	 * This implements the whole path matching logic.
@@ -80,8 +80,8 @@ public class ViewSelectorByRequestPath implements ViewSelectorByPath {
 	 * Return the first matching.
 	 */
 	@Override
-	public View select(String path, Collection<View> views) {
-		for (View view: views) {
+	public State select(String path, Collection<State> views) {
+		for (State view: views) {
 			if (match(view.getPath(), path)) return view;
 		}
 		return null;
