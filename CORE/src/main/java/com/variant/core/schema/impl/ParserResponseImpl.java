@@ -76,21 +76,28 @@ public class ParserResponseImpl implements ParserResponse {
 	 * 
 	 * @param error
 	 */
-	public void addError(MessageTemplate template, int line, int column, String...args) {
+	public ParserMessage addError(MessageTemplate template, int line, int column, String...args) {
+		
+		ParserMessage result;
+		
 		if (template.equals(MessageTemplate.PARSER_JSON_PARSE)) {
-			messages.add(new SyntaxError(template, line, column, args));
+			result = new SyntaxError(template, line, column, args);
 		}
 		else {
-			messages.add(new ParserMessage(template, line, column, args));
+			result = new ParserMessage(template, line, column, args);
 		}
+		messages.add(result);
+		return result;
 	}
 	
 	/**
 	 * 
 	 * @param error
 	 */
-	public void addError(MessageTemplate template, String...args) {
-		messages.add(new ParserMessage(template, args));
+	public ParserMessage addError(MessageTemplate template, String...args) {
+		ParserMessage result = new ParserMessage(template, args);
+		messages.add(result);
+		return result;
 	}
 
 }

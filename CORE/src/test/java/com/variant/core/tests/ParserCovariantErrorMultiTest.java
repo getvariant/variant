@@ -30,17 +30,23 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
-			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view2',                              \n" +
-			    "        'name':'view2'                                        \n" +
-			    "     },                                                       \n" +
-			    "     {  'name':'view3',                                       \n" +
-			    "        'path':'/path/to/view3'                               \n" +
-			    "     }                                                        \n" +
-			    "  ],                                                          \n" +
+				"   'states':[                                                  \n" +
+				"     {  'name':'state1',                                       \n" +
+				"        'parameters':{                                         \n" +
+				"           'path':'/path/to/state1'                            \n" +
+				"        }                                                      \n" +
+				"     },                                                        \n" +
+				"     {                                                         \n" +
+				"        'parameters':                                          \n" +
+				"        {  'path':'/path/to/state2' },                         \n" +
+				"        'name':'state2'                                        \n" +
+				"     },                                                       \n" +
+				"     {  'name':'state3',                                       \n" +
+				"        'parameters':{                                         \n" +
+				"           'path':'/path/to/state3'                            \n" +
+				"        }                                                      \n" +
+				"     }                                                        \n" +
+				"  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
@@ -59,21 +65,25 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "              'weight':30                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view2',                              \n" +
+			    "              'stateRef':'state2',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view2/test1.B'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B'           \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'path':'/path/to/view2/test1.C'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C'           \n" +
+			    "                    }                                            \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -97,35 +107,43 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "              'weight':30                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view1/test1.B'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test1.B'           \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'path':'/path/to/view1/test1.C'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test1.C'           \n" +
+			    "                   }                                            \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view2',                              \n" +
+			    "              'stateRef':'state2',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view2/test1.B'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B'           \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'path':'/path/to/view2/test1.C'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C'           \n" +
+			    "                    }                                            \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view3',                              \n" +
+			    "              'stateRef':'state3',                              \n" +
 			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
@@ -149,13 +167,15 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "              'weight':30                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view1/test3.B'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test3.B'           \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -165,7 +185,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view1/test2.B+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test2.B+test3.B'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -175,11 +197,15 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view1/test2.C+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test2.C+test3.B'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'path':'/path/to/view1/test1.C'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                       'path':'/path/to/state1/test1.C'           \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -189,7 +215,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view1/test2.B+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test2.B+test3.C'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -199,16 +227,20 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test2.C+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test2.C+test3.C'   \n" +
+			    "                    }                                           \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view2',                              \n" +
+			    "              'stateRef':'state2',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view2/test3.B'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test3.B'           \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -218,7 +250,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test3.B'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -228,7 +262,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test3.B'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -238,7 +274,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test2.B+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test2.B+test3.B'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -248,21 +286,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test2.C+test3.B'   \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test2.B+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test2.C+test3.B'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -273,10 +299,28 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                       },                                     \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.B+test3.B'   \n" +
+			    "                    }                                           \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'B',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       },                                     \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test2.C+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.C+test3.B'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -290,7 +334,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test2.B+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.B+test3.B'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -304,12 +350,16 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test2.C+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.C+test3.B'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'path':'/path/to/view2/test3.C'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test3.C'           \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -319,7 +369,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test3.C'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -329,7 +381,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test3.C'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -339,7 +393,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test2.B+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test2.B+test3.C'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -349,21 +405,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test2.C+test3.C'   \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test2.B+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test2.C+test3.C'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -374,10 +418,28 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                       },                                     \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.B+test3.C'   \n" +
+			    "                    }                                           \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'C',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       },                                     \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test2.C+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.C+test3.C'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -391,7 +453,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test2.B+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.B+test3.C'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -405,7 +469,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test2.C+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.C+test3.C'   \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    // DUPE:
 			    "                 {                                            \n" +
@@ -420,12 +486,14 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test2.B+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.B+test3.C'   \n" +
+			    "                    }                                           \n" +
 			    "                 }                                           \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view3',                              \n" +
+			    "              'stateRef':'state3',                              \n" +
 			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
@@ -440,7 +508,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_DUPE, "test1.B, test2.B", "test3", "view2", "C").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_DUPE, "test1.B, test2.B", "test3", "state2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -455,17 +523,23 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
-			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view2',                              \n" +
-			    "        'name':'view2'                                        \n" +
-			    "     },                                                       \n" +
-			    "     {  'name':'view3',                                       \n" +
-			    "        'path':'/path/to/view3'                               \n" +
-			    "     }                                                        \n" +
-			    "  ],                                                          \n" +
+				"   'states':[                                                  \n" +
+				"     {  'name':'state1',                                       \n" +
+				"        'parameters':{                                         \n" +
+				"           'path':'/path/to/state1'                            \n" +
+				"        }                                                      \n" +
+				"     },                                                        \n" +
+				"     {                                                         \n" +
+				"        'parameters':                                          \n" +
+				"        {  'path':'/path/to/state2' },                         \n" +
+				"        'name':'state2'                                        \n" +
+				"     },                                                       \n" +
+				"     {  'name':'state3',                                       \n" +
+				"        'parameters':{                                         \n" +
+				"           'path':'/path/to/state3'                            \n" +
+				"        }                                                      \n" +
+				"     }                                                        \n" +
+				"  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
@@ -484,21 +558,25 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "              'weight':30                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'isNonvariant':true                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view2',                              \n" +
+			    "              'stateRef':'state2',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view2/test1.B'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B'           \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'path':'/path/to/view2/test1.C'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C'           \n" +
+			    "                    }                                            \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -522,35 +600,43 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "              'weight':30                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view1/test1.B'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test1.B'           \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'path':'/path/to/view1/test1.C'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test1.C'           \n" +
+			    "                    }                                            \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view2',                              \n" +
+			    "              'stateRef':'state2',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view2/test1.B'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B'           \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'path':'/path/to/view2/test1.C'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C'           \n" +
+			    "                    }                                            \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view3',                              \n" +
+			    "              'stateRef':'state3',                              \n" +
 			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
@@ -574,13 +660,15 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "              'weight':30                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view1/test3.B'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test3.B'           \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -590,7 +678,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view1/test2.B+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test2.B+test3.B'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -600,11 +690,15 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view1/test2.C+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test2.C+test3.B'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'path':'/path/to/view1/test1.C'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test1.C'           \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -614,7 +708,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view1/test2.B+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state1/test2.B+test3.C'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -624,16 +720,20 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test2.C+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test2.C+test3.C'   \n" +
+			    "                    }                                            \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view2',                              \n" +
+			    "              'stateRef':'state2',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view2/test3.B'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test3.B'           \n" +
+			    "                    }                                           \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -643,7 +743,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test3.B'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -653,7 +755,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test3.B'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -663,7 +767,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test2.B+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test2.B+test3.B'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -673,21 +779,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test2.C+test3.B'   \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test2.B+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test2.C+test3.B'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -698,10 +792,28 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                       },                                     \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.B+test3.B'   \n" +
+			    "                    }                                            \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'B',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       },                                     \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test2.C+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.C+test3.B'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -715,7 +827,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test2.B+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.B+test3.B'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -729,12 +843,16 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test2.C+test3.B'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.C+test3.B'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'path':'/path/to/view2/test3.C'           \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test3.C'           \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -744,7 +862,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test3.C'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -754,7 +874,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test3.C'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -764,7 +886,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test2.B+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test2.B+test3.C'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -774,7 +898,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test2.C+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test2.C+test3.C'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -788,7 +914,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test2.B+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.B+test3.C'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -802,7 +930,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.B+test2.C+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.C+test3.C'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -816,7 +946,9 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test2.B+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.B+test3.C'   \n" +
+			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -830,12 +962,14 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
-			    "                    'path':'/path/to/view2/test1.C+test2.C+test3.C'   \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.C+test3.C'   \n" +
+			    "                    }                                            \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view3',                              \n" +
+			    "              'stateRef':'state3',                              \n" +
 			    "              'isNonvariant':true                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
@@ -850,10 +984,10 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(PARSER_COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "view2", "C").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(PARSER_COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "state2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_MISSING, "test1.B,test2.B", "test3", "view2", "C").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_MISSING, "test1.B,test2.B", "test3", "state2", "C").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}

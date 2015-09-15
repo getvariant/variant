@@ -4,6 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,12 +15,15 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.MessageTemplate;
+import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.schema.parser.TestParsedEventListener;
 import com.variant.core.schema.parser.ViewParsedEventListener;
 import com.variant.core.util.VariantStringUtils;
 
-public class SchemaParser {
+public class SchemaParser implements Keywords {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SchemaParser.class);
 	
 	/**
 	 * Convert JsonParseException to ParserError.
@@ -88,8 +94,9 @@ public class SchemaParser {
 		catch(JsonParseException parseException) {
 			toParserError(parseException, configAsJsonString, response);
 		} 
-		catch (Exception exception) {
-			response.addError(MessageTemplate.INTERNAL, exception.getMessage());
+		catch (Exception e) {
+			ParserMessage err = response.addError(MessageTemplate.INTERNAL, e.getMessage());
+			LOG.error(err.getMessage(), e);
 		}
 		
 		if (response.highestMessageSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
@@ -99,7 +106,7 @@ public class SchemaParser {
 		
 		// Pass 1. Uppercase all the expected clauses to support case insensitive key words.
 		for (Map.Entry<String, ?> entry: cbb.entrySet()) {
-			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), "views", "tests")) {
+			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_STATES, KEYWORD_TESTS)) {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {
@@ -108,9 +115,9 @@ public class SchemaParser {
 		}
 		
 		// Pass2. Look at all clauses.  Expected ones are already uppercased.
-		Object views = cleanMap.get("VIEWS");
+		Object views = cleanMap.get(KEYWORD_STATES.toUpperCase());
 		if (views == null) {
-			response.addError(MessageTemplate.PARSER_NO_VIEWS_CLAUSE);
+			response.addError(MessageTemplate.PARSER_NO_STATES_CLAUSE);
 		}
 		else {
 			StatesParser.parseViews(views, response);
@@ -130,7 +137,7 @@ public class SchemaParser {
 
 		if (response.highestMessageSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
 
-		Object tests = cleanMap.get("TESTS");
+		Object tests = cleanMap.get(KEYWORD_TESTS.toUpperCase());
 		if (tests == null) {
 			response.addError(MessageTemplate.PARSER_NO_TESTS_CLAUSE);
 		}

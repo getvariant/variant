@@ -1,9 +1,14 @@
 package com.variant.core.schema.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.variant.core.schema.State;
+import com.variant.core.schema.parser.ParserMessage;
 
 import static com.variant.core.schema.parser.MessageTemplate.*;
 
@@ -14,6 +19,8 @@ import static com.variant.core.schema.parser.MessageTemplate.*;
  */
 public class StatesParser implements Keywords {
 
+	private static final Logger LOG = LoggerFactory.getLogger(StatesParser.class);
+			
 	/**
 	 * Parse the VIEWS clause.
 	 * @param result
@@ -38,7 +45,8 @@ public class StatesParser implements Keywords {
 			}
 		}
 		catch (Exception e) {
-			response.addError(INTERNAL, e.getMessage());
+			ParserMessage err = response.addError(INTERNAL, e.getMessage());
+			LOG.error(err.getMessage(), e);
 		}
 		
 	}
@@ -98,9 +106,9 @@ public class StatesParser implements Keywords {
 		
 		if (params == null) {
 			response.addError(PARSER_STATE_PARAMS_MISSING, name);
+			params = new HashMap<String,String>();
 		}
-
-		if (params.size() == 0) {
+		else if (params.size() == 0) {
 			response.addError(PARSER_STATE_PARAMS_EMPTY, name);
 		}
 

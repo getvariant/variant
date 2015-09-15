@@ -32,6 +32,7 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.State;
 import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
+import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.schema.parser.TestParsedEventListener;
@@ -278,9 +279,9 @@ public class VariantCoreImpl implements Variant {
 			response = SchemaParser.parse(schemaAsStringNoComments.toString(), viewParsedEventListeners, testParsedEventListeners);
 		}
 		catch (Throwable t) {
-			LOG.error(t.getMessage(), t);
 			response = new ParserResponseImpl();
-			response.addError(INTERNAL, t.getMessage() + ". See log for details.");
+			ParserMessage err = response.addError(INTERNAL, t.getMessage());
+			LOG.error(err.getMessage(), t);
 		}
 
 		// Only replace the schema if no ERROR or higher level errors.

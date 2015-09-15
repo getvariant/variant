@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -19,6 +22,8 @@ import com.variant.core.util.VariantStringUtils;
  *
  */
 public class TestsParser implements Keywords {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(TestsParser.class);
 	
 	/**
 	 * @param result
@@ -32,7 +37,8 @@ public class TestsParser implements Keywords {
 			rawTests = (List<Map<String, ?>>) testsObject;
 		}
 		catch (Exception e) {
-			response.addError(INTERNAL, e.getMessage());
+			ParserMessage err = response.addError(INTERNAL, e.getMessage());
+			LOG.error(err.getMessage(), e);
 		}
 		
 		if (rawTests.size() == 0) {
@@ -206,15 +212,15 @@ public class TestsParser implements Keywords {
 			
 			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS, KEYWORD_IS_ON, KEYWORD_IDLE_DAYS_TO_LIVE)) continue;
 
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_VIEWS)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_STATES)) {
 				Object onViewsObject = entry.getValue();
 				if (! (onViewsObject instanceof List)) {
-					response.addError(PARSER_ONVIEWS_NOT_LIST, name);
+					response.addError(PARSER_ONSTATES_NOT_LIST, name);
 				}
 				else {
 					List<?> rawOnViews = (List<?>) onViewsObject;
 					if (rawOnViews.size() == 0) {
-						response.addError(PARSER_ONVIEWS_LIST_EMPTY, name);						
+						response.addError(PARSER_ONSTATES_LIST_EMPTY, name);						
 					}
 					else {
 						for (Object testOnViewObject: rawOnViews) {
@@ -223,7 +229,7 @@ public class TestsParser implements Keywords {
 								boolean dupe = false;
 								for (Test.OnState newTov: onViews) {
 									if (tov.getState().equals(newTov.getState())) {
-										response.addError(PARSER_VIEWREF_DUPE, newTov.getState().getName(), name);
+										response.addError(PARSER_STATEREF_DUPE, newTov.getState().getName(), name);
 										dupe = true;
 										break;
 									}
@@ -343,33 +349,33 @@ public class TestsParser implements Keywords {
 			rawTestOnView = (Map<String, Object>) testOnViewObject;
 		}
 		catch (Exception e) {
-			response.addError(PARSER_ONVIEW_NOT_OBJECT, test.getName());
+			response.addError(PARSER_ONSTATES_NOT_OBJECT, test.getName());
 			return null;
 		}
 		
 		// Pass 1. Figure out the experienceRef
 		String stateRef = null;
 		for (Map.Entry<String, Object> entry: rawTestOnView.entrySet()) {
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_VIEW_REF)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_STATE_REF)) {
 				try {
 					stateRef = (String) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addError(PARSER_VIEWREF_NOT_STRING, test.getName());
+					response.addError(PARSER_STATEREF_NOT_STRING, test.getName());
 					return null;
 				}
 			}
 		}
 		
 		if (stateRef == null) {
-			response.addError(PARSER_VIEWREF_MISSING, test.getName());
+			response.addError(PARSER_STATEREF_MISSING, test.getName());
 			return null;
 		}
 		
 		// The state must exist.
 		StateImpl refState = (StateImpl) response.getSchema().getState(stateRef);
 		if (refState == null) {
-			response.addError(PARSER_VIEWREF_UNDEFINED, stateRef, test.getName());
+			response.addError(PARSER_STATEREF_UNDEFINED, stateRef, test.getName());
 			return null;
 		}
 		
@@ -379,7 +385,7 @@ public class TestsParser implements Keywords {
 		List<Object> rawVariants = null;
 		
 		for (Map.Entry<String, Object> entry: rawTestOnView.entrySet()) {
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_VIEW_REF)) continue;
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_STATE_REF)) continue;
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_IS_NONVARIANT)) {
 				boolean isNonvariant = false;

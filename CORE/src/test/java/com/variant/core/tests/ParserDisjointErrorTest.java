@@ -90,7 +90,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(2, response.getMessages().size());
 
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_NO_VIEWS_CLAUSE).getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_NO_STATES_CLAUSE).getMessage(), error.getMessage());
 		assertEquals(Severity.INFO, error.getSeverity());
 
 		error = response.getMessages().get(1);
@@ -143,7 +143,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(2, response.getMessages().size());
 
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_NO_VIEWS_CLAUSE).getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_NO_STATES_CLAUSE).getMessage(), error.getMessage());
 		assertEquals(Severity.INFO, error.getSeverity());
 
 		error = response.getMessages().get(1);
