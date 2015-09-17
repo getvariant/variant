@@ -27,12 +27,16 @@ public class TargetingTest extends BaseTest {
 
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+			    "        'parameters':{                                        \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+			    "     {  'name':'state2',                                      \n" +
+			    "        'parameters':{                                        \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        }                                                     \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -53,17 +57,21 @@ public class TargetingTest extends BaseTest {
 			    "              'weight':97                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view1/test1.B'           \n" +
+			    "                    'parameters':{                            \n" +
+			    "                       'path':'/path/to/state1/test1.B'       \n" +
+			    "                    }                                         \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'path':'/path/to/view1/test1.C'           \n" +
+			    "                    'parameters':{                            \n" +
+			    "                       'path':'/path/to/state1/test1.C'       \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -73,7 +81,7 @@ public class TargetingTest extends BaseTest {
 			    "}                                                             \n";
 		
 		ParserResponse response = engine.parseSchema(config);
-
+printErrors(response);
 		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();

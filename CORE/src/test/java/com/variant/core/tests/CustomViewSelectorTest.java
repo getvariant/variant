@@ -1,5 +1,5 @@
 package com.variant.core.tests;
-
+/*
 import static org.junit.Assert.*;
 
 import java.util.Collection;
@@ -15,7 +15,7 @@ import com.variant.core.schema.parser.ParserResponse;
  * 
  * @author Igor
  *
- */
+ *
 public class CustomViewSelectorTest extends BaseTest {
 	
 	@Test
@@ -49,7 +49,7 @@ public class CustomViewSelectorTest extends BaseTest {
 	
 	/**
 	 * 
-	 */
+	 *
 	private static class CaseInsensitiveMatcher implements StateSelector {
 
 		@Override
@@ -62,3 +62,4 @@ public class CustomViewSelectorTest extends BaseTest {
 		
 	}
 }
+*/

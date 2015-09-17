@@ -28,7 +28,7 @@ public class ParserEventListenerTest extends BaseTest {
 		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printErrors(response);
 		assertFalse(response.hasMessages());
-		assertEquals(variant.getSchema().getViews(), listener.viewList);
+		assertEquals(variant.getSchema().getStates(), listener.viewList);
 		
 	}
 

@@ -105,13 +105,13 @@ public interface Variant {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public VariantViewRequest startViewRequest(VariantSession session, State view, Object targetingPersisterUserData);
+	public VariantViewRequest newStateRequest(VariantSession session, State view, Object targetingPersisterUserData);
 	
 	/**
 	 * Commit of a view request.
 	 * @param request
 	 */
-	public void commitViewRequest(VariantViewRequest request, Object sessionIdPersisterUserData);
+	public void commitStateRequest(VariantViewRequest request, Object sessionIdPersisterUserData);
 		
 	/**
 	 * Factory singleton class.

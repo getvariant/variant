@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
+import java.util.Map;
 
 import com.variant.core.VariantEventExperience;
 import com.variant.core.VariantSession;
@@ -45,66 +46,66 @@ public class VariantRuntimeTest extends BaseTest {
 		final Test test5 = schema.getTest("test5");
 		final Test test6 = schema.getTest("test6");
 
-		final State view1 = schema.getView("view1");
-		final State view2 = schema.getView("view2");
-		final State view3 = schema.getView("view3");
-		final State view4 = schema.getView("view4");
-		final State view5 = schema.getView("view5");
+		final State state1 = schema.getState("state1");
+		final State state2 = schema.getState("state2");
+		final State state3 = schema.getState("state3");
+		final State state4 = schema.getState("state4");
+		final State state5 = schema.getState("state5");
 
 		//
 		// View resolutions
 		//
 		
-		// view1
+		// state1
 
-		String path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		Map<String,String> params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A")   // control, not instrumented
 				)
 		);
-		assertEquals("/path/to/view1", path);
+		assertEquals("/path/to/state1", params.get("path"));
 		
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.B")   // not instrumented
 				)
 		);
-		assertEquals("/path/to/view1", path);
+		assertEquals("/path/to/state1", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
 						experience("test2.A")   // nonvariant.
 				)
 		);
-		assertEquals("/path/to/view1", path);
+		assertEquals("/path/to/state1", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
 						experience("test2.B")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view1", path);
+		assertEquals("/path/to/state1", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
 						experience("test2.B"),  // nonvariant
 						experience("test3.A")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view1", path);
+		assertEquals("/path/to/state1", params.get("path"));
 		
 		boolean thrown = false;
 		try {
-			VariantRuntimeTestFacade.resolveViewPath(
-					view1, 
+			VariantRuntimeTestFacade.resolveState(
+					state1, 
 					VariantCollectionsUtils.list(
 							experience("test1.A"),  // not instrumented
 							experience("test2.B"),  // nonvariant
@@ -119,8 +120,8 @@ public class VariantRuntimeTest extends BaseTest {
 		}
 		assertTrue(thrown);
 		
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // not instrumented
 						experience("test2.B"),  // nonvariant
@@ -128,10 +129,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test4.B")   // variant
 				)
 		);
-		assertEquals("/path/to/view1/test4.B", path);
+		assertEquals("/path/to/state1/test4.B", params.get("path"));
 		
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
 						experience("test2.B"),  // nonvariant
@@ -139,10 +140,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A")   // control, nonvariant
 				)
 		);
-		assertEquals("/path/to/view1/test4.B", path);
+		assertEquals("/path/to/state1/test4.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
 						experience("test2.B"),  // nonvariant
@@ -151,10 +152,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A")   // control, nonvariant
 				)
 		);
-		assertEquals("/path/to/view1/test4.B+test6.C", path);
+		assertEquals("/path/to/state1/test4.B+test6.C", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
 						experience("test2.B"),  // nonvariant
@@ -163,10 +164,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A")   // control, nonvariant
 				)
 		);
-		assertEquals("/path/to/view1/test4.B+test6.B", path);
+		assertEquals("/path/to/state1/test4.B+test6.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.A"),  // control
 						experience("test2.B"),  // nonvariant
@@ -174,10 +175,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.B")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view1/test5.C", path);
+		assertEquals("/path/to/state1/test5.C", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // variant
 						experience("test2.B"),  // nonvariant
@@ -185,10 +186,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.B")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view1/test4.C+test5.C", path);
+		assertEquals("/path/to/state1/test4.C+test5.C", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test6.A"),  // control
 						experience("test4.C"),  // variant
@@ -197,10 +198,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.B")   // variant
 				)
 		);
-		assertEquals("/path/to/view1/test4.C+test5.C", path);
+		assertEquals("/path/to/state1/test4.C+test5.C", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view1, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // variant
 						experience("test6.B"),  // variant
@@ -209,59 +210,59 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.B")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view1/test4.C+test5.C+test6.B", path);
+		assertEquals("/path/to/state1/test4.C+test5.C+test6.B", params.get("path"));
 
 		
-		// view2
+		// state2
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A")   // control
 				)
 		);
-		assertEquals("/path/to/view2", path);
+		assertEquals("/path/to/state2", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.B")   // variant
 				)
 		);
-		assertEquals("/path/to/view2/test1.B", path);
+		assertEquals("/path/to/state2/test1.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
 						experience("test2.B")   // variant
 				)
 		);
-		assertEquals("/path/to/view2/test2.B", path);
+		assertEquals("/path/to/state2/test2.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
 						experience("test2.A")   // control
 				)
 		);
-		assertEquals("/path/to/view2", path);
+		assertEquals("/path/to/state2", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
 						experience("test2.B"),  // variant
 						experience("test3.A")   // control
 				)
 		);
-		assertEquals("/path/to/view2/test2.B", path);
+		assertEquals("/path/to/state2/test2.B", params.get("path"));
 
 		thrown = false;
 		try {
-			VariantRuntimeTestFacade.resolveViewPath(
-					view2, 
+			VariantRuntimeTestFacade.resolveState(
+					state2, 
 					VariantCollectionsUtils.list(
 							experience("test1.A"),  // control
 							experience("test2.B"),  // nonvariant
@@ -276,8 +277,8 @@ public class VariantRuntimeTest extends BaseTest {
 		}
 		assertTrue(thrown);
 		
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
 						experience("test2.B"),  // variant
@@ -285,10 +286,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test4.B")   // variant, unsupported
 				)
 		);
-		assertNull(path);
+		assertNull(params);
 		
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant, unsupported
 						experience("test2.B"),  // variant
@@ -296,10 +297,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A")   // control
 				)
 		);
-		assertNull(path);
+		assertNull(params);
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
 						experience("test2.A"),  // control
@@ -308,10 +309,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A")   // control
 				)
 		);
-		assertEquals("/path/to/view2/test1.C+test4.B", path);
+		assertEquals("/path/to/state2/test1.C+test4.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
 						experience("test2.A"),  // control
@@ -320,10 +321,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A")   // control
 				)
 		);
-		assertEquals("/path/to/view2/test1.C+test4.B", path);
+		assertEquals("/path/to/state2/test1.C+test4.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.A"),  // control
 						experience("test2.B"),  // variant
@@ -331,10 +332,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.B")   // variant, unsupported.
 				)
 		);
-		assertNull(path);
+		assertNull(params);
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // variant
 						experience("test2.B"),  // variant
@@ -342,10 +343,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A")   // control
 				)
 		);
-		assertEquals("/path/to/view2/test2.B+test4.C+test5.C", path);
+		assertEquals("/path/to/state2/test2.B+test4.C+test5.C", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test6.A"),  // control
 						experience("test4.C"),  // variant
@@ -354,10 +355,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.B")   // variant, unsupported.
 				)
 		);
-		assertNull(path);
+		assertNull(params);
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // variant
 						experience("test6.B"),  // nonvariant
@@ -366,74 +367,74 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A")   // control
 				)
 		);
-		assertEquals("/path/to/view2/test2.B+test4.C+test5.C", path);
+		assertEquals("/path/to/state2/test2.B+test4.C+test5.C", params.get("path"));
 
-		// view3
+		// state3
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test2.A")   // control
 				)
 		);
-		assertEquals("/path/to/view3", path);
+		assertEquals("/path/to/state3", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.B")   // not instrumented
 				)
 		);
-		assertEquals("/path/to/view3", path);
+		assertEquals("/path/to/state3", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test3.B")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view3", path);
+		assertEquals("/path/to/state3", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test2.B")   // variant
 				)
 		);
-		assertEquals("/path/to/view3/test2.B", path);
+		assertEquals("/path/to/state3/test2.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test1.B"),  // variant
 						experience("test2.A")   // control
 				)
 		);
-		assertEquals("/path/to/view3/test1.B", path);
+		assertEquals("/path/to/state3/test1.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
 						experience("test2.A")   // control
 				)
 		);
-		assertEquals("/path/to/view2", path);
+		assertEquals("/path/to/state2", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view2, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
 						experience("test2.B"),  // variant
 						experience("test3.A")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view2/test2.B", path);
+		assertEquals("/path/to/state2/test2.B", params.get("path"));
 
 		thrown = false;
 		try {
-			VariantRuntimeTestFacade.resolveViewPath(
-					view3, 
+			VariantRuntimeTestFacade.resolveState(
+					state3, 
 					VariantCollectionsUtils.list(
 							experience("test1.A"),  // control
 							experience("test2.B"),  // variant
@@ -448,8 +449,8 @@ public class VariantRuntimeTest extends BaseTest {
 		}
 		assertTrue(thrown);
 		
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test1.C"),  // variant
 						experience("test2.B"),  // variant, unsupported
@@ -457,10 +458,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test4.B")   // uninstrumented
 				)
 		);
-		assertNull(path);
+		assertNull(params);
 		
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // uninstrumented
 						experience("test2.B"),  // variant
@@ -468,10 +469,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.C")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view3/test2.B", path);
+		assertEquals("/path/to/state3/test2.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // uninstrumented
 						experience("test2.A"),  // control
@@ -480,10 +481,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view3/test1.C+test6.C", path);
+		assertEquals("/path/to/state3/test1.C+test6.C", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // uninstrumented
 						experience("test2.B"),  // variant
@@ -492,10 +493,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view3/test1.C+test2.B+test6.B", path);
+		assertEquals("/path/to/state3/test1.C+test2.B+test6.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.A"),  // uninstrumented
 						experience("test2.B"),  // variant
@@ -503,10 +504,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.B")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view3/test2.B", path);
+		assertEquals("/path/to/state3/test2.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // uninstrumented
 						experience("test2.B"),  // variant
@@ -514,10 +515,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test1.A")   // control
 				)
 		);
-		assertEquals("/path/to/view3/test2.B", path);
+		assertEquals("/path/to/state3/test2.B", params.get("path"));
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test6.A"),  // control
 						experience("test4.C"),  // uninstrumented
@@ -526,10 +527,10 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test1.B")   // variant
 				)
 		);
-		assertNull(path);
+		assertNull(params);
 
-		path = VariantRuntimeTestFacade.resolveViewPath(
-				view3, 
+		params = VariantRuntimeTestFacade.resolveState(
+				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // uninstrumented
 						experience("test6.B"),  // variant
@@ -538,7 +539,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A")   // nonvariant
 				)
 		);
-		assertEquals("/path/to/view3/test2.B+test6.B", path);
+		assertEquals("/path/to/state3/test2.B+test6.B", params.get("path"));
 		
 		//
 		// View resolutions
@@ -868,18 +869,26 @@ public class VariantRuntimeTest extends BaseTest {
 				"{                                                                                \n" +
 			    	    //==========================================================================//
 			    	   
-			    	    "   'views':[                                                             \n" +
-			    	    "     {  'name':'view1',                                                  \n" +
-			    	    "        'path':'/path/to/view1'                                          \n" +
+			    	    "   'states':[                                                             \n" +
+			    	    "     {  'name':'state1',                                                  \n" +
+			    	    "        'parameters':{                                                    \n" +
+			    	    "           'path':'/path/to/state1'                                          \n" +
+			    	    "        }                                                                \n" +
 			    	    "     },                                                                  \n" +
-			    	    "     {  'NAME':'view2',                                                  \n" +
-			    	    "        'path':'/path/to/view2'                                          \n" +
+			    	    "     {  'NAME':'state2',                                                  \n" +
+			    	    "        'parameters':{                                                    \n" +
+			    	    "           'path':'/path/to/state2'                                          \n" +
+			    	    "        }                                                                \n" +
 			    	    "     },                                                                  \n" +
-			    	    "     {  'nAmE':'view3',                                                  \n" +
-			    	    "        'path':'/path/to/view3'                                          \n" +
+			    	    "     {  'nAmE':'state3',                                                  \n" +
+			    	    "        'parameters':{                                                    \n" +
+			    	    "           'path':'/path/to/state3'                                          \n" +
+			    	    "        }                                                                \n" +
 			    	    "     },                                                                  \n" +
-			    	    "     {  'name':'view4',                                                  \n" +
-			    	    "        'path':'/path/to/view4'                                          \n" +
+			    	    "     {  'name':'state4',                                                  \n" +
+			    	    "        'parameters':{                                                    \n" +
+			    	    "           'path':'/path/to/state4'                                          \n" +
+			    	    "        }                                                                \n" +
 			    	    "     }                                                                   \n" +
 			            "  ],                                                                     \n" +
 			    	    //=========================================================================//
@@ -903,34 +912,42 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "              'weight':30                                                \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ],                                                               \n" +
-			    	    "        'onViews':[                                                      \n" +
+			    	    "        'onStates':[                                                      \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'viewRef':'view1',                                         \n" +
+			    	    "              'stateRef':'state1',                                         \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'path':'/path/to/view1/test1.B'                      \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state1/test1.B'                      \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-			    	    "                    'path':'/path/to/view1/test1.C'                      \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state1/test1.C'                      \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'viewRef':'view2',                                         \n" +
+			    	    "              'stateRef':'state2',                                         \n" +
 			    	    "              'isNonvariant':true                                         \n" +
 			    	    "           },                                                             \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'viewRef':'view3',                                         \n" +
+			    	    "              'stateRef':'state3',                                         \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'path':'/path/to/view3/test1.B'                      \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state3/test1.B'                      \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-			    	    "                    'path':'/path/to/view3/test1.C'                      \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state3/test1.C'                      \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -955,36 +972,44 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "              'weight':30                                                \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ],                                                               \n" +
-			    	    "        'onViews':[                                                      \n" +
+			    	    "        'onStates':[                                                      \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'viewRef':'view3',                                         \n" +
+			    	    "              'stateRef':'state3',                                         \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'path':'/path/to/view3/test2.B'                      \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state3/test2.B'                      \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-			    	    "                    'path':'/path/to/view3/test2.C'                      \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state3/test2.C'                      \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'viewRef':'view2',                                         \n" +
+			    	    "              'stateRef':'state2',                                         \n" +
 			    	    "              'isNonvariant':false,                                       \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'path':'/path/to/view2/test2.B'                      \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state2/test2.B'                      \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-			    	    "                    'path':'/path/to/view2/test2.C'                      \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state2/test2.C'                      \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'viewRef':'view4',                                         \n" +
+			    	    "              'stateRef':'state4',                                         \n" +
 			    	    "              'isNonvariant':true                                         \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ]                                                                \n" +
@@ -1008,17 +1033,21 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "              'weight':20                                                \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ],                                                               \n" +
-			    	    "        'onViews':[                                                      \n" +
+			    	    "        'onStates':[                                                      \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'viewRef':'view1',                                         \n" +
+			    	    "              'stateRef':'state1',                                         \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'path':'/path/to/view1/test3.B'                      \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state1/test3.B'                      \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-			    	    "                    'path':'/path/to/view1/test3.C'                      \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state1/test3.C'                      \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -1028,7 +1057,9 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-			    	    "                    'path':'/path/to/view1/test1.B+test3.B'              \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state1/test1.B+test3.B'              \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -1038,7 +1069,9 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "                          'experienceRef': 'C'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-			    	    "                    'path':'/path/to/view1/test1.C+test3.B'              \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state1/test1.C+test3.B'              \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
@@ -1048,7 +1081,9 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-			    	    "                    'path':'/path/to/view1/test1.B+test3.C'              \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state1/test1.B+test3.C'              \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
@@ -1058,7 +1093,9 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "                          'experienceRef': 'C'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-			    	    "                    'path':'/path/to/view1/test1.C+test3.C'              \n" +
+			    	    "                    'parameters':{                                       \n" +
+			    	    "                       'path':'/path/to/state1/test1.C+test3.C'              \n" +
+			    	    "                    }                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -1073,12 +1110,12 @@ public class VariantRuntimeTest extends BaseTest {
 		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();
-		State view1 = schema.getView("view1");
+		State state1 = schema.getState("state1");
 		long timestamp = System.currentTimeMillis();
 		String persisterString = timestamp + ".test2.B";
 		VariantSession ssn = engine.getSession("foo-key");
 		// Core implementation makes no distinction between session udser data and targeting persister user data.
-		VariantViewRequest req = engine.startViewRequest(ssn, view1, persisterString);
+		VariantViewRequest req = engine.newStateRequest(ssn, state1, persisterString);
 		TargetingPersister tp = req.getTargetingPersister();
 
 		// test2 is off, but TP has a variant experience for it, which will be substituted for the purposes of lookup with control.
@@ -1087,10 +1124,11 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(3, tp.getAll().size());
 		// We didn't touch test2.B entry in the TP, even though we used control for resolution.
 		assertEquals(experience("test2.B"), tp.get(schema.getTest("test2")));
-		System.out.println(req.resolvedViewPath());
-		assertMatches("/path/to/view1(/test3\\.[B,C])?", req.resolvedViewPath());
+		String path = req.getResolvedParameterMap().get("path");
+		System.out.println(path);
+		assertMatches("/path/to/state1(/test3\\.[B,C])?", path);
 		assertEquals(ssn, req.getSession());
-		assertEquals(view1, req.getState());
+		assertEquals(state1, req.getState());
 		
 		// View Serve Event.
 		StateServeEvent event = req.getViewServeEvent();

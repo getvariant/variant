@@ -16,7 +16,7 @@ public class VariantRuntimeTestFacade {
 	 * @param vector
 	 * @return
 	 */
-	public static Map<String,String> resolveViewPath(State state, Collection<Experience> vector) {
+	public static Map<String,String> resolveState(State state, Collection<Experience> vector) {
 		return VariantRuntime.resolveState(state, vector);
 	}
 	

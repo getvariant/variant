@@ -351,7 +351,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public VariantViewRequest startViewRequest(VariantSession session, State view, Object targetingPersisterUserData) {
+	public VariantViewRequest newStateRequest(VariantSession session, State view, Object targetingPersisterUserData) {
 		
 		stateCheck();
 		
@@ -381,7 +381,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public void commitViewRequest(VariantViewRequest request, Object userData) {
+	public void commitStateRequest(VariantViewRequest request, Object userData) {
 
 		stateCheck();
 		

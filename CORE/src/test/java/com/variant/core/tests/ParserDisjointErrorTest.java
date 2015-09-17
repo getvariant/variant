@@ -27,10 +27,12 @@ public class ParserDisjointErrorTest extends BaseTest {
 	public void jsonParse_Test() throws Exception {
 		
 		String config = 
-				"{                                                             \n" +
-			    "   'views':[                                                  \n" +		    	    
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+				"{                                                              \n" +
+			    "   'states':[                                                  \n" +		    	    
+			    "     {  'name':'state1',                                       \n" +
+	    	    "        'parameters': {                                        \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     }                                                        \n" +
 			    "  ]                                                           \n" + // missing comma
 				"  'tests':[                                                   \n" +
@@ -47,13 +49,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'weight':50                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -64,12 +68,12 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "}                                                             \n";
 		
 		ParserResponse response = SchemaParser.parse(config);
-		
+
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessage(MessageTemplate.PARSER_JSON_PARSE, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries").getMessage(), error.getMessage());		
-		assertEquals(7, error.getLine().intValue());
+		assertEquals(9, error.getLine().intValue());
 		assertEquals(4, error.getColumn().intValue());
 	}
 	
@@ -100,11 +104,11 @@ public class ParserDisjointErrorTest extends BaseTest {
 	}
 
 	/**
-	 * NO_VIEWS_CLAUSE + VIEWREF_INVALID
+	 * NO_STATES_CLAUSE + stateRef_INVALID
 	 * @throws Exception
 	 */
 	@Test
-	public void noViewsClause_ViewRefInvalid_Test() throws Exception {
+	public void noViewsClause_stateRefInvalid_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +			    	   
@@ -122,13 +126,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'weight':50                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -147,20 +153,20 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.INFO, error.getSeverity());
 
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VIEWREF_UNDEFINED, "view1", "Test1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATEREF_UNDEFINED, "state1", "Test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
 	/**
-	 * NO_VIEWS + VIEWREF_INVALID
+	 * NO_STATES + stateRef_INVALID
 	 * @throws Exception
 	 */
 	@Test
-	public void noViews_ViewRefInfalid_Test() throws Exception {
+	public void noViews_stateRefInfalid_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +			    	   
-			    "   'views':[                                                  \n" +		    	    
+			    "   'states':[                                                  \n" +		    	    
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
@@ -176,13 +182,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'weight':50                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -201,7 +209,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.INFO, error.getSeverity());
 
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VIEWREF_UNDEFINED, "view1", "Test1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATEREF_UNDEFINED, "state1", "Test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -214,11 +222,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                  \n" +
+			    "     {  'name':'state1',                                       \n" +
+	    	    "        'parameters': {                                        \n" +
+			    "           'path':'/path/to/state1'                            \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1'                               \n" +
+	    	    "     {  'parameters': {                                        \n" +
+			    "           'path':'/path/to/state2'                            \n" +
+			    "        }                                                      \n" +
+//			    "        'name':'state2'                                        \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -235,13 +248,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -268,15 +283,21 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                  \n" +
+			    "     {  'name':'state1',                                       \n" +
+	    	    "        'parameters': {                                        \n" +
+			    "           'path':'/path/to/state1'                            \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                        \n" +
+			    "           'path':'/path/to/state2'                            \n" +
+			    "        },                                                     \n" +
+			    "        'name':'state2'                                        \n" +
 			    "     },                                                       \n" +
 			    "     {  'name':[1,2],                                         \n" + 
-			    "        'path':'/path/to/view3'                               \n" +
+	    	    "        'parameters': {                                        \n" +
+			    "           'path':'/path/to/state3'                           \n" +
+			    "        }                                                     \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -293,13 +314,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -326,15 +349,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
-			    "     },                                                       \n" +
-			    "     {  'name':'view3',                                       \n" + 
-			    "        'path':'/path/to/view3'                               \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -353,13 +377,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -386,15 +412,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
-			    "     },                                                       \n" +
-			    "     {  'name':'view3',                                       \n" + 
-			    "        'path':'/path/to/view3'                               \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -413,13 +440,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -446,15 +475,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
-			    "     },                                                       \n" +
-			    "     {  'name':'view3',                                       \n" + 
-			    "        'path':'/path/to/view3'                               \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -472,13 +502,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -497,7 +529,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 	}
 
 	/**
-	 * VIEW_NAME_DUPE
+	 * STATE_NAME_DUPE
 	 * @throws Exception
 	 */
 	@Test
@@ -505,15 +537,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
-			    "     },                                                       \n" +
-			    "     {  'name':'view1',                                       \n" + 
-			    "        'path':'/path/to/view2'                               \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state1'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -530,13 +563,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -552,7 +587,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATE_NAME_DUPE, "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATE_NAME_DUPE, "state1").getMessage(), error.getMessage());
 	}
 
 	/**
@@ -564,14 +599,18 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     },                                                       \n" +
-			    "     {  'name':'view3'                                        \n" + 
+			    "     {  'name':'state3'                                       \n" + 
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -588,13 +627,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -609,7 +650,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATE_PATH_MISSING, "view3").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATE_PARAMS_MISSING, "state3").getMessage(), error.getMessage());
 	}
 
 	/**
@@ -621,12 +662,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +			    	   
-			    "   'viEWs':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
@@ -648,12 +693,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +			    	   
-			    "   'viEWs':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -677,12 +726,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2',                                       \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2',                                      \n" +
 			    "        'invalid property':'throw an error'                   \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
@@ -700,13 +753,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -725,7 +780,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessage(MessageTemplate.PARSER_UNSUPPORTED_CLAUSE, "invalid clause").getMessage(), error.getMessage());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATE_UNSUPPORTED_PROPERTY, "invalid property", "view2").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATE_UNSUPPORTED_PROPERTY, "invalid property", "state2").getMessage(), error.getMessage());
 	}
 
 	/**
@@ -737,12 +792,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                       \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -759,13 +818,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'weight':50                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -793,12 +854,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -815,13 +880,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'weight':50                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -850,12 +917,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'VIEWS':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'Tests':[                                                   \n" +
@@ -872,13 +943,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -898,13 +971,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -933,12 +1008,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -956,13 +1035,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -991,25 +1072,31 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':{'foo':'bar'},                          \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1031,7 +1118,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(new ParserMessage(MessageTemplate.PARSER_IS_CONTROL_MISSING, "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(2);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "A", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "A", "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1045,12 +1132,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1058,13 +1149,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1086,7 +1179,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(new ParserMessage(MessageTemplate.PARSER_IS_CONTROL_MISSING, "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(2);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "A", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "A", "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1099,12 +1192,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1123,13 +1220,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "           },                                                 \n" +
 			    "           []                                                 \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'B',                      \n" +
-			    "                    'path':'/path/to/view1/test1.B'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.B'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1158,12 +1257,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1184,13 +1287,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'weight':50                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'B',                      \n" +
-			    "                    'path':'/path/to/view1/test1.B'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.B'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1219,12 +1324,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1242,13 +1351,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1277,12 +1388,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1299,13 +1414,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onViews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1334,12 +1451,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1357,13 +1478,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1384,20 +1507,24 @@ public class ParserDisjointErrorTest extends BaseTest {
 	}
 
 	/**
-	 * ONVIEWS_NOT_LIST
+	 * onStates_NOT_LIST
 	 * @throws Exception
 	 */
 	@Test
-	public void onViewsNotList_Test() throws Exception {
+	public void onStatesNotList_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1414,13 +1541,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':                                            \n" +
+			    "        'onStates':                                            \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1436,25 +1565,29 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_ONVIEWS_NOT_LIST, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_ONSTATES_NOT_LIST, "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
 	/**
-	 * ONVIEWS_LIST_EMPTY
+	 * onStates_LIST_EMPTY
 	 * @throws Exception
 	 */
 	@Test
-	public void onViewsListEmpty_Test() throws Exception {
+	public void onStatesListEmpty_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1471,7 +1604,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS': []                                         \n" +
+			    "        'onStates': []                                         \n" +
 			    "     }                                                        \n" +
 			    //----------------------------------------------------------------//	
 			    "  ]                                                           \n" +
@@ -1483,7 +1616,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_ONVIEWS_LIST_EMPTY, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_ONSTATES_LIST_EMPTY, "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 	
@@ -1496,12 +1629,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1518,7 +1655,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[45]                                        \n" +
+			    "        'onStates':[45]                                        \n" +
 			    "     }                                                        \n" +
 			    //----------------------------------------------------------------//	
 			    "  ]                                                           \n" +
@@ -1530,25 +1667,29 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_ONVIEW_NOT_OBJECT, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_ONSTATES_NOT_OBJECT, "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
 	/**
-	 * VIEWREF_NOT_STRING
+	 * stateRef_NOT_STRING
 	 * @throws Exception
 	 */
 	@Test
-	public void viewrefNotString_Test() throws Exception {
+	public void stateRefNotString_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1565,13 +1706,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':3456789,                              \n" +
+			    "              'stateRef':3456789,                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1587,25 +1730,29 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VIEWREF_NOT_STRING, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATEREF_NOT_STRING, "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
 	/**
-	 * PARSER_VIEWREF_MISSING
+	 * PARSER_stateRef_MISSING
 	 * @throws Exception
 	 */
 	@Test
-	public void viewrefMissing_Test() throws Exception {
+	public void stateRefMissing_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1622,12 +1769,14 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1643,25 +1792,29 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VIEWREF_MISSING, "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATEREF_MISSING, "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
 	/**
-	 * PARSER_VIEWREF_DUPE
+	 * PARSER_stateRef_DUPE
 	 * @throws Exception
 	 */
 	@Test
-	public void viewrefDupe_Test() throws Exception {
+	public void stateRefDupe_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1678,22 +1831,26 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1709,25 +1866,29 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VIEWREF_DUPE, "view1", "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATEREF_DUPE, "state1", "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
 	/**
-	 * VIEWREF_UNDEFINED
+	 * STATEREF_UNDEFINED
 	 * @throws Exception
 	 */
 	@Test
-	public void viewrefUndefined_Test() throws Exception {
+	public void stateRefUndefined_Test() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1744,14 +1905,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'View1',                              \n" +
+			    "              'stateRef':'State1',                              \n" +
 			    "              'isNonvariant': false,                           \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1767,7 +1930,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VIEWREF_UNDEFINED, "View1", "test1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_STATEREF_UNDEFINED, "State1", "test1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1780,12 +1943,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1802,14 +1969,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'ISNonvariant': 'false',                         \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1825,7 +1994,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_ISNONVARIANT_NOT_BOOLEAN, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_ISNONVARIANT_NOT_BOOLEAN, "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1838,12 +2007,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1860,14 +2033,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'ISNonvariant': false,                           \n" +
 			    "              'variants':                                     \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "                                                              \n" +
 			    "           }                                                  \n" +
@@ -1883,7 +2058,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANTS_NOT_LIST, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANTS_NOT_LIST, "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1897,12 +2072,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1919,9 +2098,9 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewref':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'VARIANTS':[                                    \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1937,7 +2116,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANTS_LIST_EMPTY, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANTS_LIST_EMPTY, "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1950,12 +2129,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -1972,13 +2155,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewref':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'VARIANTS':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A',          \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'          \n" +
+			    "                    },                                        \n" +
                 "                    'unsupported': 'unsupported property'     \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
@@ -1995,7 +2180,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY, "unsupported", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY, "unsupported", "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2008,12 +2193,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -2030,14 +2219,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewref':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "               'ISNONVARIANT': true,                           \n" +
 			    "              'VARIANTS':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'          \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'          \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2053,7 +2244,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE, "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2066,12 +2257,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -2088,9 +2283,9 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewref':'view1'                               \n" +
+			    "              'stateRef':'state1'                               \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -2104,7 +2299,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANTS_ISNONVARIANT_XOR, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANTS_ISNONVARIANT_XOR, "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2117,12 +2312,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -2139,9 +2338,9 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[45,'foo']                           \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
@@ -2156,13 +2355,13 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(3, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_NOT_OBJECT, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_NOT_OBJECT, "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_NOT_OBJECT, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_NOT_OBJECT, "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(2);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "A", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "A", "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2175,12 +2374,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -2197,13 +2400,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 //			    "                    'experienceRef':'A',                      \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2219,10 +2424,10 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_MISSING, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_MISSING, "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "A", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "A", "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 	
@@ -2235,12 +2440,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -2257,17 +2466,21 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': true,                    \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'A',                     \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2283,7 +2496,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_NOT_STRING, "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_NOT_STRING, "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2296,12 +2509,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -2318,13 +2535,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'foo',                   \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2340,10 +2559,10 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "foo", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "foo", "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "A", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "A", "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2356,12 +2575,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -2378,17 +2601,21 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'A',                     \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'path':'/path/to/view1/test1.B'           \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.B'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2404,12 +2631,12 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_ISCONTROL, "B", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_ISCONTROL, "B", "test1", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
 	/**
-	 * EXPERIENCEREF_PATH_NOT_STRING + PARSER_VARIANT_MISSING
+	 * EXPERIENCEREF_PARAMS_NOT_STRING
 	 * @throws Exception
 	 */
 	@Test
@@ -2417,12 +2644,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'Views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'TESTS':[                                                   \n" +
@@ -2439,13 +2670,13 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'ISCONTROL':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'ONVIEWS':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'A',                     \n" +
-			    "                    'path':['foo','bar']                      \n" +
+                "                    'parameters': ['foo','bar']               \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2459,12 +2690,9 @@ public class ParserDisjointErrorTest extends BaseTest {
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
-		assertEquals(2, response.getMessages().size());
+		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_PATH_NOT_STRING, "test1", "view1", "A").getMessage(), error.getMessage());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "A", "test1", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCEREF_PARAMS_NOT_OBJECT, "test1", "state1", "A").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2477,12 +2705,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -2503,13 +2735,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onviews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'A',                     \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2528,7 +2762,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(new ParserMessage(MessageTemplate.PARSER_EXPERIENCE_NAME_DUPE, "B", "TEST").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2541,12 +2775,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -2568,13 +2806,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onviews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'A',                     \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2603,12 +2843,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -2629,17 +2873,21 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onviews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'A',                     \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'A',                     \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2655,10 +2903,10 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_DUPE, "A", "TEST", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_DUPE, "A", "TEST", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2671,12 +2919,16 @@ public class ParserDisjointErrorTest extends BaseTest {
 		
 		String config = 
 				"{                                                             \n" +
-			    "   'views':[                                                  \n" +
-			    "     {  'name':'view1',                                       \n" +
-			    "        'path':'/path/to/view1'                               \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
 			    "     },                                                       \n" +
-			    "     {  'path':'/path/to/view1',                              \n" +
-			    "        'name':'view2'                                        \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -2697,13 +2949,15 @@ public class ParserDisjointErrorTest extends BaseTest {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onviews':[                                           \n" +
+			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'viewRef':'view1',                              \n" +
+			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'A',                     \n" +
-			    "                    'path':'/path/to/view1/test1.A'           \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2719,7 +2973,7 @@ public class ParserDisjointErrorTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "view1").getMessage(), error.getMessage());
+		assertEquals(new ParserMessage(MessageTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "state1").getMessage(), error.getMessage());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 

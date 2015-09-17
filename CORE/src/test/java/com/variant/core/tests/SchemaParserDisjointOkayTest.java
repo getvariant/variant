@@ -21,44 +21,66 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 	// Happy path schema is used by other tests too.
 	public static final String SCHEMA = 
 
-	"{                                                                                \n" +
+	"{                                                                                 \n" +
     	    //==========================================================================//
     	   
-    	    "   'vIeWs':[                                                             \n" +
-    	    "     {  'name':'view1',                                                  \n" +
-    	    "        'path':'/path/to/view1'                                          \n" +
-    	    "     },                                                                  \n" +
-    	    "     {  'NAME':'view2',                                                  \n" +
-    	    "        'path':'/path/to/view2'                                          \n" +
-    	    "     },                                                                  \n" +
-    	    "     {  'nAmE':'view3',                                                  \n" +
-    	    "        'path':'/path/to/view3'                                          \n" +
-    	    "     },                                                                  \n" +
-    	    "     {  'name':'view4',                                                  \n" +
-    	    "        'path':'/path/to/view4'                                          \n" +
-    	    "     },                                                                  \n" +
-    	    "     {  'name':'view5',                                                  \n" +
-    	    "        'path':'/path/to/view5'                                          \n" +
-    	    "     },                                                                  \n" +
-    	    "     {  'name':'view6',                                                  \n" +
-    	    "        'path':'/path/to/view6'                                          \n" +
-    	    "     },                                                                  \n" +
-    	    "     {  'name':'view7',                                                  \n" +
-    	    "        'path':'/path/to/view7'                                          \n" +
-    	    "     },                                                                  \n" +
-    	    "     {  'name':'view8',                                                  \n" +
-    	    "        'path':'/path/to/view8'                                          \n" +
-    	    "     },                                                                  \n" +
-    	    "     {  'name':'view9',                                                  \n" +
-    	    "        'path':'/path/to/view9'                                          \n" +
-    	    "     },                                                                  \n" +
-    	    "     {  'name':'view10',                                                 \n" +
-    	    "        'path':'/path/to/view10'                                         \n" +
-    	    "     },                                                                  \n" +
-    	    "     {  'name':'View1',                                                  \n" +
-    	    "        'path':'/path/to/View1'                                          \n" +
-    	    "     }                                                                   \n" +
-            "  ],                                                                     \n" +
+    	    "   'sTaTeS':[                                                             \n" +
+    	    "     {  'name':'state1',                                                  \n" +
+			"        'parameters':{                                                    \n" +
+    	    "           'path':'/path/to/state1'                                       \n" +
+    	    "        }                                                                 \n" +
+    	    "     },                                                                   \n" +
+    	    "     {  'NAME':'state2',                                                  \n" +
+			"        'parameters':{                                                    \n" +
+    	    "           'path':'/path/to/state2'                                       \n" +
+    	    "        }                                                                 \n" +
+    	    "     },                                                                   \n" +
+    	    "     {  'nAmE':'state3',                                                  \n" +
+			"        'parameters':{                                                    \n" +
+    	    "           'path':'/path/to/state3'                                       \n" +
+    	    "        }                                                                 \n" +
+    	    "     },                                                                   \n" +
+    	    "     {  'name':'state4',                                                  \n" +
+			"        'parameters':{                                                    \n" +
+    	    "           'path':'/path/to/state4'                                       \n" +
+    	    "        }                                                                 \n" +
+    	    "     },                                                                   \n" +
+    	    "     {  'name':'state5',                                                  \n" +
+			"        'parameters':{                                                    \n" +
+    	    "           'path':'/path/to/state5'                                       \n" +
+    	    "        }                                                                 \n" +
+    	    "     },                                                                   \n" +
+    	    "     {  'name':'state6',                                                  \n" +
+			"        'parameters':{                                                    \n" +
+    	    "           'path':'/path/to/state6'                                       \n" +
+    	    "        }                                                                 \n" +
+    	    "     },                                                                   \n" +
+    	    "     {  'name':'state7',                                                  \n" +
+			"        'parameters':{                                                    \n" +
+    	    "           'path':'/path/to/state7'                                       \n" +
+    	    "        }                                                                 \n" +
+    	    "     },                                                                   \n" +
+    	    "     {  'name':'state8',                                                  \n" +
+			"        'parameters':{                                                    \n" +
+    	    "           'path':'/path/to/state8'                                       \n" +
+    	    "        }                                                                 \n" +
+    	    "     },                                                                   \n" +
+    	    "     {  'name':'state9',                                                  \n" +
+			"        'parameters':{                                                    \n" +
+    	    "           'path':'/path/to/state9'                                       \n" +
+    	    "        }                                                                 \n" +
+    	    "     },                                                                   \n" +
+    	    "     {  'name':'state10',                                                 \n" +
+			"        'parameters':{                                                    \n" +
+    	    "           'path':'/path/to/state10'                                      \n" +
+    	    "        }                                                                 \n" +
+    	    "     },                                                                   \n" +
+    	    "     {  'name':'State1',                                                  \n" +
+			"        'parameters':{                                                    \n" +
+    	    "           'path':'/path/to/State1'                                       \n" +
+    	    "        }                                                                 \n" +
+    	    "     }                                                                    \n" +
+            "  ],                                                                      \n" +
             
     	    //=========================================================================//
     	    
@@ -82,17 +104,21 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    "              'weight':30                                                \n" +
     	    "           }                                                             \n" +
     	    "        ],                                                               \n" +
-    	    "        'onViews':[                                                      \n" +
+    	    "        'onStates':[                                                      \n" +
     	    "           {                                                             \n" +
-    	    "              'viewRef':'view1',                                         \n" +
+    	    "              'stateRef':'state1',                                        \n" +
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'B',                                 \n" +
-    	    "                    'path':'/path/to/view1/test1.B'                      \n" +
+			"                    'parameters':{                                       \n" +
+    	    "                       'path':'/path/to/state1/test1.B'                  \n" +
+    	    "                    }                                                    \n" +
     	    "                 },                                                      \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'C',                                 \n" +
-    	    "                    'path':'/path/to/view1/test1.C'                      \n" +
+			"                    'parameters':{                                       \n" +
+    	    "                       'path':'/path/to/state1/test1.C'                  \n" +
+    	    "                    }                                                    \n" +
     	    "                 }                                                       \n" +
     	    "              ]                                                          \n" +
     	    "           }                                                             \n" +
@@ -114,29 +140,33 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    "              'weight':0.6                                               \n" +
     	    "           }                                                             \n" +
     	    "        ],                                                               \n" +
-    	    "        'onViews':[                                                      \n" +
+    	    "        'onStates':[                                                      \n" +
     	    "           {                                                             \n" +
-    	    "              'viewRef':'view3',                                         \n" +
+    	    "              'stateRef':'state3',                                        \n" +
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'D',                                 \n" +
-    	    "                    'path':'/path/to/view3/test2.D'                      \n" +
+			"                    'parameters':{                                       \n" +
+    	    "                       'path':'/path/to/state3/test2.D'                  \n" +
+    	    "                    }                                                    \n" +
     	    "                 }                                                       \n" +
     	    "              ]                                                          \n" +
     	    "           },                                                            \n" +
     	    "           {                                                             \n" +
-    	    "              'viewRef':'view2',                                         \n" +
-    	    "              'isNonvariant':false,                                       \n" +
+    	    "              'stateRef':'state2',                                        \n" +
+    	    "              'isNonvariant':false,                                      \n" +
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'D',                                 \n" +
-    	    "                    'path':'/path/to/view2/test2.D'                      \n" +
+			"                    'parameters':{                                       \n" +
+    	    "                       'path':'/path/to/state2/test2.D'                  \n" +
+    	    "                    }                                                    \n" +
     	    "                 }                                                       \n" +
     	    "              ]                                                          \n" +
     	    "           },                                                            \n" +
     	    "           {                                                             \n" +
-    	    "              'viewRef':'view4',                                         \n" +
-    	    "              'isNonvariant':true                                         \n" +
+    	    "              'stateRef':'state4',                                        \n" +
+    	    "              'isNonvariant':true                                        \n" +
     	    "           }                                                             \n" +
     	    "        ]                                                                \n" +
     	    "     },                                                                  \n" +
@@ -155,13 +185,15 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    "              'weight':20                                                \n" +
     	    "           }                                                             \n" +
     	    "        ],                                                               \n" +
-    	    "        'onViews':[                                                      \n" +
+    	    "        'onStates':[                                                      \n" +
     	    "           {                                                             \n" +
-    	    "              'viewRef':'view1',                                         \n" +
+    	    "              'stateRef':'state1',                                        \n" +
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'A',                                 \n" +
-    	    "                    'path':'/path/to/view1/Test1.A'                      \n" +
+			"                    'parameters':{                                       \n" +
+    	    "                       'path':'/path/to/state1/Test1.A'                  \n" +
+    	    "                    }                                                    \n" +
     	    "                 }                                                       \n" +
     	    "              ]                                                          \n" +
     	    "           }                                                             \n" +
@@ -186,52 +218,52 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		// Views.
 		//
 		
-		String[][] expectedViews = {
-				{"view1", "/path/to/view1"},
-				{"view2", "/path/to/view2"},
-				{"view3", "/path/to/view3"},
-				{"view4", "/path/to/view4"},
-				{"view5", "/path/to/view5"},
-				{"view6", "/path/to/view6"},
-				{"view7", "/path/to/view7"},
-				{"view8", "/path/to/view8"},
-				{"view9", "/path/to/view9"},
-				{"view10", "/path/to/view10"},
-				{"View1",  "/path/to/View1"}
+		String[][] expectedStates = {
+				{"state1", "/path/to/state1"},
+				{"state2", "/path/to/state2"},
+				{"state3", "/path/to/state3"},
+				{"state4", "/path/to/state4"},
+				{"state5", "/path/to/state5"},
+				{"state6", "/path/to/state6"},
+				{"state7", "/path/to/state7"},
+				{"state8", "/path/to/state8"},
+				{"state9", "/path/to/state9"},
+				{"state10", "/path/to/state10"},
+				{"State1",  "/path/to/State1"}
 						
 		};
 
 		final Schema schema = engine.getSchema();
 		
 		// Verify views returned as a list.
-		List<State> actualViews = schema.getViews();
-		assertEquals(expectedViews.length, actualViews.size());
-		verifyView(expectedViews[0], actualViews.get(0));
-		verifyView(expectedViews[1], actualViews.get(1));
-		verifyView(expectedViews[2], actualViews.get(2));
-		verifyView(expectedViews[3], actualViews.get(3));
-		verifyView(expectedViews[4], actualViews.get(4));
-		verifyView(expectedViews[5], actualViews.get(5));
-		verifyView(expectedViews[6], actualViews.get(6));
-		verifyView(expectedViews[7], actualViews.get(7));
-		verifyView(expectedViews[8], actualViews.get(8));
-		verifyView(expectedViews[9], actualViews.get(9));
-		verifyView(expectedViews[10], actualViews.get(10));
+		List<State> actualStates = schema.getStates();
+		assertEquals(expectedStates.length, actualStates.size());
+		verifyState(expectedStates[0], actualStates.get(0));
+		verifyState(expectedStates[1], actualStates.get(1));
+		verifyState(expectedStates[2], actualStates.get(2));
+		verifyState(expectedStates[3], actualStates.get(3));
+		verifyState(expectedStates[4], actualStates.get(4));
+		verifyState(expectedStates[5], actualStates.get(5));
+		verifyState(expectedStates[6], actualStates.get(6));
+		verifyState(expectedStates[7], actualStates.get(7));
+		verifyState(expectedStates[8], actualStates.get(8));
+		verifyState(expectedStates[9], actualStates.get(9));
+		verifyState(expectedStates[10], actualStates.get(10));
 		
 		// Verify views returned individually by name.
-		for (String[] expectedView: expectedViews) {	
-			verifyView(expectedView, schema.getView(expectedView[0]));
+		for (String[] expectedView: expectedStates) {	
+			verifyState(expectedView, schema.getState(expectedView[0]));
 		}
 
 		// Verify non-existent views.
-		assertNull(schema.getView("non-existent'"));		
+		assertNull(schema.getState("non-existent'"));		
 
-		for (String[] expectedView: expectedViews) {
-			assertNull(schema.getView(expectedView[0].toUpperCase()));
+		for (String[] expectedView: expectedStates) {
+			assertNull(schema.getState(expectedView[0].toUpperCase()));
 		}
 		
 		// Instrumented tests.
-		State view = schema.getView("view1");
+		State view = schema.getState("state1");
 		ArrayList<com.variant.core.schema.Test> expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
 			add(schema.getTest("test1"));
 			add(schema.getTest("Test1"));
@@ -244,28 +276,28 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		}
 		catch (NullPointerException npe ) { /* expected */ }
 
-		view = schema.getView("view2");
+		view = schema.getState("state2");
 		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
 			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertFalse(view.isNonvariantIn(schema.getTest("test2")));
 		
-		view = schema.getView("view3");
+		view = schema.getState("state3");
 		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
 			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertFalse(view.isNonvariantIn(schema.getTest("test2")));
 
-		view = schema.getView("view4");
+		view = schema.getState("state4");
 		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>() {{
 			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertTrue(view.isNonvariantIn(schema.getTest("test2")));
 		
-		view = schema.getView("view5");
+		view = schema.getState("state5");
 		expectedInstrumentedTests = new ArrayList<com.variant.core.schema.Test>();
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 
@@ -292,10 +324,10 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 	 * @param expectedView
 	 * @param actualView
 	 */
-	private static void verifyView(String[] expectedView, State actualView) {
+	private static void verifyState(String[] expectedView, State actualView) {
 		assertNotNull(actualView);
 		assertEquals(expectedView[0], actualView.getName());
-		assertEquals(expectedView[1], actualView.getPath());		
+		assertEquals(expectedView[1], actualView.getParameterMap().get("path"));		
 	}
 	
 	/**
@@ -329,24 +361,24 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertFalse(exp.isControl());
 		assertEquals(test, exp.getTest());
 		
-		// OnViews
-		List<com.variant.core.schema.Test.OnState> actualOnViews = test.getOnStates();
-		assertEquals(1, actualOnViews.size());
+		// onStates
+		List<com.variant.core.schema.Test.OnState> actualonStates = test.getOnStates();
+		assertEquals(1, actualonStates.size());
 
-		com.variant.core.schema.Test.OnState tov = actualOnViews.get(0);
+		com.variant.core.schema.Test.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getTest());
-		assertEquals(config.getView("view1"), tov.getState());
+		assertEquals(config.getState("state1"), tov.getState());
 		assertFalse(tov.isNonvariant());
 		List<com.variant.core.schema.Test.OnState.Variant> actualVariants =  tov.getVariants();
 		assertEquals(2, actualVariants.size());
 		com.variant.core.schema.Test.OnState.Variant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("B"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
-		assertEquals("/path/to/view1/test1.B", variant.getPath());
+		assertEquals("/path/to/state1/test1.B", variant.getParameterMap().get("path"));
 		variant = actualVariants.get(1);
 		assertEquals(test.getExperience("C"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
-		assertEquals("/path/to/view1/test1.C", variant.getPath());
+		assertEquals("/path/to/state1/test1.C", variant.getParameterMap().get("path"));
 		
 		
 	}
@@ -377,35 +409,35 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertFalse(exp.isControl());
 		assertEquals(test, exp.getTest());
 		
-		// OnViews
-		List<com.variant.core.schema.Test.OnState> actualOnViews = test.getOnStates();
-		assertEquals(3, actualOnViews.size());
+		// onStates
+		List<com.variant.core.schema.Test.OnState> actualonStates = test.getOnStates();
+		assertEquals(3, actualonStates.size());
 
-		com.variant.core.schema.Test.OnState tov = actualOnViews.get(0);
+		com.variant.core.schema.Test.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getTest());
-		assertEquals(config.getView("view3"), tov.getState());
+		assertEquals(config.getState("state3"), tov.getState());
 		assertFalse(tov.isNonvariant());
 		List<com.variant.core.schema.Test.OnState.Variant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
 		com.variant.core.schema.Test.OnState.Variant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("D"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
-		assertEquals("/path/to/view3/test2.D", variant.getPath());
+		assertEquals("/path/to/state3/test2.D", variant.getParameterMap().get("path"));
 
-		tov = actualOnViews.get(1);
+		tov = actualonStates.get(1);
 		assertEquals(test, tov.getTest());
-		assertEquals(config.getView("view2"), tov.getState());
+		assertEquals(config.getState("state2"), tov.getState());
 		assertFalse(tov.isNonvariant());
 		actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
 		variant = actualVariants.get(0);
 		assertEquals(test.getExperience("D"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
-		assertEquals("/path/to/view2/test2.D", variant.getPath());
+		assertEquals("/path/to/state2/test2.D", variant.getParameterMap().get("path"));
 		
-		tov = actualOnViews.get(2);
+		tov = actualonStates.get(2);
 		assertEquals(test, tov.getTest());
-		assertEquals(config.getView("view4"), tov.getState());
+		assertEquals(config.getState("state4"), tov.getState());
 		assertTrue(tov.isNonvariant());
 		assertTrue(tov.getVariants().isEmpty());
 
@@ -437,20 +469,20 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertEquals(exp, test.getControlExperience());
 		assertEquals(test, exp.getTest());
 		
-		// OnViews
-		List<com.variant.core.schema.Test.OnState> actualOnViews = test.getOnStates();
-		assertEquals(1, actualOnViews.size());
+		// onStates
+		List<com.variant.core.schema.Test.OnState> actualonStates = test.getOnStates();
+		assertEquals(1, actualonStates.size());
 
-		com.variant.core.schema.Test.OnState tov = actualOnViews.get(0);
+		com.variant.core.schema.Test.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getTest());
-		assertEquals(config.getView("view1"), tov.getState());
+		assertEquals(config.getState("state1"), tov.getState());
 		assertFalse(tov.isNonvariant());
 		List<com.variant.core.schema.Test.OnState.Variant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
 		com.variant.core.schema.Test.OnState.Variant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("A"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
-		assertEquals("/path/to/view1/Test1.A", variant.getPath());
+		assertEquals("/path/to/state1/Test1.A", variant.getParameterMap().get("path"));
 		
 	}
 

@@ -26,7 +26,7 @@ public class RuntimeExceptionTest extends BaseTest {
 		assertFalse(response.hasMessages());
 		final Schema schema = engine.getSchema();
 		
-		State view = schema.getView("view1");
+		State view = schema.getState("state1");
 		try {
 			assertFalse(view.isNonvariantIn(schema.getTest("non-existent")));
 		}
@@ -36,37 +36,37 @@ public class RuntimeExceptionTest extends BaseTest {
 			assertFalse(view.isNonvariantIn(schema.getTest("test2")));
 		}
 		catch (VariantRuntimeException vre ) { 
-			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view1", "test2").getMessage(), vre.getMessage());
+			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state1", "test2").getMessage(), vre.getMessage());
 		}
 
-		view = schema.getView("view2");
+		view = schema.getState("state2");
 		try {
 			assertFalse(view.isNonvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
-			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view2", "test1").getMessage(), vre.getMessage());
+			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state2", "test1").getMessage(), vre.getMessage());
 		}
 		try {
 			assertFalse(view.isNonvariantIn(schema.getTest("Test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
-			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view2", "Test1").getMessage(), vre.getMessage());
+			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state2", "Test1").getMessage(), vre.getMessage());
 		}
 
-		view = schema.getView("view4");
+		view = schema.getState("state4");
 		try {
 			assertFalse(view.isNonvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
-			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view4", "test1").getMessage(), vre.getMessage());
+			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state4", "test1").getMessage(), vre.getMessage());
 		}
 		
-		view = schema.getView("view5");
+		view = schema.getState("state5");
 		try {
 			assertFalse(view.isNonvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
-			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST, "view5", "test1").getMessage(), vre.getMessage());
+			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state5", "test1").getMessage(), vre.getMessage());
 		}
 
 	}
@@ -81,7 +81,7 @@ public class RuntimeExceptionTest extends BaseTest {
 		if (response.hasMessages()) printErrors(response);
 		assertFalse(response.hasMessages());
 		final Schema schema = engine.getSchema();		
-		assertNull(schema.getView("non-existent"));
+		assertNull(schema.getState("non-existent"));
 
 	}
 }

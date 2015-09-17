@@ -61,7 +61,7 @@ public class VariantCollectionsUtils {
 	 */
 	public static Map<?,?> mapMerge(Map<?,?>...maps) {
 		Map<Object,Object> result = new HashMap<Object,Object>();
-		for (int i = 0; i < 0; i++) {
+		for (int i = 0; i < maps.length; i++) {
 			result.putAll(maps[i]);
 		}
 		return result;

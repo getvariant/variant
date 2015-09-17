@@ -2,6 +2,8 @@ package com.variant.core.tests;
 
 import static org.junit.Assert.assertFalse;
 
+import java.util.HashMap;
+
 import org.junit.After;
 import org.junit.Test;
 
@@ -35,12 +37,13 @@ public class EventWriterTest extends BaseTest {
 
 		long timestamp = System.currentTimeMillis();
 		Schema schema = engine.getSchema();
-		State view = schema.getView("view1");
+		State state = schema.getState("state1");
 		VariantSession ssn = engine.getSession("foo");
-		VariantViewRequest request = engine.startViewRequest(ssn, view, timestamp + ".test1.A");
-		StateServeEventTestFacade event1 = new StateServeEventTestFacade(request, "viewResolvedPath");
-		request = engine.startViewRequest(ssn, view, timestamp + ".test1.B");
-		StateServeEventTestFacade event2 = new StateServeEventTestFacade(request, "viewResolvedPath");
+		VariantViewRequest request = engine.newStateRequest(ssn, state, timestamp + ".state1.A");
+		HashMap<String,String> params = new HashMap<String, String>() {{put("path", "viewResolvedPath");}};
+		StateServeEventTestFacade event1 = new StateServeEventTestFacade(request, params);
+		request = engine.newStateRequest(ssn, state, timestamp + ".state1.B");
+		StateServeEventTestFacade event2 = new StateServeEventTestFacade(request, params);
 		event1.setParameter("event1-key1", "value1");
 		event2.setParameter("event2-key1", "value1");
 		event2.setParameter("event2-key2", "value2"); 
