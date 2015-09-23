@@ -8,7 +8,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.TestParsedEventListener;
-import com.variant.core.schema.parser.ViewParsedEventListener;
+import com.variant.core.schema.parser.StateParsedEventListener;
 
 /**
  * The Variant CORE API.
@@ -53,7 +53,7 @@ public interface Variant {
 	 * 
 	 * @param listener
 	 */
-	public void addListener(ViewParsedEventListener listener);
+	public void addListener(StateParsedEventListener listener);
 
 	/**
 	 * Parse and, if no errors, optionally deploy a new schema.
@@ -105,13 +105,13 @@ public interface Variant {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public VariantViewRequest newStateRequest(VariantSession session, State view, Object targetingPersisterUserData);
+	public VariantStateRequest newStateRequest(VariantSession session, State view, Object targetingPersisterUserData);
 	
 	/**
 	 * Commit of a view request.
 	 * @param request
 	 */
-	public void commitStateRequest(VariantViewRequest request, Object sessionIdPersisterUserData);
+	public void commitStateRequest(VariantStateRequest request, Object sessionIdPersisterUserData);
 		
 	/**
 	 * Factory singleton class.

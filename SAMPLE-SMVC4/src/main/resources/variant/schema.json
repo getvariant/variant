@@ -1,10 +1,14 @@
 {                                                           
-   'views':[                                                
+   'states':[                                                
      {  'name':'newOwner',                                     
-        'path':'/petclinic/owners/new'
+	    'parameters': {
+           'path':'/petclinic/owners/new'
+        }                                                    
      },                                                    
-     {  'name':'ownerDetail',                                     
-        'path':'/petclinic/owners/~\\d+/'
+     {  'name':'ownerDetail',          
+	    'parameters': {
+           'path':'/petclinic/owners/~\\d+/'
+        }                                                    
      }                                                     
    ],                                                        
    'tests':[                                                 
@@ -25,22 +29,26 @@
                'weight':1                                   
             }                                               
          ],                                                  
-         'onViews':[                                         
+         'onStates':[                                         
             {                                                
-               'viewRef':'newOwner',                            
+               'stateRef':'newOwner',                            
                'variants':[                                  
                   {                                          
                      'experienceRef': 'tosCheckbox',                   
-                     'path':'/owners/new/variant/newOwnerTest.tosCheckbox'         
+                	 'parameters': {
+                        'path':'/owners/new/variant/newOwnerTest.tosCheckbox'         
+                     }                                          
                   },                                         
                   {                                          
                      'experienceRef': 'tos&mailCheckbox',                   
-                     'path':'/owners/new/variant/newOwnerTest.tosAndMailCheckbox'         
+                	 'parameters': {
+                        'path':'/owners/new/variant/newOwnerTest.tosAndMailCheckbox'         
+                     }                                          
                   }                                          
                ]                                             
             },
             {                                                
-               'viewRef':'ownerDetail',                            
+               'stateRef':'ownerDetail',                            
                'isNonvariant': true
             }                                                
             

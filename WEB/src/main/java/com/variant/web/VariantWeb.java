@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantSession;
-import com.variant.core.VariantViewRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -121,17 +121,16 @@ public class VariantWeb {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public static VariantViewRequest startViewRequest(State view, HttpServletRequest request) {
-		getSchema().registerCustomViewSelectorByPath(new ViewSelectorByRequestPath());
-		return engine.startViewRequest(getSession(request), view, request);
+	public static VariantStateRequest newStateRequest(State view, HttpServletRequest request) {
+		return engine.newStateRequest(getSession(request), view, request);
 	}
 	
 	/**
 	 * Commit a view request.
 	 * @param request
 	 */
-	public static void commitViewRequest(VariantViewRequest viewRequest, HttpServletResponse httpResponse) {
-		engine.commitViewRequest(viewRequest, httpResponse);
+	public static void commitViewRequest(VariantStateRequest viewRequest, HttpServletResponse httpResponse) {
+		engine.commitStateRequest(viewRequest, httpResponse);
 	}
 
 }

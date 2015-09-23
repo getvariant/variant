@@ -8,7 +8,7 @@ import java.util.Set;
 
 import com.variant.core.VariantEvent;
 import com.variant.core.VariantSession;
-import com.variant.core.VariantViewRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test.Experience;
 
@@ -24,7 +24,7 @@ abstract public class VariantEventSupport implements VariantEvent {
 	protected Map<String, Object> params = new HashMap<String, Object>();
 	
 	protected Long id = null;
-	protected VariantViewRequest request;
+	protected VariantStateRequest request;
 	protected Date createDate;
 	protected String eventName;
 	protected String eventValue;
@@ -33,7 +33,7 @@ abstract public class VariantEventSupport implements VariantEvent {
 	 * Constructor
 	 * @return
 	 */
-	protected VariantEventSupport(VariantViewRequest request, String eventName, String eventValue) {
+	protected VariantEventSupport(VariantStateRequest request, String eventName, String eventValue) {
 		this.request = request;
 		this.createDate = new Date();
 		this.eventName = eventName;

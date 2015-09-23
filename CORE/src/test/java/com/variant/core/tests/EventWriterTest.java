@@ -8,7 +8,7 @@ import org.junit.After;
 import org.junit.Test;
 
 import com.variant.core.VariantSession;
-import com.variant.core.VariantViewRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.impl.StateServeEventTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -39,7 +39,7 @@ public class EventWriterTest extends BaseTest {
 		Schema schema = engine.getSchema();
 		State state = schema.getState("state1");
 		VariantSession ssn = engine.getSession("foo");
-		VariantViewRequest request = engine.newStateRequest(ssn, state, timestamp + ".state1.A");
+		VariantStateRequest request = engine.newStateRequest(ssn, state, timestamp + ".state1.A");
 		HashMap<String,String> params = new HashMap<String, String>() {{put("path", "viewResolvedPath");}};
 		StateServeEventTestFacade event1 = new StateServeEventTestFacade(request, params);
 		request = engine.newStateRequest(ssn, state, timestamp + ".state1.B");

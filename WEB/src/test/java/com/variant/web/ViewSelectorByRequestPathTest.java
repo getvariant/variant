@@ -8,37 +8,37 @@ public class ViewSelectorByRequestPathTest {
 	@Test
 	public void matcherTest() {
 		
-		assertTrue(ViewSelectorByRequestPath.match("/foo", "/foo/"));
-		assertTrue(ViewSelectorByRequestPath.match("/foo", "/foo"));
-		assertTrue(ViewSelectorByRequestPath.match("/foo/", "/foo/"));
-		assertTrue(ViewSelectorByRequestPath.match("/foo", "/foo"));
-		assertTrue(ViewSelectorByRequestPath.match("/foo/", "/foo"));
-		assertTrue(ViewSelectorByRequestPath.match("/foo//", "/foo"));
-		assertTrue(ViewSelectorByRequestPath.match("/foo//", "/foo/"));
-		assertFalse(ViewSelectorByRequestPath.match("/foo/", "/foo/bar"));
-		assertTrue(ViewSelectorByRequestPath.match("/~foo/", "/foo/"));
-		assertTrue(ViewSelectorByRequestPath.match("/~f(o*)/", "/foo/"));
-		assertTrue(ViewSelectorByRequestPath.match("//", "/foo/"));
-		assertTrue(ViewSelectorByRequestPath.match("/~.*/", "/foo/"));
-		assertTrue(ViewSelectorByRequestPath.match("///", "/foo/"));
-		assertTrue(ViewSelectorByRequestPath.match("/foo//", "/foo/"));
-		assertFalse(ViewSelectorByRequestPath.match("//foo/", "/foo/"));
+		assertTrue(StateSelectorByRequestPath.match("/foo", "/foo/"));
+		assertTrue(StateSelectorByRequestPath.match("/foo", "/foo"));
+		assertTrue(StateSelectorByRequestPath.match("/foo/", "/foo/"));
+		assertTrue(StateSelectorByRequestPath.match("/foo", "/foo"));
+		assertTrue(StateSelectorByRequestPath.match("/foo/", "/foo"));
+		assertTrue(StateSelectorByRequestPath.match("/foo//", "/foo"));
+		assertTrue(StateSelectorByRequestPath.match("/foo//", "/foo/"));
+		assertFalse(StateSelectorByRequestPath.match("/foo/", "/foo/bar"));
+		assertTrue(StateSelectorByRequestPath.match("/~foo/", "/foo/"));
+		assertTrue(StateSelectorByRequestPath.match("/~f(o*)/", "/foo/"));
+		assertTrue(StateSelectorByRequestPath.match("//", "/foo/"));
+		assertTrue(StateSelectorByRequestPath.match("/~.*/", "/foo/"));
+		assertTrue(StateSelectorByRequestPath.match("///", "/foo/"));
+		assertTrue(StateSelectorByRequestPath.match("/foo//", "/foo/"));
+		assertFalse(StateSelectorByRequestPath.match("//foo/", "/foo/"));
 		
-		assertTrue(ViewSelectorByRequestPath.match("/foo/bar", "/foo/bar/"));
-		assertTrue(ViewSelectorByRequestPath.match("/foo/bar/", "/foo/bar/"));	
-		assertTrue(ViewSelectorByRequestPath.match("/foo/bar", "/foo/bar"));
-		assertFalse(ViewSelectorByRequestPath.match("/foo/bar/x", "/foo/bar"));
-		assertTrue(ViewSelectorByRequestPath.match("//bar/", "/foo/bar/"));		
-		assertTrue(ViewSelectorByRequestPath.match("//bar/", "/foo/bar/"));		
-		assertTrue(ViewSelectorByRequestPath.match("/foo//", "/foo/bar/"));		
-		assertTrue(ViewSelectorByRequestPath.match("///", "/foo/bar/"));		
-		assertFalse(ViewSelectorByRequestPath.match("//", "/foo/bar/"));		
-		assertTrue(ViewSelectorByRequestPath.match("/~f(o*)/~b(ar)?", "/foo/bar/"));		
-		assertFalse(ViewSelectorByRequestPath.match("/~f(o*)/b(ar)?", "/foo/bar/"));		
-		assertTrue(ViewSelectorByRequestPath.match("/~f(o*)/~b(ar)?/", "/foo/bar/"));	
-		assertTrue(ViewSelectorByRequestPath.match("/~f(o*)/~b(ar)?//", "/foo/bar/"));	
-		assertTrue(ViewSelectorByRequestPath.match("/~f(o*)/~b(ar)?///", "/foo/bar/"));	
+		assertTrue(StateSelectorByRequestPath.match("/foo/bar", "/foo/bar/"));
+		assertTrue(StateSelectorByRequestPath.match("/foo/bar/", "/foo/bar/"));	
+		assertTrue(StateSelectorByRequestPath.match("/foo/bar", "/foo/bar"));
+		assertFalse(StateSelectorByRequestPath.match("/foo/bar/x", "/foo/bar"));
+		assertTrue(StateSelectorByRequestPath.match("//bar/", "/foo/bar/"));		
+		assertTrue(StateSelectorByRequestPath.match("//bar/", "/foo/bar/"));		
+		assertTrue(StateSelectorByRequestPath.match("/foo//", "/foo/bar/"));		
+		assertTrue(StateSelectorByRequestPath.match("///", "/foo/bar/"));		
+		assertFalse(StateSelectorByRequestPath.match("//", "/foo/bar/"));		
+		assertTrue(StateSelectorByRequestPath.match("/~f(o*)/~b(ar)?", "/foo/bar/"));		
+		assertFalse(StateSelectorByRequestPath.match("/~f(o*)/b(ar)?", "/foo/bar/"));		
+		assertTrue(StateSelectorByRequestPath.match("/~f(o*)/~b(ar)?/", "/foo/bar/"));	
+		assertTrue(StateSelectorByRequestPath.match("/~f(o*)/~b(ar)?//", "/foo/bar/"));	
+		assertTrue(StateSelectorByRequestPath.match("/~f(o*)/~b(ar)?///", "/foo/bar/"));	
 		
-		assertTrue(ViewSelectorByRequestPath.match("/petclinic/owners/~\\d+/", "/petclinic/owners/11"));
+		assertTrue(StateSelectorByRequestPath.match("/petclinic/owners/~\\d+/", "/petclinic/owners/11"));
 	}
 }

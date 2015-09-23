@@ -11,7 +11,7 @@ import static com.variant.core.schema.parser.MessageTemplate.*;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.parser.TestParsedEventListener;
-import com.variant.core.schema.parser.ViewParsedEventListener;
+import com.variant.core.schema.parser.StateParsedEventListener;
 
 /**
  * Package visible annotation processor.
@@ -62,11 +62,11 @@ class AnnotationProcessor {
 				case VIEW:
 					try {
 						@SuppressWarnings("unchecked")
-						ViewParsedEventListener listener = ((Class<ViewParsedEventListener>)clazz).newInstance();
+						StateParsedEventListener listener = ((Class<StateParsedEventListener>)clazz).newInstance();
 						Variant.Factory.getInstance().addListener(listener);
 					}
 					catch (ClassCastException e) {
-						throw new VariantRuntimeException(BOOT_PARSER_LISTENER_NO_INTERFACE, className, ParserEventListener.class.getName(), ViewParsedEventListener.class.getName());
+						throw new VariantRuntimeException(BOOT_PARSER_LISTENER_NO_INTERFACE, className, ParserEventListener.class.getName(), StateParsedEventListener.class.getName());
 					}
 					break;
 				}

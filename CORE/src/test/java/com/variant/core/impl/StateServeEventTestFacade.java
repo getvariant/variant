@@ -2,7 +2,7 @@ package com.variant.core.impl;
 
 import java.util.Map;
 
-import com.variant.core.VariantViewRequest;
+import com.variant.core.VariantStateRequest;
 
 /**
  * Exposes package methods to tests.
@@ -18,9 +18,9 @@ public class StateServeEventTestFacade extends StateServeEvent {
 	 * @param status
 	 * @param viewResolvedPath
 	 */
-	public StateServeEventTestFacade(VariantViewRequest request, Map<String,String> params) {
+	public StateServeEventTestFacade(VariantStateRequest request, Map<String,String> params) {
 
-		super((VariantViewRequestImpl)request, params);
+		super((VariantStateRequestImpl)request, params);
 	}
 
 }

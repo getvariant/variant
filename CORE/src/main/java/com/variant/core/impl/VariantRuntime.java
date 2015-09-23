@@ -343,11 +343,11 @@ public class VariantRuntime {
 	 * @param view
 	 * @return
 	 */
-	public static VariantViewRequestImpl startViewRequest(VariantSession ssn, State state, TargetingPersister targetingPersister) {
+	public static VariantStateRequestImpl startViewRequest(VariantSession ssn, State state, TargetingPersister targetingPersister) {
 
 		// Resolve the path and get all tests instrumented on the given view targeted.
 		Map<String,String> resolvedParams = targetSessionForState(ssn, state, targetingPersister);		
-		VariantViewRequestImpl result = new VariantViewRequestImpl((VariantSessionImpl)ssn, (StateImpl) state);
+		VariantStateRequestImpl result = new VariantStateRequestImpl((VariantSessionImpl)ssn, (StateImpl) state);
 		result.setResolvedParameters(resolvedParams);
 		
 		if (LOG.isDebugEnabled()) {

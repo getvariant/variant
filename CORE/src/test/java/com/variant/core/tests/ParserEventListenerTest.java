@@ -11,7 +11,7 @@ import com.variant.core.exception.VariantException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.TestParsedEventListener;
-import com.variant.core.schema.parser.ViewParsedEventListener;
+import com.variant.core.schema.parser.StateParsedEventListener;
 
 /**
  * TODO: Need to also test annotations.
@@ -23,7 +23,7 @@ public class ParserEventListenerTest extends BaseTest {
 	@Test
 	public void viewParsedListenerTest() throws Exception {
 		Variant variant = Variant.Factory.getInstance();
-		ViewParsedEventListenerImpl listener = new ViewParsedEventListenerImpl();
+		StateParsedEventListenerImpl listener = new StateParsedEventListenerImpl();
 		variant.addListener(listener);
 		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printErrors(response);
@@ -47,12 +47,12 @@ public class ParserEventListenerTest extends BaseTest {
 	/**
 	 * 
 	 */
-	private static class ViewParsedEventListenerImpl implements ViewParsedEventListener {
+	private static class StateParsedEventListenerImpl implements StateParsedEventListener {
 
 		private ArrayList<State> viewList = new ArrayList<State>();
 		
 		@Override
-		public void viewParsed(State view) throws VariantException {
+		public void stateParsed(State view) throws VariantException {
 			viewList.add(view);
 		}		
 	}

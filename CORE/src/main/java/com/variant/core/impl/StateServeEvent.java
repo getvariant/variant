@@ -14,12 +14,12 @@ public class StateServeEvent extends VariantEventSupport {
 	private static final String EVENT_NAME = "VIEW_SERVE";
 	private static final String PARAM_NAME_REQUEST_STATUS = "VIEW_REQUEST_STAUTS";
 	
-	private VariantViewRequestImpl request;
+	private VariantStateRequestImpl request;
 	
 	/**
 	 * New constructor
 	 */
-	StateServeEvent(VariantViewRequestImpl request, Map<String,String> resolvedParameters) {
+	StateServeEvent(VariantStateRequestImpl request, Map<String,String> resolvedParameters) {
 		super(request, EVENT_NAME, request.getState().getName());
 		this.request = request;
 		for (Map.Entry<String, String> param: resolvedParameters.entrySet()) {
@@ -32,7 +32,7 @@ public class StateServeEvent extends VariantEventSupport {
 	/**
 	 * @return
 	 */
-	public VariantViewRequestImpl getViewRequest() {
+	public VariantStateRequestImpl getViewRequest() {
 		return request;
 	}
 	

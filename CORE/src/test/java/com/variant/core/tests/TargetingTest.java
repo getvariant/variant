@@ -81,7 +81,7 @@ public class TargetingTest extends BaseTest {
 			    "}                                                             \n";
 		
 		ParserResponse response = engine.parseSchema(config);
-printErrors(response);
+
 		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();

@@ -18,7 +18,7 @@ import com.variant.core.schema.parser.MessageTemplate;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.schema.parser.TestParsedEventListener;
-import com.variant.core.schema.parser.ViewParsedEventListener;
+import com.variant.core.schema.parser.StateParsedEventListener;
 import com.variant.core.util.VariantStringUtils;
 
 public class SchemaParser implements Keywords {
@@ -76,7 +76,7 @@ public class SchemaParser implements Keywords {
 	@SuppressWarnings("unchecked")
 	public static ParserResponseImpl parse(
 			String configAsJsonString,
-			List<ViewParsedEventListener> viewParsedEventListeners,
+			List<StateParsedEventListener> viewParsedEventListeners,
 			List<TestParsedEventListener> testParsedEventListeners) 
 	throws VariantRuntimeException {
 		
@@ -122,10 +122,10 @@ public class SchemaParser implements Keywords {
 		else {
 			StatesParser.parseViews(views, response);
 			if (viewParsedEventListeners != null) {
-				for (ViewParsedEventListener listener: viewParsedEventListeners) {
+				for (StateParsedEventListener listener: viewParsedEventListeners) {
 					for (State state: response.getSchema().getStates()) {
 						try {
-							listener.viewParsed(state);
+							listener.stateParsed(state);
 						}
 						catch (VariantException e) {
 							response.addError(MessageTemplate.BOOT_PARSER_LISTENER_EXCEPTION, listener.getClass().getName(), e.getMessage(), state.getName());

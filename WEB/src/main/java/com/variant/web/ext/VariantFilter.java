@@ -16,7 +16,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantViewRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
@@ -24,6 +24,7 @@ import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.util.VariantIoUtils;
 import com.variant.web.VariantWeb;
+import com.variant.web.StateSelectorByRequestPath;
 import com.variant.web.util.VariantWebUtils;
 
 /**
@@ -95,20 +96,22 @@ public class VariantFilter implements Filter {
 		
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		VariantViewRequest variantRequest = null;
-		String forwardUrl = null;
+		VariantStateRequest variantRequest = null;
 		
 		if (VariantWeb.isBootstrapped()) {
 			
 			long start = System.currentTimeMillis();
+
+			String resolvedPath = null;
+			boolean isForwarding = false;
 			
 			try {
 
 				// Is this request's URI mapped in Variant?
 				String url = VariantWebUtils.requestUrl(httpRequest);
-				State view = VariantWeb.getSchema().matchViewByPath(url);
+				State state = StateSelectorByRequestPath.select(url);
 				
-				if (view == null) {
+				if (state == null) {
 
 					// We don't know about this path.
 					if (LOG.isDebugEnabled()) {
@@ -119,28 +122,23 @@ public class VariantFilter implements Filter {
 				else {
 				
 					// Yes, this path is mapped in Variant.
-					variantRequest = VariantWeb.startViewRequest(view, httpRequest);
-
+					variantRequest = VariantWeb.newStateRequest(state, httpRequest);
+					resolvedPath = variantRequest.getResolvedParameterMap().get("path");
+					isForwarding = !resolvedPath.equals(state.getParameter("path"));
+					
 					if (LOG.isDebugEnabled()) {
 
 						String msg = 
-								"Variant dispatcher for path [" + variantRequest.getState().getPath() +
+								"Variant dispatcher for URL [" + url +
 								"] completed in " + DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS") +". ";
-						if (variantRequest.isForwarding()) {
-							msg += "Forwarding to path [" + variantRequest.resolvedViewPath() + "].";
+						if (isForwarding) {
+							msg += "Forwarding to path [" + resolvedPath + "].";							
 						}
 						else {
 							msg += "Falling through to requested URL";
 						}
 						LOG.debug(msg);
-					}
-					
-					if (variantRequest.isForwarding()) {
-						forwardUrl = variantRequest.resolvedViewPath();
-						if (forwardUrl == null) {
-							throw new VariantInternalException("Resovled path cannot be null for session [" + variantRequest.getSession().getId() + "]");
-						}
-					}
+					}					
 				}
 			}
 			catch (Throwable t) {
@@ -151,11 +149,11 @@ public class VariantFilter implements Filter {
 				variantRequest = null;
 			}
 
-			if (forwardUrl == null) {
-				chain.doFilter(request, response);							
+			if (isForwarding) {
+				request.getRequestDispatcher(resolvedPath).forward(request, response);
 			}				
 			else {
-				request.getRequestDispatcher(forwardUrl).forward(request, response);
+				chain.doFilter(request, response);							
 			}
 								
 			if (VariantWeb.isBootstrapped() && variantRequest != null) {

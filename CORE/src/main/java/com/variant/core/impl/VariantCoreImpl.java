@@ -21,7 +21,7 @@ import com.variant.core.Variant;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
-import com.variant.core.VariantViewRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
 import com.variant.core.exception.VariantInternalException;
@@ -36,7 +36,7 @@ import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.schema.parser.TestParsedEventListener;
-import com.variant.core.schema.parser.ViewParsedEventListener;
+import com.variant.core.schema.parser.StateParsedEventListener;
 import com.variant.core.session.SessionService;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.util.VariantIoUtils;
@@ -56,7 +56,7 @@ public class VariantCoreImpl implements Variant {
 	private EventWriter eventWriter = null;
 	private SessionService sessionService = null;
 	private ArrayList<TestParsedEventListener> testParsedEventListeners = new ArrayList<TestParsedEventListener>();
-	private ArrayList<ViewParsedEventListener> viewParsedEventListeners = new ArrayList<ViewParsedEventListener>();
+	private ArrayList<StateParsedEventListener> viewParsedEventListeners = new ArrayList<StateParsedEventListener>();
 			
 	private static String version() {
 		String version = RuntimeService.getVersion();
@@ -351,7 +351,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public VariantViewRequest newStateRequest(VariantSession session, State view, Object targetingPersisterUserData) {
+	public VariantStateRequest newStateRequest(VariantSession session, State view, Object targetingPersisterUserData) {
 		
 		stateCheck();
 		
@@ -381,11 +381,11 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public void commitStateRequest(VariantViewRequest request, Object userData) {
+	public void commitStateRequest(VariantStateRequest request, Object userData) {
 
 		stateCheck();
 		
-		if (((VariantViewRequestImpl)request).isCommitted()) {
+		if (((VariantStateRequestImpl)request).isCommitted()) {
 			throw new IllegalStateException("Request already committed");
 		}
 		
@@ -403,7 +403,7 @@ public class VariantCoreImpl implements Variant {
 			ew.write(event);		
 		}
 		
-		((VariantViewRequestImpl)request).commit();
+		((VariantStateRequestImpl)request).commit();
 		
 	}
 	
@@ -415,7 +415,7 @@ public class VariantCoreImpl implements Variant {
 	}
 
 	@Override
-	public void addListener(ViewParsedEventListener listener) {
+	public void addListener(StateParsedEventListener listener) {
 		stateCheck();		
 		if (listener == null) throw new IllegalArgumentException("Argument cannot be null");
 		viewParsedEventListeners.add(listener);

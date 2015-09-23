@@ -10,14 +10,14 @@ import java.util.Map;
 
 import com.variant.core.VariantEventExperience;
 import com.variant.core.VariantSession;
-import com.variant.core.VariantViewRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.impl.StateServeEvent;
+import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.util.VariantCollectionsUtils;
@@ -1115,7 +1115,7 @@ public class VariantRuntimeTest extends BaseTest {
 		String persisterString = timestamp + ".test2.B";
 		VariantSession ssn = engine.getSession("foo-key");
 		// Core implementation makes no distinction between session udser data and targeting persister user data.
-		VariantViewRequest req = engine.newStateRequest(ssn, state1, persisterString);
+		VariantStateRequest req = engine.newStateRequest(ssn, state1, persisterString);
 		TargetingPersister tp = req.getTargetingPersister();
 
 		// test2 is off, but TP has a variant experience for it, which will be substituted for the purposes of lookup with control.

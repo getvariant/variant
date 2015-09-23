@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
-import com.variant.core.VariantViewRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.jdbc.JdbcUtil;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -38,9 +38,9 @@ public class EventDataPopulator {
 		Schema schema = VariantWeb.getSchema();
 		com.variant.core.schema.Test test = schema.getTest("NewOwnerTest");
 		assertNotNull(test);
-		State newOwnerView = schema.getView("newOwner");
+		State newOwnerView = schema.getState("newOwner");
 		assertNotNull(newOwnerView);
-		State ownerDetailView = schema.getView("ownerDetail");
+		State ownerDetailView = schema.getState("ownerDetail");
 		assertNotNull(ownerDetailView);
 		int ssnId = 1;
 		for (int i = 0; i < COUNT; i++) {
@@ -48,8 +48,8 @@ public class EventDataPopulator {
 			VariantSession ssn = Variant.Factory.getInstance().getSession(String.valueOf(ssnId++));
 			
 			// Everyone gets to the first page... Emulating new visits.
-			VariantViewRequest request = Variant.Factory.getInstance().startViewRequest(ssn, newOwnerView, "");
-			Variant.Factory.getInstance().commitViewRequest(request, null);
+			VariantStateRequest request = Variant.Factory.getInstance().newStateRequest(ssn, newOwnerView, "");
+			Variant.Factory.getInstance().commitStateRequest(request, null);
 			
 			// Some experiences don't get to the next page, simulating drop-off.
 			com.variant.core.schema.Test.Experience exp = request.getTargetedExperience(test);
@@ -59,8 +59,8 @@ public class EventDataPopulator {
 			else if (exp.getName().equals("tos&mailCheckbox")) skip = nextBoolean(0.15);
 			
 			if (!skip) {
-				request = Variant.Factory.getInstance().startViewRequest(ssn, ownerDetailView, request.getTargetingPersister().toString());
-				Variant.Factory.getInstance().commitViewRequest(request, null);
+				request = Variant.Factory.getInstance().newStateRequest(ssn, ownerDetailView, request.getTargetingPersister().toString());
+				Variant.Factory.getInstance().commitStateRequest(request, null);
 			}
 			Thread.sleep(rand.nextInt(10));
 		}
