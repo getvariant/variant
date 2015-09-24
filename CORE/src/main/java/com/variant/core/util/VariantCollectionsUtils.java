@@ -28,6 +28,18 @@ public class VariantCollectionsUtils {
 	}
 	
 	/**
+	 * Create a new List as a concatenation of given lists.
+	 * @param elems
+	 * @return
+	 */
+	@SafeVarargs
+	public static <T> List<T> list(List<T>...lists) {
+		ArrayList<T> result = new ArrayList<T>();
+		for (List<T> list: lists) result.addAll(list);
+		return result;
+	}
+
+	/**
 	 * Does collection a contain collection b?
 	 * @param a
 	 * @param b

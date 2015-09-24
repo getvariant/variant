@@ -28,6 +28,12 @@ public class ParserResponseImpl implements ParserResponse {
 		return config;
 	}
 
+	@Override
+	public void addMessage(Severity severity, String message) {
+		ParserMessage result = new ParserMessage(severity, message);
+		messages.add(result);
+	}
+
 	/**
 	 * 
 	 * @return Highest severity if there are any messages, or null otherwise.
@@ -76,7 +82,7 @@ public class ParserResponseImpl implements ParserResponse {
 	 * 
 	 * @param error
 	 */
-	public ParserMessage addError(MessageTemplate template, int line, int column, String...args) {
+	public ParserMessage addMessage(MessageTemplate template, int line, int column, String...args) {
 		
 		ParserMessage result;
 		
@@ -94,7 +100,7 @@ public class ParserResponseImpl implements ParserResponse {
 	 * 
 	 * @param error
 	 */
-	public ParserMessage addError(MessageTemplate template, String...args) {
+	public ParserMessage addMessage(MessageTemplate template, String...args) {
 		ParserMessage result = new ParserMessage(template, args);
 		messages.add(result);
 		return result;

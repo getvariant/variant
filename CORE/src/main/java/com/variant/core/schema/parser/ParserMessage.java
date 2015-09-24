@@ -8,8 +8,9 @@ package com.variant.core.schema.parser;
  */
 public class ParserMessage {
 	
-	private MessageTemplate template;
-	private String[] args;
+	private Severity severity;
+	private String message;
+	private String code;	
 	private Integer line = null, column = null;
 
 	/**
@@ -18,8 +19,9 @@ public class ParserMessage {
 	 * @param args
 	 */
 	public ParserMessage(MessageTemplate template, String...args) {
-		this.template = template;
-		this.args = args;
+		severity = template.getSeverity();
+		message = String.format(template.getFormat(), (Object[]) args);
+		code = template.toString();
 	}
 
 	/**
@@ -35,6 +37,17 @@ public class ParserMessage {
 		this.column = column;
 	}
 
+	/**
+	 * User defined errors do not use templates.
+	 * @param template
+	 * @param args
+	 */
+	public ParserMessage(Severity severity, String message) {
+		this.severity = severity;
+		this.message = message;
+		code = "USER_DEFINED_MESSAGE";
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -44,7 +57,7 @@ public class ParserMessage {
 	 * @return
 	 */
 	public Severity getSeverity() {
-		return template.getSeverity();
+		return severity;
 	}
 
 	/**
@@ -52,7 +65,7 @@ public class ParserMessage {
 	 * @return
 	 */
 	public String getMessage() {
-		return String.format(template.getFormat(), (Object[]) args);
+		return message;
 	}
 	
 	/**
@@ -60,7 +73,7 @@ public class ParserMessage {
 	 * @return
 	 */
 	public String getCode() {
-		return template.toString();
+		return code;
 	}
 
 	/**

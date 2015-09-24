@@ -1,5 +1,6 @@
 package com.variant.core.schema.impl;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,15 +11,21 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.variant.core.Variant;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.schema.Test;
+import com.variant.core.flashpoint.Flashpoint;
+import com.variant.core.flashpoint.FlashpointListener;
+import com.variant.core.flashpoint.ParserFlashpoint;
+import com.variant.core.flashpoint.StateParsedFlashpoint;
+import com.variant.core.flashpoint.StateParsedFlashpointListener;
+import com.variant.core.flashpoint.TestParsedFlashpointListener;
+import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.MessageTemplate;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.Severity;
-import com.variant.core.schema.parser.TestParsedEventListener;
-import com.variant.core.schema.parser.StateParsedEventListener;
 import com.variant.core.util.VariantStringUtils;
 
 public class SchemaParser implements Keywords {
@@ -45,40 +52,44 @@ public class SchemaParser implements Keywords {
 		String[] tokens = tail.split(",");
 		int line = Integer.parseInt(tokens[0]);
 		int column = Integer.parseInt(tokens[1]);
-		response.addError(MessageTemplate.PARSER_JSON_PARSE, line, column, message.toString(), rawInput);
+		response.addMessage(MessageTemplate.PARSER_JSON_PARSE, line, column, message.toString(), rawInput);
 
 	}
 	
-	
+	/**
+	 * Extract listeners subscribed to object parsed flashpoints.
+	 * @return
+	 */
+	private static List<FlashpointListener<? extends Flashpoint>> objectParsedListeners(Class<?> clazz) {
+		
+		List<FlashpointListener<? extends Flashpoint>> result = 
+				new ArrayList<FlashpointListener<? extends Flashpoint>>();
+		
+		for (FlashpointListener<?> listener: ((VariantCoreImpl)Variant.Factory.getInstance()).getFlashpointListeners()) {
+			try {
+				FlashpointListener<? extends Flashpoint> castListener = null;
+				// if the cast fails, its a noop.
+				if (clazz == State.class) castListener = (StateParsedFlashpointListener) listener; 
+				if (clazz == Test.class)  castListener = (TestParsedFlashpointListener) listener; 
+				result.add(castListener);
+			}
+			catch (ClassCastException e) {}
+		}
+		
+		return result;
+	}
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-	
+		
 	/**
-	 * 
+	 * Parse schema from string.
 	 * @param configAsJsonString
-	 * @return
-	 * @throws VariantRuntimeException
-	 */
-	public static ParserResponseImpl parse(String configAsJsonString)
-	throws VariantRuntimeException {
-		return parse(configAsJsonString, null, null);
-	}
-	
-	/**
-	 * 
-	 * @param configAsJsonString
-	 * @param viewParsedEventListeners
-	 * @param testParsedEventListeners
 	 * @return
 	 * @throws VariantRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	public static ParserResponseImpl parse(
-			String configAsJsonString,
-			List<StateParsedEventListener> viewParsedEventListeners,
-			List<TestParsedEventListener> testParsedEventListeners) 
-	throws VariantRuntimeException {
+	public static ParserResponseImpl parse(String configAsJsonString) throws VariantRuntimeException {
 		
 		ParserResponseImpl response = new ParserResponseImpl();
 		
@@ -95,7 +106,7 @@ public class SchemaParser implements Keywords {
 			toParserError(parseException, configAsJsonString, response);
 		} 
 		catch (Exception e) {
-			ParserMessage err = response.addError(MessageTemplate.INTERNAL, e.getMessage());
+			ParserMessage err = response.addMessage(MessageTemplate.INTERNAL, e.getMessage());
 			LOG.error(err.getMessage(), e);
 		}
 		
@@ -110,26 +121,28 @@ public class SchemaParser implements Keywords {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {
-				response.addError(MessageTemplate.PARSER_UNSUPPORTED_CLAUSE, entry.getKey());
+				response.addMessage(MessageTemplate.PARSER_UNSUPPORTED_CLAUSE, entry.getKey());
 			}
 		}
 		
 		// Pass2. Look at all clauses.  Expected ones are already uppercased.
-		Object views = cleanMap.get(KEYWORD_STATES.toUpperCase());
-		if (views == null) {
-			response.addError(MessageTemplate.PARSER_NO_STATES_CLAUSE);
+		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());
+		if (states == null) {
+			response.addMessage(MessageTemplate.PARSER_NO_STATES_CLAUSE);
 		}
 		else {
-			StatesParser.parseViews(views, response);
-			if (viewParsedEventListeners != null) {
-				for (StateParsedEventListener listener: viewParsedEventListeners) {
-					for (State state: response.getSchema().getStates()) {
-						try {
-							listener.stateParsed(state);
-						}
-						catch (VariantException e) {
-							response.addError(MessageTemplate.BOOT_PARSER_LISTENER_EXCEPTION, listener.getClass().getName(), e.getMessage(), state.getName());
-						}
+			
+			// Parse all states
+			StatesParser.parseStates(states, response);
+			
+			// Post flashpoint listeners.
+			for (FlashpointListener<? extends Flashpoint> listener: objectParsedListeners(State.class)) {
+				for (State state: response.getSchema().getStates()) {
+					try {
+						((StateParsedFlashpointListener)listener).reached(new StateParsedFlashpointImpl(state, response));
+					}
+					catch (VariantException e) {
+						response.addMessage(MessageTemplate.FLASHPOINT_LISTENER_EXCEPTION, listener.getClass().getName(), e.getMessage());
 					}
 				}
 			}
@@ -139,14 +152,21 @@ public class SchemaParser implements Keywords {
 
 		Object tests = cleanMap.get(KEYWORD_TESTS.toUpperCase());
 		if (tests == null) {
-			response.addError(MessageTemplate.PARSER_NO_TESTS_CLAUSE);
+			response.addMessage(MessageTemplate.PARSER_NO_TESTS_CLAUSE);
 		}
 		else {
+			
+			// Parse all tests
 			TestsParser.parseTests(tests, response);
-			if (testParsedEventListeners != null) {
-				for (TestParsedEventListener listener: testParsedEventListeners) {
-					for (Test test: response.getSchema().getTests()) {
-						listener.testParsed(test);
+			
+			// Post flashpoint listeners.
+			for (FlashpointListener<? extends Flashpoint> listener: objectParsedListeners(Test.class)) {
+				for (Test test: response.getSchema().getTests()) {
+					try {
+						((TestParsedFlashpointListener)listener).reached(new TestParsedFlashpointImpl(test, response));
+					}
+					catch (VariantException e) {
+						response.addMessage(MessageTemplate.FLASHPOINT_LISTENER_EXCEPTION, listener.getClass().getName(), e.getMessage());
 					}
 				}
 			}

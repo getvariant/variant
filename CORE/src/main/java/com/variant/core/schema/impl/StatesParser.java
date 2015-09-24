@@ -27,25 +27,25 @@ public class StatesParser implements Keywords {
 	 * @param viewsObject
 	 */
 	@SuppressWarnings("unchecked")
-	static void parseViews(Object statesObject, ParserResponseImpl response) {
+	static void parseStates(Object statesObject, ParserResponseImpl response) {
 
 		try {
 
 			List<Map<String, ?>> rawStates = (List<Map<String, ?>>) statesObject;
 			
 			if (rawStates.size() == 0) {
-				response.addError(PARSER_NO_STATES);
+				response.addMessage(PARSER_NO_STATES);
 			}
 			
 			for (Map<String, ?> rawState: rawStates) {
 				State state = parseState(rawState, response);
 				if (state != null && !((SchemaImpl) response.getSchema()).addState(state)) {
-					response.addError(PARSER_STATE_NAME_DUPE, state.getName());
+					response.addMessage(PARSER_STATE_NAME_DUPE, state.getName());
 				}
 			}
 		}
 		catch (Exception e) {
-			ParserMessage err = response.addError(INTERNAL, e.getMessage());
+			ParserMessage err = response.addMessage(INTERNAL, e.getMessage());
 			LOG.error(err.getMessage(), e);
 		}
 		
@@ -70,7 +70,7 @@ public class StatesParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addError(PARSER_STATE_NAME_NOT_STRING);
+					response.addMessage(PARSER_STATE_NAME_NOT_STRING);
 				}
 				else {
 					name = (String) nameObject;
@@ -81,7 +81,7 @@ public class StatesParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addError(PARSER_STATE_NAME_MISSING);
+				response.addMessage(PARSER_STATE_NAME_MISSING);
 			}
 			return null;
 		}
@@ -94,22 +94,22 @@ public class StatesParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_PARAMETERS)) {
 				Object paramsObject = entry.getValue();
 				if (! (paramsObject instanceof Map)) {
-					response.addError(PARSER_STATE_PARAMS_NOT_OBJECT, name);
+					response.addMessage(PARSER_STATE_PARAMS_NOT_OBJECT, name);
 				}
 				params = (Map<String, String>) paramsObject;
 			}
 			else {
-				response.addError(PARSER_STATE_UNSUPPORTED_PROPERTY, entry.getKey(), name);
+				response.addMessage(PARSER_STATE_UNSUPPORTED_PROPERTY, entry.getKey(), name);
 			}
 		}
 		
 		
 		if (params == null) {
-			response.addError(PARSER_STATE_PARAMS_MISSING, name);
+			response.addMessage(PARSER_STATE_PARAMS_MISSING, name);
 			params = new HashMap<String,String>();
 		}
 		else if (params.size() == 0) {
-			response.addError(PARSER_STATE_PARAMS_EMPTY, name);
+			response.addMessage(PARSER_STATE_PARAMS_EMPTY, name);
 		}
 
 		return new StateImpl(name, params);

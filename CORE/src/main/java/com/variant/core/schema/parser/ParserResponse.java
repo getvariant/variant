@@ -26,6 +26,15 @@ public interface ParserResponse {
 	public List<ParserMessage> getMessages();
 
 	/**
+	 * Add a message to this response object. Call this to add a message
+	 * from a parser related flashpoint listener.
+	 * 
+	 * @param severity
+	 * @param text
+	 */
+	public void addMessage(Severity severity, String text);
+	
+	/**
 	 * All parse messages of a given severity or higher,
 	 * in order they were emitted, as an unmodifiable list.
 	 * @return

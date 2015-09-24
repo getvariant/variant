@@ -1,24 +1,12 @@
 package com.variant.core.impl;
 
-import com.impetus.annovention.ClasspathDiscoverer;
-import com.impetus.annovention.Discoverer;
-import com.impetus.annovention.listener.ClassAnnotationDiscoveryListener;
-import com.variant.core.Variant;
-import com.variant.core.annotations.ParserEventListener;
-
-import static com.variant.core.schema.parser.MessageTemplate.*;
-
-import com.variant.core.exception.VariantInternalException;
-import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.schema.parser.TestParsedEventListener;
-import com.variant.core.schema.parser.StateParsedEventListener;
 
 /**
  * Package visible annotation processor.
  * 
  * @author Igor.
  *
- */
+ *
 class AnnotationProcessor {
 	
 	static void process() {
@@ -27,13 +15,13 @@ class AnnotationProcessor {
 
 		
 		discoverer.addAnnotationListener(new ViewParsedListener());
-		discoverer.discover(true /*classes*/, false /*fields*/, true /*methods*/, false /*parameters*/, true /*visible*/, true /*invisible*/);
+		discoverer.discover(true /*classes/, false /*fields*, true /*methods*, false /*parameters*, true /*visible*, true /*invisible*);
 
 	}
 	
 	/**
 	 *
-	 */
+	 *
 	private static class ViewParsedListener implements ClassAnnotationDiscoveryListener {
 		
 		@Override
@@ -78,3 +66,4 @@ class AnnotationProcessor {
 		}
 	}
 }
+*/

@@ -10,6 +10,7 @@ import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.flashpoint.FlashpointListener;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
@@ -57,6 +58,25 @@ public class VariantWeb {
 		engine.shutdown();
 	}
 	
+	/**
+	 * Client code may extend default semantics by supplying flashpoint listeners.
+	 * 
+	 * @param listener
+	 */
+	public static void addFlashpointListener(FlashpointListener<?> listener) {
+		engine.addFlashpointListener(listener);
+	}
+	
+
+	/**
+	 * Remove all current flashpoint listeners.
+	 * 
+	 * @param listener
+	 */
+	public static void clearFlashpointListeners() {
+		engine.clearFlashpointListeners();
+	}
+
 	/**
 	 * Parse from an input stream, and, if no errors, optionally deploy a new schema.
 	 * @param stream

@@ -3,12 +3,11 @@ package com.variant.core;
 import java.io.InputStream;
 
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.flashpoint.FlashpointListener;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.schema.parser.TestParsedEventListener;
-import com.variant.core.schema.parser.StateParsedEventListener;
 
 /**
  * The Variant CORE API.
@@ -38,22 +37,19 @@ public interface Variant {
 	public void shutdown();
 	
 	/**
-	 * Clients may add additional parse semantics via parse listeners.
-	 * Each time the core parser successfully completes parsing of a Test object,
-	 * this listener will be invoked in the same thread.
+	 * Client code may extend default semantics by supplying flashpoint listeners.
 	 * 
 	 * @param listener
 	 */
-	public void addListener(TestParsedEventListener listener);
+	public void addFlashpointListener(FlashpointListener<?> listener);
 	
+
 	/**
-	 * Clients may add additional parse semantics via parse listeners.
-	 * Each time the core parser successfully completes parsing of a View object,
-	 * this listener will be invoked in the same thread.
+	 * Remove all current flashpoint listeners.
 	 * 
 	 * @param listener
 	 */
-	public void addListener(StateParsedEventListener listener);
+	public void clearFlashpointListeners();
 
 	/**
 	 * Parse and, if no errors, optionally deploy a new schema.

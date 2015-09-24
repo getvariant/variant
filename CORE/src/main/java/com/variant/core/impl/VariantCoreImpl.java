@@ -11,6 +11,7 @@ import static com.variant.core.schema.parser.MessageTemplate.RUN_PROPERTY_NOT_SE
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -26,17 +27,17 @@ import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.flashpoint.Flashpoint;
+import com.variant.core.flashpoint.FlashpointListener;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.State;
 import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
-import com.variant.core.schema.parser.TestParsedEventListener;
-import com.variant.core.schema.parser.StateParsedEventListener;
 import com.variant.core.session.SessionService;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.util.VariantIoUtils;
@@ -55,8 +56,7 @@ public class VariantCoreImpl implements Variant {
 	private Schema schema = null;
 	private EventWriter eventWriter = null;
 	private SessionService sessionService = null;
-	private ArrayList<TestParsedEventListener> testParsedEventListeners = new ArrayList<TestParsedEventListener>();
-	private ArrayList<StateParsedEventListener> viewParsedEventListeners = new ArrayList<StateParsedEventListener>();
+	private ArrayList<FlashpointListener<? extends Flashpoint>> flashpointListeners = new ArrayList<FlashpointListener<? extends Flashpoint>>();
 			
 	private static String version() {
 		String version = RuntimeService.getVersion();
@@ -208,8 +208,7 @@ public class VariantCoreImpl implements Variant {
 		stateCheck();
 		isBootstrapped = false;
 		schema = null;
-		viewParsedEventListeners.clear();
-		testParsedEventListeners.clear();
+		flashpointListeners.clear();
 		eventWriter.shutdown();
 		eventWriter = null;
 		sessionService.shutdown();
@@ -250,7 +249,7 @@ public class VariantCoreImpl implements Variant {
 		long now = System.currentTimeMillis();
 		
 		// (Re)discover and process all annotations.
-		AnnotationProcessor.process();
+		// AnnotationProcessor.process();
 
 		ParserResponseImpl response;
 
@@ -276,11 +275,11 @@ public class VariantCoreImpl implements Variant {
 		}
 		
 		try {
-			response = SchemaParser.parse(schemaAsStringNoComments.toString(), viewParsedEventListeners, testParsedEventListeners);
+			response = SchemaParser.parse(schemaAsStringNoComments.toString());
 		}
 		catch (Throwable t) {
 			response = new ParserResponseImpl();
-			ParserMessage err = response.addError(INTERNAL, t.getMessage());
+			ParserMessage err = response.addMessage(INTERNAL, t.getMessage());
 			LOG.error(err.getMessage(), t);
 		}
 
@@ -408,17 +407,16 @@ public class VariantCoreImpl implements Variant {
 	}
 	
 	@Override
-	public void addListener(TestParsedEventListener listener) {
-		stateCheck();		
+	public void addFlashpointListener(FlashpointListener<?> listener) {
+		stateCheck();
 		if (listener == null) throw new IllegalArgumentException("Argument cannot be null");
-		testParsedEventListeners.add(listener);
+		flashpointListeners.add(listener);		
 	}
 
 	@Override
-	public void addListener(StateParsedEventListener listener) {
-		stateCheck();		
-		if (listener == null) throw new IllegalArgumentException("Argument cannot be null");
-		viewParsedEventListeners.add(listener);
+	public void clearFlashpointListeners() {
+		stateCheck();
+		flashpointListeners.clear();		
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -434,4 +432,12 @@ public class VariantCoreImpl implements Variant {
 		return eventWriter;
 	}
 	
+	/**
+	 * Flashpoint listeners.
+	 * @return
+	 */
+	public List<FlashpointListener<? extends Flashpoint>> getFlashpointListeners() {
+		return flashpointListeners;
+	}
+
 }
