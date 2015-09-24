@@ -1,5 +1,8 @@
 package com.variant.web;
 
+/**
+ * Java Servlet Domain API.
+ */
 import java.io.InputStream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,39 +26,43 @@ import com.variant.core.schema.parser.ParserResponse;
  *
  */
 public class VariantWeb {
-
-	private static Variant engine = Variant.Factory.getInstance();
+	
+	private Variant core;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
+	public VariantWeb() {
+		this.core = Variant.Factory.getInstance();
+	}
+	
 	/**
 	 * Bootstrap the Variant engine.
 	 * 
 	 * @throws VariantBootstrapException
 	 */
-	public static void bootstrap(String...resourceNames) {
+	public void bootstrap(String...resourceNames) {
 	
 		String[] newArgs = new String[resourceNames.length + 1];
 		for (int i = 0; i < resourceNames.length; i++) newArgs[i] = resourceNames[i];
 		newArgs[resourceNames.length] = "/variant-web.props";
-		engine.bootstrap(newArgs);
+		core.bootstrap(newArgs);
 	}
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public static boolean isBootstrapped() {
-		return engine.isBootstrapped();
+	public boolean isBootstrapped() {
+		return core.isBootstrapped();
 	}
 	
 	/**
 	 * Programmatically shutdown Variant engine.
 	 */
-	public static synchronized void shutdown() {
-		engine.shutdown();
+	public synchronized void shutdown() {
+		core.shutdown();
 	}
 	
 	/**
@@ -63,8 +70,8 @@ public class VariantWeb {
 	 * 
 	 * @param listener
 	 */
-	public static void addFlashpointListener(FlashpointListener<?> listener) {
-		engine.addFlashpointListener(listener);
+	public void addFlashpointListener(FlashpointListener<?> listener) {
+		core.addFlashpointListener(listener);
 	}
 	
 
@@ -73,8 +80,8 @@ public class VariantWeb {
 	 * 
 	 * @param listener
 	 */
-	public static void clearFlashpointListeners() {
-		engine.clearFlashpointListeners();
+	public void clearFlashpointListeners() {
+		core.clearFlashpointListeners();
 	}
 
 	/**
@@ -83,8 +90,8 @@ public class VariantWeb {
 	 * @deploy The new test schema will be deployed if this is true and no parse errors were encountered.
 	 * @return
 	 */
-	public static ParserResponse parseSchema(InputStream stream, boolean deploy) {		
-		return engine.parseSchema(stream, deploy);
+	public ParserResponse parseSchema(InputStream stream, boolean deploy) {		
+		return core.parseSchema(stream, deploy);
 	}
 
 	/**
@@ -92,8 +99,8 @@ public class VariantWeb {
 	 * @param stream
 	 * @return
 	 */
-	public static ParserResponse parseSchema(InputStream stream) {
-		return engine.parseSchema(stream);
+	public ParserResponse parseSchema(InputStream stream) {
+		return core.parseSchema(stream);
 	}
 
 	/**
@@ -102,8 +109,8 @@ public class VariantWeb {
 	 * @deploy The new test schema will be deployed if this is true and no parse errors were encountered.
 	 * @return
 	 */
-	public static ParserResponse parseSchema(String string, boolean deploy) {
-		return engine.parseSchema(string, deploy);
+	public ParserResponse parseSchema(String string, boolean deploy) {
+		return core.parseSchema(string, deploy);
 	}
 
 	/**
@@ -112,16 +119,16 @@ public class VariantWeb {
 	 * @deploy The new test schema will be deployed if this is true and no parse errors were encountered.
 	 * @return
 	 */
-	public static ParserResponse parseSchema(String string) {
-		return engine.parseSchema(string);
+	public ParserResponse parseSchema(String string) {
+		return core.parseSchema(string);
 	}
 
 	/**
 	 * Get current test schema.
 	 * @return Current test schema or null, if none has been deployed yet.
 	 */
-	public static Schema getSchema() {
-		return engine.getSchema();
+	public Schema getSchema() {
+		return core.getSchema();
 	
 	}
 
@@ -132,8 +139,8 @@ public class VariantWeb {
 	 * @param request Active <code>HttpServletRequest</code> object.
 	 * @return          
 	 */
-	public static VariantSession getSession(HttpServletRequest request) {
-		return engine.getSession(request);
+	public VariantSession getSession(HttpServletRequest request) {
+		return core.getSession(request);
 	}
 	
 	/**
@@ -141,16 +148,16 @@ public class VariantWeb {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public static VariantStateRequest newStateRequest(State view, HttpServletRequest request) {
-		return engine.newStateRequest(getSession(request), view, request);
+	public VariantStateRequest newStateRequest(State view, HttpServletRequest request) {
+		return core.newStateRequest(getSession(request), view, request);
 	}
 	
 	/**
 	 * Commit a view request.
 	 * @param request
 	 */
-	public static void commitViewRequest(VariantStateRequest viewRequest, HttpServletResponse httpResponse) {
-		engine.commitStateRequest(viewRequest, httpResponse);
+	public void commitViewRequest(VariantStateRequest viewRequest, HttpServletResponse httpResponse) {
+		core.commitStateRequest(viewRequest, httpResponse);
 	}
 
 }

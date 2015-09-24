@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import com.variant.core.Variant;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
@@ -70,9 +71,10 @@ public class StateParsedFlashpointTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		VariantWeb.bootstrap();
-		VariantWeb.addFlashpointListener(new StateParsedFlashpointListenerImpl());
-		ParserResponse response = VariantWeb.parseSchema(config);
+		VariantWeb api = new VariantWeb();
+		api.bootstrap();
+		api.addFlashpointListener(new StateParsedFlashpointListenerImpl());
+		ParserResponse response = api.parseSchema(config);
 		assertEquals(1, response.getMessages().size());
 		ParserMessage msg = response.getMessages().get(0);
 		assertEquals(Severity.ERROR, msg.getSeverity());

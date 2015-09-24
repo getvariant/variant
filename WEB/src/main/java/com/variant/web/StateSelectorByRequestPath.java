@@ -2,6 +2,7 @@ package com.variant.web;
 
 import java.util.regex.Pattern;
 
+import com.variant.core.Variant;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.State;
 
@@ -78,7 +79,7 @@ public class StateSelectorByRequestPath  {
 	 * Return the first matching.
 	 */
 	public static State select(String path) {
-		for (State state: VariantWeb.getSchema().getStates()) {
+		for (State state: Variant.Factory.getInstance().getSchema().getStates()) {
 			if (match(state.getParameterMap().get("path"), path)) return state;
 		}
 		return null;

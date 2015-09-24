@@ -17,14 +17,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantStateRequest;
-import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.util.VariantIoUtils;
-import com.variant.web.VariantWeb;
 import com.variant.web.StateSelectorByRequestPath;
+import com.variant.web.VariantWeb;
 import com.variant.web.util.VariantWebUtils;
 
 /**
@@ -43,6 +42,8 @@ public class VariantFilter implements Filter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantFilter.class);
 	
+	private VariantWeb webApi = new VariantWeb();
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -55,8 +56,8 @@ public class VariantFilter implements Filter {
 	public void init(FilterConfig config) throws ServletException {
 
 		String name = config.getInitParameter("propsResourceName");
-		if (name != null) VariantWeb.bootstrap(name);
-		else VariantWeb.bootstrap();
+		if (name != null) webApi.bootstrap(name);
+		else webApi.bootstrap();
 			
 		name = config.getInitParameter("schemaResourceName");
 		
@@ -67,7 +68,7 @@ public class VariantFilter implements Filter {
 			throw new RuntimeException("Classpath resource by the name [" + name + "] does not exist.");
 		}
 						
-		ParserResponse resp = VariantWeb.parseSchema(is);
+		ParserResponse resp = webApi.parseSchema(is);
 		if (resp.highestMessageSeverity().greaterOrEqualThan(Severity.ERROR)) {
 			LOG.error("Unable to parse Variant test schema due to following parser error(s):");
 			for (ParserMessage msg: resp.getMessages()) {
@@ -98,7 +99,7 @@ public class VariantFilter implements Filter {
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		VariantStateRequest variantRequest = null;
 		
-		if (VariantWeb.isBootstrapped()) {
+		if (webApi.isBootstrapped()) {
 			
 			long start = System.currentTimeMillis();
 
@@ -122,7 +123,7 @@ public class VariantFilter implements Filter {
 				else {
 				
 					// Yes, this path is mapped in Variant.
-					variantRequest = VariantWeb.newStateRequest(state, httpRequest);
+					variantRequest = webApi.newStateRequest(state, httpRequest);
 					resolvedPath = variantRequest.getResolvedParameterMap().get("path");
 					isForwarding = !resolvedPath.equals(state.getParameter("path"));
 					
@@ -156,10 +157,10 @@ public class VariantFilter implements Filter {
 				chain.doFilter(request, response);							
 			}
 								
-			if (VariantWeb.isBootstrapped() && variantRequest != null) {
+			if (webApi.isBootstrapped() && variantRequest != null) {
 				try {
 					variantRequest.getViewServeEvent().setParameter("HTTP_STATUS", httpResponse.getStatus());
-					VariantWeb.commitViewRequest(variantRequest, httpResponse);   
+					webApi.commitViewRequest(variantRequest, httpResponse);   
 				}
 				catch (Throwable t) {
 					LOG.error("Unhandled exception in Variant for path [" + 
@@ -180,7 +181,7 @@ public class VariantFilter implements Filter {
 	 */
 	@Override
 	public void destroy() {
-		VariantWeb.shutdown();
+		webApi.shutdown();
 	}
 
 }

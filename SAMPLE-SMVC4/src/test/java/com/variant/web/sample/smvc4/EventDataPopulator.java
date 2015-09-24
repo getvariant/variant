@@ -23,11 +23,13 @@ public class EventDataPopulator {
 	@Test
 	public void populate() throws Exception {
 
-		VariantWeb.bootstrap("/variant/variant-EventDataPopulator.props");
+		VariantWeb webApi = new VariantWeb();
+		
+		webApi.bootstrap("/variant/variant-EventDataPopulator.props");
 
 		JdbcUtil.recreateSchema();
 
-		ParserResponse response = VariantWeb.parseSchema(EventDataPopulator.class.getResourceAsStream("/variant/schema.json"));
+		ParserResponse response = webApi.parseSchema(EventDataPopulator.class.getResourceAsStream("/variant/schema.json"));
 		if (response.hasMessages()) {
 			for (ParserMessage msg: response.getMessages()) {
 				System.out.println(msg);
@@ -35,7 +37,7 @@ public class EventDataPopulator {
 		}
 		assertFalse(response.hasMessages());
 
-		Schema schema = VariantWeb.getSchema();
+		Schema schema = webApi.getSchema();
 		com.variant.core.schema.Test test = schema.getTest("NewOwnerTest");
 		assertNotNull(test);
 		State newOwnerView = schema.getState("newOwner");
