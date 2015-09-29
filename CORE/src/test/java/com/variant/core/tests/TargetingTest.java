@@ -15,7 +15,7 @@ import com.variant.core.schema.parser.ParserResponse;
 
 public class TargetingTest extends BaseTest {
 
-	static final int TRIALS = 5000000;
+	static final int TRIALS = 10000000;
 	static final float DELTA_AS_FRACTION = .01f;
 
 	/**

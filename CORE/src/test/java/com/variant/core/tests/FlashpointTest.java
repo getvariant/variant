@@ -116,7 +116,7 @@ public class FlashpointTest extends BaseTest {
 		state = schema.getState("state1");
 		ssn = engine.getSession("foo");
 		long timestamp = System.currentTimeMillis();
-		String tpString = timestamp + ".test1.B|" + timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
+		String tpString = timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
 		request = engine.newStateRequest(ssn, state, tpString);
 		assertEquals(1, request.getDisqualifiedTests().size());
 		assertEquals(2, request.getTargetingPersister().getAll().size());
@@ -125,6 +125,27 @@ public class FlashpointTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1"), schema.getTest("Test1")), nullListener.testList);
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1")), disqualListener.testList);
 		assertEquals("/path/to/state1/Test1.A", request.getResolvedParameterMap().get("path"));
+
+		disqualListener = new TestQualificationFlashpointListenerDisqualifyImpl(schema.getTest("Test1"), true);
+		variant.clearFlashpointListeners();
+		variant.addFlashpointListener(disqualListener);
+		
+		response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertTrue(disqualListener.testList.isEmpty());
+		schema = variant.getSchema();
+		state = schema.getState("state1");
+		ssn = engine.getSession("foo");
+		tpString = timestamp + ".test1.B|" + timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
+		request = engine.newStateRequest(ssn, state, tpString);
+		assertEquals(1, request.getDisqualifiedTests().size());
+		assertEquals(2, request.getTargetingPersister().getAll().size());
+		assertNotNull(request.getTargetingPersister().get(schema.getTest("test1")));
+		assertNotNull(request.getTargetingPersister().get(schema.getTest("test2")));
+		assertEquals(VariantCollectionsUtils.list(schema.getTest("Test1")), disqualListener.testList);
+		assertEquals("/path/to/state1/test1.B", request.getResolvedParameterMap().get("path"));
+
 	}
 
 	/**
@@ -192,11 +213,17 @@ public class FlashpointTest extends BaseTest {
 
 		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
 		private com.variant.core.schema.Test testToDisqualify;
+		private Boolean removeFromTp = null;
 		
 		private TestQualificationFlashpointListenerDisqualifyImpl(com.variant.core.schema.Test testToDisqualify) {
 			this.testToDisqualify = testToDisqualify;
 		}
-		
+
+		private TestQualificationFlashpointListenerDisqualifyImpl(com.variant.core.schema.Test testToDisqualify, boolean removeFromTp) {
+			this.testToDisqualify = testToDisqualify;
+			this.removeFromTp = removeFromTp;
+		}
+
 		@Override
 		public Class<TestQualificationFlashpoint> getFlashpointClass() {
 			return TestQualificationFlashpoint.class;
@@ -207,6 +234,7 @@ public class FlashpointTest extends BaseTest {
 			if (flashpoint.getTest().equals(testToDisqualify)) {
 				testList.add(flashpoint.getTest());
 				flashpoint.setQualified(false);
+				if (removeFromTp != null) flashpoint.setRemoveFromTargetingPersister(removeFromTp);
 			}
 		}		
 	}
