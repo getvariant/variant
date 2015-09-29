@@ -32,7 +32,7 @@ public class EventWriterTest extends BaseTest {
 
 		
 		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
-		if (response.hasMessages()) printErrors(response);
+		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
 		long timestamp = System.currentTimeMillis();

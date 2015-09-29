@@ -382,7 +382,7 @@ public class ParserCovariantOkay1Test extends BaseTest {
 	    	    "}                                                                         ";
 
 		ParserResponse response = engine.parseSchema(SCHEMA);
-		if (response.hasMessages()) printErrors(response);
+		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();

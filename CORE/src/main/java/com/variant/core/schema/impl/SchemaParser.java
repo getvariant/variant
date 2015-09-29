@@ -1,8 +1,6 @@
 package com.variant.core.schema.impl;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -14,12 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.Variant;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.flashpoint.Flashpoint;
-import com.variant.core.flashpoint.FlashpointListener;
-import com.variant.core.flashpoint.ParserFlashpoint;
-import com.variant.core.flashpoint.StateParsedFlashpoint;
-import com.variant.core.flashpoint.StateParsedFlashpointListener;
-import com.variant.core.flashpoint.TestParsedFlashpointListener;
+import com.variant.core.flashpoint.Flasher;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -56,28 +49,6 @@ public class SchemaParser implements Keywords {
 
 	}
 	
-	/**
-	 * Extract listeners subscribed to object parsed flashpoints.
-	 * @return
-	 */
-	private static List<FlashpointListener<? extends Flashpoint>> objectParsedListeners(Class<?> clazz) {
-		
-		List<FlashpointListener<? extends Flashpoint>> result = 
-				new ArrayList<FlashpointListener<? extends Flashpoint>>();
-		
-		for (FlashpointListener<?> listener: ((VariantCoreImpl)Variant.Factory.getInstance()).getFlashpointListeners()) {
-			try {
-				FlashpointListener<? extends Flashpoint> castListener = null;
-				// if the cast fails, its a noop.
-				if (clazz == State.class) castListener = (StateParsedFlashpointListener) listener; 
-				if (clazz == Test.class)  castListener = (TestParsedFlashpointListener) listener; 
-				result.add(castListener);
-			}
-			catch (ClassCastException e) {}
-		}
-		
-		return result;
-	}
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -136,14 +107,13 @@ public class SchemaParser implements Keywords {
 			StatesParser.parseStates(states, response);
 			
 			// Post flashpoint listeners.
-			for (FlashpointListener<? extends Flashpoint> listener: objectParsedListeners(State.class)) {
-				for (State state: response.getSchema().getStates()) {
-					try {
-						((StateParsedFlashpointListener)listener).reached(new StateParsedFlashpointImpl(state, response));
-					}
-					catch (VariantException e) {
-						response.addMessage(MessageTemplate.FLASHPOINT_LISTENER_EXCEPTION, listener.getClass().getName(), e.getMessage());
-					}
+			Flasher flasher = ((VariantCoreImpl)Variant.Factory.getInstance()).getFlasher();
+			for (State state: response.getSchema().getStates()) {
+				try {
+					flasher.post(new StateParsedFlashpointImpl(state, response));
+				}
+				catch (VariantException e) {
+					response.addMessage(MessageTemplate.FLASHPOINT_LISTENER_EXCEPTION, StateParsedFlashpointImpl.class.getName(), e.getMessage());
 				}
 			}
 		}
@@ -160,14 +130,13 @@ public class SchemaParser implements Keywords {
 			TestsParser.parseTests(tests, response);
 			
 			// Post flashpoint listeners.
-			for (FlashpointListener<? extends Flashpoint> listener: objectParsedListeners(Test.class)) {
-				for (Test test: response.getSchema().getTests()) {
-					try {
-						((TestParsedFlashpointListener)listener).reached(new TestParsedFlashpointImpl(test, response));
-					}
-					catch (VariantException e) {
-						response.addMessage(MessageTemplate.FLASHPOINT_LISTENER_EXCEPTION, listener.getClass().getName(), e.getMessage());
-					}
+			Flasher flasher = ((VariantCoreImpl)Variant.Factory.getInstance()).getFlasher();
+			for (Test test: response.getSchema().getTests()) {
+				try {
+					flasher.post(new TestParsedFlashpointImpl(test, response));
+				}
+				catch (VariantException e) {
+					response.addMessage(MessageTemplate.FLASHPOINT_LISTENER_EXCEPTION, TestParsedFlashpointImpl.class.getName(), e.getMessage());
 				}
 			}
 		}

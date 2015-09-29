@@ -35,7 +35,7 @@ public class VariantRuntimeTest extends BaseTest {
 	public void pathResolution() throws Exception {
 		
 		ParserResponse response = engine.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
-		if (response.hasMessages()) printErrors(response);
+		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();
@@ -1106,7 +1106,7 @@ public class VariantRuntimeTest extends BaseTest {
 
 
 		ParserResponse response = engine.parseSchema(SCHEMA);
-		if (response.hasMessages()) printErrors(response);
+		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
 		Schema schema = engine.getSchema();
@@ -1125,7 +1125,6 @@ public class VariantRuntimeTest extends BaseTest {
 		// We didn't touch test2.B entry in the TP, even though we used control for resolution.
 		assertEquals(experience("test2.B"), tp.get(schema.getTest("test2")));
 		String path = req.getResolvedParameterMap().get("path");
-		System.out.println(path);
 		assertMatches("/path/to/state1(/test3\\.[B,C])?", path);
 		assertEquals(ssn, req.getSession());
 		assertEquals(state1, req.getState());

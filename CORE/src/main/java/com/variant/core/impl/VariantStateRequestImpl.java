@@ -2,6 +2,7 @@ package com.variant.core.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 
 import com.variant.core.VariantSession;
@@ -28,6 +29,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	private StateServeEvent event;
 	private boolean committed = false;
 	private TargetingPersister targetingPersister = null;
+	private HashSet<Test> disqualifiedTests = new HashSet<Test>();
 	
 	/**
 	 * 
@@ -71,6 +73,10 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		return event;
 	}
 
+	@Override
+	public Collection<Test> getDisqualifiedTests() {
+		return disqualifiedTests;
+	}
 
 	@Override
 	public TargetingPersister getTargetingPersister() {
@@ -87,7 +93,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 			
 		ArrayList<Experience> result = new ArrayList<Experience>();
 		for (Test test: state.getInstrumentedTests()) {
-			if (!test.isOn()) continue;
+			if (!test.isOn() || disqualifiedTests.contains(test)) continue;
 			Experience e = targetingPersister.get(test);
 			if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found.");
 			result.add(e);
@@ -142,4 +148,11 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		return status;
 	}
 
+	/**
+	 * 
+	 * @param test
+	 */
+	public void addDisqualifiedTest(Test test) {
+		disqualifiedTests.add(test);
+	}
 }

@@ -2,15 +2,7 @@ package com.variant.core.schema.parser;
 
 import java.util.List;
 
-import com.variant.core.schema.Schema;
-
 public interface ParserResponse {
-
-	/**
-	 * Get the current test schema.
-	 * @param view
-	 */
-	public Schema getSchema();
 	
 	/**
 	 * Equivalent to <code>!getMessages().isEmpty()</code>

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.MessageTemplate;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
@@ -13,20 +14,13 @@ import com.variant.core.schema.parser.SyntaxError;
 public class ParserResponseImpl implements ParserResponse {
 
 	private ArrayList<ParserMessage> messages = new ArrayList<ParserMessage>();
-	private SchemaImpl config = new SchemaImpl();
+	private SchemaImpl schema = new SchemaImpl();
+	
+	public ParserResponseImpl() {}
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-
-	/**
-	 * Get the schema in progress, built by the current invocation of the parser.
-	 * @param view
-	 */
-	@Override
-	public SchemaImpl getSchema() {
-		return config;
-	}
 
 	@Override
 	public void addMessage(Severity severity, String message) {
@@ -77,6 +71,14 @@ public class ParserResponseImpl implements ParserResponse {
 	//---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC EXTENDED                                          //
 	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 * Get the schema in progress, built by the current invocation of the parser.
+	 * @param view
+	 */
+	public Schema getSchema() {
+		return schema;
+	}
 
 	/**
 	 * 

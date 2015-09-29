@@ -38,7 +38,7 @@ public class SessionTest extends BaseTest {
 	public void targetingPersosterStringTest() throws VariantBootstrapException {
 				
 		ParserResponse response = engine.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
-		if (response.hasMessages()) printErrors(response);
+		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		
 		Schema schema = engine.getSchema();

@@ -29,7 +29,7 @@ public class TargetingPersisterString extends TargetingPersisterSupport {
 	 * @param input
 	 * @param ssn
 	 */
-	private void parseFromString(String input, VariantSession ssn) {
+	private void parseFromString(VariantSession ssn, String input) {
 				
 		for (String entry: input.split("\\|")) {
 			
@@ -98,7 +98,7 @@ public class TargetingPersisterString extends TargetingPersisterSupport {
 	 */
 	@Override
 	public void initialized(VariantSession session, Object userData) { 
-		parseFromString((String) userData, session);
+		parseFromString(session, (String) userData);
 	}
 
 	@Override

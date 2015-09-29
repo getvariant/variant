@@ -211,7 +211,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 	public void happyPathTest() throws Exception {
 		
 		ParserResponse response = engine.parseSchema(SCHEMA);
-		if (response.hasMessages()) printErrors(response);
+		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
 		//

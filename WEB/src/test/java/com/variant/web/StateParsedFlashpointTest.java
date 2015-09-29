@@ -1,12 +1,9 @@
 package com.variant.web;
 
-import java.util.function.Consumer;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
-import com.variant.core.Variant;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;

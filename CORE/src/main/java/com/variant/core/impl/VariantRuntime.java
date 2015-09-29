@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.flashpoint.TestQualificationFlashpoint;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -35,6 +37,47 @@ public class VariantRuntime {
 	// Logger
 	private static final Logger LOG = LoggerFactory.getLogger(VariantRuntime.class);
 
+	private static VariantCoreImpl variantCoreImpl = (VariantCoreImpl) Variant.Factory.getInstance();
+
+	/**
+	 * 
+	 * @author Igor
+	 *
+	 */
+	private static class TestQualificationFlashpointImpl implements TestQualificationFlashpoint {
+		
+		private VariantSession ssn;
+		private Test test;
+		private boolean qualified = true;
+		private boolean removeFromTP = false;
+		
+		private TestQualificationFlashpointImpl(VariantSession ssn, Test test) {
+			this.ssn = ssn;
+			this.test = test;
+		}
+		
+		@Override
+		public Test getTest() {
+			return test;
+		}
+
+		@Override
+		public VariantSession getSession() {
+			return ssn;
+		}
+
+		@Override
+		public void setQualified(boolean qualified) {
+			this.qualified = qualified;
+		}
+
+		@Override
+		public void setRemoveFromTargetingPersister(boolean remove) {
+			removeFromTP = remove;
+		}
+
+	};
+
 	/**
 	 * Static singleton.
 	 * Need package visibility for test facade.
@@ -44,116 +87,154 @@ public class VariantRuntime {
 	/**
 	 * Target this session for all active tests.
 	 * 
-	 * 1. Find all the tests instrumented on this view - the view's test list,
-	 *    i.e. the list of tests that must be targeted before we can resolve the view.
-	 * 2. Some of these tests may be already targeted via the experience persistence mechanism.
+	 * 1. Find all the tests instrumented on this state - the state's instrumented test list (ITL),
+	 *    i.e. the list of tests that must be targeted before we can resolve the state.
+	 * 2. Check qualifications for each test on the ITL. Keep a list of disqualified tests.
+	 *    If client code 1) disqualified a test, and 2) requested removal from targeting 
+	 *    persister (TP), remove this test from targeting persister.
+	 * 3. Some of these tests may be already targeted via the experience persistence mechanism.
 	 *    Determine this already targeted subset.
-     * 3. If such a subset exists, confirm that we are still able to resolve this test cell. 
+     * 4. If such a subset exists, confirm that we are still able to resolve this test cell. 
      *    The reason we may not is, e.g., if two tests used to be covariant and the experience
      *    persister reports two already targeted variant experiences, but in a recent config 
      *    change these two tests are no longer covariant and hence we don't know how to resolve
      *    this test cell.
-     * 4. If we're still able to resolve the pre-targeted vector, continue with the rest of the tests 
+     * 5. If we're still able to resolve the pre-targeted vector, continue with the rest of the tests 
      *    on the view's list in the order they were defined, and target each test via the regular 
      *    targeting mechanism.
      * 5. If we're unable to resolve the pre-targeted vector, compute the minimal unresolvable subset
      *    and remove those experiences from the experience persistence.
      * 6. Given the new pre-targeted experience set, target the rest of the tests instrumented on
      *    this view via each test's regular targeting mechanism, in ordinal order.  Do not target
-     *    tests that are OFF — default them to control experiences.
+     *    tests that are OFF or disqualified tests. Instead, default them to control experiences.
      * 7. Resolve the path. For OFF tests, substitute non-control experiences with control ones.
 	 * 
 	 */
-	private static Map<String,String> targetSessionForState(VariantSession ssn, State state, TargetingPersister targetingPersister) {
+	private static Map<String,String> targetSessionForState(VariantStateRequestImpl req) {
 
-		Schema schema = Variant.Factory.getInstance().getSchema();
+		Schema schema = variantCoreImpl.getSchema();
+		VariantSession session = req.getSession();
+		State state = req.getState();
+		TargetingPersister tp = req.getTargetingPersister();
 		
 		// It is illegal to call this with a view that is not in schema, e.g. before runtime.
 		State schemaState = schema.getState(state.getName());
 		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
 			throw new VariantInternalException("State [" + state.getName() + "] is not in schema");
-
+		
+		// Re-qualify each instrumented test by triggering the qualification flashpoint.
+		for (Test test: state.getInstrumentedTests()) {
+			TestQualificationFlashpointImpl flashpoint = new TestQualificationFlashpointImpl(session, test);
+			variantCoreImpl.getFlasher().post(flashpoint);
+			if (!flashpoint.qualified) {
+				req.addDisqualifiedTest(test);
+				if (flashpoint.removeFromTP) tp.remove(test);
+			}
+		}
+		
 		// Pre-targeted experiences from the targeting persister.
-		Collection<Experience> alreadyTargetedExperiences = targetingPersister.getAll();
+		Collection<Experience> alreadyTargetedExperiences = tp.getAll();
 		
 		if (!alreadyTargetedExperiences.isEmpty()) {
 			
-			// Resolvable?  If not, find smallest subset that will make it resolvable.
+			// Resolvable?  If not, find largest resolvable subset.
 			Collection<Experience> minUnresolvableSubvector = 
 					minUnresolvableSubvector(alreadyTargetedExperiences);
 			
 			if (!minUnresolvableSubvector.isEmpty()) {
 
-				for (Experience e: minUnresolvableSubvector) targetingPersister.remove(e.getTest());
+				for (Experience e: minUnresolvableSubvector) tp.remove(e.getTest());
 
 				LOG.info(
-						"Targeting persistor not resolvable for session [" + ssn.getId() + "]. " +
+						"Targeting persistor not resolvable for session [" + session.getId() + "]. " +
 						"Removed experiences [" + StringUtils.join(minUnresolvableSubvector.toArray()) + "].");
 			}
 		
 		}
+		
+		// Actual experience vector we'll end up resolving will be different from the content of TP
+		// because OFF tests (and potentially disqualified tests) retain their entry in TP, even though
+		// we'll sub that with control for actual resolution.
+		ArrayList<Experience> vector = new ArrayList<Experience>();
+		
+		// First add all from from TP.
+		for (Experience e: tp.getAll()) {
 
-		// Targeting persister now has all currently targeted experiences.
-		for (Experience e: targetingPersister.getAll()) {
-			if (e.getTest().isOn()) {
+			if (!e.getTest().isOn()) {
+				Experience ce = e.getTest().getControlExperience();
+				vector.add(ce);
 				if (LOG.isDebugEnabled()) {
 					LOG.debug(
-							"Session [" + ssn.getId() + "] recognized persisted experience [" + e +"]");
-				}									
-			}
-			else {
-				if (LOG.isDebugEnabled()) {
-					LOG.debug(
-							"Session [" + ssn.getId() + "] recognized persisted experience [" + e +"]" +
-							" but substituted control experience [" + e.getTest().getControlExperience() + "]" +
-							" because test is OFF");
+							"Session [" + session.getId() + "] recognized persisted experience [" + e +"]" +
+							" but substituted control experience [" + ce + "] because test is OFF");
 				}													
 			}
+			else if (req.getDisqualifiedTests().contains(e.getTest())) {
+				Experience ce = e.getTest().getControlExperience();
+				vector.add(ce);
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(
+							"Session [" + session.getId() + "] recognized persisted experience [" + e +"]" +
+							" but substituted control experience [" + ce + "] because test is disqualified");
+				}													
+			}
+			else {
+				vector.add(e);
+				if (LOG.isDebugEnabled()) {
+					LOG.debug(
+							"Session [" + session.getId() + "] honored persisted experience [" + e + "]");
+				}									
+			}
 		}
-		// Tests that are instrumented on this state need to be targeted, unless already targeted.
+		
+		// Then target and add the rest from the ITL.
 		for (Test test: state.getInstrumentedTests()) {
-			
-			if (/*state.isInstrumentedBy(test) && -- loop's condition insures this? -- */ targetingPersister.get(test) == null) {
-				
+						
+			if (tp.get(test) == null) {
+								
 				if (!test.isOn()) {
 					Experience e = test.getControlExperience();
-					targetingPersister.add(e, System.currentTimeMillis());
+					vector.add(e);
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(
-								"Session [" + ssn.getId() + "] temporarily targeted for OFF test [" + 
+								"Session [" + session.getId() + "] temporarily targeted for OFF test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
-					}					
+					}
 				}
-				else if (isTargetable(test, targetingPersister.getAll())) {
-					Experience e = ((TestImpl) test).target(ssn);
-					targetingPersister.add(e, System.currentTimeMillis());
+				else if (req.getDisqualifiedTests().contains(test)) {
+					Experience e = test.getControlExperience();
+					vector.add(e);
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(
-								"Session [" + ssn.getId() + "] targeted for test [" + 
+								"Session [" + session.getId() + "] temporarily targeted for disqualified test [" + 
+								test.getName() +"] with control experience [" + e.getName() + "]");
+					}										
+				}
+				else if (isTargetable(test, tp.getAll())) {
+					Experience e = ((TestImpl) test).target(session);
+					vector.add(e);
+					tp.add(e, System.currentTimeMillis());
+					if (LOG.isDebugEnabled()) {
+						LOG.debug(
+								"Session [" + session.getId() + "] targeted for test [" + 
 								test.getName() +"] with experience [" + e.getName() + "]");
 					}
 
 				}
 				else {
 					Experience e = test.getControlExperience();
-					targetingPersister.add(e, System.currentTimeMillis());
+					vector.add(e);
+					tp.add(e, System.currentTimeMillis());
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(
-								"Session [" + ssn.getId() + "] targeted for test [" + 
+								"Session [" + session.getId() + "] targeted for untargetable test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}
 				}
 			}
 		}
 				
-		// TP may still contain non-control experiences for OFF tests, if they were in the persister at the top
-		// of this method and did not get reduced out due to non-resolvability.  Before resolving the view path,
-		// we substitute them with control.
-		ArrayList<Experience> vector = new ArrayList<Experience>();
-		for (Experience e: targetingPersister.getAll()) {
-			vector.add(e.getTest().isOn() ? e : e.getTest().getControlExperience());
-		}
-		
+		// vector at this point contains the actual experiences to be resolved, which may be different from what's in TP.
 		return resolveState(state, vector);
 		
 	}
@@ -185,7 +266,7 @@ public class VariantRuntime {
 		
 		Collection<Experience> result = new ArrayList<Experience>();
 			
-		// 1. Build a set of all instrumented views.
+		// 1. Build a set of all instrumented states.
 		HashSet<State> instrumentedStates = new HashSet<State>();
 		for (Experience e: vector) {
 			for (OnState tov: e.getTest().getOnStates()) {
@@ -304,7 +385,7 @@ public class VariantRuntime {
 			throw new VariantInternalException("No experiences in input vector");
 		
 		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
-		for (Test t: Variant.Factory.getInstance().getSchema().getTests()) {
+		for (Test t: variantCoreImpl.getSchema().getTests()) {
 			boolean found = false;
 			for (Experience e: vector) {
 				if (e.getTest().equals(t)) {
@@ -346,8 +427,10 @@ public class VariantRuntime {
 	public static VariantStateRequestImpl startViewRequest(VariantSession ssn, State state, TargetingPersister targetingPersister) {
 
 		// Resolve the path and get all tests instrumented on the given view targeted.
-		Map<String,String> resolvedParams = targetSessionForState(ssn, state, targetingPersister);		
 		VariantStateRequestImpl result = new VariantStateRequestImpl((VariantSessionImpl)ssn, (StateImpl) state);
+		result.setTargetingPersister(targetingPersister);
+		
+		Map<String,String> resolvedParams = targetSessionForState(result);		
 		result.setResolvedParameters(resolvedParams);
 		
 		if (LOG.isDebugEnabled()) {
@@ -357,9 +440,7 @@ public class VariantRuntime {
 			sb.append("] for experience vector [").append(StringUtils.join(targetingPersister.getAll().toArray(), ",")).append("]");
 			LOG.debug(sb.toString());
 		}   
-	
-		result.setTargetingPersister(targetingPersister);
-		
+			
 		// Create the view serve event if there are any tests instrumented on this view.
 		if (state.getInstrumentedTests().isEmpty()) {
 			

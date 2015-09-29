@@ -5,9 +5,12 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.parser.MessageTemplate;
 
 /**
  * @author Igor
@@ -19,11 +22,24 @@ public class SchemaImpl implements Schema {
 	
 	// Tests are keyed by name
 	private LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
-		
+	
+	// Life cycle.
+	private InternalState state = InternalState.NEW;
+	
 	/**
 	 * Package instantiation.
 	 */
 	SchemaImpl() {}
+	
+	/**
+	 * Public ops are only allowed on a currently deployed schema.
+	 */
+	private void checkInternalState() {
+		if (state == InternalState.UNDEPLOYED)
+			throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_REPLACED);
+		else if (state == InternalState.FAILED)
+			throw new VariantInternalException("Called on a FAILED schema");
+	}
 	
 	/**
 	 * Add state to the set.
@@ -52,6 +68,7 @@ public class SchemaImpl implements Schema {
 	 */
 	@Override
 	public List<State> getStates() {
+		checkInternalState();
 		ArrayList<State> result = new ArrayList<State>(states.size());
 		result.addAll(states);
 		return Collections.unmodifiableList(result);
@@ -62,6 +79,7 @@ public class SchemaImpl implements Schema {
 	 */
 	@Override
 	public State getState(String name) {
+		checkInternalState();
 		for (State state: states) {
 			if (state.getName().equals(name)) return state;
 		}
@@ -73,6 +91,7 @@ public class SchemaImpl implements Schema {
 	 */
 	@Override
 	public List<Test> getTests() {
+		checkInternalState();
 		ArrayList<Test> result = new ArrayList<Test>(tests.size());
 		for (Test test: tests) {
 			result.add(test);
@@ -85,9 +104,25 @@ public class SchemaImpl implements Schema {
 	 */
 	@Override
 	public Test getTest(String name) {
+		checkInternalState();
 		for (Test test: tests) {
 			if (test.getName().equals(name)) return test;
 		}
 		return null;
 	}
+	
+    //---------------------------------------------------------------------------------------------//
+	//                                       PUBLIC EXT                                            //
+	//---------------------------------------------------------------------------------------------//
+
+	public enum InternalState {NEW, FAILED, DEPLOYED, UNDEPLOYED}
+
+	/**
+	 * Set internal state
+	 * @param state
+	 */
+	public void setInternalState(InternalState state) {
+		this.state = state;
+	}
+
 }

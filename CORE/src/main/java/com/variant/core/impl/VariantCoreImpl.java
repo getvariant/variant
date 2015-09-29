@@ -10,8 +10,6 @@ import static com.variant.core.schema.parser.MessageTemplate.RUN_PROPERTY_NOT_SE
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -27,6 +25,7 @@ import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.flashpoint.Flasher;
 import com.variant.core.flashpoint.Flashpoint;
 import com.variant.core.flashpoint.FlashpointListener;
 import com.variant.core.schema.Schema;
@@ -34,6 +33,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.ParserResponseImpl;
+import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
@@ -56,8 +56,8 @@ public class VariantCoreImpl implements Variant {
 	private Schema schema = null;
 	private EventWriter eventWriter = null;
 	private SessionService sessionService = null;
-	private ArrayList<FlashpointListener<? extends Flashpoint>> flashpointListeners = new ArrayList<FlashpointListener<? extends Flashpoint>>();
-			
+	private Flasher flasher = new Flasher();
+	
 	private static String version() {
 		String version = RuntimeService.getVersion();
 		if (version == null) version = "?";
@@ -208,7 +208,7 @@ public class VariantCoreImpl implements Variant {
 		stateCheck();
 		isBootstrapped = false;
 		schema = null;
-		flashpointListeners.clear();
+		flasher.clear();
 		eventWriter.shutdown();
 		eventWriter = null;
 		sessionService.shutdown();
@@ -285,7 +285,13 @@ public class VariantCoreImpl implements Variant {
 
 		// Only replace the schema if no ERROR or higher level errors.
 		if (response.highestMessageSeverity().lessThan(Severity.ERROR)) {
+			
+			if (schema != null) {
+				((SchemaImpl)schema).setInternalState(SchemaImpl.InternalState.UNDEPLOYED);
+			}
 			schema = response.getSchema();
+			((SchemaImpl)schema).setInternalState(SchemaImpl.InternalState.DEPLOYED);
+			
 			StringBuilder msg = new StringBuilder("New schema deployed in ");
 			msg.append(DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")).append(":");
 			for (Test test: schema.getTests()) {
@@ -303,6 +309,7 @@ public class VariantCoreImpl implements Variant {
 			LOG.info(msg.toString());
 		}
 		else {
+			((SchemaImpl) response.getSchema()).setInternalState(SchemaImpl.InternalState.FAILED);
 			LOG.error("New schema was not deployed due to parser error(s).");
 		}
 		
@@ -407,16 +414,16 @@ public class VariantCoreImpl implements Variant {
 	}
 	
 	@Override
-	public void addFlashpointListener(FlashpointListener<?> listener) {
+	public void addFlashpointListener(FlashpointListener<? extends Flashpoint> listener) {
 		stateCheck();
 		if (listener == null) throw new IllegalArgumentException("Argument cannot be null");
-		flashpointListeners.add(listener);		
+		flasher.addListener(listener);		
 	}
 
 	@Override
 	public void clearFlashpointListeners() {
 		stateCheck();
-		flashpointListeners.clear();		
+		flasher.clear();		
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -433,11 +440,10 @@ public class VariantCoreImpl implements Variant {
 	}
 	
 	/**
-	 * Flashpoint listeners.
+	 * 
 	 * @return
 	 */
-	public List<FlashpointListener<? extends Flashpoint>> getFlashpointListeners() {
-		return flashpointListeners;
+	public Flasher getFlasher() {
+		return flasher;
 	}
-
 }

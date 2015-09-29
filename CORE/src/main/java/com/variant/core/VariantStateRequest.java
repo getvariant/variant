@@ -51,6 +51,8 @@ public interface VariantStateRequest {
 
 	/**
 	 * Get all experience targeted in this request.
+	 * Only actually targeted experiences are included. Control experiences
+	 * for OFF or disqualified tests are not included.
 	 * @return
 	 */
 	public Collection<Experience> getTargetedExperiences();
@@ -62,6 +64,13 @@ public interface VariantStateRequest {
 	 */
 	public Experience getTargetedExperience(Test test);
 
+	/**
+	 * All tests that have been disqualifed for this request by TestQualificationFlashpoint listeners.
+	 * 
+	 * @return
+	 */
+	public Collection<Test> getDisqualifiedTests();
+	
 	/**
 	 * 
 	 * @param status

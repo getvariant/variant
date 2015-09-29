@@ -1,8 +1,8 @@
 package com.variant.web;
 
 
+import com.variant.core.flashpoint.FlashpointListener;
 import com.variant.core.flashpoint.StateParsedFlashpoint;
-import com.variant.core.flashpoint.StateParsedFlashpointListener;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.Severity;
 
@@ -11,10 +11,15 @@ import com.variant.core.schema.parser.Severity;
  * @author Igor
  *
  */
-public class StateParsedFlashpointListenerImpl implements StateParsedFlashpointListener {
+public class StateParsedFlashpointListenerImpl implements FlashpointListener<StateParsedFlashpoint> {
 
 	@Override
-	public void reached(StateParsedFlashpoint flashpoint) {
+	public Class<StateParsedFlashpoint> getFlashpointClass() {
+		return StateParsedFlashpoint.class;
+	}
+
+	@Override
+	public void post(StateParsedFlashpoint flashpoint) {
 		State state = flashpoint.getState();
 		String path = state.getParameterMap().get("path");
 		if (!path.startsWith("/")) {
@@ -22,7 +27,6 @@ public class StateParsedFlashpointListenerImpl implements StateParsedFlashpointL
 					Severity.ERROR, 
 					"Path property [" + path + "] must start with a '/' in State [" + state.getName() + "]");
 		}
-	}
-	
+	}	
 
 }
