@@ -38,10 +38,10 @@ public interface VariantStateRequest {
 	public Map<String,String> getResolvedParameterMap();
 		
 	/**
-	 * View serve event associated with this view request
+	 * State serve event associated with this view request
 	 * @return
 	 */
-	public StateServeEvent getViewServeEvent();
+	public StateServeEvent getStateServeEvent();
 
 	/**
 	 * 
@@ -65,7 +65,7 @@ public interface VariantStateRequest {
 	public Experience getTargetedExperience(Test test);
 
 	/**
-	 * All tests that have been disqualifed for this request by TestQualificationFlashpoint listeners.
+	 * All tests that have been disqualified for this request by TestQualificationFlashpoint listeners.
 	 * 
 	 * @return
 	 */

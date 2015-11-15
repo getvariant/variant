@@ -9,7 +9,7 @@
     
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
-        <variant.version>0.5</variant.version>
+        <variant.version>0.5.RC-2</variant.version>
     	<tomcat.version>7.0.59</tomcat.version>
     	
     </properties>

@@ -1,4 +1,4 @@
-package com.variant.web.sample.smvc4;
+package com.variant.web.sample;
 
 import static org.junit.Assert.*;
 

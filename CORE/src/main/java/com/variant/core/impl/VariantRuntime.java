@@ -450,6 +450,13 @@ public class VariantRuntime {
 						state.getName() +"] that does not have any instrumented tests.");
 			}   
 		}
+		else if (result.getTargetedExperiences().isEmpty()) {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug(
+						"Session [" + ssn.getId() + "] requested state [" + 
+						state.getName() +"] that does not have live tests.");
+			}   			
+		}
 		else {
 			StateServeEvent event = new StateServeEvent(result, resolvedParams);
 			result.setViewServeEvent(event);

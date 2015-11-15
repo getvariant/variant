@@ -401,9 +401,9 @@ public class VariantCoreImpl implements Variant {
 		// Persist targeting info.  Note that we expect the userData to apply to both!
 		request.getTargetingPersister().persist(userData);
 		
-		// Save the view serve event, if any. There may not be any if we hit a known view that did not have
+		// Save the state serve event, if any. There may not be any if we hit a known state that did not have
 		// any tests instrumented on it.
-		StateServeEvent event = request.getViewServeEvent();
+		StateServeEvent event = request.getStateServeEvent();
 		if (event != null) {
 			EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
 			ew.write(event);		

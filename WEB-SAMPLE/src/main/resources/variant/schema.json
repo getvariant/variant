@@ -13,7 +13,8 @@
    ],                                                        
    'tests':[                                                 
       {                                                      
-         'name':'NewOwnerTest',                                     
+         'name':'NewOwnerTest',
+         'isOn': false,                                     
          'experiences':[                                     
             {                                                
                'name':'outOfTheBox',                                   

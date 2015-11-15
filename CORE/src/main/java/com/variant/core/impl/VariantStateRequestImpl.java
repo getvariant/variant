@@ -69,7 +69,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 
 	
 	@Override
-	public StateServeEvent getViewServeEvent() {
+	public StateServeEvent getStateServeEvent() {
 		return event;
 	}
 

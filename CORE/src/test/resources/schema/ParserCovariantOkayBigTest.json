@@ -94,7 +94,7 @@
                     }                                                       
                  }                                                       
               ]                                                          
-           },                                                            
+           }, 
            {                                                             
               'stateRef':'state4',                                         
               'isNonvariant':true                                         

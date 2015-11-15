@@ -98,11 +98,11 @@ public interface Variant {
 	public VariantSession getSession(Object sessionIdPersisterUserData);
 	
 	/**
-     * Start view Request 
+     * Start state Request 
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public VariantStateRequest newStateRequest(VariantSession session, State view, Object targetingPersisterUserData);
+	public VariantStateRequest newStateRequest(VariantSession session, State state, Object targetingPersisterUserData);
 	
 	/**
 	 * Commit of a view request.

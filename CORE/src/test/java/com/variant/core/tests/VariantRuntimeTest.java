@@ -1130,7 +1130,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(state1, req.getState());
 		
 		// View Serve Event.
-		StateServeEvent event = req.getViewServeEvent();
+		StateServeEvent event = req.getStateServeEvent();
 		assertEquals(2, event.getEventExperiences().size());
 		int index = 0;
 		for (VariantEventExperience ee: event.getEventExperiences()) {

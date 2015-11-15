@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantStateRequest;
+import com.variant.core.impl.StateServeEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
@@ -143,9 +144,7 @@ public class VariantFilter implements Filter {
 				}
 			}
 			catch (Throwable t) {
-				LOG.error("Unhandled exception in Variant for path [" + 
-						VariantWebUtils.requestUrl(httpRequest) + 
-						"] and session [" + variantRequest.getSession().getId() + "]", t);
+				LOG.error("Unhandled exception in Variant for path [" + VariantWebUtils.requestUrl(httpRequest) + "]", t);
 				// null out variant request object so we don't attempt to do anything with it.
 				variantRequest = null;
 			}
@@ -159,7 +158,9 @@ public class VariantFilter implements Filter {
 								
 			if (webApi.isBootstrapped() && variantRequest != null) {
 				try {
-					variantRequest.getViewServeEvent().setParameter("HTTP_STATUS", httpResponse.getStatus());
+					// state serve event may be null if no tests were targeted on this state.
+					StateServeEvent event = variantRequest.getStateServeEvent();
+					if (event != null) event.setParameter("HTTP_STATUS", httpResponse.getStatus());
 					webApi.commitViewRequest(variantRequest, httpResponse);   
 				}
 				catch (Throwable t) {

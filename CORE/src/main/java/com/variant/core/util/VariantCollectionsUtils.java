@@ -3,8 +3,10 @@ package com.variant.core.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 
@@ -36,6 +38,18 @@ public class VariantCollectionsUtils {
 	public static <T> List<T> list(List<T>...lists) {
 		ArrayList<T> result = new ArrayList<T>();
 		for (List<T> list: lists) result.addAll(list);
+		return result;
+	}
+
+	/**
+	 * Create a new set with the given elements.
+	 * @param elems
+	 * @return
+	 */
+	@SafeVarargs
+	public static <T> Set<T> set(T...elems) {
+		HashSet<T> result = new HashSet<T>();
+		for (T elem: elems) result.add(elem);
 		return result;
 	}
 
