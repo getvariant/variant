@@ -86,7 +86,7 @@ public class StatesParser implements Keywords {
 			return null;
 		}
 		
-		// Pass 2: Parse properties, if we have the name.
+		// Pass 2: Parse parameters, if we have the name.
 		for(Map.Entry<String, ?> entry: rawState.entrySet()) {
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) continue;

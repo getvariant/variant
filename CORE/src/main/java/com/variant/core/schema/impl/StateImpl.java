@@ -10,6 +10,8 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.MessageTemplate;
+import com.variant.core.util.CaseInsensitiveMap;
+import com.variant.core.util.CaseInsensitiveUnmodifiableMap;
 
 /**
  * 
@@ -19,7 +21,7 @@ import com.variant.core.schema.parser.MessageTemplate;
 public class StateImpl implements State {
 
 	private String name;
-	private Map<String,String> parameters;
+	private CaseInsensitiveMap<String> parameters;
 
 	/**
 	 * Package scoped constructor;
@@ -28,7 +30,7 @@ public class StateImpl implements State {
 	 */
 	StateImpl(String name, Map<String, String> parameters) {
 		this.name = name;
-		this.parameters = parameters;
+		this.parameters = new CaseInsensitiveMap<String>(parameters);
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -42,7 +44,7 @@ public class StateImpl implements State {
 	
 	@Override
 	public Map<String, String> getParameterMap() {
-		return Collections.unmodifiableMap(parameters);
+		return new CaseInsensitiveUnmodifiableMap<String>(parameters);
 	}
 
 	@Override

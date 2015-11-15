@@ -32,12 +32,12 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    "     },                                                                   \n" +
     	    "     {  'NAME':'state2',                                                  \n" +
 			"        'parameters':{                                                    \n" +
-    	    "           'path':'/path/to/state2'                                       \n" +
+    	    "           'Path':'/path/to/state2'                                       \n" +
     	    "        }                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'nAmE':'state3',                                                  \n" +
 			"        'parameters':{                                                    \n" +
-    	    "           'path':'/path/to/state3'                                       \n" +
+    	    "           'PATH':'/path/to/state3'                                       \n" +
     	    "        }                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'name':'state4',                                                  \n" +
@@ -321,13 +321,14 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 	
 	/**
 	 * 
-	 * @param expectedView
-	 * @param actualView
+	 * @param expectedState
+	 * @param actualState
 	 */
-	private static void verifyState(String[] expectedView, State actualView) {
-		assertNotNull(actualView);
-		assertEquals(expectedView[0], actualView.getName());
-		assertEquals(expectedView[1], actualView.getParameterMap().get("path"));		
+	private static void verifyState(String[] expectedState, State actualState) {
+		assertNotNull(actualState);
+		assertEquals(expectedState[0], actualState.getName());
+		assertEquals(expectedState[1], actualState.getParameterMap().get("path"));		
+		assertEquals(expectedState[1], actualState.getParameterMap().get("Path"));		
 	}
 	
 	/**
