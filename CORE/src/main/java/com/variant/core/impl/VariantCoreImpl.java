@@ -25,7 +25,6 @@ import com.variant.core.event.EventPersister;
 import com.variant.core.event.EventWriter;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.flashpoint.Flasher;
 import com.variant.core.flashpoint.Flashpoint;
 import com.variant.core.flashpoint.FlashpointListener;
 import com.variant.core.schema.Schema;
