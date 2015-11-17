@@ -236,7 +236,7 @@ public class FlashpointTest extends BaseTest {
 			if (flashpoint.getTest().equals(testToDisqualify)) {
 				testList.add(flashpoint.getTest());
 				flashpoint.setQualified(false);
-				if (removeFromTp != null) flashpoint.setRemoveFromTargetingPersister(removeFromTp);
+				if (removeFromTp != null) flashpoint.setRemoveFromTargetingTracker(removeFromTp);
 			}
 		}		
 	}

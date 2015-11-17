@@ -11,16 +11,15 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
-import com.variant.core.VariantStateRequest;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.flashpoint.TestQualificationFlashpoint;
+import com.variant.core.flashpoint.TestTargetingFlashpoint;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.Test.OnState;
 import com.variant.core.schema.impl.StateImpl;
-import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.session.TargetingPersister;
 import com.variant.core.session.VariantSessionImpl;
@@ -41,15 +40,13 @@ public class VariantRuntime {
 
 	/**
 	 * 
-	 * @author Igor
-	 *
 	 */
 	private static class TestQualificationFlashpointImpl implements TestQualificationFlashpoint {
 		
 		private VariantSession ssn;
 		private Test test;
 		private boolean qualified = true;
-		private boolean removeFromTP = false;
+		private boolean removeFromTT = false;
 		
 		private TestQualificationFlashpointImpl(VariantSession ssn, Test test) {
 			this.ssn = ssn;
@@ -62,6 +59,16 @@ public class VariantRuntime {
 		}
 
 		@Override
+		public boolean isQualified() {
+			return qualified;
+		}
+		
+		@Override
+		public boolean isRemoveFromTargetingTracker() {
+			return removeFromTT;
+		}
+		
+		@Override
 		public VariantSession getSession() {
 			return ssn;
 		}
@@ -72,11 +79,47 @@ public class VariantRuntime {
 		}
 
 		@Override
-		public void setRemoveFromTargetingPersister(boolean remove) {
-			removeFromTP = remove;
+		public void setRemoveFromTargetingTracker(boolean remove) {
+			removeFromTT = remove;
 		}
 
 	};
+
+	/**
+	 * 
+	 */
+	private static class TestTargetingFlashpointImpl implements TestTargetingFlashpoint {
+
+		private VariantSession session;
+		private Test test;
+		private Experience targetedExperience = null;
+		
+		private TestTargetingFlashpointImpl(VariantSession session, Test test) {
+			this.session = session;
+			this.test = test;
+		}
+		
+		@Override
+		public VariantSession getSession() {
+			return session;
+		}
+
+		@Override
+		public Experience getTargetedExperience() {
+			return targetedExperience;
+		}
+
+		@Override
+		public Test getTest() {
+			return test;
+		}
+
+		@Override
+		public void setTargetedExperience(Experience experience) {
+			targetedExperience = experience;
+		}
+		
+	}		
 
 	/**
 	 * Static singleton.
@@ -128,7 +171,7 @@ public class VariantRuntime {
 			variantCoreImpl.getFlasher().post(flashpoint);
 			if (!flashpoint.qualified) {
 				req.addDisqualifiedTest(test);
-				if (flashpoint.removeFromTP) tp.remove(test);
+				if (flashpoint.removeFromTT) tp.remove(test);
 			}
 		}
 		
@@ -211,13 +254,21 @@ public class VariantRuntime {
 					}										
 				}
 				else if (isTargetable(test, tp.getAll())) {
-					Experience e = ((TestImpl) test).target(session);
-					vector.add(e);
-					tp.add(e, System.currentTimeMillis());
+					// Target this test. First post possible flashpoint listeners.
+					TestTargetingFlashpointImpl flashpoint = new TestTargetingFlashpointImpl(session, test);
+					variantCoreImpl.getFlasher().post(flashpoint);
+					Experience targetedExperience = flashpoint.targetedExperience;
+					// If no listeners or no action by client code, do the random default.
+					if (targetedExperience == null) {
+						targetedExperience = new TestTargeterDefault().target(test, session);
+					}
+										
+					vector.add(targetedExperience);
+					tp.add(targetedExperience, System.currentTimeMillis());
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(
 								"Session [" + session.getId() + "] targeted for test [" + 
-								test.getName() +"] with experience [" + e.getName() + "]");
+								test.getName() +"] with experience [" + targetedExperience.getName() + "]");
 					}
 
 				}

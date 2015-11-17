@@ -6,14 +6,14 @@ class TestExperienceImpl implements Test.Experience  {
 
 	private String name;
 	private Test test;
-	private double weight;
+	private Number weight;
 	boolean isControl;
 	
 	/**
 	 * Instantiation.
 	 * @param name
 	 */
-	TestExperienceImpl(String name, double weight, boolean isControl) {
+	TestExperienceImpl(String name, Number weight, boolean isControl) {
 		this.name = name;
 		this.weight = weight;
 		this.isControl = isControl;
@@ -43,7 +43,7 @@ class TestExperienceImpl implements Test.Experience  {
 		return isControl;
 	}
 
-	public double getWeight() {
+	public Number getWeight() {
 		return weight;
 	}
 

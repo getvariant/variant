@@ -132,7 +132,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    "        'experiences':[                                                  \n" +
     	    "           {                                                             \n" +
     	    "              'name':'C',                                                \n" +
-    	    "              'weight':0.5,                                              \n" +
+    	    "              'weight':0.5,                                              \n" + 
     	    "              'isControl':true                                           \n" +
     	    "           },                                                            \n" +
     	    "           {                                                             \n" +
@@ -347,18 +347,18 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertEquals(3, actualExperiences.size());
 		com.variant.core.schema.Test.Experience exp = actualExperiences.get(0);
 		assertEquals("A", exp.getName());
-		assertEquals(10, exp.getWeight(), 0.000001);
+		assertEquals(10, exp.getWeight().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
 		assertEquals(exp, test.getControlExperience());
 		assertEquals(test, exp.getTest());
 		exp = actualExperiences.get(1);
 		assertEquals("B", exp.getName());
-		assertEquals(20, exp.getWeight(), 0.000001);
+		assertEquals(20, exp.getWeight().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
 		assertEquals(test, exp.getTest());
 		exp = actualExperiences.get(2);
 		assertEquals("C", exp.getName());
-		assertEquals(30, exp.getWeight(), 0.000001);
+		assertEquals(30, exp.getWeight().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
 		assertEquals(test, exp.getTest());
 		
@@ -400,13 +400,13 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertEquals(2, actualExperiences.size());
 		com.variant.core.schema.Test.Experience exp = actualExperiences.get(0);
 		assertEquals("C", exp.getName());
-		assertEquals(0.5, exp.getWeight(), 0.000001);
+		assertEquals(0.5, exp.getWeight().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
 		assertEquals(exp, test.getControlExperience());
 		assertEquals(test, exp.getTest());
 		exp = actualExperiences.get(1);
 		assertEquals("D", exp.getName());
-		assertEquals(0.6, exp.getWeight(), 0.000001);
+		assertEquals(0.6, exp.getWeight().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
 		assertEquals(test, exp.getTest());
 		
@@ -460,12 +460,12 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertEquals(2, actualExperiences.size());
 		com.variant.core.schema.Test.Experience exp = actualExperiences.get(0);
 		assertEquals("A", exp.getName());
-		assertEquals(10, exp.getWeight(), 0.000001);
+		assertEquals(10, exp.getWeight().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
 		assertEquals(test, exp.getTest());
 		exp = actualExperiences.get(1);
 		assertEquals("B", exp.getName());
-		assertEquals(20, exp.getWeight(), 0.000001);
+		assertEquals(20, exp.getWeight().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
 		assertEquals(exp, test.getControlExperience());
 		assertEquals(test, exp.getTest());

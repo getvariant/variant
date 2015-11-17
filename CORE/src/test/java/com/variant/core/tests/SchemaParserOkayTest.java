@@ -393,6 +393,7 @@ public class SchemaParserOkayTest extends BaseTest {
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
 	}
+	
 	/**
 	 * 
 	 */

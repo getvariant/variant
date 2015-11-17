@@ -3,8 +3,6 @@ package com.variant.core.schema;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.VariantSession;
-
 /**
  * In-memory representation of a test.
  * @author Igor
@@ -83,25 +81,6 @@ public interface Test {
 	public List<Test> getCovariantTests();
 	
 	/**
-	 * Register a custom targeter.  Multiple targeters are executed in the order order
-	 * they were registered.
-	 * 
-	 * @param targeter
-	 */
-	public void registerCustomTargeter(Targeter targeter);
-	
-	/**
-	 * Get the list of custom targeters in the order they were defined.
-	 * @return
-	 */
-	public List<Targeter> getCustomTargeters();
-	
-	/**
-	 * Remove all custom targeters.
-	 */
-	public void clearCustomTargeters();
-
-	/**
 	 * In-memory representation of a test experience.
 	 * @author Igor
 	 *
@@ -127,10 +106,10 @@ public interface Test {
 		public boolean isControl();
 		
 		/**
-		 * This experience's declared weight.
+		 * This experience's declared weight.  May be null.
 		 * @return
 		 */
-		public double getWeight();
+		public Number getWeight();
 	}
 
 	/**
@@ -208,17 +187,4 @@ public interface Test {
 		}	
 	}
 	
-	/**
-	 * Custom targeter implements this interface.
-	 */
-	public static interface Targeter {
-		
-		/**
-		 * 
-		 * @param session
-		 * @return null to defer to the next targeter on the chain, or an experience.
-		 */
-		public Experience target(Test test, VariantSession session);
-	}
-
 }

@@ -12,6 +12,19 @@ public interface TestQualificationFlashpoint extends RuntimeFlashpoint {
 	public Test getTest();
 	
 	/**
+	 * The current value, most recently set by <code>setQualified()</code>.
+	 * The seed value is true;
+	 * @return
+	 */
+	public boolean isQualified();
+	
+	/**
+	 * The current value, most recently set by <code>setREmoveFromTargetingTracker()</code>.
+	 * The seed value is true;
+	 */
+	public boolean isRemoveFromTargetingTracker();
+	
+	/**
 	 * Listener calls this to pass the result back to the engine.
 	 * If no suitable listener was found or the listener didn't call
 	 * this method, the engine will assume true.
@@ -27,6 +40,6 @@ public interface TestQualificationFlashpoint extends RuntimeFlashpoint {
 	 * 
 	 * @param remove
 	 */
-	public void setRemoveFromTargetingPersister(boolean remove);
+	public void setRemoveFromTargetingTracker(boolean remove);
 
 }

@@ -1,16 +1,14 @@
 package com.variant.core.schema.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import com.variant.core.VariantProperties;
-import com.variant.core.VariantSession;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantSpace;
-import com.variant.core.schema.Test;
 import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 
 /**
  * 
@@ -18,7 +16,7 @@ import com.variant.core.schema.State;
  *
  */
 public class TestImpl implements Test {
-
+	
 	// As defined:
 	private String name;
 	private boolean isOn = true;
@@ -27,11 +25,10 @@ public class TestImpl implements Test {
 	private List<TestExperienceImpl> experiences;
 	private VariantSpace variantSpace;
 	private List<TestOnStateImpl> onViews;
-	private List<Targeter> customTargeters = new ArrayList<Targeter>();
 	
 	// Runtime will cache stuff in this instance.
 	private HashMap<String, Object> runtimeAttributes = new HashMap<String, Object>();
-	
+
 	/**
 	 * 
 	 * @param name
@@ -182,30 +179,6 @@ public class TestImpl implements Test {
 	/**
 	 * 
 	 */
-	@Override
-	public void registerCustomTargeter(Targeter targeter) {
-		customTargeters.add(targeter);
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public List<Targeter> getCustomTargeters() {
-		return Collections.unmodifiableList(customTargeters);
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public void clearCustomTargeters() {
-		customTargeters = new ArrayList<Targeter>();
-	}
-
-	/**
-	 * 
-	 */
 	public boolean isOn() {
 		return isOn;
 	}
@@ -256,21 +229,6 @@ public class TestImpl implements Test {
 		return runtimeAttributes.put(key, attribute);
 	}
 
-	/**
-	 * Target this test, i.e. generate an experience.
-	 * @return
-	 */
-	public Experience target(VariantSession session) {
-		Experience result = null;
-		for (Targeter t: customTargeters) {
-			result = t.target(this, session);
-			if (result != null) break;
-		}
-		if (result == null) {
-			result = new TestTargeterDefault().target(this, session);
-		}
-		return result;
-	}
 	
 	@Override
 	public String toString() {
