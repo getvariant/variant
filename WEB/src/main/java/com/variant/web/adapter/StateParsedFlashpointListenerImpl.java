@@ -1,4 +1,4 @@
-package com.variant.web;
+package com.variant.web.adapter;
 
 
 import com.variant.core.flashpoint.FlashpointListener;

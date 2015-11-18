@@ -236,101 +236,11 @@ public class VariantCoreImpl implements Variant {
 
 	/**
 	 * 
-	 * @param string
-	 * @param deploy
-	 * @return
-	 */
-	@Override
-	public ParserResponse parseSchema(String string, boolean deploy) {
-
-		stateCheck();
-		
-		long now = System.currentTimeMillis();
-		
-		// (Re)discover and process all annotations.
-		// AnnotationProcessor.process();
-
-		ParserResponseImpl response;
-
-		// Lose comments, i.e. from // to eol.
-		StringBuilder schemaAsStringNoComments = new StringBuilder();
-		String lines[] = string.split("\n");
-		for (String line: lines) {
-			
-			int commentIndex = line.indexOf("//");
-			
-			if (commentIndex == 0) {
-				// full line - skip.
-				continue;
-			}
-			else if (commentIndex >= 0) {
-				// partial line: remove from // to eol.
-				schemaAsStringNoComments.append(line.substring(0, commentIndex));
-			}
-			else {
-				schemaAsStringNoComments.append(line);
-			}
-			schemaAsStringNoComments.append("\n");
-		}
-		
-		try {
-			response = SchemaParser.parse(schemaAsStringNoComments.toString());
-		}
-		catch (Throwable t) {
-			response = new ParserResponseImpl();
-			ParserMessage err = response.addMessage(INTERNAL, t.getMessage());
-			LOG.error(err.getMessage(), t);
-		}
-
-		// Only replace the schema if no ERROR or higher level errors.
-		if (response.highestMessageSeverity().lessThan(Severity.ERROR)) {
-			
-			if (schema != null) {
-				((SchemaImpl)schema).setInternalState(SchemaImpl.InternalState.UNDEPLOYED);
-			}
-			schema = response.getSchema();
-			((SchemaImpl)schema).setInternalState(SchemaImpl.InternalState.DEPLOYED);
-			
-			StringBuilder msg = new StringBuilder("New schema deployed in ");
-			msg.append(DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")).append(":");
-			for (Test test: schema.getTests()) {
-				msg.append("\n   ").append(test.getName()).append(" {");
-				boolean first = true;
-				for (Experience exp: test.getExperiences()) {
-					if (first) first = false;
-					else msg.append(", ");
-					msg.append(exp.getName());
-					if (exp.isControl()) msg.append(" (control)");
-				}
-				msg.append("}");
-				if (!test.isOn()) msg.append(" OFF");
-			}
-			LOG.info(msg.toString());
-		}
-		else {
-			((SchemaImpl) response.getSchema()).setInternalState(SchemaImpl.InternalState.FAILED);
-			LOG.error("New schema was not deployed due to parser error(s).");
-		}
-		
-		return response;
-	}
-	
-	/**
-	 * 
 	 */
 	@Override
 	public ParserResponse parseSchema(InputStream stream) {
 
 		return parseSchema(stream, true);
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public ParserResponse parseSchema(String string) {
-
-		return parseSchema(string, true);
 	}
 
 	/**
@@ -429,6 +339,95 @@ public class VariantCoreImpl implements Variant {
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
 	
+	/**
+	 * 
+	 */
+	public ParserResponse parseSchema(String schema) {
+		
+		return parseSchema(schema, true);
+	}
+
+	/**
+	 * 
+	 * @param string
+	 * @param deploy
+	 * @return
+	 */
+	public ParserResponse parseSchema(String string, boolean deploy) {
+
+		stateCheck();
+		
+		long now = System.currentTimeMillis();
+		
+		// (Re)discover and process all annotations.
+		// AnnotationProcessor.process();
+
+		ParserResponseImpl response;
+
+		// Lose comments, i.e. from // to eol.
+		StringBuilder schemaAsStringNoComments = new StringBuilder();
+		String lines[] = string.split("\n");
+		for (String line: lines) {
+			
+			int commentIndex = line.indexOf("//");
+			
+			if (commentIndex == 0) {
+				// full line - skip.
+				continue;
+			}
+			else if (commentIndex >= 0) {
+				// partial line: remove from // to eol.
+				schemaAsStringNoComments.append(line.substring(0, commentIndex));
+			}
+			else {
+				schemaAsStringNoComments.append(line);
+			}
+			schemaAsStringNoComments.append("\n");
+		}
+		
+		try {
+			response = SchemaParser.parse(schemaAsStringNoComments.toString());
+		}
+		catch (Throwable t) {
+			response = new ParserResponseImpl();
+			ParserMessage err = response.addMessage(INTERNAL, t.getMessage());
+			LOG.error(err.getMessage(), t);
+		}
+
+		// Only replace the schema if no ERROR or higher level errors.
+		if (response.highestMessageSeverity().lessThan(Severity.ERROR)) {
+			
+			if (schema != null) {
+				((SchemaImpl)schema).setInternalState(SchemaImpl.InternalState.UNDEPLOYED);
+			}
+			schema = response.getSchema();
+			((SchemaImpl)schema).setInternalState(SchemaImpl.InternalState.DEPLOYED);
+			
+			StringBuilder msg = new StringBuilder("New schema deployed in ");
+			msg.append(DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")).append(":");
+			for (Test test: schema.getTests()) {
+				msg.append("\n   ").append(test.getName()).append(" {");
+				boolean first = true;
+				for (Experience exp: test.getExperiences()) {
+					if (first) first = false;
+					else msg.append(", ");
+					msg.append(exp.getName());
+					if (exp.isControl()) msg.append(" (control)");
+				}
+				msg.append("}");
+				if (!test.isOn()) msg.append(" OFF");
+			}
+			LOG.info(msg.toString());
+		}
+		else {
+			((SchemaImpl) response.getSchema()).setInternalState(SchemaImpl.InternalState.FAILED);
+			LOG.error("New schema was not deployed due to parser error(s).");
+		}
+		
+		return response;
+	}
+	
+
 	/**
 	 * 
 	 * @return

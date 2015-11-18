@@ -1,4 +1,4 @@
-package com.variant.web.ext;
+package com.variant.web.adapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,9 +23,8 @@ import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.util.VariantIoUtils;
-import com.variant.web.StateSelectorByRequestPath;
 import com.variant.web.VariantWeb;
-import com.variant.web.util.VariantWebUtils;
+import com.variant.web.VariantWebUtils;
 
 /**
  * Copyright 2015 Variant. All rights reserved.
@@ -64,7 +63,7 @@ public class VariantFilter implements Filter {
 		
 		if (name == null) throw new ServletException("Init parameter 'schemaResourceName' must be supplied");
 		
-		InputStream is = VariantIoUtils.class.getResourceAsStream(name);
+		InputStream is = getClass().getResourceAsStream(name);
 		if (is == null) {
 			throw new RuntimeException("Classpath resource by the name [" + name + "] does not exist.");
 		}

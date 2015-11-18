@@ -2,18 +2,20 @@ package com.variant.web;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
+import com.variant.web.adapter.StateParsedFlashpointListenerImpl;
 
 public class StateParsedFlashpointTest {
 
 	@Test
 	public void leadingSlashTest() {
 		
-		String config = 
+		String schema = 
 				"{                                                             \n" +
 			    "   'states':[                                                 \n" +
 			    "     {  'name':'state1',                                      \n" +
@@ -71,7 +73,7 @@ public class StateParsedFlashpointTest {
 		VariantWeb api = new VariantWeb();
 		api.bootstrap();
 		api.addFlashpointListener(new StateParsedFlashpointListenerImpl());
-		ParserResponse response = api.parseSchema(config);
+		ParserResponse response = api.parseSchema(IOUtils.toInputStream(schema));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage msg = response.getMessages().get(0);
 		assertEquals(Severity.ERROR, msg.getSeverity());

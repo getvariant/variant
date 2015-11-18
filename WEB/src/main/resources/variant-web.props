@@ -5,10 +5,10 @@
 #
 
 # Session ID persister in cookie.
-session.id.persister.class.name = com.variant.web.SessionIdPersisterHttpCookie
+session.id.persister.class.name = com.variant.web.adapter.SessionIdPersisterHttpCookie
 
 # Targeting persister in cookie.
-targeting.persister.class.name = com.variant.web.TargetingPersisterHttpCookie
+targeting.persister.class.name = com.variant.web.adapter.TargetingPersisterHttpCookie
 
 # Postgres Event Persister
 event.persister.class.name = com.variant.core.ext.EventPersisterPostgres

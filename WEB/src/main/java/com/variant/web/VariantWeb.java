@@ -104,26 +104,6 @@ public class VariantWeb {
 	}
 
 	/**
-	 * Parse from a string, and, if no errors, optionally deploy a new schema.
-	 * @param string
-	 * @deploy The new test schema will be deployed if this is true and no parse errors were encountered.
-	 * @return
-	 */
-	public ParserResponse parseSchema(String string, boolean deploy) {
-		return core.parseSchema(string, deploy);
-	}
-
-	/**
-	 * Parse from a string, and, if no errors, deploy a new schema.
-	 * @param string
-	 * @deploy The new test schema will be deployed if this is true and no parse errors were encountered.
-	 * @return
-	 */
-	public ParserResponse parseSchema(String string) {
-		return core.parseSchema(string);
-	}
-
-	/**
 	 * Get current test schema.
 	 * @return Current test schema or null, if none has been deployed yet.
 	 */

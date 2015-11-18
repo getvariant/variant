@@ -1,4 +1,4 @@
-package com.variant.web;
+package com.variant.web.adapter;
 
 import java.util.Random;
 
@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.session.SessionIdPersister;
 import com.variant.core.util.VariantStringUtils;
-import com.variant.web.util.VariantCookie;
+import com.variant.web.VariantCookie;
 
 
 /**

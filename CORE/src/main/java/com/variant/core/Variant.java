@@ -59,29 +59,14 @@ public interface Variant {
 	 * @return
 	 */
 	public ParserResponse parseSchema(InputStream stream, boolean deploy);
-		
+			
 	/**
-	 * Parse and, if no errors, optionally deploy a new schema.
-	 * @param string
-	 * @deploy The new test schema will be deployed if this is true and no parse errors were encountered.
-	 * @return
-	 */
-	public ParserResponse parseSchema(String string, boolean deploy);
-	
-	/**
-	 * Parse and, if no errors, deploy a new schema.
+	 * Parse and, if no errors, deploy a new schema.  Equivalent to parseSchema(stream, true).
 	 * @param stream
 	 * @return
 	 */
 	public ParserResponse parseSchema(InputStream stream);
 	
-	/**
-	 * Parse and, if no errors, deploy a new test schema.
-	 * @param string
-	 * @return
-	 */
-	public ParserResponse parseSchema(String string);
-
 	/**
 	 * Get currently deployed test schema.
 	 * @return Current test schema or null, if none has been deployed yet.

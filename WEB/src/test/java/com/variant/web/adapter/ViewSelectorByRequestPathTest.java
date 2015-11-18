@@ -1,6 +1,9 @@
-package com.variant.web;
+package com.variant.web.adapter;
 
 import org.junit.Test;
+
+import com.variant.web.adapter.StateSelectorByRequestPath;
+
 import static org.junit.Assert.*;
 
 public class ViewSelectorByRequestPathTest {

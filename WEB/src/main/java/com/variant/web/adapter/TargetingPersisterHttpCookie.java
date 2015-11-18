@@ -1,4 +1,4 @@
-package com.variant.web;
+package com.variant.web.adapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -7,7 +7,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import com.variant.core.VariantSession;
 import com.variant.core.ext.TargetingPersisterString;
-import com.variant.web.util.VariantCookie;
+import com.variant.web.VariantCookie;
 
 public class TargetingPersisterHttpCookie extends TargetingPersisterString {
 
