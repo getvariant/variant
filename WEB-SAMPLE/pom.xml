@@ -40,6 +40,7 @@
 
 		<cobertura.version>2.7</cobertura.version>
 		<variant.version>0.5</variant.version>
+		<jackson.version>2.5.3</jackson.version>
 
 	</properties>
 
@@ -262,7 +263,7 @@
 			<version>${dandelion.version}</version>
 		</dependency>
 		
-		<!-- Variant Dependencies -->        
+		<!-- Variant and its dependencies -->        
         <dependency>
 			<groupId>com.variant</groupId>
 			<artifactId>variant-core</artifactId>
@@ -274,6 +275,70 @@
 			<artifactId>variant-web</artifactId>
 			<version>${variant.version}</version>
 		</dependency>
+		
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+            <version>3.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast-client</artifactId>
+            <version>3.4</version>
+        </dependency>
+        
+        <dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
+		</dependency>
+        
+        <dependency>
+	    	<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+			<version>3.5</version>
+		</dependency>
+        
+        <dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+        
+        <!-- Logging -->
+        <dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>1.7.12</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.2</version>
+        </dependency>
+        
+ 		<dependency>
+   			<groupId>com.fasterxml.jackson.core</groupId>
+   			<artifactId>jackson-core</artifactId>
+		    <version>2.5.3</version>
+ 		</dependency> 
+ 		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+  			<artifactId>jackson-databind</artifactId>
+  			<version>2.5.3</version>
+		</dependency>  
+		
+		<dependency>
+           <groupId>com.fasterxml.jackson.core</groupId>
+           <artifactId>jackson-annotations</artifactId>
+           <version>${jackson.version}</version>
+        </dependency>
+		
+    
+        <!-- End of Variant dependencies -->		
 		
 	</dependencies>
 

@@ -9,7 +9,7 @@
     
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
-        <variant.version>0.5.RC-2</variant.version>
+        <variant.version>0.5</variant.version>
     	<tomcat.version>7.0.59</tomcat.version>
     	
     </properties>
@@ -88,7 +88,22 @@
                   </systemPropertyVariables>
                </configuration>
             </plugin>
+            
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-source-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>attach-sources</id>
+                  <goals>
+                    <goal>jar</goal>
+                  </goals>
+                </execution>
+              </executions>
+          </plugin>
+
         </plugins>
+  
     </build>
 
 </project>

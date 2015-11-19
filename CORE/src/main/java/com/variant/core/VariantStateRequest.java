@@ -7,7 +7,7 @@ import com.variant.core.impl.StateServeEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.TargetingPersister;
+import com.variant.core.session.TargetingTracker;
 
 /**
  * Encapsulates state relevant to a single state request.
@@ -47,7 +47,7 @@ public interface VariantStateRequest {
 	 * 
 	 * @return
 	 */
-	public TargetingPersister getTargetingPersister();
+	public TargetingTracker getTargetingPersister();
 
 	/**
 	 * Get all experience targeted in this request.

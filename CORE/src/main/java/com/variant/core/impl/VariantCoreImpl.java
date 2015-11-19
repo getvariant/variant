@@ -38,7 +38,7 @@ import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.session.SessionService;
-import com.variant.core.session.TargetingPersister;
+import com.variant.core.session.TargetingTracker;
 import com.variant.core.util.VariantIoUtils;
 
 /**
@@ -271,16 +271,16 @@ public class VariantCoreImpl implements Variant {
 		stateCheck();
 		
 		// init Targeting Persister with the same user data.
-		TargetingPersister tp = null;
+		TargetingTracker tp = null;
 		String className = VariantProperties.getInstance().targetingPersisterClassName();
 		
 		try {
 			Object object = Class.forName(className).newInstance();
-			if (object instanceof TargetingPersister) {
-				tp = (TargetingPersister) object;
+			if (object instanceof TargetingTracker) {
+				tp = (TargetingTracker) object;
 			}
 			else {
-				throw new VariantBootstrapException(BOOT_TARGETING_PERSISTER_NO_INTERFACE, className, TargetingPersister.class.getName());
+				throw new VariantBootstrapException(BOOT_TARGETING_PERSISTER_NO_INTERFACE, className, TargetingTracker.class.getName());
 			}
 		}
 		catch (Exception e) {

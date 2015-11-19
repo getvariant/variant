@@ -12,7 +12,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.StateImpl;
-import com.variant.core.session.TargetingPersister;
+import com.variant.core.session.TargetingTracker;
 import com.variant.core.session.VariantSessionImpl;
 
 /**
@@ -28,7 +28,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	private Map<String,String> resolvedParameterMap;
 	private StateServeEvent event;
 	private boolean committed = false;
-	private TargetingPersister targetingPersister = null;
+	private TargetingTracker targetingPersister = null;
 	private HashSet<Test> disqualifiedTests = new HashSet<Test>();
 	
 	/**
@@ -44,7 +44,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		this.event = event;
 	}
 	
-	void setTargetingPersister(TargetingPersister targetingPersister) {
+	void setTargetingPersister(TargetingTracker targetingPersister) {
 		this.targetingPersister = targetingPersister;
 	}
 	
@@ -79,7 +79,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	}
 
 	@Override
-	public TargetingPersister getTargetingPersister() {
+	public TargetingTracker getTargetingPersister() {
 		return targetingPersister;
 	}
 

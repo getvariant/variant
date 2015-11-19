@@ -7,10 +7,10 @@ import org.junit.Test;
 
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantSession;
-import com.variant.core.ext.TargetingPersisterString;
+import com.variant.core.ext.TargetingTrackerString;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.session.TargetingPersister;
+import com.variant.core.session.TargetingTracker;
 
 public class SessionTest extends BaseTest {
 
@@ -49,7 +49,7 @@ public class SessionTest extends BaseTest {
 		// 
 		// Empty string
 		//
-		TargetingPersister tp = new TargetingPersisterString();
+		TargetingTracker tp = new TargetingTrackerString();
 		tp.initialized(ssn, "");
 		assertEquals(0, tp.getAll().size());
 
@@ -57,7 +57,7 @@ public class SessionTest extends BaseTest {
 		// Single entry - good
 		//
 		String persisterString = timestamp + ".test1.A";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(1, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -66,19 +66,19 @@ public class SessionTest extends BaseTest {
 		assertNull(tp.get(schema.getTest("test1")));
 
 		persisterString = timestamp + ".test1.A|";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(1, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
 
 		persisterString = "|" + timestamp + ".test2.B";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(1, tp.getAll().size());
 		assertEquals(experience("test2.B"), tp.get(schema.getTest("test2")));
 
 		persisterString = "|" + timestamp + ".test3.C|";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(1, tp.getAll().size());
 		assertEquals(experience("test3.C"), tp.get(schema.getTest("test3")));
@@ -104,22 +104,22 @@ public class SessionTest extends BaseTest {
 		// Single entry - bad
 		//
 		persisterString = "|test2.B";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(0, tp.getAll().size());
 
 		persisterString = timestamp + ".badTestName.B";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(0, tp.getAll().size());
 
 		persisterString = "|" + timestamp + ".test3.badExperienceName|";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(0, tp.getAll().size());
 
 		persisterString = "notANumber.test3.C|";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(0, tp.getAll().size());
 
@@ -127,7 +127,7 @@ public class SessionTest extends BaseTest {
 		// Multiple entries - good
 		//
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test4.B";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(3, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -141,7 +141,7 @@ public class SessionTest extends BaseTest {
 		assertEquals(timestamp + ".test1.A|" + timestamp + ".test4.B",tp.toString());
 		
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C||" + timestamp + ".test4.B|";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(3, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -153,7 +153,7 @@ public class SessionTest extends BaseTest {
 		// Multiple entries - bad
 		//
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test4..B";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(2, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -161,7 +161,7 @@ public class SessionTest extends BaseTest {
 		assertEquals(timestamp + ".test1.A|" + timestamp + ".test2.C",tp.toString());
 
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test1.B";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(2, tp.getAll().size());
 		assertEquals(experience("test1.B"), tp.get(schema.getTest("test1")));
@@ -173,7 +173,7 @@ public class SessionTest extends BaseTest {
 		//
 		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY;
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test3.B";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(3, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -183,7 +183,7 @@ public class SessionTest extends BaseTest {
 
 		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY - 1;
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test3.B";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(2, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
@@ -193,7 +193,7 @@ public class SessionTest extends BaseTest {
 
 		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY * 1000;
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test3.B|" + timestamp + ".test4.A|";
-		tp = new TargetingPersisterString();
+		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
 		assertEquals(3, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));

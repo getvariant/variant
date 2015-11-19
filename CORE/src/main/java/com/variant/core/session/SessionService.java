@@ -16,7 +16,7 @@ import com.variant.core.exception.VariantRuntimeException;
 public class SessionService {
 
 	private static final Logger LOG  = LoggerFactory.getLogger(SessionService.class);
-	private SessionIdPersister sidPersister = null;
+	private SessionIdTracker sidPersister = null;
 	private SessionStore store = null;
 	
 	/**
@@ -34,11 +34,11 @@ public class SessionService {
 		try {
 			Class<?> persisterClass = Class.forName(className);
 			Object persisterObject = persisterClass.newInstance();
-			if (persisterObject instanceof SessionIdPersister) {
-				sidPersister = (SessionIdPersister) persisterObject;
+			if (persisterObject instanceof SessionIdTracker) {
+				sidPersister = (SessionIdTracker) persisterObject;
 			}
 			else {
-				throw new VariantBootstrapException(BOOT_SID_PERSISTER_NO_INTERFACE, className, SessionIdPersister.class.getName());
+				throw new VariantBootstrapException(BOOT_SID_PERSISTER_NO_INTERFACE, className, SessionIdTracker.class.getName());
 			}
 		}
 		catch (Exception e) {

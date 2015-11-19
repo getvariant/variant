@@ -21,7 +21,7 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.Test.OnState;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
-import com.variant.core.session.TargetingPersister;
+import com.variant.core.session.TargetingTracker;
 import com.variant.core.session.VariantSessionImpl;
 import com.variant.core.util.VariantStringUtils;
 
@@ -158,7 +158,7 @@ public class VariantRuntime {
 		Schema schema = variantCoreImpl.getSchema();
 		VariantSession session = req.getSession();
 		State state = req.getState();
-		TargetingPersister tp = req.getTargetingPersister();
+		TargetingTracker tp = req.getTargetingPersister();
 		
 		// It is illegal to call this with a view that is not in schema, e.g. before runtime.
 		State schemaState = schema.getState(state.getName());
@@ -475,7 +475,7 @@ public class VariantRuntime {
 	 * @param view
 	 * @return
 	 */
-	public static VariantStateRequestImpl startViewRequest(VariantSession ssn, State state, TargetingPersister targetingPersister) {
+	public static VariantStateRequestImpl startViewRequest(VariantSession ssn, State state, TargetingTracker targetingPersister) {
 
 		// Resolve the path and get all tests instrumented on the given view targeted.
 		VariantStateRequestImpl result = new VariantStateRequestImpl((VariantSessionImpl)ssn, (StateImpl) state);

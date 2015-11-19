@@ -28,10 +28,10 @@ event.persister.jdbc.password = variant
 # event.persister.jdbc.password = variant
 
 # Number of days targeting persister will honor an idle experience. (0 => forever)
-targeting.persister.class.name = com.variant.core.ext.TargetingPersisterString
-targeting.persister.idle.days.to.live = 0
+targeting.tracker.class.name = com.variant.core.ext.TargetingTrackerString
+targeting.tracker.idle.days.to.live = 0
 
 # Session service type
 session.store.type = local
 # Session ID persister implementation class name.
-session.id.persister.class.name = com.variant.core.ext.SessionIdPersisterString
+session.id.tracker.class.name = com.variant.core.ext.SessionIdTrackerString
