@@ -1,10 +1,10 @@
-package com.variant.web;
+package com.variant.web.adapter;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-abstract public class VariantCookie {
+abstract class VariantCookie {
 
 	private String name = null;
 	private String value = null;
@@ -14,14 +14,14 @@ abstract public class VariantCookie {
 	/**
 	 * New cookie.
 	 */
-	public VariantCookie(String name) {
+	VariantCookie(String name) {
 		this.name = name;
 	}
 
 	/**
 	 * Existing from request.
 	 */
-	public VariantCookie(String name, HttpServletRequest request) {
+	VariantCookie(String name, HttpServletRequest request) {
 		this.name = name;
 		for (Cookie c: request.getCookies()) {
 			if (c.getName().equals(name)) {
@@ -34,7 +34,7 @@ abstract public class VariantCookie {
 	 * 
 	 * @return
 	 */
-	public String getValue() {
+	String getValue() {
 		return value;
 	}
 
@@ -42,7 +42,7 @@ abstract public class VariantCookie {
 	 * 
 	 * @param value
 	 */
-	public void setValue(String value) {
+	void setValue(String value) {
 		this.value = value;
 	}
 	
@@ -50,7 +50,7 @@ abstract public class VariantCookie {
 	 * 
 	 * @param response
 	 */
-	public void send(HttpServletResponse response) {
+	void send(HttpServletResponse response) {
 		Cookie cookie = new Cookie(name, value);
 		cookie.setPath("/");
 		cookie.setHttpOnly(true);

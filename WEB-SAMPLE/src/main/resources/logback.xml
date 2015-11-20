@@ -18,7 +18,7 @@
 
 	<!--<logger name="org.hibernate" level="debug"/> -->
     <!--<logger name="org.springframework.samples.petclinic" level="debug"/> -->
-    <logger name="com.variant" level="debug"/>
+    <logger name="com.variant" level="info"/>
          
     <root level="error">
         <appender-ref ref="console"/>

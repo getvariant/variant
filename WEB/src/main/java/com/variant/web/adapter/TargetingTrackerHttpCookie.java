@@ -7,7 +7,6 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import com.variant.core.VariantSession;
 import com.variant.core.ext.TargetingTrackerString;
-import com.variant.web.VariantCookie;
 
 public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 

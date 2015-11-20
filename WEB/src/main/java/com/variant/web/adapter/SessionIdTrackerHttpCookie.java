@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.session.SessionIdTracker;
 import com.variant.core.util.VariantStringUtils;
-import com.variant.web.VariantCookie;
 
 
 /**

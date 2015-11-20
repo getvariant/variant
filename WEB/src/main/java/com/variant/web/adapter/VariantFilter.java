@@ -22,7 +22,6 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
-import com.variant.core.util.VariantIoUtils;
 import com.variant.web.VariantWeb;
 import com.variant.web.VariantWebUtils;
 
@@ -127,7 +126,7 @@ public class VariantFilter implements Filter {
 					resolvedPath = variantRequest.getResolvedParameterMap().get("path");
 					isForwarding = !resolvedPath.equals(state.getParameter("path"));
 					
-					if (LOG.isDebugEnabled()) {
+					if (LOG.isInfoEnabled()) {
 
 						String msg = 
 								"Variant dispatcher for URL [" + url +
@@ -138,7 +137,7 @@ public class VariantFilter implements Filter {
 						else {
 							msg += "Falling through to requested URL";
 						}
-						LOG.debug(msg);
+						LOG.info(msg);
 					}					
 				}
 			}

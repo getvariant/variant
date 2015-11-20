@@ -19,7 +19,7 @@ public class RuntimeService {
 	    // Otherwise, if we're running off the core jar file, Maven will put the version into META-INF.
 	    try {
 	        Properties mavenProps = new Properties();
-	        InputStream is = Variant.class.getResourceAsStream("/META-INF/maven/com.variant.core/variant-core/pom.properties");
+	        InputStream is = Variant.class.getResourceAsStream("/META-INF/maven/com.variant/variant-core/pom.properties");
 	        if (is != null) {
 	        	mavenProps.load(is);
 	        	return mavenProps.getProperty("version", "");

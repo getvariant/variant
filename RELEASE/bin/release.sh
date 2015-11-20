@@ -16,7 +16,7 @@ if [[ x != "x$1" ]]; then
     exit 1
 fi
 
-version="0.5.RC-2"
+version="0.5.RC-3"
 
 workspace_root_dir=$(pwd)/$(dirname $0)/../..
 release_dir=${workspace_root_dir}/RELEASE
@@ -24,31 +24,32 @@ stage_dir=${release_dir}/stage
 out_dir=${release_dir}/out
 
 rm -rf ${stage_dir}/*
+rm -rf ${out_dir}/*
 
 #
 # Core
 #
 cd ${workspace_root_dir}/CORE
-mvn clean install -DskipTests
+mvn clean package -DskipTests
 
-cp $workspace_root_dir/CORE/target/variant-core-${version}.jar ${stage_dir}
+cp $workspace_root_dir/CORE/target/variant-core*.jar ${stage_dir}
 
 #
 # Web
 #
 
 cd ${workspace_root_dir}/WEB
-mvn clean install -DskipTests
+mvn clean package -DskipTests
 
-cp $workspace_root_dir/WEB/target/variant-web-${version}.jar ${stage_dir}
-
+cp $workspace_root_dir/WEB/target/variant-web*.jar ${stage_dir}
 
 #
 # Web Sample
 #
-
-cp -R $workspace_root_dir/SAMPLE-SMVC4 ${stage_dir}
-cd ${stage_dir}/SAMPLE-SMVC4
+cd ${workspace_root_dir}/WEB-SAMPLE
+mvn clean package -DskipTests
+cp -R $workspace_root_dir/WEB-SAMPLE ${stage_dir}
+cd ${stage_dir}/WEB-SAMPLE
 rm -rf .classpath .project .settings target
 tar -cvf ${stage_dir}/spring-petclinic-variant.tar ./*
 
