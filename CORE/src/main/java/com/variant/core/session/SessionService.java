@@ -1,6 +1,5 @@
 package com.variant.core.session;
 
-import static com.variant.core.schema.parser.MessageTemplate.BOOT_SID_PERSISTER_NO_INTERFACE;
 import static com.variant.core.schema.parser.MessageTemplate.INTERNAL;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -10,14 +9,15 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.VariantSessionIdTracker;
+import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantRuntimeException;
 
 public class SessionService {
 
 	private static final Logger LOG  = LoggerFactory.getLogger(SessionService.class);
-	private SessionIdTracker sidPersister = null;
-	private SessionStore store = null;
+	private VariantSessionIdTracker sidTracker = null;
+	private VariantSessionStore sessionStore = null;
 	
 	/**
 	 * 
@@ -26,24 +26,11 @@ public class SessionService {
 	 */
 	public SessionService() throws VariantBootstrapException {
 		
-		// Session store directly from factory.
-		store = SessionStore.Factory.getInstance(VariantProperties.getInstance().sessionStoreType());
+		// Session store.
+		sessionStore = SessionStoreFactory.getInstance(VariantProperties.getInstance().sessionStoreClassName());
 		
 		// Session ID persister 
-		String className = VariantProperties.getInstance().sessionIdPersisterClassName();
-		try {
-			Class<?> persisterClass = Class.forName(className);
-			Object persisterObject = persisterClass.newInstance();
-			if (persisterObject instanceof SessionIdTracker) {
-				sidPersister = (SessionIdTracker) persisterObject;
-			}
-			else {
-				throw new VariantBootstrapException(BOOT_SID_PERSISTER_NO_INTERFACE, className, SessionIdTracker.class.getName());
-			}
-		}
-		catch (Exception e) {
-			throw new VariantInternalException("Unable to instantiate Session Key Resolver class [" + className + "]", e);
-		}
+		sidTracker = SessionIdTrackerFactory.getInstance(VariantProperties.getInstance().sessionIdPersisterClassName());
 
 	}
 	
@@ -53,9 +40,9 @@ public class SessionService {
 	 */
 	public void shutdown() {
 		long now = System.currentTimeMillis();
-		store.shutdown();
-		store = null;
-		sidPersister = null;
+		sessionStore.shutdown();
+		sessionStore = null;
+		sidTracker = null;
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(
 					"Session Service shutdown in " + (DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
@@ -70,17 +57,17 @@ public class SessionService {
 	 */
 	public VariantSession getSession(boolean create, Object userData) throws VariantRuntimeException {
 		
-		String key = sidPersister.get(userData);
+		String key = sidTracker.get(userData);
 		
 		if (key == null) 
 			throw new VariantRuntimeException(INTERNAL, 
-					"Unable to obtain session ID from persister [" + sidPersister.getClass().getSimpleName() + "]");
+					"Unable to obtain session ID from persister [" + sidTracker.getClass().getSimpleName() + "]");
 		
-		VariantSession result = store.get(key);
+		VariantSession result = sessionStore.get(key);
 
 		if (result == null && create) {
 			result = new VariantSessionImpl(key);
-			store.put(key, result);
+			sessionStore.put(key, result);
 		}
 		return result;
 	}
@@ -91,6 +78,6 @@ public class SessionService {
 	 * @param userData
 	 */
 	public void persistSessionId(VariantSession session, Object userData) {
-		sidPersister.persist(session.getId(), userData);
+		sidTracker.persist(session.getId(), userData);
 	}
 }

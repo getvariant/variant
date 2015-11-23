@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.session.SessionStore;
 import com.variant.core.util.PropertiesChain;
 import com.variant.core.util.VariantIoUtils;
 
@@ -78,7 +77,7 @@ public class VariantProperties {
 		EVENT_WRITER_BUFFER_SIZE,
 		EVENT_WRITER_MAX_DELAY_MILLIS,
 		EVENT_WRITER_PERCENT_FULL,
-		SESSION_STORE_TYPE,
+		SESSION_STORE_CLASS_NAME,
 		SESSION_ID_TRACKER_CLASS_NAME,
 		TARGETING_TRACKER_CLASS_NAME,
 		TARGETING_TRACKER_IDLE_DAYS_TO_LIVE,
@@ -157,8 +156,8 @@ public class VariantProperties {
 		return getInteger(Keys.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName());
 	}
 
-	public SessionStore.Type sessionStoreType() {
-		return SessionStore.Type.valueOf(getString(Keys.SESSION_STORE_TYPE.propName()).toUpperCase());
+	public String sessionStoreClassName() {
+		return getString(Keys.SESSION_STORE_CLASS_NAME.propName());
 	}
 	
 	public String sessionIdPersisterClassName() {

@@ -4,7 +4,7 @@ import static com.variant.core.schema.parser.MessageTemplate.BOOT_CONFIG_BOTH_FI
 import static com.variant.core.schema.parser.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
 import static com.variant.core.schema.parser.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
 import static com.variant.core.schema.parser.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
-import static com.variant.core.schema.parser.MessageTemplate.BOOT_TARGETING_PERSISTER_NO_INTERFACE;
+import static com.variant.core.schema.parser.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
 import static com.variant.core.schema.parser.MessageTemplate.INTERNAL;
 import static com.variant.core.schema.parser.MessageTemplate.RUN_PROPERTY_NOT_SET;
 
@@ -280,7 +280,7 @@ public class VariantCoreImpl implements Variant {
 				tp = (TargetingTracker) object;
 			}
 			else {
-				throw new VariantBootstrapException(BOOT_TARGETING_PERSISTER_NO_INTERFACE, className, TargetingTracker.class.getName());
+				throw new VariantBootstrapException(BOOT_TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
 			}
 		}
 		catch (Exception e) {

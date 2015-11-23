@@ -31,7 +31,8 @@ event.persister.jdbc.password = variant
 targeting.tracker.class.name = com.variant.core.ext.TargetingTrackerString
 targeting.tracker.idle.days.to.live = 0
 
-# Session service type
-session.store.type = local
+# Session store type
+session.store.class.name = com.variant.core.session.SessionStoreLocalMemory
+
 # Session ID persister implementation class name.
 session.id.tracker.class.name = com.variant.core.ext.SessionIdTrackerString

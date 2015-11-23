@@ -1,6 +1,6 @@
 package com.variant.core.ext;
 
-import com.variant.core.session.SessionIdTracker;
+import com.variant.core.VariantSessionIdTracker;
 
 /**
  * Sample implementation of the SessionIdResolver.
@@ -11,7 +11,7 @@ import com.variant.core.session.SessionIdTracker;
  * @author Igor.
  *
  */
-public class SessionIdTrackerString implements SessionIdTracker {
+public class SessionIdTrackerString implements VariantSessionIdTracker {
 
 	private String id = null;
 		
