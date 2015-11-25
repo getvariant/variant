@@ -158,7 +158,7 @@ public class VariantRuntime {
 		Schema schema = variantCoreImpl.getSchema();
 		VariantSession session = req.getSession();
 		State state = req.getState();
-		TargetingTracker tp = req.getTargetingPersister();
+		TargetingTracker tp = req.getTargetingTracker();
 		
 		// It is illegal to call this with a view that is not in schema, e.g. before runtime.
 		State schemaState = schema.getState(state.getName());

@@ -41,10 +41,10 @@ abstract public class TargetingTrackerSupport implements TargetingTracker {
 	protected LinkedHashMap<String, Entry> entryMap = new LinkedHashMap<String, Entry>();
 	
 	// Concrete subclasses will initialize the entry map here.
-	abstract public void initialized(VariantSession session, Object userData);
+	abstract public void initialized(VariantSession session, Object...userData);
 	
 	// Concrete sublasses will flush in memory content to a persistence mechanism here.
-	abstract public void persist(Object userData);
+	abstract public void persist(Object...userData);
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //

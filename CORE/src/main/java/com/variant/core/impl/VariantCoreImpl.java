@@ -258,8 +258,8 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public VariantSession getSession(Object sessionIdPersisterUserData) {
-		return sessionService.getSession(true, sessionIdPersisterUserData);
+	public VariantSession getSession(Object...userData) {
+		return sessionService.getSession(userData);
 	}
 
 	/**
@@ -296,7 +296,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public void commitStateRequest(VariantStateRequest request, Object userData) {
+	public void commitStateRequest(VariantStateRequest request, Object...userData) {
 
 		stateCheck();
 		
@@ -304,11 +304,11 @@ public class VariantCoreImpl implements Variant {
 			throw new IllegalStateException("Request already committed");
 		}
 		
-		// Persist session Id.
-		sessionService.persistSessionId(request.getSession(), userData);
+		// Save the session in session store.
+		sessionService.saveSession(request.getSession(), userData);
 		
 		// Persist targeting info.  Note that we expect the userData to apply to both!
-		request.getTargetingPersister().persist(userData);
+		request.getTargetingTracker().persist(userData);
 		
 		// Save the state serve event, if any. There may not be any if we hit a known state that did not have
 		// any tests instrumented on it.

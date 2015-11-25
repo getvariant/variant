@@ -1,32 +1,38 @@
 package com.variant.core;
 
 /**
- * Session store is a map. Implementations will
- * be distributed, suitable for a particular application.
- * Testing of most of the code code could be done with
- * a simple local hash map.
+ * Session store holds on to the variant session between variant requests. 
+ * Implementations will be distributed, suitable for a particular application.
+ * Testing of most of the code code could be done with a simple local hash map.
  * 
  * @author Igor
  *
  */
 public interface VariantSessionStore {
-
+	
 	/**
-	 * Add a session to the store, replace if needed.
-	 * @param key
-	 * @param value
+	 * Save the session.
+	 * @param session The session to be saved in the store.
+	 * @param userData Opaque object that was passed to 
 	 */
-	public void put(String key, VariantSession value);	
+	public void save(VariantSession session, Object...userData);	
 
 	/**
 	 * 
-	 * @param key
+	 * @param userData Opaque object that was passed to Variant.getSession()
 	 * @return
 	 */
-	public VariantSession get(String key);
+	public VariantSession get(Object...userData);
+	
+	/**
+	 * Each session store implements its own SID tracker.
+	 * @return
+	 */
+	VariantSessionIdTracker getSessionIdTracker();
 	
 	/**
 	 * Release memory resources, if no longer needed.
 	 */
 	public void shutdown();
+	
 }

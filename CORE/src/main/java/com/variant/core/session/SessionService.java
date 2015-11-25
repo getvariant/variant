@@ -1,7 +1,5 @@
 package com.variant.core.session;
 
-import static com.variant.core.schema.parser.MessageTemplate.INTERNAL;
-
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +11,11 @@ import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantRuntimeException;
 
+import static com.variant.core.schema.parser.MessageTemplate.*;
+
 public class SessionService {
 
 	private static final Logger LOG  = LoggerFactory.getLogger(SessionService.class);
-	private VariantSessionIdTracker sidTracker = null;
 	private VariantSessionStore sessionStore = null;
 	
 	/**
@@ -29,9 +28,6 @@ public class SessionService {
 		// Session store.
 		sessionStore = SessionStoreFactory.getInstance(VariantProperties.getInstance().sessionStoreClassName());
 		
-		// Session ID persister 
-		sidTracker = SessionIdTrackerFactory.getInstance(VariantProperties.getInstance().sessionIdPersisterClassName());
-
 	}
 	
 	/**
@@ -42,7 +38,6 @@ public class SessionService {
 		long now = System.currentTimeMillis();
 		sessionStore.shutdown();
 		sessionStore = null;
-		sidTracker = null;
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(
 					"Session Service shutdown in " + (DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
@@ -50,34 +45,32 @@ public class SessionService {
 	}
 	
 	/**
-	 * Get user session.
-	 * @param create indicates whether to create the session if doesn't yet exist.
-	 * 
-	 * @return user session if exists or null if doesn't and create is false.
+	 * Get or create user session.
+	 * @return 
 	 */
-	public VariantSession getSession(boolean create, Object userData) throws VariantRuntimeException {
-		
-		String key = sidTracker.get(userData);
-		
-		if (key == null) 
-			throw new VariantRuntimeException(INTERNAL, 
-					"Unable to obtain session ID from persister [" + sidTracker.getClass().getSimpleName() + "]");
-		
-		VariantSession result = sessionStore.get(key);
+	public VariantSession getSession(Object...userData) throws VariantRuntimeException {
+				
+		VariantSession result = sessionStore.get(userData);
 
-		if (result == null && create) {
-			result = new VariantSessionImpl(key);
-			sessionStore.put(key, result);
+		if (result == null) {
+
+			VariantSessionIdTracker sidTracker = sessionStore.getSessionIdTracker();
+			String sessionId = sidTracker.get(userData);
+			
+			if (sessionId == null) 
+				throw new VariantRuntimeException(INTERNAL, 
+						"Unable to obtain session ID from persister [" + sidTracker.getClass().getSimpleName() + "]");
+
+			result = new VariantSessionImpl(sessionId);
+			sessionStore.save(result, userData);
 		}
-		return result;
-	}
+		return result;	}
 	
 	/**
 	 * Persist user session Id.
 	 * @param session
-	 * @param userData
 	 */
-	public void persistSessionId(VariantSession session, Object userData) {
-		sidTracker.persist(session.getId(), userData);
+	public void saveSession(VariantSession session, Object...userData) {
+		sessionStore.save(session, userData);
 	}
 }

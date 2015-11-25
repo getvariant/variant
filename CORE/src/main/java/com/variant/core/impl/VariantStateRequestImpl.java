@@ -79,7 +79,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	}
 
 	@Override
-	public TargetingTracker getTargetingPersister() {
+	public TargetingTracker getTargetingTracker() {
 		return targetingPersister;
 	}
 

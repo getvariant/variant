@@ -15,7 +15,7 @@ public interface TargetingTracker {
 	 * @param request
 	 * @param userData
 	 */
-	public void initialized(VariantSession ssn, Object userData);
+	public void initialized(VariantSession ssn, Object...userData);
 	
 	/**
 	 * Read all persisted experiences;
@@ -57,6 +57,6 @@ public interface TargetingTracker {
 	 * Persist the state of this object where it can be retrieved from again.
 	 * @param userData
 	 */
-	public void persist(Object userData);
+	public void persist(Object...userData);
 		
 }

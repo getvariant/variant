@@ -20,12 +20,13 @@ public interface VariantSessionIdTracker {
 	 * 
 	 * @return this should never return null.
 	 */
-	public String get(Object userData);
+	public String get(Object...userData);
 
 	/**
 	 * 
 	 * @param userData implementation specific user data that caller can pass
 	 *        to the implementation.
 	 */
-	public void persist(String sessionId, Object userData);
+	public void save(String sessionId, Object...userData);
 }
+

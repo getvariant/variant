@@ -61,7 +61,7 @@ public class EventDataPopulator {
 			else if (exp.getName().equals("tos&mailCheckbox")) skip = nextBoolean(0.15);
 			
 			if (!skip) {
-				request = Variant.Factory.getInstance().newStateRequest(ssn, ownerDetailView, request.getTargetingPersister().toString());
+				request = Variant.Factory.getInstance().newStateRequest(ssn, ownerDetailView, request.getTargetingTracker().toString());
 				Variant.Factory.getInstance().commitStateRequest(request, null);
 			}
 			Thread.sleep(rand.nextInt(10));

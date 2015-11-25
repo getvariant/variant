@@ -115,29 +115,33 @@ public class VariantWeb {
 	/**
 	 *  Get user's Variant session. 
 	 *  
-	 * @param create  Whether or not create the session if does not exist.
 	 * @param request Active <code>HttpServletRequest</code> object.
 	 * @return          
 	 */
-	public VariantSession getSession(HttpServletRequest request) {
-		return core.getSession(request);
+	public VariantSession getSession(HttpServletRequest httpRequest) {
+		return core.getSession(httpRequest);
 	}
 	
 	/**
-     * Start view Request 
+     * Start a new state request 
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public VariantStateRequest newStateRequest(State view, HttpServletRequest request) {
-		return core.newStateRequest(getSession(request), view, request);
+	public VariantStateRequest newStateRequest(State state, HttpServletRequest httpRequest) {
+		
+		VariantStateRequest result = core.newStateRequest(getSession(httpRequest), state, httpRequest);
+		return new VariantWebStateRequestWrapper(result, httpRequest);
 	}
 	
 	/**
-	 * Commit a view request.
+	 * Commit a state request.
 	 * @param request
 	 */
-	public void commitViewRequest(VariantStateRequest viewRequest, HttpServletResponse httpResponse) {
-		core.commitStateRequest(viewRequest, httpResponse);
+	public void commitStateRequest(VariantStateRequest request, HttpServletResponse httpResponse) {
+		// The sessionStore may need either http response or http request, depending on the implementation.
+		// We'll pass both.
+		VariantWebStateRequestWrapper wrapper = (VariantWebStateRequestWrapper) request;
+		core.commitStateRequest(wrapper.getOriginalRequest(), wrapper.getHttpServletRequest(), httpResponse);
 	}
 
 }

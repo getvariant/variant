@@ -1,4 +1,4 @@
-package com.variant.web.adapter;
+package com.variant.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,9 +16,9 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 	 * User data is expected as an <code>HttpServletRequest</code> object.
 	 */
 	@Override
-	public void initialized(VariantSession ssn, Object userData) {
+	public void initialized(VariantSession ssn, Object...userData) {
 		
-		HttpServletRequest request = (HttpServletRequest) userData;
+		HttpServletRequest request = (HttpServletRequest) userData[0];
 		cookie = new TargetingCookie(request);
 		String input = cookie.getValue();
 		// If the targeting cookie existed and returned a value, the superclass will parse it.
@@ -29,9 +29,9 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 	 * User data is expected as an <code>HttpServletResponse</code> object.
 	 */
 	@Override
-	public void persist(Object userData) {
+	public void persist(Object...userData) {
 		
-		HttpServletResponse response = (HttpServletResponse) userData;
+		HttpServletResponse response = (HttpServletResponse) userData[1];
 		cookie.setValue(toString());
 		cookie.send(response);
 	}

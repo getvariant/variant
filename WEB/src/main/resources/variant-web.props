@@ -4,11 +4,11 @@
 # Variant WEB system property overrides.
 #
 
-# Session ID persister in cookie.
-session.id.tracker.class.name = com.variant.web.adapter.SessionIdTrackerHttpCookie
+# Session store in http session.
+session.store.class.name = com.variant.web.SessionStoreHttpSession
 
-# Targeting persister in cookie.
-targeting.tracker.class.name = com.variant.web.adapter.TargetingTrackerHttpCookie
+# Targeting tracker in cookie.
+targeting.tracker.class.name = com.variant.web.TargetingTrackerHttpCookie
 
 # Postgres Event Persister
 event.persister.class.name = com.variant.core.ext.EventPersisterPostgres

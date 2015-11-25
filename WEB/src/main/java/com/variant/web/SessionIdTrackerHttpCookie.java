@@ -1,4 +1,4 @@
-package com.variant.web.adapter;
+package com.variant.web;
 
 import java.util.Random;
 
@@ -8,17 +8,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.session.SessionIdTracker;
+import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.util.VariantStringUtils;
 
 
 /**
  * HTTP Cookie based session ID tracking. Session ID is saved in an HTTP cookie.
+ * Not currently used.
  * 
  * @author Igor
  *
  */
-public class SessionIdTrackerHttpCookie implements SessionIdTracker {
+public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 		
 	private static final Logger LOG = LoggerFactory.getLogger(SessionIdTrackerHttpCookie.class);
 	private static final Random rand = new Random(System.currentTimeMillis());
@@ -27,8 +28,9 @@ public class SessionIdTrackerHttpCookie implements SessionIdTracker {
 	 * We expect caller to pass 1 argument of type <code>HttpServletRequest</code>
 	 * @return session Id, if existed, or null otherwise.
 	 */
-	public String get(Object userData) {
-		HttpServletRequest request = (HttpServletRequest) userData;
+	@Override
+	public String get(Object...userData) {
+		HttpServletRequest request = (HttpServletRequest) userData[0];
 		String result = new SsnIdCookie(request).getValue();
 		if (result == null) {
 			result = VariantStringUtils.random128BitString(rand);
@@ -47,8 +49,9 @@ public class SessionIdTrackerHttpCookie implements SessionIdTracker {
 	/**
 	 * We expect caller to pass 1 argument of type <code>HttpServletResponse</code>
 	 */
-	public void persist(String sid, Object userData) {
-		HttpServletResponse response = (HttpServletResponse) userData;
+	@Override
+	public void save(String sid, Object...userData) {
+		HttpServletResponse response = (HttpServletResponse) userData[0];
 		SsnIdCookie cookie = new SsnIdCookie();
 		cookie.setValue(sid);
 		cookie.send(response);

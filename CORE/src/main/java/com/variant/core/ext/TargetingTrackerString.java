@@ -85,7 +85,7 @@ public class TargetingTrackerString extends TargetingTrackerSupport {
 	}
 	
 	@Override
-	public void persist(Object userData) {
+	public void persist(Object...userData) {
 		// Nothing to do - in memory only.
 	}
 
@@ -97,8 +97,8 @@ public class TargetingTrackerString extends TargetingTrackerSupport {
 	 * 
 	 */
 	@Override
-	public void initialized(VariantSession session, Object userData) { 
-		parseFromString(session, (String) userData);
+	public void initialized(VariantSession session, Object...userData) { 
+		parseFromString(session, (String) userData[0]);
 	}
 
 	@Override

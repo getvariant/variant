@@ -47,7 +47,7 @@ public interface VariantStateRequest {
 	 * 
 	 * @return
 	 */
-	public TargetingTracker getTargetingPersister();
+	public TargetingTracker getTargetingTracker();
 
 	/**
 	 * Get all experience targeted in this request.

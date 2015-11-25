@@ -22,6 +22,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
+import com.variant.web.StateSelectorByRequestPath;
 import com.variant.web.VariantWeb;
 import com.variant.web.VariantWebUtils;
 
@@ -159,7 +160,7 @@ public class VariantFilter implements Filter {
 					// state serve event may be null if no tests were targeted on this state.
 					StateServeEvent event = variantRequest.getStateServeEvent();
 					if (event != null) event.setParameter("HTTP_STATUS", httpResponse.getStatus());
-					webApi.commitViewRequest(variantRequest, httpResponse);   
+					webApi.commitStateRequest(variantRequest, httpResponse);   
 				}
 				catch (Throwable t) {
 					LOG.error("Unhandled exception in Variant for path [" + 

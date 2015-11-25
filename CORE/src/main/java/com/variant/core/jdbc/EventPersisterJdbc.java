@@ -80,6 +80,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					
 					// Postgres requires Statement.RETURN_GENERATED_KEYS.
+					// And H2 Does support getGeneratedKeys() on batch inserts at all.
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
 					for (VariantEventSupport event: events) {

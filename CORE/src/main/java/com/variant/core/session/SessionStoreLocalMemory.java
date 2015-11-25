@@ -3,33 +3,78 @@ package com.variant.core.session;
 import java.util.HashMap;
 
 import com.variant.core.VariantSession;
+import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.VariantSessionStore;
 
 /**
  * Simplest session store implementation in local memory.
- * Good for tests only.
+ * No external session ID tracking is assumed. Instead, session IDs
+ * are passed in as user data.
+ * 
+ *** Good for tests only. ***
  * 
  * @author Igor
  *
  */
 public class SessionStoreLocalMemory implements VariantSessionStore {
 
+	private static VariantSessionIdTracker sidTracker = new SessionIdTrackerImpl();
+		
 	private HashMap<String, VariantSession> map = new HashMap<String, VariantSession>();
-			
+
+	/**
+	 * A suitable implementation of session ID tracker.
+	 */
+	private static class SessionIdTrackerImpl implements VariantSessionIdTracker {
+
+		@Override
+		public String get(Object...userData) {
+			try {
+				return (String) userData[0];
+			}
+			catch (ClassCastException e) {
+				throw new RuntimeException(
+						"User data object was of type " + userData.getClass().getName() + ", but expected String", e);
+			}
+		}
+		
+		@Override
+		public void save(String sessionId, Object...userData) {
+			// nothing.				
+		}
+	
+	};
+
 	SessionStoreLocalMemory() { }
 	
+	/**
+	 * @param session Session to save
+	 * @param  userData The sid, which is assumed to be managed by the caller.
+	 */
 	@Override
-	public void put(String key, VariantSession value) {
-		map.put(key, value);
+	public void save(VariantSession session, Object...userData) {
+			map.put(sidTracker.get(userData), session);
 	}
 
+	/**
+	 * 
+	 */
 	@Override
-	public VariantSession get(String key) {
-		return map.get(key);
+	public VariantSessionIdTracker getSessionIdTracker() {
+		return sidTracker;
+	}
+
+	/**
+	 * @param  userData is the sid, which is assumed to be managed by the caller.
+	 */
+	@Override
+	public VariantSession get(Object...userData) {
+			return map.get(sidTracker.get(userData));
 	}
 	
 	@Override
 	public void shutdown() {
 		map = null;
 	}
+
 }

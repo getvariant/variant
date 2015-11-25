@@ -100,9 +100,9 @@ public class FlashpointTest extends BaseTest {
 		//String tpData = System.currentTimeMillis() + ".state1.A";
 		VariantStateRequest request = engine.newStateRequest(ssn, state, "");
 		assertTrue(request.getDisqualifiedTests().isEmpty());
-		assertEquals(2, request.getTargetingPersister().getAll().size());
-		assertNotNull(request.getTargetingPersister().get(schema.getTest("test1")));
-		assertNotNull(request.getTargetingPersister().get(schema.getTest("Test1")));
+		assertEquals(2, request.getTargetingTracker().getAll().size());
+		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
+		assertNotNull(request.getTargetingTracker().get(schema.getTest("Test1")));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1"), schema.getTest("Test1")), nullListener.testList);
 		
 		nullListener.testList.clear();
@@ -121,9 +121,9 @@ public class FlashpointTest extends BaseTest {
 		String tpString = timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
 		request = engine.newStateRequest(ssn, state, tpString);
 		assertEquals(1, request.getDisqualifiedTests().size());
-		assertEquals(2, request.getTargetingPersister().getAll().size());
-		assertNotNull(request.getTargetingPersister().get(schema.getTest("test2")));
-		assertNotNull(request.getTargetingPersister().get(schema.getTest("Test1")));
+		assertEquals(2, request.getTargetingTracker().getAll().size());
+		assertNotNull(request.getTargetingTracker().get(schema.getTest("test2")));
+		assertNotNull(request.getTargetingTracker().get(schema.getTest("Test1")));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1"), schema.getTest("Test1")), nullListener.testList);
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1")), disqualListener.testList);
 		assertEquals("/path/to/state1/Test1.A", request.getResolvedParameterMap().get("path"));
@@ -142,9 +142,9 @@ public class FlashpointTest extends BaseTest {
 		tpString = timestamp + ".test1.B|" + timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
 		request = engine.newStateRequest(ssn, state, tpString);
 		assertEquals(1, request.getDisqualifiedTests().size());
-		assertEquals(2, request.getTargetingPersister().getAll().size());
-		assertNotNull(request.getTargetingPersister().get(schema.getTest("test1")));
-		assertNotNull(request.getTargetingPersister().get(schema.getTest("test2")));
+		assertEquals(2, request.getTargetingTracker().getAll().size());
+		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
+		assertNotNull(request.getTargetingTracker().get(schema.getTest("test2")));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("Test1")), disqualListener.testList);
 		assertEquals("/path/to/state1/test1.B", request.getResolvedParameterMap().get("path"));
 

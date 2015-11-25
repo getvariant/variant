@@ -27,6 +27,17 @@
 			<groupId>com.variant</groupId>
 			<artifactId>variant-core</artifactId>
 			<version>${variant.version}</version>
+			<exclusions>
+            	<exclusion>
+					<groupId>com.hazelcast</groupId>
+            		<artifactId>hazelcast</artifactId>
+        		</exclusion>
+            	<exclusion>
+            		<groupId>com.hazelcast</groupId>
+            		<artifactId>hazelcast-client</artifactId>
+        		</exclusion>
+      		</exclusions>
+
 		</dependency>
         
         <!-- Apache Commons -->        

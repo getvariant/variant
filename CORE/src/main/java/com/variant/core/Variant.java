@@ -76,11 +76,11 @@ public interface Variant {
 	/**
 	 * Get user's Variant session. Will be created if doesn't yet exist;
 	 * 
-	 * @param sessionIdPersisterUserData Opaque object that will be passed without
-	 *                 interpretation to <code>SessionIdPersister.get()</code>.
+	 * @param sessionUserData Opaque object that will be passed without
+	 *                 interpretation to <code>SessionIdTracker.get()</code>.
 	 * @return
 	 */
-	public VariantSession getSession(Object sessionIdPersisterUserData);
+	public VariantSession getSession(Object...userData);
 	
 	/**
      * Start state Request 
@@ -93,7 +93,7 @@ public interface Variant {
 	 * Commit of a view request.
 	 * @param request
 	 */
-	public void commitStateRequest(VariantStateRequest request, Object sessionIdPersisterUserData);
+	public void commitStateRequest(VariantStateRequest request, Object...userData);
 		
 	/**
 	 * Factory singleton class.

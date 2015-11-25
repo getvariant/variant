@@ -1,8 +1,8 @@
-package com.variant.web.adapter;
+package com.variant.web;
 
 import org.junit.Test;
 
-import com.variant.web.adapter.StateSelectorByRequestPath;
+import com.variant.web.StateSelectorByRequestPath;
 
 import static org.junit.Assert.*;
 
