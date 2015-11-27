@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import com.variant.core.VariantProperties;
+import com.variant.core.config.VariantProperties;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.State;

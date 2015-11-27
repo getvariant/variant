@@ -4,11 +4,11 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantBootstrapException;
-import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.VariantSessionStore;
+import com.variant.core.config.VariantProperties;
+import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantRuntimeException;
 
 import static com.variant.core.schema.parser.MessageTemplate.*;

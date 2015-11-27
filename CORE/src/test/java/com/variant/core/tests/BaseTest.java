@@ -9,13 +9,13 @@ import java.util.regex.Pattern;
 import org.junit.BeforeClass;
 
 import com.variant.core.Variant;
+import com.variant.core.config.PropertiesChain;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.jdbc.EventPersisterJdbc;
 import com.variant.core.jdbc.JdbcUtil;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.util.PropertiesChain;
 
 /**
  * Common utility methods for all JUnit tests.

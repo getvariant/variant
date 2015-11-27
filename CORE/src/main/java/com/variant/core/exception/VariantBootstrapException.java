@@ -1,4 +1,4 @@
-package com.variant.core;
+package com.variant.core.exception;
 
 import com.variant.core.schema.parser.MessageTemplate;
 import com.variant.core.schema.parser.Severity;

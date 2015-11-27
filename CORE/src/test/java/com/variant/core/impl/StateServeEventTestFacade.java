@@ -3,6 +3,7 @@ package com.variant.core.impl;
 import java.util.Map;
 
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.impl.StateServeEvent;
 
 /**
  * Exposes package methods to tests.

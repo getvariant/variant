@@ -1,11 +1,12 @@
-package com.variant.core.impl;
+package com.variant.core.event.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.VariantEventExperience;
+import com.variant.core.event.VariantEventExperience;
 import com.variant.core.event.VariantEventSupport;
+import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.Test;
 
 
@@ -19,7 +20,7 @@ public class StateServeEvent extends VariantEventSupport {
 	/**
 	 * New constructor
 	 */
-	StateServeEvent(VariantStateRequestImpl request, Map<String,String> resolvedParameters) {
+	public StateServeEvent(VariantStateRequestImpl request, Map<String,String> resolvedParameters) {
 		super(request, EVENT_NAME, request.getState().getName());
 		this.request = request;
 		for (Map.Entry<String, String> param: resolvedParameters.entrySet()) {

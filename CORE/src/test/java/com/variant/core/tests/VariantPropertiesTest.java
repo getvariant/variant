@@ -9,8 +9,8 @@ import java.util.Properties;
 import org.junit.Test;
 
 import com.variant.core.Variant;
-import com.variant.core.VariantProperties;
-import com.variant.core.VariantPropertiesTestFacade;
+import com.variant.core.config.VariantProperties;
+import com.variant.core.config.VariantPropertiesTestFacade;
 import com.variant.core.util.VariantIoUtils;
 
 public class VariantPropertiesTest {

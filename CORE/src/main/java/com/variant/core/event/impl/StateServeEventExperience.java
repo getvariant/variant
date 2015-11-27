@@ -1,4 +1,4 @@
-package com.variant.core.impl;
+package com.variant.core.event.impl;
 
 import com.variant.core.event.VariantEventExperienceSupport;
 import com.variant.core.schema.Test.Experience;

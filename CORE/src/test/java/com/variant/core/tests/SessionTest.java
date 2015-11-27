@@ -5,12 +5,12 @@ import static org.junit.Assert.*;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
-import com.variant.core.VariantBootstrapException;
+import com.variant.core.VariantTargetingTracker;
 import com.variant.core.VariantSession;
+import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.ext.TargetingTrackerString;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.session.TargetingTracker;
 
 public class SessionTest extends BaseTest {
 
@@ -49,7 +49,7 @@ public class SessionTest extends BaseTest {
 		// 
 		// Empty string
 		//
-		TargetingTracker tp = new TargetingTrackerString();
+		VariantTargetingTracker tp = new TargetingTrackerString();
 		tp.initialized(ssn, "");
 		assertEquals(0, tp.getAll().size());
 

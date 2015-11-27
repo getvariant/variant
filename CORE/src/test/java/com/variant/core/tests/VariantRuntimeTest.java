@@ -8,18 +8,19 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.VariantEventExperience;
+import com.variant.core.VariantTargetingTracker;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.VariantEventExperience;
+import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.impl.StateServeEvent;
 import com.variant.core.impl.VariantRuntimeTestFacade;
+import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.session.TargetingTracker;
 import com.variant.core.util.VariantCollectionsUtils;
 
 
@@ -1116,7 +1117,7 @@ public class VariantRuntimeTest extends BaseTest {
 		VariantSession ssn = engine.getSession("foo-key");
 		// Core implementation makes no distinction between session udser data and targeting persister user data.
 		VariantStateRequest req = engine.newStateRequest(ssn, state1, persisterString);
-		TargetingTracker tp = req.getTargetingTracker();
+		VariantTargetingTracker tp = req.getTargetingTracker();
 
 		// test2 is off, but TP has a variant experience for it, which will be substituted for the purposes of lookup with control.
 		// test1 is disjoint with test2, so has to default to control.
@@ -1130,7 +1131,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(state1, req.getState());
 		
 		// View Serve Event.
-		StateServeEvent event = req.getStateServeEvent();
+		StateServeEvent event = ((VariantStateRequestImpl)req).getStateServeEvent();
 		assertEquals(2, event.getEventExperiences().size());
 		int index = 0;
 		for (VariantEventExperience ee: event.getEventExperiences()) {

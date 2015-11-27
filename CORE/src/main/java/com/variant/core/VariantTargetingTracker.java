@@ -1,12 +1,11 @@
-package com.variant.core.session;
+package com.variant.core;
 
 import java.util.Collection;
 
-import com.variant.core.VariantSession;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
-public interface TargetingTracker {
+public interface VariantTargetingTracker {
 	
 	/**
 	 * Mechanism for passing user data to an instance of this class,

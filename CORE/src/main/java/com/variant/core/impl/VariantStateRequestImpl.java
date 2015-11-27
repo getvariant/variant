@@ -5,14 +5,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+import com.variant.core.VariantTargetingTracker;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.StateImpl;
-import com.variant.core.session.TargetingTracker;
 import com.variant.core.session.VariantSessionImpl;
 
 /**
@@ -28,7 +29,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	private Map<String,String> resolvedParameterMap;
 	private StateServeEvent event;
 	private boolean committed = false;
-	private TargetingTracker targetingPersister = null;
+	private VariantTargetingTracker targetingPersister = null;
 	private HashSet<Test> disqualifiedTests = new HashSet<Test>();
 	
 	/**
@@ -44,7 +45,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		this.event = event;
 	}
 	
-	void setTargetingPersister(TargetingTracker targetingPersister) {
+	void setTargetingPersister(VariantTargetingTracker targetingPersister) {
 		this.targetingPersister = targetingPersister;
 	}
 	
@@ -67,19 +68,13 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		return resolvedParameterMap;
 	}
 
-	
-	@Override
-	public StateServeEvent getStateServeEvent() {
-		return event;
-	}
-
 	@Override
 	public Collection<Test> getDisqualifiedTests() {
 		return disqualifiedTests;
 	}
 
 	@Override
-	public TargetingTracker getTargetingTracker() {
+	public VariantTargetingTracker getTargetingTracker() {
 		return targetingPersister;
 	}
 
@@ -140,6 +135,14 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		return committed;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
+	public StateServeEvent getStateServeEvent() {
+		return event;
+	}
+
 	/**
 	 * 
 	 * @return

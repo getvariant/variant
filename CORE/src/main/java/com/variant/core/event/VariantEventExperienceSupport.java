@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.variant.core.VariantEvent;
-import com.variant.core.VariantEventExperience;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 

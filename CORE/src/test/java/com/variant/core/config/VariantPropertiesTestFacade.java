@@ -1,4 +1,6 @@
-package com.variant.core;
+package com.variant.core.config;
+
+import com.variant.core.config.VariantProperties;
 
 public class VariantPropertiesTestFacade {
 	

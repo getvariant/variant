@@ -16,13 +16,16 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.VariantTargetingTracker;
 import com.variant.core.Variant;
-import com.variant.core.VariantBootstrapException;
-import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.config.RuntimeService;
+import com.variant.core.config.VariantProperties;
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.EventWriter;
+import com.variant.core.event.impl.EventWriter;
+import com.variant.core.event.impl.StateServeEvent;
+import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.flashpoint.Flashpoint;
@@ -38,7 +41,6 @@ import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.session.SessionService;
-import com.variant.core.session.TargetingTracker;
 import com.variant.core.util.VariantIoUtils;
 
 /**
@@ -271,16 +273,16 @@ public class VariantCoreImpl implements Variant {
 		stateCheck();
 		
 		// init Targeting Persister with the same user data.
-		TargetingTracker tp = null;
+		VariantTargetingTracker tp = null;
 		String className = VariantProperties.getInstance().targetingPersisterClassName();
 		
 		try {
 			Object object = Class.forName(className).newInstance();
-			if (object instanceof TargetingTracker) {
-				tp = (TargetingTracker) object;
+			if (object instanceof VariantTargetingTracker) {
+				tp = (VariantTargetingTracker) object;
 			}
 			else {
-				throw new VariantBootstrapException(BOOT_TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
+				throw new VariantBootstrapException(BOOT_TARGETING_TRACKER_NO_INTERFACE, className, VariantTargetingTracker.class.getName());
 			}
 		}
 		catch (Exception e) {
@@ -312,7 +314,7 @@ public class VariantCoreImpl implements Variant {
 		
 		// Save the state serve event, if any. There may not be any if we hit a known state that did not have
 		// any tests instrumented on it.
-		StateServeEvent event = request.getStateServeEvent();
+		StateServeEvent event = ((VariantStateRequestImpl)request).getStateServeEvent();
 		if (event != null) {
 			EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
 			ew.write(event);		

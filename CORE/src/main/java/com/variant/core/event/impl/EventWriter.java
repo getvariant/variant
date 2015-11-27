@@ -1,4 +1,4 @@
-package com.variant.core.event;
+package com.variant.core.event.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,8 +9,9 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantProperties;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.config.VariantProperties;
+import com.variant.core.event.EventPersister;
+import com.variant.core.event.VariantEventSupport;
 
 public class EventWriter {
 	

@@ -5,13 +5,13 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.variant.core.VariantTargetingTracker;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.impl.StateServeEvent;
+import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.TargetingTracker;
 
 class VariantWebStateRequestWrapper implements VariantStateRequest {
 
@@ -54,7 +54,7 @@ class VariantWebStateRequestWrapper implements VariantStateRequest {
 	}
 
 	@Override
-	public TargetingTracker getTargetingTracker() {
+	public VariantTargetingTracker getTargetingTracker() {
 		return variantRequest.getTargetingTracker();
 	}
 

@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.variant.core.Variant;
-import com.variant.core.VariantBootstrapException;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.flashpoint.FlashpointListener;
 import com.variant.core.schema.Schema;

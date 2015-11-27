@@ -1,10 +1,9 @@
-package com.variant.core;
+package com.variant.core.config;
 
 import java.io.InputStream;
 import java.util.Properties;
 
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.util.PropertiesChain;
 import com.variant.core.util.VariantIoUtils;
 
 /**

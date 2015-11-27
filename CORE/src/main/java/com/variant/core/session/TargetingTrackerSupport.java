@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
+import com.variant.core.VariantTargetingTracker;
 import com.variant.core.VariantSession;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -18,7 +19,7 @@ import com.variant.core.schema.Test.Experience;
  * @author Igor
  *
  */
-abstract public class TargetingTrackerSupport implements TargetingTracker {
+abstract public class TargetingTrackerSupport implements VariantTargetingTracker {
 
 	/**
 	 * 

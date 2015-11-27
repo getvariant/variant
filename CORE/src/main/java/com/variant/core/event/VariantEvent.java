@@ -1,13 +1,19 @@
-package com.variant.core;
+package com.variant.core.event;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
+import com.variant.core.VariantSession;
+
 /**
- * EVENTS DAO.
+ * Type representing a Variant event. Events are generated either implicitly
+ * by the Variant RCE Container, or explicitly by the client code as the user
+ * session traverses experiment(s). All pending events are flushed by an 
  * 
- * @author Igor.
+ * 
+ * @author Igor Urisman.
+ * @since 0.5
  *
  */
 public interface VariantEvent {

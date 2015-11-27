@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.Variant;
-import com.variant.core.event.EventWriter;
+import com.variant.core.event.impl.EventWriter;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.jdbc.EventPersisterJdbc.Vendor;
 import com.variant.core.util.VariantStringUtils;

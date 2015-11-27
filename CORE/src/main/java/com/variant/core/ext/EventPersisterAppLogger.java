@@ -5,8 +5,8 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantEventExperience;
 import com.variant.core.event.EventPersister;
+import com.variant.core.event.VariantEventExperience;
 import com.variant.core.event.VariantEventSupport;
 
 public class EventPersisterAppLogger implements EventPersister {
