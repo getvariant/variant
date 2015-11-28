@@ -3,30 +3,48 @@ package com.variant.core.flashpoint;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
+/**
+ * <p>Run time flashpoint that is reached whenever a user session encounters a test for the first time
+ * for which there is no targeting information in the targeting tracker. By default, the container will
+ * target a session to a test randomly, according to the probability weights in the test's definition. 
+ * Client code may change that by getting posted of this flashpoint and informing the container whether 
+ * of a custom targeting decision. It is important to understand that if custom targeting decision is
+ * not random, the outcome of such experiment is likely not statistically sound.
+ * 
+ * @author Igor Urisman.
+ * @since 0.5
+ *
+ */
 public interface TestTargetingFlashpoint extends RuntimeFlashpoint {
 
 	/**
-	 * What test is being targeted.  This is how Variant will
-	 * know when to call the <code>isQualified()</code> method.
-	 * @return
+	 * Client code may obtain the Test for which this flashpoint was reached.
+	 * .
+	 * @return An object of type {@link com.variant.core.schema.Test}.
+	 * @since 0.5
 	 */
 	public Test getTest();
 	
 	/**
-	 * The current value, most recently set by <code>setTargetedExperience()</code>.
-	 * The seed value is null.
-	 * @return
-	 */
-	public Experience getTargetedExperience();
-	
-	/**
-	 * Listener calls this to pass the result back to the container.
-	 * If no suitable listener was found or the listener didn't call
-	 * this method, the container will run the default random targeter
-	 * based on the weights
+	 * Client code calls this to inform the container what experience should the session
+	 * as returned by {@link #getSession()} be targeted for in the test returned by {@link #getTest()}.
+	 * If client code never calls this method, the initial value is null, which the container will
+	 * interpret by falling back on the default random targeting algorithm based on the probability
+	 * weights in the tests's definition.
 	 * .
-	 * @param experience
+	 * @param experience Targeted experience.
+	 * @since 0.5
 	 */
 	public void setTargetedExperience(Experience experience);
 
+	/**
+	 * Client code may obtain the current value set by the most recent call to {@link #setTargetedExperience(Experience)}.
+	 * This is useful if client code registers multiple listeners for this flashpoint and wants to know the value
+	 * that was set by the previously posted listener.
+	 * 
+	 * @return Currently targeted experience, if any.
+	 * @since 0.5
+	 */
+	public Experience getTargetedExperience();
+	
 }
