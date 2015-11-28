@@ -19,6 +19,6 @@ public interface EventPersister {
 	/**
 	 * Persist a bunch of events somewhere.
 	 */
-	public void persist(Collection<VariantEventSupport> events) throws Exception;
+	public void persist(Collection<VariantEvent> events) throws Exception;
 	
 }

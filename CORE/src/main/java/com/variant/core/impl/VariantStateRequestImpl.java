@@ -2,12 +2,14 @@ package com.variant.core.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 
 import com.variant.core.VariantTargetingTracker;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.State;
@@ -27,7 +29,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	private State state;
 	private Status status = Status.OK;
 	private Map<String,String> resolvedParameterMap;
-	private StateServeEvent event;
+	private HashSet<VariantEvent> events = new HashSet<VariantEvent>();
 	private boolean committed = false;
 	private VariantTargetingTracker targetingPersister = null;
 	private HashSet<Test> disqualifiedTests = new HashSet<Test>();
@@ -42,7 +44,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	}
 
 	void setViewServeEvent(StateServeEvent event) {
-		this.event = event;
+		events.add(event);
 	}
 	
 	void setTargetingPersister(VariantTargetingTracker targetingPersister) {
@@ -83,6 +85,11 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		this.status = status;
 	}
 	
+	@Override
+	public Collection<VariantEvent> getPendingEvents() {
+		return Collections.unmodifiableSet(events);
+	}
+
 	@Override
 	public Collection<Experience> getTargetedExperiences() {
 			
@@ -138,11 +145,12 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	/**
 	 * 
 	 * @return
-	 */
+	 *
 	public StateServeEvent getStateServeEvent() {
 		return event;
 	}
-
+*/
+	
 	/**
 	 * 
 	 * @return
@@ -158,4 +166,5 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	public void addDisqualifiedTest(Test test) {
 		disqualifiedTests.add(test);
 	}
+
 }

@@ -1,4 +1,4 @@
-package com.variant.core.event;
+package com.variant.core.event.impl;
 
 import java.util.Collection;
 import java.util.Date;
@@ -8,6 +8,7 @@ import java.util.Set;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test.Experience;
 
@@ -52,6 +53,11 @@ abstract public class VariantEventSupport implements VariantEvent {
 	}
 	
 	@Override
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	@Override
 	public VariantSession getSession() {
 		return request.getSession();
 	}
@@ -89,10 +95,6 @@ abstract public class VariantEventSupport implements VariantEvent {
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
-
-	public void setId(long id) {
-		this.id = id;
-	}
 
 	/**
 	 * 

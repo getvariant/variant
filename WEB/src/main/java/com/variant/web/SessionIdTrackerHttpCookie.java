@@ -25,15 +25,23 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	private static final Random rand = new Random(System.currentTimeMillis());
 	
 	/**
-	 * We expect caller to pass 1 argument of type <code>HttpServletRequest</code>
-	 * @return session Id, if existed, or null otherwise.
+	 * We expect caller to pass 2 arguments: <code>HttpServletRequest</code>
+	 * and <code>HttpServletResponse</code>. If the cookie did not exist, create
+	 * it and add the cookie to the response.
+	 * 
+	 * @return session Id.
 	 */
 	@Override
 	public String get(Object...userData) {
+		
 		HttpServletRequest request = (HttpServletRequest) userData[0];
 		String result = new SsnIdCookie(request).getValue();
 		if (result == null) {
 			result = VariantStringUtils.random128BitString(rand);
+			HttpServletResponse response = (HttpServletResponse) userData[1];
+			SsnIdCookie cookie = new SsnIdCookie();
+			cookie.setValue(result);
+			cookie.send(response);
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("Created new variant session ID [" + result + "] for HTTP session [" + request.getSession().getId());
 			}
@@ -47,18 +55,7 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	}
 
 	/**
-	 * We expect caller to pass 1 argument of type <code>HttpServletResponse</code>
-	 */
-	@Override
-	public void save(String sid, Object...userData) {
-		HttpServletResponse response = (HttpServletResponse) userData[0];
-		SsnIdCookie cookie = new SsnIdCookie();
-		cookie.setValue(sid);
-		cookie.send(response);
-	}
-
-	/**
-	 *
+	 * Session ID tracking cookie.
 	 */
 	private static class SsnIdCookie extends VariantCookie {
 

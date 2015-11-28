@@ -37,12 +37,7 @@ public class SessionStoreLocalMemory implements VariantSessionStore {
 						"User data object was of type " + userData.getClass().getName() + ", but expected String", e);
 			}
 		}
-		
-		@Override
-		public void save(String sessionId, Object...userData) {
-			// nothing.				
-		}
-	
+			
 	};
 
 	SessionStoreLocalMemory() { }

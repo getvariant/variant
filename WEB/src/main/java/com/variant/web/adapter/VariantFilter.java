@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
@@ -157,10 +158,10 @@ public class VariantFilter implements Filter {
 								
 			if (webApi.isBootstrapped() && variantRequest != null) {
 				try {
-					// state serve event may be null if no tests were targeted on this state.
-					StateServeEvent event = variantRequest.getStateServeEvent();
-					if (event != null) event.setParameter("HTTP_STATUS", httpResponse.getStatus());
-					webApi.commitStateRequest(variantRequest, httpResponse);   
+					for (VariantEvent event: variantRequest.getPendingEvents()) {
+						event.setParameter("HTTP_STATUS", httpResponse.getStatus());
+					}
+					webApi.commitStateRequest(variantRequest, httpResponse);
 				}
 				catch (Throwable t) {
 					LOG.error("Unhandled exception in Variant for path [" + 

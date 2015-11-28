@@ -2,31 +2,32 @@ package com.variant.core;
 
 
 /**
- * An implementation will use external mechanisms to obtain and to store
- * a stable session ID. For instance, in a web application environment,
- * session ID is read from and persisted in an HTTP cookie, just like an 
- * HTTP Session ID.
+ * <p>An implementation will use external mechanisms to obtain and to store
+ * the session ID between state resolution requests. For instance, in a 
+ * web application environment, session ID tracked in an HTTP cookie, 
+ * just like HTTP Session ID. This mechanism is typically different from
+ * the storage of the session itself.
  * 
- * @author Igor
+ * @see VariantSessionStore
+ * @author Igor Urisman
+ * @since 0.5
  */
 
 public interface VariantSessionIdTracker {
 
 	/**
-	 * Read session ID. If the session ID did not exist in the backing persistence
-	 * implementation, the implementation should create it. 
-	 * @param userData implementation specific user data that caller can pass
-	 *        to the implementation.
+	 * <p>Retrieve the session ID from the tracker. If the session ID did not exist,
+	 * the implementation should create it and, if needed, save it in the tracker.
+	 *  
+	 * @param userData An array of 0 or more opaque objects which 
+	 *                 {@link com.variant.core.Variant#newStateRequest(VariantSession, com.variant.core.schema.State, Object)} 
+	 *                 will pass here without interpretation.
 	 * 
-	 * @return this should never return null.
+	 * @return Session ID. Should never be null.
+	 * @see com.variant.core.Variant#newStateRequest(VariantSession, com.variant.core.schema.State, Object).
+	 * @since 0.5
 	 */
 	public String get(Object...userData);
 
-	/**
-	 * 
-	 * @param userData implementation specific user data that caller can pass
-	 *        to the implementation.
-	 */
-	public void save(String sessionId, Object...userData);
 }
 

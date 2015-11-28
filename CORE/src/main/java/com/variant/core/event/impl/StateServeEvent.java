@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.variant.core.event.VariantEventExperience;
-import com.variant.core.event.VariantEventSupport;
 import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.Test;
 

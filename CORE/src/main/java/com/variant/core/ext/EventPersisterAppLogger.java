@@ -6,8 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.event.EventPersister;
+import com.variant.core.event.VariantEvent;
 import com.variant.core.event.VariantEventExperience;
-import com.variant.core.event.VariantEventSupport;
+import com.variant.core.event.impl.VariantEventSupport;
 
 public class EventPersisterAppLogger implements EventPersister {
 	
@@ -19,9 +20,9 @@ public class EventPersisterAppLogger implements EventPersister {
 	}
 
 	@Override
-	public void persist(Collection<VariantEventSupport> events) throws Exception {
+	public void persist(Collection<VariantEvent> events) throws Exception {
 
-		for (VariantEventSupport event: events) {
+		for (VariantEvent event: events) {
 			StringBuilder msg = new StringBuilder();
 			msg.append("EVENT:{")
 			.append("session_id:'").append(event.getSession().getId()).append("', ")
@@ -33,7 +34,7 @@ public class EventPersisterAppLogger implements EventPersister {
 			LOG.info(msg.toString());
 		}
 								
-		for (VariantEventSupport event: events) {
+		for (VariantEvent event: events) {
 			for (VariantEventExperience ee: event.getEventExperiences()) {
 				
 				StringBuilder msg = new StringBuilder();
@@ -48,7 +49,7 @@ public class EventPersisterAppLogger implements EventPersister {
 			}
 		}
 		
-		for (VariantEventSupport event: events) {
+		for (VariantEvent event: events) {
 			for (String key: event.getParameterKeys()) {
 
 				StringBuilder msg = new StringBuilder();
@@ -63,7 +64,7 @@ public class EventPersisterAppLogger implements EventPersister {
 		}
 		
 		
-		for (VariantEventSupport event: events) {
+		for (VariantEvent event: events) {
 			for (VariantEventExperience ee: event.getEventExperiences()) {
 				for (String key: ee.getParameterKeys()) {
 

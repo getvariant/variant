@@ -26,6 +26,13 @@ public interface VariantEvent {
 	public Long getId();
 	
 	/**
+	 * Container calls this to set the ID at the time of persistence.
+	 * 
+	 * @return
+	 */
+	public void setId(long id);
+
+	/**
 	 * Event's name.
 	 * @return
 	 */

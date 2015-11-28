@@ -138,7 +138,7 @@ public interface Variant {
 	 *
 	 * @since 0.5
 	 */
-	public VariantStateRequest newStateRequest(VariantSession session, State state, Object targetingPersisterUserData);
+	public VariantStateRequest newStateRequest(VariantSession session, State state, Object...targetingPersisterUserData);
 	
 	/**
 	 * Commit a state request. Flushes to storage this session's state. See the Variant RCE User Guide for more information about Variant session

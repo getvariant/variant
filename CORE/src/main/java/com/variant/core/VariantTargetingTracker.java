@@ -5,57 +5,82 @@ import java.util.Collection;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
+/**
+ * <p>A container-initialized implementation will use external mechanisms to obtain and to store
+ * the current session's targeting information between state requests. For instance, 
+ * in a web application environment, this may be tracked in an HTTP cookie. Because an implementation
+ * must be initialized by the container, it must contain a no-argument constructor.
+ * 
+ * @author Igor Urisman
+ * @since 0.5	 
+ */
+
 public interface VariantTargetingTracker {
 	
 	/**
-	 * Mechanism for passing user data to an instance of this class,
-	 * after it has been initialized by the container.
+	 * <p>The container will call this method immediately following the instantiation to allow
+	 * the client code to initialize the object with some state.
 	 * 
-	 * @param request
-	 * @param userData
+	 * @param session Current Variant session.
+	 * @param userData An array of 0 or more opaque objects which 
+	 *                 {@link com.variant.core.Variant#newStateRequest(VariantSession, com.variant.core.schema.State, Object...)} 
+	 *                 will pass here without interpretation.
+	 * @since 0.5
 	 */
-	public void initialized(VariantSession ssn, Object...userData);
+	public void initialized(VariantSession session, Object...userData);
 	
 	/**
-	 * Read all persisted experiences;
-	 * Implementation must guarantee that all experiences are pairwise independent,
-	 * i.e. there are no two experiences in the returned collection that belong
-	 * to the same test.
+	 * All currently tracked test experiences. The implementation must guarantee 
+	 * consistency of this operation, e.g. that all experiences are pairwise independent,
+	 * i.e. there are no two experiences in the returned collection that belong to the same test.
 	 * 
-	 * @return Collection of <code>Test.Experience</code> corresponding to all text experiences
-	 *         currently persisted by this object.
+	 * @return Collection of objects of type {@link com.variant.core.schema.Test.Experience}.
+	 * @since 0.5
 	 */
 	public Collection<Experience> getAll();
 	
 	/**
-	 * Read a test experience corresponding to a test
-	 * @param test
-	 * @return
+	 * Currently tracked test experience from a given test, if any.
+	 * 
+	 * @param test Test of interest.
+	 * @return Given tests's experience that is currently tracked by this tracker, or null if none.
+	 * @since 0.5
 	 */
 	public Experience get(Test test);
 		
 	/**
-	 * Delete the entry corresponding to a test. If the entry existed, the experience will be returned.
-	 * @param experience
+	 * Remove the currently tracked test experience from a given test, if any.
+	 * 
+	 * @param test Test of interest.
+	 * @return Given tests's experience that was removed form this tracker by this operation, oif any.
+	 * @since 0.5
 	 */
 	public Experience remove(Test test);
 
 	/**
-	 * Save an experience. Will replace a currently persisted experience of one existed for this test.
-	 * @param experience
+	 * Add a test experience to this tracker.
+	 * 
+	 * @param experience Experience to be added.
+	 * @param timestamp The timestamp. 
+	 * @since 0.5
 	 */
 	public Experience add(Experience experience, long timestamp);
 	
 	/**
-	 * Update the timestamp of this tests's entry, if any.
-	 * @param test
+	 * Update the timestamp of a given tests's entry, if any.
+	 *
+	 * @param test Test of interest.
+	 * @since 0.5
 	 */
 	public void touch(Test test);
 	
 	/**
-	 * Persist the state of this object where it can be retrieved from again.
-	 * @param userData
+	 * Flush the state of this object to the underlying srorage.
+	 * 
+	 * @param userData An array of 0 or more opaque objects which 
+	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...)} 
+	 *                 will pass here without interpretation.
 	 */
-	public void persist(Object...userData);
+	public void save(Object...userData);
 		
 }

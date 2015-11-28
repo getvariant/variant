@@ -11,9 +11,9 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import com.variant.core.event.EventPersister;
+import com.variant.core.event.VariantEvent;
 import com.variant.core.event.VariantEventExperience;
 import com.variant.core.event.VariantEventExperienceSupport;
-import com.variant.core.event.VariantEventSupport;
 import com.variant.core.exception.VariantInternalException;
 
 /**
@@ -40,7 +40,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	 * Persist a collection of events.
 	 */
 	@Override
-	final public void persist(final Collection<VariantEventSupport> events) throws Exception {
+	final public void persist(final Collection<VariantEvent> events) throws Exception {
 
 		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
@@ -83,7 +83,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					// And H2 Does support getGeneratedKeys() on batch inserts at all.
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
-					for (VariantEventSupport event: events) {
+					for (VariantEvent event: events) {
 						stmt.setString(1, event.getSession().getId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getEventName());
@@ -97,14 +97,14 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					// Read sequence generated event IDs and add them to the event objects.
 					// We'll need these ids when inserting into events_experiences.
-					Iterator<VariantEventSupport> eventsIter = events.iterator();
+					Iterator<VariantEvent> eventsIter = events.iterator();
 					ResultSet gennedKeys = stmt.getGeneratedKeys();
 					while(gennedKeys.next()) {
 
 						if (!eventsIter.hasNext()) 
 							throw new VariantInternalException("Received more genereated keys than inserted event records.");
 						
-						VariantEventSupport event = eventsIter.next();
+						VariantEvent event = eventsIter.next();
 						event.setId(gennedKeys.getLong(1));
 					}
 					if (eventsIter.hasNext()) 
@@ -120,7 +120,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					stmt = conn.prepareStatement(INSERT_EVENT_EXPERIENCES_SQL, Statement.RETURN_GENERATED_KEYS);
 					
-					for (VariantEventSupport event: events) {
+					for (VariantEvent event: events) {
 						for (VariantEventExperience ee: event.getEventExperiences()) {
 							eventExperiences.add((VariantEventExperienceSupport)ee);
 							stmt.setLong(1, ee.getEvent().getId());
@@ -156,7 +156,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_PARAMETERS_SQL);
 					
-					for (VariantEventSupport event: events) {
+					for (VariantEvent event: events) {
 						for (String key: event.getParameterKeys()) {
 	
 							stmt.setLong(1, event.getId());

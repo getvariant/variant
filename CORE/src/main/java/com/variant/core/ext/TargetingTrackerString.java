@@ -85,7 +85,7 @@ public class TargetingTrackerString extends TargetingTrackerSupport {
 	}
 	
 	@Override
-	public void persist(Object...userData) {
+	public void save(Object...userData) {
 		// Nothing to do - in memory only.
 	}
 

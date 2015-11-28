@@ -1,37 +1,50 @@
 package com.variant.core;
 
 /**
- * Session store holds on to the variant session between variant requests. 
- * Implementations will be distributed, suitable for a particular application.
- * Testing of most of the code code could be done with a simple local hash map.
+ * <p>An implementation will use external mechanisms to obtain and to store
+ * Variant session between state resolution requests. Typically, this mechanism
+ * will be different from that used to track session ID. The implementation
+ * must also supply an implementation of {@link VariantSessionIdTracker}
  * 
- * @author Igor
- *
+ * @see VariantSessionIdTracker
+ * @author Igor Urisman
+ * @since 0.5
  */
 public interface VariantSessionStore {
 	
 	/**
 	 * Save the session.
 	 * @param session The session to be saved in the store.
-	 * @param userData Opaque object that was passed to 
+	 * @param userData An array of 0 or more opaque objects which 
+	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...)} 
+	 *                 will pass here without interpretation. 
+	 * @since 0.5
 	 */
 	public void save(VariantSession session, Object...userData);	
 
 	/**
-	 * 
-	 * @param userData Opaque object that was passed to Variant.getSession()
-	 * @return
+	 * Save the session.
+	 * @param session The session to be saved in the store.
+	 * @param userData An array of 0 or more opaque objects which 
+	 *                 {@link com.variant.core.Variant#getSession(Object...)} 
+	 *                 will pass here without interpretation.
+	 * @since 0.5
 	 */
 	public VariantSession get(Object...userData);
 	
 	/**
-	 * Each session store implements its own SID tracker.
-	 * @return
+	 * An implementation of {@link VariantSessionIdTracker} to be used in conjunction with this session store.
+	 *
+	 * @return An object of type @link VariantSessionIdTracker}.
+	 * @since 0.5
 	 */
 	VariantSessionIdTracker getSessionIdTracker();
 	
 	/**
-	 * Release memory resources, if no longer needed.
+	 * Shutdown this session store. Releases all resources. All subsequent calls to this session store will
+	 * result in an exception.
+	 * 
+	 * @since 0.5
 	 */
 	public void shutdown();
 	

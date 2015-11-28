@@ -26,11 +26,6 @@ public class SessionStoreHttpSession implements VariantSessionStore {
 			HttpServletRequest httpRequest = (HttpServletRequest) userData[0];
 			return httpRequest.getSession().getId();
 		}
-
-		@Override
-		public void save(String sessionId, Object...userData ) {
-			// Nothing.
-		}
 		
 	}
 	

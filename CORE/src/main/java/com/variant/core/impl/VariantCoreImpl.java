@@ -16,15 +16,14 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantTargetingTracker;
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantTargetingTracker;
 import com.variant.core.config.RuntimeService;
 import com.variant.core.config.VariantProperties;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
-import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
@@ -268,7 +267,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public VariantStateRequest newStateRequest(VariantSession session, State view, Object targetingPersisterUserData) {
+	public VariantStateRequest newStateRequest(VariantSession session, State state, Object...targetingPersisterUserData) {
 		
 		stateCheck();
 		
@@ -291,7 +290,7 @@ public class VariantCoreImpl implements Variant {
 			
 		tp.initialized(session, targetingPersisterUserData);
 
-		return VariantRuntime.startViewRequest(session, view, tp);
+		return VariantRuntime.startViewRequest(session, state, tp);
 	}
 	
 	/**
@@ -310,15 +309,12 @@ public class VariantCoreImpl implements Variant {
 		sessionService.saveSession(request.getSession(), userData);
 		
 		// Persist targeting info.  Note that we expect the userData to apply to both!
-		request.getTargetingTracker().persist(userData);
+		request.getTargetingTracker().save(userData);
 		
-		// Save the state serve event, if any. There may not be any if we hit a known state that did not have
-		// any tests instrumented on it.
-		StateServeEvent event = ((VariantStateRequestImpl)request).getStateServeEvent();
-		if (event != null) {
-			EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
-			ew.write(event);		
-		}
+		// Save events. Note, that there may not be any if we hit a known state that did not have
+		// any active tests instrumented on it.
+		EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
+		ew.write(request.getPendingEvents());		
 		
 		((VariantStateRequestImpl)request).commit();
 		

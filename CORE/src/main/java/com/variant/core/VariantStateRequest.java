@@ -3,6 +3,7 @@ package com.variant.core;
 import java.util.Collection;
 import java.util.Map;
 
+import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -88,6 +89,15 @@ public interface VariantStateRequest {
 	 * @since 0.5
 	 */
 	public Collection<Test> getDisqualifiedTests();
+
+	/**
+	 * All pending events that will be flushed when this request is committed.
+	 * 
+	 * @return Collection of {@link {@link com.variant.core.event.VariantEvent}s.
+	 * @see com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...).
+	 * @since 0.5
+	 */
+	public Collection<VariantEvent> getPendingEvents();
 	
 	/**
 	 * Set the status of this request.

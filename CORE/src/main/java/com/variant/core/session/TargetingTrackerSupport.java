@@ -45,7 +45,7 @@ abstract public class TargetingTrackerSupport implements VariantTargetingTracker
 	abstract public void initialized(VariantSession session, Object...userData);
 	
 	// Concrete sublasses will flush in memory content to a persistence mechanism here.
-	abstract public void persist(Object...userData);
+	abstract public void save(Object...userData);
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //

@@ -11,6 +11,7 @@ import java.util.Map;
 import com.variant.core.VariantTargetingTracker;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.VariantEvent;
 import com.variant.core.event.VariantEventExperience;
 import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.exception.VariantInternalException;
@@ -1131,7 +1132,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(state1, req.getState());
 		
 		// View Serve Event.
-		StateServeEvent event = ((VariantStateRequestImpl)req).getStateServeEvent();
+		VariantEvent event = req.getPendingEvents().iterator().next();
 		assertEquals(2, event.getEventExperiences().size());
 		int index = 0;
 		for (VariantEventExperience ee: event.getEventExperiences()) {

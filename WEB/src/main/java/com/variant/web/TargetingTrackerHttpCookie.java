@@ -29,7 +29,7 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 	 * User data is expected as an <code>HttpServletResponse</code> object.
 	 */
 	@Override
-	public void persist(Object...userData) {
+	public void save(Object...userData) {
 		
 		HttpServletResponse response = (HttpServletResponse) userData[1];
 		cookie.setValue(toString());
