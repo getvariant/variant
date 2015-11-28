@@ -9,7 +9,7 @@ import com.variant.core.schema.Test.Experience;
  * <p>A container-initialized implementation will use external mechanisms to obtain and to store
  * the current session's targeting information between state requests. For instance, 
  * in a web application environment, this may be tracked in an HTTP cookie. Because an implementation
- * must be initialized by the container, it must contain a no-argument constructor.
+ * must be instantiated by the container, it must provide a no-argument constructor.
  * 
  * @author Igor Urisman
  * @since 0.5	 

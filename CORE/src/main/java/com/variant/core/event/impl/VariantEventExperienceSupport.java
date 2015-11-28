@@ -1,9 +1,11 @@
-package com.variant.core.event;
+package com.variant.core.event.impl;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.variant.core.event.VariantEvent;
+import com.variant.core.event.VariantEventExperience;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
