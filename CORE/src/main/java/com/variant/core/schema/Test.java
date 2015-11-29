@@ -4,64 +4,73 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * In-memory representation of a test.
- * @author Igor
- *
+ * Representation of a test schema element.
+ * 
+ * @author Igor Urisman
+ * @since 0.5
  */
 public interface Test {
 
 	/**
-	 * Test name
-	 * @return
+	 * The name of this test.
+	 * 
+	 * @return The name of this test.
+	 * @since 0.5
 	 */
 	public String getName();	
 
 	/**
-	 * A list of all of this test's experiences in the order they were declared.
-	 * @return
+	 * A list of this test's experiences in the order they were defined.
+	 * 
+	 * @return A list of objects of type {@link Test.Experience}.
+	 * @since 0.5
 	 */
 	public List<Experience> getExperiences();
 	
 	/**
-	 * This tests's experience by name, case sensitive.
-	 * @param name
-	 * @return The test experience if exists, null otherwise.
+	 * This tests's experience by name. Experience names are case sensitive.
+	 * 
+	 * @param Experience name.
+	 * @return The test experience with this name, if exists; null otherwise.
+	 * @since 0.5
 	 */
 	public Experience getExperience(String name);
 	
 	/**
 	 * This test's control experience. 
-	 * @return
+	 * 
+	 * @return The control experience.
+	 * @since 0.5
 	 */
 	public Experience getControlExperience();
 	
 	/**
-	 * Is this test currently on? Tests that are not on are treated especially:
-	 * 1. Not targeted for.
-	 * 2. Existing targeting is ignored, i.e. control experience is substituted for non-control targeting.
-	 * 3. Events are not logged.
-	 * @return
+	 * <p>Is this test currently on? Tests that are not on are treated specially:
+	 * <ol>
+     * <li>A user traversing this test will always see control experience.
+     * <li>If a user already has an entry for this test in his targeting tracker, it will be ignored, but not discarded. Otherwise, no entries will be added to the user’s targeting tracker.
+     * <li>No state served events will be logged on behalf of this test.
+     * </ol>
+	 * @return true if the test is on, false if not.
+	 * @since 0.5
 	 */
 	public boolean isOn();
-	
+		
 	/**
-	 * Number of days an entry for this test will be kept by the targeting persister since the
-	 * most recent traversal. 0 means forever - the default;
-	 * @return
-	 */
-	public int getIdleDaysToLive();
-	
-	/**
-	 * A list of all state instrumentations for this Test, in the order they were declared.
-	 * @return
+	 * List of all state instrumentations for this test, in the order they were defined.
+	 * 
+	 * @return A list of objects of type {@link OnState}.
+	 * @since 0.5
 	 */
 	public List<OnState> getOnStates();
 
 	/**
-	 * The view instrumentation for this Test, on a particular view.
-	 * @return the OnView object or null if this test is not instrumented on this view.
+	 * The instrumentation for this test, on a particular state.
+	 * 
+	 * @return An object of type {@link OnState}, if exists, or null if given state is not instrumented by this test.
+	 * @since 0.5
 	 */
-	public OnState getOnView(State view);
+	public OnState getOnView(State state);
 
 	/**
 	 * Is this test disjoint with the other test?
@@ -70,117 +79,144 @@ public interface Test {
 	 * 
 	 * @param other
 	 * @return
+	 * @since 0.5
 	 */
-	public boolean isDisjointWith(Test other);
+	public boolean isSerialWith(Test other);
 		
 	/**
-	 * Get a list of tests, declared by this test as covariant.
+	 * Get a list of tests covariant with this test, i.e. listed in this tests's covariant clause.
 	 * 
-	 * @return
+	 * @return A list of tests in the order they were defined.
+	 * @since 0.5
 	 */
 	public List<Test> getCovariantTests();
 	
 	/**
-	 * In-memory representation of a test experience.
-	 * @author Igor
-	 *
+	 * Representation of a test experience.
+	 * 
+	 * @since 0.5
 	 */
 	public interface Experience {
 
 		/**
 		 * The name of the experience.
-		 * @return
+		 * 
+		 * @return The name of the experience.
+	     * @since 0.5
 		 */
 		public String getName();
 		
 		/**
-		 * This experience's test.
-		 * @return
+		 * The test this experience belongs to.
+		 * 
+		 * @return And object of type {@link Test}
+	     * @since 0.5
 		 */
 		public Test getTest();
 		
 		/**
 		 * Is this experience control for its test?
-		 * @return
+		 * 
+		 * @return True if this experience is control for its test, false otherwise.
+	     * @since 0.5
 		 */
 		public boolean isControl();
 		
 		/**
-		 * This experience's declared weight.  May be null.
+		 * This experience's random weight.  May be null.
+		 * 
 		 * @return
+	     * @since 0.5
 		 */
 		public Number getWeight();
 	}
 
 	/**
-	 * In-memory representation of a test instrumentation on a particular state.
-	 * Corresponds to an element of the test/onStates configuration list.
+	 * Representation of a test instrumentation on a particular state.
+	 * Corresponds to an element of the test/onStates schema list.
 	 * 
-	 * @author Igor
+	 * @since 0.5
 	 *
 	 */
 	public static interface OnState {
 		
 		/**
 		 * The state this instrumentation is on.
-		 * @return
+		 * 
+		 * @return An object of type {@link State}
+	     * @since 0.5
 		 */
 		public State getState();
 		
 		/**
 		 * The test this instrumentation is for.
-		 * @return
+		 * 
+		 * @return An object of type {@link Test}
+		 * @since 0.5
 		 */
 		public Test getTest();
 		
 		/**
-		 * Is this instrumentation nonvariant, i.e. has no variants property.
-		 * @return
+		 * Is this instrumentation non-variant?
+		 * 
+		 * @return True if this instrumentation is non-variant, false otherwise.
+	     * @since 0.5
 		 */
 		boolean isNonvariant();
 		
 		/**
 		 * A list of all test variants for this instrumentation. 
 		 * @return null if this is an nonvariant instrumentation.
+	     * @since 0.5
 		 */
 		public List<Variant> getVariants();
 
 		/**
-		 * In-memory representation of an instrumentation variant.
-		 * Corresponds to an element of the test/onStates/variants configuration list.
+		 * Representation of a single cell of a variance matrix.
+		 * Corresponds to an element of the test/onStates/variants schema list.
 		 *
+	     * @since 0.5
 		 */
 		public static interface Variant {
 			
 			/**
-			 * The Test.OnState object this Variant belongs to.
-			 * @return
+			 * The {@link OnState} object this variant belongs to.
+			 * 
+			 * @return An object of type {@link OnState}.
+			 * @since 0.5
 			 */
 			public OnState getOnState();
 
 			/**
-			 * The test within which this variant is defined. Equivalent to calling
-			 * <code>getOnState().getTest()</code>
+			 * The test for which this variant is defined. Equivalent to {@link #getOnState()}.getTest().
+			 * 
 			 * @return
+			 * @since 0.5
 			 */
 			public Test getTest();
 			
 			/**
-			 * This list's own experience, defined in its own test.
-			 * @return
+			 * This variant's own test experience, i.e. for the test within whose definition this variant
+			 * is defined.
+			 * 
+			 * @return An object of type {@link Test.Experience}.
+			 * @since 0.5
 			 */
 			public Experience getExperience();
 
 			/**
-			 * List of this variant's covariant experiences, i.e. the ones defined in covariant tests.
+			 * The list of this variant's covariantly concurrent experiences, i.e. the ones defined in the 
+			 * covariant tests clause of the test within whose definition this variant is defined.
 			 * 
-			 * @return
+			 * @return A list of objects of type {@link Test.Experience}.
+			 * @since 0.5
 			 */
 			public List<Experience> getCovariantExperiences();
 						
 			/**
-			 * Resource path corresponding to this test variant.
+			 * This variant's state parameter map.
 			 * @return
+			 * @since 0.5
 			 */
 			public Map<String,String> getParameterMap();
 		

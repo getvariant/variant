@@ -48,11 +48,6 @@ public class StateImpl implements State {
 	}
 
 	@Override
-	public String getParameter(String name) {
-		return parameters.get(name);
-	}
-
-	@Override
 	public List<Test> getInstrumentedTests() {
 		
 		ArrayList<Test> result = new ArrayList<Test>();

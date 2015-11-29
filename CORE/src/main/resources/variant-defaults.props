@@ -27,7 +27,8 @@ event.persister.jdbc.password = variant
 # event.persister.jdbc.user = variant
 # event.persister.jdbc.password = variant
 
-# Number of days targeting persister will honor an idle experience. (0 => forever)
+# Number of days targeting tracker will honor an idle experience.
+# 0 => for the life of the test.
 targeting.tracker.class.name = com.variant.core.ext.TargetingTrackerString
 targeting.tracker.idle.days.to.live = 0
 

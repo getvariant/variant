@@ -4,34 +4,43 @@ import java.util.List;
 
 
 /**
- * In memory representation of experiment meta-data.
- * @author Igor
+ * Representation of an experiment schema.
+ * 
+ * @author Igor Urisman
+ * @since 0.5
  */
 public interface Schema {
 
 	/**
-	 * Get a list or all state in the order they were defined.
-	 * @return
+	 * The list of all states in ordinal order, i.e. the order in which they were defined.
+	 * 
+	 * @return A list of {@link State} objects.
+	 * @since 0.5
 	 */
 	public List<State> getStates();
 
 	/**
 	 * Get a state by name.
-	 * @param name
-	 * @return State or null if none with given name.
+	 * 
+	 * @param name The name of the state of interest.
+	 * @return State or null if none with the given name.
+	 * @since 0.5
 	 */
 	public State getState(String name);
 
 	/**
-	 * Get a list of all tests in the order they were declared.
-	 * @return
+	 * The list of all tests in ordinal order, i.e. the order in which they were defined.
+	 * 
+	 * @return A list of {@link Test} objects.
 	 */
 	public List<Test>getTests();
 	
 	/**
 	 * Get a test by name.
-	 * @param name
-	 * @return
+	 * 
+	 * @param name The name of the test of interest.
+	 * @return Test or null if none with the given name.
+	 * @since 0.5
 	 */
 	public Test getTest(String name);
 	

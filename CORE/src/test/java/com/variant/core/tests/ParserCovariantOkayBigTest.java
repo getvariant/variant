@@ -53,15 +53,6 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(test1, test2, test4, test5), test6.getCovariantTests());
 
 		//
-		// idleDaysToLive
-		//
-		assertEquals(0, test1.getIdleDaysToLive());
-		assertEquals(0, test2.getIdleDaysToLive());
-		assertEquals(1, test3.getIdleDaysToLive());
-		assertEquals(0, test4.getIdleDaysToLive());
-		assertEquals(0, test5.getIdleDaysToLive());
-		assertEquals(0, test6.getIdleDaysToLive());
-		//
 		// Test disjointness. 
 		//
 
@@ -69,7 +60,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		for (Test t: schema.getTests()) {
 			boolean exceptionThrown = false;
 			try {
-				assertFalse(test1.isDisjointWith(t));
+				assertFalse(test1.isSerialWith(t));
 			}
 			catch (IllegalArgumentException iae) {
 				exceptionThrown = true;
@@ -83,7 +74,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		for (Test t: schema.getTests()) {
 			boolean exceptionThrown = false;
 			try {
-				assertFalse(test2.isDisjointWith(t));
+				assertFalse(test2.isSerialWith(t));
 			}
 			catch (IllegalArgumentException iae) {
 				exceptionThrown = true;
@@ -97,8 +88,8 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		for (Test t: schema.getTests()) {
 			boolean exceptionThrown = false;
 			try {
-				if (t.equals(test6)) assertTrue(test3.isDisjointWith(t));
-				else assertFalse(test3.isDisjointWith(t));
+				if (t.equals(test6)) assertTrue(test3.isSerialWith(t));
+				else assertFalse(test3.isSerialWith(t));
 			}
 			catch (IllegalArgumentException iae) {
 				exceptionThrown = true;
@@ -112,7 +103,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		for (Test t: schema.getTests()) {
 			boolean exceptionThrown = false;
 			try {
-				assertFalse(test4.isDisjointWith(t));
+				assertFalse(test4.isSerialWith(t));
 			}
 			catch (IllegalArgumentException iae) {
 				exceptionThrown = true;
@@ -126,7 +117,7 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		for (Test t: schema.getTests()) {
 			boolean exceptionThrown = false;
 			try {
-				assertFalse(test5.isDisjointWith(t));
+				assertFalse(test5.isSerialWith(t));
 			}
 			catch (IllegalArgumentException iae) {
 				exceptionThrown = true;

@@ -18,7 +18,7 @@ public class StateSelectorPathString /*implements StateSelector*/ {
 	public State select(Map<String,String> parameters, Collection<State> states) {
 		String path = parameters.get("path");
 		for (State s: states) {
-			if (s.getParameter("path").equals(path)) return s;
+			if (s.getParameterMap().get("path").equals(path)) return s;
 		}
 		return null;
 

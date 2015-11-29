@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
@@ -126,7 +125,7 @@ public class VariantFilter implements Filter {
 					// Yes, this path is mapped in Variant.
 					variantRequest = webApi.newStateRequest(state, httpRequest);
 					resolvedPath = variantRequest.getResolvedParameterMap().get("path");
-					isForwarding = !resolvedPath.equals(state.getParameter("path"));
+					isForwarding = !resolvedPath.equals(state.getParameterMap().get("path"));
 					
 					if (LOG.isInfoEnabled()) {
 

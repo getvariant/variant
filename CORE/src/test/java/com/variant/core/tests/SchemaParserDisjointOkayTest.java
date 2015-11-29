@@ -88,7 +88,6 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    "     {                                                                   \n" +
     	    "        'name':'test1',                                                  \n" +
     	    "        'isOn':true,                                                     \n" +
-    	    "        'idleDaysToLive':0,                                              \n" +
     	    "        'experiences':[                                                  \n" +
     	    "           {                                                             \n" +
     	    "              'name':'A',                                                \n" +
@@ -128,7 +127,6 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    "     {                                                                   \n" +
     	    "        'name':'test2',                                                  \n" +
     	    "        'isOn': false,                                                   \n" +
-    	    "        'idleDaysToLive':3,                                              \n" +
     	    "        'experiences':[                                                  \n" +
     	    "           {                                                             \n" +
     	    "              'name':'C',                                                \n" +
@@ -340,7 +338,6 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertNotNull(test);
 		assertEquals("test1", test.getName());
 		assertTrue(test.isOn());
-		assertEquals(0, test.getIdleDaysToLive());
 		
 		// Experiences
 		List<com.variant.core.schema.Test.Experience> actualExperiences = test.getExperiences();
@@ -393,7 +390,6 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertNotNull(test);
 		assertEquals("test2", test.getName());
 		assertFalse(test.isOn());
-		assertEquals(3, test.getIdleDaysToLive());
 		
 		// Experiences
 		List<com.variant.core.schema.Test.Experience> actualExperiences = test.getExperiences();
@@ -453,7 +449,6 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 		assertNotNull(test);
 		assertEquals("Test1", test.getName());
 		assertTrue(test.isOn());
-		assertEquals(0, test.getIdleDaysToLive());
 		
 		// Experiences
 		List<com.variant.core.schema.Test.Experience> actualExperiences = test.getExperiences();

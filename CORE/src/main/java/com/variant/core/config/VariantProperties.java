@@ -147,11 +147,11 @@ public class VariantProperties {
 		return getString(Keys.EVENT_PERSISTER_JDBC_PASSWORD.propName());
 	}
 
-	public String targetingPersisterClassName() {
+	public String targetingTrackerClassName() {
 		return getString(Keys.TARGETING_TRACKER_CLASS_NAME.propName());
 	}
 	
-	public int targetingPersisterIdleDaysToLive() {
+	public int targetingTrackerIdleDaysToLive() {
 		return getInteger(Keys.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName());
 	}
 

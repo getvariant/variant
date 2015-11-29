@@ -12,7 +12,6 @@ interface Keywords {
 	static String KEYWORD_COVARIANT_TEST_REFS       = "covariantTestRefs";
 	static String KEYWORD_EXPERIENCES               = "experiences";
 	static String KEYWORD_EXPERIENCE_REF            = "experienceRef";
-	static String KEYWORD_IDLE_DAYS_TO_LIVE         = "idleDaysToLive";
 	static String KEYWORD_IS_CONTROL                = "isControl";
 	static String KEYWORD_IS_NONVARIANT             = "isNonvariant";
 	static String KEYWORD_IS_ON                     = "isOn";

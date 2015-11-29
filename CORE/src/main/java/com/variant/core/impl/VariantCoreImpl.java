@@ -273,7 +273,7 @@ public class VariantCoreImpl implements Variant {
 		
 		// init Targeting Persister with the same user data.
 		VariantTargetingTracker tp = null;
-		String className = VariantProperties.getInstance().targetingPersisterClassName();
+		String className = VariantProperties.getInstance().targetingTrackerClassName();
 		
 		try {
 			Object object = Class.forName(className).newInstance();
