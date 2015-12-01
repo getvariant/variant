@@ -1,13 +1,14 @@
 package com.variant.core.tests;
 
-import static com.variant.core.schema.parser.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
-import static com.variant.core.schema.parser.MessageTemplate.PARSER_COVARIANT_VARIANT_DUPE;
-import static com.variant.core.schema.parser.MessageTemplate.PARSER_COVARIANT_VARIANT_MISSING;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_DUPE;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.variant.core.schema.impl.ParserMessageImplFacade;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
@@ -508,7 +509,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_DUPE, "test1.B, test2.B", "test3", "state2", "C").getMessage(), error.getMessage());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_DUPE, "test1.B, test2.B", "test3", "state2", "C").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -984,10 +985,10 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessage(PARSER_COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "state2", "C").getMessage(), error.getMessage());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "state2", "C").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessage(PARSER_COVARIANT_VARIANT_MISSING, "test1.B,test2.B", "test3", "state2", "C").getMessage(), error.getMessage());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "test1.B,test2.B", "test3", "state2", "C").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}

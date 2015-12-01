@@ -3,7 +3,7 @@ package com.variant.core.session;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.schema.parser.MessageTemplate;
+import com.variant.core.schema.impl.MessageTemplate;
 
 /**
  * 

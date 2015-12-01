@@ -1,12 +1,12 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.parser.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
-import static com.variant.core.schema.parser.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
-import static com.variant.core.schema.parser.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
-import static com.variant.core.schema.parser.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
-import static com.variant.core.schema.parser.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
-import static com.variant.core.schema.parser.MessageTemplate.INTERNAL;
-import static com.variant.core.schema.parser.MessageTemplate.RUN_PROPERTY_NOT_SET;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
+import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
+import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_NOT_SET;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -389,7 +389,7 @@ public class VariantCoreImpl implements Variant {
 		catch (Throwable t) {
 			response = new ParserResponseImpl();
 			ParserMessage err = response.addMessage(INTERNAL, t.getMessage());
-			LOG.error(err.getMessage(), t);
+			LOG.error(err.getText(), t);
 		}
 
 		// Only replace the schema if no ERROR or higher level errors.

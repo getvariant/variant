@@ -6,7 +6,6 @@
 #!/bin/bash
 
 set +e
-set -x
 version="0.5"
 
 workspace_root_dir=$(pwd)/$(dirname $0)/../..

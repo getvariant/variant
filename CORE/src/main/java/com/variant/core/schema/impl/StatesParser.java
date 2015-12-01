@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 
-import static com.variant.core.schema.parser.MessageTemplate.*;
+import static com.variant.core.schema.impl.MessageTemplate.*;
 
 /**
  * Parse the STATES clause.
@@ -46,7 +46,7 @@ public class StatesParser implements Keywords {
 		}
 		catch (Exception e) {
 			ParserMessage err = response.addMessage(INTERNAL, e.getMessage());
-			LOG.error(err.getMessage(), e);
+			LOG.error(err.getText(), e);
 		}
 		
 	}

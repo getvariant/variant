@@ -11,7 +11,7 @@ import com.variant.core.config.VariantProperties;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantRuntimeException;
 
-import static com.variant.core.schema.parser.MessageTemplate.*;
+import static com.variant.core.schema.impl.MessageTemplate.*;
 
 public class SessionService {
 

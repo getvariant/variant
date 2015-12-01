@@ -1,6 +1,6 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.parser.MessageTemplate.RUN_WEIGHT_MISSING;
+import static com.variant.core.schema.impl.MessageTemplate.RUN_WEIGHT_MISSING;
 
 import java.util.Random;
 

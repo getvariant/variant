@@ -1,6 +1,6 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.schema.parser.MessageTemplate.*;
+import static com.variant.core.schema.impl.MessageTemplate.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class TestsParser implements Keywords {
 		}
 		catch (Exception e) {
 			ParserMessage err = response.addMessage(INTERNAL, e.getMessage());
-			LOG.error(err.getMessage(), e);
+			LOG.error(err.getText(), e);
 		}
 		
 		if (rawTests.size() == 0) {

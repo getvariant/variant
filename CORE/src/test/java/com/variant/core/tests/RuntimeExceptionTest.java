@@ -9,7 +9,7 @@ import org.junit.Test;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
-import com.variant.core.schema.parser.MessageTemplate;
+import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
 
 

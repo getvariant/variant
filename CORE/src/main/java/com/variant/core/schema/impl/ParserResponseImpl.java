@@ -5,11 +5,9 @@ import java.util.Collections;
 import java.util.List;
 
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.parser.MessageTemplate;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
-import com.variant.core.schema.parser.SyntaxError;
 
 public class ParserResponseImpl implements ParserResponse {
 
@@ -24,7 +22,7 @@ public class ParserResponseImpl implements ParserResponse {
 
 	@Override
 	public void addMessage(Severity severity, String message) {
-		ParserMessage result = new ParserMessage(severity, message);
+		ParserMessage result = new ParserMessageImpl(severity, message);
 		messages.add(result);
 	}
 
@@ -35,9 +33,9 @@ public class ParserResponseImpl implements ParserResponse {
 	@Override
 	public Severity highestMessageSeverity() {
 		
-		Severity result = Severity.NONE;
+		Severity result = null;
 		for (ParserMessage error: messages) {
-			if (result.compareTo(error.getSeverity()) < 0)
+			if (result == null || result.lessThan(error.getSeverity()))
 				result = error.getSeverity();					
 		}
 		return result;
@@ -92,7 +90,7 @@ public class ParserResponseImpl implements ParserResponse {
 			result = new SyntaxError(template, line, column, args);
 		}
 		else {
-			result = new ParserMessage(template, line, column, args);
+			result = new ParserMessageImpl(template, line, column, args);
 		}
 		messages.add(result);
 		return result;
@@ -103,7 +101,7 @@ public class ParserResponseImpl implements ParserResponse {
 	 * @param error
 	 */
 	public ParserMessage addMessage(MessageTemplate template, String...args) {
-		ParserMessage result = new ParserMessage(template, args);
+		ParserMessage result = new ParserMessageImpl(template, args);
 		messages.add(result);
 		return result;
 	}

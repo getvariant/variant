@@ -45,7 +45,7 @@ public class FlashpointTest extends BaseTest {
 		assertEquals(variant.getSchema().getStates().size(), response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
 			assertEquals(Severity.INFO, msg.getSeverity());
-			assertEquals(MESSAGE_TEXT_STATE, msg.getMessage());
+			assertEquals(MESSAGE_TEXT_STATE, msg.getText());
 			
 		}
 	}
@@ -63,7 +63,7 @@ public class FlashpointTest extends BaseTest {
 		assertEquals(variant.getSchema().getTests().size(), response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
 			assertEquals(Severity.INFO, msg.getSeverity());
-			assertEquals(MESSAGE_TEXT_TEST, msg.getMessage());
+			assertEquals(MESSAGE_TEXT_TEST, msg.getText());
 			
 		}
 
@@ -77,7 +77,7 @@ public class FlashpointTest extends BaseTest {
 		for (int i = 0; i < response.getMessages().size(); i++) {
 			ParserMessage msg = response.getMessages().get(i);
 			assertEquals(Severity.INFO, msg.getSeverity());
-			assertEquals(i < variant.getSchema().getStates().size() ? MESSAGE_TEXT_STATE : MESSAGE_TEXT_TEST, msg.getMessage());
+			assertEquals(i < variant.getSchema().getStates().size() ? MESSAGE_TEXT_STATE : MESSAGE_TEXT_TEST, msg.getText());
 		}
 
 	}

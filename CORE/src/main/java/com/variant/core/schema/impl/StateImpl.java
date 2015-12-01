@@ -9,7 +9,6 @@ import com.variant.core.Variant;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.parser.MessageTemplate;
 import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.util.CaseInsensitiveUnmodifiableMap;
 

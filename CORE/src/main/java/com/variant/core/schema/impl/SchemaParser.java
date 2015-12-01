@@ -16,7 +16,6 @@ import com.variant.core.impl.Flasher;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.parser.MessageTemplate;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.util.VariantStringUtils;
@@ -78,7 +77,7 @@ public class SchemaParser implements Keywords {
 		} 
 		catch (Exception e) {
 			ParserMessage err = response.addMessage(MessageTemplate.INTERNAL, e.getMessage());
-			LOG.error(err.getMessage(), e);
+			LOG.error(err.getText(), e);
 		}
 		
 		if (response.highestMessageSeverity().greaterOrEqualThan(Severity.FATAL)) return response;

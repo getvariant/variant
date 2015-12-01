@@ -1,4 +1,4 @@
-package com.variant.core.schema.parser;
+package com.variant.core.schema.impl;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -7,7 +7,7 @@ import org.apache.commons.lang3.StringUtils;
  * 
  * @author Igor
  */
-public class SyntaxError extends ParserMessage {
+public class SyntaxError extends ParserMessageImpl {
 	
 	String rawInput;
 	

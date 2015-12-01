@@ -77,7 +77,7 @@ public class StateParsedFlashpointTest {
 		ParserMessage msg = response.getMessages().get(0);
 		assertEquals(Severity.ERROR, msg.getSeverity());
 		assertEquals("USER_DEFINED_MESSAGE", msg.getCode());
-		assertEquals("Path property [does/not/start/with/slash] must start with a '/' in State [state1]", msg.getMessage());
+		assertEquals("Path property [does/not/start/with/slash] must start with a '/' in State [state1]", msg.getText());
 
 	}
 }
