@@ -21,6 +21,7 @@ javadoc -d ${javadoc_dir}  \
    -sourcepath ${core_src_dir}:${web_src_dir} \
    -windowtitle "Variant RCE Container 0.5 Java API" \
    -doctitle "Variant Randomized Controlled Experiment Container Java API<br/>Version 0.5" \
+   -header "<a onclick=\"window.top.location.href='http://getvariant.com/docs';\" href=\"#\"><img src=\"http://getvariant.com/wp-content/uploads/2015/10/VariantLogo3-e1446247556580.png\"/></a>" \
    -bottom "Copyright &copy; 2015 Variant"  \
    com.variant.core                 \
    com.variant.core.event           \
