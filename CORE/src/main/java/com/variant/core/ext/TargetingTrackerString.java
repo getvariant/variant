@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
-import com.variant.core.config.VariantProperties;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.TargetingTrackerSupport;
@@ -60,8 +59,7 @@ public class TargetingTrackerString extends TargetingTrackerSupport {
 						long timestamp = Long.parseLong(tokens[0]);
 						// ignore if user hasn't seen this experience for idleDaysToLive days,
 						// unless idleDaysToLive is 0, which means for the life of the test. 
-						int idleDaysToLive = VariantProperties.getInstance().targetingTrackerIdleDaysToLive();
-						if (idleDaysToLive > 0 && System.currentTimeMillis() - timestamp > idleDaysToLive * DateUtils.MILLIS_PER_DAY) {
+						if (test.getIdleDaysToLive() > 0 && System.currentTimeMillis() - timestamp > test.getIdleDaysToLive() * DateUtils.MILLIS_PER_DAY) {
 							if (LOG.isDebugEnabled()) {
 								LOG.debug("Ignored idle experience [" + tokens[1] + "." + tokens[2] + "]");
 							}

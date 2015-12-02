@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import com.variant.core.config.VariantProperties;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.State;
@@ -19,6 +20,7 @@ public class TestImpl implements Test {
 	// As defined:
 	private String name;
 	private boolean isOn = true;
+	private int idleDaysToLive = VariantProperties.getInstance().targetingTrackerIdleDaysToLive();
 	private List<TestImpl> covariantTests;
 	private List<TestExperienceImpl> experiences;
 	private VariantSpace variantSpace;
@@ -58,7 +60,15 @@ public class TestImpl implements Test {
 	void setIsOn(boolean isOn) {
 		this.isOn = isOn;
 	}
-		
+	
+	/**
+	 * 
+	 * @param isOn
+	 */
+	void setIdleDaysToLive(int days) {
+		this.idleDaysToLive = days;
+	}
+	
 	/**
 	 * Caller must ensure that the covarTests are sorted in ordinal order.
 	 * @param tests
@@ -174,6 +184,13 @@ public class TestImpl implements Test {
 		return isOn;
 	}
 	
+	/**
+	 * 
+	 */
+	public int getIdleDaysToLive() {
+		return idleDaysToLive;
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC EXTENSION                                         //
 	//---------------------------------------------------------------------------------------------//

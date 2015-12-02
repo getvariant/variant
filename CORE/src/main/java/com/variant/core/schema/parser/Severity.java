@@ -10,7 +10,7 @@ package com.variant.core.schema.parser;
 public enum Severity {
 
 	/**
-	 * Information only.
+	 * Information only message.
 	 * @since 0.5
 	 */
 	INFO,

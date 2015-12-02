@@ -184,6 +184,20 @@ public class TestsParser implements Keywords {
 					response.addMessage(PARSER_TEST_ISON_NOT_BOOLEAN, name);					
 				}
 			}
+			else if (entry.getKey().equalsIgnoreCase(KEYWORD_IDLE_DAYS_TO_LIVE)) {
+				try {
+					Integer days = (Integer) entry.getValue();
+					if (days < 0) {
+						response.addMessage(PARSER_TEST_IDLE_DAYS_TO_LIVE_NEGATIVE, name);
+					}
+					else {
+						result.setIdleDaysToLive(days);
+					}
+				}
+				catch (Exception e)  {
+					response.addMessage(PARSER_TEST_IDLE_DAYS_TO_LIVE_NOT_INT, name);					
+				}
+			}
 		}
 		
 		// Resort covariant tests in ordinal order before adding to the result.
@@ -196,7 +210,7 @@ public class TestsParser implements Keywords {
 		// Pass 4: Parse onViews.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
-			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS, KEYWORD_IS_ON)) continue;
+			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS, KEYWORD_IS_ON, KEYWORD_IDLE_DAYS_TO_LIVE)) continue;
 
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_STATES)) {
 				Object onViewsObject = entry.getValue();

@@ -22,9 +22,9 @@ public class StatesParser implements Keywords {
 	private static final Logger LOG = LoggerFactory.getLogger(StatesParser.class);
 			
 	/**
-	 * Parse the VIEWS clause.
-	 * @param result
-	 * @param viewsObject
+	 * Parse the STATES clause.
+	 * @param statesObject
+	 * @param response 
 	 */
 	@SuppressWarnings("unchecked")
 	static void parseStates(Object statesObject, ParserResponseImpl response) {

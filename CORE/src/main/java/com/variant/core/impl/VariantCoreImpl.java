@@ -393,7 +393,8 @@ public class VariantCoreImpl implements Variant {
 		}
 
 		// Only replace the schema if no ERROR or higher level errors.
-		if (response.highestMessageSeverity().lessThan(Severity.ERROR)) {
+		Severity highSeverity = response.highestMessageSeverity();
+		if (highSeverity == null || highSeverity.lessThan(Severity.ERROR)) {
 			
 			if (schema != null) {
 				((SchemaImpl)schema).setInternalState(SchemaImpl.InternalState.UNDEPLOYED);

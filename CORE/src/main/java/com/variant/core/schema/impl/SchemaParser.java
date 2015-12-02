@@ -80,7 +80,8 @@ public class SchemaParser implements Keywords {
 			LOG.error(err.getText(), e);
 		}
 		
-		if (response.highestMessageSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
+		Severity highSeverity = response.highestMessageSeverity();
+		if (highSeverity != null && highSeverity.greaterOrEqualThan(Severity.FATAL)) return response;
 		
 		// Clean map will contain only entries with expected clauses with keys uppercased 
 		Map<String, Object> cleanMap = new LinkedHashMap<String, Object>();
@@ -117,7 +118,8 @@ public class SchemaParser implements Keywords {
 			}
 		}
 
-		if (response.highestMessageSeverity().greaterOrEqualThan(Severity.FATAL)) return response;
+		highSeverity = response.highestMessageSeverity();
+		if (highSeverity != null && highSeverity.greaterOrEqualThan(Severity.FATAL)) return response;
 
 		Object tests = cleanMap.get(KEYWORD_TESTS.toUpperCase());
 		if (tests == null) {

@@ -92,6 +92,13 @@ public interface Test {
 	public List<Test> getCovariantTests();
 	
 	/**
+	 * Number of days an entry for this test will be kept by the targeting tracker, since the
+	 * most recent traversal. 0 means "forever," i.e. for the life of the test,- the default;
+	 * @return
+	 */
+	public int getIdleDaysToLive();
+	
+	/**
 	 * Representation of a test experience.
 	 * 
 	 * @since 0.5
