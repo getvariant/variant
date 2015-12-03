@@ -7,9 +7,53 @@ import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.State;
 
 /**
- * 
- * @author Igor
+ * <p>
+ * Select a Variant state based on a path pattern. Implements a sophisticated path matching scheme:</p>
+ * <ol>
+ *   <li>Symbol '/' always stands for the path separator. Any path must start with '/'.</li>
+ *   <li>Any sequence of symbols between two consecutive symbols '/' is taken to be a literal, 
+ *       unless the first letter of the sequence is a tilde '~', in which case the string immediately 
+ *       following the tilde and until, but not including, the next unescaped '/' is considered a regular expression. 
+ *       Complete <@link https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html regular expression syntax}
+ *       is supported.</li>
+ *  <li>Although symbol '/' does not have a special meaning in the regular expression grammar, it does for Variant: 
+ *      this is how Variant decides where a regular expression ends. Therefore, if '/' must be included in the regular 
+ *      expression, it must be escaped with the '\' symbol, like any other special character. By including '/' symbols 
+ *      in the regular expression, it is possible to match variable sections in the middle of a path.</li>
+ *  <li>Symbol '//' can be used anywhere, where '/' can be used, and is a shortcut for '/~.&ast;/'. 
+ *      In other words, '//' will match any string. Note that '///' is legal but superfluous because it will be 
+ *      expanded to '/~.&ast;/~.&ast;/'.</li>
+ *  <li>The very last '/' of the pattern is not significant, i.e. Variant will remove it, if present, from both
+ *      the pattern and the path after all '//' are expanded. This enables easy prefix match: '/user//' will 
+ *      match any path that starts with '/user/'.</li>
  *
+ * <p>
+ * Examples:
+ * <table border="1" cellpadding="4">
+ *   <tr>
+ *     <th>Path</th>
+ *     <th>Will Match</th>
+ *     <th>Will Not Match</th>
+ *   </tr>
+ *   <tr>
+ *     <td>/user</td>
+ *     <td>/user<br/>/user/</td>
+ *     <td>/user/new</td>
+ *   </tr>
+ *   <tr>
+ *     <td>/user//</td>
+ *     <td>/user<br/>/user/<br/>/user/new</td>
+ *     <td>/service/user/</td>
+ *   </tr>
+ *   <tr>
+ *     <td>/user//.html</td>
+ *     <td>/user/new/error.html</td>
+ *     <td>/user/error</td>
+ *   </tr>
+ * </table>
+ *
+ * @author Igor Urisman
+ * @since 0.5
  */
 public class StateSelectorByRequestPath  {
 
@@ -76,7 +120,11 @@ public class StateSelectorByRequestPath  {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Return the first matching.
+	 * Select a Variant state based by its path.
+	 *
+	 * @param path Path string.
+	 * @return
+	 * @since 0.5
 	 */
 	public static State select(String path) {
 		for (State state: Variant.Factory.getInstance().getSchema().getStates()) {

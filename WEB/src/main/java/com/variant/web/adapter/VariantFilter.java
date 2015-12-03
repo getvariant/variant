@@ -24,7 +24,7 @@ import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 import com.variant.web.StateSelectorByRequestPath;
 import com.variant.web.VariantWeb;
-import com.variant.web.VariantWebUtils;
+import com.variant.web.util.VariantWebUtils;
 
 /**
  * Copyright 2015 Variant. All rights reserved.

@@ -1,4 +1,4 @@
-package com.variant.web;
+package com.variant.web.util;
 
 import java.util.Collection;
 import java.util.Map;
@@ -13,22 +13,22 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
-class VariantWebStateRequestWrapper implements VariantStateRequest {
+public class VariantWebStateRequestWrapper implements VariantStateRequest {
 
 	private VariantStateRequest variantRequest;
 	private HttpServletRequest httpRequest;
 	
-	VariantWebStateRequestWrapper(VariantStateRequest variantRequest, HttpServletRequest httpRequest) {
+	public VariantWebStateRequestWrapper(VariantStateRequest variantRequest, HttpServletRequest httpRequest) {
 		this.variantRequest = variantRequest;
 		this.httpRequest = httpRequest;
 	}
 
 	/// Extra Methods ///
-	HttpServletRequest getHttpServletRequest() {
+	public HttpServletRequest getHttpServletRequest() {
 		return httpRequest;
 	}
 	
-	VariantStateRequest getOriginalRequest() {
+	public VariantStateRequest getOriginalRequest() {
 		return variantRequest;
 	}
 	

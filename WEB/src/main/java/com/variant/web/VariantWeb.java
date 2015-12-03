@@ -1,8 +1,5 @@
 package com.variant.web;
 
-/**
- * Java Servlet Domain API.
- */
 import java.io.InputStream;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,19 +8,23 @@ import javax.servlet.http.HttpServletResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.exception.VariantBootstrapException;
-import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.flashpoint.FlashpointListener;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
-
+import com.variant.web.util.VariantWebStateRequestWrapper;
 
 /**
- * Variant Web API
+ * <p>Variant Web API. The platform API suitable for Web applications written on top of the Java Servlet API. 
+ * It is a facade around the {@link com.variant.core.Variant Core API} with the advantage of hiding much 
+ * of its complexities behind a new set of methods that operate on familiar Servlet API objects.
+ * To obtain an instance, instantiate with the constructor:
  * 
- * @author Igor
- *
+ * <p>
+ * <code>VariantWeb webAPI = new {@link #VariantWeb()};</code>
+ * 
+ * @author Igor Urisman
+ * @since 0.5
  */
 public class VariantWeb {
 	
@@ -33,14 +34,24 @@ public class VariantWeb {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
+	/**
+	 * Obtain an instance of the API. Can be held on to and reused for the life of the JVM.
+	 * The instance must be bootstrapped with a call to {@link #bootstrap(String...)} before it
+	 * is usable.
+	 * 
+	 * @returns An instance of {@link VariantWeb};
+	 * @since 0.5
+	 */
 	public VariantWeb() {
 		this.core = Variant.Factory.getInstance();
 	}
 	
 	/**
-	 * Bootstrap the Variant engine.
+	 * Bootstrap the Variant container. Must be the first method called on a cold API
+	 * after JVM startup.
 	 * 
-	 * @throws VariantBootstrapException
+	 * @param resourceNames See {@link Variant#bootstrap(String...)}. 
+	 * @since 0.5
 	 */
 	public void bootstrap(String...resourceNames) {
 	
@@ -51,81 +62,109 @@ public class VariantWeb {
 	}
 	
 	/**
-	 * 
-	 * @return
+	 * Is the Variant container bootstrapped?
+	 *
+	 * @return true between calls to {@link #bootstrap} and {@link #shutdown}  methods, false otherwise.
+	 * @since 0.5
 	 */
 	public boolean isBootstrapped() {
 		return core.isBootstrapped();
 	}
 	
 	/**
-	 * Programmatically shutdown Variant engine.
+	 * <p>Shutdown Variant container. Releases all JVM resources associated with Variant Core API.
+	 * Subsequently, calling any method other than {@link #bootstrap} will throw an exception.
+	 * 
+	 * @since 0.5
 	 */
 	public synchronized void shutdown() {
 		core.shutdown();
 	}
 	
 	/**
-	 * Client code may extend default semantics by supplying flashpoint listeners.
+	 * <p>Register a {@link com.variant.core.flashpoint.FlashpointListener}. 
+	 * See {@link Variant#addFlashpointListener(FlashpointListener)} for details.
 	 * 
-	 * @param listener
+	 * @param listener An instance of a caller-provided implementation of the 
+	 *        {@link com.variant.core.flashpoint.FlashpointListener} interface.
+	 *        
+	 * @since 0.5
 	 */
 	public void addFlashpointListener(FlashpointListener<?> listener) {
 		core.addFlashpointListener(listener);
 	}
 	
-
 	/**
-	 * Remove all current flashpoint listeners.
+	 * <p>Remove all previously registered (with {@link #addFlashpointListener(FlashpointListener)} listeners.
 	 * 
-	 * @param listener
+	 * @since 0.5
 	 */
 	public void clearFlashpointListeners() {
 		core.clearFlashpointListeners();
 	}
 
 	/**
-	 * Parse from an input stream, and, if no errors, optionally deploy a new schema.
-	 * @param stream
-	 * @deploy The new test schema will be deployed if this is true and no parse errors were encountered.
-	 * @return
+	 * <p>Parse and, if no errors, optionally deploy a new experiment schema.
+	 * 
+	 * @param stream The schema to be parsed and deployed, as a java.io.InputStream.
+	 * @param deploy The new test schema will be deployed if this is true and no parse errors 
+	 *        were encountered.
+	 *        
+	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} object that
+	 *         may be further examined about the outcome of this operation.
+	 * 
+	 * @since 0.5
 	 */
 	public ParserResponse parseSchema(InputStream stream, boolean deploy) {		
 		return core.parseSchema(stream, deploy);
 	}
 
 	/**
-	 * Parse from an input stream, and, if no errors, deploy a new schema.
-	 * @param stream
-	 * @return
+	 * <p>Parse and, if no errors, deploy a new experiment schema.  Same as 
+     * <code>parseSchema(stream, true)</code>.
+     * 
+	 * @param stream The schema to be parsed and deployed, as a java.io.InputStream.
+	 *         
+	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} object, which
+	 *         may be further examined about the outcome of this operation.
+     *
+	 * @since 0.5
 	 */
 	public ParserResponse parseSchema(InputStream stream) {
 		return core.parseSchema(stream);
 	}
 
 	/**
-	 * Get current test schema.
-	 * @return Current test schema or null, if none has been deployed yet.
+	 * <p>Get currently deployed test schema, if any.
+	 * 
+	 * @return Current test schema as an instance of the {@link com.variant.core.schema.Schema} object.
+	 * 
+	 * @since 0.5
 	 */
 	public Schema getSchema() {
 		return core.getSchema();
-	
 	}
 
 	/**
-	 *  Get user's Variant session. 
-	 *  
-	 * @param request Active <code>HttpServletRequest</code> object.
-	 * @return          
+	 * <p>Get user's Variant session. Typical code path likely will not need to call this method
+	 * because the {@link #newStateRequest(State, HttpServletRequest)} method will obtain
+	 * the session internally.
+	 * 
+	 * @param httpRequest Current <code>HttpServletRequest</code>.
+	 * @since 0.5
+	 * @return
 	 */
 	public VariantSession getSession(HttpServletRequest httpRequest) {
 		return core.getSession(httpRequest);
 	}
 	
 	/**
-     * Start a new state request 
-	 * @return
-	 * @throws VariantRuntimeException 
+     * <p>Start a new state request.
+     *  
+	 * @return An instance of the {@link com.variant.core.VariantStateRequest} object, which
+	 *         may be further examined about the outcome of this operation. 
+	 *
+	 * @since 0.5
 	 */
 	public VariantStateRequest newStateRequest(State state, HttpServletRequest httpRequest) {
 		
@@ -134,8 +173,12 @@ public class VariantWeb {
 	}
 	
 	/**
-	 * Commit a state request.
-	 * @param request
+	 * Commit a state request. Flushes to storage this session's state.
+     * 
+	 * @param httpRequest Current <code>HttpServletRequest</code>.
+	 * @param httpResponse Current <code>HttpServletResponse</code>.
+     *
+	 * @since 0.5
 	 */
 	public void commitStateRequest(VariantStateRequest request, HttpServletResponse httpResponse) {
 		// The sessionStore may need either http response or http request, depending on the implementation.

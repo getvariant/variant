@@ -10,14 +10,14 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.util.VariantStringUtils;
-
+import com.variant.web.util.VariantCookie;
 
 /**
  * HTTP Cookie based session ID tracking. Session ID is saved in an HTTP cookie.
  * Not currently used.
- * 
- * @author Igor
  *
+ * @author Igor Urisman
+ * @since 0.5
  */
 public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 		

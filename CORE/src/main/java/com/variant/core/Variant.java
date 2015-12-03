@@ -161,7 +161,7 @@ public interface Variant {
 		private static Variant instance = null;
 		
 		/**
-		 * Obtain an instance of the Variant API.
+		 * Obtain an instance of the Variant API. Can be held on to and reused for the life of the JVM.
 		 * 
 		 * @return An implementation of the {@link Variant} interface.
 		 */
