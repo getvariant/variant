@@ -69,7 +69,8 @@ public class VariantFilter implements Filter {
 		}
 						
 		ParserResponse resp = webApi.parseSchema(is);
-		if (resp.highestMessageSeverity().greaterOrEqualThan(Severity.ERROR)) {
+		Severity highSeverity = resp.highestMessageSeverity();
+		if (highSeverity != null && highSeverity.greaterOrEqualThan(Severity.ERROR)) {
 			LOG.error("Unable to parse Variant test schema due to following parser error(s):");
 			for (ParserMessage msg: resp.getMessages()) {
 				LOG.error(msg.toString());
