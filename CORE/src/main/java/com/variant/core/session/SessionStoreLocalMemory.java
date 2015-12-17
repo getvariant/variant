@@ -9,7 +9,8 @@ import com.variant.core.VariantSessionStore;
 /**
  * Simplest session store implementation in local memory.
  * No external session ID tracking is assumed. Instead, session IDs
- * are passed in as user data.
+ * are passed in as user data. Sessions are stored in a map keyed by ID,
+ * no expiration.
  * 
  *** Good for tests only. ***
  * 

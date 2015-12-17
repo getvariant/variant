@@ -4,11 +4,11 @@
 # To be used by the EventDataPopulator class.
 #
 
-# Session ID persister in cookie.
-session.id.persister.class.name = com.variant.core.ext.SessionIdPersisterString
+# Targeting tracker in cookie.
+targeting.tracker.class.name = com.variant.core.ext.TargetingTrackerString
 
-# Targeting persister in cookie.
-targeting.persister.class.name = com.variant.core.ext.TargetingPersisterString
+# Session store type
+session.store.class.name = com.variant.core.session.SessionStoreLocalMemory
 
 #
 event.writer.buffer.size = 5000
