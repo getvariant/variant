@@ -14,8 +14,8 @@ import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.flashpoint.TestQualificationFlashpoint;
-import com.variant.core.flashpoint.TestTargetingFlashpoint;
+import com.variant.core.hook.TestQualificationHook;
+import com.variant.core.hook.TestTargetingHook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -42,14 +42,14 @@ public class VariantRuntime {
 	/**
 	 * 
 	 */
-	private static class TestQualificationFlashpointImpl implements TestQualificationFlashpoint {
+	private static class TestQualificationHookImpl implements TestQualificationHook {
 		
 		private VariantSession ssn;
 		private Test test;
 		private boolean qualified = true;
 		private boolean removeFromTT = false;
 		
-		private TestQualificationFlashpointImpl(VariantSession ssn, Test test) {
+		private TestQualificationHookImpl(VariantSession ssn, Test test) {
 			this.ssn = ssn;
 			this.test = test;
 		}
@@ -89,13 +89,13 @@ public class VariantRuntime {
 	/**
 	 * 
 	 */
-	private static class TestTargetingFlashpointImpl implements TestTargetingFlashpoint {
+	private static class TestTargetingHookImpl implements TestTargetingHook {
 
 		private VariantSession session;
 		private Test test;
 		private Experience targetedExperience = null;
 		
-		private TestTargetingFlashpointImpl(VariantSession session, Test test) {
+		private TestTargetingHookImpl(VariantSession session, Test test) {
 			this.session = session;
 			this.test = test;
 		}
@@ -166,13 +166,13 @@ public class VariantRuntime {
 		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
 			throw new VariantInternalException("State [" + state.getName() + "] is not in schema");
 		
-		// Re-qualify each instrumented test by triggering the qualification flashpoint.
+		// Re-qualify each instrumented test by triggering the qualification user hook.
 		for (Test test: state.getInstrumentedTests()) {
-			TestQualificationFlashpointImpl flashpoint = new TestQualificationFlashpointImpl(session, test);
-			variantCoreImpl.getFlasher().post(flashpoint);
-			if (!flashpoint.qualified) {
+			TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
+			variantCoreImpl.getUserHooker().post(hook);
+			if (!hook.qualified) {
 				req.addDisqualifiedTest(test);
-				if (flashpoint.removeFromTT) tp.remove(test);
+				if (hook.removeFromTT) tp.remove(test);
 			}
 		}
 		
@@ -255,10 +255,10 @@ public class VariantRuntime {
 					}										
 				}
 				else if (isTargetable(test, tp.getAll())) {
-					// Target this test. First post possible flashpoint listeners.
-					TestTargetingFlashpointImpl flashpoint = new TestTargetingFlashpointImpl(session, test);
-					variantCoreImpl.getFlasher().post(flashpoint);
-					Experience targetedExperience = flashpoint.targetedExperience;
+					// Target this test. First post possible user hook listeners.
+					TestTargetingHookImpl hook = new TestTargetingHookImpl(session, test);
+					variantCoreImpl.getUserHooker().post(hook);
+					Experience targetedExperience = hook.targetedExperience;
 					// If no listeners or no action by client code, do the random default.
 					if (targetedExperience == null) {
 						targetedExperience = new TestTargeterDefault().target(test, session);

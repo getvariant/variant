@@ -2,8 +2,8 @@ package com.variant.core;
 
 import java.io.InputStream;
 
-import com.variant.core.flashpoint.Flashpoint;
-import com.variant.core.flashpoint.FlashpointListener;
+import com.variant.core.hook.UserHook;
+import com.variant.core.hook.HookListener;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -57,30 +57,30 @@ public interface Variant {
 	public void shutdown();
 	
 	/**
-	 * <p>Register a {@link com.variant.core.flashpoint.FlashpointListener}. The caller must provide 
-	 * an implementation of the {@link com.variant.core.flashpoint.FlashpointListener} interface 
-	 * which listens to a pre-defined {@link com.variant.core.flashpoint.Flashpoint} type. Whenever 
-	 * Variant reaches a flashpoint given by the {@link com.variant.core.flashpoint.Flashpoint} type
-	 * parameter, the listener is notified. 
+	 * <p>Register a {@link com.variant.core.hook.HookListener}. The caller must provide 
+	 * an implementation of the {@link com.variant.core.hook.HookListener} interface 
+	 * which listens to a pre-defined {@link com.variant.core.hook.UserHook} type. Whenever 
+	 * Variant reaches a hook given by the {@link com.variant.core.hook.UserHook} type
+	 * parameter, the hook listener is notified. 
 	 * 
-	 * <p>Any number of listeners may listen for the same {@link com.variant.core.flashpoint.Flashpoint} 
+	 * <p>Any number of listeners may listen for the same {@link com.variant.core.hook.UserHook} 
 	 * type. If more than one listener is registered for a particular 
-	 * {@link com.variant.core.flashpoint.Flashpoint} type, the order of notification is undefined.
+	 * {@link com.variant.core.hook.UserHook} type, the order of notification is undefined.
 	 * 
 	 * @param listener An instance of a caller-provided implementation of the 
-	 *        {@link com.variant.core.flashpoint.FlashpointListener} interface.
+	 *        {@link com.variant.core.hook.HookListener} interface.
 	 *        
 	 * @since 0.5
 	 */
-	public void addFlashpointListener(FlashpointListener<? extends Flashpoint> listener);
+	public void addHookListener(HookListener<? extends UserHook> listener);
 	
 
 	/**
-	 * <p>Remove all previously registered (with {@link #addFlashpointListener(FlashpointListener)} listeners.
+	 * <p>Remove all previously registered (with {@link #addHookListener(HookListener)} listeners.
 	 * 
 	 * @since 0.5
 	 */
-	public void clearFlashpointListeners();
+	public void clearHookListeners();
 
 	/**
 	 * <p>Parse and, if no errors, optionally deploy a new experiment schema.

@@ -11,8 +11,8 @@ import org.junit.Test;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.flashpoint.FlashpointListener;
-import com.variant.core.flashpoint.TestTargetingFlashpoint;
+import com.variant.core.hook.HookListener;
+import com.variant.core.hook.TestTargetingHook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test.Experience;
@@ -86,7 +86,7 @@ public class TargetingTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		engine.clearFlashpointListeners();
+		engine.clearHookListeners();
 		ParserResponse response = engine.parseSchema(config);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
@@ -111,9 +111,9 @@ public class TargetingTest extends BaseTest {
 		//
 		// Add one null listener - still distribution according to weights.
 		//
-		NullTargetingFlashpointListener nullListener1 = new NullTargetingFlashpointListener();
+		NullTargetingHookListener nullListener1 = new NullTargetingHookListener();
 		nullListener1.postCount = 0;
-		engine.addFlashpointListener(nullListener1);
+		engine.addHookListener(nullListener1);
 		counts[0] = counts[1] = counts[2] = 0;
 		for (int i = 0; i < TRIALS; i++) {
 			VariantStateRequest req = engine.newStateRequest(ssn, state, "");
@@ -128,8 +128,8 @@ public class TargetingTest extends BaseTest {
 		//
 		// Add two null listeners - still distribution according to weights.
 		//
-		NullTargetingFlashpointListener nullListener2 = new NullTargetingFlashpointListener();
-		engine.addFlashpointListener(nullListener2);
+		NullTargetingHookListener nullListener2 = new NullTargetingHookListener();
+		engine.addHookListener(nullListener2);
 		counts[0] = counts[1] = counts[2] = 0;
 		nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
@@ -146,8 +146,8 @@ public class TargetingTest extends BaseTest {
 		//
 		// Add the A/B listener - changes distribution to 1/1/0.
 		//
-		ABTargetingFlashpointListener ABListener = new ABTargetingFlashpointListener();
-		engine.addFlashpointListener(ABListener);
+		ABTargetingHookListener ABListener = new ABTargetingHookListener();
+		engine.addHookListener(ABListener);
 		counts[0] = counts[1] = counts[2] = 0;
 		ABListener.postCount = nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
@@ -165,9 +165,9 @@ public class TargetingTest extends BaseTest {
 		//
 		// Clear all listeners, then add the A/C listener - changes distribution to 1/0/1.
 		//
-		engine.clearFlashpointListeners();
-		ACTargetingFlashpointListener ACListener = new ACTargetingFlashpointListener();
-		engine.addFlashpointListener(ACListener);
+		engine.clearHookListeners();
+		ACTargetingHookListener ACListener = new ACTargetingHookListener();
+		engine.addHookListener(ACListener);
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
 			VariantStateRequest req = engine.newStateRequest(ssn, state, "");
@@ -182,7 +182,7 @@ public class TargetingTest extends BaseTest {
 		//
 		// Add null listener - should not change the distribution.
 		//
-		engine.addFlashpointListener(nullListener1);
+		engine.addHookListener(nullListener1);
 		nullListener1.postCount = ACListener.postCount = 0;
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
@@ -199,10 +199,10 @@ public class TargetingTest extends BaseTest {
 		//
 		// Clear all listeners, then add the A/B/Null custom targeter + A/C targeter - changes distribution to 50/25/25.
 		//
-		engine.clearFlashpointListeners();
-		ABNullTargetingFlashpointListener ABNullListener = new ABNullTargetingFlashpointListener();
-		engine.addFlashpointListener(ABNullListener);
-		engine.addFlashpointListener(ACListener);
+		engine.clearHookListeners();
+		ABNullTargetingHookListener ABNullListener = new ABNullTargetingHookListener();
+		engine.addHookListener(ABNullListener);
+		engine.addHookListener(ACListener);
 		counts[0] = counts[1] = counts[2] = 0;
 		ABNullListener.postCount = ACListener.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
@@ -296,7 +296,7 @@ public class TargetingTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		engine.clearFlashpointListeners();
+		engine.clearHookListeners();
 		ParserResponse response = engine.parseSchema(config);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
@@ -318,17 +318,17 @@ public class TargetingTest extends BaseTest {
 	/**
 	 * Always return null.
 	 */
-	private static class NullTargetingFlashpointListener implements FlashpointListener<TestTargetingFlashpoint> {
+	private static class NullTargetingHookListener implements HookListener<TestTargetingHook> {
 		
 		private int postCount = 0;
 		
 		@Override
-		public Class<TestTargetingFlashpoint> getFlashpointClass() {
-			return TestTargetingFlashpoint.class;
+		public Class<TestTargetingHook> getHookClass() {
+			return TestTargetingHook.class;
 		}
 		
 		@Override
-		public void post(TestTargetingFlashpoint flashpoint) {
+		public void post(TestTargetingHook hook) {
 			postCount++;
 			// do nothing.
 		}
@@ -337,45 +337,45 @@ public class TargetingTest extends BaseTest {
 	/**
 	 * returns A or B in equal probabilities.
 	 */
-	private static class ABTargetingFlashpointListener implements FlashpointListener<TestTargetingFlashpoint> {
+	private static class ABTargetingHookListener implements HookListener<TestTargetingHook> {
 
 		private int postCount = 0;
 		private static Random rand = new Random(System.currentTimeMillis());
 
 		@Override
-		public Class<TestTargetingFlashpoint> getFlashpointClass() {
-			return TestTargetingFlashpoint.class;
+		public Class<TestTargetingHook> getHookClass() {
+			return TestTargetingHook.class;
 		}
 		
 		@Override
-		public void post(TestTargetingFlashpoint flashpoint) {
+		public void post(TestTargetingHook hook) {
 			postCount++;
-			com.variant.core.schema.Test test = flashpoint.getTest();
+			com.variant.core.schema.Test test = hook.getTest();
 			Experience experience = rand.nextBoolean() ? test.getExperience("A") : test.getExperience("B");
-			flashpoint.setTargetedExperience(experience);
+			hook.setTargetedExperience(experience);
 		}
 	}
 
 	/**
 	 * returns A or C in equal probabilities.
 	 */
-	private static class ACTargetingFlashpointListener implements FlashpointListener<TestTargetingFlashpoint> {
+	private static class ACTargetingHookListener implements HookListener<TestTargetingHook> {
 		
 		private int postCount = 0;
 		private static Random rand = new Random(System.currentTimeMillis());
 		
 		@Override
-		public Class<TestTargetingFlashpoint> getFlashpointClass() {
-			return TestTargetingFlashpoint.class;
+		public Class<TestTargetingHook> getHookClass() {
+			return TestTargetingHook.class;
 		}
 		
 		@Override
-		public void post(TestTargetingFlashpoint flashpoint) {
+		public void post(TestTargetingHook hook) {
 			postCount++;
-			com.variant.core.schema.Test test = flashpoint.getTest();
-			if (test.getName().equals("test1") && flashpoint.getTargetedExperience() == null) {
+			com.variant.core.schema.Test test = hook.getTest();
+			if (test.getName().equals("test1") && hook.getTargetedExperience() == null) {
 				Experience experience = rand.nextBoolean() ? test.getExperience("A") : test.getExperience("C");
-				flashpoint.setTargetedExperience(experience);
+				hook.setTargetedExperience(experience);
 			}
 		}
 	}
@@ -383,23 +383,23 @@ public class TargetingTest extends BaseTest {
 	/**
 	 * returns A 25% of the time, B 25% of the time and null 50% of the time..
 	 */
-	private static class ABNullTargetingFlashpointListener implements FlashpointListener<TestTargetingFlashpoint> {
+	private static class ABNullTargetingHookListener implements HookListener<TestTargetingHook> {
 		
 		private int postCount = 0;
 		private static Random rand = new Random(System.currentTimeMillis());
 		
 		@Override
-		public Class<TestTargetingFlashpoint> getFlashpointClass() {
-			return TestTargetingFlashpoint.class;
+		public Class<TestTargetingHook> getHookClass() {
+			return TestTargetingHook.class;
 		}
 		
 		@Override
-		public void post(TestTargetingFlashpoint flashpoint) {
+		public void post(TestTargetingHook hook) {
 			postCount++;
-			com.variant.core.schema.Test test = flashpoint.getTest();
-			if (test.getName().equals("test1") && flashpoint.getTargetedExperience() == null) {
+			com.variant.core.schema.Test test = hook.getTest();
+			if (test.getName().equals("test1") && hook.getTargetedExperience() == null) {
 				Experience experience = rand.nextBoolean() ? (rand.nextBoolean() ? test.getExperience("A") : test.getExperience("B")) : null;
-				flashpoint.setTargetedExperience(experience);
+				hook.setTargetedExperience(experience);
 			}
 		}
 

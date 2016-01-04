@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.flashpoint.FlashpointListener;
+import com.variant.core.hook.HookListener;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
@@ -82,25 +82,25 @@ public class VariantWeb {
 	}
 	
 	/**
-	 * <p>Register a {@link com.variant.core.flashpoint.FlashpointListener}. 
-	 * See {@link Variant#addFlashpointListener(FlashpointListener)} for details.
+	 * <p>Register a {@link com.variant.core.hook.HookListener}. 
+	 * See {@link Variant#addHookListener(HookListener)} for details.
 	 * 
 	 * @param listener An instance of a caller-provided implementation of the 
-	 *        {@link com.variant.core.flashpoint.FlashpointListener} interface.
+	 *        {@link com.variant.core.hook.HookListener} interface.
 	 *        
 	 * @since 0.5
 	 */
-	public void addFlashpointListener(FlashpointListener<?> listener) {
-		core.addFlashpointListener(listener);
+	public void addHookListener(HookListener<?> listener) {
+		core.addHookListener(listener);
 	}
 	
 	/**
-	 * <p>Remove all previously registered (with {@link #addFlashpointListener(FlashpointListener)} listeners.
+	 * <p>Remove all previously registered (with {@link #addHookListener(HookListener)} listeners.
 	 * 
 	 * @since 0.5
 	 */
-	public void clearFlashpointListeners() {
-		core.clearFlashpointListeners();
+	public void clearHookListeners() {
+		core.clearHookListeners();
 	}
 
 	/**

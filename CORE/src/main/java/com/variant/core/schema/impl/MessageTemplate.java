@@ -113,7 +113,7 @@ public enum MessageTemplate {
 	//                                                  GENERAL MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//
 
-	FLASHPOINT_LISTENER_EXCEPTION                         (Severity.ERROR, "Flashpoint listener class [%s] threw an exception [%s]. See logs for details."),
+	HOOK_LISTENER_EXCEPTION                               (Severity.ERROR, "User hook listener class [%s] threw an exception [%s]. See logs for details."),
 	INTERNAL                                              (Severity.FATAL, "Unexpectged error [%s]. See log for details.");
 
 	//------------------------------------------------------------------------------------------------------------------------//

@@ -83,7 +83,7 @@ public interface VariantStateRequest {
 
 	/**
 	 * All tests for which this session has been disqualified.
-	 * @see com.variant.core.flashpoint.TestQualificationFlashpoint
+	 * @see com.variant.core.hook.TestQualificationHook
 	 * 
 	 * @return Collection of objects of type {@link com.variant.core.schema.Test}
 	 * @since 0.5

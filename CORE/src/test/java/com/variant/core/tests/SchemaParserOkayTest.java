@@ -8,8 +8,8 @@ import org.junit.Test;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.flashpoint.FlashpointListener;
-import com.variant.core.flashpoint.TestQualificationFlashpoint;
+import com.variant.core.hook.HookListener;
+import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.VariantCollectionsUtils;
@@ -135,7 +135,7 @@ public class SchemaParserOkayTest extends BaseTest {
 		assertFalse(response.hasMessages());
 		VariantSession session = engine.getSession("foo");
 		State state1 = engine.getSchema().getState("state1");
-		engine.clearFlashpointListeners();
+		engine.clearHookListeners();
 		VariantStateRequest req = engine.newStateRequest(session, state1, "");
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertTrue(req.getDisqualifiedTests().isEmpty());
@@ -259,8 +259,8 @@ public class SchemaParserOkayTest extends BaseTest {
 		VariantSession session = engine.getSession("foo");
 		State state1 = engine.getSchema().getState("state1");
 		com.variant.core.schema.Test test2 = engine.getSchema().getTest("test2");
-		engine.clearFlashpointListeners();
-		engine.addFlashpointListener(new TestQualificationFlashpointListener(test2));
+		engine.clearHookListeners();
+		engine.addHookListener(new TestQualificationHookListener(test2));
 		VariantStateRequest req = engine.newStateRequest(session, state1, "");
 		assertEquals(VariantCollectionsUtils.set(test2), req.getDisqualifiedTests());
 		assertTrue(req.getTargetedExperiences().isEmpty());
@@ -385,9 +385,9 @@ public class SchemaParserOkayTest extends BaseTest {
 		State state1 = engine.getSchema().getState("state1");
 		com.variant.core.schema.Test test1 = engine.getSchema().getTest("test1");
 		com.variant.core.schema.Test test2 = engine.getSchema().getTest("test2");
-		engine.clearFlashpointListeners();
-		engine.addFlashpointListener(new TestQualificationFlashpointListener(test1));
-		engine.addFlashpointListener(new TestQualificationFlashpointListener(test2));
+		engine.clearHookListeners();
+		engine.addHookListener(new TestQualificationHookListener(test1));
+		engine.addHookListener(new TestQualificationHookListener(test2));
 		VariantStateRequest req = engine.newStateRequest(session, state1, "");
 		assertEquals(VariantCollectionsUtils.set(test1, test2), req.getDisqualifiedTests());
 		assertTrue(req.getTargetedExperiences().isEmpty());
@@ -397,25 +397,25 @@ public class SchemaParserOkayTest extends BaseTest {
 	/**
 	 * 
 	 */
-	private static class TestQualificationFlashpointListener implements FlashpointListener<TestQualificationFlashpoint> {
+	private static class TestQualificationHookListener implements HookListener<TestQualificationHook> {
 
 		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
 		private com.variant.core.schema.Test testToDisqualify;
 		
-		private TestQualificationFlashpointListener(com.variant.core.schema.Test testToDisqualify) {
+		private TestQualificationHookListener(com.variant.core.schema.Test testToDisqualify) {
 			this.testToDisqualify = testToDisqualify;
 		}
 
 		@Override
-		public Class<TestQualificationFlashpoint> getFlashpointClass() {
-			return TestQualificationFlashpoint.class;
+		public Class<TestQualificationHook> getHookClass() {
+			return TestQualificationHook.class;
 		}
 
 		@Override
-		public void post(TestQualificationFlashpoint flashpoint) {
-			if (flashpoint.getTest().equals(testToDisqualify)) {
-				testList.add(flashpoint.getTest());
-				flashpoint.setQualified(false);
+		public void post(TestQualificationHook hook) {
+			if (hook.getTest().equals(testToDisqualify)) {
+				testList.add(hook.getTest());
+				hook.setQualified(false);
 			}
 		}		
 	}

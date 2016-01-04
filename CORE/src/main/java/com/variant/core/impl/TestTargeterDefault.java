@@ -25,7 +25,7 @@ class TestTargeterDefault {
 		for (Experience e: test.getExperiences()) {
 			if (e.getWeight() == null ) {
 				// It's not a syntax error not to supply the weight, but if we're
-				// here it means that no targeter flashpoint fired, and that's a runtime error.
+				// here it means that no targeter hook fired, and that's a runtime error.
 				throw new VariantRuntimeException(RUN_WEIGHT_MISSING, e.getTest().getName(), e.getName());
 			}
 			weightSum += e.getWeight().doubleValue();
