@@ -13,7 +13,7 @@ import com.variant.core.schema.parser.ParserResponse;
  * Variant Core API life cycle management. Top level methods. Call {@link Factory#getInstance()}
  * to obtain an instance.
  *
- * @author Igor Urisman
+ * @author Igor Urisman.
  * @since 0.5
  */
 public interface Variant {
@@ -130,7 +130,7 @@ public interface Variant {
 	public VariantSession getSession(Object...userData);
 	
 	/**
-     * <p>Start a new state request. See the Variant RCE User Guide for more information about Variant session
+     * <p>Dispatch a new state request. See the Variant RCE User Guide for more information about Variant session
      * life cycle.
      *  
 	 * @return An instance of the {@link com.variant.core.VariantStateRequest} object, which
@@ -138,7 +138,7 @@ public interface Variant {
 	 *
 	 * @since 0.5
 	 */
-	public VariantStateRequest newStateRequest(VariantSession session, State state, Object...targetingPersisterUserData);
+	public VariantStateRequest dispatchRequest(VariantSession session, State state, Object...targetingPersisterUserData);
 	
 	/**
 	 * Commit a state request. Flushes to storage this session's state. See the Variant RCE User Guide for more information about Variant session

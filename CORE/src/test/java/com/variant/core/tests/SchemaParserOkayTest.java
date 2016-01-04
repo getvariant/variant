@@ -136,7 +136,7 @@ public class SchemaParserOkayTest extends BaseTest {
 		VariantSession session = engine.getSession("foo");
 		State state1 = engine.getSchema().getState("state1");
 		engine.clearHookListeners();
-		VariantStateRequest req = engine.newStateRequest(session, state1, "");
+		VariantStateRequest req = engine.dispatchRequest(session, state1, "");
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertTrue(req.getDisqualifiedTests().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
@@ -261,7 +261,7 @@ public class SchemaParserOkayTest extends BaseTest {
 		com.variant.core.schema.Test test2 = engine.getSchema().getTest("test2");
 		engine.clearHookListeners();
 		engine.addHookListener(new TestQualificationHookListener(test2));
-		VariantStateRequest req = engine.newStateRequest(session, state1, "");
+		VariantStateRequest req = engine.dispatchRequest(session, state1, "");
 		assertEquals(VariantCollectionsUtils.set(test2), req.getDisqualifiedTests());
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
@@ -388,7 +388,7 @@ public class SchemaParserOkayTest extends BaseTest {
 		engine.clearHookListeners();
 		engine.addHookListener(new TestQualificationHookListener(test1));
 		engine.addHookListener(new TestQualificationHookListener(test2));
-		VariantStateRequest req = engine.newStateRequest(session, state1, "");
+		VariantStateRequest req = engine.dispatchRequest(session, state1, "");
 		assertEquals(VariantCollectionsUtils.set(test1, test2), req.getDisqualifiedTests());
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));

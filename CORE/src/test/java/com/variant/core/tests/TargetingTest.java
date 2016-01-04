@@ -100,7 +100,7 @@ public class TargetingTest extends BaseTest {
 		//
 		int[] counts = {0, 0, 0};
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.newStateRequest(ssn, state, "");
+			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -116,7 +116,7 @@ public class TargetingTest extends BaseTest {
 		engine.addHookListener(nullListener1);
 		counts[0] = counts[1] = counts[2] = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.newStateRequest(ssn, state, "");
+			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -133,7 +133,7 @@ public class TargetingTest extends BaseTest {
 		counts[0] = counts[1] = counts[2] = 0;
 		nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.newStateRequest(ssn, state, "");
+			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -151,7 +151,7 @@ public class TargetingTest extends BaseTest {
 		counts[0] = counts[1] = counts[2] = 0;
 		ABListener.postCount = nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.newStateRequest(ssn, state, "");
+			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -170,7 +170,7 @@ public class TargetingTest extends BaseTest {
 		engine.addHookListener(ACListener);
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.newStateRequest(ssn, state, "");
+			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -186,7 +186,7 @@ public class TargetingTest extends BaseTest {
 		nullListener1.postCount = ACListener.postCount = 0;
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.newStateRequest(ssn, state, "");
+			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -206,7 +206,7 @@ public class TargetingTest extends BaseTest {
 		counts[0] = counts[1] = counts[2] = 0;
 		ABNullListener.postCount = ACListener.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.newStateRequest(ssn, state, "");
+			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -306,7 +306,7 @@ public class TargetingTest extends BaseTest {
 
 		boolean exceptionThrown = false;
 		try {
-			engine.newStateRequest(ssn, state, "");
+			engine.dispatchRequest(ssn, state, "");
 		}
 		catch (VariantRuntimeException e) {
 			exceptionThrown = true;

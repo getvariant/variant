@@ -98,7 +98,7 @@ public class UserHookTest extends BaseTest {
 		State state = schema.getState("state1");
 		VariantSession ssn = engine.getSession("foo");
 		//String tpData = System.currentTimeMillis() + ".state1.A";
-		VariantStateRequest request = engine.newStateRequest(ssn, state, "");
+		VariantStateRequest request = engine.dispatchRequest(ssn, state, "");
 		assertTrue(request.getDisqualifiedTests().isEmpty());
 		assertEquals(2, request.getTargetingTracker().getAll().size());
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
@@ -119,7 +119,7 @@ public class UserHookTest extends BaseTest {
 		ssn = engine.getSession("foo");
 		long timestamp = System.currentTimeMillis();
 		String tpString = timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
-		request = engine.newStateRequest(ssn, state, tpString);
+		request = engine.dispatchRequest(ssn, state, tpString);
 		assertEquals(1, request.getDisqualifiedTests().size());
 		assertEquals(2, request.getTargetingTracker().getAll().size());
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test2")));
@@ -140,7 +140,7 @@ public class UserHookTest extends BaseTest {
 		state = schema.getState("state1");
 		ssn = engine.getSession("foo");
 		tpString = timestamp + ".test1.B|" + timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
-		request = engine.newStateRequest(ssn, state, tpString);
+		request = engine.dispatchRequest(ssn, state, tpString);
 		assertEquals(1, request.getDisqualifiedTests().size());
 		assertEquals(2, request.getTargetingTracker().getAll().size());
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));

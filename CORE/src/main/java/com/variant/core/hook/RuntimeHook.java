@@ -6,7 +6,7 @@ import com.variant.core.VariantSession;
  * <p>Super-interface for all user hook types that occur at run time.
  * 
  * @author Igor.
- * @since 0.5.1
+ * @since 0.5
  *
  */
 public interface RuntimeHook extends UserHook {

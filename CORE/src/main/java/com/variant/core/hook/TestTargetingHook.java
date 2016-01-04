@@ -12,7 +12,7 @@ import com.variant.core.schema.Test.Experience;
  * not random, the outcome of such experiment is likely not statistically sound.
  * 
  * @author Igor.
- * @since 0.5.1
+ * @since 0.5
  *
  */
 public interface TestTargetingHook extends RuntimeHook {
@@ -21,7 +21,7 @@ public interface TestTargetingHook extends RuntimeHook {
 	 * Client code may obtain the Test for which this user hook was reached.
 	 * .
 	 * @return An object of type {@link com.variant.core.schema.Test}.
-	 * @since 0.5.1
+	 * @since 0.5
 	 */
 	public Test getTest();
 	
@@ -33,7 +33,7 @@ public interface TestTargetingHook extends RuntimeHook {
 	 * weights in the tests's definition.
 	 * .
 	 * @param experience Targeted experience.
-	 * @since 0.5.1
+	 * @since 0.5
 	 */
 	public void setTargetedExperience(Experience experience);
 
@@ -43,7 +43,7 @@ public interface TestTargetingHook extends RuntimeHook {
 	 * that was set by the previously posted listener.
 	 * 
 	 * @return Currently targeted experience, if any.
-	 * @since 0.5.1
+	 * @since 0.5
 	 */
 	public Experience getTargetedExperience();
 	

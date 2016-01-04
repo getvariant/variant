@@ -471,12 +471,12 @@ public class VariantRuntime {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Implementation of <code>Variant.startViewRequest()</code>
+	 * Implementation of <code>Variant.dispatchRequest()</code>
 	 * @param ssn
 	 * @param view
 	 * @return
 	 */
-	public static VariantStateRequestImpl startViewRequest(VariantSession ssn, State state, VariantTargetingTracker targetingPersister) {
+	public static VariantStateRequestImpl dispatchRequest(VariantSession ssn, State state, VariantTargetingTracker targetingPersister) {
 
 		// Resolve the path and get all tests instrumented on the given view targeted.
 		VariantStateRequestImpl result = new VariantStateRequestImpl((VariantSessionImpl)ssn, (StateImpl) state);

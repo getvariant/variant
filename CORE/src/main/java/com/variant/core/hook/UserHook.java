@@ -5,7 +5,7 @@ package com.variant.core.hook;
  * Any concrete user hook will implement a sub-interface of this.
  * 
  * @author Igor Urisman.
- * @since 0.5.1
+ * @since 0.5
  *
  */
 

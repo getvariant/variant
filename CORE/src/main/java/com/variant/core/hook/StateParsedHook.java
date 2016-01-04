@@ -7,7 +7,7 @@ import com.variant.core.schema.State;
  * This hook will not be reached if errors were encountered during parsing of a state.
  * 
  * @author Igor.
- * @since 0.5.1
+ * @since 0.5
  *
  */
 public interface StateParsedHook extends ParserHook {
@@ -16,7 +16,7 @@ public interface StateParsedHook extends ParserHook {
 	 * Client code may obtain the state for which this hook was reached.
 	 * 
 	 * @return An object of type {@link com.variant.core.schema.State}.
-     * @since 0.5.1
+     * @since 0.5
 	 */
 	public State getState();
 }

@@ -12,7 +12,7 @@ package com.variant.core.hook;
  * 
  * @see com.variant.core.Variant#addHookListener(HookListener)
  * @author Igor
- * @since 0.5.1
+ * @since 0.5
  *
  */
 
@@ -23,7 +23,7 @@ public interface HookListener <H extends UserHook> {
 	 * If this method returns a super-type, this listener will be posted with each descendant hook.
 	 * 
 	 * @return A {@link java.lang.Class} object associated with the hooks(s) of interest.
-     * @since 0.5.1
+     * @since 0.5
 	 */
 	public Class<H> getHookClass();
 	
@@ -32,7 +32,7 @@ public interface HookListener <H extends UserHook> {
 	 * 
 	 * @param hook A concrete user hook that is of the type returned by {@link #getHookClass()}
 	 *                   or its sub-type.
-     * @since 0.5.1
+     * @since 0.5
 	 */
 	public void post(H hook);
 

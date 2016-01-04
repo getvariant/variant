@@ -147,7 +147,7 @@ public class VariantWeb {
 
 	/**
 	 * <p>Get user's Variant session. Typical code path likely will not need to call this method
-	 * because the {@link #newStateRequest(State, HttpServletRequest)} method will obtain
+	 * because the {@link #dispatchRequest(State, HttpServletRequest)} method will obtain
 	 * the session internally.
 	 * 
 	 * @param httpRequest Current <code>HttpServletRequest</code>.
@@ -159,16 +159,16 @@ public class VariantWeb {
 	}
 	
 	/**
-     * <p>Start a new state request.
+     * <p>Dispatch a new state request.
      *  
 	 * @return An instance of the {@link com.variant.core.VariantStateRequest} object, which
 	 *         may be further examined about the outcome of this operation. 
 	 *
 	 * @since 0.5
 	 */
-	public VariantStateRequest newStateRequest(State state, HttpServletRequest httpRequest) {
+	public VariantStateRequest dispatchRequest(State state, HttpServletRequest httpRequest) {
 		
-		VariantStateRequest result = core.newStateRequest(getSession(httpRequest), state, httpRequest);
+		VariantStateRequest result = core.dispatchRequest(getSession(httpRequest), state, httpRequest);
 		return new VariantWebStateRequestWrapper(result, httpRequest);
 	}
 	

@@ -20,11 +20,11 @@ public interface VariantSessionIdTracker {
 	 * the implementation should create it and, if needed, save it in the tracker.
 	 *  
 	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#newStateRequest(VariantSession, com.variant.core.schema.State, Object)} 
+	 *                 {@link com.variant.core.Variant#dispatchRequest(VariantSession, com.variant.core.schema.State, Object)} 
 	 *                 will pass here without interpretation.
 	 * 
 	 * @return Session ID. Should never be null.
-	 * @see com.variant.core.Variant#newStateRequest(VariantSession, com.variant.core.schema.State, Object).
+	 * @see com.variant.core.Variant#dispatchRequestRequest(VariantSession, com.variant.core.schema.State, Object).
 	 * @since 0.5
 	 */
 	public String get(Object...userData);

@@ -267,7 +267,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public VariantStateRequest newStateRequest(VariantSession session, State state, Object...targetingPersisterUserData) {
+	public VariantStateRequest dispatchRequest(VariantSession session, State state, Object...targetingPersisterUserData) {
 		
 		stateCheck();
 		
@@ -290,7 +290,7 @@ public class VariantCoreImpl implements Variant {
 			
 		tp.initialized(session, targetingPersisterUserData);
 
-		return VariantRuntime.startViewRequest(session, state, tp);
+		return VariantRuntime.dispatchRequest(session, state, tp);
 	}
 	
 	/**

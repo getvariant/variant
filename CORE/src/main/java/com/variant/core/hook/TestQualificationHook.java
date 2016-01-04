@@ -8,8 +8,8 @@ import com.variant.core.schema.Test;
  * getting posted of this hook and informing the container whether this session is in fact qualified
  * for a particular test.
  * 
- * @author Igor.
- * @since 0.5.1
+ * @author Igor Urisman.
+ * @since 0.5
  *
  */
 public interface TestQualificationHook extends RuntimeHook {
@@ -18,7 +18,7 @@ public interface TestQualificationHook extends RuntimeHook {
 	 * Client code may obtain the Test for which this user hook was reached.
 	 * .
 	 * @return An object of type {@link com.variant.core.schema.Test}.
-	 * @since 0.5.1
+	 * @since 0.5
 	 */
 	public Test getTest();
 			
@@ -38,7 +38,7 @@ public interface TestQualificationHook extends RuntimeHook {
 	 * that was set by the previously posted listener.
 	 * 
 	 * @return Current qualification.
-	 * @since 0.5.1
+	 * @since 0.5
 	 */
 	public boolean isQualified();
 
@@ -51,7 +51,7 @@ public interface TestQualificationHook extends RuntimeHook {
 	 * default.
 	 * 
 	 * @param remove
-	 * @since 0.5.1
+	 * @since 0.5
 	 */
 	public void setRemoveFromTargetingTracker(boolean remove);
 
@@ -61,7 +61,7 @@ public interface TestQualificationHook extends RuntimeHook {
 	 * that was set by the previously posted listener.
 	 * 
 	 * @return Current qualification.
-	 * @since 0.5.1
+	 * @since 0.5
 	 */
 	public boolean isRemoveFromTargetingTracker();
 

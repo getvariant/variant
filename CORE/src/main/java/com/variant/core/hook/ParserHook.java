@@ -6,7 +6,7 @@ import com.variant.core.schema.parser.ParserResponse;
  * <p>Super-interface for all user hook types that occur at schema parse time.
  * 
  * @author Igor.
- * @since 0.5.1
+ * @since 0.5
  *
  */
 public interface ParserHook extends UserHook {
@@ -16,7 +16,7 @@ public interface ParserHook extends UserHook {
 	 * under construction by the current invocation of parser.
 	 * 
 	 * @return An object of type {@link com.variant.core.schema.parser.ParserResponse}.
-     * @since 0.5.1
+     * @since 0.5
 	 */
 	public ParserResponse getParserResponse();
 }
