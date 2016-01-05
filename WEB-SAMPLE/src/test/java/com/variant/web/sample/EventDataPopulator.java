@@ -67,7 +67,7 @@ public class EventDataPopulator {
 			VariantSession ssn = Variant.Factory.getInstance().getSession(String.valueOf(ssnId));
 			
 			// Everyone gets to the first page... Emulating new visits.
-			VariantStateRequest request = Variant.Factory.getInstance().newStateRequest(ssn, newOwnerView, "");
+			VariantStateRequest request = Variant.Factory.getInstance().dispatchRequest(ssn, newOwnerView, "");
 			com.variant.core.schema.Test.Experience exp = request.getTargetedExperience(test);
 			
 			// If we've fulfilled quota for this experience and this second, stop untilt he end of current second;
@@ -88,7 +88,7 @@ public class EventDataPopulator {
 			else if (exp.getName().equals("tos&mailCheckbox")) skip = nextBoolean(0.93);
 			
 			if (!skip) {
-				request = Variant.Factory.getInstance().newStateRequest(ssn, ownerDetailView, request.getTargetingTracker().toString());
+				request = Variant.Factory.getInstance().dispatchRequest(ssn, ownerDetailView, request.getTargetingTracker().toString());
 				Variant.Factory.getInstance().commitStateRequest(request, String.valueOf(ssnId));
 			}
 

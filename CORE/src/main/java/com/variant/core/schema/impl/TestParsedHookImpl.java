@@ -1,6 +1,6 @@
 package com.variant.core.schema.impl;
 
-import com.variant.core.flashpoint.TestParsedFlashpoint;
+import com.variant.core.hook.TestParsedHook;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponse;
 
@@ -9,12 +9,12 @@ import com.variant.core.schema.parser.ParserResponse;
  * @author Igor
  *
  */
-class TestParsedFlashpointImpl implements TestParsedFlashpoint {
+class TestParsedHookImpl implements TestParsedHook {
 
 	private Test test;
 	private ParserResponse response;
 	
-	TestParsedFlashpointImpl(Test test, ParserResponse response) {
+	TestParsedHookImpl(Test test, ParserResponse response) {
 		this.test = test;
 		this.response = response;
 	}

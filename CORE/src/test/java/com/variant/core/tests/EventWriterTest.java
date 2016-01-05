@@ -39,10 +39,10 @@ public class EventWriterTest extends BaseTest {
 		Schema schema = engine.getSchema();
 		State state = schema.getState("state1");
 		VariantSession ssn = engine.getSession("foo");
-		VariantStateRequest request = engine.newStateRequest(ssn, state, timestamp + ".state1.A");
+		VariantStateRequest request = engine.dispatchRequest(ssn, state, timestamp + ".state1.A");
 		HashMap<String,String> params = new HashMap<String, String>() {{put("path", "viewResolvedPath");}};
 		StateServeEventTestFacade event1 = new StateServeEventTestFacade(request, params);
-		request = engine.newStateRequest(ssn, state, timestamp + ".state1.B");
+		request = engine.dispatchRequest(ssn, state, timestamp + ".state1.B");
 		StateServeEventTestFacade event2 = new StateServeEventTestFacade(request, params);
 		event1.setParameter("event1-key1", "value1");
 		event2.setParameter("event2-key1", "value1");

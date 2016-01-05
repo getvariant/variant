@@ -124,7 +124,7 @@ public class VariantFilter implements Filter {
 				else {
 				
 					// Yes, this path is mapped in Variant.
-					variantRequest = webApi.newStateRequest(state, httpRequest);
+					variantRequest = webApi.dispatchRequest(state, httpRequest);
 					resolvedPath = variantRequest.getResolvedParameterMap().get("path");
 					isForwarding = !resolvedPath.equals(state.getParameterMap().get("path"));
 					

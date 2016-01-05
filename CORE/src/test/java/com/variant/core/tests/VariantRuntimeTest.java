@@ -1117,7 +1117,7 @@ public class VariantRuntimeTest extends BaseTest {
 		String persisterString = timestamp + ".test2.B";
 		VariantSession ssn = engine.getSession("foo-key");
 		// Core implementation makes no distinction between session udser data and targeting persister user data.
-		VariantStateRequest req = engine.newStateRequest(ssn, state1, persisterString);
+		VariantStateRequest req = engine.dispatchRequest(ssn, state1, persisterString);
 		VariantTargetingTracker tp = req.getTargetingTracker();
 
 		// test2 is off, but TP has a variant experience for it, which will be substituted for the purposes of lookup with control.

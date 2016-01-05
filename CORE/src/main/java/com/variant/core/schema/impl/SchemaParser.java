@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.Variant;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.Flasher;
+import com.variant.core.impl.UserHooker;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -106,14 +106,14 @@ public class SchemaParser implements Keywords {
 			// Parse all states
 			StatesParser.parseStates(states, response);
 			
-			// Post flashpoint listeners.
-			Flasher flasher = ((VariantCoreImpl)Variant.Factory.getInstance()).getFlasher();
+			// Post user hook listeners.
+			UserHooker hooker = ((VariantCoreImpl)Variant.Factory.getInstance()).getUserHooker();
 			for (State state: response.getSchema().getStates()) {
 				try {
-					flasher.post(new StateParsedFlashpointImpl(state, response));
+					hooker.post(new StateParsedHookImpl(state, response));
 				}
 				catch (VariantException e) {
-					response.addMessage(MessageTemplate.FLASHPOINT_LISTENER_EXCEPTION, StateParsedFlashpointImpl.class.getName(), e.getMessage());
+					response.addMessage(MessageTemplate.HOOK_LISTENER_EXCEPTION, StateParsedHookImpl.class.getName(), e.getMessage());
 				}
 			}
 		}
@@ -130,14 +130,14 @@ public class SchemaParser implements Keywords {
 			// Parse all tests
 			TestsParser.parseTests(tests, response);
 			
-			// Post flashpoint listeners.
-			Flasher flasher = ((VariantCoreImpl)Variant.Factory.getInstance()).getFlasher();
+			// Post user hook listeners.
+			UserHooker hooker = ((VariantCoreImpl)Variant.Factory.getInstance()).getUserHooker();
 			for (Test test: response.getSchema().getTests()) {
 				try {
-					flasher.post(new TestParsedFlashpointImpl(test, response));
+					hooker.post(new TestParsedHookImpl(test, response));
 				}
 				catch (VariantException e) {
-					response.addMessage(MessageTemplate.FLASHPOINT_LISTENER_EXCEPTION, TestParsedFlashpointImpl.class.getName(), e.getMessage());
+					response.addMessage(MessageTemplate.HOOK_LISTENER_EXCEPTION, TestParsedHookImpl.class.getName(), e.getMessage());
 				}
 			}
 		}

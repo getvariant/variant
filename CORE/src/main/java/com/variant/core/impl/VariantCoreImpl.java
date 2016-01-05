@@ -27,8 +27,8 @@ import com.variant.core.event.impl.EventWriter;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.flashpoint.Flashpoint;
-import com.variant.core.flashpoint.FlashpointListener;
+import com.variant.core.hook.UserHook;
+import com.variant.core.hook.HookListener;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -56,7 +56,7 @@ public class VariantCoreImpl implements Variant {
 	private Schema schema = null;
 	private EventWriter eventWriter = null;
 	private SessionService sessionService = null;
-	private Flasher flasher = new Flasher();
+	private UserHooker hooker = new UserHooker();
 	
 	private static String version() {
 		String version = RuntimeService.getVersion();
@@ -208,7 +208,7 @@ public class VariantCoreImpl implements Variant {
 		stateCheck();
 		isBootstrapped = false;
 		schema = null;
-		flasher.clear();
+		hooker.clear();
 		eventWriter.shutdown();
 		eventWriter = null;
 		sessionService.shutdown();
@@ -267,7 +267,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 */
 	@Override
-	public VariantStateRequest newStateRequest(VariantSession session, State state, Object...targetingPersisterUserData) {
+	public VariantStateRequest dispatchRequest(VariantSession session, State state, Object...targetingPersisterUserData) {
 		
 		stateCheck();
 		
@@ -290,7 +290,7 @@ public class VariantCoreImpl implements Variant {
 			
 		tp.initialized(session, targetingPersisterUserData);
 
-		return VariantRuntime.startViewRequest(session, state, tp);
+		return VariantRuntime.dispatchRequest(session, state, tp);
 	}
 	
 	/**
@@ -321,16 +321,16 @@ public class VariantCoreImpl implements Variant {
 	}
 	
 	@Override
-	public void addFlashpointListener(FlashpointListener<? extends Flashpoint> listener) {
+	public void addHookListener(HookListener<? extends UserHook> listener) {
 		stateCheck();
 		if (listener == null) throw new IllegalArgumentException("Argument cannot be null");
-		flasher.addListener(listener);		
+		hooker.addListener(listener);		
 	}
 
 	@Override
-	public void clearFlashpointListeners() {
+	public void clearHookListeners() {
 		stateCheck();
-		flasher.clear();		
+		hooker.clear();		
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -440,7 +440,7 @@ public class VariantCoreImpl implements Variant {
 	 * 
 	 * @return
 	 */
-	public Flasher getFlasher() {
-		return flasher;
+	public UserHooker getUserHooker() {
+		return hooker;
 	}
 }

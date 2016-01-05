@@ -12,10 +12,10 @@ import org.junit.Test;
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.flashpoint.FlashpointListener;
-import com.variant.core.flashpoint.StateParsedFlashpoint;
-import com.variant.core.flashpoint.TestParsedFlashpoint;
-import com.variant.core.flashpoint.TestQualificationFlashpoint;
+import com.variant.core.hook.HookListener;
+import com.variant.core.hook.StateParsedHook;
+import com.variant.core.hook.TestParsedHook;
+import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
@@ -28,7 +28,7 @@ import com.variant.core.util.VariantCollectionsUtils;
  * @author Igor
  * 
  */
-public class FlashpointTest extends BaseTest {
+public class UserHookTest extends BaseTest {
 
 	private static final String MESSAGE_TEXT_STATE = "Info-Message-State";
 	private static final String MESSAGE_TEXT_TEST = "Info-Message-Test";
@@ -38,8 +38,8 @@ public class FlashpointTest extends BaseTest {
 		
 		Variant variant = Variant.Factory.getInstance();
 		
-		StateParsedFlashpointListenerImpl listener = new StateParsedFlashpointListenerImpl();
-		variant.addFlashpointListener(listener);
+		StateParsedHookListenerImpl listener = new StateParsedHookListenerImpl();
+		variant.addHookListener(listener);
 		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		assertEquals(variant.getSchema().getStates(), listener.stateList);
 		assertEquals(variant.getSchema().getStates().size(), response.getMessages().size());
@@ -55,9 +55,9 @@ public class FlashpointTest extends BaseTest {
 		
 		Variant variant = Variant.Factory.getInstance();
 		
-		TestParsedFlashpointListenerImpl listener = new TestParsedFlashpointListenerImpl();
-		variant.clearFlashpointListeners();
-		variant.addFlashpointListener(listener);
+		TestParsedHookListenerImpl listener = new TestParsedHookListenerImpl();
+		variant.clearHookListeners();
+		variant.addHookListener(listener);
 		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		assertEquals(variant.getSchema().getTests(), listener.testList);
 		assertEquals(variant.getSchema().getTests().size(), response.getMessages().size());
@@ -67,8 +67,8 @@ public class FlashpointTest extends BaseTest {
 			
 		}
 
-		StateParsedFlashpointListenerImpl stateListener = new StateParsedFlashpointListenerImpl();
-		variant.addFlashpointListener(stateListener);
+		StateParsedHookListenerImpl stateListener = new StateParsedHookListenerImpl();
+		variant.addHookListener(stateListener);
 		response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		assertEquals(VariantCollectionsUtils.list(variant.getSchema().getTests(), variant.getSchema().getTests()), listener.testList);
 		assertEquals(variant.getSchema().getStates(), stateListener.stateList);
@@ -87,9 +87,9 @@ public class FlashpointTest extends BaseTest {
 		
 		Variant variant = Variant.Factory.getInstance();
 		
-		TestQualificationFlashpointListenerNullImpl nullListener = new TestQualificationFlashpointListenerNullImpl();
-		variant.clearFlashpointListeners();
-		variant.addFlashpointListener(nullListener);
+		TestQualificationHookListenerNullImpl nullListener = new TestQualificationHookListenerNullImpl();
+		variant.clearHookListeners();
+		variant.addHookListener(nullListener);
 		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
@@ -98,7 +98,7 @@ public class FlashpointTest extends BaseTest {
 		State state = schema.getState("state1");
 		VariantSession ssn = engine.getSession("foo");
 		//String tpData = System.currentTimeMillis() + ".state1.A";
-		VariantStateRequest request = engine.newStateRequest(ssn, state, "");
+		VariantStateRequest request = engine.dispatchRequest(ssn, state, "");
 		assertTrue(request.getDisqualifiedTests().isEmpty());
 		assertEquals(2, request.getTargetingTracker().getAll().size());
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
@@ -107,8 +107,8 @@ public class FlashpointTest extends BaseTest {
 		
 		nullListener.testList.clear();
 		
-		TestQualificationFlashpointListenerDisqualifyImpl disqualListener = new TestQualificationFlashpointListenerDisqualifyImpl(schema.getTest("test1"));
-		variant.addFlashpointListener(disqualListener);
+		TestQualificationHookListenerDisqualifyImpl disqualListener = new TestQualificationHookListenerDisqualifyImpl(schema.getTest("test1"));
+		variant.addHookListener(disqualListener);
 		response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
@@ -119,7 +119,7 @@ public class FlashpointTest extends BaseTest {
 		ssn = engine.getSession("foo");
 		long timestamp = System.currentTimeMillis();
 		String tpString = timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
-		request = engine.newStateRequest(ssn, state, tpString);
+		request = engine.dispatchRequest(ssn, state, tpString);
 		assertEquals(1, request.getDisqualifiedTests().size());
 		assertEquals(2, request.getTargetingTracker().getAll().size());
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test2")));
@@ -128,9 +128,9 @@ public class FlashpointTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1")), disqualListener.testList);
 		assertEquals("/path/to/state1/Test1.A", request.getResolvedParameterMap().get("path"));
 
-		disqualListener = new TestQualificationFlashpointListenerDisqualifyImpl(schema.getTest("Test1"), true);
-		variant.clearFlashpointListeners();
-		variant.addFlashpointListener(disqualListener);
+		disqualListener = new TestQualificationHookListenerDisqualifyImpl(schema.getTest("Test1"), true);
+		variant.clearHookListeners();
+		variant.addHookListener(disqualListener);
 		
 		response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
@@ -140,7 +140,7 @@ public class FlashpointTest extends BaseTest {
 		state = schema.getState("state1");
 		ssn = engine.getSession("foo");
 		tpString = timestamp + ".test1.B|" + timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
-		request = engine.newStateRequest(ssn, state, tpString);
+		request = engine.dispatchRequest(ssn, state, tpString);
 		assertEquals(1, request.getDisqualifiedTests().size());
 		assertEquals(2, request.getTargetingTracker().getAll().size());
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
@@ -153,19 +153,19 @@ public class FlashpointTest extends BaseTest {
 	/**
 	 * 
 	 */
-	private static class StateParsedFlashpointListenerImpl implements FlashpointListener<StateParsedFlashpoint> {
+	private static class StateParsedHookListenerImpl implements HookListener<StateParsedHook> {
 
 		private ArrayList<State> stateList = new ArrayList<State>();
 
 		@Override
-		public Class<StateParsedFlashpoint> getFlashpointClass() {
-			return StateParsedFlashpoint.class;
+		public Class<StateParsedHook> getHookClass() {
+			return StateParsedHook.class;
 		}
 		
 		@Override
-		public void post(StateParsedFlashpoint flashpoint) {
-			stateList.add(flashpoint.getState());
-			flashpoint.getParserResponse().addMessage(Severity.INFO, MESSAGE_TEXT_STATE);
+		public void post(StateParsedHook hook) {
+			stateList.add(hook.getState());
+			hook.getParserResponse().addMessage(Severity.INFO, MESSAGE_TEXT_STATE);
 		}
 		
 	}
@@ -173,70 +173,70 @@ public class FlashpointTest extends BaseTest {
 	/**
 	 * 
 	 */
-	private static class TestParsedFlashpointListenerImpl implements FlashpointListener<TestParsedFlashpoint> {
+	private static class TestParsedHookListenerImpl implements HookListener<TestParsedHook> {
 
 		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
 		
 		@Override
-		public Class<TestParsedFlashpoint> getFlashpointClass() {
-			return TestParsedFlashpoint.class;
+		public Class<TestParsedHook> getHookClass() {
+			return TestParsedHook.class;
 		}
 
 		@Override
-		public void post(TestParsedFlashpoint flashpoint) {
-			testList.add(flashpoint.getTest());
-			flashpoint.getParserResponse().addMessage(Severity.INFO, MESSAGE_TEXT_TEST);
+		public void post(TestParsedHook hook) {
+			testList.add(hook.getTest());
+			hook.getParserResponse().addMessage(Severity.INFO, MESSAGE_TEXT_TEST);
 		}		
 	}
 
 	/**
 	 * 
 	 */
-	private static class TestQualificationFlashpointListenerNullImpl implements FlashpointListener<TestQualificationFlashpoint> {
+	private static class TestQualificationHookListenerNullImpl implements HookListener<TestQualificationHook> {
 
 		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
 		
 		@Override
-		public Class<TestQualificationFlashpoint> getFlashpointClass() {
-			return TestQualificationFlashpoint.class;
+		public Class<TestQualificationHook> getHookClass() {
+			return TestQualificationHook.class;
 		}
 
 		@Override
-		public void post(TestQualificationFlashpoint flashpoint) {
+		public void post(TestQualificationHook hook) {
 
-			testList.add(flashpoint.getTest());
+			testList.add(hook.getTest());
 		}		
 	}
 
 	/**
 	 * 
 	 */
-	private static class TestQualificationFlashpointListenerDisqualifyImpl implements FlashpointListener<TestQualificationFlashpoint> {
+	private static class TestQualificationHookListenerDisqualifyImpl implements HookListener<TestQualificationHook> {
 
 		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
 		private com.variant.core.schema.Test testToDisqualify;
 		private Boolean removeFromTp = null;
 		
-		private TestQualificationFlashpointListenerDisqualifyImpl(com.variant.core.schema.Test testToDisqualify) {
+		private TestQualificationHookListenerDisqualifyImpl(com.variant.core.schema.Test testToDisqualify) {
 			this.testToDisqualify = testToDisqualify;
 		}
 
-		private TestQualificationFlashpointListenerDisqualifyImpl(com.variant.core.schema.Test testToDisqualify, boolean removeFromTp) {
+		private TestQualificationHookListenerDisqualifyImpl(com.variant.core.schema.Test testToDisqualify, boolean removeFromTp) {
 			this.testToDisqualify = testToDisqualify;
 			this.removeFromTp = removeFromTp;
 		}
 
 		@Override
-		public Class<TestQualificationFlashpoint> getFlashpointClass() {
-			return TestQualificationFlashpoint.class;
+		public Class<TestQualificationHook> getHookClass() {
+			return TestQualificationHook.class;
 		}
 
 		@Override
-		public void post(TestQualificationFlashpoint flashpoint) {
-			if (flashpoint.getTest().equals(testToDisqualify)) {
-				testList.add(flashpoint.getTest());
-				flashpoint.setQualified(false);
-				if (removeFromTp != null) flashpoint.setRemoveFromTargetingTracker(removeFromTp);
+		public void post(TestQualificationHook hook) {
+			if (hook.getTest().equals(testToDisqualify)) {
+				testList.add(hook.getTest());
+				hook.setQualified(false);
+				if (removeFromTp != null) hook.setRemoveFromTargetingTracker(removeFromTp);
 			}
 		}		
 	}

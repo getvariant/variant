@@ -9,7 +9,7 @@ import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 
-public class StateParsedFlashpointTest {
+public class StateParsedHookTest {
 
 	@Test
 	public void leadingSlashTest() {
@@ -71,7 +71,7 @@ public class StateParsedFlashpointTest {
 		
 		VariantWeb api = new VariantWeb();
 		api.bootstrap();
-		api.addFlashpointListener(new StateParsedFlashpointListenerImpl());
+		api.addHookListener(new StateParsedHookListenerImpl());
 		ParserResponse response = api.parseSchema(IOUtils.toInputStream(schema));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage msg = response.getMessages().get(0);

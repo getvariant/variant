@@ -9,7 +9,7 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * Represents a state request, as instantiated by {@link com.variant.core.Variant#newStateRequest(VariantSession, State, Object)}.
+ * Represents a state request, as instantiated by {@link com.variant.core.Variant#dispatchRequest(VariantSession, State, Object)}.
  * 
  * @author Igor Urisman
  * @since 0.5
@@ -27,7 +27,7 @@ public interface VariantStateRequest {
 	
 	/**
 	 * The state for which this request was generated, i.e. that was passed to 
-	 * {@link com.variant.core.Variant#newStateRequest(VariantSession, State, Object)}.
+	 * {@link com.variant.core.Variant#dispatchRequest(VariantSession, State, Object)}.
 	 * 
 	 * @return State as an instance of {@link com.variant.core.schema.State}
 	 * @since 0.5
@@ -83,7 +83,7 @@ public interface VariantStateRequest {
 
 	/**
 	 * All tests for which this session has been disqualified.
-	 * @see com.variant.core.flashpoint.TestQualificationFlashpoint
+	 * @see com.variant.core.hook.TestQualificationHook
 	 * 
 	 * @return Collection of objects of type {@link com.variant.core.schema.Test}
 	 * @since 0.5

@@ -2,7 +2,7 @@ package com.variant.core.schema.parser;
 
 import java.util.List;
 
-import com.variant.core.flashpoint.FlashpointListener;
+import com.variant.core.hook.HookListener;
 
 /**
  * Return type of {@link com.variant.core.Variant#parseSchema(java.io.InputStream, boolean)}.
@@ -44,7 +44,7 @@ public interface ParserResponse {
 
 	/**
 	 * Add a message to this response object. This may be useful to call from
-	 * a {@link FlashpointListener} to augment core parsing semantics.
+	 * a {@link HookListener} to augment core parsing semantics.
 	 * 
 	 * @param severity The severity of the message as an instance of {@link Severity}.
 	 * @param text The text of the error message.
