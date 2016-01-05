@@ -6,7 +6,7 @@
 #!/bin/bash
 
 set +e
-version="0.5"
+version="0.5.1"
 
 workspace_root_dir=$(pwd)/$(dirname $0)/../..
 core_src_dir=${workspace_root_dir}/CORE/src/main/java
@@ -25,7 +25,7 @@ javadoc -d ${javadoc_dir}  \
    -bottom "Copyright &copy; 2015 Variant"  \
    com.variant.core                 \
    com.variant.core.event           \
-   com.variant.core.flashpoint      \
+   com.variant.core.hook            \
    com.variant.core.schema          \
    com.variant.core.schema.parser   \
    com.variant.web

@@ -61,7 +61,7 @@ public class VariantCoreImpl implements Variant {
 	private static String version() {
 		String version = RuntimeService.getVersion();
 		if (version == null) version = "?";
-		return "V. " + version + " (Beta), Copyright (C) 2015 getvariant.com";
+		return "V. " + version + " (Beta), Copyright (C) 2015-16 getvariant.com";
 	}
 
 	/**

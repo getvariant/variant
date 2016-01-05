@@ -16,7 +16,7 @@ if [[ x != "x$1" ]]; then
     exit 1
 fi
 
-version="0.5.RC-6"
+version="0.5.1"
 
 workspace_root_dir=$(pwd)/$(dirname $0)/../..
 release_dir=${workspace_root_dir}/RELEASE
