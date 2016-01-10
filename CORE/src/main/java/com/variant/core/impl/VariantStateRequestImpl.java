@@ -41,6 +41,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	VariantStateRequestImpl(VariantSessionImpl session, StateImpl state) {
 		this.session = session;
 		this.state = state;
+		session.setStateRequest(this);
 	}
 
 	void setViewServeEvent(StateServeEvent event) {

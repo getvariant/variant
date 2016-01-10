@@ -16,4 +16,13 @@ public interface VariantSession {
 	 */
 	public String getId();
 	
+	/**
+	 * <p>Get the current state request, which may be still in progress or already committed.
+	 * 
+	 * @return An object of type {@link VariantStateRequest}, or null, if none yet for this
+	 *         session.
+	 *  
+	 * @since 0.5
+	 */
+	public VariantStateRequest getStateRequest();
 }

@@ -8,15 +8,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.VariantTargetingTracker;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantTargetingTracker;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.VariantEventExperience;
-import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantRuntimeTestFacade;
-import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
