@@ -1,27 +1,27 @@
 package com.variant.core.event.impl;
-
+/*
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.VariantEventExperience;
+import com.variant.core.event.VariantEventVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * EVENTS_EXPERIENCES DAO.
+ * EVENT_VARIANTS DAO.
  * 
  * @author Igor.
- */
-public class VariantEventExperienceSupport implements VariantEventExperience {
+ *
+public class VariantEventVariantSupport implements VariantEventVariant {
 	
 	private long id;
 	private VariantEvent event;
 	private Test.Experience experience;
 	protected Map<String, Object> params = new HashMap<String, Object>();
 
-	protected VariantEventExperienceSupport(VariantEvent event, Experience experience) {
+	protected VariantEventVariantSupport(VariantEvent event, Experience experience) {
 		this.event = event;
 		this.experience = experience;
 	}
@@ -67,7 +67,7 @@ public class VariantEventExperienceSupport implements VariantEventExperience {
 	/**
 	 * 
 	 * @param id
-	 */
+	 *
 	public void setId(long id) {
 		this.id = id;
 	}
@@ -75,7 +75,7 @@ public class VariantEventExperienceSupport implements VariantEventExperience {
 	/**
 	 * 
 	 * @return
-	 */
+	 *
 	@Override
 	public String toString() {
 		
@@ -89,3 +89,4 @@ public class VariantEventExperienceSupport implements VariantEventExperience {
 	}
 
 }
+*/

@@ -22,13 +22,13 @@ public class TargetingTrackerTest extends BaseTest {
 	@Test
 	public void targetingTrackerStringTest() {
 				
-		ParserResponse response = engine.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		ParserResponse response = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		
-		Schema schema = engine.getSchema();
+		Schema schema = api.getSchema();
 		
-		VariantSession ssn = engine.getSession("key1");
+		VariantSession ssn = api.getSession("key1");
 		assertNull(ssn.getStateRequest());
 
 		long timestamp = System.currentTimeMillis();

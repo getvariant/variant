@@ -67,22 +67,22 @@ public interface VariantEvent {
 	public Date getCreateDate();
 	
 	/**
-	 * An implementation must also implement {@link com.variant.core.event.VariantEventExperience}.
+	 * An implementation must also implement {@link com.variant.core.event.VariantEventVariant}.
 	 * 
-	 * @see {@link com.variant.core.event.VariantEventExperience}
-	 * @return A collection of objects of type {@link com.variant.core.event.VariantEventExperience},
-	 *         which contain state specific to this event and a particular test experience in effect at
+	 * @see com.variant.core.event.VariantEventVariant
+	 * @return A collection of objects of type {@link com.variant.core.event.VariantEventVariant},
+	 *         which contain state specific to this event and a particular test variant in effect at
 	 *         the time of generation of this event.
 	 * @since 0.5
 	 *      
 	 */
-	public Collection<VariantEventExperience> getEventExperiences();
+	public Collection<VariantEventVariant> getEventVariants();
 
 	/**
 	 * Add a custom parameter as a key-value pair. Returns the old value associated with this key if any.
 	 * 
 	 * @param key A {@link java.util.String} key.
-	 * @param value An arbitrary Object associated with this key. At the time of persistance, 
+	 * @param value An arbitrary Object associated with this key. At the time of persistence, 
 	 *              {@link com.variant.core.event.EventPersister#persist(Collection)} will call the
 	 *              {@link java.lang.Object#toString()} method on this object.
 	 * @return

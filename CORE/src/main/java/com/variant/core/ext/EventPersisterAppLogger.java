@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.VariantEventExperience;
-import com.variant.core.event.impl.VariantEventSupport;
+import com.variant.core.event.VariantEventVariant;
 
 public class EventPersisterAppLogger implements EventPersister {
 	
@@ -35,14 +34,15 @@ public class EventPersisterAppLogger implements EventPersister {
 		}
 								
 		for (VariantEvent event: events) {
-			for (VariantEventExperience ee: event.getEventExperiences()) {
+			for (VariantEventVariant ee: event.getEventVariants()) {
 				
 				StringBuilder msg = new StringBuilder();
-				msg.append("EVENT_EXPERIENCES:{")
+				msg.append("EVENT_VARIANTS:{")
 				.append("event_name:'").append(ee.getEvent().getEventName()).append("', ")
 				.append("test_name:'").append(ee.getExperience().getTest().getName()).append("', ")
 				.append("experience_name:'").append(ee.getExperience().getName()).append("', ")
-				.append("is_control:").append(ee.getExperience().isControl())
+				.append("is_experience_control:").append(ee.isExperienceControl()).append("', ")
+				.append("is_state_nonvariant:").append(ee.isStateNonvariant())
 				.append("}");
 
 				LOG.info(msg.toString());
@@ -61,26 +61,6 @@ public class EventPersisterAppLogger implements EventPersister {
 
 				LOG.info(msg.toString());
 			}
-		}
-		
-		
-		for (VariantEvent event: events) {
-			for (VariantEventExperience ee: event.getEventExperiences()) {
-				for (String key: ee.getParameterKeys()) {
-
-					StringBuilder msg = new StringBuilder();
-					msg.append("EVENT_EXPERIENCE_PARAMS:{")
-					.append("event_name:'").append(ee.getEvent().getEventName()).append("', ")
-					.append("test_name:'").append(ee.getExperience().getTest().getName()).append("', ")
-					.append("experience_name:'").append(ee.getExperience().getName()).append("', ")
-					.append("key:'").append(key).append("', ")
-					.append("value:'").append(ee.getParameter(key)).append("'")
-					.append("}");
-	
-					LOG.info(msg.toString());
-				}
-			}
-		}
+		}		
 	}
-
 }

@@ -159,7 +159,7 @@ public class VariantRuntime {
 		Schema schema = variantCoreImpl.getSchema();
 		VariantSession session = req.getSession();
 		State state = req.getState();
-		VariantTargetingTracker tp = req.getTargetingTracker();
+		VariantTargetingTracker tt = req.getTargetingTracker();
 		
 		// It is illegal to call this with a view that is not in schema, e.g. before runtime.
 		State schemaState = schema.getState(state.getName());
@@ -172,26 +172,28 @@ public class VariantRuntime {
 			variantCoreImpl.getUserHooker().post(hook);
 			if (!hook.qualified) {
 				req.addDisqualifiedTest(test);
-				if (hook.removeFromTT) tp.remove(test);
+				if (hook.removeFromTT) tt.remove(test);
 			}
 		}
 		
-		// Pre-targeted experiences from the targeting persister.
-		Collection<Experience> alreadyTargetedExperiences = tp.getAll();
+		// Pre-targeted experiences from the targeting tracker.
+		Collection<Experience> alreadyTargetedExperiences = tt.getAll();
 		
 		if (!alreadyTargetedExperiences.isEmpty()) {
 			
-			// Resolvable?  If not, find largest resolvable subset.
+			// Resolvable?  If not, find largest resolvable subset and discard the rest.
 			Collection<Experience> minUnresolvableSubvector = 
 					minUnresolvableSubvector(alreadyTargetedExperiences);
 			
-			if (!minUnresolvableSubvector.isEmpty()) {
-
-				for (Experience e: minUnresolvableSubvector) tp.remove(e.getTest());
+			if (minUnresolvableSubvector.isEmpty()) {
+				if (LOG.isDebugEnabled()) LOG.debug("Targeting tracker resolvable for session [" + session.getId() + "]");
+			}
+			else {
+				for (Experience e: minUnresolvableSubvector) tt.remove(e.getTest());
 
 				LOG.info(
-						"Targeting persistor not resolvable for session [" + session.getId() + "]. " +
-						"Removed experiences [" + StringUtils.join(minUnresolvableSubvector.toArray()) + "].");
+						"Targeting tracker not resolvable for session [" + session.getId() + "]. " +
+						"Discarded experiences [" + StringUtils.join(minUnresolvableSubvector.toArray()) + "].");
 			}
 		
 		}
@@ -202,7 +204,7 @@ public class VariantRuntime {
 		ArrayList<Experience> vector = new ArrayList<Experience>();
 		
 		// First add all from from TP.
-		for (Experience e: tp.getAll()) {
+		for (Experience e: tt.getAll()) {
 
 			if (!e.getTest().isOn()) {
 				Experience ce = e.getTest().getControlExperience();
@@ -234,7 +236,7 @@ public class VariantRuntime {
 		// Then target and add the rest from the ITL.
 		for (Test test: state.getInstrumentedTests()) {
 						
-			if (tp.get(test) == null) {
+			if (tt.get(test) == null) {
 								
 				if (!test.isOn()) {
 					Experience e = test.getControlExperience();
@@ -254,7 +256,7 @@ public class VariantRuntime {
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}										
 				}
-				else if (isTargetable(test, tp.getAll())) {
+				else if (isTargetable(test, tt.getAll())) {
 					// Target this test. First post possible user hook listeners.
 					TestTargetingHookImpl hook = new TestTargetingHookImpl(session, test);
 					variantCoreImpl.getUserHooker().post(hook);
@@ -265,7 +267,7 @@ public class VariantRuntime {
 					}
 										
 					vector.add(targetedExperience);
-					tp.add(targetedExperience, System.currentTimeMillis());
+					tt.add(targetedExperience, System.currentTimeMillis());
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(
 								"Session [" + session.getId() + "] targeted for test [" + 
@@ -276,7 +278,7 @@ public class VariantRuntime {
 				else {
 					Experience e = test.getControlExperience();
 					vector.add(e);
-					tp.add(e, System.currentTimeMillis());
+					tt.add(e, System.currentTimeMillis());
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(
 								"Session [" + session.getId() + "] targeted for untargetable test [" + 
@@ -471,7 +473,7 @@ public class VariantRuntime {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Implementation of <code>Variant.dispatchRequest()</code>
+	 * Implementation of {@link Variant#dispatchRequest(VariantSession, State, Object...)}
 	 * @param ssn
 	 * @param view
 	 * @return

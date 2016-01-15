@@ -1,7 +1,6 @@
 package com.variant.core.event;
 
 import java.util.Collection;
-import java.util.Set;
 
 import com.variant.core.schema.Test.Experience;
 
@@ -14,7 +13,7 @@ import com.variant.core.schema.Test.Experience;
  * @author Igor Urisman.
  * @since 0.5
  */
-public interface VariantEventExperience {
+public interface VariantEventVariant {
 	
 	/**
 	 * Unique event ID, as generated at the time of persistence by {@link com.variant.core.event.EventPersister#persist(Collection)}.
@@ -39,34 +38,23 @@ public interface VariantEventExperience {
      * @since 0.5
 	 */
 	public Experience getExperience();
-	
-	/**
-	 * Add a custom parameter as a key-value pair. Returns the old value associated with this key if any.
-	 * 
-	 * @param key A {@link java.util.String} key.
-	 * @param value An arbitrary Object associated with this key. At the time of persistance, 
-	 *              {@link com.variant.core.event.EventPersister#persist(Collection)} will call the
-	 *              {@link java.lang.Object#toString()} method on this object.
-	 * @return
-	 * @since 0.5
-	 */
-	public Object setParameter(String key, Object value);	
 
 	/**
-	 * Get value associated with this parameter.
+	 * Is the associated test experience a control experience for its test?
 	 * 
-	 * @param key A {@link java.util.String} key.
-	 * @return The Object currently associated with this parameter or null if none.
-	 * @since 0.5
+	 * @return true if the experience returned by {@link #getExperience()} is control,
+	 *         false otherwise.
+     * @since 0.5
 	 */
-	public Object getParameter(String key);
+	public boolean isExperienceControl();
 	
 	/**
-	 * Get all parameters' keys.
+	 * Is the state associated with this event nonvaraint in the test associated with this experience?
 	 * 
-	 * @return A {@link java.util.Set} collection of all parameter keys.
-	 * @since 0.5
+	 * @return true if the instrumentation of the test returned by {@link #getExperience()}.getTest()
+	 *         is nonvariant on the state for returned by {@link #getEvent()}.getState(), false otherwise.
+     * @since 0.5
 	 */
-	public Set<String> getParameterKeys();
+	public boolean isStateNonvariant();
 
 }

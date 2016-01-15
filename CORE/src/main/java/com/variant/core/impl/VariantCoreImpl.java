@@ -1,16 +1,11 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
-import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
-import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_NOT_SET;
+import static com.variant.core.schema.impl.MessageTemplate.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
@@ -23,7 +18,9 @@ import com.variant.core.VariantTargetingTracker;
 import com.variant.core.config.RuntimeService;
 import com.variant.core.config.VariantProperties;
 import com.variant.core.event.EventPersister;
+import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
+import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
@@ -271,6 +268,11 @@ public class VariantCoreImpl implements Variant {
 		
 		stateCheck();
 		
+		// Can't have two requests at one time
+		VariantStateRequestImpl currentRequest = (VariantStateRequestImpl) session.getStateRequest();
+		if (currentRequest != null && !currentRequest.isCommitted()) {
+			throw new VariantRuntimeException (RUN_ACTIVE_REQUEST);
+		}
 		// init Targeting Persister with the same user data.
 		VariantTargetingTracker tp = null;
 		String className = VariantProperties.getInstance().targetingTrackerClassName();
@@ -310,6 +312,20 @@ public class VariantCoreImpl implements Variant {
 		
 		// Persist targeting info.  Note that we expect the userData to apply to both!
 		request.getTargetingTracker().save(userData);
+		
+		// State visited event gets status from this request
+		for (VariantEvent event: request.getPendingEvents(
+				new Predicate<VariantEvent>() {
+					
+					@Override
+					public boolean evaluate(VariantEvent e) {
+						return e instanceof StateServeEvent;
+					}
+				})
+			) {
+			
+			event.setParameter("REQ_STATUS", request.getStatus());
+		}
 		
 		// Save events. Note, that there may not be any if we hit a known state that did not have
 		// any active tests instrumented on it.

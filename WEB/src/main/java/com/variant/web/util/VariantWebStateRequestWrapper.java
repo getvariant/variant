@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.collections4.Predicate;
+
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
@@ -76,5 +78,17 @@ public class VariantWebStateRequestWrapper implements VariantStateRequest {
 	@Override
 	public Collection<VariantEvent> getPendingEvents() {
 		return variantRequest.getPendingEvents();
+	}
+
+	@Override
+	public Collection<VariantEvent> getPendingEvents(
+			Predicate<VariantEvent> filter) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Status getStatus() {
+		return variantRequest.getStatus();
 	}
 }

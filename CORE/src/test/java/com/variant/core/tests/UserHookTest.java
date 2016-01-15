@@ -40,7 +40,7 @@ public class UserHookTest extends BaseTest {
 		
 		StateParsedHookListenerImpl listener = new StateParsedHookListenerImpl();
 		variant.addHookListener(listener);
-		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		assertEquals(variant.getSchema().getStates(), listener.stateList);
 		assertEquals(variant.getSchema().getStates().size(), response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
@@ -58,7 +58,7 @@ public class UserHookTest extends BaseTest {
 		TestParsedHookListenerImpl listener = new TestParsedHookListenerImpl();
 		variant.clearHookListeners();
 		variant.addHookListener(listener);
-		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		assertEquals(variant.getSchema().getTests(), listener.testList);
 		assertEquals(variant.getSchema().getTests().size(), response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
@@ -69,7 +69,7 @@ public class UserHookTest extends BaseTest {
 
 		StateParsedHookListenerImpl stateListener = new StateParsedHookListenerImpl();
 		variant.addHookListener(stateListener);
-		response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		assertEquals(VariantCollectionsUtils.list(variant.getSchema().getTests(), variant.getSchema().getTests()), listener.testList);
 		assertEquals(variant.getSchema().getStates(), stateListener.stateList);
 		assertEquals(variant.getSchema().getTests().size() + variant.getSchema().getStates().size(), response.getMessages().size());
@@ -90,36 +90,37 @@ public class UserHookTest extends BaseTest {
 		TestQualificationHookListenerNullImpl nullListener = new TestQualificationHookListenerNullImpl();
 		variant.clearHookListeners();
 		variant.addHookListener(nullListener);
-		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertTrue(nullListener.testList.isEmpty());
 		Schema schema = variant.getSchema();
 		State state = schema.getState("state1");
-		VariantSession ssn = engine.getSession("foo");
+		VariantSession ssn = api.getSession("foo");
 		//String tpData = System.currentTimeMillis() + ".state1.A";
-		VariantStateRequest request = engine.dispatchRequest(ssn, state, "");
+		VariantStateRequest request = api.dispatchRequest(ssn, state, "");
 		assertTrue(request.getDisqualifiedTests().isEmpty());
 		assertEquals(2, request.getTargetingTracker().getAll().size());
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("Test1")));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1"), schema.getTest("Test1")), nullListener.testList);
+		api.commitStateRequest(request, "");
 		
 		nullListener.testList.clear();
 		
 		TestQualificationHookListenerDisqualifyImpl disqualListener = new TestQualificationHookListenerDisqualifyImpl(schema.getTest("test1"));
 		variant.addHookListener(disqualListener);
-		response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertTrue(nullListener.testList.isEmpty());
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = variant.getSchema();
 		state = schema.getState("state1");
-		ssn = engine.getSession("foo");
+		ssn = api.getSession("foo");
 		long timestamp = System.currentTimeMillis();
 		String tpString = timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
-		request = engine.dispatchRequest(ssn, state, tpString);
+		request = api.dispatchRequest(ssn, state, tpString);
 		assertEquals(1, request.getDisqualifiedTests().size());
 		assertEquals(2, request.getTargetingTracker().getAll().size());
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test2")));
@@ -127,26 +128,28 @@ public class UserHookTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1"), schema.getTest("Test1")), nullListener.testList);
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1")), disqualListener.testList);
 		assertEquals("/path/to/state1/Test1.A", request.getResolvedParameterMap().get("path"));
+		api.commitStateRequest(request, "");
 
 		disqualListener = new TestQualificationHookListenerDisqualifyImpl(schema.getTest("Test1"), true);
 		variant.clearHookListeners();
 		variant.addHookListener(disqualListener);
 		
-		response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = variant.getSchema();
 		state = schema.getState("state1");
-		ssn = engine.getSession("foo");
+		ssn = api.getSession("foo");
 		tpString = timestamp + ".test1.B|" + timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
-		request = engine.dispatchRequest(ssn, state, tpString);
+		request = api.dispatchRequest(ssn, state, tpString);
 		assertEquals(1, request.getDisqualifiedTests().size());
 		assertEquals(2, request.getTargetingTracker().getAll().size());
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test2")));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("Test1")), disqualListener.testList);
 		assertEquals("/path/to/state1/test1.B", request.getResolvedParameterMap().get("path"));
+		api.commitStateRequest(request, "");
 
 	}
 

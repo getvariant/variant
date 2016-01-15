@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.event.VariantEventExperience;
+import com.variant.core.event.VariantEventVariant;
 import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.Test;
 
 
 public class StateServeEvent extends VariantEventSupport {
 
-	private static final String EVENT_NAME = "VIEW_SERVE";
-	private static final String PARAM_NAME_REQUEST_STATUS = "VIEW_REQUEST_STAUTS";
+	public static final String EVENT_NAME = "STATE_SERVE";
 	
 	private VariantStateRequestImpl request;
 	
@@ -26,13 +25,12 @@ public class StateServeEvent extends VariantEventSupport {
 			setParameter(param.getKey(), param.getValue());
 			
 		}
-		setParameter(PARAM_NAME_REQUEST_STATUS, request.getStatus().ordinal());
 	}
 	
 	/**
 	 * @return
 	 */
-	public VariantStateRequestImpl getViewRequest() {
+	public VariantStateRequestImpl getStateRequest() {
 		return request;
 	}
 	
@@ -40,12 +38,12 @@ public class StateServeEvent extends VariantEventSupport {
      *
 	 */
 	@Override
-	public Collection<VariantEventExperience> getEventExperiences() {
+	public Collection<VariantEventVariant> getEventVariants() {
 		
-		Collection<VariantEventExperience> result = new ArrayList<VariantEventExperience>();
+		Collection<VariantEventVariant> result = new ArrayList<VariantEventVariant>();
 		
 		for (Test.Experience exp: experiences) {
-			result.add(new StateServeEventExperience(this, exp));
+			result.add(new StateServeEventVariant(this, exp));
 		}
 		
 		return result;

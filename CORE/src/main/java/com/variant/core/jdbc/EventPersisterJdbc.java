@@ -10,10 +10,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.VariantEventExperience;
-import com.variant.core.event.impl.VariantEventExperienceSupport;
+import com.variant.core.event.VariantEventVariant;
+import com.variant.core.event.impl.StateServeEventVariant;
 import com.variant.core.exception.VariantInternalException;
 
 /**
@@ -26,6 +29,8 @@ import com.variant.core.exception.VariantInternalException;
  */
 abstract public class EventPersisterJdbc implements EventPersister {
 	
+	private static final Logger LOG = LoggerFactory.getLogger(EventPersisterJdbc.class);
+			
 	/**
 	 * Concrete subclass tells this class how to obtain a connection to its flavor of JDBC.
 	 * JUnits will also use this to create the schema.
@@ -42,7 +47,14 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	@Override
 	final public void persist(final Collection<VariantEvent> events) throws Exception {
 
-		final String INSERT_EVENTS_SQL = 
+		if (getVendor() == Vendor.H2) {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug(getClass().getSimpleName() + ".persist() quit becuase H2 does not support generated key retrieval on batch inserts");
+			}
+			return;
+		}
+		
+				final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
 			    "(id, session_id, created_on, event_name, event_value) " +
 				(getVendor() == Vendor.POSTGRES ?
@@ -50,22 +62,17 @@ abstract public class EventPersisterJdbc implements EventPersister {
 				getVendor() == Vendor.H2 ?
 						"VALUES (events_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
 
-		final String INSERT_EVENT_EXPERIENCES_SQL = 
-				"INSERT INTO event_experiences " +
-			    "(id, event_id, test_name, experience_name, is_control) " +
+		final String INSERT_EVENT_VARIANTS_SQL = 
+				"INSERT INTO event_variants " +
+			    "(id, event_id, test_name, experience_name, is_experience_control, is_state_nonvariant) " +
 				(getVendor() == Vendor.POSTGRES ?
-						"VALUES (NEXTVAL('event_experiences_id_seq'), ?, ?, ?, ?)" :
+						"VALUES (NEXTVAL('event_variants_id_seq'), ?, ?, ?, ?, ?)" :
 				getVendor() == Vendor.H2 ?
-						"VALUES (event_experiences_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
+						"VALUES (event_variants_id_seq.NEXTVAL, ?, ?, ?, ?, ?)" : "");
 
 		final String INSERT_EVENT_PARAMETERS_SQL = 
 				"INSERT INTO event_params " +
 			    "(event_id, key, value) " +
-			    "VALUES (?, ?, ?)";
-
-		final String INSERT_EVENT_EXPERIENCE_PARAMETERS_SQL = 
-				"INSERT INTO event_experience_params " +
-			    "(event_experience_id, key, value) " +
 			    "VALUES (?, ?, ?)";
 
 		JdbcService.executeUpdate(
@@ -81,6 +88,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					// Postgres requires Statement.RETURN_GENERATED_KEYS.
 					// And H2 Does support getGeneratedKeys() on batch inserts at all.
+					// https://github.com/h2database/h2database/issues/156
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
 					for (VariantEvent event: events) {
@@ -116,17 +124,18 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					// 2. Insert into EVENTS_EXPERIENCES.
 					//
 					
-					ArrayList<VariantEventExperienceSupport> eventExperiences = new ArrayList<VariantEventExperienceSupport>();
+					ArrayList<StateServeEventVariant> eventVariants = new ArrayList<StateServeEventVariant>();
 					
-					stmt = conn.prepareStatement(INSERT_EVENT_EXPERIENCES_SQL, Statement.RETURN_GENERATED_KEYS);
+					stmt = conn.prepareStatement(INSERT_EVENT_VARIANTS_SQL, Statement.RETURN_GENERATED_KEYS);
 					
 					for (VariantEvent event: events) {
-						for (VariantEventExperience ee: event.getEventExperiences()) {
-							eventExperiences.add((VariantEventExperienceSupport)ee);
+						for (VariantEventVariant ee: event.getEventVariants()) {
+							eventVariants.add((StateServeEventVariant)ee);
 							stmt.setLong(1, ee.getEvent().getId());
 							stmt.setString(2, ee.getExperience().getTest().getName());
 							stmt.setString(3, ee.getExperience().getName());
-							stmt.setBoolean(4, ee.getExperience().isControl());
+							stmt.setBoolean(4, ee.isExperienceControl());
+							stmt.setBoolean(5, ee.isStateNonvariant());
 						
 							stmt.addBatch();
 						}
@@ -136,14 +145,14 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					// Read sequence generated event IDs and add them to the event objects.
 					// We'll need these ids when inserting into events_experiences.
-					Iterator<VariantEventExperienceSupport> eventExperiencesIter = eventExperiences.iterator();
+					Iterator<StateServeEventVariant> eventExperiencesIter = eventVariants.iterator();
 					gennedKeys = stmt.getGeneratedKeys();
 					while(gennedKeys.next()) {
 
 						if (!eventExperiencesIter.hasNext()) 
 							throw new VariantInternalException("Received more genereated keys than inserted event experience records.");
 						
-						VariantEventExperienceSupport ee = eventExperiencesIter.next();
+						StateServeEventVariant ee = eventExperiencesIter.next();
 						ee.setId(gennedKeys.getLong(1));
 					}
 					if (eventExperiencesIter.hasNext()) 
@@ -168,27 +177,6 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					}
 					
 					stmt.executeBatch();
-
-					//
-					// 4. Insert into EVENT_EXPERIENCE_PARAMETERS.
-					//
-					stmt = conn.prepareStatement(INSERT_EVENT_EXPERIENCE_PARAMETERS_SQL);
-					
-					for (VariantEventExperienceSupport ee: eventExperiences) {
-						for (String key: ee.getParameterKeys()) {
-	
-							stmt.setLong(1, ee.getId());
-							stmt.setString(2, key);
-							stmt.setString(3, ee.getParameter(key).toString());
-						
-							stmt.addBatch();
-						}
-					}
-					
-					stmt.executeBatch();
-
-					stmt.close();
-
 					stmt.close();
 				}
 			}

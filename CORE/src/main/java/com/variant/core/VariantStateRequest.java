@@ -3,6 +3,8 @@ package com.variant.core;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.collections4.Predicate;
+
 import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -91,10 +93,21 @@ public interface VariantStateRequest {
 	public Collection<Test> getDisqualifiedTests();
 
 	/**
-	 * All pending events that will be flushed when this request is committed.
+	 * A subset of all pending events that will be flushed when this request is committed
+	 * selected by a predicate filter.
 	 * 
-	 * @return Collection of {@link {@link com.variant.core.event.VariantEvent}s.
-	 * @see com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...).
+	 * @param filter An implementation of 
+	 *               <a href="https://commons.apache.org/proper/commons-collections/javadocs/api-4.0/org/apache/commons/collections4/Predicate.html">
+	 *                 org.apache.commons.collections4.Predicate
+	 *               </a>
+	 *               that governs filtering.
+	 * @return Collection of {@link com.variant.core.event.VariantEvent}s that satisfy the predicate.
+	 * @since 0.5
+	 */
+	public Collection<VariantEvent> getPendingEvents(Predicate<VariantEvent> filter);
+	
+	/** All pending events that will be flushed when this request is committed.
+	 * @return Collection of all currently pending events as {@link com.variant.core.event.VariantEvent}s.
 	 * @since 0.5
 	 */
 	public Collection<VariantEvent> getPendingEvents();
@@ -106,6 +119,11 @@ public interface VariantStateRequest {
 	 */
 	public void setStatus(Status status);
 	
+	/**
+	 * Current status of this request.
+	 */
+	public Status getStatus();
+
 	/**
 	 * Status of a {@link com.variant.core.VariantStateRequest}.
 	 */

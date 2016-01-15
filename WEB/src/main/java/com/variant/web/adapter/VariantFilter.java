@@ -12,12 +12,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
+import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
@@ -145,8 +147,10 @@ public class VariantFilter implements Filter {
 			}
 			catch (Throwable t) {
 				LOG.error("Unhandled exception in Variant for path [" + VariantWebUtils.requestUrl(httpRequest) + "]", t);
-				// null out variant request object so we don't attempt to do anything with it.
-				variantRequest = null;
+				isForwarding = false;
+				if (variantRequest != null) {
+					variantRequest.setStatus(VariantStateRequest.Status.FAIL);
+				}
 			}
 
 			if (isForwarding) {
@@ -158,7 +162,17 @@ public class VariantFilter implements Filter {
 								
 			if (webApi.isBootstrapped() && variantRequest != null) {
 				try {
-					for (VariantEvent event: variantRequest.getPendingEvents()) {
+					// Add some extra info to the state visited event(s)
+					for (VariantEvent event: variantRequest.getPendingEvents(
+							new Predicate<VariantEvent>() {
+								
+								@Override
+								public boolean evaluate(VariantEvent e) {
+									return e instanceof StateServeEvent;
+								}
+							})
+						) {
+						
 						event.setParameter("HTTP_STATUS", httpResponse.getStatus());
 					}
 					webApi.commitStateRequest(variantRequest, httpResponse);
@@ -167,6 +181,8 @@ public class VariantFilter implements Filter {
 					LOG.error("Unhandled exception in Variant for path [" + 
 							VariantWebUtils.requestUrl(httpRequest) + 
 							"] and session [" + variantRequest.getSession().getId() + "]", t);
+					
+					variantRequest.setStatus(VariantStateRequest.Status.FAIL);
 				}
 			}
 		}

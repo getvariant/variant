@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.apache.commons.collections4.Predicate;
+
 import com.variant.core.VariantTargetingTracker;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
@@ -88,7 +90,23 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	
 	@Override
 	public Collection<VariantEvent> getPendingEvents() {
-		return Collections.unmodifiableSet(events);
+		
+		return getPendingEvents(
+			new Predicate<VariantEvent>() {
+				@Override
+				public boolean evaluate(VariantEvent e) {return true;}
+			}
+		);
+	}
+
+	@Override
+	public Collection<VariantEvent> getPendingEvents(Predicate<VariantEvent> filter) {
+		
+		if (filter == null) throw new IllegalArgumentException("Filter cannot be null");
+		
+		HashSet<VariantEvent> result = new HashSet<VariantEvent>();
+		for (VariantEvent e: events) if (filter.evaluate(e)) result.add(e);
+		return Collections.unmodifiableSet(result);
 	}
 
 	@Override

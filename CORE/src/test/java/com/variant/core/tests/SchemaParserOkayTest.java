@@ -1,8 +1,11 @@
 package com.variant.core.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.junit.Test;
 
@@ -13,12 +16,13 @@ import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.VariantCollectionsUtils;
+import com.variant.core.util.VariantStringUtils;
 
 
 public class SchemaParserOkayTest extends BaseTest {
 	
-
-
+	private static final Random rand = new Random();
+	
 	/**
 	 * All tests are off.
 	 */
@@ -130,13 +134,13 @@ public class SchemaParserOkayTest extends BaseTest {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = engine.parseSchema(SCHEMA);
+		ParserResponse response = api.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantSession session = engine.getSession("foo");
-		State state1 = engine.getSchema().getState("state1");
-		engine.clearHookListeners();
-		VariantStateRequest req = engine.dispatchRequest(session, state1, "");
+		VariantSession session = api.getSession(VariantStringUtils.random64BitString(rand));
+		State state1 = api.getSchema().getState("state1");
+		api.clearHookListeners();
+		VariantStateRequest req = api.dispatchRequest(session, state1, "");
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertTrue(req.getDisqualifiedTests().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
@@ -253,15 +257,15 @@ public class SchemaParserOkayTest extends BaseTest {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = engine.parseSchema(SCHEMA);
+		ParserResponse response = api.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantSession session = engine.getSession("foo");
-		State state1 = engine.getSchema().getState("state1");
-		com.variant.core.schema.Test test2 = engine.getSchema().getTest("test2");
-		engine.clearHookListeners();
-		engine.addHookListener(new TestQualificationHookListener(test2));
-		VariantStateRequest req = engine.dispatchRequest(session, state1, "");
+		VariantSession session = api.getSession(VariantStringUtils.random64BitString(rand));
+		State state1 = api.getSchema().getState("state1");
+		com.variant.core.schema.Test test2 = api.getSchema().getTest("test2");
+		api.clearHookListeners();
+		api.addHookListener(new TestQualificationHookListener(test2));
+		VariantStateRequest req = api.dispatchRequest(session, state1, "");
 		assertEquals(VariantCollectionsUtils.set(test2), req.getDisqualifiedTests());
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
@@ -378,17 +382,17 @@ public class SchemaParserOkayTest extends BaseTest {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = engine.parseSchema(SCHEMA);
+		ParserResponse response = api.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantSession session = engine.getSession("foo");
-		State state1 = engine.getSchema().getState("state1");
-		com.variant.core.schema.Test test1 = engine.getSchema().getTest("test1");
-		com.variant.core.schema.Test test2 = engine.getSchema().getTest("test2");
-		engine.clearHookListeners();
-		engine.addHookListener(new TestQualificationHookListener(test1));
-		engine.addHookListener(new TestQualificationHookListener(test2));
-		VariantStateRequest req = engine.dispatchRequest(session, state1, "");
+		VariantSession session = api.getSession(VariantStringUtils.random64BitString(rand));
+		State state1 = api.getSchema().getState("state1");
+		com.variant.core.schema.Test test1 = api.getSchema().getTest("test1");
+		com.variant.core.schema.Test test2 = api.getSchema().getTest("test2");
+		api.clearHookListeners();
+		api.addHookListener(new TestQualificationHookListener(test1));
+		api.addHookListener(new TestQualificationHookListener(test2));
+		VariantStateRequest req = api.dispatchRequest(session, state1, "");
 		assertEquals(VariantCollectionsUtils.set(test1, test2), req.getDisqualifiedTests());
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
