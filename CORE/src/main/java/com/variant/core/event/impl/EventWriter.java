@@ -1,8 +1,8 @@
 package com.variant.core.event.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.config.VariantProperties;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEvent;
+import com.variant.core.schema.Test.Experience;
+import com.variant.core.util.Tuples.Pair;
 
 public class EventWriter {
 	
@@ -20,8 +22,9 @@ public class EventWriter {
 
 	// The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
 	// refusing inserts that will put the queue size over the limit, but not worrying about
-	// a possible overage due to concurrency.
-	private ConcurrentLinkedQueue<VariantEvent> eventQueue = null;
+	// a possible overage due to concurrency. Each entry is a pair of 1) event and 2) a collection of
+	// active test experiences in effect at the time the event was signaled.
+	private ConcurrentLinkedQueue<Pair<VariantEvent, Collection<Experience>>> eventQueue = null;
 
 	// Max queue size (soft).
 	private int queueSize;
@@ -64,7 +67,7 @@ public class EventWriter {
 		this.pctEmptySize = (int) Math.ceil(queueSize * 0.1);
 		this.maxPersisterDelayMillis = VariantProperties.getInstance().eventWriterMaxDelayMillis();
 		
-		eventQueue = new ConcurrentLinkedQueue<VariantEvent>();
+		eventQueue = new ConcurrentLinkedQueue<Pair<VariantEvent, Collection<Experience>>>();
 		
 		persisterThread = new Thread(new PersisterThread());
 		
@@ -93,10 +96,15 @@ public class EventWriter {
 	 * if there's no room on the queue to hold all the events, write as many as we can in the
 	 * order of the collection's iterator and ignore the rest. Log ERROR dropped events.
 	 *  
-	 * @param events
+	 * @param eventsPair A pair of 1) a collection of events, and 2) a collection of test experiences
+	 *                   that were all in effect when these events were triggered.
+	 *                   
 	 * @return number of elements actually written.
 	 */
-	public void write(Collection<VariantEvent> events) {
+	public void write(Pair<Collection<VariantEvent>, Collection<Experience>> eventsPair) {
+		
+		Collection<VariantEvent> events = eventsPair.arg1();
+		Collection<Experience> activeExperiences = eventsPair.arg2();
 		
 		// size() is an O(n) operation - do it once.
 		// We don't worry about possible concurrent writes because the underlying
@@ -108,7 +116,7 @@ public class EventWriter {
 		Iterator<VariantEvent> iter = events.iterator();
 		while (currentQueueSize < queueSize && iter.hasNext()) {
 			VariantEvent event = iter.next();
-			eventQueue.add(event);
+			eventQueue.add(new Pair<VariantEvent, Collection<Experience>>(event, activeExperiences));
 			currentQueueSize++;
 			delta--;
 		}
@@ -131,12 +139,13 @@ public class EventWriter {
 	 * Enqueue a single event.  Variation of the above.
 	 *  
 	 * @param event
-	 */
+	 *
 	public void write(VariantEvent event) {
 		ArrayList<VariantEvent> collection = new ArrayList<VariantEvent>(1);
 		collection.add(event);
 		write(collection);
 	}
+	*/
 	
 	/**
 	 * Persister thread.
@@ -196,12 +205,12 @@ public class EventWriter {
 		 */
 		private void flush() throws Exception {
 
-			ArrayList<VariantEvent> events = new ArrayList<VariantEvent>();
+			LinkedList<Pair<VariantEvent, Collection<Experience>>> events = new LinkedList<Pair<VariantEvent, Collection<Experience>>>();
 
-			VariantEvent event = eventQueue.poll();
-			while (event != null) {
-				events.add(event);
-				event = eventQueue.poll();
+			Pair<VariantEvent, Collection<Experience>> pair = eventQueue.poll();
+			while (pair != null) {
+				events.add(pair);
+				pair = eventQueue.poll();
 			}
 
 			if (events.isEmpty()) return;

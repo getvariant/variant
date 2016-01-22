@@ -3,6 +3,8 @@ package com.variant.core.tests;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
@@ -141,4 +143,46 @@ public class BaseTest {
 		}
 		assertTrue(result);
 	}
+	
+	/**
+	 * Assert that two collections are set-equivalent, i.e.
+	 * for each element in one, there's an equal element in the other.
+	 *  
+	 * @param 
+	 */	
+	static protected <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected) {
+		
+		for (T a: actual) {
+			boolean found = false;
+			for (T e: expected) {
+				if (a.equals(e)) {
+					found = true;
+					break;
+				}
+			}
+			assertTrue("Actual element " + a + " not found", found);
+		}
+		
+		for (T e: expected) {
+			boolean found = false;
+			for (T a: actual) {
+				if (a.equals(e)) {
+					found = true;
+					break;
+				}
+			}
+			assertTrue("Expected element " + e + " not found", found);
+		}
+	}
+
+	/**
+	 * Same as above for varargs
+	 * @param actual
+	 * @param expected
+	 */
+	@SafeVarargs
+	static protected <T> void assertEqualAsSets(Collection<T> actual, T...expected) {
+		assertEqualAsSets(actual, Arrays.asList(expected));
+	}
+
 }

@@ -1,16 +1,12 @@
 package com.variant.core.event.impl;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.exception.VariantInternalException;
-import com.variant.core.schema.Test.Experience;
 
 /**
  * EVENTS DAO.
@@ -20,10 +16,8 @@ import com.variant.core.schema.Test.Experience;
  */
 abstract public class VariantEventSupport implements VariantEvent {
 		
-	protected Collection<Experience> experiences;
 	protected Map<String, Object> params = new HashMap<String, Object>();
 	
-	protected Long id = null;
 	protected VariantStateRequest request;
 	protected Date createDate;
 	protected String eventName;
@@ -33,38 +27,21 @@ abstract public class VariantEventSupport implements VariantEvent {
 	 * Constructor
 	 * @return
 	 */
-	protected VariantEventSupport(VariantStateRequest request, String eventName, String eventValue) {
+	protected VariantEventSupport(String eventName, String eventValue, VariantStateRequest request) {
 		this.request = request;
 		this.createDate = new Date();
 		this.eventName = eventName;
 		this.eventValue = eventValue;
-		this.experiences = request.getTargetedExperiences();
-		if (experiences.size() == 0) throw new VariantInternalException("Must pass at least one experience");
 	}
 
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-		
-	@Override
-	public Long getId() {
-		return id;
-	}
-	
-	@Override
-	public void setId(long id) {
-		this.id = id;
-	}
-
+			
 	@Override
 	public VariantSession getSession() {
 		return request.getSession();
-	}
-
-	@Override
-	public Date getCreateDate() {
-		return createDate;
 	}
 
 	@Override
@@ -76,26 +53,37 @@ abstract public class VariantEventSupport implements VariantEvent {
 	public String getEventValue() {
 		return eventValue;
 	}
-	
+
 	@Override
-	public Object setParameter(String key, Object value) {
-		return params.put(key, value);
-	}
-	
-	@Override
-	public Object getParameter(String key) {
-		return params.get(key);
-	}
-	
-	@Override
-	public Set<String> getParameterKeys() {
-		return params.keySet();
+	public Date getCreateDate() {
+		return createDate;
 	}
 
+	@Override
+	public Map<String,Object> getParameterMap() {
+		return params;
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
-
+	/**
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public void setParameter(String key, Object value) {
+		params.put(key, value);
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public VariantStateRequest getStateRequest() {
+		return request;
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -103,13 +91,22 @@ abstract public class VariantEventSupport implements VariantEvent {
 	@Override
 	public String toString() {
 		
-		return new StringBuilder()
+		StringBuilder result = new StringBuilder()
 		.append('{')
 		.append("sessionid:'").append(request.getSession().getId()).append("', ")
 		.append("createdOn:'").append(createDate).append("', ")
 		.append("eventName:").append(eventName).append("', ")
 		.append("eventValue:").append(eventValue).append("', ")
-		.append("}").toString();
+		.append("params:{");
+		boolean first = true;
+		for (Map.Entry<String, Object> e: params.entrySet()) {
+			if (first) first = false;
+			else result.append(",");
+			result.append("'").append(e.getKey()).append("':");
+			result.append("'").append(e.getValue()).append("'");
+		}
+		result.append("}");
+		return result.toString();
 
 	}
 

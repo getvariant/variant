@@ -15,6 +15,7 @@ import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantStringUtils;
 
@@ -142,7 +143,9 @@ public class SchemaParserOkayTest extends BaseTest {
 		api.clearHookListeners();
 		VariantStateRequest req = api.dispatchRequest(session, state1, "");
 		assertTrue(req.getTargetedExperiences().isEmpty());
-		assertTrue(req.getDisqualifiedTests().isEmpty());
+		assertEquals(1, session.getTraversedStates().size());
+		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
+		assertTrue(session.getTraversedTests().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
 	}
 
@@ -236,7 +239,7 @@ public class SchemaParserOkayTest extends BaseTest {
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'stateRef':'state2',                                        \n" +
+			    	    "              'stateRef':'state2',                                       \n" +
 			    	    "              'isNonvariant':false,                                      \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
@@ -248,7 +251,7 @@ public class SchemaParserOkayTest extends BaseTest {
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'stateRef':'state3',                                        \n" +
+			    	    "              'stateRef':'state3',                                       \n" +
 			    	    "              'isNonvariant':true                                        \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ]                                                                \n" +
@@ -264,9 +267,13 @@ public class SchemaParserOkayTest extends BaseTest {
 		State state1 = api.getSchema().getState("state1");
 		com.variant.core.schema.Test test2 = api.getSchema().getTest("test2");
 		api.clearHookListeners();
-		api.addHookListener(new TestQualificationHookListener(test2));
+		api.addHookListener(new TestDisqualifier(test2));
 		VariantStateRequest req = api.dispatchRequest(session, state1, "");
-		assertEquals(VariantCollectionsUtils.set(test2), req.getDisqualifiedTests());
+		assertEquals(1, session.getTraversedStates().size());
+		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
+		assertEqualAsSets(
+				session.getTraversedTests(), 
+				new Pair<com.variant.core.schema.Test, Boolean>(test2, false));
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
 	}
@@ -390,10 +397,15 @@ public class SchemaParserOkayTest extends BaseTest {
 		com.variant.core.schema.Test test1 = api.getSchema().getTest("test1");
 		com.variant.core.schema.Test test2 = api.getSchema().getTest("test2");
 		api.clearHookListeners();
-		api.addHookListener(new TestQualificationHookListener(test1));
-		api.addHookListener(new TestQualificationHookListener(test2));
+		api.addHookListener(new TestDisqualifier(test1));
+		api.addHookListener(new TestDisqualifier(test2));
 		VariantStateRequest req = api.dispatchRequest(session, state1, "");
-		assertEquals(VariantCollectionsUtils.set(test1, test2), req.getDisqualifiedTests());
+		assertEquals(1, session.getTraversedStates().size());
+		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
+		assertEqualAsSets(
+				session.getTraversedTests(), 
+				new Pair<com.variant.core.schema.Test, Boolean>(test1, false), 
+				new Pair<com.variant.core.schema.Test, Boolean>(test2, false));
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
 	}
@@ -401,12 +413,12 @@ public class SchemaParserOkayTest extends BaseTest {
 	/**
 	 * 
 	 */
-	private static class TestQualificationHookListener implements HookListener<TestQualificationHook> {
+	private static class TestDisqualifier implements HookListener<TestQualificationHook> {
 
 		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
 		private com.variant.core.schema.Test testToDisqualify;
 		
-		private TestQualificationHookListener(com.variant.core.schema.Test testToDisqualify) {
+		private TestDisqualifier(com.variant.core.schema.Test testToDisqualify) {
 			this.testToDisqualify = testToDisqualify;
 		}
 

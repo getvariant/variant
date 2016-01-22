@@ -70,28 +70,28 @@ public interface VariantStateRequest {
 	public Collection<Experience> getTargetedExperiences();
 
 	/**
-	 * The targeted experience in a given test.
+	 * The targeted experience in a given test, if any.
 	 * 
 	 * @param test {@link com.variant.core.schema.Test}
 	 * @return The {@link com.variant.core.schema.Test.Experience} of the given 
 	 *         {@link com.variant.core.schema.Test} targeted by this session or null if none. 
-	 *         The latter condition is possible when the state in this request is not instrumented 
-	 *         by this test, or the targeted experience is control, or the test is off, or this
-	 *         session is disqualified for this test. 
-	 *  
+	 *         The latter condition is possible when the targeted experience is control, 
+	 *         or the test is off, or this session is disqualified for this test. 
+	 *         
+	 * @throws VariantRuntimeException if given test is not instrumented by this requests's test.
+	 * 
 	 * @since 0.5
 	 */
 	public Experience getTargetedExperience(Test test);
 
 	/**
-	 * All tests for which this session has been disqualified.
-	 * @see com.variant.core.hook.TestQualificationHook
+	 * Trigger a custom event.
 	 * 
-	 * @return Collection of objects of type {@link com.variant.core.schema.Test}
+	 * @param The custom event to be logged. An implementation of {@link VariantEvent}
 	 * @since 0.5
 	 */
-	public Collection<Test> getDisqualifiedTests();
-
+	public void triggerEvent(VariantEvent event);
+	
 	/**
 	 * A subset of all pending events that will be flushed when this request is committed
 	 * selected by a predicate filter.

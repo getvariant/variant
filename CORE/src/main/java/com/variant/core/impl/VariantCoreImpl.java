@@ -37,6 +37,7 @@ import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.session.SessionService;
+import com.variant.core.session.VariantSessionImpl;
 import com.variant.core.util.VariantIoUtils;
 
 /**
@@ -292,6 +293,8 @@ public class VariantCoreImpl implements Variant {
 			
 		tp.initialized(session, targetingPersisterUserData);
 
+		((VariantSessionImpl) session).addTraversedState(state);
+		
 		return VariantRuntime.dispatchRequest(session, state, tp);
 	}
 	
@@ -303,7 +306,9 @@ public class VariantCoreImpl implements Variant {
 
 		stateCheck();
 		
-		if (((VariantStateRequestImpl)request).isCommitted()) {
+		VariantStateRequestImpl requestImpl = (VariantStateRequestImpl) request;
+		
+		if ((requestImpl).isCommitted()) {
 			throw new IllegalStateException("Request already committed");
 		}
 		
@@ -324,14 +329,11 @@ public class VariantCoreImpl implements Variant {
 				})
 			) {
 			
-			event.setParameter("REQ_STATUS", request.getStatus());
+			event.getParameterMap().put("REQ_STATUS", request.getStatus());
 		}
 		
-		// Save events. Note, that there may not be any if we hit a known state that did not have
-		// any active tests instrumented on it.
-		EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
-		ew.write(request.getPendingEvents());		
-		
+		requestImpl.flushEvents();
+
 		((VariantStateRequestImpl)request).commit();
 		
 	}

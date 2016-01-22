@@ -103,9 +103,9 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    "              'weight':30                                                \n" +
     	    "           }                                                             \n" +
     	    "        ],                                                               \n" +
-    	    "        'onStates':[                                                      \n" +
+    	    "        'onStates':[                                                     \n" +
     	    "           {                                                             \n" +
-    	    "              'stateRef':'state1',                                        \n" +
+    	    "              'stateRef':'state1',                                       \n" +
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'B',                                 \n" +
@@ -183,9 +183,9 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    "              'weight':20                                                \n" +
     	    "           }                                                             \n" +
     	    "        ],                                                               \n" +
-    	    "        'onStates':[                                                      \n" +
+    	    "        'onStates':[                                                     \n" +
     	    "           {                                                             \n" +
-    	    "              'stateRef':'state1',                                        \n" +
+    	    "              'stateRef':'state1',                                       \n" +
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'A',                                 \n" +

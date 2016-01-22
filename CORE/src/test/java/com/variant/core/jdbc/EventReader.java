@@ -29,8 +29,7 @@ public class EventReader {
 		
 		final String SELECT_EVENTS_SQL = 
 				"SELECT e.id, e.session_id, e.created_on, e.event_name, e.event_value, p.key, p.value " +
-				"FROM events e, event_params p " +
-		        "WHERE e.id = p.event_id";
+				"FROM events e LEFT OUTER JOIN event_params p ON e.id = p.event_id";
 
 		final String SELECT_EVENT_VARIANTS_SQL =
 				"SELECT id, event_id, test_name, experience_name, is_experience_control, is_state_nonvariant " +

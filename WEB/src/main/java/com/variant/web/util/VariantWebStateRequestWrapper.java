@@ -81,8 +81,7 @@ public class VariantWebStateRequestWrapper implements VariantStateRequest {
 	}
 
 	@Override
-	public Collection<VariantEvent> getPendingEvents(
-			Predicate<VariantEvent> filter) {
+	public Collection<VariantEvent> getPendingEvents(Predicate<VariantEvent> filter) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -90,5 +89,10 @@ public class VariantWebStateRequestWrapper implements VariantStateRequest {
 	@Override
 	public Status getStatus() {
 		return variantRequest.getStatus();
+	}
+
+	@Override
+	public void triggerEvent(VariantEvent event) {
+		// TODO Auto-generated method stub
 	}
 }

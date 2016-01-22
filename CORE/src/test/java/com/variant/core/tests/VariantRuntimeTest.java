@@ -14,7 +14,6 @@ import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.VariantEventVariant;
 import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantRuntimeTestFacade;
@@ -1135,22 +1134,7 @@ public class VariantRuntimeTest extends BaseTest {
 		// View Serve Event.
 		Collection<VariantEvent> pendingEvents = req.getPendingEvents();
 		assertEquals(1, pendingEvents.size());
-		VariantEvent event = pendingEvents.iterator().next();
-		assertEquals(2, event.getEventVariants().size());
-		int index = 0;
-		for (VariantEventVariant ee: event.getEventVariants()) {
-			if (index == 0) {
-				assertEquals(experience("test1.A"), ee.getExperience());
-			}
-			else if (index == 1) {
-				assertEqualsMulti(ee.getExperience(), experience("test3.A"), experience("test3.B"), experience("test3.C"));
-			}
-			else {
-				assertTrue(false);
-			}
-			index++;
-		}
-		
+	
 		// Pending Events filter
 		pendingEvents = req.getPendingEvents(
 				new Predicate<VariantEvent>() {				

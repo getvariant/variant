@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +12,6 @@ import org.junit.Test;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.impl.StateServeEvent;
-import com.variant.core.impl.StateServeEventTestFacade;
 import com.variant.core.jdbc.EventReader;
 import com.variant.core.jdbc.JdbcUtil;
 import com.variant.core.jdbc.VariantEventFromDatabase;
@@ -31,39 +29,11 @@ public class EventWriterTest extends BaseTest {
 		api.bootstrap("/variant-junit.props", "/variant-junit-postgres.props");
 		JdbcUtil.recreateSchema();
 	}
-	
-	//@Test 
-	// TODO
-	public void performaceTest() throws Exception {
-
 		
-		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-
-		long timestamp = System.currentTimeMillis();
-		Schema schema = api.getSchema();
-		State state = schema.getState("state1");
-		VariantSession ssn = api.getSession("ssn1");
-		VariantStateRequest request = api.dispatchRequest(ssn, state, timestamp + ".state1.A");
-		HashMap<String,String> params = new HashMap<String, String>() {{put("path", "viewResolvedPath");}};
-		StateServeEventTestFacade event1 = new StateServeEventTestFacade(request, params);
-		request = api.dispatchRequest(ssn, state, timestamp + ".state1.B");
-		StateServeEventTestFacade event2 = new StateServeEventTestFacade(request, params);
-		event1.setParameter("event1-key1", "value1");
-		event2.setParameter("event2-key1", "value1");
-		event2.setParameter("event2-key2", "value2"); 
-		api.getEventWriter().write(event1);
-		api.getEventWriter().write(event2);
-
-		// Wait for the async writer thread to commit;
-		Thread.sleep(2000);
-		
-		Collection<VariantEventFromDatabase> events = EventReader.readEvents();
-		assertEquals(2, events.size());
-
-	}
-	
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void basicTest() throws Exception {
 
@@ -86,7 +56,7 @@ public class EventWriterTest extends BaseTest {
 		api.commitStateRequest(ssn2.getStateRequest(), "");
 
 		// Wait for the async writer thread to commit;
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		
 		Collection<VariantEventFromDatabase> events = EventReader.readEvents();
 		assertEquals(2, events.size());
@@ -174,4 +144,57 @@ public class EventWriterTest extends BaseTest {
 		}
 	}
 
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void customEventTest() throws Exception {
+
+		ParserResponse response = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+
+		Schema schema = api.getSchema();
+		State s2 = schema.getState("state2");
+		
+		VariantSession ssn2 = api.getSession("ssn2");
+		VariantStateRequest request = api.dispatchRequest(ssn2, s2, targetingTrackerString("test1.B", "test2.C","test3.A","test4.B","test5.C","test6.A"));
+
+		api.commitStateRequest(request, "");
+
+		// Wait for the async writer thread to commit;
+		Thread.sleep(1000);
+
+	}
+	
+	/**
+	private static class CustomEvent implements VariantEvent {
+
+		@Override
+		public String getEventName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public String getEventValue() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public VariantSession getSession() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Date getCreateDate() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}
+	*/
 }
