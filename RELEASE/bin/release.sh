@@ -16,15 +16,16 @@ if [[ x != "x$1" ]]; then
     exit 1
 fi
 
-version="0.5.1"
+version="0.5.2"
 
 workspace_root_dir=$(pwd)/$(dirname $0)/../..
+
 release_dir=${workspace_root_dir}/RELEASE
 stage_dir=${release_dir}/stage
 out_dir=${release_dir}/out
 
-rm -rf ${stage_dir}/*
-rm -rf ${out_dir}/*
+rm -rf ${stage_dir} ${out_dir}
+mkdir ${stage_dir} ${out_dir}
 
 #
 # Core

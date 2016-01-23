@@ -66,11 +66,6 @@ public class VariantWebStateRequestWrapper implements VariantStateRequest {
 	}
 
 	@Override
-	public Collection<Test> getDisqualifiedTests() {
-		return variantRequest.getDisqualifiedTests();
-	}
-
-	@Override
 	public void setStatus(Status status) {
 		variantRequest.setStatus(status);
 	}
@@ -82,8 +77,7 @@ public class VariantWebStateRequestWrapper implements VariantStateRequest {
 
 	@Override
 	public Collection<VariantEvent> getPendingEvents(Predicate<VariantEvent> filter) {
-		// TODO Auto-generated method stub
-		return null;
+		return variantRequest.getPendingEvents(filter);
 	}
 
 	@Override

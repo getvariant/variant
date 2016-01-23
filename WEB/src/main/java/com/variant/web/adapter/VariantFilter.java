@@ -173,7 +173,7 @@ public class VariantFilter implements Filter {
 							})
 						) {
 						
-						event.setParameter("HTTP_STATUS", httpResponse.getStatus());
+						event.getParameterMap().put("HTTP_STATUS", httpResponse.getStatus());
 					}
 					webApi.commitStateRequest(variantRequest, httpResponse);
 				}
