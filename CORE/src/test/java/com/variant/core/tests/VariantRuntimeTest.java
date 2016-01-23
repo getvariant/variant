@@ -8,11 +8,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.collections4.Predicate;
+
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.VariantEventExperience;
+import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.schema.Schema;
@@ -34,11 +36,11 @@ public class VariantRuntimeTest extends BaseTest {
 	@org.junit.Test
 	public void pathResolution() throws Exception {
 		
-		ParserResponse response = engine.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		ParserResponse response = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		Schema schema = engine.getSchema();
+		Schema schema = api.getSchema();
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");
@@ -1105,17 +1107,17 @@ public class VariantRuntimeTest extends BaseTest {
 			    	    "}                                                                         ";
 
 
-		ParserResponse response = engine.parseSchema(SCHEMA);
+		ParserResponse response = api.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		Schema schema = engine.getSchema();
+		Schema schema = api.getSchema();
 		State state1 = schema.getState("state1");
 		long timestamp = System.currentTimeMillis();
 		String persisterString = timestamp + ".test2.B";
-		VariantSession ssn = engine.getSession("foo-key");
+		VariantSession ssn = api.getSession("foo-key");
 		// Core implementation makes no distinction between session udser data and targeting persister user data.
-		VariantStateRequest req = engine.dispatchRequest(ssn, state1, persisterString);
+		VariantStateRequest req = api.dispatchRequest(ssn, state1, persisterString);
 		VariantTargetingTracker tp = req.getTargetingTracker();
 
 		// test2 is off, but TP has a variant experience for it, which will be substituted for the purposes of lookup with control.
@@ -1130,21 +1132,20 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(state1, req.getState());
 		
 		// View Serve Event.
-		VariantEvent event = req.getPendingEvents().iterator().next();
-		assertEquals(2, event.getEventExperiences().size());
-		int index = 0;
-		for (VariantEventExperience ee: event.getEventExperiences()) {
-			if (index == 0) {
-				assertEquals(experience("test1.A"), ee.getExperience());
-			}
-			else if (index == 1) {
-				assertEqualsMulti(ee.getExperience(), experience("test3.A"), experience("test3.B"), experience("test3.C"));
-			}
-			else {
-				assertTrue(false);
-			}
-			index++;
-		}
+		Collection<VariantEvent> pendingEvents = req.getPendingEvents();
+		assertEquals(1, pendingEvents.size());
+	
+		// Pending Events filter
+		pendingEvents = req.getPendingEvents(
+				new Predicate<VariantEvent>() {				
+			
+					@Override
+					public boolean evaluate(VariantEvent e) {
+						return ! (e instanceof StateServeEvent);
+					}
+				});
+		
+		assertTrue(pendingEvents.isEmpty());
 	}
 	
 }

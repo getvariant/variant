@@ -1,18 +1,13 @@
 package com.variant.core.event.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.event.VariantEventExperience;
 import com.variant.core.impl.VariantStateRequestImpl;
-import com.variant.core.schema.Test;
 
 
 public class StateServeEvent extends VariantEventSupport {
 
-	private static final String EVENT_NAME = "VIEW_SERVE";
-	private static final String PARAM_NAME_REQUEST_STATUS = "VIEW_REQUEST_STAUTS";
+	public static final String EVENT_NAME = "STATE_SERVE";
 	
 	private VariantStateRequestImpl request;
 	
@@ -20,36 +15,35 @@ public class StateServeEvent extends VariantEventSupport {
 	 * New constructor
 	 */
 	public StateServeEvent(VariantStateRequestImpl request, Map<String,String> resolvedParameters) {
-		super(request, EVENT_NAME, request.getState().getName());
+		super(EVENT_NAME, request.getState().getName(), request);
 		this.request = request;
 		for (Map.Entry<String, String> param: resolvedParameters.entrySet()) {
 			setParameter(param.getKey(), param.getValue());
 			
 		}
-		setParameter(PARAM_NAME_REQUEST_STATUS, request.getStatus().ordinal());
 	}
 	
 	/**
 	 * @return
 	 */
-	public VariantStateRequestImpl getViewRequest() {
+	public VariantStateRequestImpl getStateRequest() {
 		return request;
 	}
 	
 	/**
      *
-	 */
+	 *
 	@Override
-	public Collection<VariantEventExperience> getEventExperiences() {
+	public Collection<EventVariant> getEventVariants() {
 		
-		Collection<VariantEventExperience> result = new ArrayList<VariantEventExperience>();
+		Collection<EventVariant> result = new ArrayList<EventVariant>();
 		
 		for (Test.Experience exp: experiences) {
-			result.add(new StateServeEventExperience(this, exp));
+			result.add(new StateServeEventVariant(this, exp));
 		}
 		
 		return result;
 	}
-
+	*/
 		
 }

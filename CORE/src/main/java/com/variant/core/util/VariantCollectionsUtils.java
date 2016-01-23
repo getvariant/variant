@@ -1,12 +1,17 @@
 package com.variant.core.util;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.variant.core.util.Tuples.Pair;
 
 /**
  * 
@@ -71,7 +76,7 @@ public class VariantCollectionsUtils {
 	 * @param b
 	 * @return
 	 */
-	public boolean isDisjoint(Collection<?> a, Collection<?> b) {
+	public static boolean isDisjoint(Collection<?> a, Collection<?> b) {
 		Collection<?> small, big;
 		if (a.size() < b.size()) { small = a; big = b;}
 		else { small = b; big = a;}
@@ -92,4 +97,20 @@ public class VariantCollectionsUtils {
 		}
 		return result;
 	}
+	
+	/**
+	 * Convert a map to a collection of Pairs whose first elem is the key and the second -
+	 * the corresponding value.
+	 * 
+	 * @param map
+	 * @return
+	 */
+	public static <K,V> Collection<Pair<K,V>> mapToPairs(Map<K,V> map) {
+		LinkedList<Pair<K,V>> result = new LinkedList<Pair<K,V>>();
+		for (Map.Entry<K, V> e: map.entrySet()) {
+			result.add(new Pair<K,V>(e.getKey(), e.getValue()));
+		}
+		return result;
+	}
+	
 }

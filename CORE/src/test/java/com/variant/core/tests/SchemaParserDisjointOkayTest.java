@@ -103,9 +103,9 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    "              'weight':30                                                \n" +
     	    "           }                                                             \n" +
     	    "        ],                                                               \n" +
-    	    "        'onStates':[                                                      \n" +
+    	    "        'onStates':[                                                     \n" +
     	    "           {                                                             \n" +
-    	    "              'stateRef':'state1',                                        \n" +
+    	    "              'stateRef':'state1',                                       \n" +
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'B',                                 \n" +
@@ -183,9 +183,9 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
     	    "              'weight':20                                                \n" +
     	    "           }                                                             \n" +
     	    "        ],                                                               \n" +
-    	    "        'onStates':[                                                      \n" +
+    	    "        'onStates':[                                                     \n" +
     	    "           {                                                             \n" +
-    	    "              'stateRef':'state1',                                        \n" +
+    	    "              'stateRef':'state1',                                       \n" +
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'A',                                 \n" +
@@ -208,7 +208,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 	@Test
 	public void happyPathTest() throws Exception {
 		
-		ParserResponse response = engine.parseSchema(SCHEMA);
+		ParserResponse response = api.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
@@ -231,7 +231,7 @@ public class SchemaParserDisjointOkayTest extends BaseTest {
 						
 		};
 
-		final Schema schema = engine.getSchema();
+		final Schema schema = api.getSchema();
 		
 		// Verify views returned as a list.
 		List<State> actualStates = schema.getStates();

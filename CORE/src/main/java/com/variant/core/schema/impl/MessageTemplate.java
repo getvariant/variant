@@ -108,6 +108,7 @@ public enum MessageTemplate {
 	RUN_PROPERTY_NOT_SET                                  (Severity.ERROR, "Property [%s] must be set"),
 	RUN_SCHEMA_REPLACED                                   (Severity.ERROR, "This schema is no longer valid because it has been replaced with a newer schema."),
 	RUN_WEIGHT_MISSING                                    (Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found."),
+	RUN_ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first."),
 	
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                  GENERAL MESSAGES                                                      //

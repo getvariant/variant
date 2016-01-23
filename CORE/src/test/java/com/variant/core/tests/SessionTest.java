@@ -20,16 +20,16 @@ public class SessionTest extends BaseTest {
 	public void sessionCreationTest() throws VariantBootstrapException {
 				
 
-		VariantSession ssn = engine.getSession("key");
+		VariantSession ssn = api.getSession("key");
 		assertNotNull(ssn);
 		assertNull(ssn.getStateRequest());
 
-		VariantSession ssn2 = engine.getSession("key");
+		VariantSession ssn2 = api.getSession("key");
 		assertEquals(ssn, ssn2);
 		assertNull(ssn.getStateRequest());
 		assertNull(ssn2.getStateRequest());
 		
-		VariantSession ssn3 = engine.getSession("another-key");
+		VariantSession ssn3 = api.getSession("another-key");
 		assertNotEquals (ssn, ssn3);
 		assertNull(ssn.getStateRequest());
 		assertNull(ssn3.getStateRequest());
@@ -40,19 +40,19 @@ public class SessionTest extends BaseTest {
 		
 		Variant variant = Variant.Factory.getInstance();
 		
-		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		
 		Schema schema = variant.getSchema();
-		VariantSession ssn = engine.getSession("foo");
+		VariantSession ssn = api.getSession("foo");
 		assertNull(ssn.getStateRequest());
-		VariantStateRequest req1 = engine.dispatchRequest(ssn, schema.getState("state1"), "");
+		VariantStateRequest req1 = api.dispatchRequest(ssn, schema.getState("state1"), "");
 		assertNotNull(req1);
 		assertEquals(req1, ssn.getStateRequest());
-		engine.commitStateRequest(req1, "");
+		api.commitStateRequest(req1, "");
 		assertEquals(req1, ssn.getStateRequest());
-		VariantStateRequest req2 = engine.dispatchRequest(ssn, schema.getState("state2"), "");
+		VariantStateRequest req2 = api.dispatchRequest(ssn, schema.getState("state2"), "");
 		assertNotNull(req1);
 		assertNotEquals(req1, req2);
 		assertEquals(req2, ssn.getStateRequest());

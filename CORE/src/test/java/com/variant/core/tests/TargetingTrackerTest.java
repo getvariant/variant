@@ -22,13 +22,13 @@ public class TargetingTrackerTest extends BaseTest {
 	@Test
 	public void targetingTrackerStringTest() {
 				
-		ParserResponse response = engine.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		ParserResponse response = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		
-		Schema schema = engine.getSchema();
+		Schema schema = api.getSchema();
 		
-		VariantSession ssn = engine.getSession("key1");
+		VariantSession ssn = api.getSession("key1");
 		assertNull(ssn.getStateRequest());
 
 		long timestamp = System.currentTimeMillis();
@@ -156,16 +156,16 @@ public class TargetingTrackerTest extends BaseTest {
 		assertEquals(timestamp + ".test1.B|" + timestamp + ".test2.C",tp.toString());
 
 		// 
-		// Idle Days To Live
+		// Idle Days To Live. Test 3 should be dropped.
 		//
-		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY;
+		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY - 1;
 		persisterString = timestamp + ".test1.A|" + timestamp + ".test2.C|" + timestamp + ".test3.B";
 		tp = new TargetingTrackerString();
 		tp.initialized(ssn, persisterString);
-		assertEquals(3, tp.getAll().size());
+		assertEquals(2, tp.getAll().size());
 		assertEquals(experience("test1.A"), tp.get(schema.getTest("test1")));
 		assertEquals(experience("test2.C"), tp.get(schema.getTest("test2")));
-		assertEquals(experience("test3.B"), tp.get(schema.getTest("test3")));
+		//assertEquals(experience("test3.B"), tp.get(schema.getTest("test3")));
 		assertNull(tp.get(schema.getTest("test4")));
 
 		timestamp = System.currentTimeMillis() - DateUtils.MILLIS_PER_DAY - 1;

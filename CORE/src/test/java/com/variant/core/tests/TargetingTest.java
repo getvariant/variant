@@ -86,25 +86,25 @@ public class TargetingTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		engine.clearHookListeners();
-		ParserResponse response = engine.parseSchema(config);
+		ParserResponse response = api.parseSchema(config);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		Schema schema = engine.getSchema();		
+		Schema schema = api.getSchema();		
 		State state = schema.getState("state1");
 		com.variant.core.schema.Test test = schema.getTest("test1");
-		VariantSession ssn = engine.getSession("foo");
 
 		//
 		// No targeting listener - distribution according to weights.
 		//
 		int[] counts = {0, 0, 0};
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
+			VariantSession ssn = api.getSession("foo" + i);
+			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
+			api.commitStateRequest(req, "");
 		} 
 		verifyCounts(counts, new float[] {1, 2, 97});
 
@@ -113,14 +113,16 @@ public class TargetingTest extends BaseTest {
 		//
 		NullTargetingHookListener nullListener1 = new NullTargetingHookListener();
 		nullListener1.postCount = 0;
-		engine.addHookListener(nullListener1);
+		api.addHookListener(nullListener1);
 		counts[0] = counts[1] = counts[2] = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
+			VariantSession ssn = api.getSession("foo" + i);
+			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
+			api.commitStateRequest(req, "");
 		} 
 		assertEquals(TRIALS, nullListener1.postCount);
 		verifyCounts(counts, new float[] {1, 2, 97});
@@ -129,15 +131,17 @@ public class TargetingTest extends BaseTest {
 		// Add two null listeners - still distribution according to weights.
 		//
 		NullTargetingHookListener nullListener2 = new NullTargetingHookListener();
-		engine.addHookListener(nullListener2);
+		api.addHookListener(nullListener2);
 		counts[0] = counts[1] = counts[2] = 0;
 		nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
+			VariantSession ssn = api.getSession("foo" + i);
+			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
+			api.commitStateRequest(req, "");
 		} 
 		assertEquals(TRIALS, nullListener1.postCount);
 		assertEquals(TRIALS, nullListener2.postCount);
@@ -147,15 +151,17 @@ public class TargetingTest extends BaseTest {
 		// Add the A/B listener - changes distribution to 1/1/0.
 		//
 		ABTargetingHookListener ABListener = new ABTargetingHookListener();
-		engine.addHookListener(ABListener);
+		api.addHookListener(ABListener);
 		counts[0] = counts[1] = counts[2] = 0;
 		ABListener.postCount = nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
+			VariantSession ssn = api.getSession("foo" + i);
+			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
+			api.commitStateRequest(req, "");
 		} 
 		assertEquals(TRIALS, nullListener1.postCount);
 		assertEquals(TRIALS, nullListener2.postCount);
@@ -165,16 +171,18 @@ public class TargetingTest extends BaseTest {
 		//
 		// Clear all listeners, then add the A/C listener - changes distribution to 1/0/1.
 		//
-		engine.clearHookListeners();
+		api.clearHookListeners();
 		ACTargetingHookListener ACListener = new ACTargetingHookListener();
-		engine.addHookListener(ACListener);
+		api.addHookListener(ACListener);
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
+			VariantSession ssn = api.getSession("foo" + i);
+			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
+			api.commitStateRequest(req, "");
 		} 
 		assertEquals(TRIALS, ACListener.postCount);
 		verifyCounts(counts, new float[] {1, 0, 1});
@@ -182,15 +190,17 @@ public class TargetingTest extends BaseTest {
 		//
 		// Add null listener - should not change the distribution.
 		//
-		engine.addHookListener(nullListener1);
+		api.addHookListener(nullListener1);
 		nullListener1.postCount = ACListener.postCount = 0;
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
+			VariantSession ssn = api.getSession("foo" + i);
+			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
+			api.commitStateRequest(req, "");
 		} 
 		assertEquals(TRIALS, nullListener1.postCount);
 		assertEquals(TRIALS, ACListener.postCount);
@@ -199,18 +209,20 @@ public class TargetingTest extends BaseTest {
 		//
 		// Clear all listeners, then add the A/B/Null custom targeter + A/C targeter - changes distribution to 50/25/25.
 		//
-		engine.clearHookListeners();
+		api.clearHookListeners();
 		ABNullTargetingHookListener ABNullListener = new ABNullTargetingHookListener();
-		engine.addHookListener(ABNullListener);
-		engine.addHookListener(ACListener);
+		api.addHookListener(ABNullListener);
+		api.addHookListener(ACListener);
 		counts[0] = counts[1] = counts[2] = 0;
 		ABNullListener.postCount = ACListener.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantStateRequest req = engine.dispatchRequest(ssn, state, "");
+			VariantSession ssn = api.getSession("foo" + i);
+			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
+			api.commitStateRequest(req, "");
 		} 
 		assertEquals(TRIALS, ABNullListener.postCount);
 		assertEquals(TRIALS, ACListener.postCount);
@@ -296,17 +308,17 @@ public class TargetingTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		engine.clearHookListeners();
-		ParserResponse response = engine.parseSchema(config);
+		api.clearHookListeners();
+		ParserResponse response = api.parseSchema(config);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		Schema schema = engine.getSchema();		
+		Schema schema = api.getSchema();		
 		State state = schema.getState("state1");
-		VariantSession ssn = engine.getSession("foo");
+		VariantSession ssn = api.getSession("foo");
 
 		boolean exceptionThrown = false;
 		try {
-			engine.dispatchRequest(ssn, state, "");
+			api.dispatchRequest(ssn, state, "");
 		}
 		catch (VariantRuntimeException e) {
 			exceptionThrown = true;

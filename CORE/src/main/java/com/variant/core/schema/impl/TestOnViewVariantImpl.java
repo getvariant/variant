@@ -7,6 +7,7 @@ import java.util.Map;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.Test.OnState;
+import com.variant.core.util.CaseInsensitiveMap;
 
 
 class TestOnViewVariantImpl implements Test.OnState.Variant{
@@ -25,7 +26,7 @@ class TestOnViewVariantImpl implements Test.OnState.Variant{
 		this.onViewImpl = onViewImpl;
 		this.ownExperience = ownExperience;
 		this.covarExperiences = covarExperiences;
-		this.params = params;
+		this.params = new CaseInsensitiveMap<String>(params);
 	}
 
 	/**

@@ -9,9 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantTargetingTracker;
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
+import com.variant.core.VariantTargetingTracker;
 import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.TestQualificationHook;
@@ -24,6 +24,7 @@ import com.variant.core.schema.Test.OnState;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.session.VariantSessionImpl;
+import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -132,10 +133,12 @@ public class VariantRuntime {
 	 * Target this session for all active tests.
 	 * 
 	 * 1. Find all the tests instrumented on this state - the state's instrumented test list (ITL),
-	 *    i.e. the list of tests that must be targeted before we can resolve the state.
-	 * 2. Check qualifications for each test on the ITL. Keep a list of disqualified tests.
-	 *    If client code 1) disqualified a test, and 2) requested removal from targeting 
-	 *    persister (TP), remove this test from targeting persister.
+	 *    i.e. the list of tests that may have to be targeted before we can resolve the state.
+	 * 2. For each test on the ITL, if this test has already been traversed by this session and
+	 *    disqualified, remove this test from the ITL as we won't really need to resolve it.
+	 *    Otherwise, if this test has not yet been traversed by this session, post qualification
+	 *    hooks. If client code disqualified a test, remove it from the ITL. If client code also
+	 *    requested removal from targeting persister (TP), remove this test from targeting persister.
 	 * 3. Some of these tests may be already targeted via the experience persistence mechanism.
 	 *    Determine this already targeted subset.
      * 4. If such a subset exists, confirm that we are still able to resolve this test cell. 
@@ -157,41 +160,74 @@ public class VariantRuntime {
 	private static Map<String,String> targetSessionForState(VariantStateRequestImpl req) {
 
 		Schema schema = variantCoreImpl.getSchema();
-		VariantSession session = req.getSession();
+		VariantSessionImpl session = (VariantSessionImpl) req.getSession();
 		State state = req.getState();
-		VariantTargetingTracker tp = req.getTargetingTracker();
+		VariantTargetingTracker tt = req.getTargetingTracker();
 		
 		// It is illegal to call this with a view that is not in schema, e.g. before runtime.
 		State schemaState = schema.getState(state.getName());
 		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
 			throw new VariantInternalException("State [" + state.getName() + "] is not in schema");
 		
-		// Re-qualify each instrumented test by triggering the qualification user hook.
+		// Re-qualify the tests we're about to traverse and that haven't yet been qualified
+		// by this session, by triggering the qualification user hook.
 		for (Test test: state.getInstrumentedTests()) {
-			TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
-			variantCoreImpl.getUserHooker().post(hook);
-			if (!hook.qualified) {
-				req.addDisqualifiedTest(test);
-				if (hook.removeFromTT) tp.remove(test);
+
+			Pair<Test, Boolean> foundPair = null;
+			for (Pair<Test, Boolean> pair: session.getTraversedTests()) {
+				if (pair.arg1().equals(test)) {
+					foundPair = pair;
+					break;
+				}
+			}
+			
+			if (foundPair == null) {
+				TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
+				variantCoreImpl.getUserHooker().post(hook);
+				if (!hook.qualified) {
+					if (hook.removeFromTT) tt.remove(test);
+				}
+				
+				// If this test is on, add it to the traversed list.
+				if (test.isOn()) ((VariantSessionImpl) req.getSession()).addTraversedTest(test, hook.qualified);
 			}
 		}
 		
-		// Pre-targeted experiences from the targeting persister.
-		Collection<Experience> alreadyTargetedExperiences = tp.getAll();
+		// Pre-targeted experiences from the targeting tracker.
+		HashSet<Experience> alreadyTargetedExperiences = new HashSet<Experience>(tt.getAll());
 		
+		// Remove from the pre-targeted experience list the experiences corresponding to currently
+		// disqualified tests: we won't need to resolve them anyway.
+		for (Experience e: alreadyTargetedExperiences) {
+			
+			Pair<Test, Boolean> foundPair = null;
+			for (Pair<Test, Boolean> pair: session.getTraversedTests()) {
+				if (pair.arg1().equals(e.getTest())) {
+					foundPair = pair;
+					break;
+				}
+			}
+			
+			if (foundPair != null && !foundPair.arg2()) 
+				alreadyTargetedExperiences.remove(e);
+		}
+		
+		// If not empty, alreadyTargetedEperience least contains experiences we need to resolve for.
 		if (!alreadyTargetedExperiences.isEmpty()) {
 			
-			// Resolvable?  If not, find largest resolvable subset.
+			// Resolvable?  If not, find largest resolvable subset and discard the rest.
 			Collection<Experience> minUnresolvableSubvector = 
 					minUnresolvableSubvector(alreadyTargetedExperiences);
 			
-			if (!minUnresolvableSubvector.isEmpty()) {
-
-				for (Experience e: minUnresolvableSubvector) tp.remove(e.getTest());
+			if (minUnresolvableSubvector.isEmpty()) {
+				if (LOG.isDebugEnabled()) LOG.debug("Targeting tracker resolvable for session [" + session.getId() + "]");
+			}
+			else {
+				for (Experience e: minUnresolvableSubvector) tt.remove(e.getTest());
 
 				LOG.info(
-						"Targeting persistor not resolvable for session [" + session.getId() + "]. " +
-						"Removed experiences [" + StringUtils.join(minUnresolvableSubvector.toArray()) + "].");
+						"Targeting tracker not resolvable for session [" + session.getId() + "]. " +
+						"Discarded experiences [" + StringUtils.join(minUnresolvableSubvector.toArray()) + "].");
 			}
 		
 		}
@@ -202,7 +238,7 @@ public class VariantRuntime {
 		ArrayList<Experience> vector = new ArrayList<Experience>();
 		
 		// First add all from from TP.
-		for (Experience e: tp.getAll()) {
+		for (Experience e: tt.getAll()) {
 
 			if (!e.getTest().isOn()) {
 				Experience ce = e.getTest().getControlExperience();
@@ -213,7 +249,7 @@ public class VariantRuntime {
 							" but substituted control experience [" + ce + "] because test is OFF");
 				}													
 			}
-			else if (req.getDisqualifiedTests().contains(e.getTest())) {
+			else if (session.isDisqualified(e.getTest())) {
 				Experience ce = e.getTest().getControlExperience();
 				vector.add(ce);
 				if (LOG.isDebugEnabled()) {
@@ -234,7 +270,7 @@ public class VariantRuntime {
 		// Then target and add the rest from the ITL.
 		for (Test test: state.getInstrumentedTests()) {
 						
-			if (tp.get(test) == null) {
+			if (tt.get(test) == null) {
 								
 				if (!test.isOn()) {
 					Experience e = test.getControlExperience();
@@ -245,7 +281,7 @@ public class VariantRuntime {
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}
 				}
-				else if (req.getDisqualifiedTests().contains(test)) {
+				else if (session.isDisqualified(test)) {
 					Experience e = test.getControlExperience();
 					vector.add(e);
 					if (LOG.isDebugEnabled()) {
@@ -254,7 +290,7 @@ public class VariantRuntime {
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}										
 				}
-				else if (isTargetable(test, tp.getAll())) {
+				else if (isTargetable(test, tt.getAll())) {
 					// Target this test. First post possible user hook listeners.
 					TestTargetingHookImpl hook = new TestTargetingHookImpl(session, test);
 					variantCoreImpl.getUserHooker().post(hook);
@@ -265,7 +301,7 @@ public class VariantRuntime {
 					}
 										
 					vector.add(targetedExperience);
-					tp.add(targetedExperience, System.currentTimeMillis());
+					tt.add(targetedExperience, System.currentTimeMillis());
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(
 								"Session [" + session.getId() + "] targeted for test [" + 
@@ -276,7 +312,7 @@ public class VariantRuntime {
 				else {
 					Experience e = test.getControlExperience();
 					vector.add(e);
-					tp.add(e, System.currentTimeMillis());
+					tt.add(e, System.currentTimeMillis());
 					if (LOG.isDebugEnabled()) {
 						LOG.debug(
 								"Session [" + session.getId() + "] targeted for untargetable test [" + 
@@ -471,7 +507,7 @@ public class VariantRuntime {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Implementation of <code>Variant.dispatchRequest()</code>
+	 * Implementation of {@link Variant#dispatchRequest(VariantSession, State, Object...)}
 	 * @param ssn
 	 * @param view
 	 * @return
@@ -511,7 +547,7 @@ public class VariantRuntime {
 		}
 		else {
 			StateServeEvent event = new StateServeEvent(result, resolvedParams);
-			result.setViewServeEvent(event);
+			result.triggerEvent(event);
 		}
 	
 		return result;

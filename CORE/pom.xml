@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     
 	<properties>
-	    <variant.version>0.5.1</variant.version>
+	    <variant.version>0.5.2</variant.version>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
 		<jackson.version>2.5.3</jackson.version>
     </properties>
@@ -40,6 +40,12 @@
 			<version>2.4</version>
 		</dependency>
         
+        <dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-collections4</artifactId>
+			<version>4.0</version>
+		</dependency>
+
         <!-- Logging -->
         <dependency>
 		    <groupId>org.slf4j</groupId>

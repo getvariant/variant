@@ -39,7 +39,7 @@
 		<dandelion.version>1.0.1</dandelion.version>
 
 		<cobertura.version>2.7</cobertura.version>
-		<variant.version>0.5.1</variant.version>
+		<variant.version>0.5.2</variant.version>
 		<jackson.version>2.5.3</jackson.version>
 
 	</properties>

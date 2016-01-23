@@ -21,10 +21,10 @@ public class RuntimeExceptionTest extends BaseTest {
 	@Test
 	public void runViewNotInstrumentedForTest_Test() throws Exception {
 		
-		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		final Schema schema = engine.getSchema();
+		final Schema schema = api.getSchema();
 		
 		State view = schema.getState("state1");
 		try {
@@ -77,10 +77,10 @@ public class RuntimeExceptionTest extends BaseTest {
 	@Test
 	public void runNoViewForPath_Test() throws Exception {
 
-		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		final Schema schema = engine.getSchema();		
+		final Schema schema = api.getSchema();		
 		assertNull(schema.getState("non-existent"));
 
 	}

@@ -3,6 +3,8 @@ package com.variant.core.tests;
 import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
@@ -23,7 +25,7 @@ import com.variant.core.schema.parser.ParserResponse;
 
 public class BaseTest {
 	
-	protected static VariantCoreImpl engine = (VariantCoreImpl) Variant.Factory.getInstance();
+	protected static VariantCoreImpl api = (VariantCoreImpl) Variant.Factory.getInstance();
 
 	/**
 	 * 
@@ -33,11 +35,10 @@ public class BaseTest {
 	public static void beforeTestCase() throws Exception {
 
 		// Bootstrap the Variant container
-		//VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream("/variant-junit.props"));
-		engine.bootstrap("/variant-junit.props");
+		api.bootstrap("/variant-junit.props");
 
 		// (Re)create the schema;
-		switch (((EventPersisterJdbc)engine.getEventWriter().getEventPersister()).getVendor()) {
+		switch (((EventPersisterJdbc)api.getEventWriter().getEventPersister()).getVendor()) {
 		case POSTGRES: 
 			JdbcUtil.recreateSchema();
 			break;
@@ -46,6 +47,10 @@ public class BaseTest {
 			break;
 		}
 	}
+
+	//---------------------------------------------------------------------------------------------//
+	//                                         HELPERS                                             //
+	//---------------------------------------------------------------------------------------------//
 
 	/**
 	 * Print all messages to std out.
@@ -77,14 +82,31 @@ public class BaseTest {
 	}
 	
 	/**
-	 * 
+	 * Pull experience from schema
 	 * @param name
 	 * @return
 	 */
 	static protected Experience experience(String name) {
 		String[] tokens = name.split("\\.");
-		return engine.getSchema().getTest(tokens[0]).getExperience(tokens[1]);
+		return api.getSchema().getTest(tokens[0]).getExperience(tokens[1]);
 	}
+
+	static protected String targetingTrackerString(String...experiences) {
+		long timestamp = System.currentTimeMillis();
+		StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (String experienceString: experiences) {
+			if (first) first = false;
+			else result.append("|");
+			result.append(timestamp).
+				append(".").
+				append(experience(experienceString).toString());
+		}
+		return result.toString();
+	}
+	//---------------------------------------------------------------------------------------------//
+	//                                         ASSERTS                                             //
+	//---------------------------------------------------------------------------------------------//
 
 	/**
 	 * 
@@ -92,7 +114,9 @@ public class BaseTest {
 	 * @return
 	 */
 	static protected void assertMatches(String pattern, String string) {
-		assertTrue(Pattern.compile(pattern).matcher(string).matches());
+		assertTrue(
+				"Pattern '" + pattern + "' does not match string '" + string + "'", 
+				Pattern.compile(pattern).matcher(string).matches());
 	}
 
 	/**
@@ -119,4 +143,46 @@ public class BaseTest {
 		}
 		assertTrue(result);
 	}
+	
+	/**
+	 * Assert that two collections are set-equivalent, i.e.
+	 * for each element in one, there's an equal element in the other.
+	 *  
+	 * @param 
+	 */	
+	static protected <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected) {
+		
+		for (T a: actual) {
+			boolean found = false;
+			for (T e: expected) {
+				if (a.equals(e)) {
+					found = true;
+					break;
+				}
+			}
+			assertTrue("Actual element " + a + " not found", found);
+		}
+		
+		for (T e: expected) {
+			boolean found = false;
+			for (T a: actual) {
+				if (a.equals(e)) {
+					found = true;
+					break;
+				}
+			}
+			assertTrue("Expected element " + e + " not found", found);
+		}
+	}
+
+	/**
+	 * Same as above for varargs
+	 * @param actual
+	 * @param expected
+	 */
+	@SafeVarargs
+	static protected <T> void assertEqualAsSets(Collection<T> actual, T...expected) {
+		assertEqualAsSets(actual, Arrays.asList(expected));
+	}
+
 }

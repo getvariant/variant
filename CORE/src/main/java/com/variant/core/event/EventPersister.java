@@ -2,6 +2,9 @@ package com.variant.core.event;
 
 import java.util.Collection;
 
+import com.variant.core.schema.Test;
+import com.variant.core.util.Tuples.Pair;
+
 /**
  * <p>Container-instantiated implementation will use external mechanisms to persist Variant events.
  * An implementation must provide a no argument constructor. Because an implementation
@@ -21,14 +24,15 @@ public interface EventPersister {
 	public void initialized();
 	
 	/**
-	 * <p>Persist events to some storage mechanism. This method must generate and initialize
-	 * event IDs for all passed events, by calling {@link com.variant.core.event.VariantEvent#setId(long)}.
-	 * In the case of a relational database, these will be sequence generated numbers returned by JDBC
-	 * after the insert.
+	 * <p>Persist events to some storage mechanism.
 	 * 
-	 * @param events A collection of {@link com.variant.core.event.VariantEvent} objects to be persisted.
+	 * @param events A collection of pairs ({@link Pair}), each containing 1) an event 
+	 * (object of type {@link com.variant.core.event.VariantEvent}) to be persisted, and 2)
+	 * a collection of test experiences in effect at the time when this event was triggered.
+	 * 
+	 * @see EventPersisterH2, EventPersisterPostgres
 	 * @since 0.5
 	 */
-	public void persist(Collection<VariantEvent> events) throws Exception;
+	public void persist(Collection<Pair<VariantEvent, Collection<Test.Experience>>> events) throws Exception;
 	
 }

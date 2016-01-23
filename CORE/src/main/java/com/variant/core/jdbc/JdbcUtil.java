@@ -99,10 +99,10 @@ public class JdbcUtil {
 		
 		final String[] SQL_STATES_OBJECT_DOES_NOT_EXIST = 
 				vendor == Vendor.H2 ? new String[] {"42P01"} :
-				vendor == Vendor.H2       ? new String[] {"42S02", "90036"} : null;
+				vendor == Vendor.H2 ? new String[] {"42S02", "90036"} : null;
 
 		String[] tokens = statement.split(" ");
-		
+
 		if (VariantStringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_DOES_NOT_EXIST)) {
 			LOG.error(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Relation Does Not Exist.");
 		}

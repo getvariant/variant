@@ -1,9 +1,6 @@
 package com.variant.core.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
@@ -21,6 +18,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
+import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantCollectionsUtils;
 
 /**
@@ -40,7 +38,7 @@ public class UserHookTest extends BaseTest {
 		
 		StateParsedHookListenerImpl listener = new StateParsedHookListenerImpl();
 		variant.addHookListener(listener);
-		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		assertEquals(variant.getSchema().getStates(), listener.stateList);
 		assertEquals(variant.getSchema().getStates().size(), response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
@@ -58,7 +56,7 @@ public class UserHookTest extends BaseTest {
 		TestParsedHookListenerImpl listener = new TestParsedHookListenerImpl();
 		variant.clearHookListeners();
 		variant.addHookListener(listener);
-		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		assertEquals(variant.getSchema().getTests(), listener.testList);
 		assertEquals(variant.getSchema().getTests().size(), response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
@@ -69,7 +67,7 @@ public class UserHookTest extends BaseTest {
 
 		StateParsedHookListenerImpl stateListener = new StateParsedHookListenerImpl();
 		variant.addHookListener(stateListener);
-		response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		assertEquals(VariantCollectionsUtils.list(variant.getSchema().getTests(), variant.getSchema().getTests()), listener.testList);
 		assertEquals(variant.getSchema().getStates(), stateListener.stateList);
 		assertEquals(variant.getSchema().getTests().size() + variant.getSchema().getStates().size(), response.getMessages().size());
@@ -90,63 +88,137 @@ public class UserHookTest extends BaseTest {
 		TestQualificationHookListenerNullImpl nullListener = new TestQualificationHookListenerNullImpl();
 		variant.clearHookListeners();
 		variant.addHookListener(nullListener);
-		ParserResponse response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
+		
 		assertTrue(nullListener.testList.isEmpty());
 		Schema schema = variant.getSchema();
-		State state = schema.getState("state1");
-		VariantSession ssn = engine.getSession("foo");
-		//String tpData = System.currentTimeMillis() + ".state1.A";
-		VariantStateRequest request = engine.dispatchRequest(ssn, state, "");
-		assertTrue(request.getDisqualifiedTests().isEmpty());
+		State state1 = schema.getState("state1");
+		VariantSession ssn = api.getSession("foo");
+		VariantStateRequest request = api.dispatchRequest(ssn, state1, "");
+		assertEquals(1, ssn.getTraversedStates().size());
+		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
+		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());
+		assertEqualAsSets(
+				ssn.getTraversedTests(), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("test1"), true), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("Test1"), true));
 		assertEquals(2, request.getTargetingTracker().getAll().size());
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("Test1")));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1"), schema.getTest("Test1")), nullListener.testList);
+		api.commitStateRequest(request, "");
 		
 		nullListener.testList.clear();
 		
-		TestQualificationHookListenerDisqualifyImpl disqualListener = new TestQualificationHookListenerDisqualifyImpl(schema.getTest("test1"));
+		// Repeat the same thing.  Test should have been put on the qualified list for the session
+		// so the hooks won't be posted.
+		assertTrue(nullListener.testList.isEmpty());
+		request = api.dispatchRequest(ssn, state1, "");
+		assertEquals(1, ssn.getTraversedStates().size());
+		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
+		assertEquals(2, ssn.getTraversedStates().iterator().next().arg2().intValue());
+		assertEqualAsSets(
+				ssn.getTraversedTests(), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("test1"), true), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("Test1"), true));
+
+		assertEquals(2, request.getTargetingTracker().getAll().size());
+		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
+		assertNotNull(request.getTargetingTracker().get(schema.getTest("Test1")));
+		assertEquals(0, nullListener.testList.size());
+		api.commitStateRequest(request, "");
+
+		// New session. Disqualify, but keep in TT.
+		TestQualificationHookListenerDisqualifyImpl disqualListener = new TestQualificationHookListenerDisqualifyImpl(false, schema.getTest("test1"));
 		variant.addHookListener(disqualListener);
-		response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertTrue(nullListener.testList.isEmpty());
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = variant.getSchema();
-		state = schema.getState("state1");
-		ssn = engine.getSession("foo");
-		long timestamp = System.currentTimeMillis();
-		String tpString = timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
-		request = engine.dispatchRequest(ssn, state, tpString);
-		assertEquals(1, request.getDisqualifiedTests().size());
+		state1 = schema.getState("state1");
+		ssn = api.getSession("foo2");
+		request = api.dispatchRequest(ssn, state1, targetingTrackerString("test2.D","Test1.A"));
+		assertEquals(1, ssn.getTraversedStates().size());
+		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
+		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());
+		assertEqualAsSets(
+				ssn.getTraversedTests(), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("test1"), false), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("Test1"), true));
+
 		assertEquals(2, request.getTargetingTracker().getAll().size());
-		assertNotNull(request.getTargetingTracker().get(schema.getTest("test2")));
+		assertNull(request.getTargetingTracker().get(schema.getTest("test1")));
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("Test1")));
-		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1"), schema.getTest("Test1")), nullListener.testList);
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1")), disqualListener.testList);
 		assertEquals("/path/to/state1/Test1.A", request.getResolvedParameterMap().get("path"));
+		api.commitStateRequest(request, "");
 
-		disqualListener = new TestQualificationHookListenerDisqualifyImpl(schema.getTest("Test1"), true);
+		// New session. Disqualify and drop from TT
+		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"));
 		variant.clearHookListeners();
 		variant.addHookListener(disqualListener);
 		
-		response = engine.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = variant.getSchema();
-		state = schema.getState("state1");
-		ssn = engine.getSession("foo");
-		tpString = timestamp + ".test1.B|" + timestamp + ".test2.D|" + timestamp + ".Test1.A"; 
-		request = engine.dispatchRequest(ssn, state, tpString);
-		assertEquals(1, request.getDisqualifiedTests().size());
+		state1 = schema.getState("state1");
+		ssn = api.getSession("foo3");
+		request = api.dispatchRequest(ssn, state1, targetingTrackerString("test1.B","test2.D","Test1.A"));
+		assertEquals(1, ssn.getTraversedStates().size());
+		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
+		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());
+		assertEqualAsSets(
+				ssn.getTraversedTests(), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("test1"), true), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("Test1"), false));
+
 		assertEquals(2, request.getTargetingTracker().getAll().size());
+		assertNull(request.getTargetingTracker().get(schema.getTest("Test1")));
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test2")));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("Test1")), disqualListener.testList);
 		assertEquals("/path/to/state1/test1.B", request.getResolvedParameterMap().get("path"));
+		api.commitStateRequest(request, "");
+
+		// Same session, but dispatch o state2 - it's only instrumented by the off test2. 
+		// The extra disqualifier should not matter because test1 has already been qualified for this session. The
+		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"), schema.getTest("test1"));
+		variant.addHookListener(disqualListener);
+		
+		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertTrue(disqualListener.testList.isEmpty());
+		schema = variant.getSchema();
+		state1 = schema.getState("state1");
+		State state2 = schema.getState("state2");
+		ssn = api.getSession("foo3");
+		request = api.dispatchRequest(ssn, state2, targetingTrackerString("test1.B","test2.D","Test1.A"));
+		assertEquals(2, ssn.getTraversedStates().size());		
+		assertEqualAsSets(
+				ssn.getTraversedStates(), 
+				new Pair<State, Integer>(state1, 1), 
+				new Pair<State, Integer>(state2, 1));
+
+		assertEqualAsSets(
+				ssn.getTraversedTests(), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("test1"), true), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("Test1"), false));
+
+		assertEquals(3, request.getTargetingTracker().getAll().size());
+		assertEquals(experience("Test1.A"), request.getTargetingTracker().get(schema.getTest("Test1")));
+		assertEquals(experience("test1.B"), request.getTargetingTracker().get(schema.getTest("test1")));
+		assertEquals(experience("test2.D"), request.getTargetingTracker().get(schema.getTest("test2")));
+		assertNotNull(request.getTargetingTracker().get(schema.getTest("test2")));
+		assertTrue(disqualListener.testList.isEmpty());
+		assertEquals("/path/to/state2", request.getResolvedParameterMap().get("path"));
+		api.commitStateRequest(request, "");
 
 	}
 
@@ -190,7 +262,7 @@ public class UserHookTest extends BaseTest {
 	}
 
 	/**
-	 * 
+	 * Do nothing.  Tests should be qualified.
 	 */
 	private static class TestQualificationHookListenerNullImpl implements HookListener<TestQualificationHook> {
 
@@ -214,16 +286,12 @@ public class UserHookTest extends BaseTest {
 	private static class TestQualificationHookListenerDisqualifyImpl implements HookListener<TestQualificationHook> {
 
 		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
-		private com.variant.core.schema.Test testToDisqualify;
-		private Boolean removeFromTp = null;
+		private com.variant.core.schema.Test[] testsToDisqualify;
+		private boolean removeFromTt;
 		
-		private TestQualificationHookListenerDisqualifyImpl(com.variant.core.schema.Test testToDisqualify) {
-			this.testToDisqualify = testToDisqualify;
-		}
-
-		private TestQualificationHookListenerDisqualifyImpl(com.variant.core.schema.Test testToDisqualify, boolean removeFromTp) {
-			this.testToDisqualify = testToDisqualify;
-			this.removeFromTp = removeFromTp;
+		private TestQualificationHookListenerDisqualifyImpl(boolean removeFromTt, com.variant.core.schema.Test...testsToDisqualify) {
+			this.testsToDisqualify = testsToDisqualify;
+			this.removeFromTt = removeFromTt;
 		}
 
 		@Override
@@ -233,10 +301,19 @@ public class UserHookTest extends BaseTest {
 
 		@Override
 		public void post(TestQualificationHook hook) {
-			if (hook.getTest().equals(testToDisqualify)) {
+			
+			boolean found = false;
+			for (com.variant.core.schema.Test test: testsToDisqualify) {
+				if (test.equals(hook.getTest())) {
+					found = true;
+					break;
+				}
+			}
+			
+			if (found) {
 				testList.add(hook.getTest());
 				hook.setQualified(false);
-				if (removeFromTp != null) hook.setRemoveFromTargetingTracker(removeFromTp);
+				hook.setRemoveFromTargetingTracker(removeFromTt);
 			}
 		}		
 	}
