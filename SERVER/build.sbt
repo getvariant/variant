@@ -21,7 +21,7 @@ scalacOptions ++= Seq("-deprecation", "-unchecked")
 
 libraryDependencies ++= {
   val liftVersion = "2.6.2"
-  val variantVersion = "0.5.1"
+  val variantVersion = "0.5.2"
   Seq(
     "net.liftweb"       %% "lift-webkit"        % liftVersion        % "compile",
     "org.eclipse.jetty" % "jetty-webapp"        % "8.1.17.v20150415"  % "container,test",

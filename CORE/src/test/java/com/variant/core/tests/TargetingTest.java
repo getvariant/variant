@@ -6,11 +6,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.config.VariantProperties;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.ext.EventPersisterNull;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestTargetingHook;
 import com.variant.core.schema.Schema;
@@ -21,16 +24,26 @@ import com.variant.core.schema.parser.ParserResponse;
 
 public class TargetingTest extends BaseTest {
 
-	static final int TRIALS = 1000000;
+	static final int TRIALS = 750000;
 	static final float DELTA_AS_FRACTION = .025f;
 
+	/**
+	 * Reboot the API to use the null event persister.
+	 * @throws Exception
+	 */
+	@BeforeClass
+	public static void beforeTestCase() throws Exception {
+		System.setProperty(VariantProperties.Keys.EVENT_PERSISTER_CLASS_NAME.propName(), EventPersisterNull.class.getName());
+		rebootApi();
+	}
+	
 	/**
 	 * Basic targeting
 	 * @throws Exception
 	 */
 	@Test
 	public void basicTest() throws Exception {
-
+				
 		String config = 
 				"{                                                             \n" +
 			    "   'states':[                                                 \n" +
@@ -107,7 +120,7 @@ public class TargetingTest extends BaseTest {
 			api.commitStateRequest(req, "");
 		} 
 		verifyCounts(counts, new float[] {1, 2, 97});
-
+		
 		//
 		// Add one null listener - still distribution according to weights.
 		//

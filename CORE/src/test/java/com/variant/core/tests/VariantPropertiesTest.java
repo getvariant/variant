@@ -1,10 +1,11 @@
 package com.variant.core.tests;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.Properties;
+import java.util.Random;
 
 import org.junit.Test;
 
@@ -98,7 +99,19 @@ public class VariantPropertiesTest {
 		engine.shutdown();
 		System.clearProperty(VariantProperties.RUNTIME_PROPS_FILE_NAME);
 		System.clearProperty(VariantProperties.RUNTIME_PROPS_RESOURCE_NAME);
-
+		
+		// System props override. 
+		int randomInt = new Random().nextInt();
+		engine.bootstrap();
+		assertNotEquals(randomInt, VariantProperties.getInstance().targetingTrackerIdleDaysToLive());
+		System.setProperty(VariantProperties.Keys.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName(), String.valueOf(randomInt));
+		assertEquals(randomInt, VariantProperties.getInstance().targetingTrackerIdleDaysToLive());
+		engine.shutdown();
+		engine.bootstrap();
+		assertEquals(randomInt, VariantProperties.getInstance().targetingTrackerIdleDaysToLive());
+		System.clearProperty(VariantProperties.Keys.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName());
+		assertNotEquals(randomInt, VariantProperties.getInstance().targetingTrackerIdleDaysToLive());
+		engine.shutdown();
 	}
 
 }

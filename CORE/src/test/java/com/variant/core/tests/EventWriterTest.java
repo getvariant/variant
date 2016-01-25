@@ -6,14 +6,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.impl.StateServeEvent;
 import com.variant.core.jdbc.EventReader;
-import com.variant.core.jdbc.JdbcUtil;
 import com.variant.core.jdbc.VariantEventFromDatabase;
 import com.variant.core.jdbc.VariantEventVariantFromDatabase;
 import com.variant.core.schema.Schema;
@@ -21,15 +19,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 
 public class EventWriterTest extends BaseTest {
-	
-	@Before
-	public void beforeEachTest() throws Exception {
-		// Reboot the api with the postgres event persister: we'll be reading back.
-		api.shutdown();
-		api.bootstrap("/variant-junit.props", "/variant-junit-postgres.props");
-		JdbcUtil.recreateSchema();
-	}
-		
+			
 	/**
 	 * 
 	 * @throws Exception

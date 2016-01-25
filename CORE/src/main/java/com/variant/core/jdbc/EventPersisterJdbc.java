@@ -47,13 +47,6 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	 */
 	@Override
 	final public void persist(final Collection<Pair<VariantEvent, Collection<Test.Experience>>> eventPairs) throws Exception {
-
-		if (getVendor() == Vendor.H2) {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug(getClass().getSimpleName() + ".persist() quit becuase H2 does not support generated key retrieval on batch inserts");
-			}
-			return;
-		}
 		
 				final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
@@ -87,8 +80,6 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					// 1. Insert into EVENTS and get the sequence generated IDs back.
 					//
 					
-					// H2 does not support getGeneratedKeys() on batch inserts.
-					// https://github.com/h2database/h2database/issues/156
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
 					for (Pair<VariantEvent, Collection<Test.Experience>> pair: eventPairs) {

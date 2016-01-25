@@ -33,21 +33,39 @@ public class BaseTest {
 	 */
 	@BeforeClass
 	public static void beforeTestCase() throws Exception {
+		rebootApi();
+	}
+
+	/**
+	 * @throws Exception 
+	 * 
+	 */
+	protected static void rebootApi() throws Exception {
+
+		// Shutdown if already booted.
+		if (api.isBootstrapped()) api.shutdown();
 
 		// Bootstrap the Variant container
 		api.bootstrap("/variant-junit.props");
 
-		// (Re)create the schema;
-		switch (((EventPersisterJdbc)api.getEventWriter().getEventPersister()).getVendor()) {
-		case POSTGRES: 
-			JdbcUtil.recreateSchema();
-			break;
-		case H2:
-			JdbcUtil.createSchema();  // Fresh in-memory DB.
-			break;
+		// (Re)create the schema, if running with a JDBC based event persister.
+		try {
+			
+			EventPersisterJdbc persister = (EventPersisterJdbc)api.getEventWriter().getEventPersister();
+			
+			switch (persister.getVendor()) {
+			case POSTGRES: 
+				JdbcUtil.recreateSchema();
+				break;
+			case H2:
+				JdbcUtil.createSchema();  // Fresh in-memory DB.
+				break;
+			}
 		}
-	}
+		catch (Exception e) {}		
 
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                         HELPERS                                             //
 	//---------------------------------------------------------------------------------------------//

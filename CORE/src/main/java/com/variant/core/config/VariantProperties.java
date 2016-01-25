@@ -51,11 +51,13 @@ public class VariantProperties {
 	
 	/**
 	 * Open direct access to Property chain for junits.
+	 * System property overrides.
 	 * @param name
 	 * @return
 	 */
-	String getString(String key) {
-		String result = props.getProperty(key);
+	String getString(String key) {		
+		String result = System.getProperty(key);
+		if (result == null) result = props.getProperty(key);
 		if (result == null) throw new VariantInternalException("Undefined system property [" + key + "]");
 		return result;
 	}
@@ -77,7 +79,6 @@ public class VariantProperties {
 		EVENT_WRITER_MAX_DELAY_MILLIS,
 		EVENT_WRITER_PERCENT_FULL,
 		SESSION_STORE_CLASS_NAME,
-		//SESSION_ID_TRACKER_CLASS_NAME,
 		TARGETING_TRACKER_CLASS_NAME,
 		TARGETING_TRACKER_IDLE_DAYS_TO_LIVE,
 		;
