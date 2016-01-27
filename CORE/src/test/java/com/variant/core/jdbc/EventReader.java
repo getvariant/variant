@@ -7,8 +7,10 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.collections4.Predicate;
 
 /**
  * Read events from a JDBC event persister.
@@ -25,7 +27,8 @@ public class EventReader {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static Collection<VariantEventFromDatabase> readEvents() throws ClassNotFoundException, SQLException {
+	public static Collection<VariantEventFromDatabase> readEvents(final Predicate<VariantEventFromDatabase> filter) 
+			throws ClassNotFoundException, SQLException {
 		
 		final String SELECT_EVENTS_SQL = 
 				"SELECT e.id, e.session_id, e.created_on, e.event_name, e.event_value, p.key, p.value " +
@@ -103,9 +106,35 @@ public class EventReader {
 							event.eventVariants.add(innerEntry.getValue());
 						}
 					}
+					
+					// Apply filter
+					Iterator<VariantEventFromDatabase> result = eventMap.values().iterator();
+					while(result.hasNext()) {
+						VariantEventFromDatabase e = result.next();
+						if (!filter.evaluate(e)) result.remove();
+					}
+					
 					return eventMap.values();
 				}
 			}
 		);
-	}				
+	}			
+	
+	/**
+	 * Read events as a collection
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	public static Collection<VariantEventFromDatabase> readEvents() throws ClassNotFoundException, SQLException {
+
+		Predicate<VariantEventFromDatabase> noFilter = new Predicate<VariantEventFromDatabase>() {
+
+			@Override
+			public boolean evaluate(VariantEventFromDatabase t) {
+				return true;
+			}
+		};
+		return readEvents(noFilter);
+	}
 }

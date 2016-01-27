@@ -62,7 +62,8 @@ public class BaseTest {
 				break;
 			}
 		}
-		catch (Exception e) {}		
+		catch (ClassCastException e) {/*OK*/}		
+		catch (Exception e) { throw e; }		
 
 	}
 	
