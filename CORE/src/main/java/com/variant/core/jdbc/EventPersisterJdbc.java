@@ -14,11 +14,10 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.impl.VariantEventSupport;
+import com.variant.core.event.VariantEventDecorator;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.util.Tuples.Pair;
 
 /**
  * JDBC persisters extend this class instead of implementing the EventPersister interface. 
@@ -46,7 +45,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	 * Persist a collection of events.
 	 */
 	@Override
-	final public void persist(final Collection<Pair<VariantEvent, Collection<Test.Experience>>> eventPairs) throws Exception {
+	final public void persist(final Collection<VariantEventDecorator> events) throws Exception {
 
 		if (getVendor() == Vendor.H2) {
 			if (LOG.isDebugEnabled()) {
@@ -91,9 +90,8 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					// https://github.com/h2database/h2database/issues/156
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
-					for (Pair<VariantEvent, Collection<Test.Experience>> pair: eventPairs) {
-						VariantEvent event = pair.arg1();
-						stmt.setString(1, event.getSession().getId());
+					for (VariantEventDecorator event: events) {
+						stmt.setString(1, event.getStateRequest().getSession().getId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getEventName());
 						stmt.setString(4, event.getEventValue());
@@ -106,17 +104,17 @@ abstract public class EventPersisterJdbc implements EventPersister {
 
 					// Read sequence generated event IDs and add them to the event objects.
 					// We'll need these ids when inserting into events_experiences.
-					long[] eventIds = new long[eventPairs.size()];
+					long[] eventIds = new long[events.size()];
 					int index = 0;
 					ResultSet gennedKeys = stmt.getGeneratedKeys();
 					while(gennedKeys.next()) {
 
-						if (index == eventPairs.size()) 
+						if (index == events.size()) 
 							throw new VariantInternalException("Received more genereated keys than inserted event records.");
 						
 						eventIds[index++] = gennedKeys.getLong(1);
 					}
-					if (index < eventPairs.size()) 
+					if (index < events.size()) 
 						throw new VariantInternalException("Received fewer genereated keys than inserted event records.");
 
 					stmt.close();
@@ -126,8 +124,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_PARAMETERS_SQL);
 					index = 0;
-					for (Pair<VariantEvent, Collection<Test.Experience>> pair: eventPairs) {
-						VariantEvent event = pair.arg1();
+					for (VariantEventDecorator event: events) {
 						long eventId = eventIds[index++];
 						for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
 
@@ -147,16 +144,14 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_VARIANTS_SQL);
 					index = 0;
-					for (Pair<VariantEvent, Collection<Test.Experience>> pair: eventPairs) {
-						VariantEvent event = pair.arg1();
+					for (VariantEventDecorator event: events) {
 						long eventId = eventIds[index++];
-						Collection<Test.Experience> activeExperiences = pair.arg2();
-						for (Test.Experience exp: activeExperiences) {
+						for (Test.Experience exp: event.getActiveExperiences()) {
 							stmt.setLong(1, eventId);
 							stmt.setString(2, exp.getTest().getName());
 							stmt.setString(3, exp.getName());
 							stmt.setBoolean(4, exp.isControl());
-							State state = ((VariantEventSupport) event).getStateRequest().getState();
+							State state = event.getStateRequest().getState();
 							stmt.setBoolean(5, state.isInstrumentedBy(exp.getTest()) && state.isNonvariantIn(exp.getTest()));
 						
 							stmt.addBatch();

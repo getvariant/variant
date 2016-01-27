@@ -2,9 +2,6 @@ package com.variant.core.event;
 
 import java.util.Collection;
 
-import com.variant.core.schema.Test;
-import com.variant.core.util.Tuples.Pair;
-
 /**
  * <p>Container-instantiated implementation will use external mechanisms to persist Variant events.
  * An implementation must provide a no argument constructor. Because an implementation
@@ -26,13 +23,11 @@ public interface EventPersister {
 	/**
 	 * <p>Persist events to some storage mechanism.
 	 * 
-	 * @param events A collection of pairs ({@link Pair}), each containing 1) an event 
-	 * (object of type {@link com.variant.core.event.VariantEvent}) to be persisted, and 2)
-	 * a collection of test experiences in effect at the time when this event was triggered.
+	 * @param events A collection of decorated variant events to be persisted.
 	 * 
 	 * @see EventPersisterH2, EventPersisterPostgres
 	 * @since 0.5
 	 */
-	public void persist(Collection<Pair<VariantEvent, Collection<Test.Experience>>> events) throws Exception;
+	public void persist(Collection<VariantEventDecorator> events) throws Exception;
 	
 }

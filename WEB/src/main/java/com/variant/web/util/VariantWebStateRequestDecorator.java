@@ -15,12 +15,12 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
-public class VariantWebStateRequestWrapper implements VariantStateRequest {
+public class VariantWebStateRequestDecorator implements VariantStateRequest {
 
 	private VariantStateRequest variantRequest;
 	private HttpServletRequest httpRequest;
 	
-	public VariantWebStateRequestWrapper(VariantStateRequest variantRequest, HttpServletRequest httpRequest) {
+	public VariantWebStateRequestDecorator(VariantStateRequest variantRequest, HttpServletRequest httpRequest) {
 		this.variantRequest = variantRequest;
 		this.httpRequest = httpRequest;
 	}

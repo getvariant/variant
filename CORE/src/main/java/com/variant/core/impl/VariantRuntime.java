@@ -3,6 +3,7 @@ package com.variant.core.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantTargetingTracker;
-import com.variant.core.event.impl.StateServeEvent;
+import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;
@@ -198,7 +199,10 @@ public class VariantRuntime {
 		
 		// Remove from the pre-targeted experience list the experiences corresponding to currently
 		// disqualified tests: we won't need to resolve them anyway.
-		for (Experience e: alreadyTargetedExperiences) {
+		Iterator<Experience> alreadyTargetedExperiencesIterator = alreadyTargetedExperiences.iterator();
+		while (alreadyTargetedExperiencesIterator.hasNext()) {
+			
+			Experience e = alreadyTargetedExperiencesIterator.next();
 			
 			Pair<Test, Boolean> foundPair = null;
 			for (Pair<Test, Boolean> pair: session.getTraversedTests()) {
@@ -209,7 +213,7 @@ public class VariantRuntime {
 			}
 			
 			if (foundPair != null && !foundPair.arg2()) 
-				alreadyTargetedExperiences.remove(e);
+				alreadyTargetedExperiencesIterator.remove();
 		}
 		
 		// If not empty, alreadyTargetedEperience least contains experiences we need to resolve for.
@@ -546,8 +550,7 @@ public class VariantRuntime {
 			}   			
 		}
 		else {
-			StateServeEvent event = new StateServeEvent(result, resolvedParams);
-			result.triggerEvent(event);
+			result.triggerEvent(new StateVisitedEvent(state));
 		}
 	
 		return result;
