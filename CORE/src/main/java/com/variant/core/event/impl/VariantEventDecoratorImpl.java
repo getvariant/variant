@@ -1,5 +1,6 @@
 package com.variant.core.event.impl;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
@@ -17,8 +18,12 @@ import com.variant.core.session.VariantSessionImpl;
  * @author Igor.
  *
  */
-public class VariantEventDecoratorImpl implements VariantEventDecorator {
+public class VariantEventDecoratorImpl implements VariantEventDecorator, Serializable {
 			
+	/**
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private VariantStateRequest request;
 	private VariantEvent userEvent;
 	
