@@ -15,12 +15,12 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
-public class VariantWebStateRequestWrapper implements VariantStateRequest {
+public class VariantWebStateRequestDecorator implements VariantStateRequest {
 
 	private VariantStateRequest variantRequest;
 	private HttpServletRequest httpRequest;
 	
-	public VariantWebStateRequestWrapper(VariantStateRequest variantRequest, HttpServletRequest httpRequest) {
+	public VariantWebStateRequestDecorator(VariantStateRequest variantRequest, HttpServletRequest httpRequest) {
 		this.variantRequest = variantRequest;
 		this.httpRequest = httpRequest;
 	}
@@ -66,11 +66,6 @@ public class VariantWebStateRequestWrapper implements VariantStateRequest {
 	}
 
 	@Override
-	public Collection<Test> getDisqualifiedTests() {
-		return variantRequest.getDisqualifiedTests();
-	}
-
-	@Override
 	public void setStatus(Status status) {
 		variantRequest.setStatus(status);
 	}
@@ -82,8 +77,7 @@ public class VariantWebStateRequestWrapper implements VariantStateRequest {
 
 	@Override
 	public Collection<VariantEvent> getPendingEvents(Predicate<VariantEvent> filter) {
-		// TODO Auto-generated method stub
-		return null;
+		return variantRequest.getPendingEvents();
 	}
 
 	@Override

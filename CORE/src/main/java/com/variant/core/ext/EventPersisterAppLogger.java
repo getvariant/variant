@@ -7,11 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.VariantEvent;
-import com.variant.core.event.impl.VariantEventSupport;
+import com.variant.core.event.VariantEventDecorator;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.util.Tuples.Pair;
 
 public class EventPersisterAppLogger implements EventPersister {
 	
@@ -23,15 +21,13 @@ public class EventPersisterAppLogger implements EventPersister {
 	}
 
 	@Override
-	public void persist(
-			Collection<Pair<VariantEvent, Collection<Experience>>> events)
+	public void persist(Collection<VariantEventDecorator> events)
 			throws Exception {
 
-		for (Pair<VariantEvent, Collection<Experience>> pair: events) {
-			VariantEvent event = pair.arg1();
+		for (VariantEventDecorator event: events) {
 			StringBuilder msg = new StringBuilder();
 			msg.append("EVENT:{")
-			.append("session_id:'").append(event.getSession().getId()).append("', ")
+			.append("session_id:'").append(event.getStateRequest().getSession().getId()).append("', ")
 			.append("created_on:'").append(event.getCreateDate()).append("', ")
 			.append("event_name:'").append(event.getEventName()).append("', ")
 			.append("event_value:'").append(event.getEventValue()).append("'")
@@ -40,11 +36,10 @@ public class EventPersisterAppLogger implements EventPersister {
 			LOG.info(msg.toString());
 		}
 								
-		for (Pair<VariantEvent, Collection<Experience>> pair: events) {
-			VariantEvent event = pair.arg1();
-			for (Experience e: pair.arg2()) {
+		for (VariantEventDecorator event: events) {
+			for (Experience e: event.getActiveExperiences()) {
 				StringBuilder msg = new StringBuilder();
-				State state = ((VariantEventSupport) event).getStateRequest().getState();
+				State state = event.getStateRequest().getState();
 				msg.append("EVENT_VARIANTS:{")
 				.append("event_name:'").append(event.getEventName()).append("', ")
 				.append("test_name:'").append(e.getTest().getName()).append("', ")
@@ -57,8 +52,7 @@ public class EventPersisterAppLogger implements EventPersister {
 			}
 		}
 		
-		for (Pair<VariantEvent, Collection<Experience>> pair: events) {
-			VariantEvent event = pair.arg1();
+		for (VariantEventDecorator event: events) {
 			for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
 
 				StringBuilder msg = new StringBuilder();

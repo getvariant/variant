@@ -12,7 +12,7 @@ import com.variant.core.hook.HookListener;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.web.util.VariantWebStateRequestWrapper;
+import com.variant.web.util.VariantWebStateRequestDecorator;
 
 /**
  * <p>Variant Web API. The platform API suitable for Web applications written on top of the Java Servlet API. 
@@ -169,7 +169,7 @@ public class VariantWeb {
 	public VariantStateRequest dispatchRequest(State state, HttpServletRequest httpRequest) {
 		
 		VariantStateRequest result = core.dispatchRequest(getSession(httpRequest), state, httpRequest);
-		return new VariantWebStateRequestWrapper(result, httpRequest);
+		return new VariantWebStateRequestDecorator(result, httpRequest);
 	}
 	
 	/**
@@ -183,7 +183,7 @@ public class VariantWeb {
 	public void commitStateRequest(VariantStateRequest request, HttpServletResponse httpResponse) {
 		// The sessionStore may need either http response or http request, depending on the implementation.
 		// We'll pass both.
-		VariantWebStateRequestWrapper wrapper = (VariantWebStateRequestWrapper) request;
+		VariantWebStateRequestDecorator wrapper = (VariantWebStateRequestDecorator) request;
 		core.commitStateRequest(wrapper.getOriginalRequest(), wrapper.getHttpServletRequest(), httpResponse);
 	}
 
