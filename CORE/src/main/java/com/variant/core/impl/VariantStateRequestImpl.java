@@ -1,10 +1,10 @@
 package com.variant.core.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 
 import org.apache.commons.collections4.Predicate;
@@ -14,7 +14,9 @@ import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.impl.EventWriter;
+import com.variant.core.event.VariantEventDecorator;
+import com.variant.core.event.impl.StateVisitedEvent;
+import com.variant.core.event.impl.VariantEventDecoratorImpl;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.State;
@@ -23,20 +25,24 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.session.VariantSessionImpl;
-import com.variant.core.util.Tuples.Pair;
 
 /**
  * 
  * @author Igor
  *
  */
-public class VariantStateRequestImpl implements VariantStateRequest {
+public class VariantStateRequestImpl implements VariantStateRequest, Serializable {
 
-	private VariantSessionImpl session;
+	/**
+	 * Needs serializable because we keep it in session.
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private VariantSessionImpl session;	
 	private State state;
 	private Status status = Status.OK;
 	private Map<String,String> resolvedParameterMap;
-	private HashSet<VariantEvent> events = new HashSet<VariantEvent>();
+	private HashSet<VariantEventDecorator> events = new HashSet<VariantEventDecorator>();
 	private boolean committed = false;
 	private VariantTargetingTracker targetingTracker = null;
 	
@@ -56,18 +62,29 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	
 	// Flush pending events to an implementation of EventPersister. 
 	void flushEvents() {
+		
+		// State visited event gets status from this request
+		for (VariantEvent event: getPendingEvents(
+				new Predicate<VariantEvent>() {
+					
+					@Override
+					public boolean evaluate(VariantEvent e) {
+						VariantEvent origEvent = ((VariantEventDecoratorImpl)e).getOriginalEvent();
+						return origEvent instanceof StateVisitedEvent;
+					}
+				})
+			) {
+			
+			// The status of this request.
+			event.getParameterMap().put("REQ_STATUS", status);
 
-		// Build a collection of targeted experiences that aren't disqualified.
-		Collection<Experience> eventVariants = new LinkedList<Experience>();
-		for (Experience e: getTargetedExperiences()) 
-			if (session.isQualified(e.getTest())) eventVariants.add(e);
-
-		// There may not be anything to write if we hit a known state 
-		// that did not have any active tests instrumented on it.
-		if (eventVariants.size() > 0) {
-			EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
-			ew.write(new Pair<Collection<VariantEvent>, Collection<Experience>>(events, eventVariants));	
+			// log all resolved state params as event params.
+			for (Map.Entry<String,String> e: resolvedParameterMap.entrySet()) {
+				event.getParameterMap().put(e.getKey(), e.getValue());				
+			}
 		}
+
+		((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter().write(events);	
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -157,7 +174,10 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 
 	@Override
 	public void triggerEvent(VariantEvent event) {
-		events.add(event);
+		if (event == null)
+			throw new IllegalArgumentException("Event parameter cannot be null");
+		
+		events.add(new VariantEventDecoratorImpl(event, this));
 	}
 	
 	//---------------------------------------------------------------------------------------------//

@@ -3,14 +3,19 @@ package com.variant.core.event;
 import java.util.Date;
 import java.util.Map;
 
-import com.variant.core.VariantSession;
+import com.variant.core.Variant;
+import com.variant.core.VariantStateRequest;
 
 /**
  * A Variant event. Events are generated either implicitly by the Variant RCE Container, 
- * or explicitly by the client code. All pending events are flushed by an implementation
- * of {@link com.variant.core.event.EventPersister}. Contains state pertinent to an event.
+ * or explicitly by the client code. Events are flushed to external storage once per state
+ * request, during the {@link Variant#commitStateRequest(com.variant.core.VariantStateRequest, Object...)}
+ * method by an implementation of {@link com.variant.core.event.EventPersister}. Client code
+ * may generate its own events by passing its own implementations to 
+ * {@link VariantStateRequest#triggerEvent(VariantEvent)}.
  * 
  * @author Igor Urisman.
+ * @see VariantStateRequest#triggerEvent(VariantEvent)
  * @since 0.5
  *
  */
@@ -30,16 +35,7 @@ public interface VariantEvent {
 	 * @return Event's value.
 	 * @since 0.5
 	 */
-	public String getEventValue();
-
-	/**
-	 * Variant session that created this event.
-	 * 
-	 * @return An object of type {@link com.variant.core.VariantSession}.
-	 * @since 0.5
-	 */
-	public VariantSession getSession();
-	
+	public String getEventValue();	
 
 	/**
 	 * Create timestamp.

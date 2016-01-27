@@ -20,7 +20,8 @@ import com.variant.core.config.VariantProperties;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
-import com.variant.core.event.impl.StateServeEvent;
+import com.variant.core.event.impl.StateVisitedEvent;
+import com.variant.core.event.impl.VariantEventDecoratorImpl;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
@@ -318,20 +319,7 @@ public class VariantCoreImpl implements Variant {
 		// Persist targeting info.  Note that we expect the userData to apply to both!
 		request.getTargetingTracker().save(userData);
 		
-		// State visited event gets status from this request
-		for (VariantEvent event: request.getPendingEvents(
-				new Predicate<VariantEvent>() {
-					
-					@Override
-					public boolean evaluate(VariantEvent e) {
-						return e instanceof StateServeEvent;
-					}
-				})
-			) {
-			
-			event.getParameterMap().put("REQ_STATUS", request.getStatus());
-		}
-		
+		// Write events to external storage
 		requestImpl.flushEvents();
 
 		((VariantStateRequestImpl)request).commit();
