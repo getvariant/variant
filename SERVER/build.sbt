@@ -30,8 +30,11 @@ libraryDependencies ++= {
     "ch.qos.logback"    % "logback-classic"     % "1.1.3",
     "org.specs2"        %% "specs2-core"        % "3.6.4"           % "test",
     // Variant
-    "com.variant"       % "variant-core"        % variantVersion
+    "com.variant"               % "variant-core"        % variantVersion,
+    "org.apache.httpcomponents" % "httpcore"            % "4.4.4",
+    "org.scalatest" %% "scalatest" % "2.2.6" % "test"
   )
 }
 
-scalacOptions in Test ++= Seq("-Yrangepos")
+testOptions in Test += Tests.Argument("-oF")  // Do not truncate stack traces.
+scalacOptions in Test ++= Seq("-Yrangepos")   // ?
