@@ -86,7 +86,7 @@ class PostEventTest extends UnitSpec {
       {
          "name":"NAME",
          "value":"VALUE",
-         "createDate":1454959622350
+         "createDate":1454959622350,
          "parameters":{
             "param1":"PARAM1"
             "param2":"PARAM2"
@@ -102,7 +102,7 @@ class PostEventTest extends UnitSpec {
       {
          "name":"NAME",
          "value":"VALUE",
-         "createDate":"1454959622350"
+         "createDate":"1454959622350",
          "parameters":{
             "param1":"PARAM1"
             "param2":"PARAM2"
@@ -121,7 +121,7 @@ class PostEventTest extends UnitSpec {
       {
          "name":"NAME",
          "value":"VALUE",
-         "createDate":{"foo":"bar"}
+         "createDate":{"foo":"bar"},
          "parameters":{
             "param1":"PARAM1"
             "param2":"PARAM2"
@@ -140,7 +140,7 @@ class PostEventTest extends UnitSpec {
       {
          "name":"NAME",
          "value":"VALUE",
-         "createDate":1454959622350
+         "createDate":1454959622350,
          "parameters":{
             "param1":1234,
             "param2":"PARAM2"
@@ -151,6 +151,26 @@ class PostEventTest extends UnitSpec {
       assertResult(true, "Expected ParamFailure but got " + res.getClass.getName) {res.isInstanceOf[ParamFailure[_]]};
       val failure = res.asInstanceOf[ParamFailure[_]];
       assertResult(UserError.errors(UserError.ParamNotAString).message("param1")) {failure.msg};
+      assertResult(HttpStatus.SC_BAD_REQUEST) {failure.param}
+   }
+
+   it should "emit ParamFailure if unsupported property" in {
+      val jsonString = """
+      {
+         "name":"NAME",
+         "value":"VALUE",
+         "createDate":1454959622350,
+         "unknown":3.14,
+         "parameters":{
+            "param1":1234,
+            "param2":"PARAM2"
+          }
+      }"""
+      val json = parse(jsonString)
+      val res = Dispatcher.postEvent(json);
+      assertResult(true, "Expected ParamFailure but got " + res.getClass.getName) {res.isInstanceOf[ParamFailure[_]]};
+      val failure = res.asInstanceOf[ParamFailure[_]];
+      assertResult(UserError.errors(UserError.UnsupportedProperty).message("unknown")) {failure.msg};
       assertResult(HttpStatus.SC_BAD_REQUEST) {failure.param}
    }
 

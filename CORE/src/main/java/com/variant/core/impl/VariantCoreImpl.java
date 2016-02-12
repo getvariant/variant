@@ -1,11 +1,17 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.*;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
+import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
+import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
+import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_NOT_SET;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
@@ -18,15 +24,12 @@ import com.variant.core.VariantTargetingTracker;
 import com.variant.core.config.RuntimeService;
 import com.variant.core.config.VariantProperties;
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
-import com.variant.core.event.impl.StateVisitedEvent;
-import com.variant.core.event.impl.VariantEventDecoratorImpl;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.hook.UserHook;
 import com.variant.core.hook.HookListener;
+import com.variant.core.hook.UserHook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;

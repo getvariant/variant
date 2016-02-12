@@ -7,8 +7,11 @@ import com.variant.core.Variant
 object VariantCore {
   
    private val randomSuffix = "93449EFFB4B5BA0"
-   private val core = Variant.Factory.getInstance();
-   core.bootstrap("/variant-server-" + randomSuffix + ".props");
+   
+   val api = Variant.Factory.getInstance();
+   
+   //api.bootstrap("/variant-server-" + randomSuffix + ".props");
+   api.bootstrap();
    
    
 }

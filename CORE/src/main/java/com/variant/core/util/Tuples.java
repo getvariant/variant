@@ -1,5 +1,6 @@
 package com.variant.core.util;
 
+
 /**
  * Thinking Scala
  * @author Igor Urisman
@@ -9,7 +10,7 @@ public class Tuples {
 	/**
 	 * 
 	 */
-	public static class Pair<T1,T2> {
+	public static class Pair<T1,T2>  {
 		private T1 arg1;
 		private T2 arg2;
 		public Pair(T1 arg1, T2 arg2) {
@@ -36,6 +37,7 @@ public class Tuples {
 		public String toString() {
 			return "(" + arg1 + ", " + arg2 + ")"; 
 		}
+		
 	}
 	
 	/**

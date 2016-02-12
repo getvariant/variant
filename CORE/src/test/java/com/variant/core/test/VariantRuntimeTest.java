@@ -52,8 +52,8 @@ public class VariantRuntimeTest extends BaseTest {
 		final State state1 = schema.getState("state1");
 		final State state2 = schema.getState("state2");
 		final State state3 = schema.getState("state3");
-		final State state4 = schema.getState("state4");
-		final State state5 = schema.getState("state5");
+		//final State state4 = schema.getState("state4");
+		//final State state5 = schema.getState("state5");
 
 		//
 		// View resolutions

@@ -59,7 +59,7 @@ public class SessionService {
 			
 			if (sessionId == null) 
 				throw new VariantRuntimeException(INTERNAL, 
-						"Unable to obtain session ID from persister [" + sidTracker.getClass().getSimpleName() + "]");
+						"Unable to obtain session ID from tracker [" + sidTracker.getClass().getSimpleName() + "]");
 
 			result = new VariantSessionImpl(sessionId);
 			sessionStore.save(result, userData);

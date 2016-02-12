@@ -1,15 +1,20 @@
 package com.variant.server.dispatch
 
-import com.variant.server.lift.Boot
-import net.liftweb.http.Req
-import net.liftweb.http.rest.RestHelper
-import net.liftweb.json.JsonAST.JValue
-import com.variant.server.RemoteEvent
-import net.liftweb.common._
 import java.util.Date
+
+import com.variant.server.RemoteEvent
+import com.variant.server.SessionStore
 import com.variant.server.config.UserError
-import net.liftweb.json.JsonAST._
-import scala.util.control.NonFatal
+
+import net.liftweb.common.Box
+import net.liftweb.common.Full
+import net.liftweb.http.Req
+import net.liftweb.http.S
+import net.liftweb.http.rest.RestHelper
+import net.liftweb.json.JField
+import net.liftweb.json.JObject
+import net.liftweb.json.JsonAST.JValue
+import net.liftweb.json.parse
 
 /**
  * @author Igor
@@ -20,10 +25,15 @@ object Dispatcher extends RestHelper {
    // Remember about the prefix helper!
 
    serve {
-      case "hello" :: "world" :: _ Get _ => <b>Hello World</b>
+      case "session" :: id :: Nil Get req => getOrCreateSession(id, req)
       case "event" :: Nil JsonPost json -> req => postEvent(json)
    }
 
+   def getOrCreateSession(id: String, req: Req): Box[JValue] = {
+      val result = SessionStore.get(id, true)
+      Full(parse("""{"id":"bar"}"""))
+   }
+   
    /**
     * POST /event
     *
@@ -31,6 +41,12 @@ object Dispatcher extends RestHelper {
     */
    def postEvent(jsonData: JValue): Box[JValue] = {
 
+      // Decline request if no session.
+      println(S.findCookie("puke"));
+      //val variant = Variant.Factory.getInstance;
+      //val variantSession = variant.getSession(x$1);
+      
+      // Parse the input and construct the remote event.
       var name: Option[String] = Option(null)
       var value: Option[String] = Option(null)
       var createDate: Option[Long] = Option(System.currentTimeMillis())
@@ -45,7 +61,7 @@ object Dispatcher extends RestHelper {
                try {
                   createDate = field.extract[Option[Long]]
                } catch {
-                  case _ => return UserError.errors(UserError.InvalidDate).toFailure(field.name)
+                  case _:Exception => return UserError.errors(UserError.InvalidDate).toFailure(field.name)
                }
             case "PARAMETERS" => params = field.extract[Option[JObject]]
             case _ => return UserError.errors(UserError.UnsupportedProperty).toFailure(field.name)
@@ -72,6 +88,7 @@ object Dispatcher extends RestHelper {
          }
       }
 
+      // We have the 
       Full(jsonData)
    }
 

@@ -43,5 +43,5 @@ public class StateVisitedEvent extends VariantEventSupport {
 	public Date getCreateDate() {
 		return createDate;
 	}
-		
+
 }

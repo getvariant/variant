@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
@@ -166,32 +168,47 @@ public class BaseTest {
 	/**
 	 * Assert that two collections are set-equivalent, i.e.
 	 * for each element in one, there's an equal element in the other.
+	 * Custom comparator.
 	 *  
 	 * @param 
 	 */	
-	static protected <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected) {
+	static protected <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected, Comparator<T> comp) {
 		
 		for (T a: actual) {
 			boolean found = false;
 			for (T e: expected) {
-				if (a.equals(e)) {
+				if (comp.compare(a,e) == 0) {
 					found = true;
 					break;
 				}
 			}
-			assertTrue("Actual element " + a + " not found", found);
+			assertTrue("Actual element " + a + " not found among expected elements", found);
 		}
 		
 		for (T e: expected) {
 			boolean found = false;
 			for (T a: actual) {
-				if (a.equals(e)) {
+				if (comp.compare(a,e) == 0) {
 					found = true;
 					break;
 				}
 			}
-			assertTrue("Expected element " + e + " not found", found);
+			assertTrue("Expected element " + e + " not found among actual elements", found);
 		}
+	}
+
+	/**
+	 * Same as above with the trivial comparator
+	 *  
+	 * @param 
+	 */	
+	static protected <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected) {
+
+		Comparator<T> comp = new Comparator<T>() {
+			@Override
+			public int compare(Object o1, Object o2) {return o1.equals(o2) ? 0 : 1;}
+		};
+		assertEqualAsSets(actual, expected, comp);
 	}
 
 	/**
@@ -202,6 +219,24 @@ public class BaseTest {
 	@SafeVarargs
 	static protected <T> void assertEqualAsSets(Collection<T> actual, T...expected) {
 		assertEqualAsSets(actual, Arrays.asList(expected));
+	}
+
+	/**
+	 * Same as above for maps
+	 * @param actual
+	 * @param expected
+	 */
+	static protected <K,V> void assertEqualAsSets(Map<K,V> actual, Map<K,V> expected) {
+		assertEqualAsSets(actual.entrySet(), expected.entrySet());
+	}
+
+	/**
+	 * Same as above with custom comparator over entries.
+	 * @param actual
+	 * @param expected
+	 */
+	static protected <K,V> void assertEqualAsSets(Map<K,V> actual, Map<K,V> expected, Comparator<Map.Entry<K, V>> comp) {
+		assertEqualAsSets(actual.entrySet(), expected.entrySet(), comp);
 	}
 
 }
