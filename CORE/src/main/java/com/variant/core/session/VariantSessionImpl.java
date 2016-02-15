@@ -40,7 +40,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	 * 
 	 * @param id
 	 */
-	VariantSessionImpl(String id) {
+	public VariantSessionImpl(String id) {
 		this.id = id;
 	}
 		

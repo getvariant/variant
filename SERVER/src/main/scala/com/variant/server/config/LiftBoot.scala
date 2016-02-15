@@ -1,4 +1,4 @@
-package com.variant.server.lift
+package com.variant.server.config
 
 import net.liftweb.http.LiftRules
 import com.variant.server.dispatch.Dispatcher
