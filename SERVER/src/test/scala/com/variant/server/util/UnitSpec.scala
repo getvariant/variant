@@ -11,13 +11,14 @@ import org.scalatest.Matchers
 import org.scalatest.OptionValues
 import org.scalatest.Inspectors
 import org.scalatest.Inside
+import org.scalatest.BeforeAndAfter
 
 
 /**
  * 
  */
 abstract class UnitSpec extends FlatSpec with Matchers with
-  OptionValues with Inside with Inspectors
+  OptionValues with Inside with Inspectors with BeforeAndAfter
   
    
 object JettyTestServer {
@@ -50,19 +51,19 @@ object JettyTestServer {
 /**
  * 
  */
-trait JettyStartupAndShutdown  {
+trait JettyStartupAndShutdown extends FlatSpec {
 
    val log = Logger(LoggerFactory.getLogger(this.getClass))
    
    def start() = {
       val now = System.currentTimeMillis()
       JettyTestServer.start
-      log.info("Jetty started in " + (System.currentTimeMillis() - now) + " ms.");
+      info("Jetty started in " + (System.currentTimeMillis() - now) + " ms.");
    }
    
    def stop() = {
       val now = System.currentTimeMillis()
       JettyTestServer.stop
-      log.info("Jetty stopped in " + (System.currentTimeMillis() - now) + " ms.");
+      info("Jetty stopped in " + (System.currentTimeMillis() - now) + " ms.");
    }
 }
