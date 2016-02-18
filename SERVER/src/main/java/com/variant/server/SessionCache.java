@@ -54,9 +54,7 @@ public class SessionCache {
 		if (!valid) throw new VariantInternalException("SessionCache has been invalidated");
 		
 		Entry result = cacheMap.get(key);
-		if (result != null) {
-			result.lastAccessTimestamp = System.currentTimeMillis();
-		}
+		if (result != null) result.lastAccessTimestamp = System.currentTimeMillis();
 		return result;
 	}
 	

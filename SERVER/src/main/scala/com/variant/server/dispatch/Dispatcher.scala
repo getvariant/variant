@@ -21,6 +21,8 @@ import net.liftweb.http.GetRequest
 import net.liftweb.http.LiftResponse
 import net.liftweb.common.Empty
 import net.liftweb.http.OkResponse
+import net.liftweb.http.OkResponse
+import net.liftweb.http.OkResponse
 
 /**
  * @author Igor
@@ -45,13 +47,8 @@ object Dispatcher extends RestHelper {
    def getOrCreateSession(id: String): LiftResponse = {
 
       var result = SessionCache.get(id)
-      
-      if (result == null) {
-         // New or expired: recreate with nothing but session id
-         result = SessionCache.put(id, new VariantSessionImpl(id).toJson())
-      }
-
-      //OutputStreamResponse(out => {out.write(result.getJson.toCharArray.map(_.toByte)); out.flush(); out.close()})
+      // If new or expired, recreate with nothing but session id
+      if (result == null) result = SessionCache.put(id, new VariantSessionImpl(id).toJson())
       OutputStreamResponse(out => {out.write(result.getJson)})
    }
 
@@ -60,9 +57,9 @@ object Dispatcher extends RestHelper {
     * Update an existing session. Recreate, if already removed from the cache.
     */
    def updateSession(id:String, req: Req): Box[LiftResponse] = {      
-      if (!req.body.isDefined || req.body.openOr(null).length == 0) 
+      if (!req.body.isDefined || req.body.openOrThrowException("Unexpectged null request body").length == 0) 
          return UserError.errors(UserError.EmptyBody).toFailure()
-      SessionCache.put(id, req.body.openOr(null))
+      SessionCache.put(id, req.body.openOrThrowException("Unexpectged null request body"))
       Full(OkResponse())
    }
 
@@ -71,14 +68,10 @@ object Dispatcher extends RestHelper {
     *
     * Add a new event to the current session.
     */
-   def postEvent(jsonData: JValue): Box[JValue] = {
-
-      // Decline request if no session.
-      println(S.findCookie("puke"));
-      //val variant = Variant.Factory.getInstance;
-      //val variantSession = variant.getSession(x$1);
+   def postEvent(jsonData: JValue): Box[LiftResponse] = {
 
       // Parse the input and construct the remote event.
+      var sid: Option[String] = Option(null)
       var name: Option[String] = Option(null)
       var value: Option[String] = Option(null)
       var createDate: Option[Long] = Option(System.currentTimeMillis())
@@ -87,6 +80,7 @@ object Dispatcher extends RestHelper {
       for (elem <- jsonData.children) {
          val field = elem.asInstanceOf[JField]
          field.name.toUpperCase() match {
+            case "SID" => sid = field.extract[Option[String]]
             case "NAME" => name = field.extract[Option[String]]
             case "VALUE" => value = field.extract[Option[String]]
             case "CREATEDATE" =>
@@ -99,8 +93,10 @@ object Dispatcher extends RestHelper {
             case _ => return UserError.errors(UserError.UnsupportedProperty).toFailure(field.name)
          }
       }
-
-      if (!name.isDefined) return UserError.errors(UserError.MissingProperty).toFailure("name")
+   
+      // 400 if no required fields 
+      if (!sid.isDefined)   return UserError.errors(UserError.MissingProperty).toFailure("sid")
+      if (!name.isDefined)  return UserError.errors(UserError.MissingProperty).toFailure("name")
       if (!value.isDefined) return UserError.errors(UserError.MissingProperty).toFailure("value")
 
       val remoteEvent = new RemoteEvent(name.get, value.get);
@@ -115,13 +111,19 @@ object Dispatcher extends RestHelper {
 
       if (params.isDefined) {
          for ((k, v) <- params.get.values) {
-            if (!v.isInstanceOf[String]) return UserError.errors(UserError.ParamNotAString).toFailure(k)
+            if (!v.isInstanceOf[String]) return UserError.errors(UserError.PropertyNotAString).toFailure(k)
             remoteEvent.setParameter(k, v.asInstanceOf[String])
          }
       }
 
-      // We have the 
-      Full(jsonData)
+      // 403 if no session
+      val ssnCacheEntry = SessionCache.get(sid.get)
+      if (ssnCacheEntry == null) return  UserError.errors(UserError.SessionExpired).toFailure()
+
+      // We have the session
+      ///
+      
+      Full(OkResponse())
    }
 
    def createEvent(req: Req): String = "event"

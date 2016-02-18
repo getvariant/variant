@@ -12,15 +12,22 @@ object UserError {
    val MissingProperty = 0
    val InvalidDate = 1
    val UnsupportedProperty = 2
-   val ParamNotAString = 3
+   val PropertyNotAString = 3
    val EmptyBody = 4
+   val SessionExpired = 5
    
    val errors = Array(
+     
+     // 400
      new UserError("Required property '%s' is missing.", HttpStatus.SC_BAD_REQUEST),
      new UserError("Invalid date specification in property '%s'. Epoch millis expected.", HttpStatus.SC_BAD_REQUEST),
      new UserError("Unsupported property '%s' in payload", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Parameter '%s' must be a string", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Empty body", HttpStatus.SC_BAD_REQUEST)
+     new UserError("Property '%s' must be a string", HttpStatus.SC_BAD_REQUEST),
+     new UserError("Empty body", HttpStatus.SC_BAD_REQUEST),
+     
+     // 403
+     new UserError("Session expired", HttpStatus.SC_FORBIDDEN)
+
    );
    
 }

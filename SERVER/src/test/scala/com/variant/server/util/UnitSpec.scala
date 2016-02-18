@@ -2,7 +2,6 @@ package com.variant.server.util
 
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
-import org.specs2.Specification
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.server.nio.SelectChannelConnector
 import org.eclipse.jetty.webapp.WebAppContext
@@ -11,14 +10,26 @@ import org.scalatest.Matchers
 import org.scalatest.OptionValues
 import org.scalatest.Inspectors
 import org.scalatest.Inside
-import org.scalatest.BeforeAndAfter
+import org.scalatest.BeforeAndAfterAll
 
 
 /**
  * 
  */
 abstract class UnitSpec extends FlatSpec with Matchers with
-  OptionValues with Inside with Inspectors with BeforeAndAfter
+  OptionValues with Inside with Inspectors with BeforeAndAfterAll {
+   
+   /**
+    * 
+    */
+   def openResourceAsInputStream(name: String) = {
+      val result = this.getClass.getResourceAsStream(name);
+      if (result == null) {
+         throw new RuntimeException("Classpath resource '" + name + "' does not exist.");
+      }
+      result
+   }
+}
   
    
 object JettyTestServer {

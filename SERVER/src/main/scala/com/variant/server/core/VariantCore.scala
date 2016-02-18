@@ -1,4 +1,4 @@
-package com.variant.server.config
+package com.variant.server.core
 
 //import scala.collection.JavaConverters.mapAsScalaMapConverter
 import com.variant.core.config.PropertiesChain

@@ -39,5 +39,6 @@ libraryDependencies ++= {
   )
 }
 
+//parallelExecution in Test := false            // Run suites one at a time because there's only one Jetty instance per JVM -- does not seem to work
 testOptions in Test += Tests.Argument("-oF")  // Do not truncate stack traces.
 scalacOptions in Test ++= Seq("-Yrangepos")   // ?
