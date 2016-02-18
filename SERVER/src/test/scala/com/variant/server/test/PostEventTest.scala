@@ -9,6 +9,7 @@ import net.liftweb.common.ParamFailure
 import net.liftweb.common.Empty
 import com.variant.server.config.UserError
 import org.apache.http.HttpStatus
+import com.variant.server.util.UnitSpec
 
 /**
  * TODO: read events from database.

@@ -59,12 +59,11 @@ object Dispatcher extends RestHelper {
     * PUT /session/{id}
     * Update an existing session. Recreate, if already removed from the cache.
     */
-   def updateSession(id:String, req: Req): LiftResponse = {
-      
-      if (!req.body.isDefined) 
+   def updateSession(id:String, req: Req): Box[LiftResponse] = {      
+      if (!req.body.isDefined || req.body.openOr(null).length == 0) 
+         return UserError.errors(UserError.EmptyBody).toFailure()
       SessionCache.put(id, req.body.openOr(null))
-      println("***** " + new String(req.body.openOr(null)))
-      OkResponse()
+      Full(OkResponse())
    }
 
    /**

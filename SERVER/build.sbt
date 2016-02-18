@@ -24,15 +24,18 @@ libraryDependencies ++= {
   val variantVersion = "0.5.2"
   Seq(
     "net.liftweb"       %% "lift-webkit"        % liftVersion        % "compile",
+    "net.liftweb"       %% "lift-testkit"       % liftVersion        % "test",
     "org.eclipse.jetty" % "jetty-webapp"        % "8.1.17.v20150415"  % "container,test",
     "org.eclipse.jetty" % "jetty-plus"          % "8.1.17.v20150415"  % "container,test", // For Jetty Config
     "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016" % "container,test" artifacts Artifact("javax.servlet", "jar", "jar"),
     "ch.qos.logback"    % "logback-classic"     % "1.1.3",
-    "org.specs2"        %% "specs2-core"        % "3.6.4"           % "test",
-    // Variant
-    "com.variant"               % "variant-core"        % variantVersion,
+    "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0",
+//    "org.specs2"        %% "specs2-core"        % "3.6.4"           % "test",
+    "org.scalatest" %% "scalatest" % "2.2.6" % "test",
     "org.apache.httpcomponents" % "httpcore"            % "4.4.4",
-    "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+    
+    // Variant
+    "com.variant"               % "variant-core"        % variantVersion
   )
 }
 
