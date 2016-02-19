@@ -11,14 +11,56 @@ import org.scalatest.OptionValues
 import org.scalatest.Inspectors
 import org.scalatest.Inside
 import org.scalatest.BeforeAndAfterAll
+import com.variant.server.core.VariantCore
+import net.liftweb.http.testing.TestKit
 
 
 /**
  * 
  */
-abstract class UnitSpec extends FlatSpec with Matchers with
-  OptionValues with Inside with Inspectors with BeforeAndAfterAll {
+object UnitSpec {
    
+   // Use statc count to deal with SBT's parallel execution of tests.
+   var upCount = 0;
+}
+
+/**
+ * 
+ */
+abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with TestKit
+   with Matchers with OptionValues with Inside with Inspectors with BeforeAndAfterAll  {
+   
+   lazy val schema = VariantCore.api.getSchema()
+   
+   /**
+    * 
+    */
+   override def beforeAll() = {
+      UnitSpec.synchronized {
+         if (UnitSpec.upCount == 0) {
+            // Actual setup - only if we havent setup yet.
+            start()
+            val parserResp = VariantCore.api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"))
+            parserResp.getMessages should have size (0)
+         }
+         UnitSpec.upCount += 1
+      }
+   }
+   
+   /**
+    * 
+    */
+   override def afterAll() = {
+      UnitSpec.synchronized {
+         if (UnitSpec.upCount == 1) {
+            // Actual breakdown - only if the caller is the last one.
+            stop()
+            //VariantCore.api.shutdown
+         }
+         UnitSpec.upCount -= 1
+      }
+   }
+
    /**
     * 
     */
@@ -51,9 +93,18 @@ object JettyTestServer {
    
    def baseUrl = url
    
-   lazy val start = server.start()
+   /**
+    * Only start if not yet started.
+    */
+    def start() { 
+       server.start()
+   }
    
-   def stop() {   
+   /**
+    * Only stop if upcount is down to 1,
+    * i.e. only one starter is still out there.
+    */
+   def stop() {
       server.stop()
       server.join()
    }
@@ -64,17 +115,16 @@ object JettyTestServer {
  */
 trait JettyStartupAndShutdown extends FlatSpec {
 
-   val log = Logger(LoggerFactory.getLogger(this.getClass))
    
    def start() = {
       val now = System.currentTimeMillis()
       JettyTestServer.start
-      info("Jetty started in " + (System.currentTimeMillis() - now) + " ms.");
+      info("Jetty started in " + (System.currentTimeMillis() - now) + " ms.")
    }
    
    def stop() = {
       val now = System.currentTimeMillis()
       JettyTestServer.stop
-      info("Jetty stopped in " + (System.currentTimeMillis() - now) + " ms.");
+      info("Jetty stopped in " + (System.currentTimeMillis() - now) + " ms.")
    }
 }

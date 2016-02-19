@@ -14,26 +14,9 @@ import com.variant.core.session.VariantSessionImpl
 /**
  * TODO: read events from database.
  */
-class PostEventTest extends UnitSpec with JettyStartupAndShutdown with TestKit {
+class PostEventTest extends UnitSpec {
   
    lazy val baseUrl = JettyTestServer.baseUrl
-   lazy val schema = VariantCore.api.getSchema()
-   
-   /**
-    * 
-    */
-   override def beforeAll() = {
-      start()
-      val parserResp = VariantCore.api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"))
-      parserResp.getMessages should have size (0)
-   }
-   
-   /**
-    * 
-    */
-   override def afterAll() = {
-      stop()
-   }
 
    //---------------------------------------------------------------------------------------//
    //                                  PARSE ERRORS                                         //

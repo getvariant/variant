@@ -11,7 +11,7 @@ import org.apache.http.HttpStatus
 import com.variant.core.schema.Schema
 
 // trait WebServiceSpec { _: Specification with JettySetupAndTearDown with TestKit =>
-class SessionTest extends UnitSpec with JettyStartupAndShutdown with TestKit {
+class SessionTest extends UnitSpec {
   
    implicit val reportError = new ReportFailure {
       def fail(msg: String) = {
@@ -21,23 +21,6 @@ class SessionTest extends UnitSpec with JettyStartupAndShutdown with TestKit {
    }
   
    lazy val baseUrl = JettyTestServer.baseUrl
-   lazy val schema = VariantCore.api.getSchema()
-   
-   /**
-    * 
-    */
-   override def beforeAll() = {
-      start()
-      val parserResp = VariantCore.api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"))
-      parserResp.getMessages should have size (0)
-   }
-   
-   /**
-    * 
-    */
-   override def afterAll() = {
-      stop()
-   }
 
    "Get non-existent session" should "create new session" in {
       val id = "key1"
@@ -74,7 +57,7 @@ class SessionTest extends UnitSpec with JettyStartupAndShutdown with TestKit {
       val req = VariantCore.api.dispatchRequest(ssn, schema.getState("state4"), "")
       req.getSession shouldBe ssn
       val json = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
-      val httpPutResp =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server"
+      val httpPutResp =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server "
       httpPutResp.code should be (HttpStatus.SC_OK)
       httpPutResp.bodyAsString.openOrThrowException("Unexpected null response").length should be (0)
       val cacheEntry = SessionCache.get(id)
