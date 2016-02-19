@@ -32,7 +32,7 @@ class PostEventTest extends UnitSpec {
                "param2":"PARAM2"
              }
          }"""
-      val postResp = post("/event", json.getBytes, "application/json").asInstanceOf[HttpResponse]
+      val postResp = post("/event", json.getBytes, "application/json") ! "No response from server "
       postResp.code should be (HttpStatus.SC_BAD_REQUEST)
       postResp.bodyAsString should equal (UserError.errors(UserError.MissingProperty).message("sid"))
    }
@@ -47,7 +47,7 @@ class PostEventTest extends UnitSpec {
             "param2":"PARAM2"
           }
       }"""
-      val postResp = post("/event", json.getBytes, "application/json").asInstanceOf[HttpResponse]
+      val postResp = post("/event", json.getBytes, "application/json") ! "No response from server "
       postResp.code should be (HttpStatus.SC_BAD_REQUEST)
       postResp.bodyAsString should equal (UserError.errors(UserError.MissingProperty).message("name"))
    }
@@ -62,7 +62,7 @@ class PostEventTest extends UnitSpec {
             "param2":"PARAM2"
           }
       }"""
-      val postResp = post("/event", json.getBytes, "application/json").asInstanceOf[HttpResponse]
+      val postResp = post("/event", json.getBytes, "application/json") ! "No response from server "
       postResp.code should be (HttpStatus.SC_BAD_REQUEST)
       postResp.bodyAsString should equal (UserError.errors(UserError.MissingProperty).message("value"))
    }
@@ -79,7 +79,7 @@ class PostEventTest extends UnitSpec {
             "param2":"PARAM2"
           }
       }"""
-      val postResp = post("/event", json.getBytes, "application/json").asInstanceOf[HttpResponse]
+      val postResp = post("/event", json.getBytes, "application/json") ! "No response from server "
       postResp.code should be (HttpStatus.SC_BAD_REQUEST)
       postResp.bodyAsString should equal (UserError.errors(UserError.InvalidDate).message("createDate"))
    }
@@ -96,7 +96,7 @@ class PostEventTest extends UnitSpec {
             "param2":"PARAM2"
           }
       }"""
-      val postResp = post("/event", json.getBytes, "application/json").asInstanceOf[HttpResponse]
+      val postResp = post("/event", json.getBytes, "application/json") ! "No response from server "
       postResp.code should be (HttpStatus.SC_BAD_REQUEST)
       postResp.bodyAsString should equal (UserError.errors(UserError.InvalidDate).message("createDate"))
    }
@@ -113,7 +113,7 @@ class PostEventTest extends UnitSpec {
             "param2":"PARAM2"
           }
       }"""
-      val postResp = post("/event", json.getBytes, "application/json").asInstanceOf[HttpResponse]
+      val postResp = post("/event", json.getBytes, "application/json") ! "No response from server "
       postResp.code should be (HttpStatus.SC_BAD_REQUEST)
       postResp.bodyAsString should equal (UserError.errors(UserError.PropertyNotAString).message("param1"))
    }
@@ -131,7 +131,7 @@ class PostEventTest extends UnitSpec {
             "param2":"PARAM2"
           }
       }"""
-      val postResp = post("/event", json.getBytes, "application/json").asInstanceOf[HttpResponse]
+      val postResp = post("/event", json.getBytes, "application/json") ! "No response from server "
       postResp.code should be (HttpStatus.SC_BAD_REQUEST)
       postResp.bodyAsString should equal (UserError.errors(UserError.UnsupportedProperty).message("unknown"))
    }
@@ -153,7 +153,7 @@ class PostEventTest extends UnitSpec {
       }"""
       val id = "key1"
       SessionCache.put(id, new VariantSessionImpl(id).toJson.getBytes)
-      val postResp = post("/event", json.getBytes, "application/json").asInstanceOf[HttpResponse]
+      val postResp = post("/event", json.getBytes, "application/json") ! "No response from server "
       postResp.code should be (HttpStatus.SC_OK)
       postResp.bodyAsString.openOrThrowException("Unexpected null response").length should equal (0)
    }
@@ -172,7 +172,7 @@ class PostEventTest extends UnitSpec {
       }"""
       val id = "key1"
       SessionCache.put(id, new VariantSessionImpl(id).toJson.getBytes)
-      val postResp = post("/event", json.getBytes, "application/json").asInstanceOf[HttpResponse]
+      val postResp = post("/event", json.getBytes, "application/json") ! "No response from server "
       postResp.code should be (HttpStatus.SC_OK)
       postResp.bodyAsString.openOrThrowException("Unexpected null response").length should equal (0)
    }

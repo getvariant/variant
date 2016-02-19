@@ -12,19 +12,12 @@ import com.variant.core.schema.Schema
 
 // trait WebServiceSpec { _: Specification with JettySetupAndTearDown with TestKit =>
 class SessionTest extends UnitSpec {
-  
-   implicit val reportError = new ReportFailure {
-      def fail(msg: String) = {
-         SessionTest.this.fail(msg)
-         
-      }
-   }
-  
+    
    lazy val baseUrl = JettyTestServer.baseUrl
 
    "Get non-existent session" should "create new session" in {
       val id = "key1"
-      val httpResp =  get("/session/" + id) !@ "Jetty is not running"
+      val httpResp =  get("/session/" + id) ! "No response from server "
       httpResp.bodyAsString should equal (new VariantSessionImpl(id).toJson)
       val cacheEntry = SessionCache.get(id)
       cacheEntry should not be (null)
@@ -39,7 +32,7 @@ class SessionTest extends UnitSpec {
       val req = VariantCore.api.dispatchRequest(ssn, schema.getState("state2"), "")
       req.getSession shouldBe ssn
       val json = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
-      val httpPutResp =  put("/session/" + id, json.getBytes, "application/json").asInstanceOf[HttpResponse]
+      val httpPutResp =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server "
       httpPutResp.code should be (HttpStatus.SC_OK)
       httpPutResp.bodyAsString.openOrThrowException("Unexpected null response").length should be (0)
       val cacheEntry = SessionCache.get(id)

@@ -13,6 +13,7 @@ import org.scalatest.Inside
 import org.scalatest.BeforeAndAfterAll
 import com.variant.server.core.VariantCore
 import net.liftweb.http.testing.TestKit
+import net.liftweb.http.testing.ReportFailure
 
 
 /**
@@ -30,6 +31,16 @@ object UnitSpec {
 abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with TestKit
    with Matchers with OptionValues with Inside with Inspectors with BeforeAndAfterAll  {
    
+   /**
+    * 
+    */
+   implicit val reportError = new ReportFailure {
+      def fail(msg: String) = {
+         this.fail(msg)
+         
+      }
+   }
+
    lazy val schema = VariantCore.api.getSchema()
    
    /**
