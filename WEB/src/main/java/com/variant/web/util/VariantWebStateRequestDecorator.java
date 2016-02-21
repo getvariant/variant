@@ -71,13 +71,8 @@ public class VariantWebStateRequestDecorator implements VariantStateRequest {
 	}
 
 	@Override
-	public Collection<VariantEvent> getPendingEvents() {
-		return variantRequest.getPendingEvents();
-	}
-
-	@Override
-	public Collection<VariantEvent> getPendingEvents(Predicate<VariantEvent> filter) {
-		return variantRequest.getPendingEvents(filter);
+	public VariantEvent getStateVisitedEvent() {
+		return variantRequest.getStateVisitedEvent();
 	}
 
 	@Override
@@ -85,8 +80,4 @@ public class VariantWebStateRequestDecorator implements VariantStateRequest {
 		return variantRequest.getStatus();
 	}
 
-	@Override
-	public void triggerEvent(VariantEvent event) {
-		// TODO Auto-generated method stub
-	}
 }

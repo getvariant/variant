@@ -12,15 +12,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.impl.StateVisitedEvent;
-import com.variant.core.event.impl.VariantEventDecoratorImpl;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
@@ -164,19 +161,8 @@ public class VariantFilter implements Filter {
 			if (webApi.isBootstrapped() && variantRequest != null) {
 				try {
 					// Add some extra info to the state visited event(s)
-					for (VariantEvent event: variantRequest.getPendingEvents(
-							new Predicate<VariantEvent>() {
-								
-								@Override
-								public boolean evaluate(VariantEvent e) {
-									VariantEvent origEvent = ((VariantEventDecoratorImpl)e).getOriginalEvent();
-									return origEvent instanceof StateVisitedEvent;
-								}
-							})
-						) {
-						
-						event.getParameterMap().put("HTTP_STATUS", httpResponse.getStatus());
-					}
+					VariantEvent sve = variantRequest.getStateVisitedEvent();
+					if (sve != null) sve.getParameterMap().put("HTTP_STATUS", httpResponse.getStatus());
 					webApi.commitStateRequest(variantRequest, httpResponse);
 				}
 				catch (Throwable t) {
