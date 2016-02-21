@@ -35,7 +35,7 @@ public class EventReader {
 				"FROM events e LEFT OUTER JOIN event_params p ON e.id = p.event_id";
 
 		final String SELECT_EVENT_VARIANTS_SQL =
-				"SELECT id, event_id, test_name, experience_name, is_experience_control, is_state_nonvariant " +
+				"SELECT id, event_id, test_name, experience_name, is_experience_control " +
 				"FROM event_variants";
 		
 		return JdbcService.executeQuery(
@@ -93,7 +93,6 @@ public class EventReader {
 							ev.testName = rs.getString(3);
 							ev.experienceName = rs.getString(4);
 							ev.isExperienceControl = rs.getBoolean(5);
-							ev.isStateNonvariant = rs.getBoolean(6);
 							innerMap.put(evId, ev);
 						}
 						

@@ -27,7 +27,7 @@ public class EventPersisterAppLogger implements EventPersister {
 		for (VariantEventDecorator event: events) {
 			StringBuilder msg = new StringBuilder();
 			msg.append("EVENT:{")
-			.append("session_id:'").append(event.getStateRequest().getSession().getId()).append("', ")
+			.append("session_id:'").append(event.getSession().getId()).append("', ")
 			.append("created_on:'").append(event.getCreateDate()).append("', ")
 			.append("event_name:'").append(event.getEventName()).append("', ")
 			.append("event_value:'").append(event.getEventValue()).append("'")
@@ -39,13 +39,11 @@ public class EventPersisterAppLogger implements EventPersister {
 		for (VariantEventDecorator event: events) {
 			for (Experience e: event.getActiveExperiences()) {
 				StringBuilder msg = new StringBuilder();
-				State state = event.getStateRequest().getState();
 				msg.append("EVENT_VARIANTS:{")
 				.append("event_name:'").append(event.getEventName()).append("', ")
 				.append("test_name:'").append(e.getTest().getName()).append("', ")
 				.append("experience_name:'").append(e.getName()).append("', ")
 				.append("is_experience_control:").append(e.isControl()).append("', ")
-				.append("is_state_nonvariant:").append(state.isInstrumentedBy(e.getTest()) && state.isNonvariantIn(e.getTest()))
 				.append("}");
 
 				LOG.info(msg.toString());

@@ -68,6 +68,7 @@ public class SessionTest extends BaseTest {
 		VariantStateRequest req1 = api.dispatchRequest(ssn, schema.getState("state1"), "");
 		assertNotNull(req1);
 		assertEquals(req1, ssn.getStateRequest());
+		assertNotNull(req1.getStateVisitedEvent());
 		String json = ((VariantSessionImpl)ssn).toJson();
 		VariantSessionImpl deserializedSsn = VariantSessionImpl.fromJson(json);
 		assertEquals("foo", deserializedSsn.getId());
@@ -77,17 +78,18 @@ public class SessionTest extends BaseTest {
 		assertEqualAsSets(req1.getResolvedParameterMap(), deserializedReq.getResolvedParameterMap());
 		assertEquals(req1.getStatus(), deserializedReq.getStatus());
 		assertEqualAsSets(req1.getTargetedExperiences(), deserializedReq.getTargetedExperiences());
-		assertTrue(deserializedReq.getPendingEvents().isEmpty());
+		assertNull(deserializedReq.getStateVisitedEvent());
 		assertEqualAsSets(ssn.getTraversedStates(), deserializedSsn.getTraversedStates());
 		assertEqualAsSets(ssn.getTraversedTests(), deserializedSsn.getTraversedTests());
 		api.commitStateRequest(req1, "");
 		
+		// Nothing is instrumented on state2
 		VariantStateRequest req2 = api.dispatchRequest(ssn, schema.getState("state2"), "");
 		assertNotNull(req2);
 		assertNotEquals(req1, req2);
+		assertNull(req2.getStateVisitedEvent());
 		assertEquals(req2, ssn.getStateRequest());
 		json = ((VariantSessionImpl)ssn).toJson();
-		System.out.println(((VariantSessionImpl)ssn).toJson());		
 		deserializedSsn = VariantSessionImpl.fromJson(json);
 		assertEquals("foo", deserializedSsn.getId());
 		deserializedReq = deserializedSsn.getStateRequest();
@@ -96,7 +98,7 @@ public class SessionTest extends BaseTest {
 		assertEqualAsSets(req2.getResolvedParameterMap(), deserializedReq.getResolvedParameterMap());
 		assertEquals(req2.getStatus(), deserializedReq.getStatus());
 		assertEqualAsSets(req2.getTargetedExperiences(), deserializedReq.getTargetedExperiences());
-		assertTrue(deserializedReq.getPendingEvents().isEmpty());
+		assertNull(deserializedReq.getStateVisitedEvent());
 		assertEqualAsSets(ssn.getTraversedStates(), deserializedSsn.getTraversedStates());
 		assertEqualAsSets(ssn.getTraversedTests(), deserializedSsn.getTraversedTests());
 		api.commitStateRequest(req2, "");

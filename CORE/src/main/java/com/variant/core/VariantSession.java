@@ -2,6 +2,7 @@ package com.variant.core;
 
 import java.util.Collection;
 
+import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.util.Tuples.Pair;
@@ -44,7 +45,15 @@ public interface VariantSession {
 	public Collection<Pair<Test, Boolean>> getTraversedTests(); 
 	
 	/**
-	 * <p>Get the current state request, which may be still in progress or already committed.
+	 * Trigger a custom event.
+	 * 
+	 * @param The custom event to be logged. An implementation of {@link VariantEvent}
+	 * @since 0.5
+	 */
+	public void triggerEvent(VariantEvent event);
+
+	/**
+	 * <p>Get most recent state request, which may be still in progress or already committed.
 	 * 
 	 * @return An object of type {@link VariantStateRequest}, or null, if none yet for this
 	 *         session.

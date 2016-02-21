@@ -2,7 +2,7 @@ package com.variant.core.event;
 
 import java.util.Collection;
 
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantSession;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
@@ -19,13 +19,13 @@ public interface VariantEventDecorator extends VariantEvent {
 
 	
 	/**
-	 * The state request which triggered the original {@link VariantEvent}
+	 * The current variant session.
 	 * 
 	 * @return An object of type {@link VariantStateRequest}.
 	 * 
 	 * @since 0.5
 	 */
-	public VariantStateRequest getStateRequest();
+	public VariantSession getSession();
 	
 	/**
 	 * <p>Test experiences that:
@@ -33,7 +33,7 @@ public interface VariantEventDecorator extends VariantEvent {
 	 * <li>Were targeted for the session that triggered the event.</li>
 	 * <li>Correspond to tests, instrumented on the state corresponding to the state request
 	 *    which triggered the event.</li>
-	 * <li>Correspond totests that satisfied qualification hooks, if any, for this session
+	 * <li>Correspond to tests that satisfied qualification hooks, if any, for this session
 	 *    which triggered the event.</li>
 	 * </ol>
 	 * 

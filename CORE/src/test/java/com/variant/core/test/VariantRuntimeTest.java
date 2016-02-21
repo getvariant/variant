@@ -1,9 +1,6 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Collection;
 import java.util.Map;
@@ -1133,21 +1130,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(state1, req.getState());
 		
 		// View Serve Event.
-		Collection<VariantEvent> pendingEvents = req.getPendingEvents();
-		assertEquals(1, pendingEvents.size());
-	
-		// Pending Events filter
-		pendingEvents = req.getPendingEvents(
-				new Predicate<VariantEvent>() {				
-			
-					@Override
-					public boolean evaluate(VariantEvent e) {
-						VariantEvent origEvent = ((VariantEventDecoratorImpl)e).getOriginalEvent();
-						return ! (origEvent instanceof StateVisitedEvent);
-					}
-				});
-		
-		assertTrue(pendingEvents.isEmpty());
+		assertNotNull(req.getStateVisitedEvent());
 	}
 	
 }

@@ -1,8 +1,6 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,11 +45,11 @@ public class EventWriterTest extends BaseTest {
 		
 		VariantSession ssn1 = api.getSession("ssn1");
 		VariantStateRequest request = api.dispatchRequest(ssn1, s1, targetingTrackerString("test1.A","test2.B","test3.C","test4.A","test5.B","test6.C"));
-		assertEquals(1, request.getPendingEvents().size());
+		assertNotNull(request.getStateVisitedEvent());
 
 		VariantSession ssn2 = api.getSession("ssn2");
 		request = api.dispatchRequest(ssn2, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
-		assertEquals(1, request.getPendingEvents().size());
+		assertNotNull(request.getStateVisitedEvent());
 
 		api.commitStateRequest(ssn1.getStateRequest(), "");
 		api.commitStateRequest(ssn2.getStateRequest(), "");
@@ -83,27 +81,22 @@ public class EventWriterTest extends BaseTest {
 					if (ee.getTestName().equals("test2")) {
 						assertEquals("B", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertTrue(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test3")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertTrue(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test5")) {
 						assertEquals("B", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}
@@ -119,32 +112,26 @@ public class EventWriterTest extends BaseTest {
 					if (ee.getTestName().equals("test1")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test2")) {
 						assertEquals("C", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test3")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test5")) {
 						assertEquals("B", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertTrue(ee.isStateNonvariant());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}
@@ -174,8 +161,8 @@ public class EventWriterTest extends BaseTest {
 		VariantStateRequest request = api.dispatchRequest(ssn3, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
 		customEvent.getParameterMap().put("param-key", "param-value");
-		request.triggerEvent(customEvent);
-		assertEquals(2, request.getPendingEvents().size());
+		ssn3.triggerEvent(customEvent);
+		assertNotNull(request.getStateVisitedEvent());
 
 		api.commitStateRequest(ssn3.getStateRequest(), "");
 
@@ -204,32 +191,26 @@ public class EventWriterTest extends BaseTest {
 					if (ee.getTestName().equals("test1")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test2")) {
 						assertEquals("C", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test3")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test5")) {
 						assertEquals("B", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertTrue(ee.isStateNonvariant());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}
@@ -246,32 +227,26 @@ public class EventWriterTest extends BaseTest {
 					if (ee.getTestName().equals("test1")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test2")) {
 						assertEquals("C", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test3")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test5")) {
 						assertEquals("B", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertTrue(ee.isStateNonvariant());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}
@@ -302,8 +277,8 @@ public class EventWriterTest extends BaseTest {
 		VariantStateRequest request = api.dispatchRequest(ssn4, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
 		customEvent.getParameterMap().put("param-key", "param-value");
-		request.triggerEvent(customEvent);
-		assertEquals(2, request.getPendingEvents().size());
+		ssn4.triggerEvent(customEvent);
+		assertNotNull(request.getStateVisitedEvent());
 
 		api.commitStateRequest(ssn4.getStateRequest(), "");
 
@@ -333,22 +308,18 @@ public class EventWriterTest extends BaseTest {
 					if (ee.getTestName().equals("test1")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test5")) {
 						assertEquals("B", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertTrue(ee.isStateNonvariant());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}
@@ -365,22 +336,18 @@ public class EventWriterTest extends BaseTest {
 					if (ee.getTestName().equals("test1")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
 						assertTrue(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test5")) {
 						assertEquals("B", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertFalse(ee.isStateNonvariant());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
 						assertFalse(ee.isExperienceControl());
-						assertTrue(ee.isStateNonvariant());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}

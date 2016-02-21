@@ -8,7 +8,6 @@ public class VariantEventVariantFromDatabase {
 	String testName;
 	String experienceName;
 	boolean isExperienceControl;
-	boolean isStateNonvariant;
 	    
     VariantEventVariantFromDatabase() {}
     
@@ -17,6 +16,5 @@ public class VariantEventVariantFromDatabase {
 	public String getTestName() { return testName; }
 	public String getExperienceName() { return experienceName; }
 	public boolean isExperienceControl() { return isExperienceControl; }
-	public boolean isStateNonvariant() { return isStateNonvariant; }
 
 }

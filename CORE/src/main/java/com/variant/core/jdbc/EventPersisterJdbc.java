@@ -52,11 +52,11 @@ abstract public class EventPersisterJdbc implements EventPersister {
 
 		final String INSERT_EVENT_VARIANTS_SQL = 
 				"INSERT INTO event_variants " +
-			    "(id, event_id, test_name, experience_name, is_experience_control, is_state_nonvariant) " +
+			    "(id, event_id, test_name, experience_name, is_experience_control) " +
 				(getVendor() == Vendor.POSTGRES ?
-						"VALUES (NEXTVAL('event_variants_id_seq'), ?, ?, ?, ?, ?)" :
+						"VALUES (NEXTVAL('event_variants_id_seq'), ?, ?, ?, ?)" :
 				getVendor() == Vendor.H2 ?
-						"VALUES (event_variants_id_seq.NEXTVAL, ?, ?, ?, ?, ?)" : "");
+						"VALUES (event_variants_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
 
 		final String INSERT_EVENT_PARAMETERS_SQL = 
 				"INSERT INTO event_params " +
@@ -77,7 +77,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
 					for (VariantEventDecorator event: events) {
-						stmt.setString(1, event.getStateRequest().getSession().getId());
+						stmt.setString(1, event.getSession().getId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getEventName());
 						stmt.setString(4, event.getEventValue());
@@ -136,10 +136,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 							stmt.setLong(1, eventId);
 							stmt.setString(2, exp.getTest().getName());
 							stmt.setString(3, exp.getName());
-							stmt.setBoolean(4, exp.isControl());
-							State state = event.getStateRequest().getState();
-							stmt.setBoolean(5, state.isInstrumentedBy(exp.getTest()) && state.isNonvariantIn(exp.getTest()));
-						
+							stmt.setBoolean(4, exp.isControl());						
 							stmt.addBatch();
 						}
 					}

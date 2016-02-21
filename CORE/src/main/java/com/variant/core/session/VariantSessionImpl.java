@@ -14,7 +14,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.VariantEvent;
+import com.variant.core.event.impl.EventWriter;
+import com.variant.core.event.impl.VariantEventDecoratorImpl;
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -69,6 +73,16 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	@Override
 	public Collection<Pair<Test, Boolean>> getTraversedTests() {
 		return VariantCollectionsUtils.mapToPairs(traversedTests);
+	}
+
+	@Override
+	public void triggerEvent(VariantEvent event) {
+
+		if (event == null)
+			throw new IllegalArgumentException("Event parameter cannot be null");
+
+		EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
+		ew.write(new VariantEventDecoratorImpl(event, this));
 	}
 
 	//---------------------------------------------------------------------------------------------//

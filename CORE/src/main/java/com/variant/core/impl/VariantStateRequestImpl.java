@@ -4,13 +4,9 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections4.Predicate;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -19,7 +15,7 @@ import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.VariantEventDecorator;
+import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.event.impl.VariantEventDecoratorImpl;
 import com.variant.core.exception.VariantInternalException;
@@ -48,7 +44,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	private State state;
 	private Status status = Status.OK;
 	private Map<String,String> resolvedParameterMap;
-	private HashSet<VariantEventDecorator> events = new HashSet<VariantEventDecorator>();
+	private StateVisitedEvent event = null;
 	private boolean committed = false;
 	private VariantTargetingTracker targetingTracker = null;
 	
@@ -65,35 +61,41 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		session.setStateRequest(this);
 	}
 	
+	/**
+	 * 
+	 * @param targetingPersister
+	 */
 	void setTargetingPersister(VariantTargetingTracker targetingPersister) {
 		this.targetingTracker = targetingPersister;
 	}
 	
-	// Flush pending events to an implementation of EventPersister. 
-	void flushEvents() {
-		
-		// State visited event gets status from this request
-		for (VariantEvent event: getPendingEvents(
-				new Predicate<VariantEvent>() {
-					
-					@Override
-					public boolean evaluate(VariantEvent e) {
-						VariantEvent origEvent = ((VariantEventDecoratorImpl)e).getOriginalEvent();
-						return origEvent instanceof StateVisitedEvent;
-					}
-				})
-			) {
-			
+	/**
+	 *  Crate state visited event when appropriate.
+	 */
+	void createStateVisitedEvent() {
+		event = new StateVisitedEvent(state);
+	}
+	
+	
+	/**
+	 * Commit this state request and flush the state visited event to an implementation of EventPersister. 
+	 */
+	public void commit() {
+
+		// We won't have an event if nothing is instrumented on this state
+		if (event != null) {
 			// The status of this request.
 			event.getParameterMap().put("REQ_STATUS", status);
-
 			// log all resolved state params as event params.
 			for (Map.Entry<String,String> e: resolvedParameterMap.entrySet()) {
 				event.getParameterMap().put(e.getKey(), e.getValue());				
 			}
+			// Flush state visited event
+			session.triggerEvent(event);
+			event = null;
 		}
-
-		((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter().write(events);	
+		
+		committed = true;
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -127,24 +129,8 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	}
 	
 	@Override
-	public Collection<VariantEvent> getPendingEvents() {
-		
-		return getPendingEvents(
-			new Predicate<VariantEvent>() {
-				@Override
-				public boolean evaluate(VariantEvent e) {return true;}
-			}
-		);
-	}
-
-	@Override
-	public Collection<VariantEvent> getPendingEvents(Predicate<VariantEvent> filter) {
-		
-		if (filter == null) throw new IllegalArgumentException("Filter cannot be null");
-		
-		HashSet<VariantEvent> result = new HashSet<VariantEvent>();
-		for (VariantEvent e: events) if (filter.evaluate(e)) result.add(e);
-		return Collections.unmodifiableSet(result);
+	public VariantEvent getStateVisitedEvent() {		
+		return event;
 	}
 
 	@Override
@@ -183,14 +169,6 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 
 		return null;
 	}
-
-	@Override
-	public void triggerEvent(VariantEvent event) {
-		if (event == null)
-			throw new IllegalArgumentException("Event parameter cannot be null");
-		
-		events.add(new VariantEventDecoratorImpl(event, this));
-	}
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
@@ -202,13 +180,6 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	 */
 	public void setResolvedParameters(Map<String,String> parameterMap) {
 		this.resolvedParameterMap = parameterMap;
-	}
-
-	/**
-	 * 
-	 */
-	public void commit() {
-		committed = true;
 	}
 	
 	/**

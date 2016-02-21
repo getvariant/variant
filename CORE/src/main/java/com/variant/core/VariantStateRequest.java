@@ -3,9 +3,8 @@ package com.variant.core;
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.collections4.Predicate;
-
 import com.variant.core.event.VariantEvent;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -83,34 +82,14 @@ public interface VariantStateRequest {
 	 * @since 0.5
 	 */
 	public Experience getTargetedExperience(Test test);
-
-	/**
-	 * Trigger a custom event.
-	 * 
-	 * @param The custom event to be logged. An implementation of {@link VariantEvent}
+		
+	/** Get the pending state visited event. This is useful if the caller wants to add parameters to this
+	 *  event before it is flushed to external storage.
+	 * @return Pending event of type {@link com.variant.core.event.VariantEvent} or null if this request has already
+	 *         been committed;
 	 * @since 0.5
 	 */
-	public void triggerEvent(VariantEvent event);
-	
-	/**
-	 * A subset of all pending events that will be flushed when this request is committed
-	 * selected by a predicate filter.
-	 * 
-	 * @param filter An implementation of 
-	 *               <a href="https://commons.apache.org/proper/commons-collections/javadocs/api-4.0/org/apache/commons/collections4/Predicate.html">
-	 *                 org.apache.commons.collections4.Predicate
-	 *               </a>
-	 *               that governs filtering.
-	 * @return Collection of {@link com.variant.core.event.VariantEvent}s that satisfy the predicate.
-	 * @since 0.5
-	 */
-	public Collection<VariantEvent> getPendingEvents(Predicate<VariantEvent> filter);
-	
-	/** All pending events that will be flushed when this request is committed.
-	 * @return Collection of all currently pending events as {@link com.variant.core.event.VariantEvent}s.
-	 * @since 0.5
-	 */
-	public Collection<VariantEvent> getPendingEvents();
+	public VariantEvent getStateVisitedEvent();
 	
 	/**
 	 * Set the status of this request.

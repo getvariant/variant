@@ -322,9 +322,7 @@ public class VariantCoreImpl implements Variant {
 		// Persist targeting info.  Note that we expect the userData to apply to both!
 		request.getTargetingTracker().save(userData);
 		
-		// Write events to external storage
-		requestImpl.flushEvents();
-
+		// Commit the request.
 		((VariantStateRequestImpl)request).commit();
 		
 	}

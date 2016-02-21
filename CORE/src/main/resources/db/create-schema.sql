@@ -28,7 +28,6 @@ CREATE TABLE event_variants (
   test_name             VARCHAR(128) NOT NULL,     -- Test name
   experience_name       VARCHAR(128) NOT NULL,     -- Experience name
   is_experience_control BOOLEAN NOT NULL,          -- Is experience control for the test?
-  is_state_nonvariant   BOOLEAN NOT NULL,          -- Is this event's state non-variant in this test?
   CONSTRAINT event_variants_pk PRIMARY KEY (id),
   CONSTRAINT event_variants_ix1 UNIQUE (event_id, test_name, experience_name)
  );

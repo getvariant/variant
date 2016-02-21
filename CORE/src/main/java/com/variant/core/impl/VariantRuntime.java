@@ -550,7 +550,7 @@ public class VariantRuntime {
 			}   			
 		}
 		else {
-			result.triggerEvent(new StateVisitedEvent(state));
+			result.createStateVisitedEvent();
 		}
 	
 		return result;

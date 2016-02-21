@@ -18,18 +18,9 @@ public class StateVisitedEvent extends VariantEventSupport implements Serializab
 	private Date createDate = new Date();
 	
 	/**
-	 * New constructor
-	 *
-	public StateVisitedEvent(VariantStateRequestImpl request, Map<String,String> resolvedParameters) {
-		super(EVENT_NAME, request.getState().getName(), request);
-		this.request = request;
-		for (Map.Entry<String, String> param: resolvedParameters.entrySet()) {
-			setParameter(param.getKey(), param.getValue());
-			
-		}
-	}
-	*/
-
+	 * 
+	 * @param state
+	 */
 	public StateVisitedEvent(State state) {
 		this.state = state;
 	}
