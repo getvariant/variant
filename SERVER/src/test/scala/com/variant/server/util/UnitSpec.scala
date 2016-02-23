@@ -14,6 +14,8 @@ import org.scalatest.BeforeAndAfterAll
 import com.variant.server.core.VariantCore
 import net.liftweb.http.testing.TestKit
 import net.liftweb.http.testing.ReportFailure
+import com.variant.core.jdbc.JdbcUtil
+import com.variant.core.Variant
 
 
 /**
@@ -23,6 +25,7 @@ object UnitSpec {
    
    // Use statc count to deal with SBT's parallel execution of tests.
    var upCount = 0;
+   val api = Variant.Factory.getInstance();   
 }
 
 /**
@@ -30,6 +33,8 @@ object UnitSpec {
  */
 abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with TestKit
    with Matchers with OptionValues with Inside with Inspectors with BeforeAndAfterAll  {
+   
+   import UnitSpec._
    
    /**
     * 
@@ -40,21 +45,15 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
          
       }
    }
-
-   lazy val schema = VariantCore.api.getSchema()
    
    /**
     * 
     */
    override def beforeAll() = {
       UnitSpec.synchronized {
-         if (UnitSpec.upCount == 0) {
-            // Actual setup - only if we havent setup yet.
-            start()
-            val parserResp = VariantCore.api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"))
-            parserResp.getMessages should have size (0)
-         }
-         UnitSpec.upCount += 1
+         // Actual setup - only if we haven't done it yet
+         if (upCount == 0) jvmSetup
+         upCount += 1
       }
    }
    
@@ -63,15 +62,28 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
     */
    override def afterAll() = {
       UnitSpec.synchronized {
-         if (UnitSpec.upCount == 1) {
-            // Actual breakdown - only if the caller is the last one.
-            stop()
-            //VariantCore.api.shutdown
+         // Actual breakdown - only if the caller is the last one.
+         if (upCount == 1) {
+            // Wait for async event writer to complete if any queued up events
+            Thread.sleep(500)
+            jvmShutdown
          }
-         UnitSpec.upCount -= 1
+         upCount -= 1
       }
    }
 
+   private def jvmSetup = {
+      startJetty
+  		if (api.isBootstrapped) api.shutdown  // shutdown api if already booted
+		api.bootstrap("/variant-test.props")  // bootstrap api with test params
+      JdbcUtil.createSchema                 // Fresh in-memory DB.
+   }
+
+   private def jvmShutdown = {
+      stopJetty
+      api.shutdown      
+   }
+   
    /**
     * 
     */
@@ -127,13 +139,13 @@ object JettyTestServer {
 trait JettyStartupAndShutdown extends FlatSpec {
 
    
-   def start() = {
+   def startJetty() = {
       val now = System.currentTimeMillis()
       JettyTestServer.start
       info("Jetty started in " + (System.currentTimeMillis() - now) + " ms.")
    }
    
-   def stop() = {
+   def stopJetty() = {
       val now = System.currentTimeMillis()
       JettyTestServer.stop
       info("Jetty stopped in " + (System.currentTimeMillis() - now) + " ms.")
