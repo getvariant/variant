@@ -32,9 +32,9 @@ public class VariantPropertiesTest {
 		engine.shutdown();
 
 		// Compile time override
-		engine.bootstrap("/variant-junit.props");
+		engine.bootstrap("/variant-test.props");
 		expectedProps = new Properties();
-		expectedProps.load(VariantIoUtils.openResourceAsStream("/variant-junit.props"));
+		expectedProps.load(VariantIoUtils.openResourceAsStream("/variant-test.props"));
 		for (String prop: expectedProps.stringPropertyNames()) {
 			assertEquals("Property Name: [" + prop + "]", expectedProps.getProperty(prop), VariantPropertiesTestFacade.getString(prop));
 		}
@@ -55,7 +55,7 @@ public class VariantPropertiesTest {
 
 		// Comp time override + run time override from classpath
 		System.setProperty(VariantProperties.RUNTIME_PROPS_RESOURCE_NAME, "/VariantPropertiesTest.props");
-		engine.bootstrap("/variant-junit.props");
+		engine.bootstrap("/variant-test.props");
 		expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openResourceAsStream("/VariantPropertiesTest.props"));
 		for (String prop: expectedProps.stringPropertyNames()) {
@@ -90,7 +90,7 @@ public class VariantPropertiesTest {
 		tmpFile.println(VariantProperties.Keys.EVENT_PERSISTER_JDBC_PASSWORD + " = RunTimeOverride");	
 		tmpFile.close();
 		
-		engine.bootstrap("/variant-junit.props");
+		engine.bootstrap("/variant-test.props");
 		expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openFileAsStream(TMP_FILE_NAME));
 		for (String prop: expectedProps.stringPropertyNames()) {

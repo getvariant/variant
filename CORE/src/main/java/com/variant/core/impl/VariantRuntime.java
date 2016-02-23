@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantTargetingTracker;
-import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;

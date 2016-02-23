@@ -120,8 +120,12 @@ object Dispatcher extends RestHelper {
       val ssnCacheEntry = SessionCache.get(sid.get)
       if (ssnCacheEntry == null) return  UserError.errors(UserError.SessionExpired).toFailure()
 
-      // We have the session. Generate event object.
-      
+      // We have the session. Must have recent state request.
+      if (ssnCacheEntry.getSession.getStateRequest == null) 
+         return UserError.errors(UserError.UnknownState).toFailure()
+ 
+      // Trigger event
+      ssnCacheEntry.getSession.triggerEvent(remoteEvent)
       
       Full(OkResponse())
    }

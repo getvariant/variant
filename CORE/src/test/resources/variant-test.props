@@ -1,0 +1,7 @@
+#
+# Base properties for some JUnit Tests.
+#
+
+event.writer.buffer.size = 10000
+event.writer.max.delay.millis = 100
+		

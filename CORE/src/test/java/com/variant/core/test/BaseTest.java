@@ -48,7 +48,7 @@ public class BaseTest {
 		if (api.isBootstrapped()) api.shutdown();
 
 		// Bootstrap the Variant container
-		api.bootstrap("/variant-junit.props");
+		api.bootstrap("/variant-test.props");
 
 		// (Re)create the schema, if running with a JDBC based event persister.
 		try {

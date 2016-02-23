@@ -14,7 +14,8 @@ object UserError {
    val UnsupportedProperty = 2
    val PropertyNotAString = 3
    val EmptyBody = 4
-   val SessionExpired = 5
+   val UnknownState = 5
+   val SessionExpired = 6
    
    val errors = Array(
      
@@ -24,6 +25,7 @@ object UserError {
      new UserError("Unsupported property '%s' in payload", HttpStatus.SC_BAD_REQUEST),
      new UserError("Property '%s' must be a string", HttpStatus.SC_BAD_REQUEST),
      new UserError("Empty body", HttpStatus.SC_BAD_REQUEST),
+     new UserError("Unknown state", HttpStatus.SC_BAD_REQUEST),
      
      // 403
      new UserError("Session expired", HttpStatus.SC_FORBIDDEN)
