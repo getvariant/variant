@@ -100,7 +100,7 @@
 			<version>1.4.191</version>
 		</dependency>
 
-		<!-- Hazelcast distributed cache -->		
+		<!-- Hazelcast distributed cache 		
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
@@ -112,7 +112,8 @@
             <artifactId>hazelcast-client</artifactId>
             <version>3.4</version>
         </dependency>
-
+      -->
+      
 		<!-- Annovention annotation discovery lib -->
 		<dependency>
 			<groupId>tv.cntt</groupId>
