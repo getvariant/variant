@@ -7,7 +7,6 @@ import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_PERSISTER_
 import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
 import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
 import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
-import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_NOT_SET;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -155,19 +154,20 @@ public class VariantCoreImpl implements Variant {
 		// Instantiate event persister.
 		//
 		String eventPersisterClassName = VariantProperties.getInstance().eventPersisterClassName();
-		if (eventPersisterClassName == null) {
-			throw new VariantRuntimeException(RUN_PROPERTY_NOT_SET, VariantProperties.Keys.EVENT_PERSISTER_CLASS_NAME.propName());
-		}
 		
 		EventPersister eventPersister = null;
 		try {
 			Object eventPersisterObject = Class.forName(eventPersisterClassName).newInstance();
 			if (eventPersisterObject instanceof EventPersister) {
 				eventPersister = (EventPersister) eventPersisterObject;
+				eventPersister.initialized(VariantProperties.getInstance().eventPersisterClassInit());
 			}
 			else {
 				throw new VariantRuntimeException (BOOT_EVENT_PERSISTER_NO_INTERFACE, eventPersisterClassName, EventPersister.class.getName());
 			}
+		}
+		catch (VariantRuntimeException e) {
+			throw e;
 		}
 		catch (Exception e) {
 			throw new VariantInternalException(
@@ -176,10 +176,7 @@ public class VariantCoreImpl implements Variant {
 				
 		// Instantiate event writer.
 		eventWriter = new EventWriter(eventPersister);
-		
-		// Pass the config to the new object.
-		eventPersister.initialized();
-		
+				
 		//
 		// Instantiate session service.
 		//
