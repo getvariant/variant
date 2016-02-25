@@ -30,3 +30,4 @@ targeting.tracker.idle.days.to.live = 0
 
 # Session store type
 session.store.class.name = com.variant.core.session.SessionStoreLocalMemory
+session.store.class.init = {}

@@ -1,5 +1,7 @@
 package com.variant.web;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.variant.core.VariantSession;
@@ -43,9 +45,10 @@ public class SessionStoreHttpSession implements VariantSessionStore {
 	}
 	
 	@Override
-	public void shutdown() {
-		// nothing.
-	}
+	public void initialized(Map<String, String> initParams) throws Exception {}
+
+	@Override
+	public void shutdown() {}
 
 	/**
 	 * Save Variant session in the HTTP session.

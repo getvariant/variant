@@ -31,5 +31,5 @@ public interface EventPersister {
 	 * @since 0.5
 	 */
 	public void persist(Collection<VariantEventDecorator> events) throws Exception;
-	
+
 }

@@ -1,6 +1,7 @@
 package com.variant.core.session;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionIdTracker;
@@ -43,6 +44,9 @@ public class SessionStoreLocalMemory implements VariantSessionStore {
 
 	SessionStoreLocalMemory() { }
 	
+	@Override
+	public void initialized(Map<String, String> initParams) {}
+
 	/**
 	 * @param session Session to save
 	 * @param  userData The sid, which is assumed to be managed by the caller.

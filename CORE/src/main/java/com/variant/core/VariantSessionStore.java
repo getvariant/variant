@@ -1,5 +1,7 @@
 package com.variant.core;
 
+import java.util.Map;
+
 /**
  * <p>An implementation will use external mechanisms to obtain and to store
  * Variant session between state resolution requests. Typically, this mechanism
@@ -12,6 +14,15 @@ package com.variant.core;
  */
 public interface VariantSessionStore {
 	
+	/**
+	 * <p>The container will call this method immediately following the instantiation with
+	 * the init parameter map, as specified by the <code>session.store.class.init</code>
+	 * application property. 
+	 * 
+	 * @since 0.5
+	 */
+	public void initialized(Map<String, String> initParams) throws Exception ;
+
 	/**
 	 * Save the session.
 	 * @param session The session to be saved in the store.

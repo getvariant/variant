@@ -108,6 +108,7 @@ public class VariantProperties {
 		EVENT_WRITER_MAX_DELAY_MILLIS,
 		EVENT_WRITER_PERCENT_FULL,
 		SESSION_STORE_CLASS_NAME,
+		SESSION_STORE_CLASS_INIT,
 		TARGETING_TRACKER_CLASS_NAME,
 		TARGETING_TRACKER_IDLE_DAYS_TO_LIVE,
 		;
@@ -165,6 +166,10 @@ public class VariantProperties {
 		return getString(Keys.EVENT_PERSISTER_CLASS_NAME.propName());
 	}
 
+	public Map<String, String> eventPersisterClassInit() {
+		return getMap(Keys.EVENT_PERSISTER_CLASS_INIT.propName());
+	}
+
 	public String targetingTrackerClassName() {
 		return getString(Keys.TARGETING_TRACKER_CLASS_NAME.propName());
 	}
@@ -177,10 +182,9 @@ public class VariantProperties {
 		return getString(Keys.SESSION_STORE_CLASS_NAME.propName());
 	}
 	
-	public Map<String, String> eventPersisterClassInit() {
-		return getMap(Keys.EVENT_PERSISTER_CLASS_INIT.propName());
+	public Map<String, String> sessionStoreClassInit() {
+		return getMap(Keys.SESSION_STORE_CLASS_INIT.propName());
 	}
-
 	public int eventWriterBufferSize() {
 		return getInteger(Keys.EVENT_WRITER_BUFFER_SIZE.propName());	
 	}

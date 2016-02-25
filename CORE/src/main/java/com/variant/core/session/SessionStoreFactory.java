@@ -9,19 +9,20 @@ import com.variant.core.schema.impl.MessageTemplate;
  * 
  * @author Igor
  *
- */
+ *
 public class SessionStoreFactory {
 			
 	/**
 	 * 
 	 * @return
-	 */
+	 *
 	public static VariantSessionStore getInstance(String className) {
 		
 		try {
 			Class<?> persisterClass = Class.forName(className);
 			Object persisterObject = persisterClass.newInstance();
 			if (persisterObject instanceof VariantSessionStore) {
+				
 				return (VariantSessionStore) persisterObject;
 			}
 			else {
@@ -34,3 +35,4 @@ public class SessionStoreFactory {
 	}
 	
 }
+*/

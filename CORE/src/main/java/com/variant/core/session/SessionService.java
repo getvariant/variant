@@ -9,7 +9,9 @@ import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.config.VariantProperties;
 import com.variant.core.exception.VariantBootstrapException;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.schema.impl.MessageTemplate;
 
 import static com.variant.core.schema.impl.MessageTemplate.*;
 
@@ -26,8 +28,22 @@ public class SessionService {
 	public SessionService() throws VariantBootstrapException {
 		
 		// Session store.
-		sessionStore = SessionStoreFactory.getInstance(VariantProperties.getInstance().sessionStoreClassName());
-		
+		String storeClassName = VariantProperties.getInstance().sessionStoreClassName();
+		try {
+			Class<?> storeClass = Class.forName(storeClassName);
+			Object storeObject = storeClass.newInstance();
+			if (storeObject instanceof VariantSessionStore) {
+				sessionStore = (VariantSessionStore) storeObject;
+				sessionStore.initialized(VariantProperties.getInstance().sessionStoreClassInit());
+			}
+			else {
+				throw new VariantBootstrapException(MessageTemplate.BOOT_SESSION_STORE_NO_INTERFACE, storeClassName, VariantSessionStore.class.getName());
+			}
+		}
+		catch (Exception e) {
+			throw new VariantInternalException("Unable to instantiate session store class [" + storeClassName + "]", e);
+		}
+
 	}
 	
 	/**
