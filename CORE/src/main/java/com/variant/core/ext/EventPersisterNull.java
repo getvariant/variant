@@ -1,6 +1,7 @@
 package com.variant.core.ext;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ public class EventPersisterNull implements EventPersister {
 	private static final Logger LOG = LoggerFactory.getLogger(EventPersisterNull.class);
 	
 	@Override
-	public void initialized() {}
+	public void initialized(Map<String,String> initParams) {}
 
 	@Override
 	public void persist(Collection<VariantEventDecorator> events) throws Exception {

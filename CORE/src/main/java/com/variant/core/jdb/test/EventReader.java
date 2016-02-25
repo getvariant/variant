@@ -14,7 +14,6 @@ import org.apache.commons.collections4.Predicate;
 
 import com.variant.core.jdbc.JdbcService;
 import com.variant.core.jdbc.JdbcUtil;
-import com.variant.core.jdbc.JdbcService.QueryOperation;
 
 /**
  * Read events from a JDBC event persister.
@@ -32,7 +31,7 @@ public class EventReader {
 	 * @throws SQLException
 	 */
 	public static Collection<VariantEventFromDatabase> readEvents(final Predicate<VariantEventFromDatabase> filter) 
-			throws ClassNotFoundException, SQLException {
+		throws Exception {
 		
 		final String SELECT_EVENTS_SQL = 
 				"SELECT e.id, e.session_id, e.created_on, e.event_name, e.event_value, p.key, p.value " +
@@ -129,7 +128,7 @@ public class EventReader {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static Collection<VariantEventFromDatabase> readEvents() throws ClassNotFoundException, SQLException {
+	public static Collection<VariantEventFromDatabase> readEvents() throws Exception {
 
 		Predicate<VariantEventFromDatabase> noFilter = new Predicate<VariantEventFromDatabase>() {
 

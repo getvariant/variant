@@ -13,7 +13,6 @@ import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.VariantEventDecorator;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
 /**
@@ -34,7 +33,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public abstract Connection getJdbcConnection() throws ClassNotFoundException, SQLException;
+	public abstract Connection getJdbcConnection() throws Exception;
 
 	/**
 	 * Persist a collection of events.

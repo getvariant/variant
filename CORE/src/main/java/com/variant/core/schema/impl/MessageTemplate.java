@@ -104,8 +104,10 @@ public enum MessageTemplate {
 	//                                                 RUN TIME MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//
 	
+	RUN_PROPERTY_NOT_SET                                  (Severity.ERROR, "Application property [%s] must be set"),
+	RUN_PROPERTY_INIT_INVALID_JSON                        (Severity.ERROR, "Invalid JSON [%s] in application property [%s]"),
+	RUN_PROPERTY_INIT_PROPERTY_NOT_SET                    (Severity.ERROR, "Init property [%s] is required by class [%s] but is missing in application property [%s]"),
 	RUN_STATE_NOT_INSTRUMENTED_FOR_TEST                   (Severity.ERROR, "State [%s] is not instrumented for test [%s]"), 
-	RUN_PROPERTY_NOT_SET                                  (Severity.ERROR, "Property [%s] must be set"),
 	RUN_SCHEMA_REPLACED                                   (Severity.ERROR, "This schema is no longer valid because it has been replaced with a newer schema."),
 	RUN_WEIGHT_MISSING                                    (Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found."),
 	RUN_ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first."),

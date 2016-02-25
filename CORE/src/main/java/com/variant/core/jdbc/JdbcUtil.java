@@ -83,7 +83,7 @@ public class JdbcUtil {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static Connection getConnection() throws ClassNotFoundException, SQLException {
+	public static Connection getConnection() throws Exception {
 		return getEventPersister().getJdbcConnection();
 	}
 	

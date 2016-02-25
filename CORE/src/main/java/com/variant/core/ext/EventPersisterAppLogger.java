@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEventDecorator;
-import com.variant.core.schema.State;
 import com.variant.core.schema.Test.Experience;
 
 public class EventPersisterAppLogger implements EventPersister {
@@ -16,7 +15,7 @@ public class EventPersisterAppLogger implements EventPersister {
 	private static final Logger LOG = LoggerFactory.getLogger(EventPersisterAppLogger.class);
 
 	@Override
-	public void initialized() {
+	public void initialized(Map<String,String> initParams) {
 		LOG.info("Initialized");
 	}
 

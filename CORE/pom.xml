@@ -4,8 +4,11 @@
  * Variant CORE POM.
  */
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
+   <modelVersion>4.0.0</modelVersion>
     
 	<properties>
 	    <variant.version>0.5.2</variant.version>
@@ -21,14 +24,21 @@
     
     <dependencies>
         
-        <!-- Apache Commons -->        
-        <dependency>
+      <!-- Variant dependencies -->        
+      <dependency>
+         <groupId>com.variant</groupId>
+         <artifactId>variant-open-securestring</artifactId>
+         <version>1.0.0</version>
+      </dependency>
+
+      <!-- Apache Commons -->        
+      <dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
         
-        <dependency>
+      <dependency>
 	    	<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
 			<version>3.5</version>

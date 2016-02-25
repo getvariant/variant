@@ -1,9 +1,18 @@
 package com.variant.core.config;
 
+import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON;
+import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_NOT_SET;
+
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
-import com.variant.core.exception.VariantInternalException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.util.VariantIoUtils;
 
 /**
@@ -58,10 +67,32 @@ public class VariantProperties {
 	String getString(String key) {		
 		String result = System.getProperty(key);
 		if (result == null) result = props.getProperty(key);
-		if (result == null) throw new VariantInternalException("Undefined system property [" + key + "]");
+		if (result == null) throw new VariantRuntimeException(RUN_PROPERTY_NOT_SET, key);
 		return result;
 	}
-	
+
+	/**
+	 * Open direct access to Property chain for junits.
+	 * System property overrides.
+	 * @param name
+	 * @return
+	 * @throws IOException 
+	 * @throws JsonMappingException 
+	 * @throws JsonParseException 
+	 */
+	@SuppressWarnings("unchecked")
+	Map<String, String> getMap(String key) {
+		String raw = getString(key);
+		try {
+			ObjectMapper jacksonDataMapper = new ObjectMapper();
+			jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+			return jacksonDataMapper.readValue(raw, Map.class);
+		}
+		catch (Exception e) {
+			throw new VariantRuntimeException(RUN_PROPERTY_INIT_INVALID_JSON, raw, key);
+		}
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -72,9 +103,7 @@ public class VariantProperties {
 	public static enum Keys {
 		
 		EVENT_PERSISTER_CLASS_NAME,
-		EVENT_PERSISTER_JDBC_PASSWORD,
-		EVENT_PERSISTER_JDBC_URL,
-		EVENT_PERSISTER_JDBC_USER,
+		EVENT_PERSISTER_CLASS_INIT,
 		EVENT_WRITER_BUFFER_SIZE,
 		EVENT_WRITER_MAX_DELAY_MILLIS,
 		EVENT_WRITER_PERCENT_FULL,
@@ -136,18 +165,6 @@ public class VariantProperties {
 		return getString(Keys.EVENT_PERSISTER_CLASS_NAME.propName());
 	}
 
-	public String eventPersisterJdbcUrl() {
-		return getString(Keys.EVENT_PERSISTER_JDBC_URL.propName());
-	}
-
-	public String eventPersisterJdbcUser() {
-		return getString(Keys.EVENT_PERSISTER_JDBC_USER.propName());
-	}
-
-	public String eventPersisterJdbcPassword() {
-		return getString(Keys.EVENT_PERSISTER_JDBC_PASSWORD.propName());
-	}
-
 	public String targetingTrackerClassName() {
 		return getString(Keys.TARGETING_TRACKER_CLASS_NAME.propName());
 	}
@@ -160,9 +177,9 @@ public class VariantProperties {
 		return getString(Keys.SESSION_STORE_CLASS_NAME.propName());
 	}
 	
-	//public String sessionIdPersisterClassName() {
-	//	return getString(Keys.SESSION_ID_TRACKER_CLASS_NAME.propName());
-	//}
+	public Map<String, String> eventPersisterClassInit() {
+		return getMap(Keys.EVENT_PERSISTER_CLASS_INIT.propName());
+	}
 
 	public int eventWriterBufferSize() {
 		return getInteger(Keys.EVENT_WRITER_BUFFER_SIZE.propName());	

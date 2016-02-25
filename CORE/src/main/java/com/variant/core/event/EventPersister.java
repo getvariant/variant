@@ -1,6 +1,7 @@
 package com.variant.core.event;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * <p>Container-instantiated implementation will use external mechanisms to persist Variant events.
@@ -13,12 +14,13 @@ import java.util.Collection;
 public interface EventPersister {
 
 	/**
-	 * <p>The container will call this method immediately following the instantiation to allow
-	 * the client code to initialize the object with some state. 
+	 * <p>The container will call this method immediately following the instantiation with
+	 * the init parameter map, as specified by the <code>event.persister.class.init</code>
+	 * application property. 
 	 * 
 	 * @since 0.5
 	 */
-	public void initialized();
+	public void initialized(Map<String, String> initParams) throws Exception ;
 	
 	/**
 	 * <p>Persist events to some storage mechanism.

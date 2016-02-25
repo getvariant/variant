@@ -1,5 +1,5 @@
 package com.variant.core.session;
-
+/*
 import java.util.Map;
 
 import com.hazelcast.core.Hazelcast;
@@ -19,7 +19,7 @@ import com.variant.core.VariantSessionStore;
  * 
  * @author Igor
  *
- */
+ *
 public class SessionStoreHazelcastNoSidTracking implements VariantSessionStore {
 
 	private static VariantSessionIdTracker sidTracker = new SessionIdTrackerImpl();
@@ -29,7 +29,7 @@ public class SessionStoreHazelcastNoSidTracking implements VariantSessionStore {
 	
 	/**
 	 * A suitable implementation of session ID tracker.
-	 */
+	 *
 	private static class SessionIdTrackerImpl implements VariantSessionIdTracker {
 
 		@Override
@@ -52,7 +52,7 @@ public class SessionStoreHazelcastNoSidTracking implements VariantSessionStore {
 	/**
 	 * @param session Session to save
 	 * @param  userData The sid, which is assumed to be managed by the caller.
-	 */
+	 *
 	@Override
 	public void save(VariantSession session, Object...userData) {
 			Map<String, VariantSession> store = instance.getMap(MAP_NAME);
@@ -61,7 +61,7 @@ public class SessionStoreHazelcastNoSidTracking implements VariantSessionStore {
 
 	/**
 	 * @param  userData is the sid, which is assumed to be managed by the caller.
-	 */
+	 *
 	@Override
 	public VariantSession get(Object...userData) {
 			Map<String, VariantSession> store = instance.getMap(MAP_NAME);
@@ -70,7 +70,7 @@ public class SessionStoreHazelcastNoSidTracking implements VariantSessionStore {
 	
 	/**
 	 * 
-	 */
+	 *
 	@Override
 	public VariantSessionIdTracker getSessionIdTracker() {
 		return sidTracker;
@@ -82,3 +82,4 @@ public class SessionStoreHazelcastNoSidTracking implements VariantSessionStore {
 	}
 
 }
+*/

@@ -17,15 +17,11 @@ event.writer.max.delay.millis = 30000
 
 # Event Persister (H2 in memory)
 event.persister.class.name = com.variant.core.ext.EventPersisterH2
-event.persister.jdbc.url = jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;
-event.persister.jdbc.user = variant
-event.persister.jdbc.password = variant
+event.persister.class.init = {"url":"jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;","user":"variant","password":"variant"}
 
 # Event Persister (Postgres on Disk)
 # event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
-# event.persister.jdbc.url = jdbc:postgresql://localhost/variant
-# event.persister.jdbc.user = variant
-# event.persister.jdbc.password = variant
+# event.persister.class.init = {"url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}
 
 # Number of days targeting tracker will honor an idle experience.
 # 0 => for the life of the test.
