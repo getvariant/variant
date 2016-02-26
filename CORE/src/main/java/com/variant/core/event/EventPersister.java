@@ -1,7 +1,11 @@
 package com.variant.core.event;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+
+import com.variant.core.InitializationParams;
+import com.variant.core.exception.VariantRuntimeException;
 
 /**
  * <p>Container-instantiated implementation will use external mechanisms to persist Variant events.
@@ -18,9 +22,9 @@ public interface EventPersister {
 	 * the init parameter map, as specified by the <code>event.persister.class.init</code>
 	 * application property. 
 	 * 
-	 * @since 0.5
+	 * @since 0.1
 	 */
-	public void initialized(Map<String, String> initParams) throws Exception ;
+	public void initialized(InitializationParams initParams) throws Exception ;
 	
 	/**
 	 * <p>Persist events to some storage mechanism.

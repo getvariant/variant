@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.InitializationParams;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEventDecorator;
 import com.variant.core.schema.Test.Experience;
@@ -15,7 +16,7 @@ public class EventPersisterAppLogger implements EventPersister {
 	private static final Logger LOG = LoggerFactory.getLogger(EventPersisterAppLogger.class);
 
 	@Override
-	public void initialized(Map<String,String> initParams) {
+	public void initialized(InitializationParams initParams) {
 		LOG.info("Initialized");
 	}
 

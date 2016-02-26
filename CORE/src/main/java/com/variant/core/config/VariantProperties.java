@@ -5,6 +5,7 @@ import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_NOT_SET;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -12,6 +13,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.variant.core.InitializationParams;
+import com.variant.core.event.EventPersister;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.util.VariantIoUtils;
 
@@ -166,8 +169,8 @@ public class VariantProperties {
 		return getString(Keys.EVENT_PERSISTER_CLASS_NAME.propName());
 	}
 
-	public Map<String, String> eventPersisterClassInit() {
-		return getMap(Keys.EVENT_PERSISTER_CLASS_INIT.propName());
+	public InitializationParams eventPersisterClassInit() {
+		return new InitParams(getMap(Keys.EVENT_PERSISTER_CLASS_INIT.propName()));
 	}
 
 	public String targetingTrackerClassName() {
@@ -196,4 +199,28 @@ public class VariantProperties {
 	public int eventWriterMaxDelayMillis() {
 		return getInteger(Keys.EVENT_WRITER_MAX_DELAY_MILLIS.propName());			
 	}
+	
+	/**
+	 * 
+	 */
+	public static class InitParams extends HashMap<String, String> implements InitializationParams {
+		
+		public InitParams(Map<String,String> map) {
+			super(map);
+		}
+		
+		@Override
+		public String get(String param) {
+			return super.get(param);
+		}
+
+		@Override
+		public String getOrThrow(String key, VariantRuntimeException e) {
+			String result = super.get(key);
+			if (result == null) throw e;
+			else return result;
+		}
+
+	}
+
 }

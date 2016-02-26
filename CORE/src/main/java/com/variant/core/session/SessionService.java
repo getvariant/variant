@@ -62,6 +62,7 @@ public class SessionService {
 	
 	/**
 	 * Get or create user session.
+	 * @param userData opaque object(s) as passed to Variant.getSession()
 	 * @return 
 	 */
 	public VariantSession getSession(Object...userData) throws VariantRuntimeException {
