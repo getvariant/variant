@@ -185,8 +185,8 @@ public class VariantProperties {
 		return getString(Keys.SESSION_STORE_CLASS_NAME.propName());
 	}
 	
-	public Map<String, String> sessionStoreClassInit() {
-		return getMap(Keys.SESSION_STORE_CLASS_INIT.propName());
+	public InitializationParams sessionStoreClassInit() {
+		return new InitParams(getMap(Keys.SESSION_STORE_CLASS_INIT.propName()));
 	}
 	public int eventWriterBufferSize() {
 		return getInteger(Keys.EVENT_WRITER_BUFFER_SIZE.propName());	
@@ -203,6 +203,7 @@ public class VariantProperties {
 	/**
 	 * 
 	 */
+	@SuppressWarnings("serial")
 	public static class InitParams extends HashMap<String, String> implements InitializationParams {
 		
 		public InitParams(Map<String,String> map) {

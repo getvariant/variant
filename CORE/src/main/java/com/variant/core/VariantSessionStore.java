@@ -21,7 +21,7 @@ public interface VariantSessionStore {
 	 * 
 	 * @since 0.5
 	 */
-	public void initialized(Map<String, String> initParams) throws Exception ;
+	public void initialized(InitializationParams initParams) throws Exception ;
 
 	/**
 	 * Save the session.
