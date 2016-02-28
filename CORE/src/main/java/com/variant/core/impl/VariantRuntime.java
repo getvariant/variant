@@ -38,8 +38,6 @@ public class VariantRuntime {
 	// Logger
 	private static final Logger LOG = LoggerFactory.getLogger(VariantRuntime.class);
 
-	private static VariantCoreImpl variantCoreImpl = (VariantCoreImpl) Variant.Factory.getInstance();
-
 	/**
 	 * 
 	 */
@@ -123,11 +121,15 @@ public class VariantRuntime {
 		
 	}		
 
+	private VariantCoreImpl coreApi;
+
 	/**
 	 * Static singleton.
 	 * Need package visibility for test facade.
 	 */
-	private VariantRuntime() {}
+	VariantRuntime(VariantCoreImpl coreApi) {
+		this.coreApi = coreApi;
+	}
 	
 	/**
 	 * Target this session for all active tests.
@@ -157,9 +159,9 @@ public class VariantRuntime {
      * 7. Resolve the path. For OFF tests, substitute non-control experiences with control ones.
 	 * 
 	 */
-	private static Map<String,String> targetSessionForState(VariantStateRequestImpl req) {
+	private Map<String,String> targetSessionForState(VariantStateRequestImpl req) {
 
-		Schema schema = variantCoreImpl.getSchema();
+		Schema schema = coreApi.getSchema();
 		VariantSessionImpl session = (VariantSessionImpl) req.getSession();
 		State state = req.getState();
 		VariantTargetingTracker tt = req.getTargetingTracker();
@@ -183,7 +185,7 @@ public class VariantRuntime {
 			
 			if (foundPair == null) {
 				TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
-				variantCoreImpl.getUserHooker().post(hook);
+				coreApi.getUserHooker().post(hook);
 				if (!hook.qualified) {
 					if (hook.removeFromTT) tt.remove(test);
 				}
@@ -296,7 +298,7 @@ public class VariantRuntime {
 				else if (isTargetable(test, tt.getAll())) {
 					// Target this test. First post possible user hook listeners.
 					TestTargetingHookImpl hook = new TestTargetingHookImpl(session, test);
-					variantCoreImpl.getUserHooker().post(hook);
+					coreApi.getUserHooker().post(hook);
 					Experience targetedExperience = hook.targetedExperience;
 					// If no listeners or no action by client code, do the random default.
 					if (targetedExperience == null) {
@@ -353,7 +355,7 @@ public class VariantRuntime {
 	 * @param coordinates
 	 * @return the list of experiences from the input vector.
 	 */
-	static Collection<Experience> minUnresolvableSubvector(Collection<Experience> vector) {
+	Collection<Experience> minUnresolvableSubvector(Collection<Experience> vector) {
 		
 		Collection<Experience> result = new ArrayList<Experience>();
 			
@@ -422,7 +424,7 @@ public class VariantRuntime {
 	 * @param test set of tests.  We require set to guarantee no duplicates.
 	 * @return
 	 */
-	static boolean isTargetable(Test test, Collection<Experience> alreadyTargetedExperiences) {
+	boolean isTargetable(Test test, Collection<Experience> alreadyTargetedExperiences) {
 		
 		for (Experience e: alreadyTargetedExperiences) {
 			if (test.equals(e.getTest())) 
@@ -470,13 +472,13 @@ public class VariantRuntime {
 	 * @param vector
 	 * @return params map
 	 */
-	static Map<String,String> resolveState(State state, Collection<Experience> vector) {
+	Map<String,String> resolveState(State state, Collection<Experience> vector) {
 		
 		if (vector.size() == 0) 
 			throw new VariantInternalException("No experiences in input vector");
 		
 		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
-		for (Test t: variantCoreImpl.getSchema().getTests()) {
+		for (Test t: coreApi.getSchema().getTests()) {
 			boolean found = false;
 			for (Experience e: vector) {
 				if (e.getTest().equals(t)) {
@@ -515,7 +517,7 @@ public class VariantRuntime {
 	 * @param view
 	 * @return
 	 */
-	public static VariantStateRequestImpl dispatchRequest(VariantSession ssn, State state, VariantTargetingTracker targetingPersister) {
+	public VariantStateRequestImpl dispatchRequest(VariantSession ssn, State state, VariantTargetingTracker targetingPersister) {
 
 		// Resolve the path and get all tests instrumented on the given view targeted.
 		VariantStateRequestImpl result = new VariantStateRequestImpl((VariantSessionImpl)ssn, (StateImpl) state);

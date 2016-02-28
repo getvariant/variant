@@ -104,6 +104,7 @@ public enum MessageTemplate {
 	//                                                 RUN TIME MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//
 	
+	RUN_PROPERTY_BAD_CLASS                                (Severity.ERROR, "Don't know how to convert to class [%s]"),
 	RUN_PROPERTY_NOT_SET                                  (Severity.ERROR, "Application property [%s] must be set"),
 	RUN_PROPERTY_INIT_INVALID_JSON                        (Severity.ERROR, "Invalid JSON [%s] in application property [%s]"),
 	RUN_PROPERTY_INIT_PROPERTY_NOT_SET                    (Severity.ERROR, "Init property [%s] is required by class [%s] but is missing in application property [%s]"),
@@ -111,7 +112,7 @@ public enum MessageTemplate {
 	RUN_SCHEMA_REPLACED                                   (Severity.ERROR, "This schema is no longer valid because it has been replaced with a newer schema."),
 	RUN_WEIGHT_MISSING                                    (Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found."),
 	RUN_ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first."),
-	
+	RUN_SESSION_TOO_OLD                                   (Severity.WARN,  "Session id [%s] cannot be deserialized because it was created with a different instance of core API"),
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                  GENERAL MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//

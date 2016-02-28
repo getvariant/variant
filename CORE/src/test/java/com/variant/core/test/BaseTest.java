@@ -16,7 +16,7 @@ import com.variant.core.Variant;
 import com.variant.core.config.PropertiesChain;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.jdbc.EventPersisterJdbc;
-import com.variant.core.jdbc.JdbcUtil;
+import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
@@ -27,7 +27,7 @@ import com.variant.core.schema.parser.ParserResponse;
 
 public class BaseTest {
 	
-	protected static VariantCoreImpl api = (VariantCoreImpl) Variant.Factory.getInstance();
+	protected static VariantCoreImpl api = null;
 
 	/**
 	 * 
@@ -44,11 +44,8 @@ public class BaseTest {
 	 */
 	protected static void rebootApi() throws Exception {
 
-		// Shutdown if already booted.
-		if (api.isBootstrapped()) api.shutdown();
-
-		// Bootstrap the Variant container
-		api.bootstrap("/variant-test.props");
+		// (Re-)bootstrap the Variant api
+		api = (VariantCoreImpl) Variant.Factory.getInstance("/variant-test.props");
 
 		// (Re)create the schema, if running with a JDBC based event persister.
 		try {
@@ -57,10 +54,10 @@ public class BaseTest {
 			
 			switch (persister.getVendor()) {
 			case POSTGRES: 
-				JdbcUtil.recreateSchema();
+				new JdbcService(api).recreateSchema();
 				break;
 			case H2:
-				JdbcUtil.createSchema();  // Fresh in-memory DB.
+				new JdbcService(api).createSchema();  // Fresh in-memory DB.
 				break;
 			}
 		}

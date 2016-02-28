@@ -5,11 +5,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.schema.Schema;
@@ -29,7 +27,7 @@ public class SessionTest extends BaseTest {
 		assertNotNull(ssn);
 		assertNull(ssn.getStateRequest());
 		String json = ((VariantSessionImpl)ssn).toJson();
-		VariantSessionImpl deserializedSsn = VariantSessionImpl.fromJson(json);
+		VariantSessionImpl deserializedSsn = VariantSessionImpl.fromJson(api, json);
 		assertEquals("key", deserializedSsn.getId());
 		assertNull(deserializedSsn.getStateRequest());
 		assertEquals(0, deserializedSsn.getTraversedStates().size());
@@ -45,7 +43,7 @@ public class SessionTest extends BaseTest {
 		assertNull(ssn.getStateRequest());
 		assertNull(ssn3.getStateRequest());
 		json = ((VariantSessionImpl)ssn3).toJson();
-		deserializedSsn = VariantSessionImpl.fromJson(json);
+		deserializedSsn = VariantSessionImpl.fromJson(api, json);
 		assertEquals("another-key", deserializedSsn.getId());
 		assertNull(deserializedSsn.getStateRequest());
 		assertEquals(0, deserializedSsn.getTraversedStates().size());
@@ -55,14 +53,12 @@ public class SessionTest extends BaseTest {
 	
 	@Test
 	public void  stateRequestTest() throws Exception {
-		
-		Variant variant = Variant.Factory.getInstance();
-		
+				
 		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		
-		Schema schema = variant.getSchema();
+		Schema schema = api.getSchema();
 		VariantSession ssn = api.getSession("foo");
 		assertNull(ssn.getStateRequest());
 		VariantStateRequest req1 = api.dispatchRequest(ssn, schema.getState("state1"), "");
@@ -70,7 +66,7 @@ public class SessionTest extends BaseTest {
 		assertEquals(req1, ssn.getStateRequest());
 		assertNotNull(req1.getStateVisitedEvent());
 		String json = ((VariantSessionImpl)ssn).toJson();
-		VariantSessionImpl deserializedSsn = VariantSessionImpl.fromJson(json);
+		VariantSessionImpl deserializedSsn = VariantSessionImpl.fromJson(api, json);
 		assertEquals("foo", deserializedSsn.getId());
 		VariantStateRequest deserializedReq = deserializedSsn.getStateRequest();
 		assertEquals(deserializedReq.getSession(), deserializedSsn);
@@ -90,7 +86,7 @@ public class SessionTest extends BaseTest {
 		assertNull(req2.getStateVisitedEvent());
 		assertEquals(req2, ssn.getStateRequest());
 		json = ((VariantSessionImpl)ssn).toJson();
-		deserializedSsn = VariantSessionImpl.fromJson(json);
+		deserializedSsn = VariantSessionImpl.fromJson(api, json);
 		assertEquals("foo", deserializedSsn.getId());
 		deserializedReq = deserializedSsn.getStateRequest();
 		assertEquals(deserializedReq.getSession(), deserializedSsn);

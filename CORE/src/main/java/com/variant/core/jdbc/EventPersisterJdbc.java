@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.VariantEvent;
 import com.variant.core.event.VariantEventDecorator;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test;
@@ -30,8 +29,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	 * JUnits will also use this to create the schema.
 	 * 
 	 * @return
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
+	 * @throws Exception
 	 */
 	public abstract Connection getJdbcConnection() throws Exception;
 
@@ -62,9 +60,9 @@ abstract public class EventPersisterJdbc implements EventPersister {
 			    "(event_id, key, value) " +
 			    "VALUES (?, ?, ?)";
 
-		JdbcService.executeUpdate(
-			JdbcUtil.getConnection(), 
-			new JdbcService.UpdateOperation() {
+		JdbcAdapter.executeUpdate(
+			getJdbcConnection(), 
+			new JdbcAdapter.UpdateOperation() {
 
 				@Override
 				public void execute(Connection conn) throws SQLException {
@@ -174,10 +172,10 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	}
 	
 	/**
-	 * 
+	 *  DEAD?
 	 * @author Igor
 	 *
-	 */
+	 *
 	private static class EventWrapper {
 		private VariantEvent event;
 		private long id;
@@ -186,5 +184,5 @@ abstract public class EventPersisterJdbc implements EventPersister {
 			this.id = id;
 		}
 	}
-
+	*/
 }

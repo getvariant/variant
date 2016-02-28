@@ -19,43 +19,23 @@ import com.variant.core.schema.parser.ParserResponse;
 public interface Variant {
 	
 	/**
-	 * <p>Bootstrap Variant Core API. Must be the first method called on a cold API
-	 * after JVM startup. Takes 0 or more of String arguments. If supplied, 
-	 * each argument is understood as a Java class path resource name. Each resource 
-	 * is expected to contain a set of application properties, as specified by Java's 
-	 * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html#load-java.io.Reader-">Properties.load()</a> 
-	 * method.
+	 * <p>This API's Id.  Each API instance returned by {@link Factory#getInstance(String...)}
+	 * is a new instance and can be told apart from other instances by this ID.
 	 * 
-	 * <p>When, at runtime, the container looks for the value of a particular property key, 
-	 * these files are scanned left to right and the last value found takes precedence. 
-	 * If a value wasn't found in any of the supplied files, or if no files were supplied, 
-	 * the default value is used, as defiled in the <code>/variant-default.props</code> file 
-	 * found inside the <code>variant-core-&lt;version&gt;.jar</code> file.
-	 *
-	 * @arg resourceNames 0 or more properties files as classpath resource names.
-     *
-	 * @since 0.5
+	 * @return String ID.
+	 * @since 0.6
 	 */
-	public void bootstrap(String...resourceNames);	
+	public String getId();
+	
+	/**
+	 * <p>This API's application properties
+	 * 
+	 * @return An instance of the {@link VariantProperties} type.
+	 * 
+	 * @since 0.6
+	 */
+	public VariantProperties getProperties();
 
-	/**
-	 * Is the Variant Core API bootstrapped?
-	 *
-	 * @return true between calls to {@link #bootstrap bootstrap()} and {@link #shutdown shutdown()} 
-	 *         methods, false otherwise.
-	 * @since 0.5
-	 */
-	public boolean isBootstrapped();
-	
-	/**
-	 * <p>Shutdown Variant Core API. Releases all JVM resources associated with Variant Core API.
-	 * Subsequently, calling any method other than {@link #bootstrap bootstrap()} will throw
-	 * an exception.
-	 * 
-	 * @since 0.5
-	 */
-	public void shutdown();
-	
 	/**
 	 * <p>Register a {@link com.variant.core.hook.HookListener}. The caller must provide 
 	 * an implementation of the {@link com.variant.core.hook.HookListener} interface 
@@ -89,7 +69,7 @@ public interface Variant {
 	 * @param deploy The new test schema will be deployed if this is true and no parse errors 
 	 *        were encountered.
 	 *        
-	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} object that
+	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} type that
 	 *         may be further examined about the outcome of this operation.
 	 * 
 	 * @since 0.5
@@ -158,18 +138,27 @@ public interface Variant {
 	 * @since 0.5
 	 */
 	public static class Factory {
-		private static Variant instance = null;
 		
 		/**
-		 * Obtain an instance of the Variant API. Can be held on to and reused for the life of the JVM.
+		 * <p>Obtain an instance of the Variant API. Takes 0 or more of String arguments. If supplied, 
+		 * each argument is understood as a Java class path resource name. Each resource 
+		 * is expected to contain a set of application properties, as specified by Java's 
+		 * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html#load-java.io.Reader-">Properties.load()</a> 
+		 * method.
 		 * 
+		 * <p>When, at runtime, the container looks for the value of a particular property key, 
+		 * these files are scanned left to right and the last value found takes precedence. 
+		 * If a value wasn't found in any of the supplied files, or if no files were supplied, 
+		 * the default value is used, as defiled in the <code>/variant-default.props</code> file 
+		 * found inside the <code>variant-core-&lt;version&gt;.jar</code> file.
+		 *
+		 * @arg resourceNames 0 or more properties files as classpath resource names.
 		 * @return An implementation of the {@link Variant} interface.
+	     *
+		 * @since 0.6
 		 */
-		public static Variant getInstance() {
-			if (instance == null) {
-				instance = new VariantCoreImpl();
-			}
-			return instance;
+		public static Variant getInstance(String...resourceNames) {
+			return new VariantCoreImpl(resourceNames);
 		}
 	}
 }

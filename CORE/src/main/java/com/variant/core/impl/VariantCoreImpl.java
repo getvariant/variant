@@ -10,18 +10,21 @@ import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Random;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.InitializationParams;
 import com.variant.core.Variant;
+import com.variant.core.VariantProperties;
+import com.variant.core.VariantProperties.Key;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
 import com.variant.core.config.RuntimeService;
-import com.variant.core.config.VariantProperties;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.exception.VariantBootstrapException;
@@ -42,6 +45,7 @@ import com.variant.core.schema.parser.Severity;
 import com.variant.core.session.SessionService;
 import com.variant.core.session.VariantSessionImpl;
 import com.variant.core.util.VariantIoUtils;
+import com.variant.core.util.VariantStringUtils;
 
 /**
  * The Variant CORE API.
@@ -53,11 +57,13 @@ public class VariantCoreImpl implements Variant {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantCoreImpl.class);
 	
-	private boolean isBootstrapped = false;
+	private String apiId = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
 	private Schema schema = null;
 	private EventWriter eventWriter = null;
 	private SessionService sessionService = null;
 	private UserHooker hooker = new UserHooker();
+	private VariantPropertiesImpl properties = new VariantPropertiesImpl();
+	private VariantRuntime runtime;
 	
 	private static String version() {
 		String version = RuntimeService.getVersion();
@@ -77,7 +83,7 @@ public class VariantCoreImpl implements Variant {
 		for (int i = resourceNames.length - 1; i >= 0; i--) {
 			String name = resourceNames[i];
 			try {
-				VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream(name));
+				properties.override(VariantIoUtils.openResourceAsStream(name));
 			}
 			catch (Exception e) {
 				throw new RuntimeException("Unable to read resurce [" + name + "]");
@@ -86,15 +92,15 @@ public class VariantCoreImpl implements Variant {
 		
 		// Override with /variant.props if supplied on classpath.
 		try {
-			VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream("/variant.props"));
+			properties.override(VariantIoUtils.openResourceAsStream("/variant.props"));
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("Processed application properties resource file [/variant.props]]");
 			}
 		}
 		catch (Exception e) {}  // Not an error if wasn't found.
 
-		String runTimePropsResourceName = System.getProperty(VariantProperties.RUNTIME_PROPS_RESOURCE_NAME);
-		String runTimePropsFileName = System.getProperty(VariantProperties.RUNTIME_PROPS_FILE_NAME);
+		String runTimePropsResourceName = System.getProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME);
+		String runTimePropsFileName = System.getProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME);
 		
 		if (runTimePropsResourceName != null && runTimePropsFileName!= null) {
 			throw new VariantRuntimeException(BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN);
@@ -102,7 +108,7 @@ public class VariantCoreImpl implements Variant {
 		
 		if (runTimePropsResourceName != null) {
 			try {
-				VariantProperties.getInstance().override(VariantIoUtils.openResourceAsStream(runTimePropsResourceName));
+				properties.override(VariantIoUtils.openResourceAsStream(runTimePropsResourceName));
 			}
 			catch (Exception e) {
 				throw new VariantRuntimeException(BOOT_CONFIG_RESOURCE_NOT_FOUND, e, runTimePropsResourceName);
@@ -110,7 +116,7 @@ public class VariantCoreImpl implements Variant {
 		}
 		else if (runTimePropsFileName != null) {
 			try {
-				VariantProperties.getInstance().override(VariantIoUtils.openFileAsStream(runTimePropsFileName));
+				properties.override(VariantIoUtils.openFileAsStream(runTimePropsFileName));
 			}
 			catch (Exception e) {
 				throw new VariantRuntimeException(BOOT_CONFIG_FILE_NOT_FOUND, e, runTimePropsFileName);
@@ -119,48 +125,44 @@ public class VariantCoreImpl implements Variant {
 	}
 	
 	/**
-	 * 
+	 * Expose runtime to tests via package visible getter.
+	 * @return
 	 */
-	private void stateCheck() {
-		if (!isBootstrapped) throw new IllegalStateException("Variant must be bootstrapped first by calling one of the bootstrap() methods");
+	VariantRuntime getRuntime() {
+		return runtime;
 	}
-
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-
 	/**
 	 * 
 	 */
-	@Override
-	public synchronized void bootstrap(String...resourceNames) {
+	public VariantCoreImpl(String...resourceNames) {
 		
-
-		if (isBootstrapped) throw new IllegalStateException("Variant is already bootstrapped");
 
 		long now = System.currentTimeMillis();
 
 		setupSystemProperties(resourceNames);
 		
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("*** Do not use on a production system ***");
-			LOG.debug("Bootstrapping Variant with following system properties:");
-			for (VariantProperties.Keys key: VariantProperties.Keys.values()) {
-				LOG.debug("  " + key.propName() + " = " + key.propValue());
+		if (LOG.isTraceEnabled()) {
+			LOG.trace("Bootstrapping Variant with following system properties:");
+			for (VariantPropertiesImpl.Key key: VariantPropertiesImpl.Key.values()) {
+				LOG.debug("  " + key.propName() + " = " + properties.get(key, String.class));
 			}
 		}
 		
 		//
 		// Instantiate event persister.
 		//
-		String eventPersisterClassName = VariantProperties.getInstance().eventPersisterClassName();
+		String eventPersisterClassName = properties.get(Key.EVENT_PERSISTER_CLASS_NAME, String.class);
 		
 		EventPersister eventPersister = null;
 		try {
 			Object eventPersisterObject = Class.forName(eventPersisterClassName).newInstance();
 			if (eventPersisterObject instanceof EventPersister) {
 				eventPersister = (EventPersister) eventPersisterObject;
-				eventPersister.initialized(VariantProperties.getInstance().eventPersisterClassInit());
+				eventPersister.initialized(properties.get(Key.EVENT_PERSISTER_CLASS_INIT, InitializationParams.class));
 			}
 			else {
 				throw new VariantRuntimeException (BOOT_EVENT_PERSISTER_NO_INTERFACE, eventPersisterClassName, EventPersister.class.getName());
@@ -171,53 +173,44 @@ public class VariantCoreImpl implements Variant {
 		}
 		catch (Exception e) {
 			throw new VariantInternalException(
-					"Unable to instantiate event persister class [" + VariantProperties.getInstance().eventPersisterClassName() +"]", e);
+					"Unable to instantiate event persister class [" + eventPersisterClassName +"]", e);
 		}
 				
 		// Instantiate event writer.
-		eventWriter = new EventWriter(eventPersister);
+		eventWriter = new EventWriter(eventPersister, properties);
 				
 		//
 		// Instantiate session service.
 		//
-		sessionService = new SessionService();
-				
-		isBootstrapped = true;
-		
+		sessionService = new SessionService(this);
+
+		//
+		// Instantiate runtime.
+		//
+		runtime = new VariantRuntime(this);
+
 		LOG.info(
 				String.format("Core %s bootstrapped in %s",
 						version(),
 						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
 	}
-	
+
 	/**
 	 * 
 	 */
 	@Override
-	public boolean isBootstrapped() {
-		return isBootstrapped;
+	public String getId() {
+		return apiId;
 	}
 	
 	/**
 	 * 
 	 */
 	@Override
-	public synchronized void shutdown() {
-		long now = System.currentTimeMillis();
-		stateCheck();
-		isBootstrapped = false;
-		schema = null;
-		hooker.clear();
-		eventWriter.shutdown();
-		eventWriter = null;
-		sessionService.shutdown();
-		sessionService = null;
-		LOG.info(
-				String.format("Core %s shutdown in %s",
-						version(),
-						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
+	public VariantProperties getProperties() {
+		return properties;
 	}
-	
+
 	/**
 	 *	 
 	 */
@@ -248,10 +241,7 @@ public class VariantCoreImpl implements Variant {
 	 */
 	@Override
 	public Schema getSchema() {
-
-		stateCheck();
-		return schema;
-	
+		return schema;	
 	}
 		
 	/**
@@ -268,8 +258,6 @@ public class VariantCoreImpl implements Variant {
 	@Override
 	public VariantStateRequest dispatchRequest(VariantSession session, State state, Object...targetingPersisterUserData) {
 		
-		stateCheck();
-		
 		// Can't have two requests at one time
 		VariantStateRequestImpl currentRequest = (VariantStateRequestImpl) session.getStateRequest();
 		if (currentRequest != null && !currentRequest.isCommitted()) {
@@ -277,7 +265,7 @@ public class VariantCoreImpl implements Variant {
 		}
 		// init Targeting Persister with the same user data.
 		VariantTargetingTracker tp = null;
-		String className = VariantProperties.getInstance().targetingTrackerClassName();
+		String className = properties.get(Key.TARGETING_TRACKER_CLASS_NAME, String.class);
 		
 		try {
 			Object object = Class.forName(className).newInstance();
@@ -292,11 +280,11 @@ public class VariantCoreImpl implements Variant {
 			throw new VariantInternalException("Unable to instantiate targeting persister class [" + className +"]", e);
 		}
 			
-		tp.initialized(session, targetingPersisterUserData);
+		tp.initialized(this, session, targetingPersisterUserData);
 
 		((VariantSessionImpl) session).addTraversedState(state);
 		
-		return VariantRuntime.dispatchRequest(session, state, tp);
+		return runtime.dispatchRequest(session, state, tp);
 	}
 	
 	/**
@@ -305,8 +293,6 @@ public class VariantCoreImpl implements Variant {
 	@Override
 	public void commitStateRequest(VariantStateRequest request, Object...userData) {
 
-		stateCheck();
-		
 		VariantStateRequestImpl requestImpl = (VariantStateRequestImpl) request;
 		
 		if ((requestImpl).isCommitted()) {
@@ -326,14 +312,12 @@ public class VariantCoreImpl implements Variant {
 	
 	@Override
 	public void addHookListener(HookListener<? extends UserHook> listener) {
-		stateCheck();
 		if (listener == null) throw new IllegalArgumentException("Argument cannot be null");
 		hooker.addListener(listener);		
 	}
 
 	@Override
 	public void clearHookListeners() {
-		stateCheck();
 		hooker.clear();		
 	}
 
@@ -356,8 +340,6 @@ public class VariantCoreImpl implements Variant {
 	 */
 	public ParserResponse parseSchema(String string, boolean deploy) {
 
-		stateCheck();
-		
 		long now = System.currentTimeMillis();
 		
 		// (Re)discover and process all annotations.
@@ -387,7 +369,7 @@ public class VariantCoreImpl implements Variant {
 		}
 		
 		try {
-			response = SchemaParser.parse(schemaAsStringNoComments.toString());
+			response = SchemaParser.parse(this, schemaAsStringNoComments.toString());
 		}
 		catch (Throwable t) {
 			response = new ParserResponseImpl();
@@ -428,14 +410,12 @@ public class VariantCoreImpl implements Variant {
 		
 		return response;
 	}
-	
 
 	/**
 	 * 
 	 * @return
 	 */
 	public EventWriter getEventWriter() {
-		stateCheck();
 		return eventWriter;
 	}
 	
@@ -445,5 +425,14 @@ public class VariantCoreImpl implements Variant {
 	 */
 	public UserHooker getUserHooker() {
 		return hooker;
+	}
+	
+	/**
+	 * Shutdown event writer when garbage collected
+	 * to prevent async thread leak.
+	 */
+	@Override
+	public void finalize() {
+		eventWriter.shutdown();
 	}
 }

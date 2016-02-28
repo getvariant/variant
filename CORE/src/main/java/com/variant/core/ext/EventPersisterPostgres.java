@@ -7,16 +7,15 @@ import java.sql.DriverManager;
 import java.util.Properties;
 
 import com.variant.core.InitializationParams;
-import com.variant.core.event.EventPersister;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.jdbc.EventPersisterJdbc;
 import com.variant.open.securestring.SecureString;
 
 public class EventPersisterPostgres extends EventPersisterJdbc {
 	
-	String url = null;
-	String user = null;
-	SecureString password = null;  // TODO: change to securestring
+	private String url = null;
+	private String user = null;
+	private SecureString password = null;
 	
 	@Override
 	public void initialized(InitializationParams initParams) throws Exception {

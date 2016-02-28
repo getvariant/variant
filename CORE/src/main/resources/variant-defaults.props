@@ -8,7 +8,7 @@
 # Event Writer config
 #
 # Max number of events held in memory queue 
-event.writer.buffer.size = 10000
+event.writer.buffer.size = 20000
 # Percent of buffer size that will trigger a flush.
 event.writer.percent.full = 90
 # Max number of milliseconds since last flush that will trigger a flush even

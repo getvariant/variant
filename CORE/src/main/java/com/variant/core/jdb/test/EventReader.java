@@ -12,8 +12,10 @@ import java.util.Map;
 
 import org.apache.commons.collections4.Predicate;
 
+import com.variant.core.Variant;
+import com.variant.core.impl.VariantCoreImpl;
+import com.variant.core.jdbc.JdbcAdapter;
 import com.variant.core.jdbc.JdbcService;
-import com.variant.core.jdbc.JdbcUtil;
 
 /**
  * Read events from a JDBC event persister.
@@ -24,13 +26,23 @@ import com.variant.core.jdbc.JdbcUtil;
  */
 public class EventReader {
 
+	private JdbcService jdbcService = null;
+
+	/**
+	 * 
+	 * @param variant
+	 */
+	public EventReader(Variant variant) {
+		jdbcService = new JdbcService(variant);
+	}
+	
 	/**
 	 * Read events as a collection
 	 * @return
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static Collection<VariantEventFromDatabase> readEvents(final Predicate<VariantEventFromDatabase> filter) 
+	public Collection<VariantEventFromDatabase> readEvents(final Predicate<VariantEventFromDatabase> filter) 
 		throws Exception {
 		
 		final String SELECT_EVENTS_SQL = 
@@ -41,9 +53,9 @@ public class EventReader {
 				"SELECT id, event_id, test_name, experience_name, is_experience_control " +
 				"FROM event_variants";
 		
-		return JdbcService.executeQuery(
-			JdbcUtil.getConnection(), 
-			new JdbcService.QueryOperation<Collection<VariantEventFromDatabase>>() {
+		return JdbcAdapter.executeQuery(
+			jdbcService.getConnection(), 
+			new JdbcAdapter.QueryOperation<Collection<VariantEventFromDatabase>>() {
 
 				@Override
 				public Collection<VariantEventFromDatabase> execute(Connection conn) throws SQLException {
@@ -128,7 +140,7 @@ public class EventReader {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static Collection<VariantEventFromDatabase> readEvents() throws Exception {
+	public Collection<VariantEventFromDatabase> readEvents() throws Exception {
 
 		Predicate<VariantEventFromDatabase> noFilter = new Predicate<VariantEventFromDatabase>() {
 

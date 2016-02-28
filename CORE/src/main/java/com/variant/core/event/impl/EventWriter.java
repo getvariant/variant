@@ -7,7 +7,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.config.VariantProperties;
+import com.variant.core.VariantProperties;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEventDecorator;
 
@@ -54,13 +54,13 @@ public class EventWriter {
 	/**
 	 * Constructor
 	 */
-	public EventWriter(EventPersister persisterImpl) {
+	public EventWriter(EventPersister persisterImpl, VariantProperties properties) {
 		
 		this.persisterImpl = persisterImpl;
-		this.queueSize = VariantProperties.getInstance().eventWriterBufferSize();
-		this.pctFullSize = queueSize * VariantProperties.getInstance().eventWriterPercentFull() / 100;
+		this.queueSize = properties.get(VariantProperties.Key.EVENT_WRITER_BUFFER_SIZE, Integer.class);
+		this.pctFullSize = queueSize * properties.get(VariantProperties.Key.EVENT_WRITER_PERCENT_FULL, Integer.class) / 100;
 		this.pctEmptySize = (int) Math.ceil(queueSize * 0.1);
-		this.maxPersisterDelayMillis = VariantProperties.getInstance().eventWriterMaxDelayMillis();
+		this.maxPersisterDelayMillis = properties.get(VariantProperties.Key.EVENT_WRITER_MAX_DELAY_MILLIS, Integer.class);
 		
 		eventQueue = new ConcurrentLinkedQueue<VariantEventDecorator>();
 		
@@ -108,7 +108,7 @@ public class EventWriter {
 		}
 		else {
 			LOG.error(
-					"Dropped event due to full memory buffer. Consider increasing " + VariantProperties.Keys.EVENT_WRITER_BUFFER_SIZE.propName() + 
+					"Dropped event due to full memory buffer. Consider increasing " + VariantProperties.Key.EVENT_WRITER_BUFFER_SIZE.propName() + 
 					" system property (current value [" + queueSize + "])");
 		}
 		

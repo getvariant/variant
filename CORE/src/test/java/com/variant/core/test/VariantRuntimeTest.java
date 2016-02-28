@@ -1,18 +1,17 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.Map;
 
-import org.apache.commons.collections4.Predicate;
-
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
-import com.variant.core.event.VariantEvent;
-import com.variant.core.event.impl.StateVisitedEvent;
-import com.variant.core.event.impl.VariantEventDecoratorImpl;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.schema.Schema;
@@ -33,6 +32,8 @@ public class VariantRuntimeTest extends BaseTest {
 	 */
 	@org.junit.Test
 	public void pathResolution() throws Exception {
+		
+		VariantRuntimeTestFacade runtimeFacade = new VariantRuntimeTestFacade(api);
 		
 		ParserResponse response = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
@@ -58,7 +59,7 @@ public class VariantRuntimeTest extends BaseTest {
 		
 		// state1
 
-		Map<String,String> params = VariantRuntimeTestFacade.resolveState(
+		Map<String,String> params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A")   // control, not instrumented
@@ -66,7 +67,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state1", params.get("path"));
 		
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.B")   // not instrumented
@@ -74,7 +75,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state1", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
@@ -83,7 +84,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state1", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
@@ -92,7 +93,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state1", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
@@ -104,7 +105,7 @@ public class VariantRuntimeTest extends BaseTest {
 		
 		boolean thrown = false;
 		try {
-			VariantRuntimeTestFacade.resolveState(
+			runtimeFacade.resolveState(
 					state1, 
 					VariantCollectionsUtils.list(
 							experience("test1.A"),  // not instrumented
@@ -120,7 +121,7 @@ public class VariantRuntimeTest extends BaseTest {
 		}
 		assertTrue(thrown);
 		
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // not instrumented
@@ -131,7 +132,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state1/test4.B", params.get("path"));
 		
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
@@ -142,7 +143,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state1/test4.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
@@ -154,7 +155,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state1/test4.B+test6.C", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
@@ -166,7 +167,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state1/test4.B+test6.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.A"),  // control
@@ -177,7 +178,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state1/test5.C", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // variant
@@ -188,7 +189,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state1/test4.C+test5.C", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test6.A"),  // control
@@ -200,7 +201,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state1/test4.C+test5.C", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // variant
@@ -215,7 +216,7 @@ public class VariantRuntimeTest extends BaseTest {
 		
 		// state2
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A")   // control
@@ -223,7 +224,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state2", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.B")   // variant
@@ -231,7 +232,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state2/test1.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
@@ -240,7 +241,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state2/test2.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
@@ -249,7 +250,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state2", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
@@ -261,7 +262,7 @@ public class VariantRuntimeTest extends BaseTest {
 
 		thrown = false;
 		try {
-			VariantRuntimeTestFacade.resolveState(
+			runtimeFacade.resolveState(
 					state2, 
 					VariantCollectionsUtils.list(
 							experience("test1.A"),  // control
@@ -277,7 +278,7 @@ public class VariantRuntimeTest extends BaseTest {
 		}
 		assertTrue(thrown);
 		
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
@@ -288,7 +289,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertNull(params);
 		
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant, unsupported
@@ -299,7 +300,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertNull(params);
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
@@ -311,7 +312,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state2/test1.C+test4.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // variant
@@ -323,7 +324,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state2/test1.C+test4.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.A"),  // control
@@ -334,7 +335,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertNull(params);
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // variant
@@ -345,7 +346,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state2/test2.B+test4.C+test5.C", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test6.A"),  // control
@@ -357,7 +358,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertNull(params);
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // variant
@@ -371,7 +372,7 @@ public class VariantRuntimeTest extends BaseTest {
 
 		// state3
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test2.A")   // control
@@ -379,7 +380,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state3", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.B")   // not instrumented
@@ -387,7 +388,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state3", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test3.B")   // nonvariant
@@ -395,7 +396,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state3", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test2.B")   // variant
@@ -403,7 +404,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state3/test2.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test1.B"),  // variant
@@ -412,7 +413,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state3/test1.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
@@ -421,7 +422,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state2", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),  // control
@@ -433,7 +434,7 @@ public class VariantRuntimeTest extends BaseTest {
 
 		thrown = false;
 		try {
-			VariantRuntimeTestFacade.resolveState(
+			runtimeFacade.resolveState(
 					state3, 
 					VariantCollectionsUtils.list(
 							experience("test1.A"),  // control
@@ -449,7 +450,7 @@ public class VariantRuntimeTest extends BaseTest {
 		}
 		assertTrue(thrown);
 		
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test1.C"),  // variant
@@ -460,7 +461,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertNull(params);
 		
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // uninstrumented
@@ -471,7 +472,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state3/test2.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // uninstrumented
@@ -483,7 +484,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state3/test1.C+test6.C", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.B"),  // uninstrumented
@@ -495,7 +496,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state3/test1.C+test2.B+test6.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.A"),  // uninstrumented
@@ -506,7 +507,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state3/test2.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // uninstrumented
@@ -517,7 +518,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertEquals("/path/to/state3/test2.B", params.get("path"));
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test6.A"),  // control
@@ -529,7 +530,7 @@ public class VariantRuntimeTest extends BaseTest {
 		);
 		assertNull(params);
 
-		params = VariantRuntimeTestFacade.resolveState(
+		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test4.C"),  // uninstrumented
@@ -546,33 +547,33 @@ public class VariantRuntimeTest extends BaseTest {
 		//
 
 		Collection<Experience> subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.A")));
 		assertTrue(subVector.isEmpty());
 		
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.B")));
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.A"), 
 								experience("test2.B")));
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.C"), 
 								experience("test2.B")));
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C")), subVector);
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.A"), 
 								experience("test2.B"), 
@@ -580,7 +581,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.A"), 
 								experience("test2.B"), 
@@ -588,7 +589,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.C"), 
 								experience("test2.B"), 
@@ -596,7 +597,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C")), subVector);
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.A"), 
 								experience("test2.B"), 
@@ -605,7 +606,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.C"), 
 								experience("test2.B"), 
@@ -614,7 +615,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C")), subVector);
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.C"), 
 								experience("test2.B"), 
@@ -623,7 +624,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test4.B")), subVector);
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.C"), 
 								experience("test2.B"), 
@@ -633,7 +634,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test3.C")), subVector);
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.C"), 
 								experience("test2.A"), 
@@ -643,7 +644,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test3.C")), subVector);
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.C"), 
 								experience("test2.A"), 
@@ -653,7 +654,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test3.C")), subVector);
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.C"), 
 								experience("test2.A"), 
@@ -663,7 +664,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C")), subVector);
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test6.C"), 
 								experience("test1.C"), 
@@ -674,7 +675,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C")), subVector);
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test6.C"), 
 								experience("test1.C"), 
@@ -685,7 +686,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test4.C")), subVector);
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test6.C"), 
 								experience("test1.C"), 
@@ -696,7 +697,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test3.C")), subVector);
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test6.C"), 
 								experience("test1.A"), 
@@ -707,7 +708,7 @@ public class VariantRuntimeTest extends BaseTest {
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
-				VariantRuntimeTestFacade.minUnresolvableSubvector(
+				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test6.C"), 
 								experience("test2.B"), 
@@ -721,7 +722,7 @@ public class VariantRuntimeTest extends BaseTest {
 		
 		thrown = false;
 		try{
-			VariantRuntimeTestFacade.isTargetable(
+			runtimeFacade.isTargetable(
 				test5, 
 				VariantCollectionsUtils.list(
 						experience("test1.A"),
@@ -737,7 +738,7 @@ public class VariantRuntimeTest extends BaseTest {
 		
 		thrown = false;
 		try{
-			VariantRuntimeTestFacade.isTargetable(
+			runtimeFacade.isTargetable(
 				test6, 
 				VariantCollectionsUtils.list(
 						experience("test1.C"), 
@@ -752,15 +753,15 @@ public class VariantRuntimeTest extends BaseTest {
 		}
 		assertTrue(thrown);
 
-		assertTrue(VariantRuntimeTestFacade.isTargetable(
+		assertTrue(runtimeFacade.isTargetable(
 				test1, 
 				VariantCollectionsUtils.list(experience("test2.A"))));
 
-		assertFalse(VariantRuntimeTestFacade.isTargetable(
+		assertFalse(runtimeFacade.isTargetable(
 				test1, 
 				VariantCollectionsUtils.list(experience("test2.B"))));
 
-		assertFalse(VariantRuntimeTestFacade.isTargetable(
+		assertFalse(runtimeFacade.isTargetable(
 				test1,
 				VariantCollectionsUtils.list(
 						experience("test2.A"), 
@@ -768,7 +769,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test5.A"),
 						experience("test4.A"))));
 
-		assertFalse(VariantRuntimeTestFacade.isTargetable(
+		assertFalse(runtimeFacade.isTargetable(
 				test1,
 				VariantCollectionsUtils.list(
 						experience("test6.C"), 
@@ -777,7 +778,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test5.A"),
 						experience("test4.A"))));
 
-		assertTrue(VariantRuntimeTestFacade.isTargetable(
+		assertTrue(runtimeFacade.isTargetable(
 				test2,
 				VariantCollectionsUtils.list(
 						experience("test6.C"), 
@@ -785,7 +786,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test5.A"),
 						experience("test4.A"))));
 
-		assertTrue(VariantRuntimeTestFacade.isTargetable(
+		assertTrue(runtimeFacade.isTargetable(
 				test3,
 				VariantCollectionsUtils.list(
 						experience("test6.C"), 
@@ -793,7 +794,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test5.A"),
 						experience("test4.A"))));
 
-		assertTrue(VariantRuntimeTestFacade.isTargetable(
+		assertTrue(runtimeFacade.isTargetable(
 				test6,
 				VariantCollectionsUtils.list(
 						experience("test2.B"), 
@@ -801,7 +802,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test5.A"),
 						experience("test4.A"))));
 		
-		assertFalse(VariantRuntimeTestFacade.isTargetable(
+		assertFalse(runtimeFacade.isTargetable(
 				test1,
 				VariantCollectionsUtils.list(
 						experience("test6.C"), 
@@ -809,7 +810,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.C"),
 						experience("test5.A"))));
 
-		assertTrue(VariantRuntimeTestFacade.isTargetable(
+		assertTrue(runtimeFacade.isTargetable(
 				test6,
 				VariantCollectionsUtils.list(
 						experience("test1.A"), 
@@ -818,7 +819,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test5.B"),
 						experience("test4.C"))));
 
-		assertTrue(VariantRuntimeTestFacade.isTargetable(
+		assertTrue(runtimeFacade.isTargetable(
 				test2,
 				VariantCollectionsUtils.list(
 						experience("test6.C"), 
@@ -827,7 +828,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test5.B"),
 						experience("test4.C"))));
 
-		assertTrue(VariantRuntimeTestFacade.isTargetable(
+		assertTrue(runtimeFacade.isTargetable(
 				test4,
 				VariantCollectionsUtils.list(
 						experience("test6.C"), 
@@ -836,7 +837,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A"),
 						experience("test5.B"))));
 
-		assertFalse(VariantRuntimeTestFacade.isTargetable(
+		assertFalse(runtimeFacade.isTargetable(
 				test5,
 				VariantCollectionsUtils.list(
 						experience("test6.C"), 
@@ -845,7 +846,7 @@ public class VariantRuntimeTest extends BaseTest {
 						experience("test3.A"),
 						experience("test4.C"))));
 
-		assertFalse(VariantRuntimeTestFacade.isTargetable(
+		assertFalse(runtimeFacade.isTargetable(
 				test3,
 				VariantCollectionsUtils.list(
 						experience("test6.C"), 

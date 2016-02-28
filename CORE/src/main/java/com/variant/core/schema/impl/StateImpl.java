@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.Variant;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.util.CaseInsensitiveMap;
@@ -19,6 +19,7 @@ import com.variant.core.util.CaseInsensitiveUnmodifiableMap;
  */
 public class StateImpl implements State {
 
+	private Schema schema;
 	private String name;
 	private CaseInsensitiveMap<String> parameters;
 
@@ -27,7 +28,8 @@ public class StateImpl implements State {
 	 * @param name
 	 * @param path
 	 */
-	StateImpl(String name, Map<String, String> parameters) {
+	StateImpl(Schema schema, String name, Map<String, String> parameters) {
+		this.schema = schema;
 		this.name = name;
 		this.parameters = new CaseInsensitiveMap<String>(parameters);
 	}
@@ -51,7 +53,7 @@ public class StateImpl implements State {
 		
 		ArrayList<Test> result = new ArrayList<Test>();
 		
-		for (Test test: Variant.Factory.getInstance().getSchema().getTests()) {
+		for (Test test: schema.getTests()) {
 			for (Test.OnState tov: test.getOnStates()) {
 				if (tov.getState().equals(this)) result.add(test);
 			}

@@ -9,13 +9,14 @@ import java.util.Random;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.config.VariantProperties;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.ext.EventPersisterNull;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestTargetingHook;
+import com.variant.core.impl.VariantPropertiesImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test.Experience;
@@ -33,7 +34,7 @@ public class TargetingTest extends BaseTest {
 	 */
 	@BeforeClass
 	public static void beforeTestCase() throws Exception {
-		System.setProperty(VariantProperties.Keys.EVENT_PERSISTER_CLASS_NAME.propName(), EventPersisterNull.class.getName());
+		System.setProperty(VariantProperties.Key.EVENT_PERSISTER_CLASS_NAME.propName(), EventPersisterNull.class.getName());
 		rebootApi();
 	}
 	

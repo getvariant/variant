@@ -1,16 +1,13 @@
 package com.variant.core.event;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.variant.core.InitializationParams;
-import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.Variant;
 
 /**
  * <p>Container-instantiated implementation will use external mechanisms to persist Variant events.
- * An implementation must provide a no argument constructor. Because an implementation
- * must be instantiated by the container, it must provide a no-argument constructor.
+ * An implementation must provide a no argument constructor, which will be used for instantiation. 
  * 
  * @author Igor Urisman
  * @since 0.5
@@ -18,13 +15,15 @@ import com.variant.core.exception.VariantRuntimeException;
 public interface EventPersister {
 
 	/**
-	 * <p>The container will call this method immediately following the instantiation with
-	 * the init parameter map, as specified by the <code>event.persister.class.init</code>
-	 * application property. 
+	 * <p>The container will call this method immediately following the instantiation (via a no-argument
+	 * constructor) to allow for state management.
 	 * 
-	 * @since 0.1
+	 * @param coreApi The instance of Variant API that is initializing this object.
+	 * @param initParams 
+	 * 
+	 * @since 0.5
 	 */
-	public void initialized(InitializationParams initParams) throws Exception ;
+	public void initialized(/*Variant coreApi, */InitializationParams initParams) throws Exception;
 	
 	/**
 	 * <p>Persist events to some storage mechanism.

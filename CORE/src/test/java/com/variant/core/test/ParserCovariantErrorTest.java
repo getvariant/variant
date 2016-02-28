@@ -123,7 +123,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -237,7 +237,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -352,7 +352,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -469,7 +469,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -656,7 +656,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -846,7 +846,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1042,7 +1042,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 		
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1240,7 +1240,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1437,7 +1437,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1595,7 +1595,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1800,7 +1800,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2278,7 +2278,7 @@ public class ParserCovariantErrorTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(config);
+		ParserResponseImpl response = SchemaParser.parse(api, config);
 		
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());

@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 
 import com.variant.core.VariantTargetingTracker;
-import com.variant.core.VariantSession;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
@@ -40,13 +39,7 @@ abstract public class TargetingTrackerSupport implements VariantTargetingTracker
 
 	// Experiences are held in a map keyed by test name
 	protected LinkedHashMap<String, Entry> entryMap = new LinkedHashMap<String, Entry>();
-	
-	// Concrete subclasses will initialize the entry map here.
-	abstract public void initialized(VariantSession session, Object...userData);
-	
-	// Concrete sublasses will flush in memory content to a persistence mechanism here.
-	abstract public void save(Object...userData);
-	
+		
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//

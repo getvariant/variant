@@ -18,10 +18,12 @@ import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.VariantEventDecoratorImpl;
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantCollectionsUtils;
 
@@ -39,12 +41,14 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	private VariantStateRequestImpl currentRequest = null;
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
 	private HashMap<Test, Boolean> traversedTests = new HashMap<Test, Boolean>();
-		
+	private Variant coreApi;
+	
 	/**
 	 * 
 	 * @param id
 	 */
-	public VariantSessionImpl(String id) {
+	public VariantSessionImpl(Variant coreApi, String id) {
+		this.coreApi = coreApi;
 		this.id = id;
 	}
 		
@@ -81,7 +85,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 		if (event == null)
 			throw new IllegalArgumentException("Event parameter cannot be null");
 
-		EventWriter ew = ((VariantCoreImpl) Variant.Factory.getInstance()).getEventWriter();
+		EventWriter ew = ((VariantCoreImpl) coreApi).getEventWriter();
 		ew.write(new VariantEventDecoratorImpl(event, this));
 	}
 
@@ -143,6 +147,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	}
 
 	private static final String FIELD_NAME_ID = "id";
+	private static final String FIELD_NAME_API_ID = "apiid";
 	private static final String FIELD_NAME_CURRENT_REQUEST = "req";
 	private static final String FIELD_NAME_TRAVERSED_STATES = "states";
 	private static final String FIELD_NAME_TRAVERSED_TESTS = "tests";
@@ -161,6 +166,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 		JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 		jsonGen.writeStartObject();
 		jsonGen.writeStringField(FIELD_NAME_ID, id);
+		jsonGen.writeStringField(FIELD_NAME_API_ID, coreApi.getId());
 		if (currentRequest != null) {
 			jsonGen.writeFieldName(FIELD_NAME_CURRENT_REQUEST);
 			jsonGen.writeRawValue(currentRequest.toJson());
@@ -196,7 +202,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static VariantSessionImpl fromJson(String json) {
+	public static VariantSessionImpl fromJson(Variant coreApi, String json) {
 
 		ObjectMapper mapper = new ObjectMapper();		
 		Map<String,?> fields = null;
@@ -214,13 +220,23 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 		if (!(idObj instanceof String)) 
 			throw new VariantInternalException("Unable to deserialzie session: id not string: [" + json + "]");
 
-		VariantSessionImpl result = new VariantSessionImpl((String)idObj);
+		Object apiidObj = fields.get(FIELD_NAME_API_ID);
+		if (apiidObj == null) 
+			throw new VariantInternalException("Unable to deserialzie session: no apiid: [" + json + "]");
+		if (!(idObj instanceof String)) 
+			throw new VariantInternalException("Unable to deserialzie session: apits not string: [" + json + "]");
+
+		if (!coreApi.getId().equals((String)apiidObj)) {
+			throw new VariantRuntimeException(MessageTemplate.RUN_SESSION_TOO_OLD, apiidObj);
+		}
+
+		VariantSessionImpl result = new VariantSessionImpl(coreApi, (String)idObj);
 
 		Object currentRequestObj = fields.get(FIELD_NAME_CURRENT_REQUEST);
 		if (currentRequestObj != null) {
 			if (!(currentRequestObj instanceof Map<?,?>)) 
 			throw new VariantInternalException("Unable to deserialzie session: currentRequest not map: [" + json + "]");
-			result.currentRequest = VariantStateRequestImpl.fromJson(result, (Map<String,?>)currentRequestObj);
+			result.currentRequest = VariantStateRequestImpl.fromJson(coreApi, result, (Map<String,?>)currentRequestObj);
 		}
 		
 		Object statesObj = fields.get(FIELD_NAME_TRAVERSED_STATES);
@@ -231,7 +247,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 				for (Object obj: statesListRaw) {
 					Map<?,?> objMap = (Map<?,?>) obj;
 					String stateName = (String) objMap.get(FIELD_NAME_STATE);
-					State state = Variant.Factory.getInstance().getSchema().getState(stateName);
+					State state = coreApi.getSchema().getState(stateName);
 					Integer count =  (Integer) objMap.get(FIELD_NAME_COUNT);
 					statesMap.put(state, count);
 				}
@@ -250,7 +266,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 				for (Object obj: testsListRaw) {
 					Map<?,?> objMap = (Map<?,?>) obj;
 					String testName = (String) objMap.get(FIELD_NAME_TEST);
-					Test test = Variant.Factory.getInstance().getSchema().getTest(testName);
+					Test test = coreApi.getSchema().getTest(testName);
 					Boolean qualified =  (Boolean) objMap.get(FIELD_NAME_QUALIFIED);
 					testsMap.put(test, qualified);
 				}

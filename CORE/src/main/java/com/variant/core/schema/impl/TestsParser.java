@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.VariantProperties;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Test;
@@ -31,7 +32,7 @@ public class TestsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parseTests(Object testsObject, ParserResponseImpl response) throws VariantRuntimeException {
+	static void parseTests(Object testsObject, ParserResponseImpl response, VariantProperties properties) throws VariantRuntimeException {
 		List<Map<String, ?>> rawTests = null;
 		try {
 			rawTests = (List<Map<String, ?>>) testsObject;
@@ -46,7 +47,7 @@ public class TestsParser implements Keywords {
 		}
 		
 		for (Map<String, ?> rawTest: rawTests) {
-			Test test = parseTest(rawTest, response);
+			Test test = parseTest(rawTest, response, properties);
 			if (test != null && !((SchemaImpl) response.getSchema()).addTest(test)) {
 				response.addMessage(PARSER_TEST_NAME_DUPE, test.getName());
 			}
@@ -59,7 +60,8 @@ public class TestsParser implements Keywords {
 	 * @param response
 	 * @throws VariantRuntimeException 
 	 */
-	private static Test parseTest(Map<String, ?> test, ParserResponseImpl response) throws VariantRuntimeException {
+	private static Test parseTest(Map<String, ?> test, ParserResponseImpl response, VariantProperties properties) 
+			throws VariantRuntimeException {
 		
 		List<TestImpl> covarTests = new ArrayList<TestImpl>();
 		List<TestExperienceImpl> experiences = new ArrayList<TestExperienceImpl>();
@@ -91,7 +93,7 @@ public class TestsParser implements Keywords {
 			return null;
 		}
 		
-		TestImpl result = new TestImpl(name);
+		TestImpl result = new TestImpl(name, properties);
 		
 		// Pass 2: Parse experiences.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {

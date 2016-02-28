@@ -6,8 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 import com.variant.core.InitializationParams;
-import com.variant.core.config.VariantProperties;
-import com.variant.core.event.EventPersister;
+import com.variant.core.VariantProperties;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.jdbc.EventPersisterJdbc;
 import com.variant.open.securestring.SecureString;
@@ -22,13 +21,13 @@ public class EventPersisterH2 extends EventPersisterJdbc {
 	public void initialized(InitializationParams initParams) throws Exception {
 		url = initParams.getOrThrow(
 				"url", 
-				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName()));
+				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
 		user = initParams.getOrThrow(
 				"user", 
-				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", this.getClass().getName()));
+				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", this.getClass().getName(), VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
 		String passString = initParams.getOrThrow(
 				"password", 
-				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", this.getClass().getName(), VariantProperties.Keys.EVENT_PERSISTER_CLASS_INIT.propName()));
+				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", this.getClass().getName(), VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
 		password = new SecureString(passString.toCharArray());
 	}
 

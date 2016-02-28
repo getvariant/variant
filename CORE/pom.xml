@@ -11,7 +11,7 @@
    <modelVersion>4.0.0</modelVersion>
     
 	<properties>
-	    <variant.version>0.5.2</variant.version>
+	    <variant.version>1.0.0</variant.version>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
 		<jackson.version>2.5.3</jackson.version>
     </properties>

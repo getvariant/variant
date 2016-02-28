@@ -245,7 +245,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	 * @param fields
 	 * @return
 	 */
-	public static VariantStateRequestImpl fromJson(VariantSessionImpl session, Map<String,?> fields) {
+	public static VariantStateRequestImpl fromJson(Variant coreApi, VariantSessionImpl session, Map<String,?> fields) {
 		
 		Object stateName = fields.get(FIELD_NAME_STATE);
 		if (stateName == null) 
@@ -253,7 +253,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		if (!(stateName instanceof String)) 
 			throw new VariantInternalException("Unable to deserialzie request: state not string");
 		
-		StateImpl state = (StateImpl) Variant.Factory.getInstance().getSchema().getState((String)stateName);
+		StateImpl state = (StateImpl) coreApi.getSchema().getState((String)stateName);
 		
 		if (state == null)
 			throw new VariantInternalException("Unable to deserialzie request: state [" + stateName + "] not in schema");
@@ -294,7 +294,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 				for (Object obj: experiencesListRaw) {
 					String expQualifiedName = (String) obj;
 					// qualified name = testName.expName - need to parse.
-					Schema schema = Variant.Factory.getInstance().getSchema();
+					Schema schema = coreApi.getSchema();
 					String[] tokens = expQualifiedName.split("\\.");
 					experiencesList.add(schema.getTest(tokens[0]).getExperience(tokens[1]));
 				}

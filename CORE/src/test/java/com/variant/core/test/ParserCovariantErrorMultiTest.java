@@ -503,7 +503,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponse response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -979,7 +979,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponse response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
