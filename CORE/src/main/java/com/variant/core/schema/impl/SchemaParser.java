@@ -103,7 +103,7 @@ public class SchemaParser implements Keywords {
 		else {
 			
 			// Parse all states
-			StatesParser.parseStates(coreApi.getSchema(), states, response);
+			StatesParser.parseStates(response.getSchema(), states, response);
 			
 			// Post user hook listeners.
 			UserHooker hooker = coreApi.getUserHooker();

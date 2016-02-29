@@ -13,6 +13,7 @@ import com.variant.core.hook.HookListener;
 import com.variant.core.hook.StateParsedHook;
 import com.variant.core.hook.TestParsedHook;
 import com.variant.core.hook.TestQualificationHook;
+import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
@@ -34,13 +35,13 @@ public class UserHookTest extends BaseTest {
 	@Test
 	public void stateParsedTest() throws Exception {
 		
-		Variant variant = Variant.Factory.getInstance();
+		api = (VariantCoreImpl) Variant.Factory.getInstance();
 		
 		StateParsedHookListenerImpl listener = new StateParsedHookListenerImpl();
-		variant.addHookListener(listener);
+		api.addHookListener(listener);
 		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
-		assertEquals(variant.getSchema().getStates(), listener.stateList);
-		assertEquals(variant.getSchema().getStates().size(), response.getMessages().size());
+		assertEquals(api.getSchema().getStates(), listener.stateList);
+		assertEquals(api.getSchema().getStates().size(), response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
 			assertEquals(Severity.INFO, msg.getSeverity());
 			assertEquals(MESSAGE_TEXT_STATE, msg.getText());
@@ -51,14 +52,14 @@ public class UserHookTest extends BaseTest {
 	@Test
 	public void testParsedTest() throws Exception {
 		
-		Variant variant = Variant.Factory.getInstance();
+		api = (VariantCoreImpl) Variant.Factory.getInstance();
 		
 		TestParsedHookListenerImpl listener = new TestParsedHookListenerImpl();
-		variant.clearHookListeners();
-		variant.addHookListener(listener);
+		api.clearHookListeners();
+		api.addHookListener(listener);
 		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
-		assertEquals(variant.getSchema().getTests(), listener.testList);
-		assertEquals(variant.getSchema().getTests().size(), response.getMessages().size());
+		assertEquals(api.getSchema().getTests(), listener.testList);
+		assertEquals(api.getSchema().getTests().size(), response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
 			assertEquals(Severity.INFO, msg.getSeverity());
 			assertEquals(MESSAGE_TEXT_TEST, msg.getText());
@@ -66,16 +67,16 @@ public class UserHookTest extends BaseTest {
 		}
 
 		StateParsedHookListenerImpl stateListener = new StateParsedHookListenerImpl();
-		variant.addHookListener(stateListener);
+		api.addHookListener(stateListener);
 		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
-		assertEquals(VariantCollectionsUtils.list(variant.getSchema().getTests(), variant.getSchema().getTests()), listener.testList);
-		assertEquals(variant.getSchema().getStates(), stateListener.stateList);
-		assertEquals(variant.getSchema().getTests().size() + variant.getSchema().getStates().size(), response.getMessages().size());
+		assertEquals(VariantCollectionsUtils.list(api.getSchema().getTests(), api.getSchema().getTests()), listener.testList);
+		assertEquals(api.getSchema().getStates(), stateListener.stateList);
+		assertEquals(api.getSchema().getTests().size() + api.getSchema().getStates().size(), response.getMessages().size());
 
 		for (int i = 0; i < response.getMessages().size(); i++) {
 			ParserMessage msg = response.getMessages().get(i);
 			assertEquals(Severity.INFO, msg.getSeverity());
-			assertEquals(i < variant.getSchema().getStates().size() ? MESSAGE_TEXT_STATE : MESSAGE_TEXT_TEST, msg.getText());
+			assertEquals(i < api.getSchema().getStates().size() ? MESSAGE_TEXT_STATE : MESSAGE_TEXT_TEST, msg.getText());
 		}
 
 	}
@@ -83,17 +84,17 @@ public class UserHookTest extends BaseTest {
 	@Test
 	public void testQualificationTest() throws Exception {
 		
-		Variant variant = Variant.Factory.getInstance();
+		api = (VariantCoreImpl) Variant.Factory.getInstance();
 		
 		TestQualificationHookListenerNullImpl nullListener = new TestQualificationHookListenerNullImpl();
-		variant.clearHookListeners();
-		variant.addHookListener(nullListener);
+		api.clearHookListeners();
+		api.addHookListener(nullListener);
 		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		
 		assertTrue(nullListener.testList.isEmpty());
-		Schema schema = variant.getSchema();
+		Schema schema = api.getSchema();
 		State state1 = schema.getState("state1");
 		VariantSession ssn = api.getSession("foo");
 		VariantStateRequest request = api.dispatchRequest(ssn, state1, "");
@@ -132,13 +133,13 @@ public class UserHookTest extends BaseTest {
 
 		// New session. Disqualify, but keep in TT.
 		TestQualificationHookListenerDisqualifyImpl disqualListener = new TestQualificationHookListenerDisqualifyImpl(false, schema.getTest("test1"));
-		variant.addHookListener(disqualListener);
+		api.addHookListener(disqualListener);
 		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertTrue(nullListener.testList.isEmpty());
 		assertTrue(disqualListener.testList.isEmpty());
-		schema = variant.getSchema();
+		schema = api.getSchema();
 		state1 = schema.getState("state1");
 		ssn = api.getSession("foo2");
 		request = api.dispatchRequest(ssn, state1, targetingTrackerString("test2.D","Test1.A"));
@@ -159,14 +160,14 @@ public class UserHookTest extends BaseTest {
 
 		// New session. Disqualify and drop from TT
 		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"));
-		variant.clearHookListeners();
-		variant.addHookListener(disqualListener);
+		api.clearHookListeners();
+		api.addHookListener(disqualListener);
 		
 		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertTrue(disqualListener.testList.isEmpty());
-		schema = variant.getSchema();
+		schema = api.getSchema();
 		state1 = schema.getState("state1");
 		ssn = api.getSession("foo3");
 		request = api.dispatchRequest(ssn, state1, targetingTrackerString("test1.B","test2.D","Test1.A"));
@@ -189,13 +190,13 @@ public class UserHookTest extends BaseTest {
 		// Same session, but dispatch o state2 - it's only instrumented by the off test2. 
 		// The extra disqualifier should not matter because test1 has already been qualified for this session. The
 		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"), schema.getTest("test1"));
-		variant.addHookListener(disqualListener);
+		api.addHookListener(disqualListener);
 		
 		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertTrue(disqualListener.testList.isEmpty());
-		schema = variant.getSchema();
+		schema = api.getSchema();
 		state1 = schema.getState("state1");
 		State state2 = schema.getState("state2");
 		ssn = api.getSession("foo3");
