@@ -12,7 +12,4 @@ targeting.tracker.class.name = com.variant.web.TargetingTrackerHttpCookie
 
 # Postgres Event Persister
 event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
-event.persister.jdbc.vendor = postgres
-event.persister.jdbc.url = jdbc:postgresql://localhost/variant
-event.persister.jdbc.user = variant
-event.persister.jdbc.password = variant
+event.persister.class.init = {"vendor":"postgres","url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}

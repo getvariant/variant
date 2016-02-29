@@ -9,6 +9,7 @@ import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.hook.HookListener;
+import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
@@ -31,6 +32,18 @@ public class VariantWeb {
 	private Variant core;
 	
 	//---------------------------------------------------------------------------------------------//
+	//                                         PACKAGE                                             //
+	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 * Expose JdbcService to tests.
+	 * @return
+	 */
+	JdbcService getJdbcService() {
+		return new JdbcService(core);
+	}
+
+	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
@@ -42,45 +55,13 @@ public class VariantWeb {
 	 * @returns An instance of {@link VariantWeb};
 	 * @since 0.5
 	 */
-	public VariantWeb() {
-		this.core = Variant.Factory.getInstance();
-	}
-	
-	/**
-	 * Bootstrap the Variant container. Must be the first method called on a cold API
-	 * after JVM startup.
-	 * 
-	 * @param resourceNames See {@link Variant#bootstrap(String...)}. 
-	 * @since 0.5
-	 */
-	public void bootstrap(String...resourceNames) {
-	
+	public VariantWeb(String...resourceNames) {
 		String[] newArgs = new String[resourceNames.length + 1];
 		for (int i = 0; i < resourceNames.length; i++) newArgs[i] = resourceNames[i];
 		newArgs[resourceNames.length] = "/variant-web.props";
-		core.bootstrap(newArgs);
+		this.core = Variant.Factory.getInstance(newArgs);
 	}
-	
-	/**
-	 * Is the Variant container bootstrapped?
-	 *
-	 * @return true between calls to {@link #bootstrap} and {@link #shutdown}  methods, false otherwise.
-	 * @since 0.5
-	 */
-	public boolean isBootstrapped() {
-		return core.isBootstrapped();
-	}
-	
-	/**
-	 * <p>Shutdown Variant container. Releases all JVM resources associated with Variant Core API.
-	 * Subsequently, calling any method other than {@link #bootstrap} will throw an exception.
-	 * 
-	 * @since 0.5
-	 */
-	public synchronized void shutdown() {
-		core.shutdown();
-	}
-	
+		
 	/**
 	 * <p>Register a {@link com.variant.core.hook.HookListener}. 
 	 * See {@link Variant#addHookListener(HookListener)} for details.
@@ -186,5 +167,5 @@ public class VariantWeb {
 		VariantWebStateRequestDecorator wrapper = (VariantWebStateRequestDecorator) request;
 		core.commitStateRequest(wrapper.getOriginalRequest(), wrapper.getHttpServletRequest(), httpResponse);
 	}
-
+	
 }

@@ -9,7 +9,7 @@
     
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
-        <variant.version>0.5.2</variant.version>
+        <variant.version>0.6.0</variant.version>
     	<tomcat.version>7.0.59</tomcat.version>
     	
     </properties>
@@ -62,13 +62,13 @@
 			<version>4.12</version>
 		</dependency>
 	
-    	<!-- Tomcat -->    
+    	<!-- Servlet -->
 		<dependency>
         	<groupId>org.apache.tomcat</groupId>
         	<artifactId>tomcat-servlet-api</artifactId>
          	<version>${tomcat.version}</version>
           	<scope>provided</scope>
-        </dependency>
+      </dependency>
         
 	</dependencies>
 	

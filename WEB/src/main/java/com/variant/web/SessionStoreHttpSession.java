@@ -1,9 +1,8 @@
 package com.variant.web;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 
+import com.variant.core.InitializationParams;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.VariantSessionStore;
@@ -45,7 +44,7 @@ public class SessionStoreHttpSession implements VariantSessionStore {
 	}
 	
 	@Override
-	public void initialized(Map<String, String> initParams) throws Exception {}
+	public void initialized(InitializationParams initParams) throws Exception {}
 
 	@Override
 	public void shutdown() {}

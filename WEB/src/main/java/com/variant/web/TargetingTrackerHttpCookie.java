@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
 
+import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.ext.TargetingTrackerString;
 import com.variant.web.util.VariantCookie;
@@ -17,13 +18,13 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 	 * User data is expected as an <code>HttpServletRequest</code> object.
 	 */
 	@Override
-	public void initialized(VariantSession ssn, Object...userData) {
+	public void initialized(Variant coreApi, VariantSession ssn, Object...userData) {
 		
 		HttpServletRequest request = (HttpServletRequest) userData[0];
 		cookie = new TargetingCookie(request);
 		String input = cookie.getValue();
 		// If the targeting cookie existed and returned a value, the superclass will parse it.
-		if (input != null) super.initialized(ssn, cookie.getValue());
+		if (input != null) super.initialized(coreApi, ssn, cookie.getValue());
 	}
 
 	/**

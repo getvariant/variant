@@ -4,6 +4,7 @@ import java.util.regex.Pattern;
 
 import com.variant.core.Variant;
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 
 /**
@@ -126,8 +127,8 @@ public class StateSelectorByRequestPath  {
 	 * @return
 	 * @since 0.5
 	 */
-	public static State select(String path) {
-		for (State state: Variant.Factory.getInstance().getSchema().getStates()) {
+	public static State select(Schema schema, String path) {
+		for (State state: schema.getStates()) {
 			if (match(state.getParameterMap().get("path"), path)) return state;
 		}
 		return null;

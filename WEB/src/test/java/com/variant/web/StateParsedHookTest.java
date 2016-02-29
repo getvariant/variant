@@ -70,7 +70,6 @@ public class StateParsedHookTest {
 			    "}                                                             \n";
 		
 		VariantWeb api = new VariantWeb();
-		api.bootstrap();
 		api.addHookListener(new StateParsedHookListenerImpl());
 		ParserResponse response = api.parseSchema(IOUtils.toInputStream(schema));
 		assertEquals(1, response.getMessages().size());

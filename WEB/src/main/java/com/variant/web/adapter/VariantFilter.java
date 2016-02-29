@@ -42,7 +42,7 @@ public class VariantFilter implements Filter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantFilter.class);
 	
-	private VariantWeb webApi = new VariantWeb();
+	private VariantWeb webApi;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -56,8 +56,7 @@ public class VariantFilter implements Filter {
 	public void init(FilterConfig config) throws ServletException {
 
 		String name = config.getInitParameter("propsResourceName");
-		if (name != null) webApi.bootstrap(name);
-		else webApi.bootstrap();
+		webApi = name == null ? new VariantWeb() : new VariantWeb(name);
 			
 		name = config.getInitParameter("schemaResourceName");
 		
@@ -100,83 +99,76 @@ public class VariantFilter implements Filter {
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		VariantStateRequest variantRequest = null;
 		
-		if (webApi.isBootstrapped()) {
+		long start = System.currentTimeMillis();
+
+		String resolvedPath = null;
+		boolean isForwarding = false;
+		
+		try {
+
+			// Is this request's URI mapped in Variant?
+			String url = VariantWebUtils.requestUrl(httpRequest);
+			State state = StateSelectorByRequestPath.select(webApi.getSchema(), url);
 			
-			long start = System.currentTimeMillis();
+			if (state == null) {
 
-			String resolvedPath = null;
-			boolean isForwarding = false;
+				// We don't know about this path.
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Path [" + url + "] is not instrumented");
+				}
 			
-			try {
-
-				// Is this request's URI mapped in Variant?
-				String url = VariantWebUtils.requestUrl(httpRequest);
-				State state = StateSelectorByRequestPath.select(url);
-				
-				if (state == null) {
-
-					// We don't know about this path.
-					if (LOG.isDebugEnabled()) {
-						LOG.debug("Path [" + url + "] is not instrumented");
-					}
-				
-				}
-				else {
-				
-					// Yes, this path is mapped in Variant.
-					variantRequest = webApi.dispatchRequest(state, httpRequest);
-					resolvedPath = variantRequest.getResolvedParameterMap().get("path");
-					isForwarding = !resolvedPath.equals(state.getParameterMap().get("path"));
-					
-					if (LOG.isInfoEnabled()) {
-
-						String msg = 
-								"Variant dispatcher for URL [" + url +
-								"] completed in " + DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS") +". ";
-						if (isForwarding) {
-							msg += "Forwarding to path [" + resolvedPath + "].";							
-						}
-						else {
-							msg += "Falling through to requested URL";
-						}
-						LOG.info(msg);
-					}					
-				}
 			}
-			catch (Throwable t) {
-				LOG.error("Unhandled exception in Variant for path [" + VariantWebUtils.requestUrl(httpRequest) + "]", t);
-				isForwarding = false;
-				if (variantRequest != null) {
-					variantRequest.setStatus(VariantStateRequest.Status.FAIL);
-				}
-			}
-
-			if (isForwarding) {
-				request.getRequestDispatcher(resolvedPath).forward(request, response);
-			}				
 			else {
-				chain.doFilter(request, response);							
-			}
-								
-			if (webApi.isBootstrapped() && variantRequest != null) {
-				try {
-					// Add some extra info to the state visited event(s)
-					VariantEvent sve = variantRequest.getStateVisitedEvent();
-					if (sve != null) sve.getParameterMap().put("HTTP_STATUS", httpResponse.getStatus());
-					webApi.commitStateRequest(variantRequest, httpResponse);
-				}
-				catch (Throwable t) {
-					LOG.error("Unhandled exception in Variant for path [" + 
-							VariantWebUtils.requestUrl(httpRequest) + 
-							"] and session [" + variantRequest.getSession().getId() + "]", t);
-					
-					variantRequest.setStatus(VariantStateRequest.Status.FAIL);
-				}
+			
+				// Yes, this path is mapped in Variant.
+				variantRequest = webApi.dispatchRequest(state, httpRequest);
+				resolvedPath = variantRequest.getResolvedParameterMap().get("path");
+				isForwarding = !resolvedPath.equals(state.getParameterMap().get("path"));
+				
+				if (LOG.isInfoEnabled()) {
+
+					String msg = 
+							"Variant dispatcher for URL [" + url +
+							"] completed in " + DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS") +". ";
+					if (isForwarding) {
+						msg += "Forwarding to path [" + resolvedPath + "].";							
+					}
+					else {
+						msg += "Falling through to requested URL";
+					}
+					LOG.info(msg);
+				}					
 			}
 		}
+		catch (Throwable t) {
+			LOG.error("Unhandled exception in Variant for path [" + VariantWebUtils.requestUrl(httpRequest) + "]", t);
+			isForwarding = false;
+			if (variantRequest != null) {
+				variantRequest.setStatus(VariantStateRequest.Status.FAIL);
+			}
+		}
+
+		if (isForwarding) {
+			request.getRequestDispatcher(resolvedPath).forward(request, response);
+		}				
 		else {
-			LOG.info("Variant is not bootstrapped.");
-			chain.doFilter(request, response);
+			chain.doFilter(request, response);							
+		}
+							
+		if (variantRequest != null) {
+			try {
+				// Add some extra info to the state visited event(s)
+				VariantEvent sve = variantRequest.getStateVisitedEvent();
+				if (sve != null) sve.getParameterMap().put("HTTP_STATUS", httpResponse.getStatus());
+				webApi.commitStateRequest(variantRequest, httpResponse);
+			}
+			catch (Throwable t) {
+				LOG.error("Unhandled exception in Variant for path [" + 
+						VariantWebUtils.requestUrl(httpRequest) + 
+						"] and session [" + variantRequest.getSession().getId() + "]", t);
+				
+				variantRequest.setStatus(VariantStateRequest.Status.FAIL);
+			}
 		}
 	}
 
@@ -186,7 +178,7 @@ public class VariantFilter implements Filter {
 	 */
 	@Override
 	public void destroy() {
-		webApi.shutdown();
+		// nothing.
 	}
 
 }
