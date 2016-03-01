@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.InitializationParams;
+import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
 import com.variant.core.config.PropertiesChain;
 import com.variant.core.exception.VariantRuntimeException;
@@ -34,11 +35,13 @@ public class VariantPropertiesImpl implements VariantProperties {
 	public static final String RUNTIME_PROPS_FILE_NAME = "varaint.props.file";
 	
 	private PropertiesChain propsChain = new PropertiesChain();
+	private VariantCoreImpl coreApi;
 
 	/**
 	 * 
 	 */
-	VariantPropertiesImpl() {
+	VariantPropertiesImpl(VariantCoreImpl coreApi) {
+		this.coreApi = coreApi;
 		propsChain = new PropertiesChain();
 		override(VariantIoUtils.openResourceAsStream("/variant-defaults.props"));		
 	}
@@ -123,7 +126,7 @@ public class VariantPropertiesImpl implements VariantProperties {
 		else if (clazz == Integer.class)
 			return (T) getInteger(key.propName());
 		else if (clazz == InitializationParams.class)
-			return (T) new InitParams(getMap(key.propName()));
+			return (T) new InitParams(coreApi, getMap(key.propName()));
 		else 
 			throw new VariantRuntimeException(MessageTemplate.RUN_PROPERTY_BAD_CLASS, clazz.getName());
 	}
@@ -134,8 +137,11 @@ public class VariantPropertiesImpl implements VariantProperties {
 	@SuppressWarnings("serial")
 	public static class InitParams extends HashMap<String, String> implements InitializationParams {
 		
-		private InitParams(Map<String,String> map) {
+		private Variant coreApi; 
+		
+		private InitParams(Variant coreApi, Map<String,String> map) {
 			super(map);
+			this.coreApi = coreApi;
 		}
 		
 		@Override
@@ -148,6 +154,11 @@ public class VariantPropertiesImpl implements VariantProperties {
 			String result = super.get(key);
 			if (result == null) throw e;
 			else return result;
+		}
+
+		@Override
+		public Variant getCoreApi() {
+			return coreApi;
 		}
 
 	}

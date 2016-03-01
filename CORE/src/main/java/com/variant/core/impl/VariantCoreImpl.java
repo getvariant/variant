@@ -62,13 +62,13 @@ public class VariantCoreImpl implements Variant {
 	private EventWriter eventWriter = null;
 	private SessionService sessionService = null;
 	private UserHooker hooker = new UserHooker();
-	private VariantPropertiesImpl properties = new VariantPropertiesImpl();
+	private VariantPropertiesImpl properties;
 	private VariantRuntime runtime;
 	
 	private static String version() {
 		String version = RuntimeService.getVersion();
 		if (version == null) version = "?";
-		return "V. " + version + " (Beta), Copyright (C) 2015-16 getvariant.com";
+		return "V. " + version + " , Copyright (C) 2015-16 getvariant.com";
 	}
 		
 	/**
@@ -78,6 +78,8 @@ public class VariantCoreImpl implements Variant {
 	 * @param resourceName
 	 */
 	private void setupSystemProperties(String...resourceNames) {
+
+		properties = new VariantPropertiesImpl(this);
 
 		// Override system props in left-to-right scan.
 		for (int i = resourceNames.length - 1; i >= 0; i--) {
@@ -188,7 +190,7 @@ public class VariantCoreImpl implements Variant {
 		// Instantiate runtime.
 		//
 		runtime = new VariantRuntime(this);
-
+		
 		LOG.info(
 				String.format("Core %s bootstrapped in %s",
 						version(),

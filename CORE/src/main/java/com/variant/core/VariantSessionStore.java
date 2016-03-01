@@ -1,6 +1,5 @@
 package com.variant.core;
 
-import java.util.Map;
 
 /**
  * <p>An implementation will use external mechanisms to obtain and to store

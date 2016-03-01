@@ -1,0 +1,60 @@
+{                                                           
+   'states':[                                                
+     {  'name':'newOwner',                                     
+	    'parameters': {
+           'path':'/petclinic/owners/new'
+        }                                                    
+     },                                                    
+     {  'name':'ownerDetail',          
+	    'parameters': {
+           'path':'/petclinic/owners/~\\d+/'
+        }                                                    
+     }                                                     
+   ],                                                        
+   'tests':[                                                 
+      {                                                      
+         'name':'NewOwnerTest',
+         'isOn': true,                                     
+         'experiences':[                                     
+            {                                                
+               'name':'outOfTheBox',                                   
+               'weight':1,                                  
+               'isControl':true                              
+            },                                               
+            {                                                
+               'name':'tosCheckbox',                                   
+               'weight':1                                   
+            },                                               
+            {                                                
+               'name':'tos&mailCheckbox',                                   
+               'weight':1                                   
+            }                                               
+         ],                                                  
+         'onStates':[                                         
+            {                                                
+               'stateRef':'newOwner',                            
+               'variants':[                                  
+                  {                                          
+                     'experienceRef': 'tosCheckbox',                   
+                	 'parameters': {
+                        'path':'/owners/new/variant/newOwnerTest.tosCheckbox'         
+                     }                                          
+                  },                                         
+                  {                                          
+                     'experienceRef': 'tos&mailCheckbox',                   
+                	 'parameters': {
+                        'path':'/owners/new/variant/newOwnerTest.tosAndMailCheckbox'         
+                     }                                          
+                  }                                          
+               ]                                             
+            },
+            {                                                
+               'stateRef':'ownerDetail',                            
+               'isNonvariant': true
+            }                                                
+            
+         ]                                                   
+      }                                                     
+   ]                                                         
+}                         
+		
