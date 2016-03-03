@@ -11,7 +11,6 @@ import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Random;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -46,7 +45,6 @@ import com.variant.core.schema.parser.Severity;
 import com.variant.core.session.SessionService;
 import com.variant.core.session.VariantSessionImpl;
 import com.variant.core.util.VariantIoUtils;
-import com.variant.core.util.VariantStringUtils;
 
 /**
  * The Variant CORE API.
@@ -58,7 +56,6 @@ public class VariantCoreImpl implements Variant, Serializable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantCoreImpl.class);
 	
-	private String apiId = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
 	private Schema schema = null;
 	private EventWriter eventWriter = null;
 	private SessionService sessionService = null;
@@ -196,14 +193,6 @@ public class VariantCoreImpl implements Variant, Serializable {
 				String.format("Core %s bootstrapped in %s",
 						version(),
 						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
-	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public String getId() {
-		return apiId;
 	}
 	
 	/**

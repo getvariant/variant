@@ -1,16 +1,13 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.VariantSessionImpl;
 
@@ -20,8 +17,32 @@ public class SessionTest extends BaseTest {
 	 * 
 	 */
 	@Test
+	public void noSchemaTest() throws Exception {
+		VariantSession ssn = api.getSession("foo");
+		assertNotNull(ssn);
+		assertNull(ssn.getStateRequest());
+		assertEquals(0, ssn.getTraversedStates().size());
+		assertEquals(0, ssn.getTraversedTests().size());		
+		String json = ((VariantSessionImpl)ssn).toJson();
+		VariantSessionImpl deserializedSsn = VariantSessionImpl.fromJson(api, json);
+		assertEquals("foo", deserializedSsn.getId());
+		assertNull(deserializedSsn.getStateRequest());
+		assertEquals(0, deserializedSsn.getTraversedStates().size());
+		assertEquals(0, deserializedSsn.getTraversedTests().size());
+		Thread.sleep(10);
+		VariantSession ssn2 = api.getSession("foo");
+		assertTrue(ssn2.creationTimestamp() > ssn.creationTimestamp());
+	}
+
+	/**
+	 * 
+	 */
+	@Test
 	public void sessionCreationTest() throws Exception {
-				
+			
+		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
 
 		VariantSession ssn = api.getSession("key");
 		assertNotNull(ssn);
@@ -32,12 +53,7 @@ public class SessionTest extends BaseTest {
 		assertNull(deserializedSsn.getStateRequest());
 		assertEquals(0, deserializedSsn.getTraversedStates().size());
 		assertEquals(0, deserializedSsn.getTraversedTests().size());
-		
-		VariantSession ssn2 = api.getSession("key");
-		assertEquals(ssn, ssn2);
-		assertNull(ssn.getStateRequest());
-		assertNull(ssn2.getStateRequest());
-		
+				
 		VariantSession ssn3 = api.getSession("another-key");
 		assertNotEquals (ssn, ssn3);
 		assertNull(ssn.getStateRequest());
@@ -50,7 +66,7 @@ public class SessionTest extends BaseTest {
 		assertEquals(0, deserializedSsn.getTraversedTests().size());
 
 	}
-	
+		
 	@Test
 	public void  stateRequestTest() throws Exception {
 				
@@ -99,5 +115,61 @@ public class SessionTest extends BaseTest {
 		assertEqualAsSets(ssn.getTraversedTests(), deserializedSsn.getTraversedTests());
 		api.commitStateRequest(req2, "");
 	}
-	
+
+	@Test
+	public void  crossSchemaTest() throws Exception {
+				
+		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		
+		Schema schema = api.getSchema();
+		VariantSession ssn1 = api.getSession("foo2");
+		State state1 = schema.getState("state1");
+		VariantStateRequest req = api.dispatchRequest(ssn1, state1, "");
+		api.commitStateRequest(req, "");  // Saves the session.
+
+		Thread.sleep(10);
+		
+		VariantSession ssn2 = api.getSession("foo2");
+	    assertEquals(ssn1.creationTimestamp(), ssn2.creationTimestamp());
+
+	    // new schema.
+		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+	    
+		ssn2 = api.getSession("foo2");  // should be a new session because schema's changed
+		assertEquals("foo2", ssn2.getId());
+		assertNull(ssn2.getStateRequest());
+		assertEquals(0,ssn2.getTraversedStates().size());
+		assertEquals(0, ssn2.getTraversedTests().size());
+	    assertTrue(ssn1.creationTimestamp() < ssn2.creationTimestamp());
+		
+	    Schema schema2 = api.getSchema();
+	    assertNotEquals(schema.getId(), schema2.getId());
+	    state1 = schema2.getState("state1");
+		req = api.dispatchRequest(ssn2, state1, "");
+		api.commitStateRequest(req, "");  // Saves the session.
+	    
+		// new API
+		rebootApi();
+		assertNull(api.getSchema());
+		
+		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		
+		Schema schema3 = api.getSchema();
+		assertNotEquals(schema2.getId(), schema3.getId());
+		
+		VariantSession ssn3 = api.getSession("foo2"); // should be a new session because api's changed
+		assertEquals("foo2", ssn3.getId());
+		assertNull(ssn3.getStateRequest());
+		assertEquals(0,ssn3.getTraversedStates().size());
+		assertEquals(0, ssn3.getTraversedTests().size());
+	    assertTrue(ssn2.creationTimestamp() < ssn3.creationTimestamp());
+		
+	}
+
 }

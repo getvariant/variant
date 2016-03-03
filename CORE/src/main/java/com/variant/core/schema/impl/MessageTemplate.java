@@ -113,7 +113,7 @@ public enum MessageTemplate {
 	RUN_SCHEMA_REPLACED                                   (Severity.ERROR, "This schema is no longer valid because it has been replaced with a newer schema."),
 	RUN_WEIGHT_MISSING                                    (Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found."),
 	RUN_ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first."),
-	RUN_SESSION_TOO_OLD                                   (Severity.WARN,  "Session id [%s] cannot be deserialized because it was created with a different instance of core API"),
+	//RUN_SESSION_TOO_OLD                                   (Severity.WARN,  "Session id [%s] cannot be deserialized because it was created with a different instance of core API"),
 	RUN_SESSION_ID_NULL                                   (Severity.WARN,  "Session id tracker [%s] generated a null key"),
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                  GENERAL MESSAGES                                                      //

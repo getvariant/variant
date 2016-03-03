@@ -17,16 +17,7 @@ import com.variant.core.schema.parser.ParserResponse;
  * @since 0.5
  */
 public interface Variant {
-	
-	/**
-	 * <p>This API's Id.  Each API instance returned by {@link Factory#getInstance(String...)}
-	 * is a new instance and can be told apart from other instances by this ID.
-	 * 
-	 * @return String ID.
-	 * @since 0.6
-	 */
-	public String getId();
-	
+		
 	/**
 	 * <p>This API's application properties
 	 * 

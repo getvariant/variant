@@ -30,6 +30,8 @@ public interface VariantSessionStore {
 	 * @param userData An array of 0 or more opaque objects which 
 	 *                 {@link com.variant.core.Variant#getSession(Object...)} 
 	 *                 will pass here without interpretation.
+	 * @return An instance of {@link VariantSession} if session with this ID was
+	 *         found in the store, or null if not.
 	 * @since 0.5
 	 */
 	public VariantSession get(String sessionId, Object...userData) throws VariantException;

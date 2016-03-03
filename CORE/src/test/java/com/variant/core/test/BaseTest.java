@@ -36,6 +36,7 @@ public class BaseTest {
 	@BeforeClass
 	public static void beforeTestCase() throws Exception {
 		rebootApi();
+		recreateSchema();
 	}
 
 	/**
@@ -43,11 +44,14 @@ public class BaseTest {
 	 * 
 	 */
 	protected static void rebootApi() throws Exception {
-
-		// (Re-)bootstrap the Variant api
 		api = (VariantCoreImpl) Variant.Factory.getInstance("/variant-test.props");
+	}
 
-		// (Re)create the schema, if running with a JDBC based event persister.
+	/**
+	 * @throws Exception 
+	 * 
+	 */
+	protected static void recreateSchema() throws Exception {
 		try {
 			
 			EventPersisterJdbc persister = (EventPersisterJdbc)api.getEventWriter().getEventPersister();
@@ -65,7 +69,7 @@ public class BaseTest {
 		catch (Exception e) { throw e; }		
 
 	}
-	
+
 	//---------------------------------------------------------------------------------------------//
 	//                                         HELPERS                                             //
 	//---------------------------------------------------------------------------------------------//

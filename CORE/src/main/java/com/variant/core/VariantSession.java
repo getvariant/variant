@@ -24,6 +24,14 @@ public interface VariantSession {
 	public String getId();
 	
 	/**
+	 * <p>Get this session's creation timestamp millis.
+	 * 
+	 * @return Milliseconds since the Epoch.
+	 * @since 0.6
+	 */	
+	public long creationTimestamp();
+	
+	/**
 	 * <p> The collection of states traversed by this session so far and their counts.
 	 * 
 	 * @return A collection of {@link Pair}s of type <{@link State}, Integer> corresponding

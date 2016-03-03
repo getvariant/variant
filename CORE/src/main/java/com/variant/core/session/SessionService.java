@@ -109,6 +109,9 @@ public class SessionService {
 	 * @param session
 	 */
 	public void saveSession(VariantSession session, Object...userData) {
-		sessionStore.save(session, userData);
+		// Don't bother if there's still no schema: this session isn't worth saving
+		// and should be simply recreated on next get().
+		if (coreApi.getSchema() != null)
+			sessionStore.save(session, userData);
 	}
 }
