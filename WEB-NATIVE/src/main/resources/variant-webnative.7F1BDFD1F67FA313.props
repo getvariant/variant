@@ -5,6 +5,17 @@
 # Event Persister Applicaiton Logger
 event.persister.class.name = com.variant.core.ext.EventPersisterAppLogger
 
+# Targeting tracker in cookie.
+targeting.tracker.class.name = com.variant.webnative.TargetingTrackerHttpCookie
+
+# Session store - bind variant session to http session.
+session.store.class.name = com.variant.webnative.SessionStoreHttpSession
+session.store.class.init = {}
+
+# Session ID tracker: use http session id as variant session.
+session.id.tracker.class.name = com.variant.webnative.SessionIdTrackerHttpSession
+session.id.tracker.class.init = {}
+
 # Postgres Event Persister
 #event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
 #event.persister.class.init = {"vendor":"postgres","url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}

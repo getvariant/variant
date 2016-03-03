@@ -124,8 +124,8 @@ see here: http://static.springsource.org/spring/docs/current/spring-framework-re
      <!-- Variant Filter -->
      <filter>
         <filter-name>variantFilter</filter-name>
-<!--        <filter-class>com.variant.webnative.adapter.VariantFilter</filter-class>  -->
-        <filter-class>com.variant.web.adapter.VariantFilter</filter-class>
+        <filter-class>com.variant.webnative.adapter.VariantFilter</filter-class>
+<!--        <filter-class>com.variant.web.adapter.VariantFilter</filter-class> -->
         <init-param>
            <param-name>schemaResourceName</param-name>
            <param-value>/variant/schema.json</param-value>

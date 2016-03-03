@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.InitializationParams;
 import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.util.VariantStringUtils;
 import com.variant.webnative.util.VariantCookie;
@@ -24,6 +25,12 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	private static final Logger LOG = LoggerFactory.getLogger(SessionIdTrackerHttpCookie.class);
 	private static final Random rand = new Random(System.currentTimeMillis());
 	
+	@Override
+	public void initialized(InitializationParams initParams) throws Exception {}
+
+	@Override
+	public void shutdown() {}
+
 	/**
 	 * We expect caller to pass 2 arguments: <code>HttpServletRequest</code>
 	 * and <code>HttpServletResponse</code>. If the cookie did not exist, create
