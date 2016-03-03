@@ -198,6 +198,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 
 	private static final String FIELD_NAME_STATE = "state";
 	private static final String FIELD_NAME_STATUS = "status";
+	private static final String FILED_NAME_COMMITTED = "comm";
 	private static final String FIELD_NAME_PARAMS = "params";
 	private static final String FIELD_NAME_KEY = "key";
 	private static final String FIELD_NAME_VALUE = "val";
@@ -214,6 +215,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		jsonGen.writeStartObject();
 		jsonGen.writeStringField(FIELD_NAME_STATE, state.getName());
 		jsonGen.writeStringField(FIELD_NAME_STATUS, status.toString());
+		jsonGen.writeBooleanField(FILED_NAME_COMMITTED, committed);
 		if (resolvedParameterMap.size() > 0) {
 			jsonGen.writeArrayFieldStart(FIELD_NAME_PARAMS);
 			for (Map.Entry<String,String> e: resolvedParameterMap.entrySet()) {
@@ -267,6 +269,14 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 			throw new VariantInternalException("Unable to deserialzie request: status not string");
 
 		result.status = Status.valueOf((String)statusStr);
+
+		Object committed = fields.get(FILED_NAME_COMMITTED);
+		if (committed == null) 
+			throw new VariantInternalException("Unable to deserialzie request: no committed");
+		if (!(committed instanceof Boolean)) 
+			throw new VariantInternalException("Unable to deserialzie request: committed not boolean");
+
+		result.committed = (Boolean) committed;
 
 		Object paramListObj = fields.get(FIELD_NAME_PARAMS);
 		if (paramListObj != null) {

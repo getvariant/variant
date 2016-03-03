@@ -1,15 +1,18 @@
 package com.variant.core.session;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import com.variant.core.InitializationParams;
+import com.variant.core.Variant;
 import com.variant.core.VariantSession;
-import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.VariantSessionStore;
+import com.variant.core.exception.VariantException;
 
 /**
- * Simplest session store implementation in local memory.
+ * Session store implementation in local memory that uses JSON marshalling for better
+ * approximation of the remote server.  In other words, the same session is gotten twice
+ * will yield two different objects.
+ * 
  * No external session ID tracking is assumed. Instead, session IDs
  * are passed in as user data. Sessions are stored in a map keyed by ID,
  * no expiration.
@@ -21,56 +24,33 @@ import com.variant.core.VariantSessionStore;
  */
 public class SessionStoreLocalMemory implements VariantSessionStore {
 
-	private static VariantSessionIdTracker sidTracker = new SessionIdTrackerImpl();
-		
-	private HashMap<String, VariantSession> map = new HashMap<String, VariantSession>();
-
-	/**
-	 * A suitable implementation of session ID tracker.
-	 */
-	private static class SessionIdTrackerImpl implements VariantSessionIdTracker {
-
-		@Override
-		public String get(Object...userData) {
-			try {
-				return (String) userData[0];
-			}
-			catch (ClassCastException e) {
-				throw new RuntimeException(
-						"User data object was of type " + userData.getClass().getName() + ", but expected String", e);
-			}
-		}
-			
-	};
-
+	private HashMap<String, String> map = new HashMap<String, String>();
+	private Variant coreApi = null;
+	
 	SessionStoreLocalMemory() { }
 	
 	@Override
-	public void initialized(InitializationParams initParams) {}
-
-	/**
-	 * @param session Session to save
-	 * @param  userData The sid, which is assumed to be managed by the caller.
-	 */
-	@Override
-	public void save(VariantSession session, Object...userData) {
-			map.put(sidTracker.get(userData), session);
+	public void initialized(InitializationParams initParams) {
+		coreApi = initParams.getCoreApi();
 	}
 
 	/**
 	 * 
 	 */
 	@Override
-	public VariantSessionIdTracker getSessionIdTracker() {
-		return sidTracker;
+	public VariantSession get(String sessionId, Object...userData) {
+		String json = map.get(sessionId);
+		return json == null ? new VariantSessionImpl(coreApi, sessionId) : VariantSessionImpl.fromJson(coreApi, json);
 	}
 
 	/**
-	 * @param  userData is the sid, which is assumed to be managed by the caller.
+	 * @param session Session to save
+	 * @param  userData The sid, which is assumed to be managed by the caller.
+	 * @throws VariantException 
 	 */
 	@Override
-	public VariantSession get(Object...userData) {
-			return map.get(sidTracker.get(userData));
+	public void save(VariantSession session, Object...userData) throws VariantException {
+			map.put(session.getId(), ((VariantSessionImpl)session).toJson());
 	}
 	
 	@Override

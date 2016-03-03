@@ -1,6 +1,10 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
@@ -141,13 +145,13 @@ public class UserHookTest extends BaseTest {
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = api.getSchema();
 		state1 = schema.getState("state1");
-		ssn = api.getSession("foo2");
-		request = api.dispatchRequest(ssn, state1, targetingTrackerString("test2.D","Test1.A"));
-		assertEquals(1, ssn.getTraversedStates().size());
-		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
-		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());
+		VariantSession ssn2 = api.getSession("foo2");
+		request = api.dispatchRequest(ssn2, state1, targetingTrackerString("test2.D","Test1.A"));
+		assertEquals(1, ssn2.getTraversedStates().size());
+		assertEquals(state1, ssn2.getTraversedStates().iterator().next().arg1());
+		assertEquals(1, ssn2.getTraversedStates().iterator().next().arg2().intValue());
 		assertEqualAsSets(
-				ssn.getTraversedTests(), 
+				ssn2.getTraversedTests(), 
 				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("test1"), false), 
 				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("Test1"), true));
 
@@ -159,8 +163,8 @@ public class UserHookTest extends BaseTest {
 		api.commitStateRequest(request, "");
 
 		// New session. Disqualify and drop from TT
-		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"));
 		api.clearHookListeners();
+		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"));
 		api.addHookListener(disqualListener);
 		
 		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
@@ -169,16 +173,24 @@ public class UserHookTest extends BaseTest {
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = api.getSchema();
 		state1 = schema.getState("state1");
-		ssn = api.getSession("foo3");
-		request = api.dispatchRequest(ssn, state1, targetingTrackerString("test1.B","test2.D","Test1.A"));
-		assertEquals(1, ssn.getTraversedStates().size());
-		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
-		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());
+		VariantSession ssn3 = api.getSession("foo3");
+		assertTrue(ssn3.getTraversedStates().isEmpty());
+		assertTrue(ssn3.getTraversedTests().isEmpty());
+		request = api.dispatchRequest(ssn3, state1, targetingTrackerString("test1.B","test2.D","Test1.A"));
 		assertEqualAsSets(
-				ssn.getTraversedTests(), 
+				ssn3.getTraversedStates(),
+				new Pair<State, Integer>(state1, 1));
+		assertEqualAsSets(
+				ssn3.getTraversedTests(), 
 				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("test1"), true), 
 				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("Test1"), false));
 
+		// ssn3 hasn't yet been committed, so if we re-get the session, we won't see the traversed elements.
+		VariantSession ssn3uncommitted = api.getSession("foo3");
+		assertTrue(ssn3uncommitted.getTraversedStates().isEmpty());
+		assertTrue(ssn3uncommitted.getTraversedTests().isEmpty());
+		System.out.println(ssn3.getId() + ", " + ssn3uncommitted.getId());
+	
 		assertEquals(2, request.getTargetingTracker().getAll().size());
 		assertNull(request.getTargetingTracker().get(schema.getTest("Test1")));
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
@@ -187,7 +199,7 @@ public class UserHookTest extends BaseTest {
 		assertEquals("/path/to/state1/test1.B", request.getResolvedParameterMap().get("path"));
 		api.commitStateRequest(request, "");
 
-		// Same session, but dispatch o state2 - it's only instrumented by the off test2. 
+		// Same session, but dispatch to state2 - it's only instrumented by the off test2. 
 		// The extra disqualifier should not matter because test1 has already been qualified for this session. The
 		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"), schema.getTest("test1"));
 		api.addHookListener(disqualListener);
@@ -199,16 +211,14 @@ public class UserHookTest extends BaseTest {
 		schema = api.getSchema();
 		state1 = schema.getState("state1");
 		State state2 = schema.getState("state2");
-		ssn = api.getSession("foo3");
-		request = api.dispatchRequest(ssn, state2, targetingTrackerString("test1.B","test2.D","Test1.A"));
-		assertEquals(2, ssn.getTraversedStates().size());		
+		request = api.dispatchRequest(ssn3, state2, targetingTrackerString("test1.B","test2.D","Test1.A"));
 		assertEqualAsSets(
-				ssn.getTraversedStates(), 
-				new Pair<State, Integer>(state1, 1), 
+				ssn3.getTraversedStates(), 
+				new Pair<State, Integer>(state1, 1),
 				new Pair<State, Integer>(state2, 1));
 
 		assertEqualAsSets(
-				ssn.getTraversedTests(), 
+				ssn3.getTraversedTests(), 
 				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("test1"), true), 
 				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("Test1"), false));
 
@@ -220,7 +230,15 @@ public class UserHookTest extends BaseTest {
 		assertTrue(disqualListener.testList.isEmpty());
 		assertEquals("/path/to/state2", request.getResolvedParameterMap().get("path"));
 		api.commitStateRequest(request, "");
+		assertEqualAsSets(
+				ssn3.getTraversedStates(), 
+				new Pair<State, Integer>(state1, 1), 
+				new Pair<State, Integer>(state2, 1));
 
+		assertEqualAsSets(
+				ssn3.getTraversedTests(), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("test1"), true), 
+				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("Test1"), false));
 	}
 
 	/**

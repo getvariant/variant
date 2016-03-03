@@ -4,10 +4,9 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.variant.core.Variant;
-import com.variant.core.impl.VariantRuntime;
+import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.State;
 
 public class VariantRuntimeTestFacade {
 	

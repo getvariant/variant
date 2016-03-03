@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
-import com.variant.core.schema.Test;
 import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 
 /**
  * An element of the onViews array of the test definition.

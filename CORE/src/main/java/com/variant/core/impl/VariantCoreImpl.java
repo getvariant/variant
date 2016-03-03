@@ -10,6 +10,7 @@ import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.Random;
 
 import org.apache.commons.io.IOUtils;
@@ -53,7 +54,7 @@ import com.variant.core.util.VariantStringUtils;
  * @author Igor
  *
  */
-public class VariantCoreImpl implements Variant {
+public class VariantCoreImpl implements Variant, Serializable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantCoreImpl.class);
 	
@@ -300,16 +301,16 @@ public class VariantCoreImpl implements Variant {
 		if ((requestImpl).isCommitted()) {
 			throw new IllegalStateException("Request already committed");
 		}
-		
-		// Save the session in session store.
-		sessionService.saveSession(request.getSession(), userData);
-		
+				
 		// Persist targeting info.  Note that we expect the userData to apply to both!
 		request.getTargetingTracker().save(userData);
 		
 		// Commit the request.
 		((VariantStateRequestImpl)request).commit();
 		
+		// Save the session in session store.
+		sessionService.saveSession(request.getSession(), userData);
+
 	}
 	
 	@Override
@@ -437,4 +438,9 @@ public class VariantCoreImpl implements Variant {
 	public void finalize() {
 		eventWriter.shutdown();
 	}
+	
+	/**
+	 */
+	private static final long serialVersionUID = 1L;
+
 }

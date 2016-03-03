@@ -28,6 +28,12 @@ event.persister.class.init = {"url":"jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELA
 targeting.tracker.class.name = com.variant.core.ext.TargetingTrackerString
 targeting.tracker.idle.days.to.live = 0
 
-# Session store type
+# Session store. Uses in-memory hash table, but stores sessions not as live
+# objects, but as their JSON representations, which emulates the real-life
+# conditions better.
 session.store.class.name = com.variant.core.session.SessionStoreLocalMemory
 session.store.class.init = {}
+
+# Session ID tracker suitable for the above session store. 
+session.id.tracker.class.name = com.variant.core.session.SessionIdTrackerSimple
+session.id.tracker.class.init = {}

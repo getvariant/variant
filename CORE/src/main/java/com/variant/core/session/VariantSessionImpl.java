@@ -17,6 +17,7 @@ import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.VariantEventDecoratorImpl;
+import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantCoreImpl;
@@ -161,39 +162,44 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	 * @return
 	 * @throws JsonProcessingException 
 	 */
-	public String toJson() throws Exception {
-		StringWriter result = new StringWriter(2048);
-		JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
-		jsonGen.writeStartObject();
-		jsonGen.writeStringField(FIELD_NAME_ID, id);
-		jsonGen.writeStringField(FIELD_NAME_API_ID, coreApi.getId());
-		if (currentRequest != null) {
-			jsonGen.writeFieldName(FIELD_NAME_CURRENT_REQUEST);
-			jsonGen.writeRawValue(currentRequest.toJson());
-		}
-		if (traversedStates.size() > 0) {
-			jsonGen.writeArrayFieldStart(FIELD_NAME_TRAVERSED_STATES);
-			for (Map.Entry<State, Integer> e: traversedStates.entrySet()) {
-				jsonGen.writeStartObject();
-				jsonGen.writeStringField(FIELD_NAME_STATE, e.getKey().getName());
-				jsonGen.writeNumberField(FIELD_NAME_COUNT, e.getValue());
-				jsonGen.writeEndObject();
+	public String toJson() throws VariantException {
+		try {
+			StringWriter result = new StringWriter(2048);
+			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
+			jsonGen.writeStartObject();
+			jsonGen.writeStringField(FIELD_NAME_ID, id);
+			jsonGen.writeStringField(FIELD_NAME_API_ID, coreApi.getId());
+			if (currentRequest != null) {
+				jsonGen.writeFieldName(FIELD_NAME_CURRENT_REQUEST);
+				jsonGen.writeRawValue(currentRequest.toJson());
 			}
-			jsonGen.writeEndArray();
-		}
-		if (traversedTests.size() > 0) {
-			jsonGen.writeArrayFieldStart(FIELD_NAME_TRAVERSED_TESTS);
-			for (Map.Entry<Test, Boolean> e: traversedTests.entrySet()) {
-				jsonGen.writeStartObject();
-				jsonGen.writeStringField(FIELD_NAME_TEST, e.getKey().getName());
-				jsonGen.writeBooleanField(FIELD_NAME_QUALIFIED, e.getValue());
-				jsonGen.writeEndObject();
+			if (traversedStates.size() > 0) {
+				jsonGen.writeArrayFieldStart(FIELD_NAME_TRAVERSED_STATES);
+				for (Map.Entry<State, Integer> e: traversedStates.entrySet()) {
+					jsonGen.writeStartObject();
+					jsonGen.writeStringField(FIELD_NAME_STATE, e.getKey().getName());
+					jsonGen.writeNumberField(FIELD_NAME_COUNT, e.getValue());
+					jsonGen.writeEndObject();
+				}
+				jsonGen.writeEndArray();
 			}
-			jsonGen.writeEndArray();
-		}		
-		jsonGen.writeEndObject();
-		jsonGen.flush();
-		return result.toString();
+			if (traversedTests.size() > 0) {
+				jsonGen.writeArrayFieldStart(FIELD_NAME_TRAVERSED_TESTS);
+				for (Map.Entry<Test, Boolean> e: traversedTests.entrySet()) {
+					jsonGen.writeStartObject();
+					jsonGen.writeStringField(FIELD_NAME_TEST, e.getKey().getName());
+					jsonGen.writeBooleanField(FIELD_NAME_QUALIFIED, e.getValue());
+					jsonGen.writeEndObject();
+				}
+				jsonGen.writeEndArray();
+			}		
+			jsonGen.writeEndObject();
+			jsonGen.flush();
+			return result.toString();
+		}
+		catch (Exception e) {
+			throw new VariantInternalException("Unable to serialize session", e);
+		}
 	}
 
 	/**
@@ -289,6 +295,11 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 		catch(ClassCastException e) {
 			return false;
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return id.hashCode();
 	}
 
 }

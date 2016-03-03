@@ -2,8 +2,8 @@ package com.variant.core;
 
 import java.io.InputStream;
 
-import com.variant.core.hook.UserHook;
 import com.variant.core.hook.HookListener;
+import com.variant.core.hook.UserHook;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;

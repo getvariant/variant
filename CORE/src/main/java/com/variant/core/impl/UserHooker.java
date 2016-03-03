@@ -2,8 +2,8 @@ package com.variant.core.impl;
 
 import java.util.ArrayList;
 
-import com.variant.core.hook.UserHook;
 import com.variant.core.hook.HookListener;
+import com.variant.core.hook.UserHook;
 
 /**
  * User Hook processor

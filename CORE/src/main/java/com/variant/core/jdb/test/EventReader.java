@@ -13,7 +13,6 @@ import java.util.Map;
 import org.apache.commons.collections4.Predicate;
 
 import com.variant.core.Variant;
-import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.jdbc.JdbcAdapter;
 import com.variant.core.jdbc.JdbcService;
 
