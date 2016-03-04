@@ -6,14 +6,12 @@ import com.variant.core.InitializationParams;
 import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
-import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.session.VariantSessionImpl;
 import com.variant.web.http.HttpClient;
 import com.variant.web.http.HttpResponse;
-import com.variant.webnative.SessionIdTrackerHttpCookie;
 
 public class RemoteSessionStore implements VariantSessionStore {
 
@@ -21,18 +19,18 @@ public class RemoteSessionStore implements VariantSessionStore {
 	private Variant coreApi;
 
 	/**
-	 * We expect user data to be a single elem array and contain the session ID.
+	 * We don't care what's in userData as all we need is the session ID.
 	 */
 	@Override
-	public VariantSession get(Object... userData) {
-		if (userData == null || userData.length != 1 || !(userData[0] instanceof String)) {
-			throw new VariantInternalException("Expected a single-element String array");
+	public VariantSession get(String sessionId, Object... userData) {
+		if (sessionId == null || sessionId.length() == 0) {
+			throw new VariantInternalException("No session ID");
 		}
+		
 		HttpClient httpClient = new HttpClient();
 		HttpResponse resp = httpClient.get(apiEndpointUrl + "session/" + userData[0]);
 		return VariantSessionImpl.fromJson(coreApi, resp.getBody());
 	}
-
 
 	/**
 	 * We expect user data to be a single elem array and contain the session ID.
@@ -40,11 +38,6 @@ public class RemoteSessionStore implements VariantSessionStore {
 	@Override
 	public void save(VariantSession session, Object... userData) {
 		throw new UnsupportedOperationException();
-	}
-	
-	@Override
-	public VariantSessionIdTracker getSessionIdTracker() {
-		return new SessionIdTrackerHttpCookie();
 	}
 
 	@Override

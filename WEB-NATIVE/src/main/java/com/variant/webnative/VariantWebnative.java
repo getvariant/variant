@@ -137,8 +137,8 @@ public class VariantWebnative {
 	 * @since 0.5
 	 * @return
 	 */
-	public VariantSession getSession(HttpServletRequest httpRequest) {
-		return core.getSession(httpRequest);
+	public VariantSession getSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
+		return core.getSession(httpRequest, httpResponse);
 	}
 	
 	/**
@@ -149,9 +149,9 @@ public class VariantWebnative {
 	 *
 	 * @since 0.5
 	 */
-	public VariantStateRequest dispatchRequest(State state, HttpServletRequest httpRequest) {
+	public VariantStateRequest dispatchRequest(State state, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
 		
-		VariantStateRequest result = core.dispatchRequest(getSession(httpRequest), state, httpRequest);
+		VariantStateRequest result = core.dispatchRequest(getSession(httpRequest, httpResponse), state, httpRequest);
 		return new VariantWebStateRequestDecorator(result, httpRequest);
 	}
 	

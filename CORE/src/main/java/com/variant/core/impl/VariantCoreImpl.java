@@ -66,7 +66,7 @@ public class VariantCoreImpl implements Variant, Serializable {
 	private static String version() {
 		String version = RuntimeService.getVersion();
 		if (version == null) version = "?";
-		return "V. " + version + " , Copyright (C) 2015-16 getvariant.com";
+		return version + " , Copyright (C) 2015-16 getvariant.com";
 	}
 		
 	/**
@@ -190,7 +190,7 @@ public class VariantCoreImpl implements Variant, Serializable {
 		runtime = new VariantRuntime(this);
 		
 		LOG.info(
-				String.format("Core %s bootstrapped in %s",
+				String.format("Variant Core %s bootstrapped in %s",
 						version(),
 						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
 	}
