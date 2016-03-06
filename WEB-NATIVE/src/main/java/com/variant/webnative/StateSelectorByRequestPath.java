@@ -2,7 +2,6 @@ package com.variant.webnative;
 
 import java.util.regex.Pattern;
 
-import com.variant.core.Variant;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;

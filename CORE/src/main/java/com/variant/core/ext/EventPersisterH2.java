@@ -9,6 +9,7 @@ import com.variant.core.InitializationParams;
 import com.variant.core.VariantProperties;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.jdbc.EventPersisterJdbc;
+import com.variant.core.jdbc.JdbcService.Vendor;
 import com.variant.open.securestring.SecureString;
 
 public class EventPersisterH2 extends EventPersisterJdbc {
@@ -37,5 +38,9 @@ public class EventPersisterH2 extends EventPersisterJdbc {
 		return DriverManager.getConnection(url, user, new String(password.getValue()));
 	}
 
-
+	@Override
+	public Vendor getVendor() {
+		return Vendor.H2;
+	}
+	
 }

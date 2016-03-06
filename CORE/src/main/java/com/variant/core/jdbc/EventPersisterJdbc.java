@@ -13,6 +13,7 @@ import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEventDecorator;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test;
+import static com.variant.core.jdbc.JdbcService.Vendor;
 
 /**
  * JDBC persisters extend this class instead of implementing the EventPersister interface. 
@@ -34,12 +35,18 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	public abstract Connection getJdbcConnection() throws Exception;
 
 	/**
+	 * Implementations will know the vendor.
+	 * @return
+	 */
+	public abstract Vendor getVendor();
+	
+	/**
 	 * Persist a collection of events.
 	 */
 	@Override
 	final public void persist(final Collection<VariantEventDecorator> events) throws Exception {
-		
-				final String INSERT_EVENTS_SQL = 
+				
+		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
 			    "(id, session_id, created_on, event_name, event_value) " +
 				(getVendor() == Vendor.POSTGRES ?
@@ -144,31 +151,6 @@ abstract public class EventPersisterJdbc implements EventPersister {
 			}
 		);
 		
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public Vendor getVendor() {
-		// Figure out the JDBC vendor, if we can.
-		if (this instanceof com.variant.core.ext.EventPersisterPostgres) {
-			return Vendor.POSTGRES;
-		}
-		else if (this instanceof com.variant.core.ext.EventPersisterH2) {
-			return Vendor.H2;
-		}
-		else return null;
-	}
-	
-	/**
-	 * 
-	 * @author Igor
-	 *
-	 */
-	public static enum Vendor {
-		POSTGRES,
-		H2
 	}
 	
 	/**

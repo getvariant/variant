@@ -151,5 +151,6 @@ public interface Variant {
 		public static Variant getInstance(String...resourceNames) {
 			return new VariantCoreImpl(resourceNames);
 		}
+		
 	}
 }

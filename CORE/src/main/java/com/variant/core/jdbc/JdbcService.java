@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.Variant;
 import com.variant.core.impl.VariantCoreImpl;
-import com.variant.core.jdbc.EventPersisterJdbc.Vendor;
 import com.variant.core.util.VariantStringUtils;
 
 
@@ -71,27 +70,6 @@ public class JdbcService {
 		return (EventPersisterJdbc) coreApi.getEventWriter().getEventPersister();		
 	}
 	
-	private VariantCoreImpl coreApi = null;
-	
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
-
-	public JdbcService(Variant coreApi) {
-		this.coreApi = (VariantCoreImpl) coreApi;
-	}
-	
-	/**
-	 * This is how we get to the underlying jdbc connection via the EvetWriter facade.
-	 * 
-	 * @return
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
-	 */
-	public Connection getConnection() throws Exception {
-		return getEventPersister().getJdbcConnection();
-	}
-	
 	/**
 	 * Exception parser.
 	 * @param e
@@ -100,7 +78,7 @@ public class JdbcService {
 	 */
 	private void parseSQLException(SQLException e, String statement) throws SQLException {
 
-		EventPersisterJdbc.Vendor vendor = getEventPersister().getVendor();
+		Vendor vendor = getVendor();
 		
 		final String[] SQL_STATES_OBJECT_DOES_NOT_EXIST = 
 				vendor == Vendor.H2 ? new String[] {"42P01"} :
@@ -117,7 +95,53 @@ public class JdbcService {
 		}
 
 	}
+
+	private VariantCoreImpl coreApi = null;
 	
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 * 
+	 * @author Igor
+	 *
+	 */
+	public static enum Vendor {
+		POSTGRES,
+		H2
+	}
+
+	public JdbcService(Variant coreApi) {
+		this.coreApi = (VariantCoreImpl) coreApi;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public Vendor getVendor() {
+		// Figure out the JDBC vendor, if we can.
+		if (getEventPersister() instanceof com.variant.core.ext.EventPersisterPostgres) {
+			return Vendor.POSTGRES;
+		}
+		else if (getEventPersister() instanceof com.variant.core.ext.EventPersisterH2) {
+			return Vendor.H2;
+		}
+		else return null;
+	}
+	
+	/**
+	 * This is how we get to the underlying jdbc connection via the EvetWriter facade.
+	 * 
+	 * @return
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
+	public Connection getConnection() throws Exception {
+		return getEventPersister().getJdbcConnection();
+	}
+		
 	/**
 	 * Drop relational schema. Ignore the table does not exist errors.
 	 * 

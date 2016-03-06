@@ -9,7 +9,6 @@ import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.hook.HookListener;
-import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
@@ -38,11 +37,11 @@ public class VariantWebnative {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Expose JdbcService to tests.
+	 * Expose Core API to tests.
 	 * @return
 	 */
-	JdbcService getJdbcService() {
-		return new JdbcService(core);
+	Variant getCoreApi() {
+		return core;
 	}
 
 	//---------------------------------------------------------------------------------------------//
