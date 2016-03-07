@@ -1,44 +1,52 @@
 package com.variant.webnative.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.variant.core.VariantSession;
-import com.variant.core.session.VariantSessionImpl;
-
+import com.variant.core.VariantStateRequest;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.parser.ParserResponse;
 
 public class SessionTest extends BaseTest {
 
-	@Test
-	public void noSchemaTest() throws Exception {
+	/**
+	 * No session in cookie.
+	 * @throws Exception
+	 */
+	@org.junit.Test
+	public void basicTest() throws Exception {
 		
-		HttpServletRequest req = Mockito.mock(HttpServletRequest.class);
-		HttpServletResponse resp = Mockito.mock(HttpServletResponse.class);
+		ParserResponse response = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
 
-		VariantSession ssn = api.getSession(req, resp);
+		Schema schema = api.getSchema();
 		
-/*		
-		assertNotNull(ssn);
-		assertNull(ssn.getStateRequest());
-		assertEquals(0, ssn.getTraversedStates().size());
-		assertEquals(0, ssn.getTraversedTests().size());		
-		String json = ((VariantSessionImpl)ssn).toJson();
-		VariantSessionImpl deserializedSsn = VariantSessionImpl.fromJson(api, json);
-		assertEquals("foo", deserializedSsn.getId());
-		assertNull(deserializedSsn.getStateRequest());
-		assertEquals(0, deserializedSsn.getTraversedStates().size());
-		assertEquals(0, deserializedSsn.getTraversedTests().size());
-		Thread.sleep(10);
-		VariantSession ssn2 = api.getSession("foo");
-		assertTrue(ssn2.creationTimestamp() > ssn.creationTimestamp());
-*/	}
+		HttpServletRequest httpReq = mockHttpServletRequest();
+		HttpServletResponse httpResp = Mockito.mock(HttpServletResponse.class);
+
+		VariantSession ssn1 = api.getSession(httpReq, httpResp);
+		assertNotNull(ssn1);
+		assertNotNull(ssn1.getId());
+		assertNull(ssn1.getStateRequest());		
+		assertEquals(0, ssn1.getTraversedStates().size());
+		assertEquals(0, ssn1.getTraversedTests().size());
+		
+		State state1 = schema.getState("state1");
+		
+		VariantStateRequest varReq = api.dispatchRequest(ssn1, state1, httpReq);
+		
+		api.commitStateRequest(varReq, httpResp);
+	}
 
 }

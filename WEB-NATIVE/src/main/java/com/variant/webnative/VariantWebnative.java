@@ -128,9 +128,7 @@ public class VariantWebnative {
 	}
 
 	/**
-	 * <p>Get user's Variant session. Typical code path likely will not need to call this method
-	 * because the {@link #dispatchRequest(State, HttpServletRequest)} method will obtain
-	 * the session internally.
+	 * <p>Get user's Variant session.
 	 * 
 	 * @param httpRequest Current <code>HttpServletRequest</code>.
 	 * @since 0.5
@@ -148,10 +146,8 @@ public class VariantWebnative {
 	 *
 	 * @since 0.5
 	 */
-	public VariantStateRequest dispatchRequest(State state, HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-		
-		VariantStateRequest result = core.dispatchRequest(getSession(httpRequest, httpResponse), state, httpRequest);
-		return new VariantWebStateRequestDecorator(result, httpRequest);
+	public VariantStateRequest dispatchRequest(VariantSession session, State state, HttpServletRequest httpRequest) {		
+		return new VariantWebStateRequestDecorator(core.dispatchRequest(session, state, httpRequest), httpRequest);
 	}
 	
 	/**

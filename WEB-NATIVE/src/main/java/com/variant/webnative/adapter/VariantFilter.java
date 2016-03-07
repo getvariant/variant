@@ -16,6 +16,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
@@ -105,6 +106,7 @@ public class VariantFilter implements Filter {
 		
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
+		VariantSession variantSsn = null; 
 		VariantStateRequest variantRequest = null;
 		
 		long start = System.currentTimeMillis();
@@ -129,7 +131,8 @@ public class VariantFilter implements Filter {
 			else {
 			
 				// Yes, this path is mapped in Variant.
-				variantRequest = webApi.dispatchRequest(state, httpRequest, httpResponse);
+				variantSsn = webApi.getSession(httpRequest, httpResponse);
+				variantRequest = webApi.dispatchRequest(variantSsn, state, httpRequest);
 				resolvedPath = variantRequest.getResolvedParameterMap().get("path");
 				isForwarding = !resolvedPath.equals(state.getParameterMap().get("path"));
 				
