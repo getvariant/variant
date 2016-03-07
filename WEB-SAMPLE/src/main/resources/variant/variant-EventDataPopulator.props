@@ -8,7 +8,7 @@
 targeting.tracker.class.name = com.variant.core.ext.TargetingTrackerString
 
 # Session store type
-session.store.class.name = com.variant.core.session.SessionStoreLocalMemory
+session.store.class.name = com.variant.core.ext.SessionStoreLocalMemory
 
 #
 event.writer.buffer.size = 5000
@@ -17,7 +17,4 @@ event.writer.max.delay.millis = 5000
 
 # Postgres Event Persister
 event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
-event.persister.jdbc.vendor = postgres
-event.persister.jdbc.url = jdbc:postgresql://localhost/variant
-event.persister.jdbc.user = variant
-event.persister.jdbc.password = variant
+event.persister.class.init = {"url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}

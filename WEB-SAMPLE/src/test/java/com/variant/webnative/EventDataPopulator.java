@@ -5,16 +5,15 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Random;
 
-import org.junit.Test;
-
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.webnative.VariantWebnative;
 
 public class EventDataPopulator {
 
@@ -22,15 +21,15 @@ public class EventDataPopulator {
 	private static final Random rand = new Random();
 
 	
-	@Test
+	@org.junit.Test
 	public void populate() throws Exception {
 
-		VariantWebnative webApi = new VariantWebnative("/variant/variant-EventDataPopulator.props");
+		Variant coreApi = Variant.Factory.getInstance("/variant/variant-EventDataPopulator.props");
 
-		// For this to work, we need to be in the right package.
-		webApi.getJdbcService().recreateSchema();
+		// For getCoreApi() to work, we need to be in the right package.
+		new JdbcService(coreApi).recreateSchema();
 
-		ParserResponse response = webApi.parseSchema(EventDataPopulator.class.getResourceAsStream("/variant/schema.json"));
+		ParserResponse response = coreApi.parseSchema(EventDataPopulator.class.getResourceAsStream("/variant/schema.json"));
 		if (response.hasMessages()) {
 			for (ParserMessage msg: response.getMessages()) {
 				System.out.println(msg);
@@ -38,8 +37,8 @@ public class EventDataPopulator {
 		}
 		assertFalse(response.hasMessages());
 
-		Schema schema = webApi.getSchema();
-		com.variant.core.schema.Test test = schema.getTest("NewOwnerTest");
+		Schema schema = coreApi.getSchema();
+		Test test = schema.getTest("NewOwnerTest");
 		assertNotNull(test);
 		State newOwnerView = schema.getState("newOwner");
 		assertNotNull(newOwnerView);
@@ -62,11 +61,11 @@ public class EventDataPopulator {
 						5 + new Random(thisSecond % 7 + test.getExperiences().get(2).hashCode()).nextInt(10) + new Random(test.getExperiences().get(2).hashCode()).nextInt(10)};
 			}
 			//System.out.println(countsPerSecond[0] + "," + countsPerSecond[1] + "," + countsPerSecond[2]);
-			VariantSession ssn = Variant.Factory.getInstance().getSession(String.valueOf(ssnId));
+			VariantSession ssn = coreApi.getSession(String.valueOf(ssnId));
 			
 			// Everyone gets to the first page... Emulating new visits.
-			VariantStateRequest request = Variant.Factory.getInstance().dispatchRequest(ssn, newOwnerView, "");
-			com.variant.core.schema.Test.Experience exp = request.getTargetedExperience(test);
+			VariantStateRequest request = coreApi.dispatchRequest(ssn, newOwnerView, "");
+			Test.Experience exp = request.getTargetedExperience(test);
 			
 			// If we've fulfilled quota for this experience and this second, stop untilt he end of current second;
 			if (exp.getName().equals("outOfTheBox")      && --countsPerSecond[0] <= 0 ||
@@ -77,7 +76,7 @@ public class EventDataPopulator {
 			
 			i++;
 			
-			Variant.Factory.getInstance().commitStateRequest(request, String.valueOf(ssnId));
+			coreApi.commitStateRequest(request, String.valueOf(ssnId));
 			
 			// Some experiences don't get to the next page, simulating drop-off.
 			boolean skip = false;
@@ -86,8 +85,8 @@ public class EventDataPopulator {
 			else if (exp.getName().equals("tos&mailCheckbox")) skip = nextBoolean(0.93);
 			
 			if (!skip) {
-				request = Variant.Factory.getInstance().dispatchRequest(ssn, ownerDetailView, request.getTargetingTracker().toString());
-				Variant.Factory.getInstance().commitStateRequest(request, String.valueOf(ssnId));
+				request = coreApi.dispatchRequest(ssn, ownerDetailView, request.getTargetingTracker().toString());
+				coreApi.commitStateRequest(request, String.valueOf(ssnId));
 			}
 
 			ssnId++;
