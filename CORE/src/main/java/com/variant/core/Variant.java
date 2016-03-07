@@ -96,7 +96,7 @@ public interface Variant {
 	 *                 to the implementations of {@link com.variant.core.VariantSessionIdTracker#get(Object...)}
 	 *                 and {@link com.variant.core.VariantSessionStore#get(Object...)}.
 	 * @since 0.5
-	 * @return
+	 * @return An instance of {@link VariantSession}.
 	 */
 	public VariantSession getSession(Object...userData);
 	

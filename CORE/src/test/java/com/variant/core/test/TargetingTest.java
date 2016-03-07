@@ -33,10 +33,10 @@ public class TargetingTest extends BaseTest {
 	 * @throws Exception
 	 */
 	@BeforeClass
-	public static void beforeTestCase() throws Exception {
+	public static void before() throws Exception {
 		System.setProperty(VariantProperties.Key.EVENT_PERSISTER_CLASS_NAME.propName(), EventPersisterNull.class.getName());
 		System.setProperty(VariantProperties.Key.SESSION_STORE_CLASS_NAME.propName(), SessionStoreNull.class.getName());
-		rebootApi();
+		//rebootApi();  We do this in @Before of the base class anyway.
 	}
 	
 	/**

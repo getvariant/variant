@@ -8,32 +8,29 @@ import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.Schema;
 
 /**
- * Common utility methods for all JUnit tests.
+ * Base class for all Core JUnit tests.
  */
-
 public class BaseTest extends BaseTestCommon {
 	
-	protected static VariantCoreImpl api = null;
-	protected static JdbcService jdbc = null;
+	protected VariantCoreImpl api = null;
 	
-	private static Boolean beforeTestCaseRan = false;
+	private static Boolean sqlSchemaCreated = false;
 	
 	/**
-	 * This should really be a @BeforeClass, but we can't do that
-	 * because it would have to be static and we wouldn't be able to invoke
-	 * instance methods we inherited from BaseTestCommon. Hence we
-	 * make sure it only runs once.
+	 * Each case runs in its own JVM. Each test runs in its
+	 * own instance of the test case. We want the jdbc schema
+	 * created only once per jvm, but the api be instance scoped.
 	 * 
 	 * @throws Exception
 	 */
 	@Before
 	public void _beforeTestCase() throws Exception {
-		synchronized (beforeTestCaseRan) {
-		if (!beforeTestCaseRan) {
-			rebootApi();
-			recreateSchema();
-			beforeTestCaseRan = true;
-		}
+		rebootApi(); // in each instance 
+		synchronized (sqlSchemaCreated) { // once per JVM
+			if (!sqlSchemaCreated) {
+				recreateSchema();
+				sqlSchemaCreated = true;
+			}
 		}
 	}
 	
@@ -41,20 +38,17 @@ public class BaseTest extends BaseTestCommon {
 	 * @throws Exception 
 	 * 
 	 */
-	protected static void rebootApi() throws Exception {
+	protected void rebootApi() throws Exception {
 		api = (VariantCoreImpl) Variant.Factory.getInstance("/variant-test.props");
-		jdbc = new JdbcService(api);
 	}
 
 	@Override
 	protected JdbcService getJdbcService() {
-		return jdbc;
+		return new JdbcService(api);
 	}
 
 	@Override
 	protected Schema getSchema() {
 		return api.getSchema();
 	}
-
-
 }

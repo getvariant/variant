@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
@@ -18,20 +19,23 @@ public class SessionTest extends BaseTest {
 	 */
 	@Test
 	public void noSchemaTest() throws Exception {
+		assertNull(api.getSchema());
+		long now = System.currentTimeMillis();
 		VariantSession ssn = api.getSession("foo");
+		assertEquals(now, ssn.creationTimestamp(), 2);
 		assertNotNull(ssn);
 		assertNull(ssn.getStateRequest());
 		assertEquals(0, ssn.getTraversedStates().size());
-		assertEquals(0, ssn.getTraversedTests().size());		
-		String json = ((VariantSessionImpl)ssn).toJson();
-		VariantSessionImpl deserializedSsn = VariantSessionImpl.fromJson(api, json);
-		assertEquals("foo", deserializedSsn.getId());
-		assertNull(deserializedSsn.getStateRequest());
-		assertEquals(0, deserializedSsn.getTraversedStates().size());
-		assertEquals(0, deserializedSsn.getTraversedTests().size());
-		Thread.sleep(10);
-		VariantSession ssn2 = api.getSession("foo");
-		assertTrue(ssn2.creationTimestamp() > ssn.creationTimestamp());
+		assertEquals(0, ssn.getTraversedTests().size());
+		boolean thrown = false;
+		try {
+			((VariantSessionImpl)ssn).toJson();
+		}
+		catch (VariantInternalException e) {
+			assertEquals("Unable to serialize session", e.getMessage());
+			thrown = true;
+		}
+		assertTrue(thrown);
 	}
 
 	/**
@@ -45,14 +49,24 @@ public class SessionTest extends BaseTest {
 		assertFalse(response.hasMessages());
 
 		VariantSession ssn = api.getSession("key");
-		assertNotNull(ssn);
+		assertEquals("key", ssn.getId());
 		assertNull(ssn.getStateRequest());
+		assertEquals(0, ssn.getTraversedStates().size());
+		assertEquals(0, ssn.getTraversedTests().size());
 		String json = ((VariantSessionImpl)ssn).toJson();
 		VariantSessionImpl deserializedSsn = VariantSessionImpl.fromJson(api, json);
 		assertEquals("key", deserializedSsn.getId());
 		assertNull(deserializedSsn.getStateRequest());
 		assertEquals(0, deserializedSsn.getTraversedStates().size());
 		assertEquals(0, deserializedSsn.getTraversedTests().size());
+		
+		// Test for idempotency. ssn2 is a different object from ssn,
+		// but should have all props the same, except the creation timestamp.
+		VariantSession ssn2 = api.getSession("key");
+		assertEquals("key", ssn2.getId());
+		assertNull(ssn2.getStateRequest());
+		assertEquals(0, ssn2.getTraversedStates().size());
+		assertEquals(0, ssn2.getTraversedTests().size());
 				
 		VariantSession ssn3 = api.getSession("another-key");
 		assertNotEquals (ssn, ssn3);
@@ -66,7 +80,7 @@ public class SessionTest extends BaseTest {
 		assertEquals(0, deserializedSsn.getTraversedTests().size());
 
 	}
-		
+
 	@Test
 	public void  stateRequestTest() throws Exception {
 				
