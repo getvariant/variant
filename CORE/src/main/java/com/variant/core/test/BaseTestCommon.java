@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import com.variant.core.config.PropertiesChain;
@@ -59,13 +58,9 @@ abstract public class BaseTestCommon {
 	 */
 	protected void printMessages(ParserResponse response) {
 		if (response.hasMessages()) {
-			response.getMessages().forEach(
-					new Consumer<ParserMessage>() {
-						public void accept(ParserMessage pe) {
-							System.out.println(pe);
-						}
-					}
-			);
+			for (ParserMessage msg: response.getMessages()) {
+				System.out.println(msg);
+			}
 		}
 	}
 	
