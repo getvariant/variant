@@ -18,7 +18,7 @@ import com.variant.core.util.VariantStringUtils;
  */
 public class SchemaImpl implements Schema {
 
-	private final String ID = VariantStringUtils.random128BitString(new Random(System.currentTimeMillis()));
+	private final String ID = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
 	
 	// Views are keyed by name
 	private LinkedHashSet<State> states = new LinkedHashSet<State>();

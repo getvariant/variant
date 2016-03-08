@@ -86,7 +86,7 @@ public class VariantCoreImpl implements Variant, Serializable {
 				properties.override(VariantIoUtils.openResourceAsStream(name));
 			}
 			catch (Exception e) {
-				throw new RuntimeException("Unable to read resurce [" + name + "]");
+				throw new RuntimeException("Unable to read resurce [" + name + "]", e);
 			}
 		}
 		

@@ -4,6 +4,7 @@ import net.liftweb.http.LiftRules
 import com.variant.ws.server.dispatch.Dispatcher
 import net.liftweb.http.Bootable
 import com.variant.core.Variant
+import com.variant.ws.server.core.VariantCore
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -18,5 +19,7 @@ class LiftBoot extends Bootable {
       
       // API Dispatcher
       LiftRules.statelessDispatch.append(Dispatcher)
+      
+      VariantCore.init()
   }
 }

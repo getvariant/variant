@@ -58,8 +58,8 @@ public class VariantWebnative {
 	public VariantWebnative(String...resourceNames) {
 		this.core = Variant.Factory.getInstance(
 				VariantArrayUtils.concat(
-						resourceNames, 
-						"/variant-webnative." + VariantStringUtils.RESOURCE_POSTFIX + ".props", 
+						"/variant-webnative." + VariantStringUtils.RESOURCE_POSTFIX + ".props",
+						resourceNames,
 						String.class));
 	}
 		

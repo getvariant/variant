@@ -14,8 +14,8 @@ import org.scalatest.BeforeAndAfterAll
 import com.variant.ws.server.core.VariantCore
 import net.liftweb.http.testing.TestKit
 import net.liftweb.http.testing.ReportFailure
-import com.variant.core.jdbc.JdbcUtil
 import com.variant.core.Variant
+import com.variant.core.jdbc.JdbcService
 
 
 /**
@@ -25,7 +25,6 @@ object UnitSpec {
    
    // Use statc count to deal with SBT's parallel execution of tests.
    var upCount = 0;
-   val api = Variant.Factory.getInstance();   
 }
 
 /**
@@ -36,6 +35,9 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
    
    import UnitSpec._
    
+   lazy val baseUrl = JettyTestServer.baseUrl
+   lazy val api = VariantCore.api
+
    /**
     * 
     */
@@ -74,14 +76,12 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
 
    private def jvmSetup = {
       startJetty
-  		if (api.isBootstrapped) api.shutdown  // shutdown api if already booted
-		api.bootstrap("/variant-test.props")  // bootstrap api with test params
-      JdbcUtil.createSchema                 // Fresh in-memory DB.
+      VariantCore.init("/variant-test.props")
+      new JdbcService(VariantCore.api).createSchema
    }
 
    private def jvmShutdown = {
-      stopJetty
-      api.shutdown      
+      stopJetty  
    }
    
    /**
@@ -95,7 +95,7 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
       result
    }
 }
-  
+ 
    
 object JettyTestServer {
    

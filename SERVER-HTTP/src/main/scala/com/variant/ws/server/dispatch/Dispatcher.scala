@@ -2,12 +2,9 @@ package com.variant.ws.server.dispatch
 
 import java.io.OutputStream
 import java.util.Date
-
 import com.variant.core.session.VariantSessionImpl
-import com.variant.server.RemoteEvent
-import com.variant.ws.server.SessionCache;
+import com.variant.ws.server.SessionCache
 import com.variant.ws.server.config.UserError
-
 import net.liftweb.common.Box
 import net.liftweb.common.EmptyBox
 import net.liftweb.common.Full
@@ -25,6 +22,8 @@ import net.liftweb.common.Empty
 import net.liftweb.http.OkResponse
 import net.liftweb.http.OkResponse
 import net.liftweb.http.OkResponse
+import com.variant.ws.server.core.VariantCore
+import com.variant.ws.server.RemoteEvent
 
 /**
  * @author Igor
@@ -50,7 +49,7 @@ object Dispatcher extends RestHelper {
 
       var result = SessionCache.get(id)
       // If new or expired, recreate with nothing but session id
-      if (result == null) result = SessionCache.put(id, new VariantSessionImpl(id).toJson())
+      if (result == null) result = SessionCache.put(id, new VariantSessionImpl(VariantCore.api, id).toJson())
       OutputStreamResponse(out => {out.write(result.getJson)})
    }
 

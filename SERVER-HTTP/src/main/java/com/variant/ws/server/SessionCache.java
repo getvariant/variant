@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.variant.core.VariantSession;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.session.VariantSessionImpl;
+import com.variant.ws.server.core.VariantCore;
 
 /**
  * Sessions are stored serialized as JSON strings because most of the time
@@ -88,7 +89,7 @@ public class SessionCache {
 		 */
 		public VariantSession getSession() {
 			if (session == null && json != null) {
-				session = VariantSessionImpl.fromJson(new String(json));
+				session = VariantSessionImpl.fromJson(VariantCore.api(), new String(json));
 			}
 			return session;
 		}

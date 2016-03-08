@@ -3,15 +3,17 @@ package com.variant.ws.server.core
 //import scala.collection.JavaConverters.mapAsScalaMapConverter
 import com.variant.core.config.PropertiesChain
 import com.variant.core.Variant
+import scala.io.Source
 
 object VariantCore {
   
-   private val randomSuffix = "93449EFFB4B5BA0"
+   var api: Variant = null
    
-   val api = Variant.Factory.getInstance();
-   
-   //api.bootstrap("/variant-server-" + randomSuffix + ".props");
-   api.bootstrap();
-   
+   /**
+    * External configuration passes the name of the resource properties file here.
+    */
+   def init(configNamesAsResources: String*) : Unit = {
+      api = Variant.Factory.getInstance("/variant-server.props" +: configNamesAsResources:_*)
+   }
    
 }

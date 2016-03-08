@@ -57,11 +57,8 @@ abstract public class BaseTestCommon {
 	 * @param response
 	 */
 	protected void printMessages(ParserResponse response) {
-		if (response.hasMessages()) {
-			for (ParserMessage msg: response.getMessages()) {
-				System.out.println(msg);
-			}
-		}
+		if (response.hasMessages()) 
+			for (ParserMessage msg: response.getMessages()) System.out.println(msg);
 	}
 	
 	/**
