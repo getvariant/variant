@@ -1,8 +1,10 @@
 package com.variant.core.config;
 
 import java.util.ArrayList;
-import java.util.ListIterator;
+import java.util.Iterator;
 import java.util.Properties;
+
+import com.variant.core.util.Tuples.Pair;
 
 /**
  * 
@@ -11,7 +13,8 @@ import java.util.Properties;
  */
 public class PropertiesChain  {
 	
-	private ArrayList<Properties> propsChain = new ArrayList<Properties>();
+	private ArrayList<Properties> propsList = new ArrayList<Properties>();
+	private ArrayList<String> sourceList = new ArrayList<String>();
 	
 	/**
 	 * Expand ${...} variables.
@@ -74,30 +77,36 @@ public class PropertiesChain  {
 	public PropertiesChain() { }
 	
 	/**
-	 * Add a new properties object by reading it from class path resource.
+	 * Add a new properties object by reading it from class path resource, to the head of the queue.
+	 * Its contents override the rest of the chain.
 	 * @param fileName
 	 * @return
 	 */
-	public void add(Properties props) {
-		propsChain.add(props);
+	public void overrideWith(Properties props, String source) {
+		propsList.add(0, props);
+		sourceList.add(0, source);
 	}
 	
 	/**
 	 * Find the first occurrence of key, walking props chain from most recent backwards.
 	 * @param key
-	 * @return
+	 * @return A pair: string value and its source
 	 */
-	public String getProperty(String key) {
+	public Pair<String, String> getProperty(String key) {
 
-		if (propsChain.size() == 0) throw new IllegalStateException("Empty properties chain.");
+		if (propsList.size() == 0) throw new IllegalStateException("Empty properties chain.");
 
-		String result = null;
-		ListIterator<Properties> iter = propsChain.listIterator(propsChain.size());
-		while (iter.hasPrevious()) {
-			if ((result = iter.previous().getProperty(key)) != null) break;
+		Iterator<Properties> propsIter = propsList.iterator();
+		Iterator<String> sourceIter = sourceList.iterator();
+		while (propsIter.hasNext()) {
+			String value = propsIter.next().getProperty(key);
+			String source = sourceIter.next();
+			if (value != null) {
+				return new Pair<String, String>(expandVariables(value), source);
+			}
 		}
 		
-		return expandVariables(result);
+		return null;
 	}
 
 }

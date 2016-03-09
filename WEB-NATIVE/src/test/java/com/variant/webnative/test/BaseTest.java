@@ -19,11 +19,11 @@ import com.variant.webnative.VariantWebnativeTestFacade;
 /**
  * Base class for all Core JUnit tests.
  */
-public class BaseTest extends BaseTestCommon {
-	
-	protected VariantWebnative api = null;
+public abstract class BaseTest extends BaseTestCommon {
 	
 	private static Boolean sqlSchemaCreated = false;
+
+	protected VariantWebnative api = null;
 	
 	/**
 	 * Each case runs in its own JVM. Each test runs in its
@@ -34,8 +34,8 @@ public class BaseTest extends BaseTestCommon {
 	 */
 	@Before
 	public void _beforeTestCase() throws Exception {
-		rebootApi(); // in each instance 
-		synchronized (sqlSchemaCreated) { // once per JVM
+		api = rebootApi();                 // in each instance 
+		synchronized (sqlSchemaCreated) {  // once per JVM
 			if (!sqlSchemaCreated) {
 				recreateSchema();
 				sqlSchemaCreated = true;
@@ -44,11 +44,10 @@ public class BaseTest extends BaseTestCommon {
 	}
 	
 	/**
-	 * @throws Exception 
-	 * 
+	 * Subclasses will be able to override this
 	 */
-	protected void rebootApi() throws Exception {
-		api = new VariantWebnative("/variant-test.props");
+	protected VariantWebnative rebootApi() {
+		return new VariantWebnative("/variant-test.props");
 	}
 
 	@Override

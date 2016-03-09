@@ -80,10 +80,10 @@ public class VariantCoreImpl implements Variant, Serializable {
 		properties = new VariantPropertiesImpl(this);
 
 		// Override system props in left-to-right scan.
-		for (int i = resourceNames.length - 1; i >= 0; i--) {
+		for (int i = 0; i < resourceNames.length; i++) {
 			String name = resourceNames[i];
 			try {
-				properties.override(VariantIoUtils.openResourceAsStream(name));
+				properties.overrideWith(VariantIoUtils.openResourceAsStream(name), name);
 			}
 			catch (Exception e) {
 				throw new RuntimeException("Unable to read resurce [" + name + "]", e);
@@ -92,12 +92,12 @@ public class VariantCoreImpl implements Variant, Serializable {
 		
 		// Override with /variant.props if supplied on classpath.
 		try {
-			properties.override(VariantIoUtils.openResourceAsStream("/variant.props"));
+			properties.overrideWith(VariantIoUtils.openResourceAsStream("/variant.props"), "/variant.props");
 			if (LOG.isDebugEnabled()) {
 				LOG.debug("Processed application properties resource file [/variant.props]]");
 			}
 		}
-		catch (Exception e) {}  // Not an error if wasn't found.
+		catch (Exception e) {} // Not an error if wasn't found.
 
 		String runTimePropsResourceName = System.getProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME);
 		String runTimePropsFileName = System.getProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME);
@@ -108,7 +108,9 @@ public class VariantCoreImpl implements Variant, Serializable {
 		
 		if (runTimePropsResourceName != null) {
 			try {
-				properties.override(VariantIoUtils.openResourceAsStream(runTimePropsResourceName));
+				properties.overrideWith(
+						VariantIoUtils.openResourceAsStream(runTimePropsResourceName), 
+						"-D" + VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME + "=" + runTimePropsResourceName);
 			}
 			catch (Exception e) {
 				throw new VariantRuntimeException(BOOT_CONFIG_RESOURCE_NOT_FOUND, e, runTimePropsResourceName);
@@ -116,7 +118,9 @@ public class VariantCoreImpl implements Variant, Serializable {
 		}
 		else if (runTimePropsFileName != null) {
 			try {
-				properties.override(VariantIoUtils.openFileAsStream(runTimePropsFileName));
+				properties.overrideWith(
+						VariantIoUtils.openFileAsStream(runTimePropsFileName),
+						 "-D" + VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME + "=" + runTimePropsFileName);
 			}
 			catch (Exception e) {
 				throw new VariantRuntimeException(BOOT_CONFIG_FILE_NOT_FOUND, e, runTimePropsFileName);
@@ -146,10 +150,11 @@ public class VariantCoreImpl implements Variant, Serializable {
 		setupSystemProperties(resourceNames);
 		
 		if (LOG.isTraceEnabled()) {
-			LOG.trace("Bootstrapping Variant with following system properties:");
+			LOG.trace("+-- Bootstrapping Variant with following application properties: --");
 			for (VariantPropertiesImpl.Key key: VariantPropertiesImpl.Key.values()) {
-				LOG.debug("  " + key.propName() + " = " + properties.get(key, String.class));
+				LOG.trace("| " + key.propName() + " = " + properties.get(key, String.class) + " <- " + properties.getSource(key));
 			}
+			LOG.trace("+------------- Fingers crossed, this is not PRODUCTION -------------");
 		}
 		
 		//

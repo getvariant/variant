@@ -138,7 +138,7 @@ public interface Variant {
 		 * method.
 		 * 
 		 * <p>When, at runtime, the container looks for the value of a particular property key, 
-		 * these files are scanned left to right and the last value found takes precedence. 
+		 * these files are scanned left to right and the first value found is returned. 
 		 * If a value wasn't found in any of the supplied files, or if no files were supplied, 
 		 * the default value is used, as defiled in the <code>/variant-default.props</code> file 
 		 * found inside the <code>variant-core-&lt;version&gt;.jar</code> file.

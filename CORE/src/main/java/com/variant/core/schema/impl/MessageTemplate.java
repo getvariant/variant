@@ -106,7 +106,7 @@ public enum MessageTemplate {
 	//------------------------------------------------------------------------------------------------------------------------//
 	
 	RUN_PROPERTY_BAD_CLASS                                (Severity.ERROR, "Don't know how to convert to class [%s]"),
-	RUN_PROPERTY_NOT_SET                                  (Severity.ERROR, "Application property [%s] must be set"),
+	RUN_PROPERTY_NOT_SET                                  (Severity.ERROR, "Application property [%s] is not set"),
 	RUN_PROPERTY_INIT_INVALID_JSON                        (Severity.ERROR, "Invalid JSON [%s] in application property [%s]"),
 	RUN_PROPERTY_INIT_PROPERTY_NOT_SET                    (Severity.ERROR, "Init property [%s] is required by class [%s] but is missing in application property [%s]"),
 	RUN_STATE_NOT_INSTRUMENTED_FOR_TEST                   (Severity.ERROR, "State [%s] is not instrumented for test [%s]"), 

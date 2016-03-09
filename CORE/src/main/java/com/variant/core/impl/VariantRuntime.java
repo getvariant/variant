@@ -248,8 +248,8 @@ public class VariantRuntime {
 			if (!e.getTest().isOn()) {
 				Experience ce = e.getTest().getControlExperience();
 				vector.add(ce);
-				if (LOG.isDebugEnabled()) {
-					LOG.debug(
+				if (LOG.isTraceEnabled()) {
+					LOG.trace(
 							"Session [" + session.getId() + "] recognized persisted experience [" + e +"]" +
 							" but substituted control experience [" + ce + "] because test is OFF");
 				}													
@@ -257,16 +257,16 @@ public class VariantRuntime {
 			else if (session.isDisqualified(e.getTest())) {
 				Experience ce = e.getTest().getControlExperience();
 				vector.add(ce);
-				if (LOG.isDebugEnabled()) {
-					LOG.debug(
+				if (LOG.isTraceEnabled()) {
+					LOG.trace(
 							"Session [" + session.getId() + "] recognized persisted experience [" + e +"]" +
 							" but substituted control experience [" + ce + "] because test is disqualified");
 				}													
 			}
 			else {
 				vector.add(e);
-				if (LOG.isDebugEnabled()) {
-					LOG.debug(
+				if (LOG.isTraceEnabled()) {
+					LOG.trace(
 							"Session [" + session.getId() + "] honored persisted experience [" + e + "]");
 				}									
 			}
@@ -280,8 +280,8 @@ public class VariantRuntime {
 				if (!test.isOn()) {
 					Experience e = test.getControlExperience();
 					vector.add(e);
-					if (LOG.isDebugEnabled()) {
-						LOG.debug(
+					if (LOG.isTraceEnabled()) {
+						LOG.trace(
 								"Session [" + session.getId() + "] temporarily targeted for OFF test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}
@@ -289,8 +289,8 @@ public class VariantRuntime {
 				else if (session.isDisqualified(test)) {
 					Experience e = test.getControlExperience();
 					vector.add(e);
-					if (LOG.isDebugEnabled()) {
-						LOG.debug(
+					if (LOG.isTraceEnabled()) {
+						LOG.trace(
 								"Session [" + session.getId() + "] temporarily targeted for disqualified test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}										
@@ -307,8 +307,8 @@ public class VariantRuntime {
 										
 					vector.add(targetedExperience);
 					tt.add(targetedExperience, System.currentTimeMillis());
-					if (LOG.isDebugEnabled()) {
-						LOG.debug(
+					if (LOG.isTraceEnabled()) {
+						LOG.trace(
 								"Session [" + session.getId() + "] targeted for test [" + 
 								test.getName() +"] with experience [" + targetedExperience.getName() + "]");
 					}
@@ -318,8 +318,8 @@ public class VariantRuntime {
 					Experience e = test.getControlExperience();
 					vector.add(e);
 					tt.add(e, System.currentTimeMillis());
-					if (LOG.isDebugEnabled()) {
-						LOG.debug(
+					if (LOG.isTraceEnabled()) {
+						LOG.trace(
 								"Session [" + session.getId() + "] targeted for untargetable test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}

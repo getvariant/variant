@@ -1,6 +1,7 @@
 package com.variant.core.impl;
 
 import com.variant.core.VariantProperties;
+import com.variant.core.util.Tuples.Pair;
 
 public class VariantPropertiesTestFacade {
 
@@ -10,7 +11,7 @@ public class VariantPropertiesTestFacade {
 		this.props = (VariantPropertiesImpl) props;
 	}
 	
-	public String getString(String key) {
+	public Pair<String, String> getString(String key) {
 		return props.getString(key);
 	}
 }

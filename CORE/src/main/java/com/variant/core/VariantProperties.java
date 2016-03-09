@@ -1,6 +1,7 @@
 package com.variant.core;
 
 
+
 /**
  * <p>Variant applicaiton properties.
  * 
@@ -59,4 +60,11 @@ public interface VariantProperties {
 	 */
 	public <T> T get(Key key, Class<T> clazz);
 	
+	/**
+	 * The source of where the value came from, such as the name of the application properties resurce file.
+	 *  
+	 * @param key
+	 * @return
+	 */
+	public String getSource(Key key);
 }

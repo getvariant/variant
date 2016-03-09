@@ -19,6 +19,7 @@ import com.variant.core.VariantProperties;
 import com.variant.core.config.PropertiesChain;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.impl.MessageTemplate;
+import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantIoUtils;
 
 /**
@@ -31,7 +32,7 @@ import com.variant.core.util.VariantIoUtils;
  */
 public class VariantPropertiesImpl implements VariantProperties {
 
-	public static final String RUNTIME_PROPS_RESOURCE_NAME = "varaint.props.resource";
+	public static final String RUNTIME_PROPS_RESOURCE_NAME = "variant.props.resource";
 	public static final String RUNTIME_PROPS_FILE_NAME = "varaint.props.file";
 	
 	private PropertiesChain propsChain = new PropertiesChain();
@@ -43,7 +44,7 @@ public class VariantPropertiesImpl implements VariantProperties {
 	VariantPropertiesImpl(VariantCoreImpl coreApi) {
 		this.coreApi = coreApi;
 		propsChain = new PropertiesChain();
-		override(VariantIoUtils.openResourceAsStream("/variant-defaults.props"));		
+		overrideWith(VariantIoUtils.openResourceAsStream("/variant-defaults.props"), "/variant-defaults.props");		
 	}
 
 	/**
@@ -52,7 +53,7 @@ public class VariantPropertiesImpl implements VariantProperties {
 	 * @return
 	 */
 	private Integer getInteger(String key) {
-		return Integer.parseInt(getString(key));
+		return Integer.parseInt(getString(key).arg1());
 	}
 
 	/**
@@ -70,11 +71,16 @@ public class VariantPropertiesImpl implements VariantProperties {
 	 * @param name
 	 * @return
 	 */
-	String getString(String key) {		
-		String result = System.getProperty(key);
-		if (result == null) result = propsChain.getProperty(key);
-		if (result == null) throw new VariantRuntimeException(RUN_PROPERTY_NOT_SET, key);
-		return result;
+	Pair<String, String> getString(String key) {		
+		String value = System.getProperty(key);
+		if (value == null) {
+			Pair<String, String> result = propsChain.getProperty(key);
+			if (result == null) throw new VariantRuntimeException(RUN_PROPERTY_NOT_SET, key);
+			else return result;
+		}
+		else {
+			return new Pair<String, String>(value, "JVM Property");
+		}
 	}
 
 	/**
@@ -88,7 +94,7 @@ public class VariantPropertiesImpl implements VariantProperties {
 	 */
 	@SuppressWarnings("unchecked")
 	Map<String, String> getMap(String key) {
-		String raw = getString(key);
+		String raw = getString(key).arg1();
 		try {
 			ObjectMapper jacksonDataMapper = new ObjectMapper();
 			jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
@@ -107,22 +113,25 @@ public class VariantPropertiesImpl implements VariantProperties {
 	 * Override with properties sourced from an InputStream.
 	 * @param resourceName
 	 */
-	public void override(InputStream is) {
+	public void overrideWith(InputStream is, String comment) {
 					
 		try {
 			Properties properties = new Properties();
 			properties.load(is);
-			propsChain.add(properties);
+			propsChain.overrideWith(properties, comment);
 		} catch (Throwable t) {
 			throw new RuntimeException("Unable to read input stream", t);
 		}
 	}
 
+	/**
+	 * 
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T get(Key key, Class<T> clazz) {
 		if (clazz == String.class)
-			return (T) getString(key.propName());
+			return (T) getString(key.propName()).arg1();
 		else if (clazz == Integer.class)
 			return (T) getInteger(key.propName());
 		else if (clazz == InitializationParams.class)
@@ -131,6 +140,14 @@ public class VariantPropertiesImpl implements VariantProperties {
 			throw new VariantRuntimeException(MessageTemplate.RUN_PROPERTY_BAD_CLASS, clazz.getName());
 	}
 	
+	/**
+	 * 
+	 */
+	@Override
+	public String getSource(Key key) {
+		return getString(key.propName()).arg2();
+	}
+
 	/**
 	 * 
 	 */

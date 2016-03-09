@@ -18,6 +18,7 @@ import com.variant.core.impl.VariantPropertiesImpl;
 import com.variant.core.impl.VariantPropertiesTestFacade;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.VariantIoUtils;
+import com.variant.core.util.Tuples.*;
 
 public class VariantPropertiesTest {
 
@@ -39,7 +40,10 @@ public class VariantPropertiesTest {
 		expectedProps.load(VariantIoUtils.openResourceAsStream("/variant-test.props"));
 		VariantPropertiesTestFacade actualProps = new VariantPropertiesTestFacade(api.getProperties());
 		for (String prop: expectedProps.stringPropertyNames()) {
-			assertEquals("Property Name: [" + prop + "]", expectedProps.getProperty(prop), actualProps.getString(prop));
+			assertEquals(
+			   "Property Name: [" + prop + "]", 
+			   new Pair<String, String>(expectedProps.getProperty(prop), "/variant-test.props"), 
+			   actualProps.getString(prop));
 		}
 
 		// Run time override from classpath
@@ -50,7 +54,10 @@ public class VariantPropertiesTest {
 		expectedProps.load(VariantIoUtils.openResourceAsStream(RESOURCE_NAME));
 		actualProps = new VariantPropertiesTestFacade(api.getProperties());
 		for (String prop: expectedProps.stringPropertyNames()) {
-			assertEquals("Property Name: [" + prop + "]", expectedProps.getProperty(prop), actualProps.getString(prop));
+			assertEquals(
+					"Property Name: [" + prop + "]", 
+					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvariant.props.resource=/VariantPropertiesTest.props"), 
+					actualProps.getString(prop));
 		}
 		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME);
 		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME);
@@ -62,7 +69,10 @@ public class VariantPropertiesTest {
 		expectedProps.load(VariantIoUtils.openResourceAsStream("/VariantPropertiesTest.props"));
 		actualProps = new VariantPropertiesTestFacade(api.getProperties());
 		for (String prop: expectedProps.stringPropertyNames()) {
-			assertEquals("Property Name: [" + prop + "]", expectedProps.getProperty(prop), actualProps.getString(prop));
+			assertEquals(
+					"Property Name: [" + prop + "]", 
+					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvariant.props.resource=/VariantPropertiesTest.props"), 
+					actualProps.getString(prop));
 		}
 		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME);
 		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME);
@@ -72,7 +82,7 @@ public class VariantPropertiesTest {
 		System.setProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME, TMP_FILE_NAME);
 		PrintWriter tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
 		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_CLASS_NAME.propName() + " = FileOverride");
-		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName() + " = RunTimeOverride");	
+		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName() + " = FileOverride");	
 		tmpFile.close();
 		
 		api = Variant.Factory.getInstance();
@@ -80,7 +90,10 @@ public class VariantPropertiesTest {
 		expectedProps.load(VariantIoUtils.openFileAsStream(TMP_FILE_NAME));
 		actualProps = new VariantPropertiesTestFacade(api.getProperties());
 		for (String prop: expectedProps.stringPropertyNames()) {
-			assertEquals("Property Name: [" + prop + "]", expectedProps.getProperty(prop), actualProps.getString(prop));
+			assertEquals(
+					"Property Name: [" + prop + "]", 
+					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvaraint.props.file=/tmp/VariantPropertiesTest.props"), 
+					actualProps.getString(prop));
 		}
 		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME);
 		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME);
@@ -89,7 +102,7 @@ public class VariantPropertiesTest {
 		System.setProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME, TMP_FILE_NAME);
 		tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
 		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_CLASS_NAME + " = FileOverride");
-		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE + " = RunTimeOverride");	
+		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE + " = FileTimeOverride");	
 		tmpFile.close();
 		
 		api = Variant.Factory.getInstance("/variant-test.props");
@@ -97,7 +110,10 @@ public class VariantPropertiesTest {
 		expectedProps.load(VariantIoUtils.openFileAsStream(TMP_FILE_NAME));
 		actualProps = new VariantPropertiesTestFacade(api.getProperties());
 		for (String prop: expectedProps.stringPropertyNames()) {
-			assertEquals("Property Name: [" + prop + "]", expectedProps.getProperty(prop), actualProps.getString(prop));
+			assertEquals(
+					"Property Name: [" + prop + "]", 
+					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvaraint.props.file=/tmp/VariantPropertiesTest.props"), 
+					actualProps.getString(prop));
 		}
 		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME);
 		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME);
