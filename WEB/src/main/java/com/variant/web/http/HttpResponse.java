@@ -3,6 +3,8 @@ package com.variant.web.http;
 import java.io.IOException;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
 import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -10,6 +12,7 @@ import org.apache.http.util.EntityUtils;
 
 public class HttpResponse {
 
+	HttpRequest request = null;
 	StatusLine status = null;
 	String body = null;
 	Header[] headers = null;
@@ -22,9 +25,11 @@ public class HttpResponse {
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
-	HttpResponse(CloseableHttpResponse underlyingResponse) throws ParseException, IOException {
+	HttpResponse(HttpRequest request, CloseableHttpResponse underlyingResponse) throws ParseException, IOException {
+		this.request = request;
 		status = underlyingResponse.getStatusLine();
-		body = EntityUtils.toString(underlyingResponse.getEntity());
+		HttpEntity entity = underlyingResponse.getEntity();
+		if (entity != null) body = EntityUtils.toString(entity);
 		headers = underlyingResponse.getAllHeaders();
 	}
 	
@@ -36,8 +41,20 @@ public class HttpResponse {
 		return status.getStatusCode();
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public String getBody() {
 		return body;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public HttpRequest getOriginalRequest() {
+		return request;
 	}
 	
 	@Override

@@ -24,6 +24,7 @@ import net.liftweb.http.OkResponse
 import net.liftweb.http.OkResponse
 import com.variant.ws.server.core.VariantCore
 import com.variant.ws.server.RemoteEvent
+import net.liftweb.http.NoContentResponse
 
 /**
  * @author Igor
@@ -34,7 +35,7 @@ object Dispatcher extends RestHelper {
    // Remember about the prefix helper!
 
    serve {
-      case "session" :: id :: Nil JsonGet _ => getOrCreateSession(id)
+      case "session" :: id :: Nil JsonGet _ => getSession(id)
       case "session" :: id :: Nil JsonPut json -> req => updateSession(id, req)
       case "event" :: Nil JsonPost json -> req => postEvent(json)
    }
@@ -42,15 +43,17 @@ object Dispatcher extends RestHelper {
    /**
     * GET /session/{id}
     *
-    * Get or create a new session.
-    * If created, send only the ID, and the caller will know to re-instantiate a session object.
+    * Get a new session. In the future, when schema is processes on the server,
+    * we'll be able to also create, but for now we return null if did not exist
+    * and let the client create and POST it back here.
+    * 
+    * @since 0.6
     */
-   def getOrCreateSession(id: String): LiftResponse = {
+   def getSession(id: String): LiftResponse = {
 
       var result = SessionCache.get(id)
-      // If new or expired, recreate with nothing but session id
-      if (result == null) result = SessionCache.put(id, new VariantSessionImpl(VariantCore.api, id).toJson())
-      OutputStreamResponse(out => {out.write(result.getJson)})
+      if (result == null) NoContentResponse()
+      else OutputStreamResponse(out => {out.write(result.getJson)})
    }
 
    /**

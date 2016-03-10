@@ -80,7 +80,7 @@ public class VariantCoreImpl implements Variant, Serializable {
 		properties = new VariantPropertiesImpl(this);
 
 		// Override system props in left-to-right scan.
-		for (int i = 0; i < resourceNames.length; i++) {
+		for (int i = resourceNames.length - 1; i >= 0; i--) {
 			String name = resourceNames[i];
 			try {
 				properties.overrideWith(VariantIoUtils.openResourceAsStream(name), name);

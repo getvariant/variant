@@ -33,7 +33,14 @@
          <artifactId>variant-web-native</artifactId>
          <version>${variant.version}</version>
       </dependency>
-      
+
+      <dependency>
+         <groupId>com.variant</groupId>
+         <artifactId>variant-web-native</artifactId>
+         <version>${variant.version}</version>
+         <type>test-jar</type>
+         <scope>test</scope>
+      </dependency>
       
         <!-- Apache Commons -->        
         <dependency>
