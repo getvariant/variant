@@ -18,7 +18,7 @@ public class SessionIdTrackerHttpSession implements VariantSessionIdTracker {
 	public void initialized(InitializationParams initParams) throws Exception {}
 
 	/**
-	 * @param userData is 1 element array containing the servletRequest.
+	 * @param userData is 1 element array containing the servlet request.
 	 */
 	@Override
 	public String get(Object...userData) {

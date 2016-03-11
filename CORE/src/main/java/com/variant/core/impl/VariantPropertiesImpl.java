@@ -143,6 +143,13 @@ public class VariantPropertiesImpl implements VariantProperties {
 	/**
 	 * 
 	 */
+	public String get(Key key) {
+		return getString(key.propName()).arg1();
+	}
+
+	/**
+	 * 
+	 */
 	@Override
 	public String getSource(Key key) {
 		return getString(key.propName()).arg2();

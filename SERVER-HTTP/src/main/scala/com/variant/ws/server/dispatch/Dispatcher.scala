@@ -25,12 +25,13 @@ import net.liftweb.http.OkResponse
 import com.variant.ws.server.core.VariantCore
 import com.variant.ws.server.RemoteEvent
 import net.liftweb.http.NoContentResponse
+import com.typesafe.scalalogging.LazyLogging
 
 /**
  * @author Igor
  *
  */
-object Dispatcher extends RestHelper {
+object Dispatcher extends RestHelper with LazyLogging {
 
    // Remember about the prefix helper!
 
@@ -52,8 +53,14 @@ object Dispatcher extends RestHelper {
    def getSession(id: String): LiftResponse = {
 
       var result = SessionCache.get(id)
-      if (result == null) NoContentResponse()
-      else OutputStreamResponse(out => {out.write(result.getJson)})
+      if (result == null) {
+         logger.trace("No session found for ID " + id)         
+         NoContentResponse()
+      }
+      else {
+         logger.trace("Session found for ID " + id)
+         OutputStreamResponse(out => {out.write(result.getJson)})
+      }
    }
 
    /**
@@ -63,7 +70,12 @@ object Dispatcher extends RestHelper {
    def updateSession(id:String, req: Req): Box[LiftResponse] = {      
       if (!req.body.isDefined || req.body.openOrThrowException("Unexpectged null request body").length == 0) 
          return UserError.errors(UserError.EmptyBody).toFailure()
-      SessionCache.put(id, req.body.openOrThrowException("Unexpectged null request body"))
+      
+      if (SessionCache.put(id, req.body.openOrThrowException("Unexpectged null request body")) == null)
+         logger.trace("Saved session ID " + id)
+      else
+         logger.trace("Updated session ID " + id)
+         
       Full(OkResponse())
    }
 

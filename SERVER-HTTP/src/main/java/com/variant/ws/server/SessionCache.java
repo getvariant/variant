@@ -32,10 +32,7 @@ public class SessionCache {
 	 * @param ssn
 	 */
 	public static Entry put(String key, byte[] json) {
-		Entry result = new Entry(json);
-		result.lastAccessTimestamp = System.currentTimeMillis();
-		cacheMap.put(key, result);
-		return result;
+		return cacheMap.put(key, new Entry(json));
 	}
 	
 	/**
@@ -66,7 +63,7 @@ public class SessionCache {
 		// Store as json and only deserialize if needed.
 		private byte[] json = null;
 		private VariantSession session = null;
-		private long lastAccessTimestamp;
+		private long lastAccessTimestamp = System.currentTimeMillis();
 
 		/**
 		 * @param json

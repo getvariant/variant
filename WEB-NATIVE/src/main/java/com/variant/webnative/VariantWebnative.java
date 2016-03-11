@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.variant.core.Variant;
+import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.hook.HookListener;
@@ -62,7 +63,18 @@ public class VariantWebnative {
 						"/variant-webnative." + VariantStringUtils.RESOURCE_POSTFIX + ".props",
 						String.class));
 	}
-		
+
+	/**
+	 * <p>This API's application properties
+	 * 
+	 * @return An instance of the {@link VariantProperties} type.
+	 * 
+	 * @since 0.6
+	 */
+	public VariantProperties getProperties() {
+		return core.getProperties();
+	}
+
 	/**
 	 * <p>Register a {@link com.variant.core.hook.HookListener}. 
 	 * See {@link Variant#addHookListener(HookListener)} for details.

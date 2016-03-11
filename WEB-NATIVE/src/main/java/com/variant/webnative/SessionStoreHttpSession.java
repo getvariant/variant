@@ -2,6 +2,9 @@ package com.variant.webnative;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.variant.core.InitializationParams;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionStore;
@@ -17,7 +20,10 @@ import com.variant.core.VariantSessionStore;
  */
 public class SessionStoreHttpSession implements VariantSessionStore {
 
-
+	private static final Logger LOG = LoggerFactory.getLogger(SessionStoreHttpSession.class);
+	
+	private final static String SSN_KEY = "vrnt-session-id";
+	
 	@Override
 	public void initialized(InitializationParams initParams) throws Exception {}
 
@@ -38,7 +44,11 @@ public class SessionStoreHttpSession implements VariantSessionStore {
 		// We don't need the response, but other implementations may,
 		// e.g. when we track our own session in cookie.
 		// HttpServletResponse httpResponse = (HttpServletResponse) userData[1];
-		httpRequest.getSession().setAttribute(session.getId(), session);
+		httpRequest.getSession().setAttribute(SSN_KEY, session);
+		if (LOG.isTraceEnabled()) {
+			LOG.trace(String.format("Saved session ID [%s]", session.getId()));
+		}
+		
 	}
 
 	/**
@@ -52,7 +62,11 @@ public class SessionStoreHttpSession implements VariantSessionStore {
 	@Override
 	public VariantSession get(String sessionId, Object...userData) {		
 		HttpServletRequest httpRequest = (HttpServletRequest) userData[0];
-		return (VariantSession) httpRequest.getSession().getAttribute(sessionId);
+		VariantSession result = (VariantSession) httpRequest.getSession().getAttribute(SSN_KEY);
+		if (LOG.isTraceEnabled()) {
+			LOG.trace(String.format("Session ID [%s] %s found", sessionId, result == null ? "not" : ""));
+		}
+		return result;
 	}
 
 

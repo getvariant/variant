@@ -9,7 +9,6 @@ import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionStore;
-import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.session.VariantSessionImpl;
 import com.variant.web.http.HttpClient;

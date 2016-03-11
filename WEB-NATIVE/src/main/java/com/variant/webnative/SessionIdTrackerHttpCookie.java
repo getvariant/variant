@@ -1,4 +1,4 @@
-package com.variant.web;
+package com.variant.webnative;
 
 import java.util.Random;
 
@@ -22,6 +22,8 @@ import com.variant.webnative.util.VariantCookie;
  */
 public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 		
+	public static final String COOKIE_NAME = "vrnt-ssnid";
+
 	private static final Logger LOG = LoggerFactory.getLogger(SessionIdTrackerHttpCookie.class);
 	private static final Random rand = new Random(System.currentTimeMillis());
 	
@@ -65,8 +67,6 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	 * Session ID tracking cookie.
 	 */
 	private static class SsnIdCookie extends VariantCookie {
-
-		private static final String COOKIE_NAME = "vrnt-ssnid";
 
 		private SsnIdCookie() {
 			super(COOKIE_NAME);

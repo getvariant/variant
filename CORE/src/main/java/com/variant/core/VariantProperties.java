@@ -61,6 +61,15 @@ public interface VariantProperties {
 	public <T> T get(Key key, Class<T> clazz);
 	
 	/**
+	 * <p> Equivalent to <code>get(key, Class<String>)</code>.
+	 * 
+	 * @param key Property key
+	 *              
+	 * @return Raw String value.
+	 */	
+	public String get(Key key);
+	
+	/**
 	 * The source of where the value came from, such as the name of the application properties resurce file.
 	 *  
 	 * @param key
