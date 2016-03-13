@@ -13,7 +13,7 @@ import com.variant.core.schema.Test.Experience;
  * Basic implementation of a targeting persister as a list in memory.
  * Implements all operations except for initialized() and persist(),
  * which are the input and the output for this implementation and are
- * external of it.
+ * external. Concrete subclasses will worry about that.
  * 
  * @author Igor
  *
@@ -52,7 +52,7 @@ abstract public class TargetingTrackerSupport implements VariantTargetingTracker
 	public Collection<Experience> getAll() {
 		ArrayList<Experience> result = new ArrayList<Test.Experience>();
 		for (Entry entry: entryMap.values()) result.add(entry.experience);
-		return Collections.unmodifiableCollection(result);
+		return Collections.unmodifiableList(result);
 	}
 
 	/**

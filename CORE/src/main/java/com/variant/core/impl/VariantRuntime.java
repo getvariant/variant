@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -195,8 +196,9 @@ public class VariantRuntime {
 			}
 		}
 		
-		// Pre-targeted experiences from the targeting tracker.
-		HashSet<Experience> alreadyTargetedExperiences = new HashSet<Experience>(tt.getAll());
+		// Pre-targeted experiences from the targeting tracker. Keep original order for
+		// test determinism.
+		LinkedHashSet<Experience> alreadyTargetedExperiences = new LinkedHashSet<Experience>(tt.getAll());
 		
 		// Remove from the pre-targeted experience list the experiences corresponding to currently
 		// disqualified tests: we won't need to resolve them anyway.
@@ -360,7 +362,7 @@ public class VariantRuntime {
 		Collection<Experience> result = new ArrayList<Experience>();
 			
 		// 1. Build a set of all instrumented states.
-		HashSet<State> instrumentedStates = new HashSet<State>();
+		LinkedHashSet<State> instrumentedStates = new LinkedHashSet<State>();
 		for (Experience e: vector) {
 			for (OnState tov: e.getTest().getOnStates()) {
 				if (!tov.getState().isNonvariantIn(e.getTest())) {
@@ -473,7 +475,7 @@ public class VariantRuntime {
 	 * @return params map
 	 */
 	Map<String,String> resolveState(State state, Collection<Experience> vector) {
-		
+
 		if (vector.size() == 0) 
 			throw new VariantInternalException("No experiences in input vector");
 		

@@ -98,7 +98,7 @@ abstract public class BaseTestCommon {
 		return result.toString();
 	}
 	//---------------------------------------------------------------------------------------------//
-	//                                         ASSERTS                                             //
+	//                                        ASSERTION                                            //
 	//---------------------------------------------------------------------------------------------//
 
 	/**
@@ -210,4 +210,47 @@ abstract public class BaseTestCommon {
 		assertEqualAsSets(actual.entrySet(), expected.entrySet(), comp);
 	}
 
+	protected static abstract class ExceptionInterceptor<E> {
+
+		abstract public void toRun();
+		abstract public Class<E> getExceptionClass();
+		
+		public void onThrown(E e) {}  // do nothing by default
+		public void onNotThrown() {}  // do nothing by default
+		
+		/**
+		 * Call this if you want to analyse both thrown and unthrown cases.
+		 * @return
+		 */
+		final protected E run() throws Exception {
+			E result = null;
+			try {
+				toRun();
+			}
+			catch (Exception x) {
+				if (getExceptionClass().isInstance(x)) {
+					result = getExceptionClass().cast(x);
+					onThrown(result);
+				}
+				else throw x;
+			}
+			if (result == null) onNotThrown();				
+			return result;
+		}
+		
+		/**
+		 * Call this if you want assertion always thrown.
+		 */
+		final protected void assertThrown() throws Exception {
+			assertTrue("Assertion of type [" + Class.class.getName() + "] was not thrown when expected", run() != null);
+		}
+
+		/**
+		 * Call this if you want assertion never thrown.
+		 */
+		final protected void assertNotThrown() throws Exception {
+			assertTrue("Assertion of type [" + Class.class.getName() + "] was thrown when not expected", run() == null);
+		}
+
+	}
 }

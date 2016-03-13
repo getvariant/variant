@@ -2,7 +2,6 @@ package com.variant.core.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
 
@@ -328,18 +327,17 @@ public class TargetingTest extends BaseTest {
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		Schema schema = api.getSchema();		
-		State state = schema.getState("state1");
-		VariantSession ssn = api.getSession("foo");
+		final State state = schema.getState("state1");
+		final VariantSession ssn = api.getSession("foo");
 
-		boolean exceptionThrown = false;
-		try {
-			api.dispatchRequest(ssn, state, "");
-		}
-		catch (VariantRuntimeException e) {
-			exceptionThrown = true;
-			assertEquals(e.getMessage(), new VariantRuntimeException(MessageTemplate.RUN_WEIGHT_MISSING, "test1", "B").getMessage());
-		}
-		assertTrue(exceptionThrown);
+		new ExceptionInterceptor<VariantRuntimeException>() {
+			@Override public void toRun() { api.dispatchRequest(ssn, state, ""); }
+			@Override public void onThrown(VariantRuntimeException e) { 
+				assertEquals(e.getMessage(), new VariantRuntimeException(MessageTemplate.RUN_WEIGHT_MISSING, "test1", "B").getMessage()); 
+			}
+			@Override public Class<VariantRuntimeException> getExceptionClass() { return VariantRuntimeException.class; }
+		}.assertThrown();
+
 	}
 	
 	/**

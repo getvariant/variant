@@ -3,7 +3,6 @@ package com.variant.core.impl;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.Variant;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -12,8 +11,8 @@ public class VariantRuntimeTestFacade {
 	
 	private VariantRuntime runtime;
 	
-	public VariantRuntimeTestFacade(Variant api) {
-		this.runtime = ((VariantCoreImpl)api).getRuntime();
+	public VariantRuntimeTestFacade(VariantRuntime runtime) {
+		this.runtime = runtime;
 	}
 	/**
 	 * 

@@ -90,7 +90,9 @@ public interface Variant {
 	public Schema getSchema();
 		
 	/**
-	 * Get user's Variant session.
+	 * Get user's Variant session. The contract of this method is that multiple calls with the same arguments
+	 * are will return the same object, provided the session did not expire between calls.  It is an error to
+	 * call this method on an idle instance, i.e. before a valid schema has been parsed. 
 	 * 
 	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
 	 *                 to the implementations of {@link com.variant.core.VariantSessionIdTracker#get(Object...)}

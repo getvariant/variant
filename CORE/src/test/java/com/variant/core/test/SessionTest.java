@@ -6,38 +6,62 @@ import org.junit.Test;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.impl.VariantCoreImplTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
+import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.parser.Severity;
 import com.variant.core.session.VariantSessionImpl;
 
 public class SessionTest extends BaseTest {
 
 	/**
-	 * 
+	 * No Session Test
 	 */
 	@Test
 	public void noSchemaTest() throws Exception {
+		
+		// Can't create session if no schema.
 		assertNull(api.getSchema());
-		long now = System.currentTimeMillis();
-		VariantSession ssn = api.getSession("foo");
-		assertEquals(now, ssn.creationTimestamp(), 2);
-		assertNotNull(ssn);
-		assertNull(ssn.getStateRequest());
-		assertEquals(0, ssn.getTraversedStates().size());
-		assertEquals(0, ssn.getTraversedTests().size());
-		boolean thrown = false;
-		try {
-			((VariantSessionImpl)ssn).toJson();
-		}
-		catch (VariantInternalException e) {
-			assertEquals("Unable to serialize session", e.getMessage());
-			thrown = true;
-		}
-		assertTrue(thrown);
-	}
+		new ExceptionInterceptor<VariantRuntimeException>() { 
+			@Override public void toRun() { api.getSession("foo"); }
+			@Override public void onThrown(VariantRuntimeException e) {
+				assertEquals(new VariantRuntimeException(MessageTemplate.RUN_NO_SCHEMA).getMessage(), e.getMessage());
+			}
+			@Override
+			public Class<VariantRuntimeException> getExceptionClass() { return 	VariantRuntimeException.class; } 
+		}.assertThrown();
 
+		// Unsuccessful parse will not create a schema, so we still should be able to get a session.
+		ParserResponse response = api.parseSchema("UNPARSABLE JUNK");
+		assertEquals(Severity.FATAL, response.highestMessageSeverity());
+		new ExceptionInterceptor<VariantRuntimeException>() { 
+			@Override public void toRun() { api.getSession("foo"); }
+			@Override public void onThrown(VariantRuntimeException e) {
+				assertEquals(new VariantRuntimeException(MessageTemplate.RUN_NO_SCHEMA).getMessage(), e.getMessage());
+			}
+			@Override
+			public Class<VariantRuntimeException> getExceptionClass() {return 	VariantRuntimeException.class; }
+		}.assertThrown();
+
+		
+		// Create schema. We should be able to get and save.
+		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+
+		VariantSession ssn = api.getSession("bar");
+		assertNotNull(ssn);
+		
+		// Unsuccessful parse will not replace the existing schema, so still should be able to save.
+		response = api.parseSchema("UNPARSABLE JUNK");
+		assertEquals(Severity.FATAL, response.highestMessageSeverity());
+		
+		new VariantCoreImplTestFacade(api).getSessionService().saveSession(ssn);
+	}
+	
 	/**
 	 * 
 	 */

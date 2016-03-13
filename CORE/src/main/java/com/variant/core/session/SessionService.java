@@ -89,7 +89,9 @@ public class SessionService {
 	 * @return 
 	 */
 	public VariantSession getSession(Object...userData) throws VariantRuntimeException {
-				
+		
+		if (coreApi.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_NO_SCHEMA);
+
 		String sessionId = sidTracker.get(userData);
 		// Should never return null!
 		if (sessionId == null) 
@@ -99,7 +101,7 @@ public class SessionService {
 
 		if (result == null) {
 			result = new VariantSessionImpl(coreApi, sessionId);
-			// sessionStore.save(result, userData);  We're doing this at commit time. Do we need to do it here too?
+			sessionStore.save(result, userData);
 		}
 		return result;	
 	}
@@ -107,11 +109,10 @@ public class SessionService {
 	/**
 	 * Persist user session Id.
 	 * @param session
+	 * TODO Make this async
 	 */
 	public void saveSession(VariantSession session, Object...userData) {
-		// Don't bother if there's still no schema: this session isn't worth saving
-		// and should be simply recreated on next get().
-		if (coreApi.getSchema() != null)
-			sessionStore.save(session, userData);
+		if (coreApi.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_NO_SCHEMA);
+		sessionStore.save(session, userData);
 	}
 }

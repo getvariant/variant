@@ -1,9 +1,6 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
@@ -20,7 +17,7 @@ public class TargetingTrackerTest extends BaseTest {
 	 * 
 	 */
 	@Test
-	public void targetingTrackerStringTest() {
+	public void targetingTrackerStringTest() throws Exception {
 				
 		ParserResponse response = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
@@ -70,22 +67,17 @@ public class TargetingTrackerTest extends BaseTest {
 		assertEquals(1, tp.getAll().size());
 		assertEquals(experience("test3.C"), tp.get(schema.getTest("test3")));
 		assertNull(tp.get(schema.getTest("test1")));
-		boolean exceptionThrown = false;
-		try {
-			assertNull(tp.get(null));
-		}
-		catch (NullPointerException e) {
-			exceptionThrown = true;
-		}
-		assertTrue(exceptionThrown);
-		exceptionThrown = false;
-		try {
-			assertNull(tp.remove(null));
-		}
-		catch (NullPointerException e) {
-			exceptionThrown = true;
-		}
-		assertTrue(exceptionThrown);
+		
+		final VariantTargetingTracker tt1 = tp;  // No closures in Java :-(
+		new ExceptionInterceptor<NullPointerException>() { 
+			@Override public void toRun() { tt1.get(null); }
+			@Override public Class<NullPointerException> getExceptionClass() {return 	NullPointerException.class; }
+		}.assertThrown();
+
+		new ExceptionInterceptor<NullPointerException>() { 
+			@Override public void toRun() { tt1.remove(null); }
+			@Override public Class<NullPointerException> getExceptionClass() {return 	NullPointerException.class; }
+		}.assertThrown();
 		
 		// 
 		// Single entry - bad

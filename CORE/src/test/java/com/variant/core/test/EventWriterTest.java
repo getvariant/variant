@@ -181,8 +181,9 @@ public class EventWriterTest extends BaseTest {
 					}
 				});
 		assertEquals(2, events.size());
-
+		
 		for (VariantEventFromDatabase e: events) {
+
 			if (e.getEventValue().equals("bar")) {
 				assertEquals("foo", e.getEventName());
 				assertEquals("ssn3", e.getSessionId());

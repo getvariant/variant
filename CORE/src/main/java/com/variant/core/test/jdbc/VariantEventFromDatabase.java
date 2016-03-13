@@ -7,6 +7,9 @@ import java.util.Map;
 
 import org.apache.commons.collections4.Predicate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 public class VariantEventFromDatabase {
 
 	long id;
@@ -38,4 +41,14 @@ public class VariantEventFromDatabase {
 		return result; 	
 	}
 
+	@Override public String toString() {
+		ObjectMapper jacksonMapper = new ObjectMapper();
+		jacksonMapper.enable(SerializationFeature.INDENT_OUTPUT);
+		try {
+			return jacksonMapper.writeValueAsString(this);
+		}
+		catch (Exception e) {
+			throw new RuntimeException("Unable to serialize object", e);
+		}
+	}
 }

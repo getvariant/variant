@@ -114,7 +114,7 @@ public class VariantCoreImpl implements Variant, Serializable {
 			}
 			catch (Exception e) {
 				throw new VariantRuntimeException(BOOT_CONFIG_RESOURCE_NOT_FOUND, e, runTimePropsResourceName);
-			}			
+			}
 		}
 		else if (runTimePropsFileName != null) {
 			try {
@@ -127,7 +127,10 @@ public class VariantCoreImpl implements Variant, Serializable {
 			}			
 		}
 	}
-	
+		
+	//---------------------------------------------------------------------------------------------//
+	//                                  PACKAGE - EXPOSE TO TESTS                                  //
+	//---------------------------------------------------------------------------------------------//
 	/**
 	 * Expose runtime to tests via package visible getter.
 	 * @return
@@ -135,7 +138,14 @@ public class VariantCoreImpl implements Variant, Serializable {
 	VariantRuntime getRuntime() {
 		return runtime;
 	}
-	
+
+	/** 
+	 * @return
+	 */
+	SessionService getSessionService() {
+		return sessionService;
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//

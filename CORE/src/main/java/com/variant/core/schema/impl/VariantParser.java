@@ -24,6 +24,7 @@ import java.util.Map;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
+import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantStringUtils;
 
@@ -192,6 +193,7 @@ public class VariantParser implements Keywords {
 			params = tov.getState().getParameterMap();
 		}
 		else {
+			params = new CaseInsensitiveMap<String>(params);  // The map from json parser is not case insensitive.
 			params = (Map<String,String>) VariantCollectionsUtils.mapMerge(tov.getState().getParameterMap(), params);
 		}
 		
