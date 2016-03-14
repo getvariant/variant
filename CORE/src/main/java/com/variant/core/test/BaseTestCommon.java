@@ -1,6 +1,6 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -10,9 +10,11 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.variant.core.config.PropertiesChain;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 
@@ -210,6 +212,11 @@ abstract public class BaseTestCommon {
 		assertEqualAsSets(actual.entrySet(), expected.entrySet(), comp);
 	}
 
+	/**
+	 * Generic Exception Interceptor
+	 *
+	 * @param <E>
+	 */
 	protected static abstract class ExceptionInterceptor<E> {
 
 		abstract public void toRun();
@@ -245,11 +252,26 @@ abstract public class BaseTestCommon {
 			assertTrue("Assertion of type [" + Class.class.getName() + "] was not thrown when expected", run() != null);
 		}
 
+	}
+	
+	/**
+	 * Exception interceptor for VariantRuntimeException
+	 *
+	 */
+	protected static abstract class VariantRuntimeExceptionInterceptor 
+		extends ExceptionInterceptor<VariantRuntimeException> {
+		
+		@Override
+		final public Class<VariantRuntimeException> getExceptionClass() {
+			return VariantRuntimeException.class;
+		}
+		
 		/**
-		 * Call this if you want assertion never thrown.
+		 * Call this if you want assertion always thrown.
 		 */
-		final public void assertNotThrown() throws Exception {
-			assertTrue("Assertion of type [" + Class.class.getName() + "] was thrown when not expected", run() == null);
+		final public void assertThrown(MessageTemplate template, Object...templateArgs) throws Exception {
+			VariantRuntimeException result = super.run();
+			assertEquals(new VariantRuntimeException(template, templateArgs).getMessage(), result.getMessage());
 		}
 
 	}

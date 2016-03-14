@@ -10,7 +10,7 @@ import com.variant.core.schema.Schema;
 /**
  * Base class for all Core JUnit tests.
  */
-public class BaseTest extends BaseTestCommon {
+public class BaseTestCore extends BaseTestCommon {
 	
 	protected VariantCoreImpl api = null;
 	

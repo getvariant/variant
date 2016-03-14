@@ -30,7 +30,7 @@ import com.variant.core.schema.parser.Severity;
  * @author Igor
  *
  */
-public class ParserCovariantErrorTest extends BaseTest {
+public class ParserCovariantErrorTest extends BaseTestCore {
 	
 	/**
 	 * PARSER_COVARIANT_TESTS_NOT_LIST

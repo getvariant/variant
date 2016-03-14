@@ -18,7 +18,7 @@ import com.variant.core.schema.parser.Severity;
  * @author Igor
  *
  */
-public class ParserDisjointErrorTest extends BaseTest {
+public class ParserDisjointErrorTest extends BaseTestCore {
 	
 	/**
 	 * JSON_PARSE

@@ -19,7 +19,7 @@ import com.variant.core.schema.parser.Severity;
  * @author Igor
  *
  */
-public class ParserCovariantErrorMultiTest extends BaseTest {
+public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	
 	/**
 	 * PARSER_COVARIANT_VARIANT_DUPE

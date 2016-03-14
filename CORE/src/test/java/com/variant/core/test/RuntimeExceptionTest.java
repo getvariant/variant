@@ -13,7 +13,7 @@ import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
 
 
-public class RuntimeExceptionTest extends BaseTest {
+public class RuntimeExceptionTest extends BaseTestCore {
 	
 	/**
 	 * RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST

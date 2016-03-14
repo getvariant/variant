@@ -28,7 +28,7 @@ import com.variant.core.test.jdbc.EventReader;
 import com.variant.core.test.jdbc.VariantEventFromDatabase;
 import com.variant.core.test.jdbc.VariantEventVariantFromDatabase;
 
-public class EventWriterTest extends BaseTest {
+public class EventWriterTest extends BaseTestCore {
 		
 
 	/**

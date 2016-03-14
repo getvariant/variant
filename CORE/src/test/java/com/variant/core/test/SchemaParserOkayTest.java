@@ -19,7 +19,7 @@ import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantStringUtils;
 
 
-public class SchemaParserOkayTest extends BaseTest {
+public class SchemaParserOkayTest extends BaseTestCore {
 	
 	private static final Random rand = new Random();
 	

@@ -1,12 +1,16 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantCoreImplTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -15,7 +19,7 @@ import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.session.VariantSessionImpl;
 
-public class SessionTest extends BaseTest {
+public class SessionTest extends BaseTestCore {
 
 	/**
 	 * No Session Test
@@ -25,26 +29,16 @@ public class SessionTest extends BaseTest {
 		
 		// Can't create session if no schema.
 		assertNull(api.getSchema());
-		new ExceptionInterceptor<VariantRuntimeException>() { 
+		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { api.getSession("foo"); }
-			@Override public void onThrown(VariantRuntimeException e) {
-				assertEquals(new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED).getMessage(), e.getMessage());
-			}
-			@Override
-			public Class<VariantRuntimeException> getExceptionClass() { return 	VariantRuntimeException.class; } 
-		}.assertThrown();
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 
 		// Unsuccessful parse will not create a schema, so we still should be able to get a session.
 		ParserResponse response = api.parseSchema("UNPARSABLE JUNK");
 		assertEquals(Severity.FATAL, response.highestMessageSeverity());
-		new ExceptionInterceptor<VariantRuntimeException>() { 
+		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { api.getSession("foo"); }
-			@Override public void onThrown(VariantRuntimeException e) {
-				assertEquals(new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED).getMessage(), e.getMessage());
-			}
-			@Override
-			public Class<VariantRuntimeException> getExceptionClass() {return 	VariantRuntimeException.class; }
-		}.assertThrown();
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 
 		
 		// Create schema. We should be able to get and save.
@@ -70,14 +64,9 @@ public class SessionTest extends BaseTest {
 
 		final VariantSession ssnFinal = ssn;  // No closures in Java.
 		
-		new ExceptionInterceptor<VariantRuntimeException>() { 
+		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { new VariantCoreImplTestFacade(api).getSessionService().saveSession(ssnFinal); }
-			@Override public void onThrown(VariantRuntimeException e) {
-				assertEquals(new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_REPLACED).getMessage(), e.getMessage());
-			}
-			@Override
-			public Class<VariantRuntimeException> getExceptionClass() {return 	VariantRuntimeException.class; }
-		}.assertThrown();
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_REPLACED);
 
 	}
 	

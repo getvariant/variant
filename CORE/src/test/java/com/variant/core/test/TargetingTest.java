@@ -22,7 +22,7 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
 
-public class TargetingTest extends BaseTest {
+public class TargetingTest extends BaseTestCore {
 
 	static final int TRIALS = 750000;
 	static final float DELTA_AS_FRACTION = .025f;

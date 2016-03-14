@@ -24,11 +24,14 @@ import com.variant.core.test.BaseTestCommon;
 import com.variant.web.SessionIdTrackerHttpCookie;
 import com.variant.web.VariantWeb;
 import com.variant.web.VariantWebnativeTestFacade;
+import com.variant.web.mock.HttpServletRequestMock;
+import com.variant.web.mock.HttpServletResponseMock;
+import com.variant.web.mock.HttpSessionMock;
 
 /**
  * Base class for all Core JUnit tests.
  */
-public abstract class BaseTest extends BaseTestCommon {
+public abstract class BaseTestWeb extends BaseTestCommon {
 	
 	private static Boolean sqlSchemaCreated = false;
 
@@ -79,16 +82,16 @@ public abstract class BaseTest extends BaseTestCommon {
 	 * Mock HttpServletRequest
 	 * @return
 	 */
-	protected HttpServletRequest mockHttpServletRequest(String jsessionId, String vsessionId) { 
+	protected HttpServletRequestMock mockHttpServletRequest(String jsessionId, String vsessionId) { 
 		
 		//
 		// Session
 		//
-		HttpSessionWrap ssn = mock(HttpSessionWrap.class, new DefaultAnswer());
+		HttpSessionMock ssn = mock(HttpSessionMock.class, new DefaultAnswer());
 		when(ssn.getId()).thenReturn(jsessionId);
 
 		// Request
-		HttpServletRequest result = mock(HttpServletRequest.class, new DefaultAnswer());
+		HttpServletRequestMock result = mock(HttpServletRequestMock.class, new DefaultAnswer());
 		when(result.getSession()).thenReturn(ssn);
 		Cookie[] cookies = { new Cookie(SessionIdTrackerHttpCookie.COOKIE_NAME, vsessionId) };
 		when(result.getCookies()).thenReturn(cookies);
@@ -100,47 +103,14 @@ public abstract class BaseTest extends BaseTestCommon {
 	 * Mock HttpServletResponse
 	 * @return
 	 */
-	protected HttpServletResponse mockHttpServletResponse() {
+	protected HttpServletResponseMock mockHttpServletResponse() {
 		
 		//
 		// Response
 		//
-		HttpServletResponseWrap result = mock(HttpServletResponseWrap.class, new DefaultAnswer());
+		HttpServletResponseMock result = mock(HttpServletResponseMock.class, new DefaultAnswer());
 
 		return result;
-	}
-
-	/**
-	 * HttpSession wrapper adds state and methods to get to it.
-	 */
-	public static abstract class HttpSessionWrap implements HttpSession {
-		
-		private HashMap<String, Object> attributes = null;
-		
-		@Override public void setAttribute(String key, Object value) {
-			if (attributes == null) attributes = new HashMap<String, Object>();
-			attributes.put(key, value);
-		}
-		
-		@Override public Object getAttribute(String key) {
-			return attributes == null ? null : attributes.get(key);
-		}
-	}
-
-	/**
-	 * HttpServletResponse wrapper adds state and methods to get to it.
-	 */
-	public static abstract class HttpServletResponseWrap implements HttpServletResponse {
-		private ArrayList<Cookie> addedCookies = null;
-		
-		@Override public void addCookie(Cookie cookie) {
-			if (addedCookies == null) addedCookies = new ArrayList<Cookie>();
-			addedCookies.add(cookie);
-		}
-		
-		public Cookie[] getCookies() { 
-			return addedCookies == null ? new Cookie[0] : addedCookies.toArray(new Cookie[addedCookies.size()]); 
-		}
 	}
 	
 	/**

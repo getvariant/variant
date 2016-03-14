@@ -16,7 +16,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 
 
-public class SchemaParserDisjointOkayTest extends BaseTest {
+public class SchemaParserDisjointOkayTest extends BaseTestCore {
 	
 	// Happy path schema is used by other tests too.
 	public static final String SCHEMA = 

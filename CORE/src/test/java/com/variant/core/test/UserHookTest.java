@@ -31,7 +31,7 @@ import com.variant.core.util.VariantCollectionsUtils;
  * @author Igor
  * 
  */
-public class UserHookTest extends BaseTest {
+public class UserHookTest extends BaseTestCore {
 
 	private static final String MESSAGE_TEXT_STATE = "Info-Message-State";
 	private static final String MESSAGE_TEXT_TEST = "Info-Message-Test";

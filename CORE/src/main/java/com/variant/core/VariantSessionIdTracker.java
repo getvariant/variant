@@ -27,6 +27,8 @@ public interface VariantSessionIdTracker {
 	/**
 	 * <p>Retrieve the session ID from the tracker. If the session ID did not exist,
 	 * the implementation should create it and, if needed, save it in the tracker.
+	 * The contract of this method is that multiple calls with the same arguments
+	 * will return the same value. 
 	 *  
 	 * @param userData An array of 0 or more opaque objects which 
 	 *                 {@link com.variant.core.Variant#dispatchRequest(VariantSession, com.variant.core.schema.State, Object)} 

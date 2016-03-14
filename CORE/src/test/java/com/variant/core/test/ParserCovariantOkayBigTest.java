@@ -14,7 +14,7 @@ import com.variant.core.util.VariantCollectionsUtils;
 /**
  * @author Igor
  */
-public class ParserCovariantOkayBigTest extends BaseTest {
+public class ParserCovariantOkayBigTest extends BaseTestCore {
 
 	/**
 	 * 

@@ -29,7 +29,7 @@ import com.variant.core.util.VariantCollectionsUtils;
 /**
  * @author Igor
  */
-public class VariantRuntimeTest extends BaseTest {
+public class VariantRuntimeTest extends BaseTestCore {
 
 	/**
 	 * 

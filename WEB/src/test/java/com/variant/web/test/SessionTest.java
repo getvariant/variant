@@ -1,20 +1,24 @@
 package com.variant.web.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantCoreImplTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
+import com.variant.web.mock.HttpServletResponseMock;
 
-public class SessionTest extends BaseTest {
+public class SessionTest extends BaseTestWeb {
 
 	/**
 	 * No Schema.
@@ -28,13 +32,9 @@ public class SessionTest extends BaseTest {
 		final HttpServletRequest httpReq = mockHttpServletRequest("JSESSIONID", null);  // no vssn.
 		final HttpServletResponse httpResp = mockHttpServletResponse();
 
-		new ExceptionInterceptor<VariantRuntimeException>() {
-			@Override public void toRun() {webApi.getSession(httpReq, httpResp); }
-			@Override public Class<VariantRuntimeException> getExceptionClass() { return VariantRuntimeException.class;}
-			@Override public void onThrown(VariantRuntimeException e) {
-				assertEquals(new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED).getMessage(), e.getMessage());
-			}
-		}.assertThrown();	
+		new VariantRuntimeExceptionInterceptor() {
+			@Override public void toRun() { webApi.getSession(httpReq, httpResp); }
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);	
 	}
 
 	/**
@@ -50,11 +50,11 @@ public class SessionTest extends BaseTest {
 		assertFalse(response.hasMessages());
 		assertNull(response.highestMessageSeverity());
 		
-		final HttpServletRequest httpReq = mockHttpServletRequest("JSESSIONID", null);
-		final HttpServletResponse httpResp = mockHttpServletResponse();
+		final HttpServletRequest httpReq = mockHttpServletRequest("JSESSIONID", null); // no vssn.
+		final HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		VariantSession ssn1 = webApi.getSession(httpReq, httpResp);
-		VariantCoreImplTestFacade coreFacade = new VariantCoreImplTestFacade(coreApi);
+		final VariantSession ssn1 = webApi.getSession(httpReq, httpResp);
+		final VariantCoreImplTestFacade coreFacade = new VariantCoreImplTestFacade(coreApi);
 		coreFacade.getSessionService().saveSession(ssn1, httpReq);     // succeeds
 		
 		// replace the schema and the session save should fail.
@@ -63,25 +63,28 @@ public class SessionTest extends BaseTest {
 		assertFalse(response.hasMessages());
 		assertNull(response.highestMessageSeverity());
 		
-		coreFacade.getSessionService().saveSession(ssn1, httpReq);
+		new VariantRuntimeExceptionInterceptor() {
+			@Override public void toRun() { coreFacade.getSessionService().saveSession(ssn1, httpReq); }
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_REPLACED);
 	}
 
 	/**
 	 * No session ID in cookie.
-	 *  
+	 * 
 	 * @throws Exception
 	 */
-	//@org.junit.Test
-	public void basicTest() throws Exception {
+	@org.junit.Test
+	public void noSessionIDInTrackerTest() throws Exception {
 		
 		ParserResponse response = webApi.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
+		assertNull(response.highestMessageSeverity());
 
 		Schema schema = webApi.getSchema();
 		
 		HttpServletRequest httpReq = mockHttpServletRequest("JSESSIONID", null);  // no vssn.
-		HttpServletResponse httpResp = mockHttpServletResponse();
+		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
 		VariantSession ssn1 = webApi.getSession(httpReq, httpResp);
 		assertNotNull(ssn1);
@@ -89,16 +92,26 @@ public class SessionTest extends BaseTest {
 		assertNull(ssn1.getStateRequest());		
 		assertEquals(0, ssn1.getTraversedStates().size());
 		assertEquals(0, ssn1.getTraversedTests().size());
+		assertEquals(1, httpResp.getCookies().length);
 		
 		VariantSession ssn2 = webApi.getSession(httpReq, httpResp);
 		assertNotNull(ssn2);
 		
-		// getSession() will create a new one
-		assertNotEquals(ssn1, ssn2);
-				
+		// getSession() should be idempotent.
+		assertEquals(ssn1, ssn2);
+		assertNull(ssn2.getStateRequest());		
+		assertEquals(0, ssn2.getTraversedStates().size());
+		assertEquals(0, ssn2.getTraversedTests().size());
+		assertEquals(1, httpResp.getCookies().length);
+
 		State state1 = schema.getState("state1");		
 		VariantStateRequest varReq = webApi.dispatchRequest(ssn1, state1, httpReq);
 		webApi.commitStateRequest(varReq, httpResp);
+		
+		// commit() has added the targeting tracker cookie.
+		Cookie[] outgoingCookies = httpResp.getCookies();
+		assertEquals(2, outgoingCookies.length);
+		assertEquals(ssn1.getId(), outgoingCookies[0].getValue());
 	}
 
 	
