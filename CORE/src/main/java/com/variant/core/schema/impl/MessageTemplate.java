@@ -110,10 +110,10 @@ public enum MessageTemplate {
 	RUN_PROPERTY_INIT_INVALID_JSON                        (Severity.ERROR, "Invalid JSON [%s] in application property [%s]"),
 	RUN_PROPERTY_INIT_PROPERTY_NOT_SET                    (Severity.ERROR, "Init property [%s] is required by class [%s] but is missing in application property [%s]"),
 	RUN_STATE_NOT_INSTRUMENTED_FOR_TEST                   (Severity.ERROR, "State [%s] is not instrumented for test [%s]"), 
-	RUN_SCHEMA_REPLACED                                   (Severity.ERROR, "This schema is no longer valid because it has been replaced with a newer schema."),
 	RUN_WEIGHT_MISSING                                    (Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found."),
 	RUN_ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first."),
-	RUN_NO_SCHEMA                                         (Severity.ERROR, "Cannot create a session on an idle Variant instance. Parse a schema first."),
+	RUN_SCHEMA_REPLACED                                   (Severity.ERROR, "Opereation not allowed because the current schema ID differs from that which was in effect with it was created."),
+	RUN_SCHEMA_UNDEFINED                                  (Severity.ERROR, "Cannot create a session on an idle Variant instance. Parse a schema first."),
 	RUN_SESSION_ID_NULL                                   (Severity.WARN,  "Session id tracker [%s] generated a null key"),
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                  GENERAL MESSAGES                                                      //

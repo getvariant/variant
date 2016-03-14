@@ -1,10 +1,10 @@
 package com.variant.core.ext;
 
 import com.variant.core.InitializationParams;
-import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantException;
+import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.session.VariantSessionImpl;
 
 /**
@@ -18,13 +18,13 @@ import com.variant.core.session.VariantSessionImpl;
  */
 public class SessionStoreNull implements VariantSessionStore {
 
-	private Variant coreApi = null;
+	private VariantCoreImpl coreApi = null;
 	
 	public SessionStoreNull() { }
 	
 	@Override
 	public void initialized(InitializationParams initParams) {
-		coreApi = initParams.getCoreApi();
+		coreApi = (VariantCoreImpl) initParams.getCoreApi();
 	}
 
 	/**

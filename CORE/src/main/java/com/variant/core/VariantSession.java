@@ -30,6 +30,15 @@ public interface VariantSession {
 	 * @since 0.6
 	 */	
 	public long creationTimestamp();
+
+	/**
+	 * <p>The ID of the schema in effect at the time this session was created. Any subsequent operations
+	 * on this session will fail if this schema is replaced with another schema. 
+	 * 
+	 * @return Milliseconds since the Epoch.
+	 * @since 0.6
+	 */	
+	public String getSchemaId();
 	
 	/**
 	 * <p> The collection of states traversed by this session so far and their counts.

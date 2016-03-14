@@ -11,7 +11,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
@@ -41,14 +40,16 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	private VariantStateRequestImpl currentRequest = null;
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
 	private HashMap<Test, Boolean> traversedTests = new HashMap<Test, Boolean>();
-	private Variant coreApi;
+	private VariantCoreImpl coreApi;
+	private String schemaId;
 	
 	/**
 	 * 
 	 * @param id
 	 */
-	public VariantSessionImpl(Variant coreApi, String id) {
+	public VariantSessionImpl(VariantCoreImpl coreApi, String id) {
 		this.coreApi = coreApi;
+		this.schemaId = coreApi.getSchema().getId();
 		this.id = id;
 	}
 		
@@ -62,6 +63,14 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	@Override
 	public String getId() {
 		return id;
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public String getSchemaId() {
+		return schemaId;
 	}
 
 	@Override
@@ -174,7 +183,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 			jsonGen.writeStartObject();
 			jsonGen.writeStringField(FIELD_NAME_ID, id);
 			jsonGen.writeNumberField(FIELD_NAME_TIMESTAMP, timestamp);
-			jsonGen.writeStringField(FIELD_NAME_SCHEMA_ID, coreApi.getSchema().getId());
+			jsonGen.writeStringField(FIELD_NAME_SCHEMA_ID, schemaId);
 			if (currentRequest != null) {
 				jsonGen.writeFieldName(FIELD_NAME_CURRENT_REQUEST);
 				jsonGen.writeRawValue(currentRequest.toJson());
@@ -214,7 +223,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static VariantSessionImpl fromJson(Variant coreApi, String json) {
+	public static VariantSessionImpl fromJson(VariantCoreImpl coreApi, String json) {
 
 		ObjectMapper mapper = new ObjectMapper();		
 		Map<String,?> fields = null;

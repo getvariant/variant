@@ -28,7 +28,7 @@ public class SessionTest extends BaseTest {
 		new ExceptionInterceptor<VariantRuntimeException>() { 
 			@Override public void toRun() { api.getSession("foo"); }
 			@Override public void onThrown(VariantRuntimeException e) {
-				assertEquals(new VariantRuntimeException(MessageTemplate.RUN_NO_SCHEMA).getMessage(), e.getMessage());
+				assertEquals(new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED).getMessage(), e.getMessage());
 			}
 			@Override
 			public Class<VariantRuntimeException> getExceptionClass() { return 	VariantRuntimeException.class; } 
@@ -40,7 +40,7 @@ public class SessionTest extends BaseTest {
 		new ExceptionInterceptor<VariantRuntimeException>() { 
 			@Override public void toRun() { api.getSession("foo"); }
 			@Override public void onThrown(VariantRuntimeException e) {
-				assertEquals(new VariantRuntimeException(MessageTemplate.RUN_NO_SCHEMA).getMessage(), e.getMessage());
+				assertEquals(new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED).getMessage(), e.getMessage());
 			}
 			@Override
 			public Class<VariantRuntimeException> getExceptionClass() {return 	VariantRuntimeException.class; }
@@ -54,12 +54,31 @@ public class SessionTest extends BaseTest {
 
 		VariantSession ssn = api.getSession("bar");
 		assertNotNull(ssn);
-		
+
+		new VariantCoreImplTestFacade(api).getSessionService().saveSession(ssn);
+
 		// Unsuccessful parse will not replace the existing schema, so still should be able to save.
 		response = api.parseSchema("UNPARSABLE JUNK");
 		assertEquals(Severity.FATAL, response.highestMessageSeverity());
 		
 		new VariantCoreImplTestFacade(api).getSessionService().saveSession(ssn);
+
+		// Successful parse invalidates existing schemas.
+		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+
+		final VariantSession ssnFinal = ssn;  // No closures in Java.
+		
+		new ExceptionInterceptor<VariantRuntimeException>() { 
+			@Override public void toRun() { new VariantCoreImplTestFacade(api).getSessionService().saveSession(ssnFinal); }
+			@Override public void onThrown(VariantRuntimeException e) {
+				assertEquals(new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_REPLACED).getMessage(), e.getMessage());
+			}
+			@Override
+			public Class<VariantRuntimeException> getExceptionClass() {return 	VariantRuntimeException.class; }
+		}.assertThrown();
+
 	}
 	
 	/**

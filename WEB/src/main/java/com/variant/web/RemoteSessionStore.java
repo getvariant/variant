@@ -10,6 +10,7 @@ import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.session.VariantSessionImpl;
 import com.variant.web.http.HttpClient;
 import com.variant.web.http.HttpResponse;
@@ -18,7 +19,7 @@ import com.variant.web.http.VariantHttpClientException;
 public class RemoteSessionStore implements VariantSessionStore {
 
 	private String apiEndpointUrl = null;
-	private Variant coreApi;
+	private VariantCoreImpl coreApi;
 
 	/**
 	 * GET or create session by ID.
@@ -79,7 +80,7 @@ public class RemoteSessionStore implements VariantSessionStore {
 		apiEndpointUrl = initParams.getOrThrow(
 				"apiEndpoint", 
 				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
-		coreApi = initParams.getCoreApi();
+		coreApi = (VariantCoreImpl) initParams.getCoreApi();
 	}
 
 	@Override

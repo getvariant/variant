@@ -241,14 +241,14 @@ abstract public class BaseTestCommon {
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
-		final protected void assertThrown() throws Exception {
+		final public void assertThrown() throws Exception {
 			assertTrue("Assertion of type [" + Class.class.getName() + "] was not thrown when expected", run() != null);
 		}
 
 		/**
 		 * Call this if you want assertion never thrown.
 		 */
-		final protected void assertNotThrown() throws Exception {
+		final public void assertNotThrown() throws Exception {
 			assertTrue("Assertion of type [" + Class.class.getName() + "] was thrown when not expected", run() == null);
 		}
 

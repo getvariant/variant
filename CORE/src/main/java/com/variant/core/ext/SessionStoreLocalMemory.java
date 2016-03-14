@@ -3,10 +3,10 @@ package com.variant.core.ext;
 import java.util.HashMap;
 
 import com.variant.core.InitializationParams;
-import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantException;
+import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.session.VariantSessionImpl;
 
 /**
@@ -26,13 +26,13 @@ import com.variant.core.session.VariantSessionImpl;
 public class SessionStoreLocalMemory implements VariantSessionStore {
 
 	private HashMap<String, String> map = new HashMap<String, String>();
-	private Variant coreApi = null;
+	private VariantCoreImpl coreApi = null;
 	
 	public SessionStoreLocalMemory() { }
 	
 	@Override
 	public void initialized(InitializationParams initParams) {
-		coreApi = initParams.getCoreApi();
+		coreApi = (VariantCoreImpl) initParams.getCoreApi();
 	}
 
 	/**

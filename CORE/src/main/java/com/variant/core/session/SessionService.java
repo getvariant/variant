@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.InitializationParams;
-import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionIdTracker;
@@ -13,12 +12,13 @@ import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.impl.MessageTemplate;
 
 public class SessionService {
 
 	private static final Logger LOG  = LoggerFactory.getLogger(SessionService.class);
-	private Variant coreApi = null;
+	private VariantCoreImpl coreApi = null;
 	private VariantSessionIdTracker sidTracker = null;
 	private VariantSessionStore sessionStore = null;
 	
@@ -27,7 +27,7 @@ public class SessionService {
 	 * @param config
 	 * @throws VariantBootstrapException 
 	 */
-	public SessionService(Variant coreApi) throws VariantBootstrapException {
+	public SessionService(VariantCoreImpl coreApi) throws VariantBootstrapException {
 		
 		this.coreApi = coreApi;
 		
@@ -90,7 +90,7 @@ public class SessionService {
 	 */
 	public VariantSession getSession(Object...userData) throws VariantRuntimeException {
 		
-		if (coreApi.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_NO_SCHEMA);
+		if (coreApi.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 
 		String sessionId = sidTracker.get(userData);
 		// Should never return null!
@@ -112,7 +112,8 @@ public class SessionService {
 	 * TODO Make this async
 	 */
 	public void saveSession(VariantSession session, Object...userData) {
-		if (coreApi.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_NO_SCHEMA);
+		if (coreApi.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
+		if (!coreApi.getSchema().getId().equals(session.getSchemaId())) throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_REPLACED);
 		sessionStore.save(session, userData);
 	}
 }
