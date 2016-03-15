@@ -31,6 +31,7 @@ targeting.tracker.idle.days.to.live = 0
 # Session store. Uses in-memory hash table, but stores sessions not as live
 # objects, but as their JSON representations, which emulates the real-life
 # conditions better.
+# Idle session expires in 15 min.
 session.store.class.name = com.variant.core.ext.SessionStoreLocalMemory
 session.store.class.init = {}
 

@@ -63,7 +63,7 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 			result = (String) request.getAttribute(COOKIE_NAME);
 			if (result == null) {
 				// Still nothing. Really create.
-				result = VariantStringUtils.random128BitString(rand);
+				result = VariantStringUtils.random64BitString(rand);
 				SsnIdCookie cookie = new SsnIdCookie();
 				cookie.setValue(result);
 				cookie.send(response);

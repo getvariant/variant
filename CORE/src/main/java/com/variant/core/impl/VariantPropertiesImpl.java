@@ -169,8 +169,9 @@ public class VariantPropertiesImpl implements VariantProperties {
 		}
 		
 		@Override
-		public String get(String param) {
-			return super.get(param);
+		public String getOr(String param, String defaultValue) {
+			String result = super.get(param);
+			return result == null ? defaultValue : result;
 		}
 
 		@Override

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +20,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.util.VariantStringUtils;
 import com.variant.web.mock.HttpServletResponseMock;
 import com.variant.web.util.VariantWebStateRequestDecorator;
 
@@ -145,7 +147,7 @@ public class SessionTest extends BaseTestWeb {
 
 		// Commit should have saved the session.
 		VariantSession ssn3 = webApi.getSession(httpReq, httpResp);
-		assertEquals(ssn3, ssn3);
+		assertEquals(ssn3, ssn2);
 		assertEquals(ssn3.getSchemaId(), schema.getId());
 		assertEquals(
 				((VariantStateRequestImpl)((VariantWebStateRequestDecorator)varReq).getOriginalRequest()).toJson(), 
@@ -155,8 +157,67 @@ public class SessionTest extends BaseTestWeb {
 				Arrays.toString(ssn3.getTraversedStates().toArray()));
 		assertEquals(
 				"[(test6, true), (test4, true), (test5, true), (test2, true), (test3, true)]", 
-				Arrays.toString(ssn3.getTraversedTests().toArray()));
-		
+				Arrays.toString(ssn3.getTraversedTests().toArray()));		
 	}
 	
+	/**
+	 * Session ID in cookie.
+	 * 
+	 * @throws Exception
+	 */
+	@org.junit.Test
+	public void sessionIDInTrackerTest() throws Exception {
+		
+		ParserResponse response = webApi.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertNull(response.highestMessageSeverity());
+
+		Schema schema = webApi.getSchema();
+		String sessionId = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
+		HttpServletRequest httpReq = mockHttpServletRequest("JSESSIONID", sessionId);
+		HttpServletResponseMock httpResp = mockHttpServletResponse();
+
+		VariantSession ssn1 = webApi.getSession(httpReq, httpResp);
+		assertNotNull(ssn1);
+		assertEquals(sessionId, ssn1.getId());
+		assertEquals(ssn1.getSchemaId(), schema.getId());
+		assertNull(ssn1.getStateRequest());		
+		assertEquals(0, ssn1.getTraversedStates().size());
+		assertEquals(0, ssn1.getTraversedTests().size());
+		assertEquals(0, httpResp.getCookies().length);  // We didn't drop the ssnid cookie, because there was one in request.
+		
+		State state2 = schema.getState("state2");		
+		VariantStateRequest varReq = webApi.dispatchRequest(ssn1, state2, httpReq);
+		assertEquals(ssn1, varReq.getSession());
+		assertEquals(ssn1.getSchemaId(), schema.getId());
+		assertEquals(
+				((VariantStateRequestImpl)((VariantWebStateRequestDecorator)varReq).getOriginalRequest()).toJson(), 
+				((VariantStateRequestImpl)ssn1.getStateRequest()).toJson());
+		assertEquals(
+				"[(state2, 1)]", 
+				Arrays.toString(ssn1.getTraversedStates().toArray()));
+		assertEquals(
+				"[(test1, true), (test6, true), (test4, true), (test5, true), (test2, true), (test3, true)]", 
+				Arrays.toString(ssn1.getTraversedTests().toArray()));		
+
+		webApi.commitStateRequest(varReq, httpResp);
+		
+		// Create a new HTTP request with the same VRNT-SSNID cookie.  Should fetch the same session.
+		// but without the state request.
+		HttpServletRequest httpReq2 = mockHttpServletRequest("JSESSIONID", sessionId);
+		HttpServletResponseMock httpResp2 = mockHttpServletResponse();
+		VariantSession ssn2 = webApi.getSession(httpReq2, httpResp2);
+		assertEquals(ssn2, varReq.getSession());
+		assertEquals(ssn2.getSchemaId(), schema.getId());
+		assertNull(ssn2.getStateRequest());
+		assertEquals(
+				"[(state2, 1)]", 
+				Arrays.toString(ssn2.getTraversedStates().toArray()));
+		assertEquals(
+				"[(test1, true), (test6, true), (test4, true), (test5, true), (test2, true), (test3, true)]", 
+				Arrays.toString(ssn1.getTraversedTests().toArray()));		
+		
+		
+	}
 }

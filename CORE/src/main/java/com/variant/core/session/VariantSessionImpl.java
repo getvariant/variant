@@ -184,7 +184,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 			jsonGen.writeStringField(FIELD_NAME_ID, id);
 			jsonGen.writeNumberField(FIELD_NAME_TIMESTAMP, timestamp);
 			jsonGen.writeStringField(FIELD_NAME_SCHEMA_ID, schemaId);
-			if (currentRequest != null) {
+			if (currentRequest != null && ! currentRequest.isCommitted()) {
 				jsonGen.writeFieldName(FIELD_NAME_CURRENT_REQUEST);
 				jsonGen.writeRawValue(currentRequest.toJson());
 			}

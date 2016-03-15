@@ -19,7 +19,7 @@ public interface InitializationParams {
      *
 	 * @since 0.6
 	 */
-	public String get(String param);
+	public String getOr(String param, String defaultValue);
 
 	/**
 	 * The value of an init parameter.
