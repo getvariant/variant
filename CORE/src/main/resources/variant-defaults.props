@@ -4,9 +4,7 @@
 # Default values for all Variant system properties.
 #
 
-#
-# Event Writer config
-#
+# Event Writer
 # Max number of events held in memory queue 
 event.writer.buffer.size = 20000
 # Percent of buffer size that will trigger a flush.

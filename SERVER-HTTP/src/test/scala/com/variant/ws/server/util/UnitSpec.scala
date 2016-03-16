@@ -16,13 +16,13 @@ import net.liftweb.http.testing.TestKit
 import net.liftweb.http.testing.ReportFailure
 import com.variant.core.Variant
 import com.variant.core.jdbc.JdbcService
+import com.variant.core.impl.VariantCoreImpl
 
 
 /**
  * 
  */
-object UnitSpec {
-   
+object UnitSpec {   
    // Use statc count to deal with SBT's parallel execution of tests.
    var upCount = 0;
 }
@@ -96,9 +96,13 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
    }
 }
  
-   
+/**
+ * 
+ */
 object JettyTestServer {
    
+   val logger = Logger(LoggerFactory.getLogger(this.getClass))
+
    private val server: Server = {
       val svr = new Server
       val connector = new SelectChannelConnector
@@ -120,7 +124,9 @@ object JettyTestServer {
     * Only start if not yet started.
     */
     def start() { 
-       server.start()
+      val now = System.currentTimeMillis()
+      server.start()
+      logger.info("Jetty started in " + (System.currentTimeMillis() - now) + " ms.")
    }
    
    /**
@@ -128,8 +134,10 @@ object JettyTestServer {
     * i.e. only one starter is still out there.
     */
    def stop() {
+      val now = System.currentTimeMillis()
       server.stop()
       server.join()
+      logger.info("Jetty stopped in " + (System.currentTimeMillis() - now) + " ms.")
    }
 }
 
@@ -137,17 +145,12 @@ object JettyTestServer {
  * 
  */
 trait JettyStartupAndShutdown extends FlatSpec {
-
    
    def startJetty() = {
-      val now = System.currentTimeMillis()
       JettyTestServer.start
-      info("Jetty started in " + (System.currentTimeMillis() - now) + " ms.")
    }
    
    def stopJetty() = {
-      val now = System.currentTimeMillis()
       JettyTestServer.stop
-      info("Jetty stopped in " + (System.currentTimeMillis() - now) + " ms.")
    }
 }
