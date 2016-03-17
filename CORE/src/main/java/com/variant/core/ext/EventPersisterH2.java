@@ -20,13 +20,15 @@ public class EventPersisterH2 extends EventPersisterJdbc {
 	
 	@Override
 	public void initialized(InitializationParams initParams) throws Exception {
-		url = initParams.getOrThrow(
+		url = (String) initParams.getOrThrow(
 				"url", 
 				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
-		user = initParams.getOrThrow(
+		
+		user = (String) initParams.getOrThrow(
 				"user", 
 				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", this.getClass().getName(), VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
-		String passString = initParams.getOrThrow(
+		
+		String passString = (String) initParams.getOrThrow(
 				"password", 
 				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", this.getClass().getName(), VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
 		password = new SecureString(passString.toCharArray());

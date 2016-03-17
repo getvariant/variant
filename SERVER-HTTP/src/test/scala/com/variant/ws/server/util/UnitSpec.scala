@@ -17,12 +17,15 @@ import net.liftweb.http.testing.ReportFailure
 import com.variant.core.Variant
 import com.variant.core.jdbc.JdbcService
 import com.variant.core.impl.VariantCoreImpl
-
+import scala.util.Random
 
 /**
  * 
  */
 object UnitSpec {   
+   
+   val rand = new Random(System.currentTimeMillis())
+
    // Use statc count to deal with SBT's parallel execution of tests.
    var upCount = 0;
 }

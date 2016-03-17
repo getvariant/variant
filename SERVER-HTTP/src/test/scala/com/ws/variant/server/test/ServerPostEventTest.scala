@@ -17,15 +17,14 @@ import net.liftweb.http.testing.HttpResponse
 import net.liftweb.http.testing.TestKit
 
 /**
- * TODO: read events from database.
+ * 
  */
 class PostEventTest extends UnitSpec {
-  
+
    "setup" should "run after beforeAll" in {
       val parserResp = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"))
       parserResp.getMessages should have size (0)      
    }
-
    //---------------------------------------------------------------------------------------//
    //                                  PARSE ERRORS                                         //
    //---------------------------------------------------------------------------------------//
@@ -147,7 +146,6 @@ class PostEventTest extends UnitSpec {
    //---------------------------------------------------------------------------------------//
    //                                   PARSE OKAY                                          //
    //---------------------------------------------------------------------------------------//
-
    // Pre-pop session cache to avoid errors due to no session, while we're still testing payload parsing.
    var key1 = this.getClass.getSimpleName + "key1"
 
@@ -191,8 +189,9 @@ class PostEventTest extends UnitSpec {
    //---------------------------------------------------------------------------------------//
    //                                   NO SESSION                                          //
    //---------------------------------------------------------------------------------------//
+   
    it should "fail due to no session with 403" in {
-      val key2 = this.getClass.getSimpleName + "key2"  
+      val id = this.getClass.getSimpleName + rand.nextInt();  
       val json = """
       {
          "sid":"$sid",
@@ -203,18 +202,19 @@ class PostEventTest extends UnitSpec {
             "param1":"PARAM1"
             "param2":"PARAM2"
           }
-      }""".replaceAll("\\$sid", key2)
+      }""".replaceAll("\\$sid", id)
       val postResp = post("/event", json.getBytes, "application/json") ! "No response from server "
       postResp.code should be (HttpStatus.SC_FORBIDDEN)
       postResp.bodyAsString should equal (UserError.errors(UserError.SessionExpired).message())
    }
-
+   
    //---------------------------------------------------------------------------------------//
    //                                        AOK                                            //
    //---------------------------------------------------------------------------------------//
+  
    it should "succeed if valid session and request" in {
-      val key3 = this.getClass.getSimpleName + "key3"  
-      val eventJson = """
+   val id = this.getClass.getSimpleName + rand.nextInt();
+   val eventJson = """
       {
          "sid":"$sid",
          "name":"NAME",
@@ -224,10 +224,11 @@ class PostEventTest extends UnitSpec {
             "param1":"PARAM1"
             "param2":"PARAM2"
           }
-      }""".replaceAll("\\$sid", key3)
+      }""".replaceAll("\\$sid", id)
       
-      // Get new session remotely
-      val getResp = get("/session/" + key3) !@ "Jetty is not running"
+      val ssn = api.getSession(id).asInstanceOf[VariantSessionImpl]
+      SessionCache.put(id, ssn.toJson())
+      val getResp = get("/session/" + id) ! "Jetty is not running"
       getResp.code should be (HttpStatus.SC_OK)
       var ssnIn = VariantSessionImpl.fromJson(api, getResp.bodyAsString.openOrThrowException("Unexpected null response"));
       ssnIn.getTraversedStates().toList should be ('empty)
@@ -238,7 +239,7 @@ class PostEventTest extends UnitSpec {
       val jsonIn = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
          
       // Update the session with the state dispatch data.
-      val putResp =  put("/session/" + key3, jsonIn.getBytes, "application/json") ! "No response from server "
+      val putResp =  put("/session/" + id, jsonIn.getBytes, "application/json") ! "No response from server "
       putResp.code should be (HttpStatus.SC_OK)
       putResp.bodyAsString.openOrThrowException("Unexpected null response").length should be (0) 
          
@@ -249,7 +250,7 @@ class PostEventTest extends UnitSpec {
       
       Thread.sleep(500) // Writes to DB are async
       
-      val eventsFromDb = new EventReader(api).readEvents().filter(e => e.getSessionId == key3)
+      val eventsFromDb = new EventReader(api).readEvents().filter(e => e.getSessionId == id)
 		eventsFromDb should have size (1)
       val eventFromDb = eventsFromDb.iterator.next
       // TODO: uncomment when bug #15

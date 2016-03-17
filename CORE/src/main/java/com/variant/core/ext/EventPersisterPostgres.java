@@ -20,9 +20,15 @@ public class EventPersisterPostgres extends EventPersisterJdbc {
 	
 	@Override
 	public void initialized(InitializationParams initParams) throws Exception {
-		url = initParams.getOrThrow("url", new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName()));
-		user = initParams.getOrThrow("user", new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", this.getClass().getName()));
-		String passString = initParams.getOrThrow("password", new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", this.getClass().getName()));
+		url = (String) initParams.getOrThrow(
+				"url", new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName()));
+		
+		user = (String) initParams.getOrThrow(
+				"user", new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", this.getClass().getName()));
+		
+		String passString = (String) initParams.getOrThrow(
+				"password", new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", this.getClass().getName()));
+
 		password = new SecureString(passString.toCharArray());
 	}
 

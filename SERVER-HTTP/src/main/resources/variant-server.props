@@ -4,5 +4,5 @@
 # Server properties.
 #
 
-# Session expired by the server after this many seconds.
-ws.session.expiration.mins = 900
+# The defaults
+session.store.class.init = {"apiEndpoint":"**Not used on Server**", "sessionTimeoutSecs":900, "vacuumingFrequencySecs":60}

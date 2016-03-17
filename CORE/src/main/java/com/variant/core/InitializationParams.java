@@ -19,7 +19,7 @@ public interface InitializationParams {
      *
 	 * @since 0.6
 	 */
-	public String getOr(String param, String defaultValue);
+	public Object getOr(String param, Object defaultValue);
 
 	/**
 	 * The value of an init parameter.
@@ -30,7 +30,7 @@ public interface InitializationParams {
      *
 	 * @since 0.6
 	 */
-	public String getOrThrow(String param, VariantRuntimeException exceptionIfNull);
+	public Object getOrThrow(String param, VariantRuntimeException exceptionIfNull);
 
 	/**
 	 * The core API handle that created this object.

@@ -131,9 +131,9 @@ public class EventWriter {
 		@Override
 		public void run() {
 
-			LOG.debug("Event persister thread " + Thread.currentThread().getName() + " started.");
+			if (LOG.isDebugEnabled()) LOG.debug("Event persister thread " + Thread.currentThread().getName() + " started.");
 			
-			boolean InterruptedExceptionThrown = false;
+			boolean interruptedExceptionThrown = false;
 			
 			while (true) {
 				
@@ -152,22 +152,21 @@ public class EventWriter {
 
 				}
 				catch (InterruptedException e) {
-					InterruptedExceptionThrown = true;
+					interruptedExceptionThrown = true;
 				}
 				catch (Throwable t) {
 					LOG.error("Unexpected exception in async database event writer.", t);
 				}
 				
-				if (InterruptedExceptionThrown || Thread.currentThread().isInterrupted()) {
+				if (interruptedExceptionThrown || isInterrupted()) {
 					try {
 						flush();
 					}
 					catch (Throwable t) {
 						LOG.error("Unexpected exception in async database event writer.", t);
 					}
-					if (LOG.isDebugEnabled()) {
+					if (LOG.isDebugEnabled())
 						LOG.debug("Event persister thread " + Thread.currentThread().getName() + " interrupted and exited.");
-					}
 					return;
 				};
 			}

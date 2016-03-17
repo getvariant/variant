@@ -6,12 +6,16 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.variant.core.exception.VariantInternalException;
 
 public class HttpClient {
 
-	CloseableHttpClient client = HttpClients.createDefault();
+	final private static Logger LOG = LoggerFactory.getLogger(HttpClient.class);
+	
+	private CloseableHttpClient client = HttpClients.createDefault();
 	
 	public HttpClient() {}
 	
@@ -34,6 +38,9 @@ public class HttpClient {
 			// Please note that if response content is not fully consumed the underlying
 			// connection cannot be safely re-used and will be shut down and discarded
 			// by the connection manager.
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(String.format("GET %s => %s", url, resp.getStatusLine()));
+			}
 			return new HttpResponse(get, resp);
 		}
 		catch (Exception e) {
@@ -59,6 +66,9 @@ public class HttpClient {
 			put.setHeader("Content-Type", "application/json");
 			put.setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
 			resp = client.execute(put);
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(String.format("PUT %s [%s] => %s", url, body, resp.getStatusLine()));
+			}
 		    return new HttpResponse(put, resp);
 		}
 		catch (Exception e) {

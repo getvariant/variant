@@ -4,8 +4,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.variant.core.InitializationParams;
+import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
-import com.variant.core.exception.VariantInternalException;
 import com.variant.core.session.VariantSessionImpl;
 import com.variant.ws.server.core.VariantCore;
 
@@ -17,15 +21,75 @@ import com.variant.ws.server.core.VariantCore;
  */
 public class SessionCache {
 
+	private static final Logger LOG = LoggerFactory.getLogger(SessionCache.class);
+	
 	private static ConcurrentHashMap<String, Entry> cacheMap = new ConcurrentHashMap<>();
-	private static boolean valid = false;
-
+	
 	static {
 		VacuumThread vt = new VacuumThread();
 		vt.setName("ssn_cache_vac");
 		vt.setDaemon(true);
 		vt.start();
-		valid = true;
+	}
+	
+	/**
+	 * Background thread deletes cache entries older than the keep-alive interval.
+	 */
+	private static class VacuumThread extends Thread {
+		
+		// How frequently should we vacuum?
+		private static long vacuumingFrequencyMillis;
+		private static long sessionTimeoutMillis;
+
+		private VacuumThread() {
+			
+			// Session expiration interval is defined in the session.store.class.init map
+			// and is also used by the client.
+			InitializationParams params = VariantCore.api().getProperties().get(VariantProperties.Key.SESSION_STORE_CLASS_INIT, InitializationParams.class);
+			sessionTimeoutMillis = (Integer) params.getOr("sessionTimeoutSecs",  new Integer(15 * 60) /*15 min default*/) * 1000;
+			// Vacuuming frequency is same place but only used on the server.
+			vacuumingFrequencyMillis = (Integer) params.getOr("vacuumingFrequencySecs",  new Integer(60) /*1 min default*/)  * 1000;
+		}
+
+		@Override
+		public void run() {
+
+			LOG.debug("Vacuuming thread " + Thread.currentThread().getName() + " started.");
+			
+			boolean interrupted = false;
+			boolean timeToGo = false;
+			
+			while (!timeToGo) {
+			
+				try {
+					long now = System.currentTimeMillis();					
+					Iterator<Map.Entry<String, Entry>> iter = cacheMap.entrySet().iterator();
+					while(iter.hasNext()) {
+						Map.Entry<String, Entry> e = iter.next();
+						if (e.getValue().lastAccessTimestamp + sessionTimeoutMillis < now) {
+							iter.remove();
+							if (LOG.isTraceEnabled()) LOG.trace(String.format("Vacuumed expired session ID [%s]", e.getKey()));
+						}
+					}
+					
+					sleep(vacuumingFrequencyMillis);
+
+				}
+				catch (InterruptedException e) {
+					interrupted = true;
+				}
+				catch (Throwable t) {
+					LOG.error("Unexpected exception in vacuuming thread.", t);
+				}
+				
+				if (interrupted || isInterrupted()) {
+					if (LOG.isDebugEnabled())
+						LOG.debug("Vacuuming thread " + Thread.currentThread().getName() + " interrupted and exited.");
+					cacheMap = null;
+					timeToGo = true;
+				}
+			}
+		}
 	}
 	
 	/**
@@ -48,8 +112,6 @@ public class SessionCache {
 	 * @return
 	 */
 	public static Entry get(String key) throws Exception {
-
-		if (!valid) throw new VariantInternalException("SessionCache has been invalidated");
 		
 		Entry result = cacheMap.get(key);
 		if (result != null) result.lastAccessTimestamp = System.currentTimeMillis();
@@ -89,37 +151,6 @@ public class SessionCache {
 				session = VariantSessionImpl.fromJson(VariantCore.api(), new String(json));
 			}
 			return session;
-		}
-	}
-
-	/**
-	 * Background thread deletes cache entries older than the keep-alive interval.
-	 */
-	private static class VacuumThread extends Thread {
-		
-		// Entry will be removed from cache after this period
-		private static final long KEEP_ALIVE_MILLIS = 15 * 60 * 1000; // 15 min.
-
-		// How frequently should the thread run?
-		private static final long PAUSE_MILLIS = 60 * 1000;  // 1 min.
-		
-		@Override
-		public void run() {
-			
-			try {
-				sleep(PAUSE_MILLIS);
-			} catch (InterruptedException e1) {
-				valid = false;
-				return;
-			}
-			
-			long now = System.currentTimeMillis();
-			Iterator<Map.Entry<String, Entry>> iter = cacheMap.entrySet().iterator();
-			while(iter.hasNext()) {
-				Map.Entry<String, Entry> e = iter.next();
-				if (e.getValue().lastAccessTimestamp + KEEP_ALIVE_MILLIS > now) 
-					iter.remove();
-			}
 		}
 	}
 }

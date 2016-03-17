@@ -14,7 +14,7 @@ object VariantCore {
     * External configuration passes the name of the resource properties file here.
     */
    def init(configNamesAsResources: String*) : Unit = {
-      api = Variant.Factory.getInstance("/variant-server.props" +: configNamesAsResources:_*).asInstanceOf[VariantCoreImpl]
+      api = Variant.Factory.getInstance((configNamesAsResources :+ "/variant-server.props"):_*).asInstanceOf[VariantCoreImpl]
    }
    
 }

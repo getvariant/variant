@@ -15,29 +15,42 @@ import com.variant.core.hook.TestQualificationHook
 import com.variant.core.hook.HookListener
 import scala.util.Random
 import com.variant.core.VariantProperties
+import net.liftweb.json.JsonAST.JValue
 
 /**
  */
-class SessionTest extends UnitSpec {
+class ServerSessionTest extends UnitSpec {
     
-   val rand = new Random(System.currentTimeMillis())
-   
    "setup" should "run after beforeAll" in {
+      
+      import net.liftweb.json._
+      
+      // Change session expiration to 1 second by reading current store class init (as json string),
+      // replacing the value and resetting it. We'll need to bounce the api for that to take effect.
+      // UPDATE: this is now accomplished via variant-test.props. Keeping this cmmented as an
+      // example of JSON manipualtion.
+      //val initParams = parse(api.getProperties.get(VariantProperties.Key.SESSION_STORE_CLASS_INIT));
+      //System.setProperty(VariantProperties.Key.SESSION_STORE_CLASS_INIT.propName(), compact(render(initParams.replace("sessionTimeoutSecs" :: Nil, JInt(1)))));
+      //VariantCore.init("/variant-test.props")
+
       val parserResp = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"))
       parserResp.getMessages should have size (0)      
    }
 
    "Get non-existent session" should "return no content" in {
       
-      val id = this.getClass.getSimpleName + rand.nextLong;
+      val id = this.getClass.getSimpleName + rand.nextInt;
       val httpResp =  get("/session/" + id) ! "No response from server "
       SessionCache.get(id) should be (null)
       httpResp.code should be (HttpStatus.SC_NO_CONTENT)
    }
 
    "PUT non-existent session" should "create the session" in {
-      val id = this.getClass.getSimpleName + rand.nextLong();
+      val id = this.getClass.getSimpleName + rand.nextInt();
       SessionCache.get(id) should be (null)
+      val httpGetResp1 = get("/session/" + id) ! "Jetty not running"
+      httpGetResp1.code should be (HttpStatus.SC_NO_CONTENT)
+
       val ssn = api.getSession(id)
       ssn should not be (null)
       val json = ssn.asInstanceOf[VariantSessionImpl].toJson()
@@ -47,43 +60,52 @@ class SessionTest extends UnitSpec {
       val cacheEntry = SessionCache.get(id)
       cacheEntry should not be (null)
       new String(cacheEntry.getJson) should equal (json)
-      val httpGetResp = get("/session/" + id) ! "Jetty is not running"
-      httpGetResp.code should be (HttpStatus.SC_OK)
-      httpGetResp.bodyAsString should equal (json)
+      val httpGetResp2 = get("/session/" + id) ! "Jetty is not running"
+      httpGetResp2.code should be (HttpStatus.SC_OK)
+      httpGetResp2.bodyAsString should equal (json)
    }
 
    "PUT expired session" should "quietly reinstate the session" in {
-      // Change session expiration by reading current store class init (as json string)
-      // replacing the value and resetting it.
-      println(api.getProperties.get(VariantProperties.Key.SESSION_STORE_CLASS_INIT))
-      //System.setProperty(VariantProperties.Key.SESSION_STORE_CLASS_INIT, TMP_FILE_NAME);
-      val id = this.getClass.getSimpleName + rand.nextLong();
+            
+      val id = this.getClass.getSimpleName + rand.nextInt();
+      SessionCache.get(id) should be (null)      
       val ssn = api.getSession(id)
-      val req = api.dispatchRequest(ssn, api.getSchema.getState("state2"), "")
-      req.getSession shouldBe ssn
-      val json = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
-      val httpPutResp =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server "
-      httpPutResp.code should be (HttpStatus.SC_OK)
-      httpPutResp.bodyAsString.openOrThrowException("Unexpected null response").length should be (0)
+      ssn should not be (null)      
+      val json = ssn.asInstanceOf[VariantSessionImpl].toJson()
+      val httpPutResp1 =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server "
+      httpPutResp1.code should be (HttpStatus.SC_OK)
+      httpPutResp1.bodyAsString.openOrThrowException("Unexpected null response").length should be (0)
+      SessionCache.get(id) should not be (null)      
+
+      Thread.sleep(2000);  // Wait for the vacuum to delete the session.
+      SessionCache.get(id) should be (null)
+      
+      val httpPutResp2 =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server "
+      httpPutResp2.code should be (HttpStatus.SC_OK)
+      httpPutResp2.bodyAsString.openOrThrowException("Unexpected null response").length should be (0)
+      SessionCache.get(id) should not be (null)      
       val cacheEntry = SessionCache.get(id)
       cacheEntry should not be (null)
-      new String(cacheEntry.getJson) should equal (json)
-      val httpGetResp = get("/session/" + id) !@ "Jetty is not running"
-      httpGetResp.code should be (HttpStatus.SC_OK)
-      httpGetResp.bodyAsString should equal (json)
-      api.commitStateRequest(req, "")
+      new String(cacheEntry.getJson) should equal (json)  
    }
 
-   "PUT on existing session" should "create new session" in {
+   "PUT on existing session" should "replace the session" in {
       
-      val id = this.getClass.getSimpleName + rand.nextLong();
+      val id = this.getClass.getSimpleName + rand.nextInt();
+      SessionCache.get(id) should be (null)
       val ssn = api.getSession(id)
+      ssn should not be (null)      
+      val httpPutResp1 =  put(
+            "/session/" + id, 
+            ssn.asInstanceOf[VariantSessionImpl].toJson().getBytes, "application/json"
+            ) ! "No response from server "
+      httpPutResp1.code should be (HttpStatus.SC_OK)
       val req = api.dispatchRequest(ssn, api.getSchema.getState("state4"), "")
       req.getSession shouldBe ssn
       val json = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
-      val httpPutResp =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server "
-      httpPutResp.code should be (HttpStatus.SC_OK)
-      httpPutResp.bodyAsString.openOrThrowException("Unexpected null response").length should be (0)
+      val httpPutResp2 =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server "
+      httpPutResp2.code should be (HttpStatus.SC_OK)
+      httpPutResp2.bodyAsString.openOrThrowException("Unexpected null response").length should be (0)
       val cacheEntry = SessionCache.get(id)
       cacheEntry should not be (null)
       new String(cacheEntry.getJson) should equal (json)
@@ -95,13 +117,9 @@ class SessionTest extends UnitSpec {
 
    "Session storage" should "preserve traversed tests" in {
       
-      val id = this.getClass.getSimpleName + rand.nextLong();
-   
-      // Get new session
-      val httpGetResp = get("/session/" + id) ! "Jetty not running"
-      httpGetResp.code should be (HttpStatus.SC_OK)
-      val json = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
-      var ssnIn = VariantSessionImpl.fromJson(api, json);
+      val id = this.getClass.getSimpleName + rand.nextInt();
+
+      val ssnIn = api.getSession(id)
       ssnIn.getTraversedStates().toList should be ('empty)
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)
@@ -115,7 +133,7 @@ class SessionTest extends UnitSpec {
          httpPutResp.code should be (HttpStatus.SC_OK)
          httpPutResp.bodyAsString.openOrThrowException("Unexpected null response").length should be (0) 
          
-         val httpGetResp = get("/session/" + id) !@ "Jetty is not running"
+         val httpGetResp = get("/session/" + id) ! "Jetty is not running"
          httpGetResp.code should be (HttpStatus.SC_OK)
          val jsonOut = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
          jsonOut should equal (jsonIn)
@@ -126,16 +144,10 @@ class SessionTest extends UnitSpec {
       }      
    }
 
-/*
    it should "preserve traversed states" in {
       
-      val id = this.getClass.getSimpleName + "key4"
-
-      // Get new session
-      val httpGetResp = get("/session/" + id) !@ "Jetty is not running"
-      httpGetResp.code should be (HttpStatus.SC_OK)
-      val json = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
-      var ssnIn = VariantSessionImpl.fromJson(api, json);
+      val id = this.getClass.getSimpleName + rand.nextInt();
+      val ssnIn = api.getSession(id)
       ssnIn.getTraversedStates().toList should be ('empty)
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)
@@ -149,7 +161,7 @@ class SessionTest extends UnitSpec {
          httpPutResp.code should be (HttpStatus.SC_OK)
          httpPutResp.bodyAsString.openOrThrowException("Unexpected null response").length should be (0) 
          
-         val httpGetResp = get("/session/" + id) !@ "Jetty is not running"
+         val httpGetResp = get("/session/" + id) ! "Jetty is not running"
          httpGetResp.code should be (HttpStatus.SC_OK)
          val jsonOut = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
          jsonOut should equal (jsonIn)
@@ -162,13 +174,8 @@ class SessionTest extends UnitSpec {
 
    it should "preserve targeted experiences" in {
       
-      val id = this.getClass.getSimpleName + "key5"
-
-      // Get new session
-      val httpGetResp = get("/session/" + id) !@ "Jetty is not running"
-      httpGetResp.code should be (HttpStatus.SC_OK)
-      val json = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
-      var ssnIn = VariantSessionImpl.fromJson(api, json);
+      val id = this.getClass.getSimpleName + rand.nextInt();
+      val ssnIn = api.getSession(id)
       ssnIn.getTraversedStates().toList should be ('empty)
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)
@@ -182,7 +189,7 @@ class SessionTest extends UnitSpec {
          httpPutResp.code should be (HttpStatus.SC_OK)
          httpPutResp.bodyAsString.openOrThrowException("Unexpected null response").length should be (0) 
          
-         val httpGetResp = get("/session/" + id) !@ "Jetty is not running"
+         val httpGetResp = get("/session/" + id) ! "Jetty is not running"
          httpGetResp.code should be (HttpStatus.SC_OK)
          val jsonOut = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
          jsonOut should equal (jsonIn)
@@ -210,16 +217,11 @@ class SessionTest extends UnitSpec {
 
       }      
    }
-   
+  
    it should "preserve targeted experiences when they are empty list if we hit a state with no instrumented tests" in {
       
-      val id = this.getClass.getSimpleName + "key6"
-
-      // Get new session
-      val httpGetResp = get("/session/" + id) !@ "Jetty is not running"
-      httpGetResp.code should be (HttpStatus.SC_OK)
-      val json = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
-      var ssnIn = VariantSessionImpl.fromJson(api, json);
+      val id = this.getClass.getSimpleName + rand.nextInt
+      val ssnIn = api.getSession(id)
       ssnIn.getTraversedStates().toList should be ('empty)
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)
@@ -237,7 +239,7 @@ class SessionTest extends UnitSpec {
          httpPutResp.code should be (HttpStatus.SC_OK)
          httpPutResp.bodyAsString.openOrThrowException("Unexpected null response").length should be (0) 
          
-         val httpGetResp = get("/session/" + id) !@ "Jetty is not running"
+         val httpGetResp = get("/session/" + id) ! "Jetty is not running"
          httpGetResp.code should be (HttpStatus.SC_OK)
          val jsonOut = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
          jsonOut should equal (jsonIn)
@@ -249,7 +251,6 @@ class SessionTest extends UnitSpec {
          
          api.commitStateRequest(req, "")
       }
-
       
       /**
        * Qualifer hook listener.  Disqualifies everything.
@@ -265,6 +266,5 @@ class SessionTest extends UnitSpec {
    		}
       }
    }
-   
-*/
+
 }

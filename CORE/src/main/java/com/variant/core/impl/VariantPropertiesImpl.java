@@ -159,7 +159,7 @@ public class VariantPropertiesImpl implements VariantProperties {
 	 * 
 	 */
 	@SuppressWarnings("serial")
-	public static class InitParams extends HashMap<String, String> implements InitializationParams {
+	public static class InitParams extends HashMap<String, Object> implements InitializationParams {
 		
 		private Variant coreApi; 
 		
@@ -169,14 +169,14 @@ public class VariantPropertiesImpl implements VariantProperties {
 		}
 		
 		@Override
-		public String getOr(String param, String defaultValue) {
-			String result = super.get(param);
+		public Object getOr(String param, Object defaultValue) {
+			Object result = super.get(param);
 			return result == null ? defaultValue : result;
 		}
 
 		@Override
-		public String getOrThrow(String key, VariantRuntimeException e) {
-			String result = super.get(key);
+		public Object getOrThrow(String key, VariantRuntimeException e) {
+			Object result = super.get(key);
 			if (result == null) throw e;
 			else return result;
 		}

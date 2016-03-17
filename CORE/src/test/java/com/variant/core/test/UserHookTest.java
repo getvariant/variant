@@ -204,9 +204,6 @@ public class UserHookTest extends BaseTestCore {
 		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"), schema.getTest("test1"));
 		api.addHookListener(disqualListener);
 		
-		response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = api.getSchema();
 		state1 = schema.getState("state1");

@@ -7,7 +7,7 @@
 # Session store on a remote server accessed via an HTTP service.
 # session timeout = 15 min (also the default, if not supplied.)
 session.store.class.name = com.variant.web.SessionStoreRemote
-session.store.class.init = {"apiEndpoint":"http://localhost:8080/", "sessionTimeoutSecs":900}
+session.store.class.init = {"apiEndpoint":"http://localhost:8080/", "sessionTimeoutSecs":900, "vacuumingFrequencySecs":"**Not Used On Client**}
 
 # Session ID tracker in HTTP cookie.
 session.id.tracker.class.name = com.variant.web.SessionIdTrackerHttpCookie

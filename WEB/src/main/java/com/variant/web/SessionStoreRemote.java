@@ -76,7 +76,7 @@ public class SessionStoreRemote implements VariantSessionStore {
 	}
 
 	/**
-	 * Save the session in the reomote server.
+	 * Save the session in the remote server.
 	 */
 	@Override
 	public void save(VariantSession session, Object... userData) {
@@ -104,11 +104,11 @@ public class SessionStoreRemote implements VariantSessionStore {
 	@Override
 	public void initialized(InitializationParams initParams) throws Exception {
 
-		apiEndpointUrl = initParams.getOrThrow(
+		apiEndpointUrl = (String) initParams.getOrThrow(
 				"apiEndpoint", 
 				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
 		
-		sessionTimeoutMillis = Integer.parseInt(initParams.getOr("sessionTimeout",  "900")) * 1000;
+		sessionTimeoutMillis = (Integer) initParams.getOr("sessionTimeoutSecs",  "900") * 1000;
 		
 		coreApi = (VariantCoreImpl) initParams.getCoreApi();
 	}
