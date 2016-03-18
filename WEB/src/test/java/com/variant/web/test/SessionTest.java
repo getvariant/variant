@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Random;
 
 import javax.servlet.http.Cookie;
@@ -18,8 +19,13 @@ import com.variant.core.impl.VariantCoreImplTestFacade;
 import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
+
+import static com.variant.core.util.Tuples.Pair;
+
+import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantStringUtils;
 import com.variant.web.mock.HttpServletResponseMock;
 import com.variant.web.util.VariantWebStateRequestDecorator;
@@ -122,9 +128,15 @@ public class SessionTest extends BaseTestWeb {
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
-		assertEquals(
-				"[(test6, true), (test4, true), (test5, true), (test2, true), (test3, true)]", 
-				Arrays.toString(ssn2.getTraversedTests().toArray()));
+		
+		Collection<Pair<Test,Boolean>> expectedTests = VariantCollectionsUtils.list(
+				new Pair<Test,Boolean>(schema.getTest("test2"), true), 
+				new Pair<Test,Boolean>(schema.getTest("test3"), true), 
+				new Pair<Test,Boolean>(schema.getTest("test4"), true), 
+				new Pair<Test,Boolean>(schema.getTest("test5"), true), 
+				new Pair<Test,Boolean>(schema.getTest("test6"), true));
+		
+		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
 
 		webApi.commitStateRequest(varReq, httpResp);
 
@@ -141,9 +153,8 @@ public class SessionTest extends BaseTestWeb {
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
-		assertEquals(
-				"[(test6, true), (test4, true), (test5, true), (test2, true), (test3, true)]", 
-				Arrays.toString(ssn2.getTraversedTests().toArray()));
+
+		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
 
 		// Commit should have saved the session.
 		VariantSession ssn3 = webApi.getSession(httpReq, httpResp);
@@ -155,9 +166,7 @@ public class SessionTest extends BaseTestWeb {
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn3.getTraversedStates().toArray()));
-		assertEquals(
-				"[(test6, true), (test4, true), (test5, true), (test2, true), (test3, true)]", 
-				Arrays.toString(ssn3.getTraversedTests().toArray()));		
+		assertEqualAsSets(expectedTests, ssn3.getTraversedTests());		
 	}
 	
 	/**
@@ -197,9 +206,16 @@ public class SessionTest extends BaseTestWeb {
 		assertEquals(
 				"[(state2, 1)]", 
 				Arrays.toString(ssn1.getTraversedStates().toArray()));
-		assertEquals(
-				"[(test1, true), (test6, true), (test4, true), (test5, true), (test2, true), (test3, true)]", 
-				Arrays.toString(ssn1.getTraversedTests().toArray()));		
+		
+		Collection<Pair<Test,Boolean>> expectedTests = VariantCollectionsUtils.list(
+				new Pair<Test,Boolean>(schema.getTest("test1"), true), 
+				new Pair<Test,Boolean>(schema.getTest("test2"), true), 
+				new Pair<Test,Boolean>(schema.getTest("test3"), true), 
+				new Pair<Test,Boolean>(schema.getTest("test4"), true), 
+				new Pair<Test,Boolean>(schema.getTest("test5"), true), 
+				new Pair<Test,Boolean>(schema.getTest("test6"), true));
+
+		assertEqualAsSets(expectedTests, ssn1.getTraversedTests());		
 
 		webApi.commitStateRequest(varReq, httpResp);
 		
@@ -214,9 +230,7 @@ public class SessionTest extends BaseTestWeb {
 		assertEquals(
 				"[(state2, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
-		assertEquals(
-				"[(test1, true), (test6, true), (test4, true), (test5, true), (test2, true), (test3, true)]", 
-				Arrays.toString(ssn1.getTraversedTests().toArray()));		
+		assertEqualAsSets(expectedTests, ssn1.getTraversedTests());		
 		
 		
 	}
