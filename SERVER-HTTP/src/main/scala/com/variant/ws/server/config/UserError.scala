@@ -25,7 +25,7 @@ object UserError {
      new UserError("Unsupported property '%s' in payload", HttpStatus.SC_BAD_REQUEST),
      new UserError("Property '%s' must be a string", HttpStatus.SC_BAD_REQUEST),
      new UserError("Empty body", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Unknown state", HttpStatus.SC_BAD_REQUEST),
+     new UserError("No recent state request in session", HttpStatus.SC_BAD_REQUEST),
      
      // 403
      new UserError("Session expired", HttpStatus.SC_FORBIDDEN)

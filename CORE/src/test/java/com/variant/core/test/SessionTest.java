@@ -140,7 +140,7 @@ public class SessionTest extends BaseTestCore {
 		assertEqualAsSets(ssn.getTraversedStates(), deserializedSsn.getTraversedStates());
 		assertEqualAsSets(ssn.getTraversedTests(), deserializedSsn.getTraversedTests());
 		api.commitStateRequest(req1, "");
-		
+		System.out.println(((VariantSessionImpl)ssn).toJson());
 		// Nothing is instrumented on state2
 		VariantStateRequest req2 = api.dispatchRequest(ssn, schema.getState("state2"), "");
 		assertNotNull(req2);

@@ -9,6 +9,7 @@ import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.config.ComptimeService;
 import com.variant.core.hook.HookListener;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -57,10 +58,11 @@ public class VariantWeb {
 	 * @since 0.5
 	 */
 	public VariantWeb(String...resourceNames) {
+		ComptimeService.registerComponent("WEB", "0.6.0");
 		this.core = Variant.Factory.getInstance(
 				VariantArrayUtils.concat(
 						resourceNames,
-						"/variant-web." + VariantStringUtils.RESOURCE_POSTFIX + ".props",
+						"/variant/web." + VariantStringUtils.RESOURCE_POSTFIX + ".props",
 						String.class));
 	}
 

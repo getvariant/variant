@@ -5,6 +5,28 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
 "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
+
+<filter>
+    <filter-name>cross-origin</filter-name>
+    <filter-class>org.eclipse.jetty.servlets.CrossOriginFilter</filter-class>
+    <init-param>
+        <param-name>allowedOrigins</param-name>
+        <param-value>*</param-value>
+    </init-param>
+    <init-param>
+        <param-name>allowedMethods</param-name>
+        <param-value>GET,POST,DELETE,PUT,HEAD</param-value>
+    </init-param>
+    <init-param>
+        <param-name>allowedHeaders</param-name>
+        <param-value>origin, content-type, accept</param-value>
+    </init-param>
+    <init-param>
+        <param-name>chainPreflight</param-name>
+        <param-value>false</param-value>
+    </init-param>
+</filter>
+
    <filter>
       <filter-name>LiftFilter</filter-name>
       <display-name>Lift Filter</display-name>
@@ -16,6 +38,10 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     </init-param> 
    </filter>
   	
+<filter-mapping>
+    <filter-name>cross-origin</filter-name>
+   <url-pattern>/*</url-pattern>
+</filter-mapping>
 
 <filter-mapping>
   <filter-name>LiftFilter</filter-name>

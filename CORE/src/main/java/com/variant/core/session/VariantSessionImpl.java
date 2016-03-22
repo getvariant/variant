@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.config.ComptimeService;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.VariantEventDecoratorImpl;
@@ -49,7 +50,9 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	 */
 	public VariantSessionImpl(VariantCoreImpl coreApi, String id) {
 		this.coreApi = coreApi;
-		this.schemaId = coreApi.getSchema().getId();
+		// No schema ID on server yet. 
+		if (!ComptimeService.getComponent().equals("Server")) 
+			this.schemaId = coreApi.getSchema().getId();
 		this.id = id;
 	}
 		
@@ -160,7 +163,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 		traversedStates.put(state, count);
 	}
 
-	private static final String FIELD_NAME_ID = "id";
+	private static final String FIELD_NAME_ID = "sid";
 	private static final String FIELD_NAME_TIMESTAMP = "ts";
 	private static final String FIELD_NAME_SCHEMA_ID = "schid";
 	private static final String FIELD_NAME_CURRENT_REQUEST = "req";
@@ -184,7 +187,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 			jsonGen.writeStringField(FIELD_NAME_ID, id);
 			jsonGen.writeNumberField(FIELD_NAME_TIMESTAMP, timestamp);
 			jsonGen.writeStringField(FIELD_NAME_SCHEMA_ID, schemaId);
-			if (currentRequest != null && ! currentRequest.isCommitted()) {
+			if (currentRequest != null) {
 				jsonGen.writeFieldName(FIELD_NAME_CURRENT_REQUEST);
 				jsonGen.writeRawValue(currentRequest.toJson());
 			}
@@ -247,8 +250,8 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 		if (!(schidObj instanceof String)) 
 			throw new VariantInternalException("Unable to deserialzie session: schema id not string: [" + json + "]");
 
-		// If schema has changed, return null.
-		if (!coreApi.getSchema().getId().equals(schidObj)) {
+		// If schema has changed, return null. But remember that we don't yet have a schema on server.
+		if (!ComptimeService.getComponent().equals("Server") && !coreApi.getSchema().getId().equals(schidObj)) {
 			return null;
 		}
 		
@@ -269,42 +272,45 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 			result.currentRequest = VariantStateRequestImpl.fromJson(coreApi, result, (Map<String,?>)currentRequestObj);
 		}
 		
-		Object statesObj = fields.get(FIELD_NAME_TRAVERSED_STATES);
-		if (statesObj != null) {
-			HashMap<State,Integer> statesMap = new HashMap<State, Integer>();
-			try {
-				List<?> statesListRaw = (List<?>) statesObj; 
-				for (Object obj: statesListRaw) {
-					Map<?,?> objMap = (Map<?,?>) obj;
-					String stateName = (String) objMap.get(FIELD_NAME_STATE);
-					State state = coreApi.getSchema().getState(stateName);
-					Integer count =  (Integer) objMap.get(FIELD_NAME_COUNT);
-					statesMap.put(state, count);
+		// If server, don't deserialize traversed tests and states becau se we don't have the schema here.
+		if (!ComptimeService.getComponent().equals("Server")) {
+			Object statesObj = fields.get(FIELD_NAME_TRAVERSED_STATES);
+			if (statesObj != null) {
+				HashMap<State,Integer> statesMap = new HashMap<State, Integer>();
+				try {
+					List<?> statesListRaw = (List<?>) statesObj; 
+					for (Object obj: statesListRaw) {
+						Map<?,?> objMap = (Map<?,?>) obj;
+						String stateName = (String) objMap.get(FIELD_NAME_STATE);
+						State state = coreApi.getSchema().getState(stateName);
+						Integer count =  (Integer) objMap.get(FIELD_NAME_COUNT);
+						statesMap.put(state, count);
+					}
 				}
+				catch (Exception e) {
+					throw new VariantInternalException("Unable to deserialzie session: bad states spec", e);
+				}
+				result.traversedStates = statesMap;
 			}
-			catch (Exception e) {
-				throw new VariantInternalException("Unable to deserialzie session: bad states spec", e);
-			}
-			result.traversedStates = statesMap;
-		}
 		
-		Object testsObj = fields.get(FIELD_NAME_TRAVERSED_TESTS);
-		if (testsObj != null) {
-			HashMap<Test, Boolean> testsMap = new HashMap<Test, Boolean>();
-			try {
-				List<?> testsListRaw = (List<?>) testsObj; 
-				for (Object obj: testsListRaw) {
-					Map<?,?> objMap = (Map<?,?>) obj;
-					String testName = (String) objMap.get(FIELD_NAME_TEST);
-					Test test = coreApi.getSchema().getTest(testName);
-					Boolean qualified =  (Boolean) objMap.get(FIELD_NAME_QUALIFIED);
-					testsMap.put(test, qualified);
+			Object testsObj = fields.get(FIELD_NAME_TRAVERSED_TESTS);
+			if (testsObj != null) {
+				HashMap<Test, Boolean> testsMap = new HashMap<Test, Boolean>();
+				try {
+					List<?> testsListRaw = (List<?>) testsObj; 
+					for (Object obj: testsListRaw) {
+						Map<?,?> objMap = (Map<?,?>) obj;
+						String testName = (String) objMap.get(FIELD_NAME_TEST);
+						Test test = coreApi.getSchema().getTest(testName);
+						Boolean qualified =  (Boolean) objMap.get(FIELD_NAME_QUALIFIED);
+						testsMap.put(test, qualified);
+					}
 				}
+				catch (Exception e) {
+					throw new VariantInternalException("Unable to deserialzie session: bad tests spec", e);
+				}
+				result.traversedTests = testsMap;
 			}
-			catch (Exception e) {
-				throw new VariantInternalException("Unable to deserialzie session: bad tests spec", e);
-			}
-			result.traversedTests = testsMap;
 		}
 		
 		return result;

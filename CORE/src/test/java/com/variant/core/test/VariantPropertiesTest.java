@@ -28,7 +28,7 @@ public class VariantPropertiesTest {
 		// Core default
 		Variant api = Variant.Factory.getInstance();
 		Properties expectedProps = new Properties();
-		expectedProps.load(VariantIoUtils.openResourceAsStream("/variant-defaults.props"));
+		expectedProps.load(VariantIoUtils.openResourceAsStream("/variant/defaults.props"));
 		assertEquals(expectedProps.size(), VariantPropertiesImpl.Key.values().length);
 		for (VariantPropertiesImpl.Key key: VariantPropertiesImpl.Key.values()) {
 			assertEquals(expectedProps.getProperty(key.propName()), api.getProperties().get(key, String.class));

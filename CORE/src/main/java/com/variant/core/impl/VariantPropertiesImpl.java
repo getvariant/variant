@@ -44,7 +44,7 @@ public class VariantPropertiesImpl implements VariantProperties {
 	VariantPropertiesImpl(VariantCoreImpl coreApi) {
 		this.coreApi = coreApi;
 		propsChain = new PropertiesChain();
-		overrideWith(VariantIoUtils.openResourceAsStream("/variant-defaults.props"), "/variant-defaults.props");		
+		overrideWith(VariantIoUtils.openResourceAsStream("/variant/defaults.props"), "/variant/defaults.props");		
 	}
 
 	/**

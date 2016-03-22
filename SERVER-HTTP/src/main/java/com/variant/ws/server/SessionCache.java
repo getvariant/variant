@@ -27,7 +27,7 @@ public class SessionCache {
 	
 	static {
 		VacuumThread vt = new VacuumThread();
-		vt.setName("ssn_cache_vac");
+		vt.setName("VrntSessionVacuum");
 		vt.setDaemon(true);
 		vt.start();
 	}
@@ -66,7 +66,7 @@ public class SessionCache {
 					Iterator<Map.Entry<String, Entry>> iter = cacheMap.entrySet().iterator();
 					while(iter.hasNext()) {
 						Map.Entry<String, Entry> e = iter.next();
-						if (e.getValue().lastAccessTimestamp + sessionTimeoutMillis < now) {
+						if (sessionTimeoutMillis > 0 && e.getValue().lastAccessTimestamp + sessionTimeoutMillis < now) {
 							iter.remove();
 							if (LOG.isTraceEnabled()) LOG.trace(String.format("Vacuumed expired session ID [%s]", e.getKey()));
 						}

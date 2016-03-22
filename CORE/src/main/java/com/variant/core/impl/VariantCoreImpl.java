@@ -24,7 +24,7 @@ import com.variant.core.VariantProperties.Key;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
-import com.variant.core.config.RuntimeService;
+import com.variant.core.config.ComptimeService;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.exception.VariantBootstrapException;
@@ -62,12 +62,6 @@ public class VariantCoreImpl implements Variant, Serializable {
 	private UserHooker hooker = new UserHooker();
 	private VariantPropertiesImpl properties;
 	private VariantRuntime runtime;
-	
-	private static String version() {
-		String version = RuntimeService.getVersion();
-		if (version == null) version = "?";
-		return version + " , Copyright (C) 2015-16 getvariant.com";
-	}
 		
 	/**
 	 * Setup system properties.
@@ -152,11 +146,8 @@ public class VariantCoreImpl implements Variant, Serializable {
 	/**
 	 * 
 	 */
-	public VariantCoreImpl(String...resourceNames) {
+	public VariantCoreImpl(String...resourceNames) throws Exception {
 		
-
-		long now = System.currentTimeMillis();
-
 		setupSystemProperties(resourceNames);
 		
 		if (LOG.isTraceEnabled()) {
@@ -203,11 +194,12 @@ public class VariantCoreImpl implements Variant, Serializable {
 		// Instantiate runtime.
 		//
 		runtime = new VariantRuntime(this);
-		
-		LOG.info(
-				String.format("Variant Core %s bootstrapped in %s",
-						version(),
-						DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
+
+		//
+		// Init comptime service.
+		//
+		ComptimeService.init();
+
 	}
 	
 	/**

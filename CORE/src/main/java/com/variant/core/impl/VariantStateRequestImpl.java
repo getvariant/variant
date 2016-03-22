@@ -14,6 +14,7 @@ import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
+import com.variant.core.config.ComptimeService;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.exception.VariantInternalException;
@@ -24,6 +25,7 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.impl.StateImpl;
+import com.variant.core.schema.impl.TestExperienceImpl;
 import com.variant.core.session.VariantSessionImpl;
 
 /**
@@ -46,11 +48,14 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	private boolean committed = false;
 	private VariantTargetingTracker targetingTracker = null;
 	
+	// For transitional server side use only.
+	private String stateName = null;
+	
 	// This doesn't change over the life of a request, so we'll only compute this once.
 	private Collection<Experience> targetedExperiencesCache; 
 		
 	/**
-	 * 
+	 * Regular constructor
 	 * @param session
 	 */
 	VariantStateRequestImpl(VariantSessionImpl session, StateImpl state) {
@@ -58,7 +63,20 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		this.state = state;
 		session.setStateRequest(this);
 	}
-	
+
+	/**
+	 * Transitinal server side constructor that has state name instead
+	 * of the fully instantiated State object, which we cannot instatiate
+	 * without a schema, which we don't yet have on server.
+	 * 
+	 * @param session
+	 */
+	VariantStateRequestImpl(VariantSessionImpl session, String stateName) {
+		this.session = session;
+		this.stateName = stateName;
+		session.setStateRequest(this);
+	}
+
 	/**
 	 * 
 	 * @param targetingPersister
@@ -196,6 +214,20 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		return status;
 	}
 
+	/**
+	 * A transitional hack to get access to state name on the server where we
+	 * don't yet have the schema and cannot properly instantiate state by state
+	 * name.  Which is fine because we'llonly need the name to log events.
+	 * @return
+	 */
+	public String getStateName() {
+		
+		if (ComptimeService.getComponent().equals("Server"))
+			throw new VariantInternalException("Method is supported only on Server");
+		
+		return stateName;
+	}
+	
 	private static final String FIELD_NAME_STATE = "state";
 	private static final String FIELD_NAME_STATUS = "status";
 	private static final String FILED_NAME_COMMITTED = "comm";
@@ -231,7 +263,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		if (targetedExperiences.size() > 0) {
 			jsonGen.writeArrayFieldStart(FIELD_NAME_EXPERIENCES);
 			for (Experience e: targetedExperiences) {
-				jsonGen.writeString(e.toString());
+				jsonGen.writeString(e.toString() + "." + e.isControl());
 			}
 			jsonGen.writeEndArray();
 		}
@@ -255,12 +287,12 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		if (!(stateName instanceof String)) 
 			throw new VariantInternalException("Unable to deserialzie request: state not string");
 		
-		StateImpl state = (StateImpl) coreApi.getSchema().getState((String)stateName);
+		// If we're on the server, we don't have the schema => we can't instantiate a State object,
+		// but we need the state name to log events.
 		
-		if (state == null)
-			throw new VariantInternalException("Unable to deserialzie request: state [" + stateName + "] not in schema");
-		
-		VariantStateRequestImpl result = new VariantStateRequestImpl(session, state);
+		VariantStateRequestImpl result =  ComptimeService.getComponent().equals("Server") ?
+				new VariantStateRequestImpl(session, (String)stateName) :
+				new VariantStateRequestImpl(session, (StateImpl) coreApi.getSchema().getState((String)stateName));
 		
 		Object statusStr = fields.get(FIELD_NAME_STATUS);
 		if (statusStr == null) 
@@ -303,10 +335,15 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 				List<?> experiencesListRaw = (List<?>) experiencesListObj; 
 				for (Object obj: experiencesListRaw) {
 					String expQualifiedName = (String) obj;
-					// qualified name = testName.expName - need to parse.
-					Schema schema = coreApi.getSchema();
+					// qualified name = testName.expName.bool - need to parse.
 					String[] tokens = expQualifiedName.split("\\.");
-					experiencesList.add(schema.getTest(tokens[0]).getExperience(tokens[1]));
+					if (ComptimeService.getComponent().equals("Server")) {
+						experiencesList.add(new TestExperienceImpl(tokens[0], tokens[1], new Boolean(tokens[2])));
+					}
+					else {
+						Schema schema = coreApi.getSchema();
+						experiencesList.add(schema.getTest(tokens[0]).getExperience(tokens[1]));
+					}
 				}
 			}
 			catch (Exception e) {

@@ -150,7 +150,7 @@ public class JdbcService {
 	 */
 	public void dropSchema() throws Exception {
 				
-		List<String> statements = statementsFromResourceFile("/db/drop-schema.sql");
+		List<String> statements = statementsFromResourceFile("/variant/drop-schema.sql");
 		Statement jdbcStmt = getConnection().createStatement();
 
 		for (String stmt: statements) {
@@ -175,7 +175,7 @@ public class JdbcService {
 	 */
 	public void createSchema() throws Exception {
 		
-		List<String> statements = statementsFromResourceFile("/db/create-schema.sql");
+		List<String> statements = statementsFromResourceFile("/variant/create-schema.sql");
 		Statement jdbcStmt = getConnection().createStatement();
 		for (String stmt: statements) {
 			try {

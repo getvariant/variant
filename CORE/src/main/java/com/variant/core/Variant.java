@@ -2,6 +2,13 @@ package com.variant.core;
 
 import java.io.InputStream;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.variant.core.config.ComptimeService;
+import com.variant.core.exception.VariantException;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.UserHook;
 import com.variant.core.impl.VariantCoreImpl;
@@ -132,6 +139,8 @@ public interface Variant {
 	 */
 	public static class Factory {
 		
+		private static final Logger LOG = LoggerFactory.getLogger(Variant.class);
+		
 		/**
 		 * <p>Obtain an instance of the Variant API. Takes 0 or more of String arguments. If supplied, 
 		 * each argument is understood as a Java class path resource name. Each resource 
@@ -142,7 +151,7 @@ public interface Variant {
 		 * <p>When, at runtime, the container looks for the value of a particular property key, 
 		 * these files are scanned left to right and the first value found is returned. 
 		 * If a value wasn't found in any of the supplied files, or if no files were supplied, 
-		 * the default value is used, as defiled in the <code>/variant-default.props</code> file 
+		 * the default value is used, as defiled in the <code>/variant/defaults.props</code> file 
 		 * found inside the <code>variant-core-&lt;version&gt;.jar</code> file.
 		 *
 		 * @arg resourceNames 0 or more properties files as classpath resource names.
@@ -151,7 +160,27 @@ public interface Variant {
 		 * @since 0.6
 		 */
 		public static Variant getInstance(String...resourceNames) {
-			return new VariantCoreImpl(resourceNames);
+			
+			long now = System.currentTimeMillis();
+			Variant result;
+			try {
+				result = new VariantCoreImpl(resourceNames);
+			}
+			catch (final VariantException e) {
+				throw e;
+			}
+			catch (Exception e) {
+				throw new VariantInternalException("Unable to instantiate Core", e);
+			}
+			LOG.info(
+					String.format("Variant Core %s bootstrapped in %s.",
+							ComptimeService.getCoreVersion(),
+							DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
+			LOG.info(
+					String.format("Variant %s %s, © 2015-16 getvariant.com.",
+							ComptimeService.getComponent(), ComptimeService.getComponentVersion()));
+			
+			return result;
 		}
 		
 	}

@@ -1,13 +1,20 @@
 package com.variant.core.schema.impl;
 
+import com.variant.core.config.ComptimeService;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test;
 
-class TestExperienceImpl implements Test.Experience  {
+// Remove public modifier is the result of exposing the server side
+// constructor.
+public class TestExperienceImpl implements Test.Experience  {
 
 	private String name;
 	private Test test;
 	private Number weight;
 	boolean isControl;
+	
+	// Transitional hack until server has schema
+	private String testName;
 	
 	/**
 	 * Instantiation.
@@ -19,6 +26,23 @@ class TestExperienceImpl implements Test.Experience  {
 		this.isControl = isControl;
 	}
 
+	/**
+	 * Server side constructor only.
+	 * Transitional hack to avoid instantiating the fully fledged object becase we don't
+	 * yet have schema on server.  Remove public modifier from the class when removing this.
+	 * 
+	 * @param testName
+	 * @param name
+	 * @param isControl
+	 */
+	public TestExperienceImpl(String testName, String name, boolean isControl) {
+		if (!ComptimeService.getComponent().equals("Server"))
+			throw new VariantInternalException("Operation is supported only on Server");
+		this.testName = testName;
+		this.name = name;
+		this.isControl = isControl;
+	}
+	
 	/**
 	 * Test is unknown at the time of instantiation.
 	 * @param test
@@ -64,4 +88,13 @@ class TestExperienceImpl implements Test.Experience  {
 		return test.getName() + "." + name;
 	}
 
+	//---------------------------------------------------------------------------------------------//
+	//                                       PUBLIC EXT                                            //
+	//---------------------------------------------------------------------------------------------//
+
+	public String getTestName() {
+		if (!ComptimeService.getComponent().equals("Server"))
+			throw new VariantInternalException("Operation is supported only on Server");
+		return testName;
+	}
 }

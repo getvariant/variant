@@ -26,6 +26,7 @@ import com.variant.ws.server.core.VariantCore
 import com.variant.ws.server.RemoteEvent
 import net.liftweb.http.NoContentResponse
 import com.typesafe.scalalogging.LazyLogging
+import net.liftweb.json.JsonAST.JArray
 
 /**
  * @author Igor
@@ -65,7 +66,8 @@ object Dispatcher extends RestHelper with LazyLogging {
 
    /**
     * PUT /session/{id}
-    * Update an existing session. Recreate, if already removed from the cache.
+    * Create or update an existing session.
+    * Do not attempt to parse the payload. 
     */
    def updateSession(id:String, req: Req): Box[LiftResponse] = {      
       if (!req.body.isDefined || req.body.openOrThrowException("Unexpectged null request body").length == 0) 
@@ -75,7 +77,9 @@ object Dispatcher extends RestHelper with LazyLogging {
          logger.trace("Saved session ID " + id)
       else
          logger.trace("Updated session ID " + id)
-         
+      
+      val response = OkResponse()
+
       Full(OkResponse())
    }
 
@@ -91,7 +95,7 @@ object Dispatcher extends RestHelper with LazyLogging {
       var name: Option[String] = Option(null)
       var value: Option[String] = Option(null)
       var createDate: Option[Long] = Option(System.currentTimeMillis())
-      var params: Option[JObject] = Option(null)
+      var params: Option[JArray] = Option(null)
 
       for (elem <- jsonData.children) {
          val field = elem.asInstanceOf[JField]
@@ -105,7 +109,7 @@ object Dispatcher extends RestHelper with LazyLogging {
                } catch {
                   case _: Exception => return UserError.errors(UserError.InvalidDate).toFailure(field.name)
                }
-            case "PARAMETERS" => params = field.extract[Option[JObject]]
+            case "PARAMETERS" => params = field.extract[Option[JArray]]
             case _ => return UserError.errors(UserError.UnsupportedProperty).toFailure(field.name)
          }
       }
@@ -126,9 +130,10 @@ object Dispatcher extends RestHelper with LazyLogging {
       }
 
       if (params.isDefined) {
-         for ((k, v) <- params.get.values) {
-            if (!v.isInstanceOf[String]) return UserError.errors(UserError.PropertyNotAString).toFailure(k)
-            remoteEvent.setParameter(k, v.asInstanceOf[String])
+         for (v <- params.get.values) {
+            println(v)
+//            if (!v.isInstanceOf[String]) return UserError.errors(UserError.PropertyNotAString).toFailure(k)
+//            remoteEvent.setParameter(k, v.asInstanceOf[String])
          }
       }
 
@@ -136,14 +141,16 @@ object Dispatcher extends RestHelper with LazyLogging {
       val ssnCacheEntry = SessionCache.get(sid.get)
       if (ssnCacheEntry == null) return  UserError.errors(UserError.SessionExpired).toFailure()
 
-      // We have the session. Must have recent state request.
+      // We have the session. Must have no recent state request.
       if (ssnCacheEntry.getSession.getStateRequest == null) 
          return UserError.errors(UserError.UnknownState).toFailure()
  
       // Trigger event
       ssnCacheEntry.getSession.triggerEvent(remoteEvent)
       
-      Full(OkResponse())
+      var response = OkResponse();
+      println(response.headers);
+      Full(response)
    }
 
    def createEvent(req: Req): String = "event"
