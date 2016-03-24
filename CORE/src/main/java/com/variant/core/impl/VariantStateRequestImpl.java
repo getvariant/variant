@@ -353,4 +353,5 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 
 		return result;
 	}
+	
 }

@@ -66,6 +66,7 @@ public class SessionTest extends BaseTestWeb {
 		final VariantSession ssn1 = webApi.getSession(httpReq, httpResp);
 		final VariantCoreImplTestFacade coreFacade = new VariantCoreImplTestFacade(coreApi);
 		coreFacade.getSessionService().saveSession(ssn1, httpReq);     // succeeds
+		String oldSchemaId = webApi.getSchema().getId();
 		
 		// replace the schema and the session save should fail.
 		response = webApi.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
@@ -75,7 +76,7 @@ public class SessionTest extends BaseTestWeb {
 		
 		new VariantRuntimeExceptionInterceptor() {
 			@Override public void toRun() { coreFacade.getSessionService().saveSession(ssn1, httpReq); }
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_REPLACED);
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_REPLACED, webApi.getSchema().getId(), oldSchemaId);
 	}
 
 	/**
@@ -218,13 +219,12 @@ public class SessionTest extends BaseTestWeb {
 		webApi.commitStateRequest(varReq, httpResp);
 		
 		// Create a new HTTP request with the same VRNT-SSNID cookie.  Should fetch the same session.
-		// but without the state request.
 		HttpServletRequest httpReq2 = mockHttpServletRequest("JSESSIONID", sessionId);
 		HttpServletResponseMock httpResp2 = mockHttpServletResponse();
 		VariantSession ssn2 = webApi.getSession(httpReq2, httpResp2);
 		assertEquals(ssn2, varReq.getSession());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
-		assertNull(ssn2.getStateRequest());
+		assertEquals(ssn2.getStateRequest().getResolvedParameterMap(), varReq.getSession().getStateRequest().getResolvedParameterMap());
 		assertEquals(
 				"[(state2, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
