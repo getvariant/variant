@@ -1,10 +1,10 @@
-package com.variant.ws.server.config
+package com.variant.server.config
 
 import net.liftweb.http.LiftRules
-import com.variant.ws.server.dispatch.Dispatcher
+import com.variant.server.dispatch.Dispatcher
 import net.liftweb.http.Bootable
 import com.variant.core.Variant
-import com.variant.ws.server.core.VariantCore
+import com.variant.server.core.VariantCore
 import net.liftweb.http.provider.HTTPParam
 import net.liftweb.http.Req
 

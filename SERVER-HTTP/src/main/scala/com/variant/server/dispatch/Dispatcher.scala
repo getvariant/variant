@@ -1,10 +1,10 @@
-package com.variant.ws.server.dispatch
+package com.variant.server.dispatch
 
 import java.io.OutputStream
 import java.util.Date
 import com.variant.core.session.VariantSessionImpl
-import com.variant.ws.server.SessionCache
-import com.variant.ws.server.config.UserError
+import com.variant.server.SessionCache
+import com.variant.server.config.UserError
 import net.liftweb.common.Box
 import net.liftweb.common.EmptyBox
 import net.liftweb.common.Full
@@ -22,8 +22,8 @@ import net.liftweb.common.Empty
 import net.liftweb.http.OkResponse
 import net.liftweb.http.OkResponse
 import net.liftweb.http.OkResponse
-import com.variant.ws.server.core.VariantCore
-import com.variant.ws.server.RemoteEvent
+import com.variant.server.core.VariantCore
+import com.variant.server.RemoteEvent
 import net.liftweb.http.NoContentResponse
 import com.typesafe.scalalogging.LazyLogging
 import net.liftweb.json.JsonAST.JArray
@@ -95,7 +95,7 @@ object Dispatcher extends RestHelper with LazyLogging {
       var name: Option[String] = Option(null)
       var value: Option[String] = Option(null)
       var createDate: Option[Long] = Option(System.currentTimeMillis())
-      var params: Option[JArray] = Option(null)
+      var params: Option[JObject] = Option(null)
 
       for (elem <- jsonData.children) {
          val field = elem.asInstanceOf[JField]
@@ -109,7 +109,7 @@ object Dispatcher extends RestHelper with LazyLogging {
                } catch {
                   case _: Exception => return UserError.errors(UserError.InvalidDate).toFailure(field.name)
                }
-            case "PARAMETERS" => params = field.extract[Option[JArray]]
+            case "PARAMETERS" => {params = field.extract[Option[JObject]]}
             case _ => return UserError.errors(UserError.UnsupportedProperty).toFailure(field.name)
          }
       }
@@ -130,10 +130,9 @@ object Dispatcher extends RestHelper with LazyLogging {
       }
 
       if (params.isDefined) {
-         for (v <- params.get.values) {
-            println(v)
-//            if (!v.isInstanceOf[String]) return UserError.errors(UserError.PropertyNotAString).toFailure(k)
-//            remoteEvent.setParameter(k, v.asInstanceOf[String])
+         for ((k,v) <- params.get.values) {
+            if (!v.isInstanceOf[String]) return UserError.errors(UserError.PropertyNotAString).toFailure(k)
+            remoteEvent.setParameter(k, v.asInstanceOf[String])
          }
       }
 
@@ -148,9 +147,7 @@ object Dispatcher extends RestHelper with LazyLogging {
       // Trigger event
       ssnCacheEntry.getSession.triggerEvent(remoteEvent)
       
-      var response = OkResponse();
-      println(response.headers);
-      Full(response)
+      Full(OkResponse())
    }
 
    def createEvent(req: Req): String = "event"

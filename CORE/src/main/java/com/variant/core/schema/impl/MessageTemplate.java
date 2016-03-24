@@ -112,7 +112,7 @@ public enum MessageTemplate {
 	RUN_STATE_NOT_INSTRUMENTED_FOR_TEST                   (Severity.ERROR, "State [%s] is not instrumented for test [%s]"), 
 	RUN_WEIGHT_MISSING                                    (Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found."),
 	RUN_ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first."),
-	RUN_SCHEMA_REPLACED                                   (Severity.ERROR, "Opereation not allowed because the current schema ID differs from that which was in effect with it was created."),
+	RUN_SCHEMA_REPLACED                                   (Severity.ERROR, "Opereation not allowed because the current schema ID [%s] differs from that with which this session was created [%s]."),
 	RUN_SCHEMA_UNDEFINED                                  (Severity.ERROR, "Cannot create a session on an idle Variant instance. Parse a schema first."),
 	RUN_SESSION_ID_NULL                                   (Severity.WARN,  "Session id tracker [%s] generated a null key"),
 	//------------------------------------------------------------------------------------------------------------------------//

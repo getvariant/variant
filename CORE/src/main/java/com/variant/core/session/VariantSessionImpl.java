@@ -13,7 +13,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.config.ComptimeService;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.VariantEventDecoratorImpl;
@@ -51,7 +50,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	public VariantSessionImpl(VariantCoreImpl coreApi, String id) {
 		this.coreApi = coreApi;
 		// No schema ID on server yet. 
-		if (!ComptimeService.getComponent().equals("Server")) 
+		if (!coreApi.getComptime().getComponent().equals("Server")) 
 			this.schemaId = coreApi.getSchema().getId();
 		this.id = id;
 	}
@@ -99,9 +98,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	@Override
 	public void triggerEvent(VariantEvent event) {
 
-		if (event == null)
-			throw new IllegalArgumentException("Event parameter cannot be null");
-
+		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
 		EventWriter ew = ((VariantCoreImpl) coreApi).getEventWriter();
 		ew.write(new VariantEventDecoratorImpl(event, this));
 	}
@@ -110,6 +107,14 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
 
+	/**
+	 * 
+	 * @return
+	 */
+	public VariantCoreImpl getCoreApi() {
+		return coreApi;
+	}
+	
 	/**
 	 * 
 	 * @param req
@@ -251,7 +256,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 			throw new VariantInternalException("Unable to deserialzie session: schema id not string: [" + json + "]");
 
 		// If schema has changed, return null. But remember that we don't yet have a schema on server.
-		if (!ComptimeService.getComponent().equals("Server") && !coreApi.getSchema().getId().equals(schidObj)) {
+		if (!coreApi.getComptime().getComponent().equals("Server") && !coreApi.getSchema().getId().equals(schidObj)) {
 			return null;
 		}
 		
@@ -272,8 +277,8 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 			result.currentRequest = VariantStateRequestImpl.fromJson(coreApi, result, (Map<String,?>)currentRequestObj);
 		}
 		
-		// If server, don't deserialize traversed tests and states becau se we don't have the schema here.
-		if (!ComptimeService.getComponent().equals("Server")) {
+		// If server, don't deserialize traversed tests and states because we don't have the schema.
+		if (!coreApi.getComptime().getComponent().equals("Server")) {
 			Object statesObj = fields.get(FIELD_NAME_TRAVERSED_STATES);
 			if (statesObj != null) {
 				HashMap<State,Integer> statesMap = new HashMap<State, Integer>();

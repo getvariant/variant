@@ -66,7 +66,7 @@ public class SessionTest extends BaseTestCore {
 		
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { new VariantCoreImplTestFacade(api).getSessionService().saveSession(ssnFinal); }
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_REPLACED);
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_REPLACED, api.getSchema().getId(), ssnFinal.getSchemaId());
 
 	}
 	

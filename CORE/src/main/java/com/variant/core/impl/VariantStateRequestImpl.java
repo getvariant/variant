@@ -14,7 +14,6 @@ import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
-import com.variant.core.config.ComptimeService;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.exception.VariantInternalException;
@@ -25,8 +24,8 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.impl.StateImpl;
-import com.variant.core.schema.impl.TestExperienceImpl;
 import com.variant.core.session.VariantSessionImpl;
+import com.variant.core.srvstub.TestExperienceServerStub;
 
 /**
  * 
@@ -65,7 +64,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	}
 
 	/**
-	 * Transitinal server side constructor that has state name instead
+	 * Transitional server side constructor that has state name instead
 	 * of the fully instantiated State object, which we cannot instatiate
 	 * without a schema, which we don't yet have on server.
 	 * 
@@ -155,7 +154,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		if (targetedExperiencesCache == null) {
 			ArrayList<Experience> result = new ArrayList<Experience>();
 			for (Test test: state.getInstrumentedTests()) {
-				if (!test.isOn() || session.isDisqualified(test)) continue;
+				if (!(test.isOn() && session.isQualified(test))) continue;
 				Experience e = targetingTracker.get(test);
 				if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found in targeting tracker.");
 				result.add(e);
@@ -222,7 +221,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	 */
 	public String getStateName() {
 		
-		if (ComptimeService.getComponent().equals("Server"))
+		if (session.getCoreApi().getComptime().getComponent().equals("Server"))
 			throw new VariantInternalException("Method is supported only on Server");
 		
 		return stateName;
@@ -290,7 +289,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		// If we're on the server, we don't have the schema => we can't instantiate a State object,
 		// but we need the state name to log events.
 		
-		VariantStateRequestImpl result =  ComptimeService.getComponent().equals("Server") ?
+		VariantStateRequestImpl result =  ((VariantCoreImpl)coreApi).getComptime().getComponent().equals("Server") ?
 				new VariantStateRequestImpl(session, (String)stateName) :
 				new VariantStateRequestImpl(session, (StateImpl) coreApi.getSchema().getState((String)stateName));
 		
@@ -337,8 +336,8 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 					String expQualifiedName = (String) obj;
 					// qualified name = testName.expName.bool - need to parse.
 					String[] tokens = expQualifiedName.split("\\.");
-					if (ComptimeService.getComponent().equals("Server")) {
-						experiencesList.add(new TestExperienceImpl(tokens[0], tokens[1], new Boolean(tokens[2])));
+					if (((VariantCoreImpl)coreApi).getComptime().getComponent().equals("Server")) {
+						experiencesList.add(new TestExperienceServerStub(tokens[0], tokens[1], new Boolean(tokens[2])));
 					}
 					else {
 						Schema schema = coreApi.getSchema();

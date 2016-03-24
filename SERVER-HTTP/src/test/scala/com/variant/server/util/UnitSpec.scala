@@ -1,4 +1,4 @@
-package com.variant.ws.server.util
+package com.variant.server.util
 
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
@@ -11,7 +11,7 @@ import org.scalatest.OptionValues
 import org.scalatest.Inspectors
 import org.scalatest.Inside
 import org.scalatest.BeforeAndAfterAll
-import com.variant.ws.server.core.VariantCore
+import com.variant.server.core.VariantCore
 import net.liftweb.http.testing.TestKit
 import net.liftweb.http.testing.ReportFailure
 import com.variant.core.Variant
@@ -39,7 +39,11 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
    import UnitSpec._
    
    lazy val baseUrl = JettyTestServer.baseUrl
-   lazy val api = VariantCore.api
+   
+   val serverApi = VariantCore.api
+   // We'll need the client side api too.
+   val clientApi = Variant.Factory.getInstance().asInstanceOf[VariantCoreImpl]
+   clientApi.getComptime().registerComponent("Web", "0.6.0");
 
    /**
     * 

@@ -1,4 +1,4 @@
-package com.variant.ws.server.config
+package com.variant.server.config
 
 import org.apache.http.HttpStatus
 import net.liftweb.common.Failure

@@ -10,7 +10,6 @@ import com.variant.core.VariantSession;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.VariantEventDecorator;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.VariantSessionImpl;
 
 /**
  * EVENTS DAO.
@@ -24,14 +23,14 @@ public class VariantEventDecoratorImpl implements VariantEventDecorator, Seriali
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private VariantSessionImpl session;
+	private VariantSession session;
 	private VariantEvent userEvent;
 	
 	/**
 	 * Constructor
 	 * @return
 	 */
-	public VariantEventDecoratorImpl(VariantEvent event, VariantSessionImpl session) {
+	public VariantEventDecoratorImpl(VariantEvent event, VariantSession session) {
 		this.userEvent = event;		
 		this.session = session;
 	}
@@ -70,9 +69,10 @@ public class VariantEventDecoratorImpl implements VariantEventDecorator, Seriali
 	public Collection<Experience> getActiveExperiences() {
 		
 		Collection<Experience> result = new LinkedList<Experience>();
-		for (Experience e: session.getStateRequest().getTargetedExperiences()) 
-			if (session.isQualified(e.getTest())) result.add(e);
-		
+		for (Experience e: session.getStateRequest().getTargetedExperiences()) {
+		//	if (session.isQualified(e.getTest())) result.add(e);
+			result.add(e);
+		}
 		return result;
 	}
 	

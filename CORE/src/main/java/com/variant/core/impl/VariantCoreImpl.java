@@ -24,7 +24,6 @@ import com.variant.core.VariantProperties.Key;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
-import com.variant.core.config.ComptimeService;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.exception.VariantBootstrapException;
@@ -62,6 +61,7 @@ public class VariantCoreImpl implements Variant, Serializable {
 	private UserHooker hooker = new UserHooker();
 	private VariantPropertiesImpl properties;
 	private VariantRuntime runtime;
+	private VariantComptime comptime;
 		
 	/**
 	 * Setup system properties.
@@ -198,7 +198,7 @@ public class VariantCoreImpl implements Variant, Serializable {
 		//
 		// Init comptime service.
 		//
-		ComptimeService.init();
+		comptime = new VariantComptime();
 
 	}
 	
@@ -433,6 +433,14 @@ public class VariantCoreImpl implements Variant, Serializable {
 	@Override
 	public void finalize() {
 		eventWriter.shutdown();
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public VariantComptime getComptime() {
+		return comptime;
 	}
 	
 	/**

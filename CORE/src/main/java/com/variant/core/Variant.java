@@ -6,7 +6,6 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.config.ComptimeService;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.HookListener;
@@ -162,7 +161,7 @@ public interface Variant {
 		public static Variant getInstance(String...resourceNames) {
 			
 			long now = System.currentTimeMillis();
-			Variant result;
+			VariantCoreImpl result;
 			try {
 				result = new VariantCoreImpl(resourceNames);
 			}
@@ -174,11 +173,8 @@ public interface Variant {
 			}
 			LOG.info(
 					String.format("Variant Core %s bootstrapped in %s.",
-							ComptimeService.getCoreVersion(),
+							result.getComptime().getCoreVersion(),
 							DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
-			LOG.info(
-					String.format("Variant %s %s, © 2015-16 getvariant.com.",
-							ComptimeService.getComponent(), ComptimeService.getComponentVersion()));
 			
 			return result;
 		}

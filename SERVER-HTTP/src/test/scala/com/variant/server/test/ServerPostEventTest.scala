@@ -1,4 +1,4 @@
-package com.ws.variant.server.test
+package com.variant.server.test
 
 import scala.collection.JavaConversions._
 
@@ -6,12 +6,12 @@ import org.apache.http.HttpStatus
 
 import com.variant.core.session.VariantSessionImpl
 import com.variant.core.test.jdbc.EventReader
-import com.variant.ws.server.SessionCache
-import com.variant.ws.server.config.UserError
-import com.variant.ws.server.util.JettyStartupAndShutdown
-import com.variant.ws.server.util.JettyTestServer
-import com.variant.ws.server.util.UnitSpec
-import com.variant.ws.server.util.UnitSpec._
+import com.variant.server.SessionCache
+import com.variant.server.config.UserError
+import com.variant.server.util.JettyStartupAndShutdown
+import com.variant.server.util.JettyTestServer
+import com.variant.server.util.UnitSpec
+import com.variant.server.util.UnitSpec._
 
 import net.liftweb.http.testing.HttpResponse
 import net.liftweb.http.testing.TestKit
@@ -19,10 +19,10 @@ import net.liftweb.http.testing.TestKit
 /**
  * 
  */
-class PostEventTest extends UnitSpec {
+class ServerPostEventTest extends UnitSpec {
 
    "setup" should "run after beforeAll" in {
-      val parserResp = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"))
+      val parserResp = clientApi.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"))
       parserResp.getMessages should have size (0)      
    }
    //---------------------------------------------------------------------------------------//
@@ -151,7 +151,7 @@ class PostEventTest extends UnitSpec {
 
    it should "parse mixed case properties" in {
 
-      SessionCache.put(key1, new VariantSessionImpl(api, key1).toJson.getBytes)
+      SessionCache.put(key1, new VariantSessionImpl(clientApi, key1).toJson.getBytes)
       
       val json = """
       {
@@ -226,16 +226,16 @@ class PostEventTest extends UnitSpec {
           }
       }""".replaceAll("\\$sid", id)
       
-      val ssn = api.getSession(id).asInstanceOf[VariantSessionImpl]
+      val ssn = clientApi.getSession(id).asInstanceOf[VariantSessionImpl]
       SessionCache.put(id, ssn.toJson())
       val getResp = get("/session/" + id) ! "Jetty is not running"
       getResp.code should be (HttpStatus.SC_OK)
-      var ssnIn = VariantSessionImpl.fromJson(api, getResp.bodyAsString.openOrThrowException("Unexpected null response"));
+      var ssnIn = VariantSessionImpl.fromJson(clientApi, getResp.bodyAsString.openOrThrowException("Unexpected null response"));
       ssnIn.getTraversedStates().toList should be ('empty)
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)
 
-      val req = api.dispatchRequest(ssnIn, api.getSchema.getState("state1"), "")
+      val req = clientApi.dispatchRequest(ssnIn, clientApi.getSchema.getState("state1"), "")
       val jsonIn = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
          
       // Update the session with the state dispatch data.
@@ -250,7 +250,7 @@ class PostEventTest extends UnitSpec {
       
       Thread.sleep(500) // Writes to DB are async
       
-      val eventsFromDb = new EventReader(api).readEvents().filter(e => e.getSessionId == id)
+      val eventsFromDb = new EventReader(clientApi).readEvents().filter(e => e.getSessionId == id)
 		eventsFromDb should have size (1)
       val eventFromDb = eventsFromDb.iterator.next
       // TODO: uncomment when bug #15
@@ -260,7 +260,7 @@ class PostEventTest extends UnitSpec {
       eventFromDb.getEventVariants.size() should be (req.getTargetedExperiences.size)
 		for (variantEvent <- eventFromDb.getEventVariants) {
 		   variantEvent.getEventId should be (eventFromDb.getId)
-		   val test = api.getSchema.getTest(variantEvent.getTestName)
+		   val test = clientApi.getSchema.getTest(variantEvent.getTestName)
 		   req.getTargetedExperience(test) should equal (test.getExperience(variantEvent.getExperienceName))
 		}
    }

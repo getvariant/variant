@@ -1,4 +1,4 @@
-package com.variant.ws.server;
+package com.variant.server;
 
 import java.util.Date;
 import java.util.HashMap;

@@ -113,7 +113,8 @@ public class SessionService {
 	 */
 	public void saveSession(VariantSession session, Object...userData) {
 		if (coreApi.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
-		if (!coreApi.getSchema().getId().equals(session.getSchemaId())) throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_REPLACED);
+		if (!coreApi.getSchema().getId().equals(session.getSchemaId())) 
+			throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_REPLACED, coreApi.getSchema().getId(), session.getSchemaId());
 		sessionStore.save(session, userData);
 	}
 }

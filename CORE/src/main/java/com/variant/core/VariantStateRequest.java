@@ -60,8 +60,9 @@ public interface VariantStateRequest {
 	public VariantTargetingTracker getTargetingTracker();
 
 	/**
-	 * Get all targeted experiences. Only variant experiences from active tests are included. 
-	 * Control experiences, OFF tests or disqualified tests are not included.
+	 * Get all targeted experiences from active tests. A test is active if it has been
+	 * traversed by the current session. Off tests and disqualified tests are excluded,
+	 * as are control-only experiences on current state.
 	 * 
 	 * @return Collection of {@link com.variant.core.schema.Test.Experience}s.
 	 * @since 0.5

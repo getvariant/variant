@@ -536,7 +536,7 @@ public class VariantRuntime {
 			LOG.debug(sb.toString());
 		}   
 			
-		// Create the view serve event if there are any tests instrumented on this view.
+		// Create the state serve event if there are any tests instrumented on this state.
 		if (state.getInstrumentedTests().isEmpty()) {
 			
 			if (LOG.isDebugEnabled()) {

@@ -40,7 +40,6 @@ CREATE SEQUENCE event_variants_id_seq
 CREATE VIEW events_v AS
   SELECT e.*, ev.test_name, ev.experience_name, ev.is_experience_control,
          (SELECT string_agg('''' || key || '''=''' || value || '''', ',') FROM event_params where event_id = e.id) event_params
-  FROM events e, event_variants ev 
-  WHERE e.id = ev.event_id
+  FROM events e left outer join event_variants ev ON e.id = ev.event_id
   ORDER BY event_id
 ;
