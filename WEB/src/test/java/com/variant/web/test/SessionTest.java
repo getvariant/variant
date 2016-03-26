@@ -22,6 +22,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.session.VariantSessionImpl;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantStringUtils;
@@ -119,6 +120,7 @@ public class SessionTest extends BaseTestWeb {
 
 		State state1 = schema.getState("state1");		
 		VariantStateRequest varReq = webApi.dispatchRequest(ssn2, state1, httpReq);
+		System.out.println(((VariantSessionImpl)ssn2).toJson());
 		assertEquals(state1, varReq.getState());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(

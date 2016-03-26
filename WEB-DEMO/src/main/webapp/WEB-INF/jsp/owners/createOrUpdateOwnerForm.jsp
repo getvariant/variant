@@ -7,10 +7,32 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="petclinic" tagdir="/WEB-INF/tags" %>
 
-
 <html lang="en">
 
 <jsp:include page="../fragments/staticFiles.jsp"/>
+
+<!-- ---------- Variant remote events ---------------- -->
+<script>
+
+   variant.boot({
+      url:"http://localhost:8080/event",
+      success: function(data, textStatus) {console.log("POST returned status '" + textStatus + "' and body '" + data + "'");},
+      error: function(jqXHR) {
+         throw Error("Bad response from Variant server: " + jqXHR.status + " " + jqXHR.statusText + ": " + jqXHR.responseText);
+      }
+   });
+   
+   $(document).ready(function() {
+   
+      $(':submit').click(function() {
+         var event = new variant.Event("SESSIONID", $(this).html(), "CLICK");
+         event.send();   
+      });
+         
+   });
+
+</script>
+<!-- -------------------------------------------------- -->
 
 <body>
 <div class="container">

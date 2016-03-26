@@ -1,76 +1,123 @@
 /* Variant 0.6.0 (c) Variant, Inc. All rights reserved. getvariant.com */
 
-// Can't do w/o jQuery or local storage
-if (!window.jQuery) throw Error("jQuery is required by Variant but wasn't found");
+(function() {
 
-if(typeof(Storage) === "undefined")
+	// Can't do w/o jQuery
+	if (!window.jQuery) throw Error("jQuery is required, but wasn't found");
+
+	// privates
+	var webStorage = !(typeof(Storage) === "undefined");
+	var booted = false;
 	
-// Variant name space
-if (!variant) var variant = {};
-variant.url = variant.url || "unset";
-variant.success = function() {};
-variant.error = function(jqXHR) {
-	throw Error("Bad response from Variant server: " + jqXHR.status + " " + jqXHR.statusText + ": " + jqXHR.responseText);
-}
-	
-/**
- * Returns global options currently in effect. If supplied as an argument,
- * also sets them before returning.
- */
-variant.options = function(options) {
-	
-	if (arguments.length != 0) {	
-		if (!params.endpointUrl) throw Error("Property 'endpointUrl' must be set") = endpoint;
+	// Variant name space and default properties.
+	if (typeof window.variant === "undefined") {
+		window.variant = {
+			url: null,
+			success: function() {},
+			error: function(jqXHR) {
+				throw Error(
+						"Bad response from Variant server: " + 
+						jqXHR.status + " " + jqXHR.statusText + ": " + jqXHR.responseText);
+			}
+	    }
 	}
-	
-	return {"url": variant.url};	
-}
 
-/**
- * Event Queue
- */
-variant.eventQueue = {
-
-	push: function(event) {
-		if (!sessionStorage.variantQueue) sessionStorage.variantQueue = [];
-		sessionStorage.variantQueue.push(event);
-	}
-	
-	drain(): function() {
-		while (sessionStorage.variantQueue.length > 0) {
-			var event = sessionStorage.variantQueue.pop();
-			$.ajax({
-				url: variant.url,
-				method: "post",
-				data: JSON.stringify(event),
-				contentType: "application/json; charset=utf-8",
-				success: variant.success,
-				error: vriant.error
-			});			
+	/**
+	 * Boot up Variant.js: override default properties and start the drainer.
+	 */
+	variant.boot = function(props) {
+		
+		if (booted) throw Error("Variant.js is already booted.");
+		
+		if (arguments.length != 0) {
+			
+			variant.url = props.url || variant.url;
+			variant.success = props.success || variant.success;
+			variant.error = props.error || variant.error;
 		}
+
+		if (webStorage && !sessionStorage.variantQueue) sessionStorage.variantQueue = "[]";
+
+		variant.eventQueue.drain();
+		booted = true;
 	}
-}
 
-/**
- * Event Object can be sent to server.
- */
-variant.Event = function(sid, name, value, params) {
-	
-	if (arguments.length < 3) throw Error("Contructor variant.Event(sid, name, value, params) requires at least 3 arguments");
-  
-	this.sid = sid;
-	this.name = name;
-	this.value = value;
-	this.params = params;
+	/**
+	 * Event Object can be sent to server.
+	 */
+	variant.Event = function(sid, name, value, params) {
 
-}
+		if (!webStorage) return;
 
-///--------------------------------------------------------------------------///
+		if (arguments.length < 3) throw Error("Contructor variant.Event(sid, name, value, params) requires at least 3 arguments.");
+	  
+		this.sid = sid;
+		this.name = name;
+		this.value = value;
+		this.params = params;
 
-var opts = variant.options({
-	url:"http://localhost:8080/event",
-	success: function(data) {console.log(data);}
-});
+	}
 
-console.log(opts);
+	/**
+	 * Push the event onto queue.
+	 */
+	variant.Event.prototype.send = function() {
+		if (!webStorage) return;
+		if (!booted) throw Error("Variant.js is not booted.  Call variant.boot() first.")
+		variant.eventQueue.push(this);
+	}
 
+	/**
+	 * Event Queue.
+	 * Does nothing if session storage not supported by browser.
+	 */
+	variant.eventQueue = {
+
+		/**
+		 * Push an event onto the queue.
+		 * local storage can only be a strging, so we store events in a json representation of an array
+		 * of events. We parse in order to push and then stringify again to save.
+		 */
+		push: function(event) {
+
+			if (!webStorage) return;
+			
+			var queueAsArray = JSON.parse(sessionStorage.variantQueue);
+			queueAsArray.push(event);
+			sessionStorage.variantQueue = JSON.stringify(queueAsArray);
+		},
+		
+		drain: function() {
+			
+			if (!webStorage) return;	
+								
+			var drainer = setInterval(
+				function() {
+					var queueAsArray = JSON.parse(sessionStorage.variantQueue);
+					if (queueAsArray.length > 0 && !variant.url) {
+						clearInterval(drainer);
+						throw Error("API endpoint URL has not been set. Call variant.options() to set. " + sessionStorage.variantQueue);
+					}
+
+					var cnt = 0;
+					while (queueAsArray.length > 0) {
+						var event = queueAsArray.pop();
+						$.ajax({
+							url: variant.url,
+							method: "post",
+							data: JSON.stringify(event),
+							contentType: "application/json; charset=utf-8",
+							success: variant.success,
+							error: variant.error
+						});
+						cnt++;
+					}
+					sessionStorage.variantQueue = "[]";
+				},
+				500
+			);
+		},
+		
+	}
+
+})();
