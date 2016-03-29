@@ -5,10 +5,6 @@
 	// Can't do w/o jQuery
 	if (!window.jQuery) throw Error("jQuery is required, but wasn't found");
 
-	// privates
-	var webStorage = !(typeof(Storage) === "undefined");
-	var booted = false;
-	
 	// Variant name space and default properties.
 	if (typeof window.variant === "undefined") {
 		window.variant = {
@@ -22,56 +18,13 @@
 	    }
 	}
 
-	/**
-	 * Boot up Variant.js: override default properties and start the drainer.
-	 */
-	variant.boot = function(props) {
-		
-		if (booted) throw Error("Variant.js is already booted.");
-		
-		if (arguments.length != 0) {
-			
-			variant.url = props.url || variant.url;
-			variant.success = props.success || variant.success;
-			variant.error = props.error || variant.error;
-		}
-
-		if (webStorage && !sessionStorage.variantQueue) sessionStorage.variantQueue = "[]";
-
-		variant.eventQueue.drain();
-		booted = true;
-	}
-
-	/**
-	 * Event Object can be sent to server.
-	 */
-	variant.Event = function(sid, name, value, params) {
-
-		if (!webStorage) return;
-
-		if (arguments.length < 3) throw Error("Contructor variant.Event(sid, name, value, params) requires at least 3 arguments.");
-	  
-		this.sid = sid;
-		this.name = name;
-		this.value = value;
-		this.params = params;
-
-	}
-
-	/**
-	 * Push the event onto queue.
-	 */
-	variant.Event.prototype.send = function() {
-		if (!webStorage) return;
-		if (!booted) throw Error("Variant.js is not booted.  Call variant.boot() first.")
-		variant.eventQueue.push(this);
-	}
-
-	/**
-	 * Event Queue.
-	 * Does nothing if session storage not supported by browser.
-	 */
-	variant.eventQueue = {
+	// privates
+	var webStorage = !(typeof(Storage) === "undefined");
+	var booted = false;
+	
+	// Private Event Queue.
+	// Does nothing if session storage not supported by browser.
+	var eventQueue = {
 
 		/**
 		 * Push an event onto the queue.
@@ -118,6 +71,51 @@
 			);
 		},
 		
+	}
+
+	/**
+	 * Boot up Variant.js: override default properties and start the drainer.
+	 */
+	variant.boot = function(props) {
+		
+		if (booted) throw Error("Variant.js is already booted.");
+		
+		if (arguments.length != 0) {
+			
+			variant.url = props.url || variant.url;
+			variant.success = props.success || variant.success;
+			variant.error = props.error || variant.error;
+		}
+
+		if (webStorage && !sessionStorage.variantQueue) sessionStorage.variantQueue = "[]";
+
+		eventQueue.drain();
+		booted = true;
+	}
+
+	/**
+	 * Event Object can be sent to server.
+	 */
+	variant.Event = function(sid, name, value, params) {
+
+		if (!webStorage) return;
+
+		if (arguments.length < 3) throw Error("Contructor variant.Event(sid, name, value, params) requires at least 3 arguments.");
+	  
+		this.sid = sid;
+		this.name = name;
+		this.value = value;
+		this.params = params;
+
+	}
+
+	/**
+	 * Push the event onto queue.
+	 */
+	variant.Event.prototype.send = function() {
+		if (!webStorage) return;
+		if (!booted) throw Error("Variant.js is not booted.  Call variant.boot() first.")
+		eventQueue.push(this);
 	}
 
 })();

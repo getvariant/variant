@@ -27,6 +27,8 @@ import com.variant.server.RemoteEvent
 import net.liftweb.http.NoContentResponse
 import com.typesafe.scalalogging.LazyLogging
 import net.liftweb.json.JsonAST.JArray
+import org.apache.http.HttpStatus
+import net.liftweb.http.PlainTextResponse
 
 /**
  * @author Igor
@@ -37,11 +39,19 @@ object Dispatcher extends RestHelper with LazyLogging {
    // Remember about the prefix helper!
 
    serve {
+      case "event" :: Nil Options req => options(req)
       case "session" :: id :: Nil JsonGet _ => getSession(id)
       case "session" :: id :: Nil JsonPut json -> req => updateSession(id, req)
       case "event" :: Nil JsonPost json -> req => postEvent(json)
    }
 
+   def options(req: Req): LiftResponse = {
+      val headers = S.getResponseHeaders(List(
+         ("Access-Control-Allow-Methods", "*"),
+         ("Access-Control-Allow-Headers", "origin, content-type, accept")))
+      PlainTextResponse("", headers, HttpStatus.SC_OK)
+   }
+   
    /**
     * GET /session/{id}
     *

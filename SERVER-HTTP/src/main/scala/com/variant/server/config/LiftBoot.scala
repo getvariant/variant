@@ -26,16 +26,13 @@ class LiftBoot extends Bootable {
       
       // API Dispatcher
       LiftRules.statelessDispatch.append(Dispatcher)
-/*      
+      
       LiftRules.supplementalHeaders.default.set(
          List(
-            ("X-Lift-Version", LiftRules.liftVersion),
             ("Access-Control-Allow-Origin", "*"),
-            ("Access-Control-Allow-Content-Type", "application/json"),
-            ("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, HEAD, OPTIONS, PATCH"),
-            ("Access-Control-Allow-Headers", "Cookie, Host, X-Forwarded-For, Accept-Charset, If-Modified-Since, Accept-Language, X-Forwarded-Port, Connection, X-Forwarded-Proto, User-Agent, Referer, Accept-Encoding, X-Requested-With, Authorization, Accept, Content-Type")
+            ("Access-Control-Allow-Credentials", "true")
          ))
-*/       
+       
       VariantCore.init()
   }
 }
