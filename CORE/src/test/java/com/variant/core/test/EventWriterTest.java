@@ -47,11 +47,11 @@ public class EventWriterTest extends BaseTestCore {
 		State s2 = schema.getState("state2");
 		
 		VariantSession ssn1 = api.getSession("ssn1");
-		VariantStateRequest request = api.dispatchRequest(ssn1, s1, targetingTrackerString("test1.A","test2.B","test3.C","test4.A","test5.B","test6.C"));
+		VariantStateRequest request = api.targetSession(ssn1, s1, targetingTrackerString("test1.A","test2.B","test3.C","test4.A","test5.B","test6.C"));
 		assertNotNull(request.getStateVisitedEvent());
 
 		VariantSession ssn2 = api.getSession("ssn2");
-		request = api.dispatchRequest(ssn2, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
+		request = api.targetSession(ssn2, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		assertNotNull(request.getStateVisitedEvent());
 
 		api.commitStateRequest(ssn1.getStateRequest(), "");
@@ -161,7 +161,7 @@ public class EventWriterTest extends BaseTestCore {
 		State s2 = schema.getState("state2");
 		
 		VariantSession ssn3 = api.getSession("ssn3");
-		VariantStateRequest request = api.dispatchRequest(ssn3, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
+		VariantStateRequest request = api.targetSession(ssn3, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
 		customEvent.getParameterMap().put("param-key", "param-value");
 		ssn3.triggerEvent(customEvent);
@@ -278,7 +278,7 @@ public class EventWriterTest extends BaseTestCore {
 		api.addHookListener(new TestQualificationHookListenerDisqualifyTest(false, "ssn4", schema.getTest("test3")));
 		
 		VariantSession ssn4 = api.getSession("ssn4");
-		VariantStateRequest request = api.dispatchRequest(ssn4, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
+		VariantStateRequest request = api.targetSession(ssn4, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
 		customEvent.getParameterMap().put("param-key", "param-value");
 		ssn4.triggerEvent(customEvent);

@@ -113,7 +113,7 @@ public class TargetingTest extends BaseTestCore {
 		int[] counts = {0, 0, 0};
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
+			VariantStateRequest req = api.targetSession(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -131,7 +131,7 @@ public class TargetingTest extends BaseTestCore {
 		counts[0] = counts[1] = counts[2] = 0;
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
+			VariantStateRequest req = api.targetSession(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -150,7 +150,7 @@ public class TargetingTest extends BaseTestCore {
 		nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
+			VariantStateRequest req = api.targetSession(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -170,7 +170,7 @@ public class TargetingTest extends BaseTestCore {
 		ABListener.postCount = nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
+			VariantStateRequest req = api.targetSession(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -191,7 +191,7 @@ public class TargetingTest extends BaseTestCore {
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
+			VariantStateRequest req = api.targetSession(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -209,7 +209,7 @@ public class TargetingTest extends BaseTestCore {
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
+			VariantStateRequest req = api.targetSession(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -231,7 +231,7 @@ public class TargetingTest extends BaseTestCore {
 		ABNullListener.postCount = ACListener.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.dispatchRequest(ssn, state, "");
+			VariantStateRequest req = api.targetSession(ssn, state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
@@ -331,7 +331,7 @@ public class TargetingTest extends BaseTestCore {
 		final VariantSession ssn = api.getSession("foo");
 
 		new ExceptionInterceptor<VariantRuntimeException>() {
-			@Override public void toRun() { api.dispatchRequest(ssn, state, ""); }
+			@Override public void toRun() { api.targetSession(ssn, state, ""); }
 			@Override public void onThrown(VariantRuntimeException e) { 
 				assertEquals(e.getMessage(), new VariantRuntimeException(MessageTemplate.RUN_WEIGHT_MISSING, "test1", "B").getMessage()); 
 			}

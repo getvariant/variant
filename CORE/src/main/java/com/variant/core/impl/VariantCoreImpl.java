@@ -255,7 +255,7 @@ public class VariantCoreImpl implements Variant, Serializable {
 	 * 
 	 */
 	@Override
-	public VariantStateRequest dispatchRequest(VariantSession session, State state, Object...targetingPersisterUserData) {
+	public VariantStateRequest targetSession(VariantSession session, State state, Object...targetingPersisterUserData) {
 		
 		// Can't have two requests at one time
 		VariantStateRequestImpl currentRequest = (VariantStateRequestImpl) session.getStateRequest();

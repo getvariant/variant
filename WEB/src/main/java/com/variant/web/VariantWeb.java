@@ -162,7 +162,7 @@ public class VariantWeb {
 	 * @since 0.5
 	 */
 	public VariantStateRequest dispatchRequest(VariantSession session, State state, HttpServletRequest httpRequest) {		
-		return new VariantWebStateRequestDecorator(core.dispatchRequest(session, state, httpRequest), httpRequest);
+		return new VariantWebStateRequestDecorator(core.targetSession(session, state, httpRequest), httpRequest);
 	}
 	
 	/**

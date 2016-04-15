@@ -123,7 +123,7 @@ public class SessionTest extends BaseTestCore {
 		Schema schema = api.getSchema();
 		VariantSession ssn = api.getSession("foo");
 		assertNull(ssn.getStateRequest());
-		VariantStateRequest req1 = api.dispatchRequest(ssn, schema.getState("state1"), "");
+		VariantStateRequest req1 = api.targetSession(ssn, schema.getState("state1"), "");
 		assertNotNull(req1);
 		assertEquals(req1, ssn.getStateRequest());
 		assertNotNull(req1.getStateVisitedEvent());
@@ -142,7 +142,7 @@ public class SessionTest extends BaseTestCore {
 		api.commitStateRequest(req1, "");
 		System.out.println(((VariantSessionImpl)ssn).toJson());
 		// Nothing is instrumented on state2
-		VariantStateRequest req2 = api.dispatchRequest(ssn, schema.getState("state2"), "");
+		VariantStateRequest req2 = api.targetSession(ssn, schema.getState("state2"), "");
 		assertNotNull(req2);
 		assertNotEquals(req1, req2);
 		assertNull(req2.getStateVisitedEvent());
@@ -172,7 +172,7 @@ public class SessionTest extends BaseTestCore {
 		Schema schema = api.getSchema();
 		VariantSession ssn1 = api.getSession("foo2");
 		State state1 = schema.getState("state1");
-		VariantStateRequest req = api.dispatchRequest(ssn1, state1, "");
+		VariantStateRequest req = api.targetSession(ssn1, state1, "");
 		api.commitStateRequest(req, "");  // Saves the session.
 
 		Thread.sleep(10);
@@ -195,7 +195,7 @@ public class SessionTest extends BaseTestCore {
 	    Schema schema2 = api.getSchema();
 	    assertNotEquals(schema.getId(), schema2.getId());
 	    state1 = schema2.getState("state1");
-		req = api.dispatchRequest(ssn2, state1, "");
+		req = api.targetSession(ssn2, state1, "");
 		api.commitStateRequest(req, "");  // Saves the session.
 	    
 		// new API

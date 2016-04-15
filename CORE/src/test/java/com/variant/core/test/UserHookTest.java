@@ -101,7 +101,7 @@ public class UserHookTest extends BaseTestCore {
 		Schema schema = api.getSchema();
 		State state1 = schema.getState("state1");
 		VariantSession ssn = api.getSession("foo");
-		VariantStateRequest request = api.dispatchRequest(ssn, state1, "");
+		VariantStateRequest request = api.targetSession(ssn, state1, "");
 		assertEquals(1, ssn.getTraversedStates().size());
 		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
 		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());
@@ -120,7 +120,7 @@ public class UserHookTest extends BaseTestCore {
 		// Repeat the same thing.  Test should have been put on the qualified list for the session
 		// so the hooks won't be posted.
 		assertTrue(nullListener.testList.isEmpty());
-		request = api.dispatchRequest(ssn, state1, "");
+		request = api.targetSession(ssn, state1, "");
 		assertEquals(1, ssn.getTraversedStates().size());
 		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
 		assertEquals(2, ssn.getTraversedStates().iterator().next().arg2().intValue());
@@ -146,7 +146,7 @@ public class UserHookTest extends BaseTestCore {
 		schema = api.getSchema();
 		state1 = schema.getState("state1");
 		VariantSession ssn2 = api.getSession("foo2");
-		request = api.dispatchRequest(ssn2, state1, targetingTrackerString("test2.D","Test1.A"));
+		request = api.targetSession(ssn2, state1, targetingTrackerString("test2.D","Test1.A"));
 		assertEquals(1, ssn2.getTraversedStates().size());
 		assertEquals(state1, ssn2.getTraversedStates().iterator().next().arg1());
 		assertEquals(1, ssn2.getTraversedStates().iterator().next().arg2().intValue());
@@ -176,7 +176,7 @@ public class UserHookTest extends BaseTestCore {
 		VariantSession ssn3 = api.getSession("foo3");
 		assertTrue(ssn3.getTraversedStates().isEmpty());
 		assertTrue(ssn3.getTraversedTests().isEmpty());
-		request = api.dispatchRequest(ssn3, state1, targetingTrackerString("test1.B","test2.D","Test1.A"));
+		request = api.targetSession(ssn3, state1, targetingTrackerString("test1.B","test2.D","Test1.A"));
 		assertEqualAsSets(
 				ssn3.getTraversedStates(),
 				new Pair<State, Integer>(state1, 1));
@@ -208,7 +208,7 @@ public class UserHookTest extends BaseTestCore {
 		schema = api.getSchema();
 		state1 = schema.getState("state1");
 		State state2 = schema.getState("state2");
-		request = api.dispatchRequest(ssn3, state2, targetingTrackerString("test1.B","test2.D","Test1.A"));
+		request = api.targetSession(ssn3, state2, targetingTrackerString("test1.B","test2.D","Test1.A"));
 		assertEqualAsSets(
 				ssn3.getTraversedStates(), 
 				new Pair<State, Integer>(state1, 1),

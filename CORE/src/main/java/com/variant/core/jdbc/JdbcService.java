@@ -81,16 +81,22 @@ public class JdbcService {
 		Vendor vendor = getVendor();
 		
 		final String[] SQL_STATES_OBJECT_DOES_NOT_EXIST = 
-				vendor == Vendor.H2 ? new String[] {"42P01"} :
-				vendor == Vendor.H2 ? new String[] {"42S02", "90036"} : null;
+				vendor == Vendor.POSTGRES ? new String[] {"42P01"} :
+				(vendor == Vendor.H2 ? new String[] {"90036"} : null);
+
+		final String[] SQL_STATES_OBJECT_ALREADY_EXIST = 
+				vendor == Vendor.POSTGRES ? new String[] {"42P07"} : null;
 
 		String[] tokens = statement.split(" ");
 
 		if (VariantStringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_DOES_NOT_EXIST)) {
-			LOG.error(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Relation Does Not Exist.");
+			LOG.error(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Object Does Not Exist.");
+		}
+		else if (VariantStringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_ALREADY_EXIST)) {
+			LOG.error(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Object Already Exists.");
 		}
 		else {
-			LOG.error("SQLException: " + e.getMessage());
+			LOG.error(String.format("SQLException: %s, (%s error code %s)",  e.getMessage(), vendor.name(), e.getSQLState()));
 			throw e;
 		}
 

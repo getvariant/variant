@@ -514,7 +514,7 @@ public class VariantRuntime {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Implementation of {@link Variant#dispatchRequest(VariantSession, State, Object...)}
+	 * Implementation of {@link Variant#targetSession(VariantSession, State, Object...)}
 	 * @param ssn
 	 * @param view
 	 * @return

@@ -25,8 +25,7 @@
    $(document).ready(function() {
    
       $(':submit').click(function() {
-         var event = new variant.Event("SESSIONID", $(this).html(), "CLICK");
-         event.send();   
+         new variant.Event("SESSIONID", $(this).html(), "CLICK").send();   
       });
          
    });

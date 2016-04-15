@@ -109,15 +109,14 @@ public interface Variant {
 	public VariantSession getSession(Object...userData);
 	
 	/**
-     * <p>Dispatch a new state request. See the Variant RCE User Guide for more information about Variant session
-     * life cycle.
+     * <p>Target session for a state. 
      *  
 	 * @return An instance of the {@link com.variant.core.VariantStateRequest} object, which
-	 *         may be further examined about the outcome of this operation. 
+	 *         may be further examined for more information about targeting.  
 	 *
 	 * @since 0.5
 	 */
-	public VariantStateRequest dispatchRequest(VariantSession session, State state, Object...targetingPersisterUserData);
+	public VariantStateRequest targetSession(VariantSession session, State state, Object...targetingPersisterUserData);
 	
 	/**
 	 * Commit a state request. Flushes to storage this session's state. See the Variant RCE User Guide for more information about Variant session

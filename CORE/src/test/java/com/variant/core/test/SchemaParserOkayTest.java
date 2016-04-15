@@ -140,7 +140,7 @@ public class SchemaParserOkayTest extends BaseTestCore {
 		VariantSession session = api.getSession(VariantStringUtils.random64BitString(rand));
 		State state1 = api.getSchema().getState("state1");
 		api.clearHookListeners();
-		VariantStateRequest req = api.dispatchRequest(session, state1, "");
+		VariantStateRequest req = api.targetSession(session, state1, "");
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals(1, session.getTraversedStates().size());
 		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
@@ -267,7 +267,7 @@ public class SchemaParserOkayTest extends BaseTestCore {
 		com.variant.core.schema.Test test2 = api.getSchema().getTest("test2");
 		api.clearHookListeners();
 		api.addHookListener(new TestDisqualifier(test2));
-		VariantStateRequest req = api.dispatchRequest(session, state1, "");
+		VariantStateRequest req = api.targetSession(session, state1, "");
 		assertEquals(1, session.getTraversedStates().size());
 		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
 		assertEqualAsSets(
@@ -398,7 +398,7 @@ public class SchemaParserOkayTest extends BaseTestCore {
 		api.clearHookListeners();
 		api.addHookListener(new TestDisqualifier(test1));
 		api.addHookListener(new TestDisqualifier(test2));
-		VariantStateRequest req = api.dispatchRequest(session, state1, "");
+		VariantStateRequest req = api.targetSession(session, state1, "");
 		assertEquals(1, session.getTraversedStates().size());
 		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
 		assertEqualAsSets(
