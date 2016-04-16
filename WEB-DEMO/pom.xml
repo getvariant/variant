@@ -273,7 +273,7 @@
 
 		<dependency>
 			<groupId>com.variant</groupId>
-			<artifactId>variant-web</artifactId>
+			<artifactId>variant-client</artifactId>
 			<version>${variant.version}</version>
 		</dependency>
 		
