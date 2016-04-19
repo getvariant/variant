@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import com.variant.client.VariantWeb;
+import com.variant.client.VariantClient;
 import com.variant.core.Variant;
 
 /**
@@ -14,7 +14,7 @@ public class VariantWebnativeTestFacade {
 	 * @param webnativeApi
 	 * @return
 	 */
-	public static Variant getCoreApi(VariantWeb webnativeApi) {
+	public static Variant getCoreApi(VariantClient webnativeApi) {
 		return webnativeApi.getCoreApi();
 	}
 }

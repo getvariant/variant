@@ -31,7 +31,7 @@ public interface VariantSessionIdTracker {
 	 * will return the same value. 
 	 *  
 	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#targetSession(VariantSession, com.variant.core.schema.State, Object)} 
+	 *                 {@link com.variant.core.Variant#targetForState(VariantSession, com.variant.core.schema.State, Object)} 
 	 *                 will pass here without interpretation.
 	 * 
 	 * @return Session ID. Should never be null.

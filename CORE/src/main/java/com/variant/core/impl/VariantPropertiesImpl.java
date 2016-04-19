@@ -31,9 +31,6 @@ import com.variant.core.util.VariantIoUtils;
  *
  */
 public class VariantPropertiesImpl implements VariantProperties {
-
-	public static final String RUNTIME_PROPS_RESOURCE_NAME = "variant.props.resource";
-	public static final String RUNTIME_PROPS_FILE_NAME = "varaint.props.file";
 	
 	private PropertiesChain propsChain = new PropertiesChain();
 	private VariantCoreImpl coreApi;
@@ -72,7 +69,7 @@ public class VariantPropertiesImpl implements VariantProperties {
 	 * @return
 	 */
 	Pair<String, String> getString(String key) {		
-		String value = System.getProperty(key);
+		String value = System.getProperty(COMMANDLINE_PROP_PREFIX + key);
 		if (value == null) {
 			Pair<String, String> result = propsChain.getProperty(key);
 			if (result == null) throw new VariantRuntimeException(RUN_PROPERTY_NOT_SET, key);

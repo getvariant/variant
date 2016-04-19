@@ -1,5 +1,8 @@
 package com.variant.core.session;
 
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
+import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
+
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -13,11 +16,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantTargetingTracker;
+import com.variant.core.VariantProperties.Key;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.VariantEventDecoratorImpl;
+import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.State;
@@ -101,6 +108,41 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
 		EventWriter ew = ((VariantCoreImpl) coreApi).getEventWriter();
 		ew.write(new VariantEventDecoratorImpl(event, this));
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public VariantStateRequest targetForState(State state, Object...targetingPersisterUserData) {
+		
+		// Can't have two requests at one time
+		if (currentRequest != null && !currentRequest.isCommitted()) {
+			throw new VariantRuntimeException (RUN_ACTIVE_REQUEST);
+		}
+		
+		// init Targeting Persister with the same user data.
+		VariantTargetingTracker tp = null;
+		String className = coreApi.getProperties().get(Key.TARGETING_TRACKER_CLASS_NAME, String.class);
+		
+		try {
+			Object object = Class.forName(className).newInstance();
+			if (object instanceof VariantTargetingTracker) {
+				tp = (VariantTargetingTracker) object;
+			}
+			else {
+				throw new VariantBootstrapException(BOOT_TARGETING_TRACKER_NO_INTERFACE, className, VariantTargetingTracker.class.getName());
+			}
+		}
+		catch (Exception e) {
+			throw new VariantInternalException("Unable to instantiate targeting persister class [" + className +"]", e);
+		}
+			
+		tp.initialized(coreApi, this, targetingPersisterUserData);
+
+		addTraversedState(state);
+		
+		return coreApi.getRuntime().targetSessionForState(this, state, tp);
 	}
 
 	//---------------------------------------------------------------------------------------------//

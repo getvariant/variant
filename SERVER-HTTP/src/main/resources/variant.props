@@ -1,7 +1,8 @@
 #
 # Copyright Variant, Inc. All Rights Reserved.
 #
-# Server properties.
+# Server properties suitable for running server behind CLIENT-JAVA tests.
+# Must be commented out to run own tests.
 #
 
 # No session timeout.

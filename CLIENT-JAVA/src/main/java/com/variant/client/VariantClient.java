@@ -5,15 +5,11 @@ import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.variant.client.util.VariantWebStateRequestDecorator;
 import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
-import com.variant.core.VariantSession;
-import com.variant.core.VariantStateRequest;
 import com.variant.core.hook.HookListener;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.VariantArrayUtils;
 import com.variant.core.util.VariantStringUtils;
@@ -30,9 +26,12 @@ import com.variant.core.util.VariantStringUtils;
  * @author Igor Urisman
  * @since 0.5
  */
-public class VariantWeb {
+public class VariantClient {
 	
 	private Variant core;
+	
+	// Cache most recently returned session for idempotency.
+	VariantSession lastSession = null;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                         PACKAGE                                             //
@@ -51,13 +50,13 @@ public class VariantWeb {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Obtain an instance of this API. Can be held on to and reused for the life of the JVM.
+	 * Obtain an instance of Variant client. Can be held on to and reused for the life of the JVM.
 	 * 
 	 * @param See {@link Variant.Factory#getInstance(String...)}
-	 * @returns An instance of {@link VariantWeb};
+	 * @returns An instance of {@link VariantClient};
 	 * @since 0.5
 	 */
-	public VariantWeb(String...resourceNames) {
+	public VariantClient(String...resourceNames) {
 		this.core = Variant.Factory.getInstance(
 				VariantArrayUtils.concat(
 						resourceNames,
@@ -150,34 +149,14 @@ public class VariantWeb {
 	 * @return
 	 */
 	public VariantSession getSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-		return core.getSession(httpRequest, httpResponse);
+		
+		com.variant.core.VariantSession coreSession = core.getSession(httpRequest, httpResponse);
+		
+		VariantSession result = lastSession != null && lastSession.getCoreSession().equals(coreSession) ? 
+				lastSession : new VariantSession(coreSession);
+		
+		lastSession = result;
+		return result;
 	}
-	
-	/**
-     * <p>Dispatch a new state request.
-     *  
-	 * @return An instance of the {@link com.variant.core.VariantStateRequest} object, which
-	 *         may be further examined about the outcome of this operation. 
-	 *
-	 * @since 0.5
-	 */
-	public VariantStateRequest dispatchRequest(VariantSession session, State state, HttpServletRequest httpRequest) {		
-		return new VariantWebStateRequestDecorator(core.targetSession(session, state, httpRequest), httpRequest);
-	}
-	
-	/**
-	 * Commit a state request. Flushes to storage this session's state.
-     * 
-	 * @param httpRequest Current <code>HttpServletRequest</code>.
-	 * @param httpResponse Current <code>HttpServletResponse</code>.
-     *
-	 * @since 0.5
-	 */
-	public void commitStateRequest(VariantStateRequest request, HttpServletResponse httpResponse) {
-		// The sessionStore may need either http response or http request, depending on the implementation.
-		// We'll pass both.
-		VariantWebStateRequestDecorator wrapper = (VariantWebStateRequestDecorator) request;
-		core.commitStateRequest(wrapper.getOriginalRequest(), wrapper.getHttpServletRequest(), httpResponse);
-	}
-	
+			
 }

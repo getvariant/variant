@@ -25,8 +25,7 @@ public class EventPersisterNull implements EventPersister {
 
 	@Override
 	public void persist(Collection<VariantEventDecorator> events) throws Exception {
-		
-			LOG.debug("Discarded " + events.size() + " events.");
+			LOG.debug(String.format("Discarded %s events.", events.size()));
 	}
 
 

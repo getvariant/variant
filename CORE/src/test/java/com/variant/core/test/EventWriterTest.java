@@ -47,15 +47,15 @@ public class EventWriterTest extends BaseTestCore {
 		State s2 = schema.getState("state2");
 		
 		VariantSession ssn1 = api.getSession("ssn1");
-		VariantStateRequest request = api.targetSession(ssn1, s1, targetingTrackerString("test1.A","test2.B","test3.C","test4.A","test5.B","test6.C"));
+		VariantStateRequest request = ssn1.targetForState(s1, targetingTrackerString("test1.A","test2.B","test3.C","test4.A","test5.B","test6.C"));
 		assertNotNull(request.getStateVisitedEvent());
 
 		VariantSession ssn2 = api.getSession("ssn2");
-		request = api.targetSession(ssn2, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
+		request = ssn2.targetForState(s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		assertNotNull(request.getStateVisitedEvent());
 
-		api.commitStateRequest(ssn1.getStateRequest(), "");
-		api.commitStateRequest(ssn2.getStateRequest(), "");
+		ssn1.getStateRequest().commit("");
+		ssn2.getStateRequest().commit("");
 
 		// Wait for the async writer thread to commit;
 		Thread.sleep(500);
@@ -161,13 +161,13 @@ public class EventWriterTest extends BaseTestCore {
 		State s2 = schema.getState("state2");
 		
 		VariantSession ssn3 = api.getSession("ssn3");
-		VariantStateRequest request = api.targetSession(ssn3, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
+		VariantStateRequest request = ssn3.targetForState(s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
 		customEvent.getParameterMap().put("param-key", "param-value");
 		ssn3.triggerEvent(customEvent);
 		assertNotNull(request.getStateVisitedEvent());
 
-		api.commitStateRequest(ssn3.getStateRequest(), "");
+		ssn3.getStateRequest().commit("");
 
 		// Wait for the async writer thread to commit;
 		Thread.sleep(500);
@@ -278,13 +278,13 @@ public class EventWriterTest extends BaseTestCore {
 		api.addHookListener(new TestQualificationHookListenerDisqualifyTest(false, "ssn4", schema.getTest("test3")));
 		
 		VariantSession ssn4 = api.getSession("ssn4");
-		VariantStateRequest request = api.targetSession(ssn4, s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
+		VariantStateRequest request = ssn4.targetForState(s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
 		customEvent.getParameterMap().put("param-key", "param-value");
 		ssn4.triggerEvent(customEvent);
 		assertNotNull(request.getStateVisitedEvent());
 
-		api.commitStateRequest(ssn4.getStateRequest(), "");
+		ssn4.getStateRequest().commit("");
 
 		// Wait for the async writer thread to commit;
 		Thread.sleep(500);

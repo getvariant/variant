@@ -13,7 +13,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.variant.client.SessionIdTrackerHttpCookie;
-import com.variant.client.VariantWeb;
+import com.variant.client.VariantClient;
 import com.variant.client.VariantWebnativeTestFacade;
 import com.variant.client.mock.HttpServletRequestMock;
 import com.variant.client.mock.HttpServletResponseMock;
@@ -26,11 +26,11 @@ import com.variant.core.test.BaseTestCommon;
 /**
  * Base class for all Core JUnit tests.
  */
-public abstract class BaseTestWeb extends BaseTestCommon {
+public abstract class BaseTestClient extends BaseTestCommon {
 	
 	private static Boolean sqlSchemaCreated = false;
 
-	protected VariantWeb webApi = null;
+	protected VariantClient client = null;
 	protected VariantCoreImpl coreApi = null;
 	
 	/**
@@ -42,8 +42,8 @@ public abstract class BaseTestWeb extends BaseTestCommon {
 	 */
 	@Before
 	public void _beforeTestCase() throws Exception {
-		webApi = rebootApi();                 // in each instance 
-		coreApi = (VariantCoreImpl) VariantWebnativeTestFacade.getCoreApi(webApi);
+		client = rebootApi();                 // in each instance 
+		coreApi = (VariantCoreImpl) VariantWebnativeTestFacade.getCoreApi(client);
 		synchronized (sqlSchemaCreated) {  // once per JVM
 			if (!sqlSchemaCreated) {
 				recreateSchema();
@@ -55,8 +55,8 @@ public abstract class BaseTestWeb extends BaseTestCommon {
 	/**
 	 * Subclasses will be able to override this
 	 */
-	protected VariantWeb rebootApi() {
-		return new VariantWeb("/variant-test.props");
+	protected VariantClient rebootApi() {
+		return new VariantClient("/variant-test.props");
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public abstract class BaseTestWeb extends BaseTestCommon {
 
 	@Override
 	protected Schema getSchema() {
-		return webApi.getSchema();
+		return client.getSchema();
 	}
 
 	//---------------------------------------------------------------------------------------------//

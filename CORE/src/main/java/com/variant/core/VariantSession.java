@@ -50,6 +50,16 @@ public interface VariantSession {
 	public Collection<Pair<State, Integer>> getTraversedStates(); 
 
 	/**
+     * <p>Target session for a state. 
+     *  
+	 * @return An instance of the {@link com.variant.core.VariantStateRequest} object, which
+	 *         may be further examined for more information about targeting.  
+	 *
+	 * @since 0.5
+	 */
+	public VariantStateRequest targetForState(State state, Object...targetingTrackerUserData);
+
+	/**
 	 * <p> The collection of tests traversed by this session so far and their  qualifications. 
 	 * Each time a session requests a new state, the tests instrumented on this 
 	 * state but not yet traversed by this session will be re-qualified. The outcome of this 

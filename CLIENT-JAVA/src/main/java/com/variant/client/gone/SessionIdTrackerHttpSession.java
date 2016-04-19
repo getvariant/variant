@@ -1,5 +1,5 @@
 package com.variant.client.gone;
-
+/*
 import javax.servlet.http.HttpServletRequest;
 
 import com.variant.core.InitializationParams;
@@ -11,7 +11,7 @@ import com.variant.core.VariantSessionIdTracker;
  * the ID of the underlying HTTP session.
  *
  * @since 0.5
- */
+ *
 public class SessionIdTrackerHttpSession implements VariantSessionIdTracker {
 
 	@Override
@@ -19,7 +19,7 @@ public class SessionIdTrackerHttpSession implements VariantSessionIdTracker {
 
 	/**
 	 * @param userData is 1 element array containing the servlet request.
-	 */
+	 *
 	@Override
 	public String get(Object...userData) {
 		HttpServletRequest httpRequest = (HttpServletRequest) userData[0];
@@ -30,4 +30,4 @@ public class SessionIdTrackerHttpSession implements VariantSessionIdTracker {
 	public void shutdown() {}
 	
 }
-
+*/

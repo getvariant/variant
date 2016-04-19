@@ -4,9 +4,7 @@ import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE
 import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
 import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
 import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
 import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
-import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,17 +20,13 @@ import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantProperties.Key;
 import com.variant.core.VariantSession;
-import com.variant.core.VariantStateRequest;
-import com.variant.core.VariantTargetingTracker;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
-import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.UserHook;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.ParserResponseImpl;
@@ -42,7 +36,6 @@ import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 import com.variant.core.session.SessionService;
-import com.variant.core.session.VariantSessionImpl;
 import com.variant.core.util.VariantIoUtils;
 
 /**
@@ -93,8 +86,8 @@ public class VariantCoreImpl implements Variant, Serializable {
 		}
 		catch (Exception e) {} // Not an error if wasn't found.
 
-		String runTimePropsResourceName = System.getProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME);
-		String runTimePropsFileName = System.getProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME);
+		String runTimePropsResourceName = System.getProperty(VariantProperties.COMMANDLINE_RESOURCE_NAME);
+		String runTimePropsFileName = System.getProperty(VariantPropertiesImpl.COMMANDLINE_FILE_NAME);
 		
 		if (runTimePropsResourceName != null && runTimePropsFileName!= null) {
 			throw new VariantRuntimeException(BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN);
@@ -104,7 +97,7 @@ public class VariantCoreImpl implements Variant, Serializable {
 			try {
 				properties.overrideWith(
 						VariantIoUtils.openResourceAsStream(runTimePropsResourceName), 
-						"-D" + VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME + "=" + runTimePropsResourceName);
+						"-D" + VariantPropertiesImpl.COMMANDLINE_RESOURCE_NAME + "=" + runTimePropsResourceName);
 			}
 			catch (Exception e) {
 				throw new VariantRuntimeException(BOOT_CONFIG_RESOURCE_NOT_FOUND, e, runTimePropsResourceName);
@@ -114,30 +107,12 @@ public class VariantCoreImpl implements Variant, Serializable {
 			try {
 				properties.overrideWith(
 						VariantIoUtils.openFileAsStream(runTimePropsFileName),
-						 "-D" + VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME + "=" + runTimePropsFileName);
+						 "-D" + VariantPropertiesImpl.COMMANDLINE_FILE_NAME + "=" + runTimePropsFileName);
 			}
 			catch (Exception e) {
 				throw new VariantRuntimeException(BOOT_CONFIG_FILE_NOT_FOUND, e, runTimePropsFileName);
 			}			
 		}
-	}
-		
-	//---------------------------------------------------------------------------------------------//
-	//                                  PACKAGE - EXPOSE TO TESTS                                  //
-	//---------------------------------------------------------------------------------------------//
-	/**
-	 * Expose runtime to tests via package visible getter.
-	 * @return
-	 */
-	VariantRuntime getRuntime() {
-		return runtime;
-	}
-
-	/** 
-	 * @return
-	 */
-	SessionService getSessionService() {
-		return sessionService;
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -150,12 +125,12 @@ public class VariantCoreImpl implements Variant, Serializable {
 		
 		setupSystemProperties(resourceNames);
 		
-		if (LOG.isTraceEnabled()) {
-			LOG.trace("+-- Bootstrapping Variant with following application properties: --");
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("+-- Bootstrapping Variant with following application properties: --");
 			for (VariantPropertiesImpl.Key key: VariantPropertiesImpl.Key.values()) {
-				LOG.trace("| " + key.propName() + " = " + properties.get(key, String.class) + " <- " + properties.getSource(key));
+				LOG.debug("| " + key.propName() + " = " + properties.get(key, String.class) + " : " + properties.getSource(key));
 			}
-			LOG.trace("+------------- Fingers crossed, this is not PRODUCTION -------------");
+			LOG.debug("+------------- Fingers crossed, this is not PRODUCTION -------------");
 		}
 		
 		//
@@ -251,64 +226,7 @@ public class VariantCoreImpl implements Variant, Serializable {
 		return sessionService.getSession(userData);
 	}
 
-	/**
-	 * 
-	 */
-	@Override
-	public VariantStateRequest targetSession(VariantSession session, State state, Object...targetingPersisterUserData) {
 		
-		// Can't have two requests at one time
-		VariantStateRequestImpl currentRequest = (VariantStateRequestImpl) session.getStateRequest();
-		if (currentRequest != null && !currentRequest.isCommitted()) {
-			throw new VariantRuntimeException (RUN_ACTIVE_REQUEST);
-		}
-		// init Targeting Persister with the same user data.
-		VariantTargetingTracker tp = null;
-		String className = properties.get(Key.TARGETING_TRACKER_CLASS_NAME, String.class);
-		
-		try {
-			Object object = Class.forName(className).newInstance();
-			if (object instanceof VariantTargetingTracker) {
-				tp = (VariantTargetingTracker) object;
-			}
-			else {
-				throw new VariantBootstrapException(BOOT_TARGETING_TRACKER_NO_INTERFACE, className, VariantTargetingTracker.class.getName());
-			}
-		}
-		catch (Exception e) {
-			throw new VariantInternalException("Unable to instantiate targeting persister class [" + className +"]", e);
-		}
-			
-		tp.initialized(this, session, targetingPersisterUserData);
-
-		((VariantSessionImpl) session).addTraversedState(state);
-		
-		return runtime.dispatchRequest(session, state, tp);
-	}
-	
-	/**
-	 * 
-	 */
-	@Override
-	public void commitStateRequest(VariantStateRequest request, Object...userData) {
-
-		VariantStateRequestImpl requestImpl = (VariantStateRequestImpl) request;
-		
-		if ((requestImpl).isCommitted()) {
-			throw new IllegalStateException("Request already committed");
-		}
-				
-		// Persist targeting info.  Note that we expect the userData to apply to both!
-		request.getTargetingTracker().save(userData);
-		
-		// Commit the request.
-		((VariantStateRequestImpl)request).commit();
-		
-		// Save the session in session store.
-		sessionService.saveSession(request.getSession(), userData);
-
-	}
-	
 	@Override
 	public void addHookListener(HookListener<? extends UserHook> listener) {
 		if (listener == null) throw new IllegalArgumentException("Argument cannot be null");
@@ -323,6 +241,21 @@ public class VariantCoreImpl implements Variant, Serializable {
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
+	/**
+	 * Expose runtime to tests via package visible getter.
+	 * @return
+	 */
+	public VariantRuntime getRuntime() {
+		return runtime;
+	}
+
+	/** 
+	 * @return
+	 */
+	public SessionService getSessionService() {
+		return sessionService;
+	}
+
 	/**
 	 * 
 	 */
@@ -386,7 +319,8 @@ public class VariantCoreImpl implements Variant, Serializable {
 			schema = response.getSchema();
 			((SchemaImpl)schema).setInternalState(SchemaImpl.InternalState.DEPLOYED);
 			
-			StringBuilder msg = new StringBuilder("New schema deployed in ");
+			StringBuilder msg = new StringBuilder();
+			msg.append("New schema ID [").append(schema.getId()).append("] deployed in ");
 			msg.append(DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")).append(":");
 			for (Test test: schema.getTests()) {
 				msg.append("\n   ").append(test.getName()).append(" {");

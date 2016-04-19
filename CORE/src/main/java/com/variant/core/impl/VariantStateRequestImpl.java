@@ -95,8 +95,13 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	/**
 	 * Commit this state request and flush the state visited event to an implementation of EventPersister. 
 	 */
-	public void commit() {
-
+	public void commit(Object...userData) {
+		
+		if (isCommitted()) throw new IllegalStateException("Request already committed");
+				
+		// Persist targeting info.  Note that we expect the userData to apply to both!
+		getTargetingTracker().save(userData);
+		
 		// We won't have an event if nothing is instrumented on this state
 		if (event != null) {
 			// The status of this request.
@@ -110,7 +115,11 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 			event = null;
 		}
 		
+		// Save the session in session store.
+		session.getCoreApi().getSessionService().saveSession(session, userData);
+
 		committed = true;
+
 	}
 
 	//---------------------------------------------------------------------------------------------//

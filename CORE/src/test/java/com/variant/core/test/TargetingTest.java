@@ -28,14 +28,18 @@ public class TargetingTest extends BaseTestCore {
 	static final float DELTA_AS_FRACTION = .025f;
 
 	/**
-	 * Reboot the API to use the null event persister.
+	 * Reboot the API to use the null event persister because the test will generating lots of them in a short time.
 	 * @throws Exception
 	 */
 	@BeforeClass
 	public static void before() throws Exception {
-		System.setProperty(VariantProperties.Key.EVENT_PERSISTER_CLASS_NAME.propName(), EventPersisterNull.class.getName());
-		System.setProperty(VariantProperties.Key.SESSION_STORE_CLASS_NAME.propName(), SessionStoreNull.class.getName());
-		//rebootApi();  We do this in @Before of the base class anyway.
+		System.setProperty(
+				VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.EVENT_PERSISTER_CLASS_NAME.propName(), 
+				EventPersisterNull.class.getName());
+		System.setProperty(
+				VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.SESSION_STORE_CLASS_NAME.propName(),
+				SessionStoreNull.class.getName());
+
 	}
 	
 	/**
@@ -113,12 +117,12 @@ public class TargetingTest extends BaseTestCore {
 		int[] counts = {0, 0, 0};
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.targetSession(ssn, state, "");
+			VariantStateRequest req = ssn.targetForState(state, "");
 			String expName = req.getTargetedExperience(test).getName();
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
-			api.commitStateRequest(req, "");
+			req.commit("");
 		} 
 		verifyCounts(counts, new float[] {1, 2, 97});
 		
@@ -131,12 +135,12 @@ public class TargetingTest extends BaseTestCore {
 		counts[0] = counts[1] = counts[2] = 0;
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.targetSession(ssn, state, "");
+			VariantStateRequest req = ssn.targetForState(state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
-			api.commitStateRequest(req, "");
+			req.commit("");
 		} 
 		assertEquals(TRIALS, nullListener1.postCount);
 		verifyCounts(counts, new float[] {1, 2, 97});
@@ -150,12 +154,12 @@ public class TargetingTest extends BaseTestCore {
 		nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.targetSession(ssn, state, "");
+			VariantStateRequest req = ssn.targetForState(state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
-			api.commitStateRequest(req, "");
+			req.commit("");
 		} 
 		assertEquals(TRIALS, nullListener1.postCount);
 		assertEquals(TRIALS, nullListener2.postCount);
@@ -170,12 +174,12 @@ public class TargetingTest extends BaseTestCore {
 		ABListener.postCount = nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.targetSession(ssn, state, "");
+			VariantStateRequest req = ssn.targetForState(state, "");
 			String expName = req.getTargetedExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
-			api.commitStateRequest(req, "");
+			req.commit("");
 		} 
 		assertEquals(TRIALS, nullListener1.postCount);
 		assertEquals(TRIALS, nullListener2.postCount);
@@ -191,12 +195,12 @@ public class TargetingTest extends BaseTestCore {
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.targetSession(ssn, state, "");
+			VariantStateRequest req = ssn.targetForState(state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
-			api.commitStateRequest(req, "");
+			req.commit("");
 		} 
 		assertEquals(TRIALS, ACListener.postCount);
 		verifyCounts(counts, new float[] {1, 0, 1});
@@ -209,12 +213,12 @@ public class TargetingTest extends BaseTestCore {
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.targetSession(ssn, state, "");
+			VariantStateRequest req = ssn.targetForState(state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
-			api.commitStateRequest(req, "");
+			req.commit("");
 		} 
 		assertEquals(TRIALS, nullListener1.postCount);
 		assertEquals(TRIALS, ACListener.postCount);
@@ -231,12 +235,12 @@ public class TargetingTest extends BaseTestCore {
 		ABNullListener.postCount = ACListener.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
 			VariantSession ssn = api.getSession("foo" + i);
-			VariantStateRequest req = api.targetSession(ssn, state, "");
+			VariantStateRequest req = ssn.targetForState(state, "");
 			String expName = req.getTargetedExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
-			api.commitStateRequest(req, "");
+			req.commit("");
 		} 
 		assertEquals(TRIALS, ABNullListener.postCount);
 		assertEquals(TRIALS, ACListener.postCount);
@@ -331,7 +335,7 @@ public class TargetingTest extends BaseTestCore {
 		final VariantSession ssn = api.getSession("foo");
 
 		new ExceptionInterceptor<VariantRuntimeException>() {
-			@Override public void toRun() { api.targetSession(ssn, state, ""); }
+			@Override public void toRun() { ssn.targetForState(state, ""); }
 			@Override public void onThrown(VariantRuntimeException e) { 
 				assertEquals(e.getMessage(), new VariantRuntimeException(MessageTemplate.RUN_WEIGHT_MISSING, "test1", "B").getMessage()); 
 			}

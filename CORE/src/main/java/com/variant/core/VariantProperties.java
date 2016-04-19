@@ -14,7 +14,11 @@ public interface VariantProperties {
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-	
+
+	public static final String COMMANDLINE_RESOURCE_NAME = "variant.props.resource";
+	public static final String COMMANDLINE_FILE_NAME = "varaint.props.file";
+	public static final String COMMANDLINE_PROP_PREFIX = "varaint.";
+
 	/**
 	 * <p>Keys of all known properties.
 	 */

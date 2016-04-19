@@ -101,7 +101,7 @@ class ServerSessionTest extends UnitSpec {
             ssn.asInstanceOf[VariantSessionImpl].toJson().getBytes, "application/json"
             ) ! "No response from server "
       httpPutResp1.code should be (HttpStatus.SC_OK)
-      val req = clientApi.targetSession(ssn, clientApi.getSchema.getState("state4"), "")
+      val req = ssn.targetForState(clientApi.getSchema.getState("state4"), "")
       req.getSession shouldBe ssn // Identity
       val json = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
       val httpPutResp2 =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server "
@@ -113,7 +113,7 @@ class ServerSessionTest extends UnitSpec {
       val httpGetResp = get("/session/" + id) ! "Jetty is not running"
       httpGetResp.code should be (HttpStatus.SC_OK)
       httpGetResp.bodyAsString should equal (json)
-      clientApi.commitStateRequest(req, "")
+      req.commit("")
    }
 
    "Session storage" should "preserve traversed tests" in {
@@ -127,7 +127,7 @@ class ServerSessionTest extends UnitSpec {
 
       for (state <- "state1" :: "state2" :: "state3" :: "state4" :: "state5" :: Nil) {
 
-         val req = clientApi.targetSession(ssnIn, clientApi.getSchema.getState(state), "")
+         val req = ssnIn.targetForState(clientApi.getSchema.getState(state), "")
          val jsonIn = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
          
          val httpPutResp =  put("/session/" + id, jsonIn.getBytes, "application/json") ! "No response from server "
@@ -141,7 +141,7 @@ class ServerSessionTest extends UnitSpec {
          val ssnOut = VariantSessionImpl.fromJson(clientApi, jsonOut)
          for (testIn <- ssnIn.getTraversedTests) ssnOut.getTraversedTests.exists(p => p.equals(testIn)) should be (true)
         
-         clientApi.commitStateRequest(req, "")
+         req.commit("")
       }      
    }
 
@@ -155,7 +155,7 @@ class ServerSessionTest extends UnitSpec {
       
       for (state <- "state1" :: "state2" :: "state3" :: "state4" :: "state5" :: Nil) {
          
-         val req = clientApi.targetSession(ssnIn, clientApi.getSchema.getState(state), "")
+         val req = ssnIn.targetForState(clientApi.getSchema.getState(state), "")
          val jsonIn = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
          
          val httpPutResp =  put("/session/" + id, jsonIn.getBytes, "application/json") ! "No response from server "
@@ -169,7 +169,7 @@ class ServerSessionTest extends UnitSpec {
          val ssnOut = VariantSessionImpl.fromJson(clientApi, jsonOut)
          for (stateIn <- ssnIn.getTraversedStates) ssnOut.getTraversedStates.exists(p => p.equals(stateIn)) should be (true)
         
-         clientApi.commitStateRequest(req, "")
+         req.commit("")
       }
    }
 
@@ -183,7 +183,7 @@ class ServerSessionTest extends UnitSpec {
       
       for (state <- "state1" :: "state2" :: "state3" :: "state4" :: "state5" :: Nil) {
          
-         val req = clientApi.targetSession(ssnIn, clientApi.getSchema.getState(state), "")
+         val req = ssnIn.targetForState(clientApi.getSchema.getState(state), "")
          val jsonIn = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
          
          val httpPutResp =  put("/session/" + id, jsonIn.getBytes, "application/json") ! "No response from server "
@@ -205,7 +205,7 @@ class ServerSessionTest extends UnitSpec {
             clientApi.getSchema.getState(state).getInstrumentedTests.exists { t => exp.getTest equals t } should be (true)
          }
 
-         clientApi.commitStateRequest(req, "")
+         req.commit("")
          
          val reqOutAfterCommit = ssnOut.getStateRequest()
          reqOutAfterCommit shouldBe reqOutBeforeCommit
@@ -232,7 +232,7 @@ class ServerSessionTest extends UnitSpec {
       
       for (state <- "state1" :: "state2" :: "state3" :: "state4" :: "state5" :: Nil) {
          
-         val req = clientApi.targetSession(ssnIn, clientApi.getSchema.getState(state), "")
+         val req = ssnIn.targetForState(clientApi.getSchema.getState(state), "")
          val jsonIn = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
          req.getTargetedExperiences should be ('empty)
          
@@ -250,7 +250,7 @@ class ServerSessionTest extends UnitSpec {
          reqOut should not be (null)
          reqOut.getTargetedExperiences should be ('empty)
          
-         clientApi.commitStateRequest(req, "")
+         req.commit("")
       }
       
       /**

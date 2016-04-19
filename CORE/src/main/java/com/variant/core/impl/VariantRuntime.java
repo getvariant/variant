@@ -514,12 +514,12 @@ public class VariantRuntime {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Implementation of {@link Variant#targetSession(VariantSession, State, Object...)}
+	 * Implementation of {@link Variant#targetForState(VariantSession, State, Object...)}
 	 * @param ssn
 	 * @param view
 	 * @return
 	 */
-	public VariantStateRequestImpl dispatchRequest(VariantSession ssn, State state, VariantTargetingTracker targetingPersister) {
+	public VariantStateRequestImpl targetSessionForState(VariantSession ssn, State state, VariantTargetingTracker targetingPersister) {
 
 		// Resolve the path and get all tests instrumented on the given view targeted.
 		VariantStateRequestImpl result = new VariantStateRequestImpl((VariantSessionImpl)ssn, (StateImpl) state);
@@ -528,26 +528,26 @@ public class VariantRuntime {
 		Map<String,String> resolvedParams = targetSessionForState(result);		
 		result.setResolvedParameters(resolvedParams);
 		
-		if (LOG.isDebugEnabled()) {
+		if (LOG.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Session [").append(ssn.getId()).append("] resolved state [").append(state.getName()).append("] as [");
 			sb.append(VariantStringUtils.toString(resolvedParams,","));
 			sb.append("] for experience vector [").append(StringUtils.join(targetingPersister.getAll().toArray(), ",")).append("]");
-			LOG.debug(sb.toString());
+			LOG.trace(sb.toString());
 		}   
 			
 		// Create the state serve event if there are any tests instrumented on this state.
 		if (state.getInstrumentedTests().isEmpty()) {
 			
-			if (LOG.isDebugEnabled()) {
-				LOG.debug(
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(
 						"Session [" + ssn.getId() + "] requested state [" + 
 						state.getName() +"] that does not have any instrumented tests.");
 			}   
 		}
 		else if (result.getTargetedExperiences().isEmpty()) {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug(
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(
 						"Session [" + ssn.getId() + "] requested state [" + 
 						state.getName() +"] that does not have live tests.");
 			}   			

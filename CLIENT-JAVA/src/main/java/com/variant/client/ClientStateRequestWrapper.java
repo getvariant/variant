@@ -1,4 +1,4 @@
-package com.variant.client.util;
+package com.variant.client;
 
 import java.util.Collection;
 import java.util.Map;
@@ -13,19 +13,23 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
-public class VariantWebStateRequestDecorator implements VariantStateRequest {
+public class ClientStateRequestWrapper implements VariantStateRequest {
 
 	private VariantStateRequest variantRequest;
-	private HttpServletRequest httpRequest;
+	private Object[] userData;
+	private VariantSession clientSession;
 	
-	public VariantWebStateRequestDecorator(VariantStateRequest variantRequest, HttpServletRequest httpRequest) {
+	public ClientStateRequestWrapper(
+			VariantSession clientSession, VariantStateRequest variantRequest, Object...targetingTrackerUserData) 
+	{
 		this.variantRequest = variantRequest;
-		this.httpRequest = httpRequest;
+		this.userData = targetingTrackerUserData;
+		this.clientSession = clientSession;
 	}
 
 	/// Extra Methods ///
 	public HttpServletRequest getHttpServletRequest() {
-		return httpRequest;
+		return (HttpServletRequest) userData[0];
 	}
 	
 	public VariantStateRequest getOriginalRequest() {
@@ -35,7 +39,7 @@ public class VariantWebStateRequestDecorator implements VariantStateRequest {
 	/// Pass-through methods ///
 	@Override
 	public VariantSession getSession() {
-		return variantRequest.getSession();
+		return clientSession;
 	}
 
 	@Override
@@ -76,6 +80,11 @@ public class VariantWebStateRequestDecorator implements VariantStateRequest {
 	@Override
 	public Status getStatus() {
 		return variantRequest.getStatus();
+	}
+
+	@Override
+	public void commit(Object... userData) {
+		variantRequest.commit(userData);
 	}
 
 }

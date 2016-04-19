@@ -17,9 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.StateSelectorByRequestPath;
-import com.variant.client.VariantWeb;
+import com.variant.client.VariantClient;
 import com.variant.client.util.VariantWebUtils;
-import com.variant.core.VariantSession;
+import com.variant.client.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
@@ -36,22 +36,22 @@ import com.variant.core.schema.parser.Severity;
  * Can be configured via the following filter config parameters:
  * schemaResourcePath specifies the resource path 
  * 
- * @author Igor
+ * @author Igor Urisman
  *
  */
 public class VariantFilter implements Filter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantFilter.class);
 	
-	private VariantWeb webApi;
+	private VariantClient client;
 	
 	/**
 	 * HTTP API will override these two methods.  The rest of this filter is the same for both.
 	 * 
 	 * @return
 	 */
-	protected VariantWeb getWebApi() { return new VariantWeb();}
-	protected VariantWeb getWebApi(String configName) { return new VariantWeb(configName);}
+	protected VariantClient getClient() { return new VariantClient();}
+	protected VariantClient getClient(String configName) { return new VariantClient(configName);}
 
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -65,7 +65,7 @@ public class VariantFilter implements Filter {
 	public void init(FilterConfig config) throws ServletException {
 
 		String name = config.getInitParameter("propsResourceName");
-		webApi = name == null ? getWebApi() : getWebApi(name);
+		client = name == null ? getClient() : getClient(name);
 			
 		name = config.getInitParameter("schemaResourceName");
 		
@@ -76,7 +76,7 @@ public class VariantFilter implements Filter {
 			throw new RuntimeException("Classpath resource by the name [" + name + "] does not exist.");
 		}
 						
-		ParserResponse resp = webApi.parseSchema(is);
+		ParserResponse resp = client.parseSchema(is);
 		Severity highSeverity = resp.highestMessageSeverity();
 		if (highSeverity != null && highSeverity.greaterOrEqualThan(Severity.ERROR)) {
 			LOG.error("Unable to parse Variant test schema due to following parser error(s):");
@@ -118,7 +118,7 @@ public class VariantFilter implements Filter {
 
 			// Is this request's URI mapped in Variant?
 			String url = VariantWebUtils.requestUrl(httpRequest);
-			State state = StateSelectorByRequestPath.select(webApi.getSchema(), url);
+			State state = StateSelectorByRequestPath.select(client.getSchema(), url);
 			
 			if (state == null) {
 
@@ -131,8 +131,8 @@ public class VariantFilter implements Filter {
 			else {
 			
 				// Yes, this path is mapped in Variant.
-				variantSsn = webApi.getSession(httpRequest, httpResponse);
-				variantRequest = webApi.dispatchRequest(variantSsn, state, httpRequest);
+				variantSsn = client.getSession(httpRequest, httpResponse);
+				variantRequest = variantSsn.targetForState(state, httpRequest);
 				resolvedPath = variantRequest.getResolvedParameterMap().get("path");
 				isForwarding = !resolvedPath.equals(state.getParameterMap().get("path"));
 				
@@ -171,7 +171,7 @@ public class VariantFilter implements Filter {
 				// Add some extra info to the state visited event(s)
 				VariantEvent sve = variantRequest.getStateVisitedEvent();
 				if (sve != null) sve.getParameterMap().put("HTTP_STATUS", httpResponse.getStatus());
-				webApi.commitStateRequest(variantRequest, httpResponse);
+				variantRequest.commit(httpResponse);
 			}
 			catch (Throwable t) {
 				LOG.error("Unhandled exception in Variant for path [" + 

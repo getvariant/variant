@@ -6,7 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.variant.client.StateParsedHookListenerImpl;
-import com.variant.client.VariantWeb;
+import com.variant.client.VariantClient;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
@@ -71,7 +71,7 @@ public class StateParsedHookTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		VariantWeb api = new VariantWeb();
+		VariantClient api = new VariantClient();
 		api.addHookListener(new StateParsedHookListenerImpl());
 		ParserResponse response = api.parseSchema(IOUtils.toInputStream(schema));
 		assertEquals(1, response.getMessages().size());

@@ -12,7 +12,6 @@ import com.variant.core.hook.HookListener;
 import com.variant.core.hook.UserHook;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 
 /**
@@ -107,30 +106,7 @@ public interface Variant {
 	 * @return An instance of {@link VariantSession}.
 	 */
 	public VariantSession getSession(Object...userData);
-	
-	/**
-     * <p>Target session for a state. 
-     *  
-	 * @return An instance of the {@link com.variant.core.VariantStateRequest} object, which
-	 *         may be further examined for more information about targeting.  
-	 *
-	 * @since 0.5
-	 */
-	public VariantStateRequest targetSession(VariantSession session, State state, Object...targetingPersisterUserData);
-	
-	/**
-	 * Commit a state request. Flushes to storage this session's state. See the Variant RCE User Guide for more information about Variant session
-     * life cycle.
-     * 
-	 * @param request The state request to be committed.
-	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
-	 *                 to the implementations of {@link com.variant.core.VariantSessionIdTracker#save(String, Object...)}
-	 *                 and {@link com.variant.core.VariantSessionStore#save(VariantSession, Object...)}.
-     *
-	 * @since 0.5
-	 */
-	public void commitStateRequest(VariantStateRequest request, Object...userData);
-		
+				
 	/**
 	 * Factory singleton class for obtaining an instance of the Variant API.
 	 * @since 0.5

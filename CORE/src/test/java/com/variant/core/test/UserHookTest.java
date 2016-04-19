@@ -101,7 +101,7 @@ public class UserHookTest extends BaseTestCore {
 		Schema schema = api.getSchema();
 		State state1 = schema.getState("state1");
 		VariantSession ssn = api.getSession("foo");
-		VariantStateRequest request = api.targetSession(ssn, state1, "");
+		VariantStateRequest request = ssn.targetForState(state1, "");
 		assertEquals(1, ssn.getTraversedStates().size());
 		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
 		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());
@@ -113,14 +113,14 @@ public class UserHookTest extends BaseTestCore {
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("Test1")));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1"), schema.getTest("Test1")), nullListener.testList);
-		api.commitStateRequest(request, "");
+		request.commit("");
 		
 		nullListener.testList.clear();
 		
 		// Repeat the same thing.  Test should have been put on the qualified list for the session
 		// so the hooks won't be posted.
 		assertTrue(nullListener.testList.isEmpty());
-		request = api.targetSession(ssn, state1, "");
+		request = ssn.targetForState(state1, "");
 		assertEquals(1, ssn.getTraversedStates().size());
 		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
 		assertEquals(2, ssn.getTraversedStates().iterator().next().arg2().intValue());
@@ -133,7 +133,7 @@ public class UserHookTest extends BaseTestCore {
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test1")));
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("Test1")));
 		assertEquals(0, nullListener.testList.size());
-		api.commitStateRequest(request, "");
+		request.commit("");
 
 		// New session. Disqualify, but keep in TT.
 		TestQualificationHookListenerDisqualifyImpl disqualListener = new TestQualificationHookListenerDisqualifyImpl(false, schema.getTest("test1"));
@@ -146,7 +146,7 @@ public class UserHookTest extends BaseTestCore {
 		schema = api.getSchema();
 		state1 = schema.getState("state1");
 		VariantSession ssn2 = api.getSession("foo2");
-		request = api.targetSession(ssn2, state1, targetingTrackerString("test2.D","Test1.A"));
+		request = ssn2.targetForState(state1, targetingTrackerString("test2.D","Test1.A"));
 		assertEquals(1, ssn2.getTraversedStates().size());
 		assertEquals(state1, ssn2.getTraversedStates().iterator().next().arg1());
 		assertEquals(1, ssn2.getTraversedStates().iterator().next().arg2().intValue());
@@ -160,7 +160,7 @@ public class UserHookTest extends BaseTestCore {
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("Test1")));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1")), disqualListener.testList);
 		assertEquals("/path/to/state1/Test1.A", request.getResolvedParameterMap().get("path"));
-		api.commitStateRequest(request, "");
+		request.commit("");
 
 		// New session. Disqualify and drop from TT
 		api.clearHookListeners();
@@ -176,7 +176,7 @@ public class UserHookTest extends BaseTestCore {
 		VariantSession ssn3 = api.getSession("foo3");
 		assertTrue(ssn3.getTraversedStates().isEmpty());
 		assertTrue(ssn3.getTraversedTests().isEmpty());
-		request = api.targetSession(ssn3, state1, targetingTrackerString("test1.B","test2.D","Test1.A"));
+		request = ssn3.targetForState(state1, targetingTrackerString("test1.B","test2.D","Test1.A"));
 		assertEqualAsSets(
 				ssn3.getTraversedStates(),
 				new Pair<State, Integer>(state1, 1));
@@ -197,7 +197,7 @@ public class UserHookTest extends BaseTestCore {
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test2")));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("Test1")), disqualListener.testList);
 		assertEquals("/path/to/state1/test1.B", request.getResolvedParameterMap().get("path"));
-		api.commitStateRequest(request, "");
+		request.commit("");
 
 		// Same session, but dispatch to state2 - it's only instrumented by the off test2. 
 		// The extra disqualifier should not matter because test1 has already been qualified for this session. The
@@ -208,7 +208,7 @@ public class UserHookTest extends BaseTestCore {
 		schema = api.getSchema();
 		state1 = schema.getState("state1");
 		State state2 = schema.getState("state2");
-		request = api.targetSession(ssn3, state2, targetingTrackerString("test1.B","test2.D","Test1.A"));
+		request = ssn3.targetForState(state2, targetingTrackerString("test1.B","test2.D","Test1.A"));
 		assertEqualAsSets(
 				ssn3.getTraversedStates(), 
 				new Pair<State, Integer>(state1, 1),
@@ -226,7 +226,7 @@ public class UserHookTest extends BaseTestCore {
 		assertNotNull(request.getTargetingTracker().get(schema.getTest("test2")));
 		assertTrue(disqualListener.testList.isEmpty());
 		assertEquals("/path/to/state2", request.getResolvedParameterMap().get("path"));
-		api.commitStateRequest(request, "");
+		request.commit("");
 		assertEqualAsSets(
 				ssn3.getTraversedStates(), 
 				new Pair<State, Integer>(state1, 1), 

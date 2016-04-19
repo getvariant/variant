@@ -1,5 +1,5 @@
-package com.variant.client.gone;
-
+package com.variant.client;
+/*
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import com.variant.core.VariantSessionStore;
  *
  * @author Igor Urisman
  * @since 0.5
- */
+ *
 public class SessionStoreHttpSession implements VariantSessionStore {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SessionStoreHttpSession.class);
@@ -37,7 +37,7 @@ public class SessionStoreHttpSession implements VariantSessionStore {
 	 * @param userData An object array whose first and only element must be the current
 	 *                 <code>HttpServletRequest</code>.
 	 * @since 0.5
-	 */
+	 *
 	@Override
 	public void save(VariantSession session, Object...userData) {
 		HttpServletRequest httpRequest = (HttpServletRequest) userData[0];
@@ -58,7 +58,7 @@ public class SessionStoreHttpSession implements VariantSessionStore {
 	 *                 <code>HttpServletRequest</code>.
 	 * @return Variant session.
 	 * @since 0.5
-	 */	
+	 *
 	@Override
 	public VariantSession get(String sessionId, Object...userData) {		
 		HttpServletRequest httpRequest = (HttpServletRequest) userData[0];
@@ -71,3 +71,4 @@ public class SessionStoreHttpSession implements VariantSessionStore {
 
 
 }
+*/

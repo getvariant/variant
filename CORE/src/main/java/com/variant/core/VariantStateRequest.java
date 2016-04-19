@@ -10,10 +10,10 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * Represents a state request, as instantiated by {@link com.variant.core.Variant#targetSession(VariantSession, State, Object)}.
+ * Represents a state request, as instantiated by {@link com.variant.core.Variant#targetForState(VariantSession, State, Object)}.
  * 
  * @author Igor Urisman
- * @since 0.5
+ * @since 0.6
  *
  */
 public interface VariantStateRequest {
@@ -22,16 +22,16 @@ public interface VariantStateRequest {
 	 * This request's Variant session.
 	 * 
 	 * @return Variant session as an instance of {@link com.variant.core.VariantSession}.
-	 * @since 0.5
+	 * @since 0.6
 	 */
 	public VariantSession getSession();
 	
 	/**
 	 * The state for which this request was generated, i.e. that was passed to 
-	 * {@link com.variant.core.Variant#targetSession(VariantSession, State, Object)}.
+	 * {@link com.variant.core.Variant#targetForState(VariantSession, State, Object)}.
 	 * 
 	 * @return State as an instance of {@link com.variant.core.schema.State}
-	 * @since 0.5
+	 * @since 0.6
 	 */
 	public State getState();
 	
@@ -46,7 +46,7 @@ public interface VariantStateRequest {
 	 * map.
 	 * 
 	 * @return Resolved parameter map.
-	 * @since 0.5
+	 * @since 0.6
 	 */
 	public Map<String,String> getResolvedParameterMap();
 		
@@ -55,7 +55,7 @@ public interface VariantStateRequest {
 	 * to maintain the list of targeted tests.
 	 * 
 	 * @return An instance of type  {@link com.variant.core.VariantTargetingTracker}.
-	 * @since 0.5
+	 * @since 0.6
 	 */
 	public VariantTargetingTracker getTargetingTracker();
 
@@ -65,7 +65,7 @@ public interface VariantStateRequest {
 	 * as are control-only experiences on current state.
 	 * 
 	 * @return Collection of {@link com.variant.core.schema.Test.Experience}s.
-	 * @since 0.5
+	 * @since 0.6
 	 */
 	public Collection<Experience> getTargetedExperiences();
 
@@ -80,7 +80,7 @@ public interface VariantStateRequest {
 	 *         
 	 * @throws VariantRuntimeException if given test is not instrumented by this requests's test.
 	 * 
-	 * @since 0.5
+	 * @since 0.6
 	 */
 	public Experience getTargetedExperience(Test test);
 		
@@ -88,7 +88,7 @@ public interface VariantStateRequest {
 	 *  event before it is flushed to external storage.
 	 * @return Pending event of type {@link com.variant.core.event.VariantEvent} or null if this request has already
 	 *         been committed;
-	 * @since 0.5
+	 * @since 0.6
 	 */
 	public VariantEvent getStateVisitedEvent();
 	
@@ -99,6 +99,20 @@ public interface VariantStateRequest {
 	 */
 	public void setStatus(Status status);
 	
+	/**
+	 * Commit this state request. Flushes to storage this session's state. 
+	 * See the Variant RCE User Guide for more information about Variant session
+     * life cycle.
+     * 
+	 * @param request The state request to be committed.
+	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
+	 *                 to the implementations of {@link com.variant.core.VariantSessionIdTracker#save(String, Object...)}
+	 *                 and {@link com.variant.core.VariantSessionStore#save(VariantSession, Object...)}.
+     *
+	 * @since 0.6
+	 */
+	public void commit(Object...userData);
+
 	/**
 	 * Current status of this request.
 	 */

@@ -24,7 +24,7 @@ public interface VariantTargetingTracker {
 	 * @param api Current Variant Core API handle.
 	 * @param session Current Variant session.
 	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#targetSession(VariantSession, com.variant.core.schema.State, Object...)} 
+	 *                 {@link com.variant.core.Variant#targetForState(VariantSession, com.variant.core.schema.State, Object...)} 
 	 *                 will pass here without interpretation.
 	 * @since 0.5
 	 */

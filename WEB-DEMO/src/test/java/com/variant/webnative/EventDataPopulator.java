@@ -64,7 +64,7 @@ public class EventDataPopulator {
 			VariantSession ssn = coreApi.getSession(String.valueOf(ssnId));
 			
 			// Everyone gets to the first page... Emulating new visits.
-			VariantStateRequest request = coreApi.targetSession(ssn, newOwnerView, "");
+			VariantStateRequest request = ssn.targetForState(newOwnerView, "");
 			Test.Experience exp = request.getTargetedExperience(test);
 			
 			// If we've fulfilled quota for this experience and this second, stop untilt he end of current second;
@@ -76,7 +76,7 @@ public class EventDataPopulator {
 			
 			i++;
 			
-			coreApi.commitStateRequest(request, String.valueOf(ssnId));
+			request.commit(String.valueOf(ssnId));
 			
 			// Some experiences don't get to the next page, simulating drop-off.
 			boolean skip = false;
@@ -85,8 +85,8 @@ public class EventDataPopulator {
 			else if (exp.getName().equals("tos&mailCheckbox")) skip = nextBoolean(0.93);
 			
 			if (!skip) {
-				request = coreApi.targetSession(ssn, ownerDetailView, request.getTargetingTracker().toString());
-				coreApi.commitStateRequest(request, String.valueOf(ssnId));
+				request = ssn.targetForState(ownerDetailView, request.getTargetingTracker().toString());
+				request.commit(String.valueOf(ssnId));
 			}
 
 			ssnId++;

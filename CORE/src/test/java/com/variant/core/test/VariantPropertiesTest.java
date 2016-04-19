@@ -48,7 +48,7 @@ public class VariantPropertiesTest {
 
 		// Run time override from classpath
 		final String RESOURCE_NAME = "/VariantPropertiesTest.props";
-		System.setProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME, RESOURCE_NAME);
+		System.setProperty(VariantProperties.COMMANDLINE_RESOURCE_NAME, RESOURCE_NAME);
 		api = Variant.Factory.getInstance();
 		expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openResourceAsStream(RESOURCE_NAME));
@@ -59,11 +59,11 @@ public class VariantPropertiesTest {
 					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvariant.props.resource=/VariantPropertiesTest.props"), 
 					actualProps.getString(prop));
 		}
-		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME);
-		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME);
+		System.clearProperty(VariantProperties.COMMANDLINE_FILE_NAME);
+		System.clearProperty(VariantProperties.COMMANDLINE_RESOURCE_NAME);
 
 		// Comp time override + run time override from classpath
-		System.setProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME, "/VariantPropertiesTest.props");
+		System.setProperty(VariantProperties.COMMANDLINE_RESOURCE_NAME, "/VariantPropertiesTest.props");
 		api = Variant.Factory.getInstance("/variant-test.props");
 		expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openResourceAsStream("/VariantPropertiesTest.props"));
@@ -74,12 +74,12 @@ public class VariantPropertiesTest {
 					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvariant.props.resource=/VariantPropertiesTest.props"), 
 					actualProps.getString(prop));
 		}
-		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME);
-		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME);
+		System.clearProperty(VariantProperties.COMMANDLINE_FILE_NAME);
+		System.clearProperty(VariantProperties.COMMANDLINE_RESOURCE_NAME);
 
 		// Run time override from file system.
 		final String TMP_FILE_NAME = "/tmp/VariantPropertiesTest.props";
-		System.setProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME, TMP_FILE_NAME);
+		System.setProperty(VariantProperties.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
 		PrintWriter tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
 		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_CLASS_NAME.propName() + " = FileOverride");
 		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName() + " = FileOverride");	
@@ -95,11 +95,11 @@ public class VariantPropertiesTest {
 					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvaraint.props.file=/tmp/VariantPropertiesTest.props"), 
 					actualProps.getString(prop));
 		}
-		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME);
-		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME);
+		System.clearProperty(VariantProperties.COMMANDLINE_FILE_NAME);
+		System.clearProperty(VariantProperties.COMMANDLINE_RESOURCE_NAME);
 
 		// Comp time override from class path + run time override from file system.
-		System.setProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME, TMP_FILE_NAME);
+		System.setProperty(VariantProperties.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
 		tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
 		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_CLASS_NAME + " = FileOverride");
 		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE + " = FileTimeOverride");	
@@ -115,26 +115,26 @@ public class VariantPropertiesTest {
 					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvaraint.props.file=/tmp/VariantPropertiesTest.props"), 
 					actualProps.getString(prop));
 		}
-		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_FILE_NAME);
-		System.clearProperty(VariantPropertiesImpl.RUNTIME_PROPS_RESOURCE_NAME);
+		System.clearProperty(VariantProperties.COMMANDLINE_FILE_NAME);
+		System.clearProperty(VariantProperties.COMMANDLINE_RESOURCE_NAME);
 		
 		// System props override. 
 		int randomInt = new Random().nextInt();
 		api = Variant.Factory.getInstance();
 		assertNotEquals(randomInt, api.getProperties().get(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE,  Integer.class).intValue());
-		System.setProperty(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName(), String.valueOf(randomInt));
+		System.setProperty(VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName(), String.valueOf(randomInt));
 		assertEquals(randomInt, api.getProperties().get(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class).intValue());
 
 		api = Variant.Factory.getInstance();
 		assertEquals(randomInt, api.getProperties().get(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class).intValue());
-		System.clearProperty(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName());
+		System.clearProperty(VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName());
 		assertNotEquals(randomInt, api.getProperties().get(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class).intValue());
 		
 		// JSON parsing errors
 		{
 			// Invalid JSON
 			final String BAD_JSON = "{\"foo\":\"FOO\"\"bar\":\"BAR\"}";
-			System.setProperty(VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName(), BAD_JSON);
+			System.setProperty(VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName(), BAD_JSON);
 			boolean exceptionThrown = false;
 			try {
 				api = Variant.Factory.getInstance();
@@ -154,7 +154,7 @@ public class VariantPropertiesTest {
 		
 		{
 			// missing password
-			System.setProperty(VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
+			System.setProperty(VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
 			boolean exceptionThrown = false;
 			try {
 				api = Variant.Factory.getInstance();

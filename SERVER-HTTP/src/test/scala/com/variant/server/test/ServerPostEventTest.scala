@@ -235,7 +235,7 @@ class ServerPostEventTest extends UnitSpec {
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)
 
-      val req = clientApi.targetSession(ssnIn, clientApi.getSchema.getState("state1"), "")
+      val req = ssnIn.targetForState(clientApi.getSchema.getState("state1"), "")
       val jsonIn = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
          
       // Update the session with the state dispatch data.
