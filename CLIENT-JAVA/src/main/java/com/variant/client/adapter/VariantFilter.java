@@ -171,7 +171,7 @@ public class VariantFilter implements Filter {
 				// Add some extra info to the state visited event(s)
 				VariantEvent sve = variantRequest.getStateVisitedEvent();
 				if (sve != null) sve.getParameterMap().put("HTTP_STATUS", httpResponse.getStatus());
-				variantRequest.commit(httpResponse);
+				variantRequest.commit(httpRequest, httpResponse);
 			}
 			catch (Throwable t) {
 				LOG.error("Unhandled exception in Variant for path [" + 
