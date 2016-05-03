@@ -14,7 +14,7 @@ import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.util.VariantStringUtils;
 
 /**
- * HTTP Cookie based session ID tracking. Session ID is saved in an HTTP cookie.
+ * HTTP Cookie based session ID tracker. Session ID is saved in an HTTP cookie.
  * Use HTTP request object to cache a pending session ID. In other words, if
  * there's no vrnt-ssnid cookie and we've genned a random number, save that in
  * request, so that we can reuse it on a subsequent request from with the same
@@ -32,7 +32,7 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	private static final Random rand = new Random(System.currentTimeMillis());
 	
 	/**
-	 * No-arg constructor must be provided by contract.
+	 * No-argument constructor must be provided by contract.
 	 */
 	public SessionIdTrackerHttpCookie() {}
 

@@ -14,8 +14,10 @@ public class VariantComptime {
 	
 	public static final Logger LOG = LoggerFactory.getLogger(Variant.class);
 	
+	public enum Component {SERVER, CLIENT}
+	
 	private String coreVersion = null;
-	private String component = "NONE";
+	private Component component = null;
 	private String componentVersion = "NONE";
 	
 	private boolean isComponentRegistered = false;
@@ -43,7 +45,7 @@ public class VariantComptime {
 		if (coreVersion == null) coreVersion = "?.?.?";
 	}
 	
-	public void registerComponent(String component, String version) {
+	public void registerComponent(Component component, String version) {
 		
 		if (isComponentRegistered) throw new VariantInternalException(
 				String.format("Already registered component [%s] [%s]", this.component, this.componentVersion));
@@ -54,7 +56,7 @@ public class VariantComptime {
 	}
 	
 	public String getCoreVersion() { return coreVersion; }
-	public String getComponent() { return component; }
+	public Component getComponent() { return component; }
 	public String getComponentVersion() { return componentVersion; }
 }
 

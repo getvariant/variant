@@ -6,3 +6,7 @@ event.writer.buffer.size = 10000
 event.writer.max.delay.millis = 100
 
 session.store.class.init = {"apiEndpoint":"**Not used on Server**", "sessionTimeoutSecs":1, "vacuumingFrequencySecs":1}
+
+# Event Persister (Postgres on Disk)
+#event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
+#event.persister.class.init = {"url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}

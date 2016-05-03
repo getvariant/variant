@@ -125,6 +125,7 @@
               </executions>
             </plugin>
 
+<!-- Do we need client tests packaged?
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-jar-plugin</artifactId>
@@ -137,8 +138,8 @@
                   </execution>
                </executions>
             </plugin>
+-->  
           </plugins>
-  
     </build>
 
 </project>

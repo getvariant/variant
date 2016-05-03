@@ -1,8 +1,0 @@
-#
-# Copyright Variant, Inc. All Rights Reserved.
-#
-# Server properties.
-#
-
-# The defaults
-session.store.class.init = {"apiEndpoint":"**Not used on Server**", "sessionTimeoutSecs":900, "vacuumingFrequencySecs":60}

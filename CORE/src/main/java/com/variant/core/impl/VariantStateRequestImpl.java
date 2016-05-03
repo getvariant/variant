@@ -110,7 +110,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 			for (Map.Entry<String,String> e: resolvedParameterMap.entrySet()) {
 				event.getParameterMap().put(e.getKey(), e.getValue());				
 			}
-			// Flush state visited event
+			// Trigger state visited event
 			session.triggerEvent(event);
 			event = null;
 		}
@@ -230,7 +230,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	 */
 	public String getStateName() {
 		
-		if (session.getCoreApi().getComptime().getComponent().equals("Server"))
+		if (session.getCoreApi().getComptime().getComponent() == VariantComptime.Component.SERVER)
 			throw new VariantInternalException("Method is supported only on Server");
 		
 		return stateName;
@@ -298,7 +298,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		// If we're on the server, we don't have the schema => we can't instantiate a State object,
 		// but we need the state name to log events.
 		
-		VariantStateRequestImpl result =  ((VariantCoreImpl)coreApi).getComptime().getComponent().equals("Server") ?
+		VariantStateRequestImpl result =  ((VariantCoreImpl)coreApi).getComptime().getComponent() == VariantComptime.Component.SERVER ?
 				new VariantStateRequestImpl(session, (String)stateName) :
 				new VariantStateRequestImpl(session, (StateImpl) coreApi.getSchema().getState((String)stateName));
 		
@@ -345,7 +345,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 					String expQualifiedName = (String) obj;
 					// qualified name = testName.expName.bool - need to parse.
 					String[] tokens = expQualifiedName.split("\\.");
-					if (((VariantCoreImpl)coreApi).getComptime().getComponent().equals("Server")) {
+					if (((VariantCoreImpl)coreApi).getComptime().getComponent() == VariantComptime.Component.SERVER) {
 						experiencesList.add(new TestExperienceServerStub(tokens[0], tokens[1], new Boolean(tokens[2])));
 					}
 					else {

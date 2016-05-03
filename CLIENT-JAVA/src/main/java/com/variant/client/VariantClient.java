@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
 import com.variant.core.hook.HookListener;
+import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
@@ -62,7 +63,7 @@ public class VariantClient {
 						resourceNames,
 						"/variant/client." + VariantStringUtils.RESOURCE_POSTFIX + ".props",
 						String.class));
-		((VariantCoreImpl)this.core).getComptime().registerComponent("Web", "0.6.0");
+		((VariantCoreImpl)this.core).getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.0");
 
 	}
 

@@ -18,6 +18,7 @@ import com.variant.core.Variant
 import com.variant.core.jdbc.JdbcService
 import com.variant.core.impl.VariantCoreImpl
 import scala.util.Random
+import com.variant.core.impl.VariantComptime
 
 /**
  * 
@@ -39,11 +40,12 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
    import UnitSpec._
    
    lazy val baseUrl = JettyTestServer.baseUrl
-   
+
+   VariantCore.init("/variant-test.props")
    val serverApi = VariantCore.api
    // We'll need the client side api too.
    val clientApi = Variant.Factory.getInstance().asInstanceOf[VariantCoreImpl]
-   clientApi.getComptime().registerComponent("Web", "0.6.0");
+   clientApi.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.0");
 
    /**
     * 
