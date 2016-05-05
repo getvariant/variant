@@ -52,7 +52,7 @@ public class VariantComptime {
 		
 		this.component = component;
 		this.componentVersion = version;
-		LOG.info(String.format("Registered component %s %s, © 2015-16 getvariant.com.", component, component));
+		LOG.info(String.format("Registered component %s %s, © 2015-16 getvariant.com.", component, componentVersion));
 	}
 	
 	public String getCoreVersion() { return coreVersion; }

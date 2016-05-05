@@ -1,7 +1,7 @@
 #
 # Copyright Variant, Inc. All Rights Reserved.
 #
-# Variant WEB system property overrides.
+# Variant Java Client system property overrides.
 #
 
 # Session store on a remote server accessed via an HTTP service.

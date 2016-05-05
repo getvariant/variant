@@ -27,22 +27,30 @@ public class VariantPropertiesTest {
 		
 		// Core default
 		Variant api = Variant.Factory.getInstance();
-		Properties expectedProps = new Properties();
-		expectedProps.load(VariantIoUtils.openResourceAsStream("/variant/defaults.props"));
-		assertEquals(expectedProps.size(), VariantPropertiesImpl.Key.values().length);
+		
+		Properties defaultProps = new Properties();
+		defaultProps.load(VariantIoUtils.openResourceAsStream("/variant/defaults.props"));
+		Properties internalProps = new Properties();
+		internalProps.load(VariantIoUtils.openResourceAsStream("/variant/internal.7F1BDFD1F67FA313.props"));
+
+		assertEquals(internalProps.size() + defaultProps.size(), VariantPropertiesImpl.Key.values().length);
+
 		for (VariantPropertiesImpl.Key key: VariantPropertiesImpl.Key.values()) {
-			assertEquals(expectedProps.getProperty(key.propName()), api.getProperties().get(key, String.class));
+			if (defaultProps.containsKey(key.propName())) 
+				assertEquals(defaultProps.getProperty(key.propName()), api.getProperties().get(key, String.class));
+			else
+				assertEquals(internalProps.getProperty(key.propName()), api.getProperties().get(key, String.class));				
 		}
 		
 		// Compile time override
 		api = Variant.Factory.getInstance("/variant-test.props");
-		expectedProps = new Properties();
-		expectedProps.load(VariantIoUtils.openResourceAsStream("/variant-test.props"));
+		Properties testProps = new Properties();
+		testProps.load(VariantIoUtils.openResourceAsStream("/variant-test.props"));
 		VariantPropertiesTestFacade actualProps = new VariantPropertiesTestFacade(api.getProperties());
-		for (String prop: expectedProps.stringPropertyNames()) {
+		for (String prop: testProps.stringPropertyNames()) {
 			assertEquals(
 			   "Property Name: [" + prop + "]", 
-			   new Pair<String, String>(expectedProps.getProperty(prop), "/variant-test.props"), 
+			   new Pair<String, String>(testProps.getProperty(prop), "/variant-test.props"), 
 			   actualProps.getString(prop));
 		}
 
@@ -50,7 +58,7 @@ public class VariantPropertiesTest {
 		final String RESOURCE_NAME = "/VariantPropertiesTest.props";
 		System.setProperty(VariantProperties.COMMANDLINE_RESOURCE_NAME, RESOURCE_NAME);
 		api = Variant.Factory.getInstance();
-		expectedProps = new Properties();
+		Properties expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openResourceAsStream(RESOURCE_NAME));
 		actualProps = new VariantPropertiesTestFacade(api.getProperties());
 		for (String prop: expectedProps.stringPropertyNames()) {
@@ -154,6 +162,7 @@ public class VariantPropertiesTest {
 		
 		{
 			// missing password
+			System.setProperty(VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.EVENT_PERSISTER_CLASS_NAME.propName(), "com.variant.core.ext.EventPersisterH2"); 
 			System.setProperty(VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
 			boolean exceptionThrown = false;
 			try {

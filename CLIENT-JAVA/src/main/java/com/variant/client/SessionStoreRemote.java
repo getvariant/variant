@@ -16,6 +16,7 @@ import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.session.VariantSessionImpl;
 
@@ -111,6 +112,11 @@ public class SessionStoreRemote implements VariantSessionStore {
 		sessionTimeoutMillis = (Integer) initParams.getOr("sessionTimeoutSecs",  "900") * 1000;
 		
 		coreApi = (VariantCoreImpl) initParams.getCoreApi();
+		
+		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) {
+			apiEndpointUrl = coreApi.getProperties().get(VariantProperties.Key.SERVER_ENDPOINT_URL);
+		}
+		if (!apiEndpointUrl.endsWith("/")) apiEndpointUrl += "/";
 	}
 
 	@Override

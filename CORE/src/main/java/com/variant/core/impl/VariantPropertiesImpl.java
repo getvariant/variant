@@ -21,6 +21,7 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantIoUtils;
+import com.variant.core.util.VariantStringUtils;
 
 /**
  * Static singleton interface to system properties.
@@ -41,7 +42,10 @@ public class VariantPropertiesImpl implements VariantProperties {
 	VariantPropertiesImpl(VariantCoreImpl coreApi) {
 		this.coreApi = coreApi;
 		propsChain = new PropertiesChain();
-		overrideWith(VariantIoUtils.openResourceAsStream("/variant/defaults.props"), "/variant/defaults.props");		
+		// Internal is the last on the chain
+		overrideWith(VariantIoUtils.openResourceAsStream("/variant/internal." + VariantStringUtils.RESOURCE_POSTFIX + ".props"), "INTERNAL");
+		// Publicly visible defaults.props is actually the second to last on the chain.
+		overrideWith(VariantIoUtils.openResourceAsStream("/variant/defaults.props"), "/variant/defaults.props");
 	}
 
 	/**

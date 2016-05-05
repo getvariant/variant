@@ -13,26 +13,21 @@ event.writer.percent.full = 90
 # if pct full has not been reached.
 event.writer.max.delay.millis = 30000
 
-# Event Persister (H2 in memory)
-event.persister.class.name = com.variant.core.ext.EventPersisterH2
-event.persister.class.init = {"url":"jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;","user":"variant","password":"variant"}
+# Event Persister: Events go into the application logger in effect.
+event.persister.class.name = com.variant.core.ext.EventPersisterAppLogger
+event.persister.class.init = {}
 
-# Event Persister (Postgres on Disk)
-# event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
-# event.persister.class.init = {"url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}
-
-# Number of days targeting tracker will honor an idle experience.
-# 0 => for the life of the test.
-targeting.tracker.class.name = com.variant.core.ext.TargetingTrackerString
-targeting.tracker.idle.days.to.live = 0
-
-# Session store. Uses in-memory hash table, but stores sessions not as live
-# objects, but as their JSON representations, which emulates the real-life
-# conditions better.
-# Idle session expires in 15 min.
-session.store.class.name = com.variant.core.ext.SessionStoreLocalMemory
-session.store.class.init = {}
-
-# Session ID tracker suitable for the above session store. 
+# Session ID tracker that does no tracking at all,  but simply returns the ID
+# with which it was called.  Any practically usable implementation will need
+# to do something cleverer.
 session.id.tracker.class.name = com.variant.core.ext.SessionIdTrackerSimple
 session.id.tracker.class.init = {}
+
+# Targeting Tracker that tracks targeting in an in-memory string. 
+targeting.tracker.class.name = com.variant.core.ext.TargetingTrackerString
+# Number of days targeting tracker will honor an idle experience.
+# 0 => for the life of the test.
+targeting.tracker.idle.days.to.live = 0
+
+# URL to server API endpoint.
+server.endpoint.url=Unset. Use app property server.endpoint.url to set.

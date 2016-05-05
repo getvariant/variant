@@ -21,7 +21,8 @@ scalacOptions ++= Seq("-deprecation", "-unchecked")
 
 libraryDependencies ++= {
   val liftVersion = "2.6.2"
-  val variantVersion = "0.6.0"
+  val variantVersion = scala.util.Properties.envOrElse("VARIANT_VERSION", "UNSET")
+  
   Seq(
     "net.liftweb"       %% "lift-webkit"        % liftVersion        % "compile",
     "net.liftweb"       %% "lift-testkit"       % liftVersion        % "test",

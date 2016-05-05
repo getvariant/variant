@@ -12,10 +12,10 @@
         </encoder>
     </appender>
 
-    <logger name="code.snippet" level="info" />
+    <logger name="code.snippet" level="warn" />
     <logger name="net.liftweb" level="warn" />
-    <logger name="bootstrap.liftweb" level="info" />
-    <logger name="com.variant" level="trace" />
+    <logger name="bootstrap.liftweb" level="warn" />
+    <logger name="com.variant" level="info" />
    
     <root level="warn">
         <appender-ref ref="STDOUT" />

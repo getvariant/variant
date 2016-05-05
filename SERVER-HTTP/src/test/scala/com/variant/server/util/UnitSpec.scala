@@ -44,7 +44,7 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
    VariantCore.init("/variant-test.props")
    val serverApi = VariantCore.api
    // We'll need the client side api too.
-   val clientApi = Variant.Factory.getInstance().asInstanceOf[VariantCoreImpl]
+   val clientApi = Variant.Factory.getInstance("/variant-test.props").asInstanceOf[VariantCoreImpl]
    clientApi.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.0");
 
    /**

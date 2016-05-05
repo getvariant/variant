@@ -123,6 +123,9 @@ public class VariantCoreImpl implements Variant, Serializable {
 	 */
 	public VariantCoreImpl(String...resourceNames) throws Exception {
 		
+		//
+		// System properties first.
+		//
 		setupSystemProperties(resourceNames);
 		
 		if (LOG.isDebugEnabled()) {
@@ -133,6 +136,11 @@ public class VariantCoreImpl implements Variant, Serializable {
 			LOG.debug("+------------- Fingers crossed, this is not PRODUCTION -------------");
 		}
 		
+		//
+		// Init comptime service. 
+		//
+		comptime = new VariantComptime();
+
 		//
 		// Instantiate event persister.
 		//
@@ -169,11 +177,6 @@ public class VariantCoreImpl implements Variant, Serializable {
 		// Instantiate runtime.
 		//
 		runtime = new VariantRuntime(this);
-
-		//
-		// Init comptime service.
-		//
-		comptime = new VariantComptime();
 
 	}
 	

@@ -39,7 +39,6 @@
 		<dandelion.version>1.0.1</dandelion.version>
 
 		<cobertura.version>2.7</cobertura.version>
-		<variant.version>0.6.0</variant.version>
 		<jackson.version>2.5.3</jackson.version>
 
 	</properties>
@@ -268,13 +267,13 @@
         <dependency>
         	<groupId>com.variant</groupId>
 	  		<artifactId>variant-core</artifactId>
-	  		<version>${variant.version}</version>
+	  		<version>${env.VARIANT_VERSION}</version>
 	  	</dependency>
 
 		<dependency>
 			<groupId>com.variant</groupId>
 			<artifactId>variant-client</artifactId>
-			<version>${variant.version}</version>
+			<version>${env.VARIANT_VERSION}</version>
 		</dependency>
 		
         <dependency>

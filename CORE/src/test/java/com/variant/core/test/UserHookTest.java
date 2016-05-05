@@ -10,14 +10,12 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.StateParsedHook;
 import com.variant.core.hook.TestParsedHook;
 import com.variant.core.hook.TestQualificationHook;
-import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
@@ -38,9 +36,7 @@ public class UserHookTest extends BaseTestCore {
 	
 	@Test
 	public void stateParsedTest() throws Exception {
-		
-		api = (VariantCoreImpl) Variant.Factory.getInstance();
-		
+				
 		StateParsedHookListenerImpl listener = new StateParsedHookListenerImpl();
 		api.addHookListener(listener);
 		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
@@ -55,9 +51,7 @@ public class UserHookTest extends BaseTestCore {
 
 	@Test
 	public void testParsedTest() throws Exception {
-		
-		api = (VariantCoreImpl) Variant.Factory.getInstance();
-		
+				
 		TestParsedHookListenerImpl listener = new TestParsedHookListenerImpl();
 		api.clearHookListeners();
 		api.addHookListener(listener);
@@ -87,8 +81,6 @@ public class UserHookTest extends BaseTestCore {
 
 	@Test
 	public void testQualificationTest() throws Exception {
-		
-		api = (VariantCoreImpl) Variant.Factory.getInstance();
 		
 		TestQualificationHookListenerNullImpl nullListener = new TestQualificationHookListenerNullImpl();
 		api.clearHookListeners();

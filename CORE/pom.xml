@@ -11,7 +11,6 @@
    <modelVersion>4.0.0</modelVersion>
     
 	<properties>
-	    <variant.version>0.6.0</variant.version>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
 		<jackson.version>2.5.3</jackson.version>
     </properties>
@@ -20,7 +19,7 @@
     <name>Variant core lib</name>
     <packaging>jar</packaging>
     <groupId>com.variant</groupId>
-    <version>${variant.version}</version>
+    <version>${env.VARIANT_VERSION}</version>
     
     <dependencies>
         

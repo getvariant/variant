@@ -56,7 +56,7 @@
 					while (queueAsArray.length > 0) {
 						var event = queueAsArray.pop();
 						$.ajax({
-							url: variant.url,
+							url: variant.url + '/event',
 							method: "post",
 							data: JSON.stringify(event),
 							contentType: "application/json; charset=utf-8",
@@ -83,6 +83,7 @@
 		if (arguments.length != 0) {
 			
 			variant.url = props.url || variant.url;
+			if (!variant.url.endsWith('/')) variant.url += "/";
 			variant.success = props.success || variant.success;
 			variant.error = props.error || variant.error;
 		}

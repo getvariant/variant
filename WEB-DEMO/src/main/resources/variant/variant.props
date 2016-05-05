@@ -1,12 +1,18 @@
 #
 # Variant properties for the Pet Clinic Demo application
 # Copyright 2016 Variant, Inc. All rights reserved.
+# http://getvariant.com
 
-# Event Persister Applicaiton Logger
-event.persister.class.name = com.variant.core.ext.EventPersisterAppLogger
+# The URL to server API endpoint
+server.endpoint.url=http://localhost:8080/
 
-# Postgres Event Persister
+# Override the default for demo purposes only. Events will be flushed
+# no less frequently than once a second.
+event.writer.max.delay.millis = 1000
+
+# Postgres Event Persister comes with Variant and can be used out of the box.
+# The SQL schema required to support this Event Persister can be found in the
+# distribution db/postgres directory. The same scripts run on an H2 instance
+# in Oralce compatibility mode.
 #event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
 #event.persister.class.init = {"vendor":"postgres","url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}
-
-event.writer.max.delay.millis = 1000

@@ -44,7 +44,7 @@ public class HttpClient {
 			return new HttpResponse(get, resp);
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to perform HTTP GET", e);
+			throw new VariantInternalException("Unable to perform HTTP GET: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					
@@ -72,7 +72,7 @@ public class HttpClient {
 		    return new HttpResponse(put, resp);
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to perform HTTP POST", e);
+			throw new VariantInternalException("Unable to perform HTTP POST: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					

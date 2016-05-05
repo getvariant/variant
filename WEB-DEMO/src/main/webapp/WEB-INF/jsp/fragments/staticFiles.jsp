@@ -30,7 +30,8 @@ PetClinic :: a Spring Framework demonstration
     <link href="${jQueryUiCss}" rel="stylesheet"></link>
     
     <!-- variant.js v0.6.0 -->
-    <script src="http://getvariant.com/js/0.6.0/variant.js"></script>
+    <script src="http://getvariant.com/js/variant-0.6.0.js"></script>
+        
 </head>
 
 

@@ -8,7 +8,6 @@ import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.TargetingTrackerSupport;
 
 /**
  * Emulates targeting persister that is tracked by a cookie,

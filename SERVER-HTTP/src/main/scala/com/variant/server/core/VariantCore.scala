@@ -8,6 +8,7 @@ import com.variant.core.impl.VariantComptime
 object VariantCore {
   
    var api: VariantCoreImpl = null
+   var bootTime = System.currentTimeMillis()
    
    /**
     * External configuration passes the name of the resource properties file here.

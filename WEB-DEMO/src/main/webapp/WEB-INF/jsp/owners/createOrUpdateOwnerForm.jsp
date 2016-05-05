@@ -11,11 +11,12 @@
 
 <jsp:include page="../fragments/staticFiles.jsp"/>
 
-<!-- ---------- Variant remote events ---------------- -->
+<!-- ----------------- Variant remote events ------------------------- 
+     Does not quite work: need to pass  session ID from the server -->
 <script>
 
    variant.boot({
-      url:"http://localhost:8080/event",
+      url:"http://localhost:8080/api",
       success: function(data, textStatus) {console.log("POST returned status '" + textStatus + "' and body '" + data + "'");},
       error: function(jqXHR) {
          throw Error("Bad response from Variant server: " + jqXHR.status + " " + jqXHR.statusText + ": " + jqXHR.responseText);
@@ -31,7 +32,7 @@
    });
 
 </script>
-<!-- -------------------------------------------------- -->
+<!-- --------------------------------------------------------------- -->
 
 <body>
 <div class="container">

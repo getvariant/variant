@@ -3,6 +3,6 @@
 #
 # Variant compile time props.
 #
-
-component = CORE
-version = 0.6.0
+# DELETE ME?
+#component = CORE
+#version = 0.6.0

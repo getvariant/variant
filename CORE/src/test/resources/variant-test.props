@@ -2,6 +2,17 @@
 # Base properties for some JUnit Tests.
 #
 
+# Event Persister (H2 in memory)
+event.persister.class.name = com.variant.core.ext.EventPersisterH2
+event.persister.class.init = {"url":"jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;","user":"variant","password":"variant"}
+
+# Event Persister (Postgres on Disk)
+# event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
+# event.persister.class.init = {"url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}
+
 event.writer.buffer.size = 10000
 event.writer.max.delay.millis = 100
-		
+
+# Session ID tracker suitable for the above session store. 
+session.id.tracker.class.name = com.variant.core.ext.SessionIdTrackerSimple
+session.id.tracker.class.init = {}

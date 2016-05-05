@@ -24,7 +24,7 @@ public class BaseTestCore extends BaseTestCommon {
 	 * @throws Exception
 	 */
 	@Before
-	public void _beforeTestCase() throws Exception {
+	public void _beforeTest() throws Exception {
 		rebootApi(); // in each instance 
 		synchronized (sqlSchemaCreated) { // once per JVM
 			if (!sqlSchemaCreated) {
