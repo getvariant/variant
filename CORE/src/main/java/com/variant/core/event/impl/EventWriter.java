@@ -36,7 +36,7 @@ public class EventWriter {
 	private long maxPersisterDelayMillis;
 		
 	// Asynchronous persister thread consumes events from the holding queue.
-	private Thread persisterThread;
+	private PersisterThread persisterThread;
 	
 	// The actual event persister passed to the constructor by client code.
 	private EventPersister persisterImpl = null;
@@ -66,7 +66,7 @@ public class EventWriter {
 		
 		eventQueue = new ConcurrentLinkedQueue<VariantEventDecorator>();
 		
-		persisterThread = new Thread(new PersisterThread());
+		persisterThread = new PersisterThread();
 		
 		// Not a daemon: intercept interrupt and flush the buffer before exiting.
 		persisterThread.setDaemon(false);
@@ -116,10 +116,11 @@ public class EventWriter {
 		}
 
 		if (delta > 0) {
+			System.out.println(currentQueueSize);
 			LOG.error(
 					"Memory buffer is full. Dropped [" + delta + 
-					"] events. Consider increasing event.writer.buffer.size system property (current value [" + 
-					VariantProperties.getInstance().eventWriterBufferSize() + "])");
+					"] events. Consider increasing " + VariantProperties.Keys.EVENT_WRITER_BUFFER_SIZE.propName() + 
+					" system property (current value [" + queueSize + "])");
 		}
 		
 		// Block momentarily to wake up the persister thread if the queue has reached the pctFull size.
@@ -128,19 +129,7 @@ public class EventWriter {
 		}
 
 	}
-		
-	/**
-	 * Enqueue a single event.  Variation of the above.
-	 *  
-	 * @param event
-	 *
-	public void write(VariantEvent event) {
-		ArrayList<VariantEvent> collection = new ArrayList<VariantEvent>(1);
-		collection.add(event);
-		write(collection);
-	}
-	*/
-	
+			
 	/**
 	 * Persister thread.
 	 * Removes events from the queue and flushes them to an event persistence interface. 
@@ -148,7 +137,7 @@ public class EventWriter {
 	 * @author Igor.
 	 *
 	 */
-	private class PersisterThread implements Runnable {
+	private class PersisterThread extends Thread {
 		
 		@Override
 		public void run() {
@@ -187,7 +176,9 @@ public class EventWriter {
 					catch (Throwable t) {
 						LOG.error("Unexpected exception in async database event writer.", t);
 					}
-					LOG.debug("Event persister thread " + Thread.currentThread().getName() + " interrupted and exited.");
+					if (LOG.isDebugEnabled()) {
+						LOG.debug("Event persister thread " + Thread.currentThread().getName() + " interrupted and exited.");
+					}
 					return;
 				};
 			}
@@ -196,6 +187,9 @@ public class EventWriter {
 		
 		/**
 		 * Flush the entire queue to an event persister.
+		 * Package visibility to let test call this.  Must be synchronized because
+		 * tests may call flush directly concurrently with the regular async path.
+		 * Should be no overhead during regular code path.
 		 */
 		private void flush() throws Exception {
 

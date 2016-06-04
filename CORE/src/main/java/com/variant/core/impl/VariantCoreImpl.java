@@ -62,13 +62,6 @@ public class VariantCoreImpl implements Variant {
 		if (version == null) version = "?";
 		return "V. " + version + " (Beta), Copyright (C) 2015-16 getvariant.com";
 	}
-
-	/**
-	 * 
-	 */
-	private void stateCheck() {
-		if (!isBootstrapped) throw new IllegalStateException("Variant must be bootstrapped first by calling one of the bootstrap() methods");
-	}
 		
 	/**
 	 * Setup system properties.
@@ -123,6 +116,13 @@ public class VariantCoreImpl implements Variant {
 		}
 	}
 	
+	/**
+	 * 
+	 */
+	private void stateCheck() {
+		if (!isBootstrapped) throw new IllegalStateException("Variant must be bootstrapped first by calling one of the bootstrap() methods");
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -342,7 +342,6 @@ public class VariantCoreImpl implements Variant {
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
-	
 	/**
 	 * 
 	 */

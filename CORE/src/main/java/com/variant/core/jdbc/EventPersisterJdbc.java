@@ -9,9 +9,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.VariantEventDecorator;
@@ -28,9 +25,7 @@ import com.variant.core.schema.Test;
  *
  */
 abstract public class EventPersisterJdbc implements EventPersister {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(EventPersisterJdbc.class);
-			
+				
 	/**
 	 * Concrete subclass tells this class how to obtain a connection to its flavor of JDBC.
 	 * JUnits will also use this to create the schema.
@@ -46,13 +41,6 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	 */
 	@Override
 	final public void persist(final Collection<VariantEventDecorator> events) throws Exception {
-
-		if (getVendor() == Vendor.H2) {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug(getClass().getSimpleName() + ".persist() quit becuase H2 does not support generated key retrieval on batch inserts");
-			}
-			return;
-		}
 		
 				final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
@@ -86,8 +74,6 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					// 1. Insert into EVENTS and get the sequence generated IDs back.
 					//
 					
-					// H2 does not support getGeneratedKeys() on batch inserts.
-					// https://github.com/h2database/h2database/issues/156
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
 					for (VariantEventDecorator event: events) {
