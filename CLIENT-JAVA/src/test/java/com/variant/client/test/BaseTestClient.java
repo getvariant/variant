@@ -12,9 +12,9 @@ import org.mockito.Answers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.variant.client.SessionIdTrackerHttpCookie;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantWebnativeTestFacade;
+import com.variant.client.adapter.SessionIdTrackerHttpCookie;
 import com.variant.client.mock.HttpServletRequestMock;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.mock.HttpSessionMock;

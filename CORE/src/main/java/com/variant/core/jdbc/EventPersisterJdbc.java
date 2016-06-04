@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.VariantEventDecorator;
+import com.variant.core.event.PersistableVariantEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test;
 import static com.variant.core.jdbc.JdbcService.Vendor;
@@ -44,7 +44,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	 * Persist a collection of events.
 	 */
 	@Override
-	final public void persist(final Collection<VariantEventDecorator> events) throws Exception {
+	final public void persist(final Collection<PersistableVariantEvent> events) throws Exception {
 				
 		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
@@ -80,7 +80,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
-					for (VariantEventDecorator event: events) {
+					for (PersistableVariantEvent event: events) {
 						stmt.setString(1, event.getSession().getId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getEventName());
@@ -114,7 +114,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_PARAMETERS_SQL);
 					index = 0;
-					for (VariantEventDecorator event: events) {
+					for (PersistableVariantEvent event: events) {
 						long eventId = eventIds[index++];
 						for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
 
@@ -134,7 +134,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_VARIANTS_SQL);
 					index = 0;
-					for (VariantEventDecorator event: events) {
+					for (PersistableVariantEvent event: events) {
 						long eventId = eventIds[index++];
 						for (Test.Experience exp: event.getActiveExperiences()) {
 							stmt.setLong(1, eventId);

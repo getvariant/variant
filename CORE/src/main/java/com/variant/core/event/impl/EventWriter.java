@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantProperties;
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.VariantEventDecorator;
+import com.variant.core.event.PersistableVariantEvent;
 
 public class EventWriter {
 	
@@ -19,7 +19,7 @@ public class EventWriter {
 	// The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
 	// refusing inserts that will put the queue size over the limit, but not worrying about
 	// a possible overage due to concurrency.
-	private ConcurrentLinkedQueue<VariantEventDecorator> eventQueue = null;
+	private ConcurrentLinkedQueue<PersistableVariantEvent> eventQueue = null;
 
 	// Max queue size (soft).
 	private int queueSize;
@@ -62,7 +62,7 @@ public class EventWriter {
 		this.pctEmptySize = (int) Math.ceil(queueSize * 0.1);
 		this.maxPersisterDelayMillis = properties.get(VariantProperties.Key.EVENT_WRITER_MAX_DELAY_MILLIS, Integer.class);
 		
-		eventQueue = new ConcurrentLinkedQueue<VariantEventDecorator>();
+		eventQueue = new ConcurrentLinkedQueue<PersistableVariantEvent>();
 		
 		persisterThread = new PersisterThread();
 		
@@ -95,7 +95,7 @@ public class EventWriter {
 	 *                   
 	 * @return number of elements actually written.
 	 */
-	public void write(VariantEventDecorator event) {
+	public void write(PersistableVariantEvent event) {
 				
 		// We don't worry about possible concurrent writes because the underlying
 		// queue implementation is thread safe and unbound.  It's okay to temporarily 
@@ -181,9 +181,9 @@ public class EventWriter {
 		 */
 		private void flush() throws Exception {
 
-			LinkedList<VariantEventDecorator> events = new LinkedList<VariantEventDecorator>();
+			LinkedList<PersistableVariantEvent> events = new LinkedList<PersistableVariantEvent>();
 
-			VariantEventDecorator event;
+			PersistableVariantEvent event;
 			while ((event = eventQueue.poll()) != null) events.add(event);
 
 			if (events.isEmpty()) return;

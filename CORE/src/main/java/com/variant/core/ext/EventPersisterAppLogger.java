@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.InitializationParams;
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.VariantEventDecorator;
+import com.variant.core.event.PersistableVariantEvent;
 import com.variant.core.schema.Test.Experience;
 
 public class EventPersisterAppLogger implements EventPersister {
@@ -21,10 +21,10 @@ public class EventPersisterAppLogger implements EventPersister {
 	}
 
 	@Override
-	public void persist(Collection<VariantEventDecorator> events)
+	public void persist(Collection<PersistableVariantEvent> events)
 			throws Exception {
 
-		for (VariantEventDecorator event: events) {
+		for (PersistableVariantEvent event: events) {
 			StringBuilder msg = new StringBuilder();
 			msg.append("EVENT:{")
 			.append("session_id:'").append(event.getSession().getId()).append("', ")
@@ -36,7 +36,7 @@ public class EventPersisterAppLogger implements EventPersister {
 			LOG.info(msg.toString());
 		}
 								
-		for (VariantEventDecorator event: events) {
+		for (PersistableVariantEvent event: events) {
 			for (Experience e: event.getActiveExperiences()) {
 				StringBuilder msg = new StringBuilder();
 				msg.append("EVENT_VARIANTS:{")
@@ -50,7 +50,7 @@ public class EventPersisterAppLogger implements EventPersister {
 			}
 		}
 		
-		for (VariantEventDecorator event: events) {
+		for (PersistableVariantEvent event: events) {
 			for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
 
 				StringBuilder msg = new StringBuilder();

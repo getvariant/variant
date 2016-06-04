@@ -53,7 +53,7 @@ public interface VariantTargetingTracker {
 	 * Remove the currently tracked test experience from a given test, if any.
 	 * 
 	 * @param test Test of interest.
-	 * @return Given tests's experience that was removed form this tracker by this operation, oif any.
+	 * @return Given tests's experience that was removed form this tracker by this operation, if any.
 	 * @since 0.5
 	 */
 	public Experience remove(Test test);
@@ -76,7 +76,7 @@ public interface VariantTargetingTracker {
 	public void touch(Test test);
 	
 	/**
-	 * Flush the state of this object to the underlying srorage.
+	 * Flush the state of this object to the underlying storage.
 	 * 
 	 * @param userData An array of 0 or more opaque objects which 
 	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...)} 

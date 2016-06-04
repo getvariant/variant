@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.InitializationParams;
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.VariantEventDecorator;
+import com.variant.core.event.PersistableVariantEvent;
 
 /**
  * Null implementation: all events are discarded.  Useful for testing.
@@ -24,7 +24,7 @@ public class EventPersisterNull implements EventPersister {
 	public void initialized(InitializationParams initParams) {}
 
 	@Override
-	public void persist(Collection<VariantEventDecorator> events) throws Exception {
+	public void persist(Collection<PersistableVariantEvent> events) throws Exception {
 			LOG.debug(String.format("Discarded %s events.", events.size()));
 	}
 

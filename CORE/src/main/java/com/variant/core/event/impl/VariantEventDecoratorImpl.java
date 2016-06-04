@@ -8,7 +8,7 @@ import java.util.Map;
 
 import com.variant.core.VariantSession;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.VariantEventDecorator;
+import com.variant.core.event.PersistableVariantEvent;
 import com.variant.core.schema.Test.Experience;
 
 /**
@@ -17,7 +17,7 @@ import com.variant.core.schema.Test.Experience;
  * @author Igor.
  *
  */
-public class VariantEventDecoratorImpl implements VariantEventDecorator, Serializable {
+public class VariantEventDecoratorImpl implements PersistableVariantEvent, Serializable {
 			
 	/**
 	 */
