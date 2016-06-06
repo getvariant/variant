@@ -10,11 +10,11 @@ session.store.class.name = com.variant.client.SessionStoreRemote
 session.store.class.init = {"apiEndpoint":"http://localhost:8080/", "sessionTimeoutSecs":900, "vacuumingFrequencySecs":"**Not Used On Client**"}
 
 # Session ID tracker in HTTP cookie.
-session.id.tracker.class.name = com.variant.client.SessionIdTrackerHttpCookie
+session.id.tracker.class.name = com.variant.client.adapter.SessionIdTrackerHttpCookie
 session.id.tracker.class.init = {}
 
 # Targeting tracker in cookie.
-targeting.tracker.class.name = com.variant.client.TargetingTrackerHttpCookie
+targeting.tracker.class.name = com.variant.client.adapter.TargetingTrackerHttpCookie
 
 # Postgres Event Persister
 #event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
