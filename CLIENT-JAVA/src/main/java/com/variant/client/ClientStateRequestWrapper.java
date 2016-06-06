@@ -1,0 +1,90 @@
+package com.variant.client;
+
+import java.util.Collection;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import com.variant.core.VariantSession;
+import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantTargetingTracker;
+import com.variant.core.event.VariantEvent;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
+
+public class ClientStateRequestWrapper implements VariantStateRequest {
+
+	private VariantStateRequest variantRequest;
+	private Object[] userData;
+	private VariantSession clientSession;
+	
+	public ClientStateRequestWrapper(
+			VariantSession clientSession, VariantStateRequest variantRequest, Object...targetingTrackerUserData) 
+	{
+		this.variantRequest = variantRequest;
+		this.userData = targetingTrackerUserData;
+		this.clientSession = clientSession;
+	}
+
+	/// Extra Methods ///
+	public HttpServletRequest getHttpServletRequest() {
+		return (HttpServletRequest) userData[0];
+	}
+	
+	public VariantStateRequest getOriginalRequest() {
+		return variantRequest;
+	}
+	
+	/// Pass-through methods ///
+	@Override
+	public VariantSession getSession() {
+		return clientSession;
+	}
+
+	@Override
+	public State getState() {
+		return variantRequest.getState();
+	}
+
+	@Override
+	public Map<String, String> getResolvedParameterMap() {
+		return variantRequest.getResolvedParameterMap();
+	}
+
+	@Override
+	public VariantTargetingTracker getTargetingTracker() {
+		return variantRequest.getTargetingTracker();
+	}
+
+	@Override
+	public Collection<Experience> getTargetedExperiences() {
+		return variantRequest.getTargetedExperiences();
+	}
+
+	@Override
+	public Experience getTargetedExperience(Test test) {
+		return variantRequest.getTargetedExperience(test);
+	}
+
+	@Override
+	public void setStatus(Status status) {
+		variantRequest.setStatus(status);
+	}
+
+	@Override
+	public VariantEvent getStateVisitedEvent() {
+		return variantRequest.getStateVisitedEvent();
+	}
+
+	@Override
+	public Status getStatus() {
+		return variantRequest.getStatus();
+	}
+
+	@Override
+	public void commit(Object... userData) {
+		variantRequest.commit(userData);
+	}
+
+}

@@ -8,6 +8,10 @@ import java.util.regex.Pattern;
 
 public class VariantStringUtils {
 
+	// All Variant's private resource files should incorporate this in their name
+	// to reduce chances of name collision with a resurce provided by client code.
+	public final static String RESOURCE_POSTFIX = "7F1BDFD1F67FA313";
+	
 	/**
 	 * Does the first string equal (ignore case) to any of the subsequent strings?
 	 * @param arg1

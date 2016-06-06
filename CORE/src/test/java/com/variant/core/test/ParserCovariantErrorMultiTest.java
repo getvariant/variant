@@ -19,7 +19,7 @@ import com.variant.core.schema.parser.Severity;
  * @author Igor
  *
  */
-public class ParserCovariantErrorMultiTest extends BaseTest {
+public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	
 	/**
 	 * PARSER_COVARIANT_VARIANT_DUPE
@@ -503,7 +503,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponse response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -979,7 +979,7 @@ public class ParserCovariantErrorMultiTest extends BaseTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(config);
+		ParserResponse response = SchemaParser.parse(api, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());

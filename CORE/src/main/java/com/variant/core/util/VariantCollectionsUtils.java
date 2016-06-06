@@ -1,7 +1,5 @@
 package com.variant.core.util;
 
-import static org.junit.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

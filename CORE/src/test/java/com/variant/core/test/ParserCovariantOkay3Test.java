@@ -25,7 +25,7 @@ import com.variant.core.util.VariantCollectionsUtils;
  * 
  * @author Igor
  */
-public class ParserCovariantOkay3Test extends BaseTest {
+public class ParserCovariantOkay3Test extends BaseTestCore {
 	
 	/**
 	 * 

@@ -3,21 +3,25 @@ package com.variant.core.impl;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.impl.VariantRuntime;
+import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.State;
 
 public class VariantRuntimeTestFacade {
 	
+	private VariantRuntime runtime;
+	
+	public VariantRuntimeTestFacade(VariantRuntime runtime) {
+		this.runtime = runtime;
+	}
 	/**
 	 * 
 	 * @param view
 	 * @param vector
 	 * @return
 	 */
-	public static Map<String,String> resolveState(State state, Collection<Experience> vector) {
-		return VariantRuntime.resolveState(state, vector);
+	public Map<String,String> resolveState(State state, Collection<Experience> vector) {
+		return runtime.resolveState(state, vector);
 	}
 	
 	/**
@@ -25,8 +29,8 @@ public class VariantRuntimeTestFacade {
 	 * @param vector
 	 * @return
 	 */
-	public static Collection<Experience> minUnresolvableSubvector(Collection<Experience> vector) {
-		return VariantRuntime.minUnresolvableSubvector(vector);
+	public Collection<Experience> minUnresolvableSubvector(Collection<Experience> vector) {
+		return runtime.minUnresolvableSubvector(vector);
 	}
 
 	/**
@@ -35,8 +39,8 @@ public class VariantRuntimeTestFacade {
 	 * @param alreadyTargetedExperiences
 	 * @return
 	 */
-	public static boolean isTargetable(Test test, Collection<Experience> alreadyTargetedExperiences) {
-		return VariantRuntime.isTargetable(test, alreadyTargetedExperiences);
+	public boolean isTargetable(Test test, Collection<Experience> alreadyTargetedExperiences) {
+		return runtime.isTargetable(test, alreadyTargetedExperiences);
 	}
 
 }

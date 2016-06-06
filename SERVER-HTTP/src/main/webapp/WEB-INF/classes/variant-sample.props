@@ -1,0 +1,8 @@
+#
+# Copyright Variant, Inc. All Rights Reserved.
+#
+# Sample application properties file for Variant Server version 0.6.0.
+#
+
+# Session timeout and vacuuming frequency can be changed here.
+#session.store.class.init = {"sessionTimeoutSecs":900, "vacuumingFrequencySecs":60}

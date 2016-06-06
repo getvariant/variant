@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.Variant;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.UserHooker;
@@ -59,7 +58,7 @@ public class SchemaParser implements Keywords {
 	 * @throws VariantRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	public static ParserResponseImpl parse(String configAsJsonString) throws VariantRuntimeException {
+	public static ParserResponseImpl parse(VariantCoreImpl coreApi, String configAsJsonString) throws VariantRuntimeException {
 		
 		ParserResponseImpl response = new ParserResponseImpl();
 		
@@ -104,10 +103,10 @@ public class SchemaParser implements Keywords {
 		else {
 			
 			// Parse all states
-			StatesParser.parseStates(states, response);
+			StatesParser.parseStates(response.getSchema(), states, response);
 			
 			// Post user hook listeners.
-			UserHooker hooker = ((VariantCoreImpl)Variant.Factory.getInstance()).getUserHooker();
+			UserHooker hooker = coreApi.getUserHooker();
 			for (State state: response.getSchema().getStates()) {
 				try {
 					hooker.post(new StateParsedHookImpl(state, response));
@@ -128,10 +127,10 @@ public class SchemaParser implements Keywords {
 		else {
 			
 			// Parse all tests
-			TestsParser.parseTests(tests, response);
+			TestsParser.parseTests(tests, response, coreApi.getProperties());
 			
 			// Post user hook listeners.
-			UserHooker hooker = ((VariantCoreImpl)Variant.Factory.getInstance()).getUserHooker();
+			UserHooker hooker = coreApi.getUserHooker();
 			for (Test test: response.getSchema().getTests()) {
 				try {
 					hooker.post(new TestParsedHookImpl(test, response));

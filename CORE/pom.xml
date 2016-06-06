@@ -4,11 +4,13 @@
  * Variant CORE POM.
  */
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
+   <modelVersion>4.0.0</modelVersion>
     
 	<properties>
-	    <variant.version>0.5.2</variant.version>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
 		<jackson.version>2.5.3</jackson.version>
     </properties>
@@ -17,18 +19,25 @@
     <name>Variant core lib</name>
     <packaging>jar</packaging>
     <groupId>com.variant</groupId>
-    <version>${variant.version}</version>
+    <version>${env.VARIANT_VERSION}</version>
     
     <dependencies>
         
-        <!-- Apache Commons -->        
-        <dependency>
+      <!-- Variant dependencies -->        
+      <dependency>
+         <groupId>com.variant</groupId>
+         <artifactId>variant-open-securestring</artifactId>
+         <version>1.0.0</version>
+      </dependency>
+
+      <!-- Apache Commons -->        
+      <dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
         
-        <dependency>
+      <dependency>
 	    	<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
 			<version>3.5</version>
@@ -100,7 +109,7 @@
 			<version>1.4.191</version>
 		</dependency>
 
-		<!-- Hazelcast distributed cache -->		
+		<!-- Hazelcast distributed cache 		
         <dependency>
             <groupId>com.hazelcast</groupId>
             <artifactId>hazelcast</artifactId>
@@ -112,7 +121,8 @@
             <artifactId>hazelcast-client</artifactId>
             <version>3.4</version>
         </dependency>
-
+      -->
+      
 		<!-- Annovention annotation discovery lib -->
 		<dependency>
 			<groupId>tv.cntt</groupId>
@@ -124,6 +134,14 @@
 	
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                   <target>1.7</target>
+                </configuration>
+            </plugin>
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-surefire-plugin</artifactId>

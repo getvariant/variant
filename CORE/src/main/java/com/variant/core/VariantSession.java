@@ -2,6 +2,7 @@ package com.variant.core;
 
 import java.util.Collection;
 
+import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.util.Tuples.Pair;
@@ -23,6 +24,23 @@ public interface VariantSession {
 	public String getId();
 	
 	/**
+	 * <p>Get this session's creation timestamp millis.
+	 * 
+	 * @return Milliseconds since the Epoch.
+	 * @since 0.6
+	 */	
+	public long creationTimestamp();
+
+	/**
+	 * <p>The ID of the schema in effect at the time this session was created. Any subsequent operations
+	 * on this session will fail if this schema is replaced with another schema. 
+	 * 
+	 * @return Milliseconds since the Epoch.
+	 * @since 0.6
+	 */	
+	public String getSchemaId();
+	
+	/**
 	 * <p> The collection of states traversed by this session so far and their counts.
 	 * 
 	 * @return A collection of {@link Pair}s of type <{@link State}, Integer> corresponding
@@ -30,6 +48,16 @@ public interface VariantSession {
 	 *         <code>arg2()</code> to obtain the count of times this state has been traversed.
 	 */
 	public Collection<Pair<State, Integer>> getTraversedStates(); 
+
+	/**
+     * <p>Target session for a state. 
+     *  
+	 * @return An instance of the {@link com.variant.core.VariantStateRequest} object, which
+	 *         may be further examined for more information about targeting.  
+	 *
+	 * @since 0.5
+	 */
+	public VariantStateRequest targetForState(State state, Object...targetingTrackerUserData);
 
 	/**
 	 * <p> The collection of tests traversed by this session so far and their  qualifications. 
@@ -44,7 +72,15 @@ public interface VariantSession {
 	public Collection<Pair<Test, Boolean>> getTraversedTests(); 
 	
 	/**
-	 * <p>Get the current state request, which may be still in progress or already committed.
+	 * Trigger a custom event.
+	 * 
+	 * @param The custom event to be logged. An implementation of {@link VariantEvent}
+	 * @since 0.5
+	 */
+	public void triggerEvent(VariantEvent event);
+
+	/**
+	 * <p>Get most recent state request, which may be still in progress or already committed.
 	 * 
 	 * @return An object of type {@link VariantStateRequest}, or null, if none yet for this
 	 *         session.

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +14,6 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantTargetingTracker;
-import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;
@@ -38,8 +38,6 @@ public class VariantRuntime {
 
 	// Logger
 	private static final Logger LOG = LoggerFactory.getLogger(VariantRuntime.class);
-
-	private static VariantCoreImpl variantCoreImpl = (VariantCoreImpl) Variant.Factory.getInstance();
 
 	/**
 	 * 
@@ -124,11 +122,15 @@ public class VariantRuntime {
 		
 	}		
 
+	private VariantCoreImpl coreApi;
+
 	/**
 	 * Static singleton.
 	 * Need package visibility for test facade.
 	 */
-	private VariantRuntime() {}
+	VariantRuntime(VariantCoreImpl coreApi) {
+		this.coreApi = coreApi;
+	}
 	
 	/**
 	 * Target this session for all active tests.
@@ -158,9 +160,9 @@ public class VariantRuntime {
      * 7. Resolve the path. For OFF tests, substitute non-control experiences with control ones.
 	 * 
 	 */
-	private static Map<String,String> targetSessionForState(VariantStateRequestImpl req) {
+	private Map<String,String> targetSessionForState(VariantStateRequestImpl req) {
 
-		Schema schema = variantCoreImpl.getSchema();
+		Schema schema = coreApi.getSchema();
 		VariantSessionImpl session = (VariantSessionImpl) req.getSession();
 		State state = req.getState();
 		VariantTargetingTracker tt = req.getTargetingTracker();
@@ -184,7 +186,7 @@ public class VariantRuntime {
 			
 			if (foundPair == null) {
 				TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
-				variantCoreImpl.getUserHooker().post(hook);
+				coreApi.getUserHooker().post(hook);
 				if (!hook.qualified) {
 					if (hook.removeFromTT) tt.remove(test);
 				}
@@ -194,8 +196,9 @@ public class VariantRuntime {
 			}
 		}
 		
-		// Pre-targeted experiences from the targeting tracker.
-		HashSet<Experience> alreadyTargetedExperiences = new HashSet<Experience>(tt.getAll());
+		// Pre-targeted experiences from the targeting tracker. Keep original order for
+		// test determinism.
+		LinkedHashSet<Experience> alreadyTargetedExperiences = new LinkedHashSet<Experience>(tt.getAll());
 		
 		// Remove from the pre-targeted experience list the experiences corresponding to currently
 		// disqualified tests: we won't need to resolve them anyway.
@@ -247,8 +250,8 @@ public class VariantRuntime {
 			if (!e.getTest().isOn()) {
 				Experience ce = e.getTest().getControlExperience();
 				vector.add(ce);
-				if (LOG.isDebugEnabled()) {
-					LOG.debug(
+				if (LOG.isTraceEnabled()) {
+					LOG.trace(
 							"Session [" + session.getId() + "] recognized persisted experience [" + e +"]" +
 							" but substituted control experience [" + ce + "] because test is OFF");
 				}													
@@ -256,16 +259,16 @@ public class VariantRuntime {
 			else if (session.isDisqualified(e.getTest())) {
 				Experience ce = e.getTest().getControlExperience();
 				vector.add(ce);
-				if (LOG.isDebugEnabled()) {
-					LOG.debug(
+				if (LOG.isTraceEnabled()) {
+					LOG.trace(
 							"Session [" + session.getId() + "] recognized persisted experience [" + e +"]" +
 							" but substituted control experience [" + ce + "] because test is disqualified");
 				}													
 			}
 			else {
 				vector.add(e);
-				if (LOG.isDebugEnabled()) {
-					LOG.debug(
+				if (LOG.isTraceEnabled()) {
+					LOG.trace(
 							"Session [" + session.getId() + "] honored persisted experience [" + e + "]");
 				}									
 			}
@@ -279,8 +282,8 @@ public class VariantRuntime {
 				if (!test.isOn()) {
 					Experience e = test.getControlExperience();
 					vector.add(e);
-					if (LOG.isDebugEnabled()) {
-						LOG.debug(
+					if (LOG.isTraceEnabled()) {
+						LOG.trace(
 								"Session [" + session.getId() + "] temporarily targeted for OFF test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}
@@ -288,8 +291,8 @@ public class VariantRuntime {
 				else if (session.isDisqualified(test)) {
 					Experience e = test.getControlExperience();
 					vector.add(e);
-					if (LOG.isDebugEnabled()) {
-						LOG.debug(
+					if (LOG.isTraceEnabled()) {
+						LOG.trace(
 								"Session [" + session.getId() + "] temporarily targeted for disqualified test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}										
@@ -297,7 +300,7 @@ public class VariantRuntime {
 				else if (isTargetable(test, tt.getAll())) {
 					// Target this test. First post possible user hook listeners.
 					TestTargetingHookImpl hook = new TestTargetingHookImpl(session, test);
-					variantCoreImpl.getUserHooker().post(hook);
+					coreApi.getUserHooker().post(hook);
 					Experience targetedExperience = hook.targetedExperience;
 					// If no listeners or no action by client code, do the random default.
 					if (targetedExperience == null) {
@@ -306,8 +309,8 @@ public class VariantRuntime {
 										
 					vector.add(targetedExperience);
 					tt.add(targetedExperience, System.currentTimeMillis());
-					if (LOG.isDebugEnabled()) {
-						LOG.debug(
+					if (LOG.isTraceEnabled()) {
+						LOG.trace(
 								"Session [" + session.getId() + "] targeted for test [" + 
 								test.getName() +"] with experience [" + targetedExperience.getName() + "]");
 					}
@@ -317,8 +320,8 @@ public class VariantRuntime {
 					Experience e = test.getControlExperience();
 					vector.add(e);
 					tt.add(e, System.currentTimeMillis());
-					if (LOG.isDebugEnabled()) {
-						LOG.debug(
+					if (LOG.isTraceEnabled()) {
+						LOG.trace(
 								"Session [" + session.getId() + "] targeted for untargetable test [" + 
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}
@@ -354,12 +357,12 @@ public class VariantRuntime {
 	 * @param coordinates
 	 * @return the list of experiences from the input vector.
 	 */
-	static Collection<Experience> minUnresolvableSubvector(Collection<Experience> vector) {
+	Collection<Experience> minUnresolvableSubvector(Collection<Experience> vector) {
 		
 		Collection<Experience> result = new ArrayList<Experience>();
 			
 		// 1. Build a set of all instrumented states.
-		HashSet<State> instrumentedStates = new HashSet<State>();
+		LinkedHashSet<State> instrumentedStates = new LinkedHashSet<State>();
 		for (Experience e: vector) {
 			for (OnState tov: e.getTest().getOnStates()) {
 				if (!tov.getState().isNonvariantIn(e.getTest())) {
@@ -423,7 +426,7 @@ public class VariantRuntime {
 	 * @param test set of tests.  We require set to guarantee no duplicates.
 	 * @return
 	 */
-	static boolean isTargetable(Test test, Collection<Experience> alreadyTargetedExperiences) {
+	boolean isTargetable(Test test, Collection<Experience> alreadyTargetedExperiences) {
 		
 		for (Experience e: alreadyTargetedExperiences) {
 			if (test.equals(e.getTest())) 
@@ -471,13 +474,13 @@ public class VariantRuntime {
 	 * @param vector
 	 * @return params map
 	 */
-	static Map<String,String> resolveState(State state, Collection<Experience> vector) {
-		
+	Map<String,String> resolveState(State state, Collection<Experience> vector) {
+
 		if (vector.size() == 0) 
 			throw new VariantInternalException("No experiences in input vector");
 		
 		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
-		for (Test t: variantCoreImpl.getSchema().getTests()) {
+		for (Test t: coreApi.getSchema().getTests()) {
 			boolean found = false;
 			for (Experience e: vector) {
 				if (e.getTest().equals(t)) {
@@ -511,12 +514,12 @@ public class VariantRuntime {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Implementation of {@link Variant#dispatchRequest(VariantSession, State, Object...)}
+	 * Implementation of {@link Variant#targetForState(VariantSession, State, Object...)}
 	 * @param ssn
 	 * @param view
 	 * @return
 	 */
-	public static VariantStateRequestImpl dispatchRequest(VariantSession ssn, State state, VariantTargetingTracker targetingPersister) {
+	public VariantStateRequestImpl targetSessionForState(VariantSession ssn, State state, VariantTargetingTracker targetingPersister) {
 
 		// Resolve the path and get all tests instrumented on the given view targeted.
 		VariantStateRequestImpl result = new VariantStateRequestImpl((VariantSessionImpl)ssn, (StateImpl) state);
@@ -525,32 +528,32 @@ public class VariantRuntime {
 		Map<String,String> resolvedParams = targetSessionForState(result);		
 		result.setResolvedParameters(resolvedParams);
 		
-		if (LOG.isDebugEnabled()) {
+		if (LOG.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Session [").append(ssn.getId()).append("] resolved state [").append(state.getName()).append("] as [");
 			sb.append(VariantStringUtils.toString(resolvedParams,","));
 			sb.append("] for experience vector [").append(StringUtils.join(targetingPersister.getAll().toArray(), ",")).append("]");
-			LOG.debug(sb.toString());
+			LOG.trace(sb.toString());
 		}   
 			
-		// Create the view serve event if there are any tests instrumented on this view.
+		// Create the state serve event if there are any tests instrumented on this state.
 		if (state.getInstrumentedTests().isEmpty()) {
 			
-			if (LOG.isDebugEnabled()) {
-				LOG.debug(
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(
 						"Session [" + ssn.getId() + "] requested state [" + 
 						state.getName() +"] that does not have any instrumented tests.");
 			}   
 		}
 		else if (result.getTargetedExperiences().isEmpty()) {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug(
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(
 						"Session [" + ssn.getId() + "] requested state [" + 
 						state.getName() +"] that does not have live tests.");
 			}   			
 		}
 		else {
-			result.triggerEvent(new StateVisitedEvent(state));
+			result.createStateVisitedEvent();
 		}
 	
 		return result;

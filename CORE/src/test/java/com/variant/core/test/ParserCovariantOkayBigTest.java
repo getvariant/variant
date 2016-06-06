@@ -1,14 +1,12 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.Test;
 import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.VariantCollectionsUtils;
 
@@ -16,7 +14,7 @@ import com.variant.core.util.VariantCollectionsUtils;
 /**
  * @author Igor
  */
-public class ParserCovariantOkayBigTest extends BaseTest {
+public class ParserCovariantOkayBigTest extends BaseTestCore {
 
 	/**
 	 * 
@@ -57,74 +55,60 @@ public class ParserCovariantOkayBigTest extends BaseTest {
 		//
 
 		// test1
-		for (Test t: schema.getTests()) {
-			boolean exceptionThrown = false;
-			try {
-				assertFalse(test1.isSerialWith(t));
-			}
-			catch (IllegalArgumentException iae) {
-				exceptionThrown = true;
-			}
+		for (final Test t: schema.getTests()) {			
 			
-			if (test1.equals(t)) assertTrue(exceptionThrown);
-			else assertFalse(exceptionThrown);
+			new ExceptionInterceptor<IllegalArgumentException>() {
+				@Override public void toRun() { assertFalse(test1.isSerialWith(t)); }
+				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test1, t); }
+				@Override public void onNotThrown() { assertNotEquals(test1, t); }
+				@Override public Class<IllegalArgumentException> getExceptionClass() { return IllegalArgumentException.class; }
+			}.run();
 		}
 		
 		// test2
-		for (Test t: schema.getTests()) {
-			boolean exceptionThrown = false;
-			try {
-				assertFalse(test2.isSerialWith(t));
-			}
-			catch (IllegalArgumentException iae) {
-				exceptionThrown = true;
-			}
+		for (final Test t: schema.getTests()) {
 			
-			if (test2.equals(t)) assertTrue(exceptionThrown);
-			else assertFalse(exceptionThrown);
+			new ExceptionInterceptor<IllegalArgumentException>() {
+				@Override public void toRun() { assertFalse(test2.isSerialWith(t)); }
+				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test2, t); }
+				@Override public void onNotThrown() { assertNotEquals(test2, t); }
+				@Override public Class<IllegalArgumentException> getExceptionClass() { return IllegalArgumentException.class; }
+			}.run();
+			
 		}
 
 		// test3
-		for (Test t: schema.getTests()) {
-			boolean exceptionThrown = false;
-			try {
-				if (t.equals(test6)) assertTrue(test3.isSerialWith(t));
-				else assertFalse(test3.isSerialWith(t));
-			}
-			catch (IllegalArgumentException iae) {
-				exceptionThrown = true;
-			}
-			
-			if (test3.equals(t)) assertTrue(exceptionThrown);
-			else assertFalse(exceptionThrown);
+		for (final Test t: schema.getTests()) {
+
+			new ExceptionInterceptor<IllegalArgumentException>() {
+					@Override public void toRun() { 
+						if (t.equals(test6)) assertTrue(test3.isSerialWith(t));
+						else assertFalse(test3.isSerialWith(t));
+					}
+				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test3, t); }
+				@Override public void onNotThrown() { assertNotEquals(test3, t); }
+				@Override public Class<IllegalArgumentException> getExceptionClass() { return IllegalArgumentException.class; }
+			}.run();
 		}
 
 		// test4
-		for (Test t: schema.getTests()) {
-			boolean exceptionThrown = false;
-			try {
-				assertFalse(test4.isSerialWith(t));
-			}
-			catch (IllegalArgumentException iae) {
-				exceptionThrown = true;
-			}
-			
-			if (test4.equals(t)) assertTrue(exceptionThrown);
-			else assertFalse(exceptionThrown);
+		for (final Test t: schema.getTests()) {
+			new ExceptionInterceptor<IllegalArgumentException>() {
+				@Override public void toRun() { assertFalse(test4.isSerialWith(t)); }
+				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test4, t); }
+				@Override public void onNotThrown() { assertNotEquals(test4, t); }
+				@Override public Class<IllegalArgumentException> getExceptionClass() { return IllegalArgumentException.class; }
+			}.run();
 		}
 
 		// test5
-		for (Test t: schema.getTests()) {
-			boolean exceptionThrown = false;
-			try {
-				assertFalse(test5.isSerialWith(t));
-			}
-			catch (IllegalArgumentException iae) {
-				exceptionThrown = true;
-			}
-			
-			if (test5.equals(t)) assertTrue(exceptionThrown);
-			else assertFalse(exceptionThrown);
+		for (final Test t: schema.getTests()) {
+			new ExceptionInterceptor<IllegalArgumentException>() {
+				@Override public void toRun() { assertFalse(test5.isSerialWith(t)); }
+				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test5, t); }
+				@Override public void onNotThrown() { assertNotEquals(test5, t); }
+				@Override public Class<IllegalArgumentException> getExceptionClass() { return IllegalArgumentException.class; }
+			}.run();
 		}
 
 		// 

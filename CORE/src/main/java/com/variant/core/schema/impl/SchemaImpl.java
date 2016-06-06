@@ -4,18 +4,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Random;
 
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
+import com.variant.core.util.VariantStringUtils;
 
 /**
  * @author Igor
  */
 public class SchemaImpl implements Schema {
 
+	private final String ID = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
+	
 	// Views are keyed by name
 	private LinkedHashSet<State> states = new LinkedHashSet<State>();
 	
@@ -35,7 +39,7 @@ public class SchemaImpl implements Schema {
 	 */
 	private void checkInternalState() {
 		if (state == InternalState.UNDEPLOYED)
-			throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_REPLACED);
+			throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 		else if (state == InternalState.FAILED)
 			throw new VariantInternalException("Called on a FAILED schema");
 	}
@@ -60,8 +64,15 @@ public class SchemaImpl implements Schema {
 		
     //---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC INTERFACE                                         //
-	//---------------------------------------------------------------------------------------------//
-
+	//---------------------------------------------------------------------------------------------//	
+	/**
+	 * 
+	 */
+	@Override
+	public String getId() {
+		return ID;
+	}
+	
 	/**
 	 * States in the ordinal order, as an immutable list.
 	 */

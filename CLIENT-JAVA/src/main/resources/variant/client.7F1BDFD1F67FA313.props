@@ -1,0 +1,21 @@
+#
+# Copyright Variant, Inc. All Rights Reserved.
+#
+# Variant Java Client system property overrides.
+#
+
+# Session store on a remote server accessed via an HTTP service.
+# session timeout = 15 min (also the default, if not supplied.)
+session.store.class.name = com.variant.client.SessionStoreRemote
+session.store.class.init = {"apiEndpoint":"http://localhost:8080/", "sessionTimeoutSecs":900, "vacuumingFrequencySecs":"**Not Used On Client**"}
+
+# Session ID tracker in HTTP cookie.
+session.id.tracker.class.name = com.variant.client.SessionIdTrackerHttpCookie
+session.id.tracker.class.init = {}
+
+# Targeting tracker in cookie.
+targeting.tracker.class.name = com.variant.client.TargetingTrackerHttpCookie
+
+# Postgres Event Persister
+#event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
+#event.persister.class.init = {"vendor":"postgres","url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}

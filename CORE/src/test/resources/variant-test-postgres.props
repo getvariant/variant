@@ -1,0 +1,10 @@
+#
+# Postgres Event Persister for those tests that need to read events back.
+#
+# DELETE ME?
+#event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
+#event.persister.jdbc.vendor = postgres
+#event.persister.jdbc.url = jdbc:postgresql://localhost/variant
+#event.persister.jdbc.user = variant
+#event.persister.jdbc.password = variant
+		

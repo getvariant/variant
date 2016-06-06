@@ -8,7 +8,6 @@ import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.TargetingTrackerSupport;
 
 /**
  * Emulates targeting persister that is tracked by a cookie,
@@ -23,7 +22,8 @@ import com.variant.core.session.TargetingTrackerSupport;
 public class TargetingTrackerString extends TargetingTrackerSupport {
 
 	private Logger LOG = LoggerFactory.getLogger(TargetingTrackerString.class);
-		
+	private Variant coreApi;
+	
 	/**
 	 * Parse the content from an input string.
 	 * @param input
@@ -41,7 +41,7 @@ public class TargetingTrackerString extends TargetingTrackerSupport {
 				String[] tokens = entry.split("\\.");
 				if (tokens.length == 3) {
 					try {
-						Test test = Variant.Factory.getInstance().getSchema().getTest(tokens[1]);
+						Test test = coreApi.getSchema().getTest(tokens[1]);
 						if (test == null) {
 							if (LOG.isDebugEnabled()) {
 								LOG.debug("Ignored non-existent test [" + tokens[1] + "]");
@@ -97,7 +97,8 @@ public class TargetingTrackerString extends TargetingTrackerSupport {
 	 * 
 	 */
 	@Override
-	public void initialized(VariantSession session, Object...userData) { 
+	public void initialized(Variant coreApi, VariantSession session, Object...userData) { 
+		this.coreApi = coreApi;
 		parseFromString(session, (String) userData[0]);
 	}
 

@@ -1,7 +1,5 @@
 package com.variant.core.event.impl;
 
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -9,9 +7,9 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.config.VariantProperties;
+import com.variant.core.VariantProperties;
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.VariantEventDecorator;
+import com.variant.core.event.PersistableVariantEvent;
 
 public class EventWriter {
 	
@@ -21,7 +19,7 @@ public class EventWriter {
 	// The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
 	// refusing inserts that will put the queue size over the limit, but not worrying about
 	// a possible overage due to concurrency.
-	private ConcurrentLinkedQueue<VariantEventDecorator> eventQueue = null;
+	private ConcurrentLinkedQueue<PersistableVariantEvent> eventQueue = null;
 
 	// Max queue size (soft).
 	private int queueSize;
@@ -56,15 +54,15 @@ public class EventWriter {
 	/**
 	 * Constructor
 	 */
-	public EventWriter(EventPersister persisterImpl) {
+	public EventWriter(EventPersister persisterImpl, VariantProperties properties) {
 		
 		this.persisterImpl = persisterImpl;
-		this.queueSize = VariantProperties.getInstance().eventWriterBufferSize();
-		this.pctFullSize = queueSize * VariantProperties.getInstance().eventWriterPercentFull() / 100;
+		this.queueSize = properties.get(VariantProperties.Key.EVENT_WRITER_BUFFER_SIZE, Integer.class);
+		this.pctFullSize = queueSize * properties.get(VariantProperties.Key.EVENT_WRITER_PERCENT_FULL, Integer.class) / 100;
 		this.pctEmptySize = (int) Math.ceil(queueSize * 0.1);
-		this.maxPersisterDelayMillis = VariantProperties.getInstance().eventWriterMaxDelayMillis();
+		this.maxPersisterDelayMillis = properties.get(VariantProperties.Key.EVENT_WRITER_MAX_DELAY_MILLIS, Integer.class);
 		
-		eventQueue = new ConcurrentLinkedQueue<VariantEventDecorator>();
+		eventQueue = new ConcurrentLinkedQueue<PersistableVariantEvent>();
 		
 		persisterThread = new PersisterThread();
 		
@@ -93,43 +91,34 @@ public class EventWriter {
 	 * if there's no room on the queue to hold all the events, write as many as we can in the
 	 * order of the collection's iterator and ignore the rest. Log ERROR dropped events.
 	 *  
-	 * @param eventsPair A pair of 1) a collection of events, and 2) a collection of test experiences
-	 *                   that were all in effect when these events were triggered.
+	 * @param event decoratedEvent
 	 *                   
 	 * @return number of elements actually written.
 	 */
-	public void write(Collection<VariantEventDecorator> events) {
+	public void write(PersistableVariantEvent event) {
 				
-		// size() is an O(n) operation - do it once.
 		// We don't worry about possible concurrent writes because the underlying
-		// queue implementation is unbound.  It's okay to temporarily go over the
-		// queueSize due to concurrency, so long as we eventually shrink back.
-		int currentQueueSize = eventQueue.size();
-		int delta = events.size();
+		// queue implementation is thread safe and unbound.  It's okay to temporarily 
+		// go over the queueSize due to concurrency, so long as we eventually shrink back.
+		// But we won't go over it knowingly.
+		int currentSize = eventQueue.size();
 		
-		Iterator<VariantEventDecorator> iter = events.iterator();
-		while (currentQueueSize < queueSize && iter.hasNext()) {
-			VariantEventDecorator event = iter.next();
+		if (currentSize < queueSize) {
 			eventQueue.add(event);
-			currentQueueSize++;
-			delta--;
 		}
-
-		if (delta > 0) {
-			System.out.println(currentQueueSize);
+		else {
 			LOG.error(
-					"Memory buffer is full. Dropped [" + delta + 
-					"] events. Consider increasing " + VariantProperties.Keys.EVENT_WRITER_BUFFER_SIZE.propName() + 
+					"Dropped event due to full memory buffer. Consider increasing " + VariantProperties.Key.EVENT_WRITER_BUFFER_SIZE.propName() + 
 					" system property (current value [" + queueSize + "])");
 		}
 		
 		// Block momentarily to wake up the persister thread if the queue has reached the pctFull size.
 		synchronized (eventQueue) {
-			if (currentQueueSize >= pctFullSize) eventQueue.notify();
+			if (currentSize >= pctFullSize) eventQueue.notify();
 		}
 
 	}
-			
+	
 	/**
 	 * Persister thread.
 	 * Removes events from the queue and flushes them to an event persistence interface. 
@@ -142,9 +131,9 @@ public class EventWriter {
 		@Override
 		public void run() {
 
-			LOG.debug("Event persister thread " + Thread.currentThread().getName() + " started.");
+			if (LOG.isDebugEnabled()) LOG.debug("Event persister thread " + Thread.currentThread().getName() + " started.");
 			
-			boolean InterruptedExceptionThrown = false;
+			boolean interruptedExceptionThrown = false;
 			
 			while (true) {
 				
@@ -163,22 +152,21 @@ public class EventWriter {
 
 				}
 				catch (InterruptedException e) {
-					InterruptedExceptionThrown = true;
+					interruptedExceptionThrown = true;
 				}
 				catch (Throwable t) {
 					LOG.error("Unexpected exception in async database event writer.", t);
 				}
 				
-				if (InterruptedExceptionThrown || Thread.currentThread().isInterrupted()) {
+				if (interruptedExceptionThrown || isInterrupted()) {
 					try {
 						flush();
 					}
 					catch (Throwable t) {
 						LOG.error("Unexpected exception in async database event writer.", t);
 					}
-					if (LOG.isDebugEnabled()) {
+					if (LOG.isDebugEnabled())
 						LOG.debug("Event persister thread " + Thread.currentThread().getName() + " interrupted and exited.");
-					}
 					return;
 				};
 			}
@@ -193,9 +181,9 @@ public class EventWriter {
 		 */
 		private void flush() throws Exception {
 
-			LinkedList<VariantEventDecorator> events = new LinkedList<VariantEventDecorator>();
+			LinkedList<PersistableVariantEvent> events = new LinkedList<PersistableVariantEvent>();
 
-			VariantEventDecorator event;
+			PersistableVariantEvent event;
 			while ((event = eventQueue.poll()) != null) events.add(event);
 
 			if (events.isEmpty()) return;

@@ -16,11 +16,22 @@ package com.variant.core;
 public interface VariantSessionIdTracker {
 
 	/**
+	 * <p>The container will call this method immediately following the instantiation with
+	 * the init parameter map, as specified by the <code>session.id.tracker.class.init</code>
+	 * application property. 
+	 * 
+	 * @since 0.5
+	 */
+	public void initialized(InitializationParams initParams) throws Exception;
+
+	/**
 	 * <p>Retrieve the session ID from the tracker. If the session ID did not exist,
 	 * the implementation should create it and, if needed, save it in the tracker.
+	 * The contract of this method is that multiple calls with the same arguments
+	 * will return the same value. 
 	 *  
 	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#dispatchRequest(VariantSession, com.variant.core.schema.State, Object)} 
+	 *                 {@link com.variant.core.Variant#targetForState(VariantSession, com.variant.core.schema.State, Object)} 
 	 *                 will pass here without interpretation.
 	 * 
 	 * @return Session ID. Should never be null.
@@ -28,6 +39,15 @@ public interface VariantSessionIdTracker {
 	 * @since 0.5
 	 */
 	public String get(Object...userData);
+	
+	/**
+	 * Shutdown this tracker. Releases all resources. All subsequent calls to this tercker store will
+	 * result in an exception.
+	 * 
+	 * @since 0.5
+	 */
+	public void shutdown();
+
 
 }
 

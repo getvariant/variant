@@ -6,11 +6,10 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantSession;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.VariantEventDecorator;
+import com.variant.core.event.PersistableVariantEvent;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.VariantSessionImpl;
 
 /**
  * EVENTS DAO.
@@ -18,22 +17,22 @@ import com.variant.core.session.VariantSessionImpl;
  * @author Igor.
  *
  */
-public class VariantEventDecoratorImpl implements VariantEventDecorator, Serializable {
+public class VariantEventDecoratorImpl implements PersistableVariantEvent, Serializable {
 			
 	/**
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private VariantStateRequest request;
+	private VariantSession session;
 	private VariantEvent userEvent;
 	
 	/**
 	 * Constructor
 	 * @return
 	 */
-	public VariantEventDecoratorImpl(VariantEvent event, VariantStateRequest request) {
-		this.request = request;
-		this.userEvent = event;
+	public VariantEventDecoratorImpl(VariantEvent event, VariantSession session) {
+		this.userEvent = event;		
+		this.session = session;
 	}
 
 	
@@ -62,22 +61,21 @@ public class VariantEventDecoratorImpl implements VariantEventDecorator, Seriali
 	}
 	
 	@Override
-	public VariantStateRequest getStateRequest() {
-		return request;
+	public VariantSession getSession() {
+		return session;
 	}
 
 	@Override
 	public Collection<Experience> getActiveExperiences() {
-
-		VariantSessionImpl session = (VariantSessionImpl) request.getSession();
 		
 		Collection<Experience> result = new LinkedList<Experience>();
-		for (Experience e: request.getTargetedExperiences()) 
-			if (session.isQualified(e.getTest())) result.add(e);
-		
+		for (Experience e: session.getStateRequest().getTargetedExperiences()) {
+		//	if (session.isQualified(e.getTest())) result.add(e);
+			result.add(e);
+		}
 		return result;
 	}
-
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//	
@@ -98,7 +96,7 @@ public class VariantEventDecoratorImpl implements VariantEventDecorator, Seriali
 		
 		StringBuilder result = new StringBuilder()
 		.append('{')
-		.append("sessionid:'").append(request.getSession().getId()).append("', ")
+		.append("sessionid:'").append(session.getId()).append("', ")
 		.append("createdOn:'").append(getCreateDate()).append("', ")
 		.append("eventName:").append(getEventName()).append("', ")
 		.append("eventValue:").append(getEventValue()).append("', ")

@@ -1,5 +1,15 @@
 package com.variant.core.schema.impl;
 
+import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_NO_STATES;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_NAME_DUPE;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_NAME_MISSING;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_NAME_NOT_STRING;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_PARAMS_EMPTY;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_PARAMS_MISSING;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_PARAMS_NOT_OBJECT;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_UNSUPPORTED_PROPERTY;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,10 +17,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
-
-import static com.variant.core.schema.impl.MessageTemplate.*;
 
 /**
  * Parse the STATES clause.
@@ -27,7 +36,7 @@ public class StatesParser implements Keywords {
 	 * @param response 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parseStates(Object statesObject, ParserResponseImpl response) {
+	static void parseStates(Schema schema, Object statesObject, ParserResponseImpl response) {
 
 		try {
 
@@ -38,7 +47,7 @@ public class StatesParser implements Keywords {
 			}
 			
 			for (Map<String, ?> rawState: rawStates) {
-				State state = parseState(rawState, response);
+				State state = parseState(schema, rawState, response);
 				if (state != null && !((SchemaImpl) response.getSchema()).addState(state)) {
 					response.addMessage(PARSER_STATE_NAME_DUPE, state.getName());
 				}
@@ -57,7 +66,7 @@ public class StatesParser implements Keywords {
 	 * @param response
 	 */
 	@SuppressWarnings("unchecked")
-	private static State parseState(Map<String, ?> rawState, final ParserResponseImpl response) {
+	private static State parseState(Schema schema, Map<String, ?> rawState, final ParserResponseImpl response) {
 		
 		String name = null;
 		boolean nameFound = false;
@@ -112,7 +121,7 @@ public class StatesParser implements Keywords {
 			response.addMessage(PARSER_STATE_PARAMS_EMPTY, name);
 		}
 
-		return new StateImpl(name, params);
+		return new StateImpl(schema, name, params);
 	}
 
 }

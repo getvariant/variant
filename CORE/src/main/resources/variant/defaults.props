@@ -1,0 +1,33 @@
+#
+# Copyright Variant, Inc. All Rights Reserved.
+#
+# Default values for all Variant system properties.
+#
+
+# Event Writer
+# Max number of events held in memory queue 
+event.writer.buffer.size = 20000
+# Percent of buffer size that will trigger a flush.
+event.writer.percent.full = 90
+# Max number of milliseconds since last flush that will trigger a flush even
+# if pct full has not been reached.
+event.writer.max.delay.millis = 30000
+
+# Event Persister: Events go into the application logger in effect.
+event.persister.class.name = com.variant.core.ext.EventPersisterAppLogger
+event.persister.class.init = {}
+
+# Session ID tracker that does no tracking at all,  but simply returns the ID
+# with which it was called.  Any practically usable implementation will need
+# to do something cleverer.
+session.id.tracker.class.name = com.variant.core.ext.SessionIdTrackerSimple
+session.id.tracker.class.init = {}
+
+# Targeting Tracker that tracks targeting in an in-memory string. 
+targeting.tracker.class.name = com.variant.core.ext.TargetingTrackerString
+# Number of days targeting tracker will honor an idle experience.
+# 0 => for the life of the test.
+targeting.tracker.idle.days.to.live = 0
+
+# URL to server API endpoint.
+server.endpoint.url=Unset. Use app property server.endpoint.url to set.

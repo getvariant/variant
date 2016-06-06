@@ -10,11 +10,10 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.VariantEvent;
-import com.variant.core.event.VariantEventDecorator;
+import com.variant.core.event.PersistableVariantEvent;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
+import static com.variant.core.jdbc.JdbcService.Vendor;
 
 /**
  * JDBC persisters extend this class instead of implementing the EventPersister interface. 
@@ -31,18 +30,23 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	 * JUnits will also use this to create the schema.
 	 * 
 	 * @return
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
+	 * @throws Exception
 	 */
-	public abstract Connection getJdbcConnection() throws ClassNotFoundException, SQLException;
+	public abstract Connection getJdbcConnection() throws Exception;
 
+	/**
+	 * Implementations will know the vendor.
+	 * @return
+	 */
+	public abstract Vendor getVendor();
+	
 	/**
 	 * Persist a collection of events.
 	 */
 	@Override
-	final public void persist(final Collection<VariantEventDecorator> events) throws Exception {
-		
-				final String INSERT_EVENTS_SQL = 
+	final public void persist(final Collection<PersistableVariantEvent> events) throws Exception {
+				
+		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
 			    "(id, session_id, created_on, event_name, event_value) " +
 				(getVendor() == Vendor.POSTGRES ?
@@ -52,20 +56,20 @@ abstract public class EventPersisterJdbc implements EventPersister {
 
 		final String INSERT_EVENT_VARIANTS_SQL = 
 				"INSERT INTO event_variants " +
-			    "(id, event_id, test_name, experience_name, is_experience_control, is_state_nonvariant) " +
+			    "(id, event_id, test_name, experience_name, is_experience_control) " +
 				(getVendor() == Vendor.POSTGRES ?
-						"VALUES (NEXTVAL('event_variants_id_seq'), ?, ?, ?, ?, ?)" :
+						"VALUES (NEXTVAL('event_variants_id_seq'), ?, ?, ?, ?)" :
 				getVendor() == Vendor.H2 ?
-						"VALUES (event_variants_id_seq.NEXTVAL, ?, ?, ?, ?, ?)" : "");
+						"VALUES (event_variants_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
 
 		final String INSERT_EVENT_PARAMETERS_SQL = 
 				"INSERT INTO event_params " +
 			    "(event_id, key, value) " +
 			    "VALUES (?, ?, ?)";
 
-		JdbcService.executeUpdate(
-			JdbcUtil.getConnection(), 
-			new JdbcService.UpdateOperation() {
+		JdbcAdapter.executeUpdate(
+			getJdbcConnection(), 
+			new JdbcAdapter.UpdateOperation() {
 
 				@Override
 				public void execute(Connection conn) throws SQLException {
@@ -76,8 +80,8 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
-					for (VariantEventDecorator event: events) {
-						stmt.setString(1, event.getStateRequest().getSession().getId());
+					for (PersistableVariantEvent event: events) {
+						stmt.setString(1, event.getSession().getId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getEventName());
 						stmt.setString(4, event.getEventValue());
@@ -110,7 +114,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_PARAMETERS_SQL);
 					index = 0;
-					for (VariantEventDecorator event: events) {
+					for (PersistableVariantEvent event: events) {
 						long eventId = eventIds[index++];
 						for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
 
@@ -130,16 +134,13 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_VARIANTS_SQL);
 					index = 0;
-					for (VariantEventDecorator event: events) {
+					for (PersistableVariantEvent event: events) {
 						long eventId = eventIds[index++];
 						for (Test.Experience exp: event.getActiveExperiences()) {
 							stmt.setLong(1, eventId);
 							stmt.setString(2, exp.getTest().getName());
 							stmt.setString(3, exp.getName());
-							stmt.setBoolean(4, exp.isControl());
-							State state = event.getStateRequest().getState();
-							stmt.setBoolean(5, state.isInstrumentedBy(exp.getTest()) && state.isNonvariantIn(exp.getTest()));
-						
+							stmt.setBoolean(4, exp.isControl());						
 							stmt.addBatch();
 						}
 					}
@@ -151,37 +152,12 @@ abstract public class EventPersisterJdbc implements EventPersister {
 		);
 		
 	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public Vendor getVendor() {
-		// Figure out the JDBC vendor, if we can.
-		if (this instanceof com.variant.core.ext.EventPersisterPostgres) {
-			return Vendor.POSTGRES;
-		}
-		else if (this instanceof com.variant.core.ext.EventPersisterH2) {
-			return Vendor.H2;
-		}
-		else return null;
-	}
 	
 	/**
-	 * 
+	 *  DEAD?
 	 * @author Igor
 	 *
-	 */
-	public static enum Vendor {
-		POSTGRES,
-		H2
-	}
-	
-	/**
-	 * 
-	 * @author Igor
 	 *
-	 */
 	private static class EventWrapper {
 		private VariantEvent event;
 		private long id;
@@ -190,5 +166,5 @@ abstract public class EventPersisterJdbc implements EventPersister {
 			this.id = id;
 		}
 	}
-
+	*/
 }

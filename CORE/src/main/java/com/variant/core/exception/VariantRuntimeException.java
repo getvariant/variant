@@ -7,15 +7,15 @@ public class VariantRuntimeException extends VariantException {
 
 	private static final long serialVersionUID = 1L;
 	private MessageTemplate template;
-	private String[] args;
+	private Object[] args;
 	
-	public VariantRuntimeException(MessageTemplate template, String...args) {
+	public VariantRuntimeException(MessageTemplate template, Object...args) {
 		super();
 		this.template = template;
 		this.args = args;
 	}
 
-	public VariantRuntimeException(MessageTemplate template, Throwable t, String...args) {
+	public VariantRuntimeException(MessageTemplate template, Throwable t, Object...args) {
 		super(t);
 		this.template = template;
 		this.args = args;

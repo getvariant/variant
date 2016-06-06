@@ -1,6 +1,21 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.*;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_MISSING;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_NOT_STRING;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_PARAMS_NOT_OBJECT;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_VARIANT_NOT_OBJECT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +24,7 @@ import java.util.Map;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
+import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantStringUtils;
 
@@ -177,6 +193,7 @@ public class VariantParser implements Keywords {
 			params = tov.getState().getParameterMap();
 		}
 		else {
+			params = new CaseInsensitiveMap<String>(params);  // The map from json parser is not case insensitive.
 			params = (Map<String,String>) VariantCollectionsUtils.mapMerge(tov.getState().getParameterMap(), params);
 		}
 		

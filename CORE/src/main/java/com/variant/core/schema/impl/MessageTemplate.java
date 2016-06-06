@@ -21,6 +21,7 @@ public enum MessageTemplate {
 	BOOT_EVENT_PERSISTER_NO_INTERFACE                     (Severity.FATAL, "Event persister class [%s] must implement interface [%s]"), 
 	BOOT_SID_TRACKER_NO_INTERFACE                         (Severity.FATAL, "Session ID tracker class [%s] must implement interface [%s]"),
 	BOOT_SESSION_STORE_NO_INTERFACE                       (Severity.FATAL, "Session store class [%s] must implement interface [%s]"),
+	BOOT_SESSION_ID_TRACKER_NO_INTERFACE                  (Severity.FATAL, "Session ID tracker class [%s] must implement interface [%s]"),
 	BOOT_TARGETING_TRACKER_NO_INTERFACE                   (Severity.FATAL, "Targeting tracker class [%s] must implement interface [%s]"),
 	BOOT_PARSER_LISTENER_NO_INTERFACE                     (Severity.FATAL, "Class [%s], annotated as [%s] must implement interface [%s]"),
 	
@@ -104,12 +105,16 @@ public enum MessageTemplate {
 	//                                                 RUN TIME MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//
 	
+	RUN_PROPERTY_BAD_CLASS                                (Severity.ERROR, "Don't know how to convert to class [%s]"),
+	RUN_PROPERTY_NOT_SET                                  (Severity.ERROR, "Application property [%s] is not set"),
+	RUN_PROPERTY_INIT_INVALID_JSON                        (Severity.ERROR, "Invalid JSON [%s] in application property [%s]"),
+	RUN_PROPERTY_INIT_PROPERTY_NOT_SET                    (Severity.ERROR, "Init property [%s] is required by class [%s] but is missing in application property [%s]"),
 	RUN_STATE_NOT_INSTRUMENTED_FOR_TEST                   (Severity.ERROR, "State [%s] is not instrumented for test [%s]"), 
-	RUN_PROPERTY_NOT_SET                                  (Severity.ERROR, "Property [%s] must be set"),
-	RUN_SCHEMA_REPLACED                                   (Severity.ERROR, "This schema is no longer valid because it has been replaced with a newer schema."),
 	RUN_WEIGHT_MISSING                                    (Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found."),
 	RUN_ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first."),
-	
+	RUN_SCHEMA_REPLACED                                   (Severity.ERROR, "Opereation not allowed because the current schema ID [%s] differs from that with which this session was created [%s]."),
+	RUN_SCHEMA_UNDEFINED                                  (Severity.ERROR, "Cannot create a session on an idle Variant instance. Parse a schema first."),
+	RUN_SESSION_ID_NULL                                   (Severity.WARN,  "Session id tracker [%s] generated a null key"),
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                  GENERAL MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//

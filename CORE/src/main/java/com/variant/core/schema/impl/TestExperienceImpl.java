@@ -2,13 +2,15 @@ package com.variant.core.schema.impl;
 
 import com.variant.core.schema.Test;
 
-class TestExperienceImpl implements Test.Experience  {
+// Remove public modifier is the result of exposing the server side
+// constructor.
+public class TestExperienceImpl implements Test.Experience  {
 
 	private String name;
 	private Test test;
 	private Number weight;
 	boolean isControl;
-	
+		
 	/**
 	 * Instantiation.
 	 * @param name
@@ -18,7 +20,7 @@ class TestExperienceImpl implements Test.Experience  {
 		this.weight = weight;
 		this.isControl = isControl;
 	}
-
+	
 	/**
 	 * Test is unknown at the time of instantiation.
 	 * @param test
@@ -63,5 +65,4 @@ class TestExperienceImpl implements Test.Experience  {
 	public String toString() {
 		return test.getName() + "." + name;
 	}
-
 }

@@ -2,10 +2,11 @@ package com.variant.core.event;
 
 import java.util.Collection;
 
+import com.variant.core.InitializationParams;
+
 /**
  * <p>Container-instantiated implementation will use external mechanisms to persist Variant events.
- * An implementation must provide a no argument constructor. Because an implementation
- * must be instantiated by the container, it must provide a no-argument constructor.
+ * An implementation must provide a no argument constructor, which will be used for instantiation. 
  * 
  * @author Igor Urisman
  * @since 0.5
@@ -13,12 +14,15 @@ import java.util.Collection;
 public interface EventPersister {
 
 	/**
-	 * <p>The container will call this method immediately following the instantiation to allow
-	 * the client code to initialize the object with some state. 
+	 * <p>The container will call this method immediately following the instantiation (via a no-argument
+	 * constructor) to allow for state management.
+	 * 
+	 * @param coreApi The instance of Variant API that is initializing this object.
+	 * @param initParams 
 	 * 
 	 * @since 0.5
 	 */
-	public void initialized();
+	public void initialized(InitializationParams initParams) throws Exception;
 	
 	/**
 	 * <p>Persist events to some storage mechanism.
@@ -28,6 +32,6 @@ public interface EventPersister {
 	 * @see EventPersisterH2, EventPersisterPostgres
 	 * @since 0.5
 	 */
-	public void persist(Collection<VariantEventDecorator> events) throws Exception;
-	
+	public void persist(Collection<PersistableVariantEvent> events) throws Exception;
+
 }

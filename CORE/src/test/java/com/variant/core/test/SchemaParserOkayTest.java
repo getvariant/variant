@@ -16,11 +16,10 @@ import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantStringUtils;
 
 
-public class SchemaParserOkayTest extends BaseTest {
+public class SchemaParserOkayTest extends BaseTestCore {
 	
 	private static final Random rand = new Random();
 	
@@ -141,7 +140,7 @@ public class SchemaParserOkayTest extends BaseTest {
 		VariantSession session = api.getSession(VariantStringUtils.random64BitString(rand));
 		State state1 = api.getSchema().getState("state1");
 		api.clearHookListeners();
-		VariantStateRequest req = api.dispatchRequest(session, state1, "");
+		VariantStateRequest req = session.targetForState(state1, "");
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals(1, session.getTraversedStates().size());
 		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
@@ -268,7 +267,7 @@ public class SchemaParserOkayTest extends BaseTest {
 		com.variant.core.schema.Test test2 = api.getSchema().getTest("test2");
 		api.clearHookListeners();
 		api.addHookListener(new TestDisqualifier(test2));
-		VariantStateRequest req = api.dispatchRequest(session, state1, "");
+		VariantStateRequest req = session.targetForState(state1, "");
 		assertEquals(1, session.getTraversedStates().size());
 		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
 		assertEqualAsSets(
@@ -399,7 +398,7 @@ public class SchemaParserOkayTest extends BaseTest {
 		api.clearHookListeners();
 		api.addHookListener(new TestDisqualifier(test1));
 		api.addHookListener(new TestDisqualifier(test2));
-		VariantStateRequest req = api.dispatchRequest(session, state1, "");
+		VariantStateRequest req = session.targetForState(state1, "");
 		assertEquals(1, session.getTraversedStates().size());
 		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
 		assertEqualAsSets(

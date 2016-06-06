@@ -2,11 +2,16 @@ package com.variant.core;
 
 import java.io.InputStream;
 
-import com.variant.core.hook.UserHook;
+import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.variant.core.exception.VariantException;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.HookListener;
+import com.variant.core.hook.UserHook;
 import com.variant.core.impl.VariantCoreImpl;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 
 /**
@@ -17,45 +22,16 @@ import com.variant.core.schema.parser.ParserResponse;
  * @since 0.5
  */
 public interface Variant {
-	
+		
 	/**
-	 * <p>Bootstrap Variant Core API. Must be the first method called on a cold API
-	 * after JVM startup. Takes 0 or more of String arguments. If supplied, 
-	 * each argument is understood as a Java class path resource name. Each resource 
-	 * is expected to contain a set of application properties, as specified by Java's 
-	 * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html#load-java.io.Reader-">Properties.load()</a> 
-	 * method.
+	 * <p>This API's application properties
 	 * 
-	 * <p>When, at runtime, the container looks for the value of a particular property key, 
-	 * these files are scanned left to right and the last value found takes precedence. 
-	 * If a value wasn't found in any of the supplied files, or if no files were supplied, 
-	 * the default value is used, as defiled in the <code>/variant-default.props</code> file 
-	 * found inside the <code>variant-core-&lt;version&gt;.jar</code> file.
-	 *
-	 * @arg resourceNames 0 or more properties files as classpath resource names.
-     *
-	 * @since 0.5
+	 * @return An instance of the {@link VariantProperties} type.
+	 * 
+	 * @since 0.6
 	 */
-	public void bootstrap(String...resourceNames);	
+	public VariantProperties getProperties();
 
-	/**
-	 * Is the Variant Core API bootstrapped?
-	 *
-	 * @return true between calls to {@link #bootstrap bootstrap()} and {@link #shutdown shutdown()} 
-	 *         methods, false otherwise.
-	 * @since 0.5
-	 */
-	public boolean isBootstrapped();
-	
-	/**
-	 * <p>Shutdown Variant Core API. Releases all JVM resources associated with Variant Core API.
-	 * Subsequently, calling any method other than {@link #bootstrap bootstrap()} will throw
-	 * an exception.
-	 * 
-	 * @since 0.5
-	 */
-	public void shutdown();
-	
 	/**
 	 * <p>Register a {@link com.variant.core.hook.HookListener}. The caller must provide 
 	 * an implementation of the {@link com.variant.core.hook.HookListener} interface 
@@ -89,7 +65,7 @@ public interface Variant {
 	 * @param deploy The new test schema will be deployed if this is true and no parse errors 
 	 *        were encountered.
 	 *        
-	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} object that
+	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} type that
 	 *         may be further examined about the outcome of this operation.
 	 * 
 	 * @since 0.5
@@ -119,57 +95,64 @@ public interface Variant {
 	public Schema getSchema();
 		
 	/**
-	 * Get user's Variant session.
+	 * Get user's Variant session. The contract of this method is that multiple calls with the same arguments
+	 * will return the same object, provided the session did not expire between calls.  It is an error to
+	 * call this method on an idle instance, i.e. before a valid schema has been parsed. 
 	 * 
 	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
 	 *                 to the implementations of {@link com.variant.core.VariantSessionIdTracker#get(Object...)}
 	 *                 and {@link com.variant.core.VariantSessionStore#get(Object...)}.
 	 * @since 0.5
-	 * @return
+	 * @return An instance of {@link VariantSession}.
 	 */
 	public VariantSession getSession(Object...userData);
-	
-	/**
-     * <p>Dispatch a new state request. See the Variant RCE User Guide for more information about Variant session
-     * life cycle.
-     *  
-	 * @return An instance of the {@link com.variant.core.VariantStateRequest} object, which
-	 *         may be further examined about the outcome of this operation. 
-	 *
-	 * @since 0.5
-	 */
-	public VariantStateRequest dispatchRequest(VariantSession session, State state, Object...targetingPersisterUserData);
-	
-	/**
-	 * Commit a state request. Flushes to storage this session's state. See the Variant RCE User Guide for more information about Variant session
-     * life cycle.
-     * 
-	 * @param request The state request to be committed.
-	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
-	 *                 to the implementations of {@link com.variant.core.VariantSessionIdTracker#save(String, Object...)}
-	 *                 and {@link com.variant.core.VariantSessionStore#save(VariantSession, Object...)}.
-     *
-	 * @since 0.5
-	 */
-	public void commitStateRequest(VariantStateRequest request, Object...userData);
-		
+				
 	/**
 	 * Factory singleton class for obtaining an instance of the Variant API.
 	 * @since 0.5
 	 */
 	public static class Factory {
-		private static Variant instance = null;
+		
+		private static final Logger LOG = LoggerFactory.getLogger(Variant.class);
 		
 		/**
-		 * Obtain an instance of the Variant API. Can be held on to and reused for the life of the JVM.
+		 * <p>Obtain an instance of the Variant API. Takes 0 or more of String arguments. If supplied, 
+		 * each argument is understood as a Java class path resource name. Each resource 
+		 * is expected to contain a set of application properties, as specified by Java's 
+		 * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Properties.html#load-java.io.Reader-">Properties.load()</a> 
+		 * method.
 		 * 
+		 * <p>When, at runtime, the container looks for the value of a particular property key, 
+		 * these files are scanned left to right and the first value found is returned. 
+		 * If a value wasn't found in any of the supplied files, or if no files were supplied, 
+		 * the default value is used, as defiled in the <code>/variant/defaults.props</code> file 
+		 * found inside the <code>variant-core-&lt;version&gt;.jar</code> file.
+		 *
+		 * @arg resourceNames 0 or more properties files as classpath resource names.
 		 * @return An implementation of the {@link Variant} interface.
+	     *
+		 * @since 0.6
 		 */
-		public static Variant getInstance() {
-			if (instance == null) {
-				instance = new VariantCoreImpl();
+		public static Variant getInstance(String...resourceNames) {
+			
+			long now = System.currentTimeMillis();
+			VariantCoreImpl result;
+			try {
+				result = new VariantCoreImpl(resourceNames);
 			}
-			return instance;
+			catch (final VariantException e) {
+				throw e;
+			}
+			catch (Exception e) {
+				throw new VariantInternalException("Unable to instantiate Core", e);
+			}
+			LOG.info(
+					String.format("Variant Core %s bootstrapped in %s.",
+							result.getComptime().getCoreVersion(),
+							DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
+			
+			return result;
 		}
+		
 	}
 }

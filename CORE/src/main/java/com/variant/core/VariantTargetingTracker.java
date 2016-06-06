@@ -21,13 +21,14 @@ public interface VariantTargetingTracker {
 	 * <p>The container will call this method immediately following the instantiation to allow
 	 * the client code to initialize the object with some state.
 	 * 
+	 * @param api Current Variant Core API handle.
 	 * @param session Current Variant session.
 	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#dispatchRequest(VariantSession, com.variant.core.schema.State, Object...)} 
+	 *                 {@link com.variant.core.Variant#targetForState(VariantSession, com.variant.core.schema.State, Object...)} 
 	 *                 will pass here without interpretation.
 	 * @since 0.5
 	 */
-	public void initialized(VariantSession session, Object...userData);
+	public void initialized(Variant core, VariantSession session, Object...userData);
 	
 	/**
 	 * All currently tracked test experiences. The implementation must guarantee 
@@ -52,7 +53,7 @@ public interface VariantTargetingTracker {
 	 * Remove the currently tracked test experience from a given test, if any.
 	 * 
 	 * @param test Test of interest.
-	 * @return Given tests's experience that was removed form this tracker by this operation, oif any.
+	 * @return Given tests's experience that was removed form this tracker by this operation, if any.
 	 * @since 0.5
 	 */
 	public Experience remove(Test test);
@@ -75,7 +76,7 @@ public interface VariantTargetingTracker {
 	public void touch(Test test);
 	
 	/**
-	 * Flush the state of this object to the underlying srorage.
+	 * Flush the state of this object to the underlying storage.
 	 * 
 	 * @param userData An array of 0 or more opaque objects which 
 	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...)} 

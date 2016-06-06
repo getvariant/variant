@@ -1,0 +1,10 @@
+#
+# Base properties for some JUnit Tests.
+#
+
+# We expect server to run here
+server.endpoint.url=http://localhost:8080/
+
+event.writer.buffer.size = 10000
+event.writer.max.delay.millis = 100
+      

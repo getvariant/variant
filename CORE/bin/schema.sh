@@ -10,4 +10,4 @@ EOF
 basedir=$(dirname $0)
 
 export PGPASSWORD=variant
-psql -U variant < $basedir/../src/main/resources/db/create-schema.sql
+psql -U variant < $basedir/../src/main/resources/variant/create-schema.sql
