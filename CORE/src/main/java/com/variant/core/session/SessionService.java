@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.InitializationParams;
-import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionIdTracker;
 import com.variant.core.VariantSessionStore;
@@ -13,6 +12,7 @@ import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantCore;
+import com.variant.core.impl.CoreProperties;
 import com.variant.core.schema.impl.MessageTemplate;
 
 public class SessionService {
@@ -32,13 +32,13 @@ public class SessionService {
 		this.coreApi = coreApi;
 		
 		// Session ID tracker.
-		String sidTrackerClassName = coreApi.getProperties().get(VariantProperties.Key.SESSION_ID_TRACKER_CLASS_NAME, String.class);
+		String sidTrackerClassName = coreApi.getProperties().get(CoreProperties.Key.SESSION_ID_TRACKER_CLASS_NAME, String.class);
 		try {
 			Class<?> sidTrackerClass = Class.forName(sidTrackerClassName);
 			Object sidTrackerObject = sidTrackerClass.newInstance();
 			if (sidTrackerObject instanceof VariantSessionIdTracker) {
 				sidTracker = (VariantSessionIdTracker) sidTrackerObject;
-				sidTracker.initialized(coreApi.getProperties().get(VariantProperties.Key.SESSION_STORE_CLASS_INIT, InitializationParams.class));
+				sidTracker.initialized(coreApi.getProperties().get(CoreProperties.Key.SESSION_STORE_CLASS_INIT, InitializationParams.class));
 			}
 			else {
 				throw new VariantBootstrapException(MessageTemplate.BOOT_SESSION_ID_TRACKER_NO_INTERFACE, sidTrackerClassName, VariantSessionStore.class.getName());
@@ -49,13 +49,13 @@ public class SessionService {
 		}
 
 		// Session store.
-		String storeClassName = coreApi.getProperties().get(VariantProperties.Key.SESSION_STORE_CLASS_NAME, String.class);
+		String storeClassName = coreApi.getProperties().get(CoreProperties.Key.SESSION_STORE_CLASS_NAME, String.class);
 		try {
 			Class<?> storeClass = Class.forName(storeClassName);
 			Object storeObject = storeClass.newInstance();
 			if (storeObject instanceof VariantSessionStore) {
 				sessionStore = (VariantSessionStore) storeObject;
-				sessionStore.initialized(coreApi.getProperties().get(VariantProperties.Key.SESSION_STORE_CLASS_INIT, InitializationParams.class));
+				sessionStore.initialized(coreApi.getProperties().get(CoreProperties.Key.SESSION_STORE_CLASS_INIT, InitializationParams.class));
 			}
 			else {
 				throw new VariantBootstrapException(MessageTemplate.BOOT_SESSION_STORE_NO_INTERFACE, storeClassName, VariantSessionStore.class.getName());

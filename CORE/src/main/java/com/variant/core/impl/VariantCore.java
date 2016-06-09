@@ -16,11 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.InitializationParams;
-import com.variant.core.VariantProperties;
-import com.variant.core.VariantProperties.Key;
 import com.variant.core.VariantSession;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
+import com.variant.core.impl.CoreProperties.Key;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
@@ -53,7 +52,7 @@ public class VariantCore implements Serializable {
 	private EventWriter eventWriter = null;
 	private SessionService sessionService = null;
 	private UserHooker hooker = new UserHooker();
-	private VariantPropertiesImpl properties;
+	private CoreProperties properties;
 	private VariantRuntime runtime;
 	private VariantComptime comptime;
 		
@@ -69,7 +68,7 @@ public class VariantCore implements Serializable {
 	 */
 	private void setupSystemProperties(String...resourceNames) {
 
-		properties = new VariantPropertiesImpl(this);
+		properties = new CoreProperties(this);
 
 		// Override system props in left-to-right scan.
 		for (int i = resourceNames.length - 1; i >= 0; i--) {
@@ -91,8 +90,8 @@ public class VariantCore implements Serializable {
 		}
 		catch (Exception e) {} // Not an error if wasn't found.
 
-		String runTimePropsResourceName = System.getProperty(VariantProperties.COMMANDLINE_RESOURCE_NAME);
-		String runTimePropsFileName = System.getProperty(VariantPropertiesImpl.COMMANDLINE_FILE_NAME);
+		String runTimePropsResourceName = System.getProperty(CoreProperties.COMMANDLINE_RESOURCE_NAME);
+		String runTimePropsFileName = System.getProperty(CoreProperties.COMMANDLINE_FILE_NAME);
 		
 		if (runTimePropsResourceName != null && runTimePropsFileName!= null) {
 			throw new VariantRuntimeException(BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN);
@@ -102,7 +101,7 @@ public class VariantCore implements Serializable {
 			try {
 				properties.overrideWith(
 						VariantIoUtils.openResourceAsStream(runTimePropsResourceName), 
-						"-D" + VariantPropertiesImpl.COMMANDLINE_RESOURCE_NAME + "=" + runTimePropsResourceName);
+						"-D" + CoreProperties.COMMANDLINE_RESOURCE_NAME + "=" + runTimePropsResourceName);
 			}
 			catch (Exception e) {
 				throw new VariantRuntimeException(BOOT_CONFIG_RESOURCE_NOT_FOUND, e, runTimePropsResourceName);
@@ -112,7 +111,7 @@ public class VariantCore implements Serializable {
 			try {
 				properties.overrideWith(
 						VariantIoUtils.openFileAsStream(runTimePropsFileName),
-						 "-D" + VariantPropertiesImpl.COMMANDLINE_FILE_NAME + "=" + runTimePropsFileName);
+						 "-D" + CoreProperties.COMMANDLINE_FILE_NAME + "=" + runTimePropsFileName);
 			}
 			catch (Exception e) {
 				throw new VariantRuntimeException(BOOT_CONFIG_FILE_NOT_FOUND, e, runTimePropsFileName);
@@ -128,7 +127,7 @@ public class VariantCore implements Serializable {
 		
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("+-- Bootstrapping Variant with following application properties: --");
-			for (VariantPropertiesImpl.Key key: VariantPropertiesImpl.Key.values()) {
+			for (CoreProperties.Key key: CoreProperties.Key.values()) {
 				LOG.debug("| " + key.propName() + " = " + properties.get(key, String.class) + " : " + properties.getSource(key));
 			}
 			LOG.debug("+------------- Fingers crossed, this is not PRODUCTION -------------");
@@ -221,11 +220,11 @@ public class VariantCore implements Serializable {
 	/**
 	 * <p>This API's application properties
 	 * 
-	 * @return An instance of the {@link VariantProperties} type.
+	 * @return An instance of the {@link CoreProperties} type.
 	 * 
 	 * @since 0.6
 	 */
-	public VariantProperties getProperties() {
+	public CoreProperties getProperties() {
 		return properties;
 	}
 

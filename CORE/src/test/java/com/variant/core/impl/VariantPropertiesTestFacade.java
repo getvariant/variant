@@ -1,14 +1,13 @@
 package com.variant.core.impl;
 
-import com.variant.core.VariantProperties;
 import com.variant.core.util.Tuples.Pair;
 
 public class VariantPropertiesTestFacade {
 
-	VariantPropertiesImpl props;
+	CoreProperties props;
 	
-	public VariantPropertiesTestFacade(VariantProperties props) {
-		this.props = (VariantPropertiesImpl) props;
+	public VariantPropertiesTestFacade(CoreProperties props) {
+		this.props = (CoreProperties) props;
 	}
 	
 	public Pair<String, String> getString(String key) {

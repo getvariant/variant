@@ -8,7 +8,6 @@ import java.util.Random;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.exception.VariantRuntimeException;
@@ -16,6 +15,7 @@ import com.variant.core.ext.EventPersisterNull;
 import com.variant.core.ext.SessionStoreNull;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestTargetingHook;
+import com.variant.core.impl.CoreProperties;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test.Experience;
@@ -34,10 +34,10 @@ public class TargetingTest extends BaseTestCore {
 	@BeforeClass
 	public static void before() throws Exception {
 		System.setProperty(
-				VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.EVENT_PERSISTER_CLASS_NAME.propName(), 
+				CoreProperties.COMMANDLINE_PROP_PREFIX + CoreProperties.Key.EVENT_PERSISTER_CLASS_NAME.propName(), 
 				EventPersisterNull.class.getName());
 		System.setProperty(
-				VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.SESSION_STORE_CLASS_NAME.propName(),
+				CoreProperties.COMMANDLINE_PROP_PREFIX + CoreProperties.Key.SESSION_STORE_CLASS_NAME.propName(),
 				SessionStoreNull.class.getName());
 
 	}
