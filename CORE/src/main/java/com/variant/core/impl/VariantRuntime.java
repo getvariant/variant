@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantTargetingTracker;
 import com.variant.core.exception.VariantInternalException;
@@ -22,6 +21,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.Test.OnState;
+import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.session.VariantSessionImpl;
@@ -122,13 +122,13 @@ public class VariantRuntime {
 		
 	}		
 
-	private VariantCoreImpl coreApi;
+	private VariantCore coreApi;
 
 	/**
 	 * Static singleton.
 	 * Need package visibility for test facade.
 	 */
-	VariantRuntime(VariantCoreImpl coreApi) {
+	VariantRuntime(VariantCore coreApi) {
 		this.coreApi = coreApi;
 	}
 	

@@ -14,11 +14,10 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.InitializationParams;
-import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
-import com.variant.core.config.PropertiesChain;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.impl.MessageTemplate;
+import com.variant.core.util.PropertiesChain;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantIoUtils;
 import com.variant.core.util.VariantStringUtils;
@@ -34,12 +33,12 @@ import com.variant.core.util.VariantStringUtils;
 public class VariantPropertiesImpl implements VariantProperties {
 	
 	private PropertiesChain propsChain = new PropertiesChain();
-	private VariantCoreImpl coreApi;
+	private VariantCore coreApi;
 
 	/**
 	 * 
 	 */
-	VariantPropertiesImpl(VariantCoreImpl coreApi) {
+	VariantPropertiesImpl(VariantCore coreApi) {
 		this.coreApi = coreApi;
 		propsChain = new PropertiesChain();
 		// Internal is the last on the chain
@@ -136,7 +135,7 @@ public class VariantPropertiesImpl implements VariantProperties {
 		else if (clazz == Integer.class)
 			return (T) getInteger(key.propName());
 		else if (clazz == InitializationParams.class)
-			return (T) new InitParams(coreApi, getMap(key.propName()));
+			return (T) new InitializationParamsImpl(coreApi, getMap(key.propName()));
 		else 
 			throw new VariantRuntimeException(MessageTemplate.RUN_PROPERTY_BAD_CLASS, clazz.getName());
 	}
@@ -154,39 +153,6 @@ public class VariantPropertiesImpl implements VariantProperties {
 	@Override
 	public String getSource(Key key) {
 		return getString(key.propName()).arg2();
-	}
-
-	/**
-	 * 
-	 */
-	@SuppressWarnings("serial")
-	public static class InitParams extends HashMap<String, Object> implements InitializationParams {
-		
-		private Variant coreApi; 
-		
-		private InitParams(Variant coreApi, Map<String,String> map) {
-			super(map);
-			this.coreApi = coreApi;
-		}
-		
-		@Override
-		public Object getOr(String param, Object defaultValue) {
-			Object result = super.get(param);
-			return result == null ? defaultValue : result;
-		}
-
-		@Override
-		public Object getOrThrow(String key, VariantRuntimeException e) {
-			Object result = super.get(key);
-			if (result == null) throw e;
-			else return result;
-		}
-
-		@Override
-		public Variant getCoreApi() {
-			return coreApi;
-		}
-
 	}
 
 }

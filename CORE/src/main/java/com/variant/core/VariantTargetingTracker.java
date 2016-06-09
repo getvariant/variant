@@ -21,14 +21,13 @@ public interface VariantTargetingTracker {
 	 * <p>The container will call this method immediately following the instantiation to allow
 	 * the client code to initialize the object with some state.
 	 * 
-	 * @param api Current Variant Core API handle.
 	 * @param session Current Variant session.
 	 * @param userData An array of 0 or more opaque objects which 
 	 *                 {@link com.variant.core.Variant#targetForState(VariantSession, com.variant.core.schema.State, Object...)} 
 	 *                 will pass here without interpretation.
 	 * @since 0.5
 	 */
-	public void initialized(Variant core, VariantSession session, Object...userData);
+	public void initialized(VariantSession session, Object...userData);
 	
 	/**
 	 * All currently tracked test experiences. The implementation must guarantee 

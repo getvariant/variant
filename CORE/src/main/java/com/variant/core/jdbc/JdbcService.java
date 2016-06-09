@@ -15,8 +15,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.Variant;
-import com.variant.core.impl.VariantCoreImpl;
+import com.variant.core.impl.VariantCore;
+import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.util.VariantStringUtils;
 
 
@@ -102,7 +102,7 @@ public class JdbcService {
 
 	}
 
-	private VariantCoreImpl coreApi = null;
+	private VariantCore coreApi = null;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -118,8 +118,8 @@ public class JdbcService {
 		H2
 	}
 
-	public JdbcService(Variant coreApi) {
-		this.coreApi = (VariantCoreImpl) coreApi;
+	public JdbcService(VariantCore coreApi) {
+		this.coreApi = coreApi;
 	}
 
 	/**

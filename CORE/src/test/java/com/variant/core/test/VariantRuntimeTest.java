@@ -13,16 +13,12 @@ import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.VariantCoreImplTestFacade;
 import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.test.BaseTestCommon.ExceptionInterceptor;
 import com.variant.core.util.VariantCollectionsUtils;
 
 
@@ -37,7 +33,7 @@ public class VariantRuntimeTest extends BaseTestCore {
 	@org.junit.Test
 	public void pathResolution() throws Exception {
 		
-		VariantRuntimeTestFacade runtimeFacade = new VariantRuntimeTestFacade(new VariantCoreImplTestFacade(api).getRuntime());
+		VariantRuntimeTestFacade runtimeFacade = new VariantRuntimeTestFacade(api.getRuntime());
 		
 		ParserResponse response = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);

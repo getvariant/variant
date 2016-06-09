@@ -6,7 +6,8 @@ import com.variant.core.InitializationParams;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantException;
-import com.variant.core.impl.VariantCoreImpl;
+import com.variant.core.impl.InitializationParamsImpl;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.session.VariantSessionImpl;
 
 /**
@@ -26,13 +27,13 @@ import com.variant.core.session.VariantSessionImpl;
 public class SessionStoreLocalMemory implements VariantSessionStore {
 
 	private HashMap<String, String> map = new HashMap<String, String>();
-	private VariantCoreImpl coreApi = null;
+	private VariantCore coreApi = null;
 	
 	public SessionStoreLocalMemory() { }
 	
 	@Override
 	public void initialized(InitializationParams initParams) {
-		coreApi = (VariantCoreImpl) initParams.getCoreApi();
+		coreApi =  ((InitializationParamsImpl)initParams).getCoreApi();
 	}
 
 	/**

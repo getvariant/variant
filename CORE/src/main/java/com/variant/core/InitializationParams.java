@@ -32,15 +32,4 @@ public interface InitializationParams {
 	 */
 	public Object getOrThrow(String param, VariantRuntimeException exceptionIfNull);
 
-	/**
-	 * The core API handle that created this object.
-	 * @param param Parameter name
-	 * @param exceptionIfNull The exception to be thrown if param not provided.
-	 * 
-	 * @return Its value or throws an exception if not defined.
-     *
-	 * @since 0.6
-	 */
-	public Variant getCoreApi();
-
 }

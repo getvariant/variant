@@ -12,13 +12,13 @@ import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.VariantCoreImpl;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.impl.MessageTemplate;
 
 public class SessionService {
 
 	private static final Logger LOG  = LoggerFactory.getLogger(SessionService.class);
-	private VariantCoreImpl coreApi = null;
+	private VariantCore coreApi = null;
 	private VariantSessionIdTracker sidTracker = null;
 	private VariantSessionStore sessionStore = null;
 	
@@ -27,7 +27,7 @@ public class SessionService {
 	 * @param config
 	 * @throws VariantBootstrapException 
 	 */
-	public SessionService(VariantCoreImpl coreApi) throws VariantBootstrapException {
+	public SessionService(VariantCore coreApi) throws VariantBootstrapException {
 		
 		this.coreApi = coreApi;
 		

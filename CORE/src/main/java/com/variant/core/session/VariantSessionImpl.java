@@ -26,7 +26,7 @@ import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantComptime;
-import com.variant.core.impl.VariantCoreImpl;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -48,14 +48,14 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	private VariantStateRequestImpl currentRequest = null;
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
 	private HashMap<Test, Boolean> traversedTests = new HashMap<Test, Boolean>();
-	private VariantCoreImpl coreApi;
+	private VariantCore coreApi;
 	private String schemaId;
 	
 	/**
 	 * 
 	 * @param id
 	 */
-	public VariantSessionImpl(VariantCoreImpl coreApi, String id) {
+	public VariantSessionImpl(VariantCore coreApi, String id) {
 		this.coreApi = coreApi;
 		// No schema ID on server yet. 
 		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) 
@@ -107,7 +107,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	public void triggerEvent(VariantEvent event) {
 
 		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
-		EventWriter ew = ((VariantCoreImpl) coreApi).getEventWriter();
+		EventWriter ew = ((VariantCore) coreApi).getEventWriter();
 		ew.write(new VariantEventDecoratorImpl(event, this));
 	}
 
@@ -139,7 +139,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 			throw new VariantInternalException("Unable to instantiate targeting persister class [" + className +"]", e);
 		}
 			
-		tp.initialized(coreApi, this, targetingPersisterUserData);
+		tp.initialized(this, targetingPersisterUserData);
 
 		addTraversedState(state);
 		
@@ -154,7 +154,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	 * 
 	 * @return
 	 */
-	public VariantCoreImpl getCoreApi() {
+	public VariantCore getCoreApi() {
 		return coreApi;
 	}
 	
@@ -274,7 +274,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static VariantSessionImpl fromJson(VariantCoreImpl coreApi, String json) {
+	public static VariantSessionImpl fromJson(VariantCore coreApi, String json) {
 
 		ObjectMapper mapper = new ObjectMapper();		
 		Map<String,?> fields = null;

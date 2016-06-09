@@ -2,8 +2,7 @@ package com.variant.core.test;
 
 import org.junit.Before;
 
-import com.variant.core.Variant;
-import com.variant.core.impl.VariantCoreImpl;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.Schema;
 
@@ -12,7 +11,7 @@ import com.variant.core.schema.Schema;
  */
 public class BaseTestCore extends BaseTestCommon {
 	
-	protected VariantCoreImpl api = null;
+	protected VariantCore api = null;
 	
 	private static Boolean sqlSchemaCreated = false;
 	
@@ -39,7 +38,7 @@ public class BaseTestCore extends BaseTestCommon {
 	 * 
 	 */
 	protected void rebootApi() throws Exception {
-		api = (VariantCoreImpl) Variant.Factory.getInstance("/variant-test.props");
+		api = new VariantCore("/variant-test.props");
 	}
 
 	@Override

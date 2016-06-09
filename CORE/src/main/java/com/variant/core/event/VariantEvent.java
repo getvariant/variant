@@ -3,8 +3,8 @@ package com.variant.core.event;
 import java.util.Date;
 import java.util.Map;
 
-import com.variant.core.Variant;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.schema.Test.OnState.Variant;
 
 /**
  * A Variant event. Events are generated either implicitly by the Variant RCE Container, 

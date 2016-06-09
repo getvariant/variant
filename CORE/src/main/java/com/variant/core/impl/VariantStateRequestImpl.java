@@ -10,7 +10,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.VariantTargetingTracker;
@@ -287,7 +286,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	 * @param fields
 	 * @return
 	 */
-	public static VariantStateRequestImpl fromJson(Variant coreApi, VariantSessionImpl session, Map<String,?> fields) {
+	public static VariantStateRequestImpl fromJson(VariantCore coreApi, VariantSessionImpl session, Map<String,?> fields) {
 		
 		Object stateName = fields.get(FIELD_NAME_STATE);
 		if (stateName == null) 
@@ -298,7 +297,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		// If we're on the server, we don't have the schema => we can't instantiate a State object,
 		// but we need the state name to log events.
 		
-		VariantStateRequestImpl result =  ((VariantCoreImpl)coreApi).getComptime().getComponent() == VariantComptime.Component.SERVER ?
+		VariantStateRequestImpl result =  ((VariantCore)coreApi).getComptime().getComponent() == VariantComptime.Component.SERVER ?
 				new VariantStateRequestImpl(session, (String)stateName) :
 				new VariantStateRequestImpl(session, (StateImpl) coreApi.getSchema().getState((String)stateName));
 		
@@ -345,7 +344,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 					String expQualifiedName = (String) obj;
 					// qualified name = testName.expName.bool - need to parse.
 					String[] tokens = expQualifiedName.split("\\.");
-					if (((VariantCoreImpl)coreApi).getComptime().getComponent() == VariantComptime.Component.SERVER) {
+					if (((VariantCore)coreApi).getComptime().getComponent() == VariantComptime.Component.SERVER) {
 						experiencesList.add(new TestExperienceServerStub(tokens[0], tokens[1], new Boolean(tokens[2])));
 					}
 					else {

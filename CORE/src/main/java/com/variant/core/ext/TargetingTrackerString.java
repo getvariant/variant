@@ -4,10 +4,10 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.Variant;
 import com.variant.core.VariantSession;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
+import com.variant.core.session.VariantSessionImpl;
 
 /**
  * Emulates targeting persister that is tracked by a cookie,
@@ -22,7 +22,6 @@ import com.variant.core.schema.Test.Experience;
 public class TargetingTrackerString extends TargetingTrackerSupport {
 
 	private Logger LOG = LoggerFactory.getLogger(TargetingTrackerString.class);
-	private Variant coreApi;
 	
 	/**
 	 * Parse the content from an input string.
@@ -41,7 +40,7 @@ public class TargetingTrackerString extends TargetingTrackerSupport {
 				String[] tokens = entry.split("\\.");
 				if (tokens.length == 3) {
 					try {
-						Test test = coreApi.getSchema().getTest(tokens[1]);
+						Test test = ((VariantSessionImpl)ssn).getCoreApi().getSchema().getTest(tokens[1]);
 						if (test == null) {
 							if (LOG.isDebugEnabled()) {
 								LOG.debug("Ignored non-existent test [" + tokens[1] + "]");
@@ -97,8 +96,7 @@ public class TargetingTrackerString extends TargetingTrackerSupport {
 	 * 
 	 */
 	@Override
-	public void initialized(Variant coreApi, VariantSession session, Object...userData) { 
-		this.coreApi = coreApi;
+	public void initialized(VariantSession session, Object...userData) { 
 		parseFromString(session, (String) userData[0]);
 	}
 

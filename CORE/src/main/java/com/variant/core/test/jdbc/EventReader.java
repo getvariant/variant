@@ -12,7 +12,7 @@ import java.util.Map;
 
 import org.apache.commons.collections4.Predicate;
 
-import com.variant.core.Variant;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.jdbc.JdbcAdapter;
 import com.variant.core.jdbc.JdbcService;
 
@@ -31,7 +31,7 @@ public class EventReader {
 	 * 
 	 * @param variant
 	 */
-	public EventReader(Variant variant) {
+	public EventReader(VariantCore variant) {
 		jdbcService = new JdbcService(variant);
 	}
 	

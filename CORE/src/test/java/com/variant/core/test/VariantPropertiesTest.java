@@ -11,14 +11,14 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.variant.core.Variant;
 import com.variant.core.VariantProperties;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantPropertiesImpl;
 import com.variant.core.impl.VariantPropertiesTestFacade;
 import com.variant.core.schema.impl.MessageTemplate;
+import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantIoUtils;
-import com.variant.core.util.Tuples.*;
 
 public class VariantPropertiesTest {
 
@@ -26,7 +26,7 @@ public class VariantPropertiesTest {
 	public void test() throws Exception {
 		
 		// Core default
-		Variant api = Variant.Factory.getInstance();
+		VariantCore api = new VariantCore();
 		
 		Properties defaultProps = new Properties();
 		defaultProps.load(VariantIoUtils.openResourceAsStream("/variant/defaults.props"));
@@ -43,7 +43,7 @@ public class VariantPropertiesTest {
 		}
 		
 		// Compile time override
-		api = Variant.Factory.getInstance("/variant-test.props");
+		api = new VariantCore("/variant-test.props");
 		Properties testProps = new Properties();
 		testProps.load(VariantIoUtils.openResourceAsStream("/variant-test.props"));
 		VariantPropertiesTestFacade actualProps = new VariantPropertiesTestFacade(api.getProperties());
@@ -57,7 +57,7 @@ public class VariantPropertiesTest {
 		// Run time override from classpath
 		final String RESOURCE_NAME = "/VariantPropertiesTest.props";
 		System.setProperty(VariantProperties.COMMANDLINE_RESOURCE_NAME, RESOURCE_NAME);
-		api = Variant.Factory.getInstance();
+		api = new VariantCore();
 		Properties expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openResourceAsStream(RESOURCE_NAME));
 		actualProps = new VariantPropertiesTestFacade(api.getProperties());
@@ -72,7 +72,7 @@ public class VariantPropertiesTest {
 
 		// Comp time override + run time override from classpath
 		System.setProperty(VariantProperties.COMMANDLINE_RESOURCE_NAME, "/VariantPropertiesTest.props");
-		api = Variant.Factory.getInstance("/variant-test.props");
+		api = new VariantCore("/variant-test.props");
 		expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openResourceAsStream("/VariantPropertiesTest.props"));
 		actualProps = new VariantPropertiesTestFacade(api.getProperties());
@@ -93,7 +93,7 @@ public class VariantPropertiesTest {
 		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName() + " = FileOverride");	
 		tmpFile.close();
 		
-		api = Variant.Factory.getInstance();
+		api = new VariantCore();
 		expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openFileAsStream(TMP_FILE_NAME));
 		actualProps = new VariantPropertiesTestFacade(api.getProperties());
@@ -113,7 +113,7 @@ public class VariantPropertiesTest {
 		tmpFile.println(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE + " = FileTimeOverride");	
 		tmpFile.close();
 		
-		api = Variant.Factory.getInstance("/variant-test.props");
+		api = new VariantCore("/variant-test.props");
 		expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openFileAsStream(TMP_FILE_NAME));
 		actualProps = new VariantPropertiesTestFacade(api.getProperties());
@@ -128,12 +128,12 @@ public class VariantPropertiesTest {
 		
 		// System props override. 
 		int randomInt = new Random().nextInt();
-		api = Variant.Factory.getInstance();
+		api = new VariantCore();
 		assertNotEquals(randomInt, api.getProperties().get(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE,  Integer.class).intValue());
 		System.setProperty(VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName(), String.valueOf(randomInt));
 		assertEquals(randomInt, api.getProperties().get(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class).intValue());
 
-		api = Variant.Factory.getInstance();
+		api = new VariantCore();
 		assertEquals(randomInt, api.getProperties().get(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class).intValue());
 		System.clearProperty(VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName());
 		assertNotEquals(randomInt, api.getProperties().get(VariantProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class).intValue());
@@ -145,7 +145,7 @@ public class VariantPropertiesTest {
 			System.setProperty(VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName(), BAD_JSON);
 			boolean exceptionThrown = false;
 			try {
-				api = Variant.Factory.getInstance();
+				api = new VariantCore();
 			}
 			catch (VariantRuntimeException e) {
 				exceptionThrown = true;
@@ -166,7 +166,7 @@ public class VariantPropertiesTest {
 			System.setProperty(VariantProperties.COMMANDLINE_PROP_PREFIX + VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
 			boolean exceptionThrown = false;
 			try {
-				api = Variant.Factory.getInstance();
+				api = new VariantCore();
 			}
 			catch (VariantRuntimeException e) {
 				exceptionThrown = true;

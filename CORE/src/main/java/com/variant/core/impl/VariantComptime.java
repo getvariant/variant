@@ -6,13 +6,12 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.Variant;
 import com.variant.core.exception.VariantInternalException;
 
 
 public class VariantComptime {
 	
-	public static final Logger LOG = LoggerFactory.getLogger(Variant.class);
+	public static final Logger LOG = LoggerFactory.getLogger(VariantComptime.class);
 	
 	public enum Component {SERVER, CLIENT}
 	

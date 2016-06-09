@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.UserHooker;
-import com.variant.core.impl.VariantCoreImpl;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserMessage;
@@ -58,7 +58,7 @@ public class SchemaParser implements Keywords {
 	 * @throws VariantRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	public static ParserResponseImpl parse(VariantCoreImpl coreApi, String configAsJsonString) throws VariantRuntimeException {
+	public static ParserResponseImpl parse(VariantCore coreApi, String configAsJsonString) throws VariantRuntimeException {
 		
 		ParserResponseImpl response = new ParserResponseImpl();
 		
