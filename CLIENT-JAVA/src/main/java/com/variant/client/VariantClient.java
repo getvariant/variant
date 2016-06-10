@@ -5,44 +5,43 @@ import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.variant.core.Variant;
-import com.variant.core.VariantProperties;
+import com.variant.client.impl.VariantClientSession;
+import com.variant.core.VariantSession;
 import com.variant.core.hook.HookListener;
+import com.variant.core.impl.CoreProperties;
 import com.variant.core.impl.VariantComptime;
-import com.variant.core.impl.VariantCoreImpl;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.VariantArrayUtils;
 import com.variant.core.util.VariantStringUtils;
 
 /**
- * <p>Variant Web API. The platform API suitable for Web applications written on top of the Java Servlet API. 
- * It is a facade around the {@link com.variant.core.Variant Core API} with the advantage of hiding much 
- * of its complexities behind a new set of methods that operate on familiar Servlet API objects.
- * To obtain an instance, instantiate with the constructor:
- * 
- * <p>
- * <code>VariantWeb webAPI = new {@link #VariantWeb()};</code>
+ * <p>Variant Java Client API. Makes no assumptions about the host application other than 
+ * it is Java (can compile with Java). 
  * 
  * @author Igor Urisman
- * @since 0.5
+ * @since 0.6
  */
 public class VariantClient {
 	
-	private Variant core;
+	private VariantCore core;
 	
 	// Cache most recently returned session for idempotency.
-	VariantSession lastSession = null;
+	VariantClientSession lastSession = null;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                         PACKAGE                                             //
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Expose Core API to tests.
-	 * @return
+	 * <p>Expose Core API to tests.
+	 * 
+	 * @return Core API Object.
+	 * @since 0.5
 	 */
-	Variant getCoreApi() {
+	VariantCore getCoreApi() {
 		return core;
 	}
 
@@ -51,41 +50,40 @@ public class VariantClient {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Obtain an instance of Variant client. Can be held on to and reused for the life of the JVM.
+	 * <p>Instantiate an instance of Variant client. Should be held on to and reused for the life of the JVM.
+	 * Not thread safe: the host application should not use more than one of these at a time.
 	 * 
-	 * @param See {@link Variant.Factory#getInstance(String...)}
-	 * @returns An instance of {@link VariantClient};
-	 * @since 0.5
+	 * @since 0.6
 	 */
 	public VariantClient(String...resourceNames) {
-		this.core = Variant.Factory.getInstance(
+		this.core = new VariantCore(
 				VariantArrayUtils.concat(
 						resourceNames,
 						"/variant/client." + VariantStringUtils.RESOURCE_POSTFIX + ".props",
 						String.class));
-		((VariantCoreImpl)this.core).getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.0");
+		((VariantCore)this.core).getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.0");
 
 	}
 
 	/**
 	 * <p>This API's application properties
 	 * 
-	 * @return An instance of the {@link VariantProperties} type.
+	 * @return An instance of the {@link CoreProperties} type.
 	 * 
 	 * @since 0.6
 	 */
-	public VariantProperties getProperties() {
+	public CoreProperties getProperties() {
 		return core.getProperties();
 	}
 
 	/**
-	 * <p>Register a {@link com.variant.core.hook.HookListener}. 
+	 * <p>Register a {@link HookListener}.
 	 * See {@link Variant#addHookListener(HookListener)} for details.
 	 * 
 	 * @param listener An instance of a caller-provided implementation of the 
 	 *        {@link com.variant.core.hook.HookListener} interface.
 	 *        
-	 * @since 0.5
+	 * @since 0.6
 	 */
 	public void addHookListener(HookListener<?> listener) {
 		core.addHookListener(listener);
@@ -153,8 +151,8 @@ public class VariantClient {
 		
 		com.variant.core.VariantSession coreSession = core.getSession(httpRequest, httpResponse);
 		
-		VariantSession result = lastSession != null && lastSession.getCoreSession().equals(coreSession) ? 
-				lastSession : new VariantSession(coreSession);
+		VariantClientSession result = lastSession != null && lastSession.getCoreSession().equals(coreSession) ? 
+				lastSession : new VariantClientSession(coreSession);
 		
 		lastSession = result;
 		return result;

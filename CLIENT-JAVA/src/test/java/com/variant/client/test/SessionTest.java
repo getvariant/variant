@@ -13,12 +13,11 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.variant.client.impl.ClientStateRequestWrapper;
+import com.variant.client.impl.VariantClientSession;
 import com.variant.client.mock.HttpServletResponseMock;
-import com.variant.client.ClientStateRequestWrapper;
-import com.variant.client.VariantSession;
-import com.variant.client.VariantSessionTestFacade;
+import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.impl.VariantCoreImplTestFacade;
 import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -65,8 +64,7 @@ public class SessionTest extends BaseTestClient {
 		final HttpServletResponseMock httpResp = mockHttpServletResponse();
 
 		final VariantSession ssn1 = client.getSession(httpReq, httpResp);
-		final VariantCoreImplTestFacade coreFacade = new VariantCoreImplTestFacade(coreApi);
-		coreFacade.getSessionService().saveSession(VariantSessionTestFacade.getCoreSession(ssn1), httpReq);     // succeeds
+		coreApi.getSessionService().saveSession(((VariantClientSession)ssn1).getCoreSession(), httpReq);     // succeeds
 		String oldSchemaId = client.getSchema().getId();
 		
 		// replace the schema and the session save should fail.
@@ -76,7 +74,7 @@ public class SessionTest extends BaseTestClient {
 		assertNull(response.highestMessageSeverity());
 		
 		new VariantRuntimeExceptionInterceptor() {
-			@Override public void toRun() { coreFacade.getSessionService().saveSession(VariantSessionTestFacade.getCoreSession(ssn1), httpReq); }
+			@Override public void toRun() { coreApi.getSessionService().saveSession(((VariantClientSession)ssn1).getCoreSession(), httpReq); }
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_REPLACED, getSchema().getId(), oldSchemaId);
 	}
 

@@ -1,11 +1,9 @@
-package com.variant.server.config
+package com.variant.server.boot
 
 import net.liftweb.http.LiftRules
 import net.liftweb.http.S
 import com.variant.server.dispatch.Dispatcher
 import net.liftweb.http.Bootable
-import com.variant.core.Variant
-import com.variant.server.core.VariantCore
 import net.liftweb.http.provider.HTTPParam
 import net.liftweb.http.Req
 import com.typesafe.scalalogging.LazyLogging
@@ -38,7 +36,7 @@ class LiftBoot extends Bootable with LazyLogging {
             ("Access-Control-Allow-Credentials", "true")
          ))
        
-      VariantCore.init()
+      ServerBoot.init()
       
       logger.info("Variant Server 0.6.0 listening on " + LiftRules.context.path + "/")
   }

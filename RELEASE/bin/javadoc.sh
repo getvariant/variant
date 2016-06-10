@@ -25,6 +25,7 @@ javadoc -d ${javadoc_dir}  \
    -bottom "$version <br/> Copyright &copy; 2015-2016 Variant" \
    com.variant.core                 \
    com.variant.core.event           \
+   com.variant.core.ext             \
    com.variant.core.hook            \
    com.variant.core.schema          \
    com.variant.core.schema.parser   \

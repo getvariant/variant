@@ -1,4 +1,4 @@
-package com.variant.client.adapter;
+package com.variant.client.servlet.adapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,10 +16,10 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.StateSelectorByRequestPath;
 import com.variant.client.VariantClient;
+import com.variant.client.impl.StateSelectorByRequestPath;
 import com.variant.client.util.VariantWebUtils;
-import com.variant.client.VariantSession;
+import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;

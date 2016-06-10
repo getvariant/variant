@@ -1,7 +1,6 @@
 name := "Variant Server"
-
-version := "0.6.0"
-
+val coreVersion = "0.6.1"
+version := coreVersion
 organization := "com.variant"
 
 scalaVersion := "2.11.5"
@@ -21,7 +20,6 @@ scalacOptions ++= Seq("-deprecation", "-unchecked")
 
 libraryDependencies ++= {
   val liftVersion = "2.6.2"
-  val variantVersion = scala.util.Properties.envOrElse("VARIANT_VERSION", "UNSET")
   
   Seq(
     "net.liftweb"       %% "lift-webkit"        % liftVersion        % "compile",
@@ -43,11 +41,11 @@ libraryDependencies ++= {
     "org.apache.httpcomponents" % "httpcore"            % "4.4.4",
     
     // Variant
-    "com.variant"               % "variant-core"        % variantVersion
+    "com.variant"               % "variant-core"        % coreVersion
   )
 }
 
-//parallelExecution in Test := false            // Run suites one at a time because there's only one Jetty instance per JVM -- does not seem to work
+//parallelExecution in Test := false          // Run suites one at a time because there's only one Jetty instance per JVM -- does not seem to work
 testOptions in Test += Tests.Argument("-oF")  // Do not truncate stack traces.
 scalacOptions in Test ++= Seq("-Yrangepos")   // ?
 EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource // Tells sbteclipse to include reource dirs in eclipse classpaths.

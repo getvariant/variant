@@ -8,10 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.InitializationParams;
-import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
+import com.variant.core.impl.CoreProperties;
 import com.variant.core.session.VariantSessionImpl;
-import com.variant.server.core.VariantCore;
+import com.variant.server.boot.ServerBoot;
 
 /**
  * Sessions are stored serialized as JSON strings because most of the time
@@ -45,7 +45,7 @@ public class SessionCache {
 			
 			// Session expiration interval is defined in the session.store.class.init map
 			// and is also used by the client.
-			InitializationParams params = VariantCore.api().getProperties().get(VariantProperties.Key.SESSION_STORE_CLASS_INIT, InitializationParams.class);
+			InitializationParams params = ServerBoot.core().getProperties().get(CoreProperties.Key.SESSION_STORE_CLASS_INIT, InitializationParams.class);
 			sessionTimeoutMillis = (Integer) params.getOr("sessionTimeoutSecs",  new Integer(15 * 60) /*15 min default*/) * 1000;
 			// Vacuuming frequency is same place but only used on the server.
 			vacuumingFrequencyMillis = (Integer) params.getOr("vacuumingFrequencySecs",  new Integer(60) /*1 min default*/)  * 1000;
@@ -149,7 +149,7 @@ public class SessionCache {
 		public VariantSession getSession() {
 			if (session == null && json != null) {
 				//session = new SessionServerWrapper(VariantSessionImpl.fromJson(VariantCore.api(), new String(json)));
-				session = VariantSessionImpl.fromJson(VariantCore.api(), new String(json));
+				session = VariantSessionImpl.fromJson(ServerBoot.core(), new String(json));
 			}
 			return session;
 		}

@@ -1,4 +1,4 @@
-package com.variant.client.adapter;
+package com.variant.client.servlet.adapter;
 
 import java.util.Random;
 

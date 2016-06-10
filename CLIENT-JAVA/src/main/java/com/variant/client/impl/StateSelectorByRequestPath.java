@@ -1,4 +1,4 @@
-package com.variant.client;
+package com.variant.client.impl;
 
 import java.util.regex.Pattern;
 
@@ -61,7 +61,7 @@ public class StateSelectorByRequestPath  {
 	 * This implements the whole path matching logic.
 	 * Package visibility to expose to tests.
 	 */
-	static boolean match(String pattern, String string) {
+	public static boolean match(String pattern, String string) {
 
 		if (!pattern.startsWith("/")) throw new VariantInternalException("Pattern must start with [/] but was [" + pattern + "]");
 		if (!string.startsWith("/")) throw new VariantInternalException("String must start with [/] but was [" + string + "]");

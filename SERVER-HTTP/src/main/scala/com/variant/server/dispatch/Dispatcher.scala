@@ -4,7 +4,7 @@ import java.io.OutputStream
 import java.util.Date
 import com.variant.core.session.VariantSessionImpl
 import com.variant.server.SessionCache
-import com.variant.server.config.UserError
+import com.variant.server.boot.UserError
 import net.liftweb.common.Box
 import net.liftweb.common.EmptyBox
 import net.liftweb.common.Full
@@ -22,7 +22,6 @@ import net.liftweb.common.Empty
 import net.liftweb.http.OkResponse
 import net.liftweb.http.OkResponse
 import net.liftweb.http.OkResponse
-import com.variant.server.core.VariantCore
 import com.variant.server.RemoteEvent
 import net.liftweb.http.NoContentResponse
 import com.typesafe.scalalogging.LazyLogging

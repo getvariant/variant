@@ -13,12 +13,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.variant.client.VariantClient;
-import com.variant.client.VariantWebnativeTestFacade;
-import com.variant.client.adapter.SessionIdTrackerHttpCookie;
+import com.variant.client.VariantClientTestFacade;
 import com.variant.client.mock.HttpServletRequestMock;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.mock.HttpSessionMock;
-import com.variant.core.impl.VariantCoreImpl;
+import com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.Schema;
 import com.variant.core.test.BaseTestCommon;
@@ -31,7 +31,7 @@ public abstract class BaseTestClient extends BaseTestCommon {
 	private static Boolean sqlSchemaCreated = false;
 
 	protected VariantClient client = null;
-	protected VariantCoreImpl coreApi = null;
+	protected VariantCore coreApi = null;
 	
 	/**
 	 * Each case runs in its own JVM. Each test runs in its
@@ -42,8 +42,9 @@ public abstract class BaseTestClient extends BaseTestCommon {
 	 */
 	@Before
 	public void _beforeTestCase() throws Exception {
-		client = rebootApi();                 // in each instance 
-		coreApi = (VariantCoreImpl) VariantWebnativeTestFacade.getCoreApi(client);
+		client = rebootApi();               // in each instance 
+		coreApi = VariantClientTestFacade.getCoreApi(client);
+		
 		synchronized (sqlSchemaCreated) {  // once per JVM
 			if (!sqlSchemaCreated) {
 				recreateSchema();

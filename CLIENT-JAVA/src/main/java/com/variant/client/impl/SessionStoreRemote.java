@@ -1,4 +1,4 @@
-package com.variant.client;
+package com.variant.client.impl;
 
 import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET;
 
@@ -12,12 +12,13 @@ import com.variant.client.http.HttpClient;
 import com.variant.client.http.HttpResponse;
 import com.variant.client.http.VariantHttpClientException;
 import com.variant.core.InitializationParams;
-import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.impl.CoreProperties;
+import com.variant.core.impl.InitializationParamsImpl;
 import com.variant.core.impl.VariantComptime;
-import com.variant.core.impl.VariantCoreImpl;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.session.VariantSessionImpl;
 
 public class SessionStoreRemote implements VariantSessionStore {
@@ -26,7 +27,7 @@ public class SessionStoreRemote implements VariantSessionStore {
 	
 	private static final String LOCAL_KEY = "variant-session";
 	private String apiEndpointUrl = null;
-	private VariantCoreImpl coreApi;
+	private VariantCore coreApi;
 	private long sessionTimeoutMillis;
 
 	/**
@@ -107,14 +108,14 @@ public class SessionStoreRemote implements VariantSessionStore {
 
 		apiEndpointUrl = (String) initParams.getOrThrow(
 				"apiEndpoint", 
-				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), VariantProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
+				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), CoreProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
 		
 		sessionTimeoutMillis = (Integer) initParams.getOr("sessionTimeoutSecs",  "900") * 1000;
 		
-		coreApi = (VariantCoreImpl) initParams.getCoreApi();
+		coreApi = ((InitializationParamsImpl)initParams).getCoreApi();
 		
 		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) {
-			apiEndpointUrl = coreApi.getProperties().get(VariantProperties.Key.SERVER_ENDPOINT_URL);
+			apiEndpointUrl = coreApi.getProperties().get(CoreProperties.Key.SERVER_ENDPOINT_URL);
 		}
 		if (!apiEndpointUrl.endsWith("/")) apiEndpointUrl += "/";
 	}
