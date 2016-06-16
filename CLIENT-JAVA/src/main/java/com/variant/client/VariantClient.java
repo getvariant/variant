@@ -2,20 +2,13 @@ package com.variant.client;
 
 import java.io.InputStream;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.variant.client.impl.VariantClientSession;
-import com.variant.core.VariantSession;
+import com.variant.client.impl.VariantClientImpl;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.hook.HookListener;
-import com.variant.core.impl.CoreProperties;
-import com.variant.core.impl.VariantComptime;
-import com.variant.core.impl.VariantCore;
+import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.util.VariantArrayUtils;
-import com.variant.core.util.VariantStringUtils;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
@@ -24,57 +17,16 @@ import com.variant.core.util.VariantStringUtils;
  * @author Igor Urisman
  * @since 0.6
  */
-public class VariantClient {
-	
-	private VariantCore core;
-	
-	// Cache most recently returned session for idempotency.
-	VariantClientSession lastSession = null;
-	
-	//---------------------------------------------------------------------------------------------//
-	//                                         PACKAGE                                             //
-	//---------------------------------------------------------------------------------------------//
-
-	/**
-	 * <p>Expose Core API to tests.
-	 * 
-	 * @return Core API Object.
-	 * @since 0.5
-	 */
-	VariantCore getCoreApi() {
-		return core;
-	}
-
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
-
-	/**
-	 * <p>Instantiate an instance of Variant client. Should be held on to and reused for the life of the JVM.
-	 * Not thread safe: the host application should not use more than one of these at a time.
-	 * 
-	 * @since 0.6
-	 */
-	public VariantClient(String...resourceNames) {
-		this.core = new VariantCore(
-				VariantArrayUtils.concat(
-						resourceNames,
-						"/variant/client." + VariantStringUtils.RESOURCE_POSTFIX + ".props",
-						String.class));
-		((VariantCore)this.core).getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.0");
-
-	}
-
+public interface VariantClient {
+		
 	/**
 	 * <p>This API's application properties
 	 * 
-	 * @return An instance of the {@link CoreProperties} type.
+	 * @return An instance of the {@link CorePropertiesImpl} type.
 	 * 
 	 * @since 0.6
 	 */
-	public CoreProperties getProperties() {
-		return core.getProperties();
-	}
+	public VariantProperties getProperties();
 
 	/**
 	 * <p>Register a {@link HookListener}.
@@ -85,18 +37,14 @@ public class VariantClient {
 	 *        
 	 * @since 0.6
 	 */
-	public void addHookListener(HookListener<?> listener) {
-		core.addHookListener(listener);
-	}
+	public void addHookListener(HookListener<?> listener);
 	
 	/**
 	 * <p>Remove all previously registered (with {@link #addHookListener(HookListener)} listeners.
 	 * 
 	 * @since 0.5
 	 */
-	public void clearHookListeners() {
-		core.clearHookListeners();
-	}
+	public void clearHookListeners();
 
 	/**
 	 * <p>Parse and, if no errors, optionally deploy a new experiment schema.
@@ -110,9 +58,7 @@ public class VariantClient {
 	 * 
 	 * @since 0.5
 	 */
-	public ParserResponse parseSchema(InputStream stream, boolean deploy) {		
-		return core.parseSchema(stream, deploy);
-	}
+	public ParserResponse parseSchema(InputStream stream, boolean deploy);
 
 	/**
 	 * <p>Parse and, if no errors, deploy a new experiment schema.  Same as 
@@ -120,14 +66,12 @@ public class VariantClient {
      * 
 	 * @param stream The schema to be parsed and deployed, as a java.io.InputStream.
 	 *         
-	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} object, which
+	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} type, which
 	 *         may be further examined about the outcome of this operation.
      *
 	 * @since 0.5
 	 */
-	public ParserResponse parseSchema(InputStream stream) {
-		return core.parseSchema(stream);
-	}
+	public ParserResponse parseSchema(InputStream stream);
 
 	/**
 	 * <p>Get currently deployed test schema, if any.
@@ -136,26 +80,47 @@ public class VariantClient {
 	 * 
 	 * @since 0.5
 	 */
-	public Schema getSchema() {
-		return core.getSchema();
-	}
+	public Schema getSchema();
 
 	/**
 	 * <p>Get user's Variant session.
 	 * 
-	 * @param httpRequest Current <code>HttpServletRequest</code>.
+	 * @param userData
 	 * @since 0.5
 	 * @return
 	 */
-	public VariantSession getSession(HttpServletRequest httpRequest, HttpServletResponse httpResponse) {
-		
-		com.variant.core.VariantSession coreSession = core.getSession(httpRequest, httpResponse);
-		
-		VariantClientSession result = lastSession != null && lastSession.getCoreSession().equals(coreSession) ? 
-				lastSession : new VariantClientSession(coreSession);
-		
-		lastSession = result;
-		return result;
-	}
+	public VariantCoreSession getSession(Object... userData);
 			
+	
+	/**
+	 * <p>Factory class
+	 * @author Igor Urisman
+	 *
+	 */
+	public static class Factory {
+		
+		/**
+		 * <p>Instantiate an instance of Variant client. Takes 0 or more of String arguments. 
+		 * If supplied, each argument is understood as a Java class path resource name. Each 
+		 * resource is expected to contain a set of application properties, as specified by 
+		 * Java's Properties.load() method. When VariantClient needs to look up a property
+		 * value, these files are scanned left to right and the first value found is used. 
+		 * If a value wasn't found in any of the supplied files, or if no files were supplied, 
+		 * a default is used.
+		 * 
+		 * <p>Host application should hold on to and reuse the object returned by this method.
+		 * Not thread safe: the host application should not use more than one of these at a time.
+		 * 
+		 * @param  0 or more classpath resource names.
+		 * @return Instance of the {@link VariantClient} type
+		 * @since 0.6
+		 */
+		public VariantClient getInstance(String...resourceNames) {
+			
+			return new VariantClientImpl(resourceNames);
+		}
+
+	}
+		
+	
 }

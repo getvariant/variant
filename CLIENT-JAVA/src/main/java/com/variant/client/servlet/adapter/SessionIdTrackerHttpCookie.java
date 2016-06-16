@@ -8,77 +8,80 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.util.VariantCookie;
-import com.variant.core.InitializationParams;
-import com.variant.core.VariantSessionIdTracker;
+import com.variant.client.VariantInitParams;
+import com.variant.client.VariantSessionIdTracker;
+import com.variant.client.servlet.util.VariantCookie;
 import com.variant.core.util.VariantStringUtils;
 
 /**
  * HTTP Cookie based session ID tracker. Session ID is saved in an HTTP cookie.
  * Use HTTP request object to cache a pending session ID. In other words, if
  * there's no vrnt-ssnid cookie and we've genned a random number, save that in
- * request, so that we can reuse it on a subsequent request from with the same
+ * request, so that we can reuse it on a subsequent request with the same
  * HTTP request.
  * 
- *
  * @author Igor Urisman
- * @since 0.6
+ * @since 0.5
  */
 public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 		
-	public static final String COOKIE_NAME = "vrnt-ssnid";
-
 	private static final Logger LOG = LoggerFactory.getLogger(SessionIdTrackerHttpCookie.class);
 	private static final Random rand = new Random(System.currentTimeMillis());
 	
+	private SsnIdCookie cookie = null;
+
+	private void _initialized(HttpServletRequest request) {
+
+		cookie = new SsnIdCookie(request);
+		if (cookie == null || cookie.getValue() == null) {
+			cookie = new SsnIdCookie(VariantStringUtils.random64BitString(rand));
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Created new variant session ID [" + cookie.getValue() + "] for HTTP session [" + request.getSession().getId());
+			}
+		}
+		else {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Retrieved existing variant session ID [" + cookie.getValue() + "] for HTTP session [" + request.getSession().getId());
+			}			
+		}
+	}
+
+	private void _save(HttpServletResponse response) {
+		cookie.send(response);		
+	}
+
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+	
+	public static final String COOKIE_NAME = "vrnt-ssnid";
+
 	/**
 	 * No-argument constructor must be provided by contract.
 	 */
 	public SessionIdTrackerHttpCookie() {}
 
-	@Override
-	public void initialized(InitializationParams initParams) throws Exception {}
-
-	@Override
-	public void shutdown() {}
-	
-	/**
-	 * We expect caller to pass 2 arguments: <code>HttpServletRequest</code>
-	 * and <code>HttpServletResponse</code>. If the cookie did not exist, create
-	 * it and add the cookie to the response.
-	 * 
+	/** 
 	 * @return session Id.
 	 */
 	@Override
-	public String get(Object...userData) {
-		
+	public void initialized(VariantInitParams initParams, Object... userData) throws Exception {
 		HttpServletRequest request = (HttpServletRequest) userData[0];
-		HttpServletResponse response = (HttpServletResponse) userData[1];
-		
-		// Check the VRNT-SSNID cookie first.  If there - we're done.
-		String result = new SsnIdCookie(request).getValue();
-		if (result == null) {
-			// If not in the cookie, check in the HTTP request, in case this is not the
-			// first client call and we don't want to create a different session ID.
-			result = (String) request.getAttribute(COOKIE_NAME);
-			if (result == null) {
-				// Still nothing. Really create.
-				result = VariantStringUtils.random64BitString(rand);
-				SsnIdCookie cookie = new SsnIdCookie();
-				cookie.setValue(result);
-				cookie.send(response);
-				request.setAttribute(COOKIE_NAME, result);
-			}
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Created new variant session ID [" + result + "] for HTTP session [" + request.getSession().getId());
-			}
-		}
-		else {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Retrieved existing variant session ID [" + result + "] for HTTP session [" + request.getSession().getId());
-			}			
-		}
-		return result;
+		_initialized(request);
+	}
+	
+	public String get() {
+		return cookie.getValue();
+	}
+
+	/**
+	 * We expect one 
+	 * @param userData
+	 */
+	@Override
+	public void save(Object... userData) {
+		HttpServletResponse response = (HttpServletResponse) userData[0];
+		_save(response);
 	}
 
 	/**
@@ -86,11 +89,12 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	 */
 	private static class SsnIdCookie extends VariantCookie {
 
-		private SsnIdCookie() {
+		SsnIdCookie(String sid) {
 			super(COOKIE_NAME);
+			super.setValue(sid);
 		}
 		
-		private SsnIdCookie(HttpServletRequest request) {
+		SsnIdCookie(HttpServletRequest request) {
 			super(COOKIE_NAME, request);
 		}
 
@@ -103,4 +107,5 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 		}
 		
 	}
+
 }

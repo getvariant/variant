@@ -22,29 +22,23 @@ public interface VariantSessionStore {
 	 * 
 	 * @since 0.5
 	 */
-	public void initialized(InitializationParams initParams) throws Exception ;
+	public void initialized(VariantCoreInitParams initParams) throws Exception ;
 
 	/**
 	 * Get a session from the store by its ID. 
 	 * @param sessionId The ID of the session of interest.
-	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#getSession(Object...)} 
-	 *                 will pass here without interpretation.
-	 * @return An instance of {@link VariantSession} if session with this ID was
+	 * @return An instance of {@link VariantCoreSession} if session with this ID was
 	 *         found in the store, or null if not.
 	 * @since 0.5
 	 */
-	public VariantSession get(String sessionId, Object...userData) throws VariantException;
+	public VariantCoreSession get(String sessionId) throws VariantException;
 
 	/**
 	 * Save the session.
 	 * @param session The session to be saved in the store.
-	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...)} 
-	 *                 will pass here without interpretation. 
 	 * @since 0.5
 	 */
-	public void save(VariantSession session, Object...userData) throws VariantException;	
+	public void save(VariantCoreSession session) throws VariantException;	
 		
 	/**
 	 * Shutdown this session store. Releases all resources. All subsequent calls to this session store will

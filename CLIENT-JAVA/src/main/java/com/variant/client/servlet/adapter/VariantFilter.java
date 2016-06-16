@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.VariantClient;
 import com.variant.client.impl.StateSelectorByRequestPath;
-import com.variant.client.util.VariantWebUtils;
-import com.variant.core.VariantSession;
+import com.variant.client.servlet.util.VariantWebUtils;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
@@ -106,7 +106,7 @@ public class VariantFilter implements Filter {
 		
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		VariantSession variantSsn = null; 
+		VariantCoreSession variantSsn = null; 
 		VariantStateRequest variantRequest = null;
 		
 		long start = System.currentTimeMillis();

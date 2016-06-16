@@ -1,35 +1,65 @@
-package com.variant.core.ext;
+package com.variant.client.servlet.util;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantSession;
+import com.variant.client.VariantTargetingTracker;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.VariantSessionImpl;
 
 /**
- * Emulates targeting persister that is tracked by a cookie,
- * i.e. in an off-board string.
- * 
- * Entries in the string are organized as follows:
+ * Targeting tracker trait that knows how to marshal a collection of experience entries
+ * to and from string.  Each experience entry also has a timestamp. Entries in the string 
+ * are organized as follows:
  * 1234567:test:expereince|1234567:test:experience ...
  * 
  * @author Igor
  *
  */
-public class TargetingTrackerString extends TargetingTrackerSupport {
+public abstract class TargetingTrackerString implements VariantTargetingTracker {
 
 	private Logger LOG = LoggerFactory.getLogger(TargetingTrackerString.class);
 	
+	public static class EntryImpl implements VariantTargetingTracker.Entry {
+		
+		private Experience experience;
+		private long timestamp;
+		
+		private EntryImpl(Experience experience, long timestamp) { 
+			this.experience = experience;
+			this.timestamp = timestamp;
+		}
+		
+		/**
+		 */
+		@Override
+		public Experience getExperience() {return experience;}
+		
+		/**
+		 */
+		@Override
+		public long getTimestamp() {return timestamp;}
+		
+		@Override
+		public String toString() {
+			return timestamp + "." + experience.getTest().getName() + "." + experience.getName();
+		}
+	}
+
 	/**
 	 * Parse the content from an input string.
 	 * @param input
 	 * @param ssn
 	 */
-	private void parseFromString(VariantSession ssn, String input) {
+	public Collection<Entry> fromString(String input, Schema schema) {
 				
+		Collection<Entry> result = new ArrayList<Entry>();
+		
 		for (String entry: input.split("\\|")) {
 			
 			if (entry != null) {
@@ -40,7 +70,7 @@ public class TargetingTrackerString extends TargetingTrackerSupport {
 				String[] tokens = entry.split("\\.");
 				if (tokens.length == 3) {
 					try {
-						Test test = ((VariantSessionImpl)ssn).getCoreApi().getSchema().getTest(tokens[1]);
+						Test test = schema.getTest(tokens[1]);
 						if (test == null) {
 							if (LOG.isDebugEnabled()) {
 								LOG.debug("Ignored non-existent test [" + tokens[1] + "]");
@@ -65,51 +95,38 @@ public class TargetingTrackerString extends TargetingTrackerSupport {
 							continue;
 						}
 						
-						add(experience, timestamp);
+						result.add(new EntryImpl(experience, timestamp));
 					}
 					catch (Exception e) {
 						// any parsing error is due to end user's mucking with the string...
 						if (LOG.isDebugEnabled()) {
-							LOG.debug("Unable to parse entry [" + entry + "] for session [" + ssn.getId() + "]", e);
+							LOG.debug("Unable to parse entry [" + entry + "]", e);
 						}
 					}
 				}
 				else {
-					if (LOG.isDebugEnabled()) {
-						LOG.debug("Unable to parse entry [" + entry + "] for session [" + ssn.getId() + "]");
+					if (LOG.isInfoEnabled()) {
+						LOG.info("Unable to parse entry [" + entry + "]");
 					}					
 				}
 			}
 		}
+		
+		return result;
 	}
 	
-	@Override
-	public void save(Object...userData) {
-		// Nothing to do - in memory only.
-	}
-
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
-
 	/**
 	 * 
 	 */
-	@Override
-	public void initialized(VariantSession session, Object...userData) { 
-		parseFromString(session, (String) userData[0]);
-	}
-
-	@Override
-	public String toString() {
+	public String toString(Collection<Entry> entries) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
-		for (Entry e: entryMap.values()) {
+		for (Entry e: entries) {
 			if (first) first = false;
 			else sb.append("|");
-			sb.append(e.getTimestamp()).append(".").append(e.getExperience());
+			sb.append(e);
 		}
 		return sb.toString();
 	}
-	
+
 }

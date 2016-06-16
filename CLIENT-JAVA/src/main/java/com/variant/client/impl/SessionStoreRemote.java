@@ -2,8 +2,6 @@ package com.variant.client.impl;
 
 import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,24 +9,23 @@ import org.slf4j.LoggerFactory;
 import com.variant.client.http.HttpClient;
 import com.variant.client.http.HttpResponse;
 import com.variant.client.http.VariantHttpClientException;
-import com.variant.core.InitializationParams;
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreInitParams;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.CoreProperties;
-import com.variant.core.impl.InitializationParamsImpl;
+import com.variant.core.impl.CorePropertiesImpl;
+import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.session.VariantSessionImpl;
+import com.variant.core.impl.VariantCoreInitParamsImpl;
 
 public class SessionStoreRemote implements VariantSessionStore {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SessionStoreRemote.class);
 	
-	private static final String LOCAL_KEY = "variant-session";
 	private String apiEndpointUrl = null;
 	private VariantCore coreApi;
-	private long sessionTimeoutMillis;
+	private long sessionTimeoutMillis;  // dont need on client.
 
 	/**
 	 * GET or create session by ID.
@@ -36,64 +33,42 @@ public class SessionStoreRemote implements VariantSessionStore {
 	 * does not understand schemas. To avoid an extra trip to the server, we'll
 	 * pre-create a blank session and send it in the body of the GET request,
 	 * 
-	 * We cash variant session in http request for idempotency, i.e. subsequent
-	 * calls to this method with the same arguments will return exact same object.
-	 * 
 	 * @since 0.6
 	 */
 	@Override
-	public VariantSession get(String sessionId, Object... userData) {
+	public VariantCoreSession get(String sessionId) {
 
 		if (sessionId == null || sessionId.length() == 0) {
 			throw new IllegalArgumentException("No session ID");
 		}
-		
-		HttpServletRequest httpReq = (HttpServletRequest) userData[0];
-		
-		// Try local cache first.
-		VariantSession result = (VariantSession) httpReq.getAttribute(LOCAL_KEY);
-		if (result != null) {
-			if (System.currentTimeMillis() - result.creationTimestamp() < sessionTimeoutMillis) {
-				if (LOG.isTraceEnabled()) {
-					LOG.trace("Local session cache hit for ID [" + sessionId + "]");
-				}
-				return result;
-			}
-		}
-		
+						
 		HttpClient httpClient = new HttpClient();
 		HttpResponse resp = httpClient.get(apiEndpointUrl + "session/" + sessionId);
 
 		if (resp.getStatus() == HttpStatus.SC_OK) {
-			result = VariantSessionImpl.fromJson(coreApi, resp.getBody());
+			return CoreSessionImpl.fromJson(coreApi, resp.getBody());
 		}
 		else if (resp.getStatus() == HttpStatus.SC_NO_CONTENT) {
-			result = new VariantSessionImpl(coreApi, sessionId);
-			save(result, userData);
+			return null;
 		}
 		else {
 			throw new VariantHttpClientException(resp);
 		}
-		return result;
 	}
 
 	/**
 	 * Save the session in the remote server.
 	 */
 	@Override
-	public void save(VariantSession session, Object... userData) {
+	public void save(VariantCoreSession session) {
 
 		if (session == null) {
 			throw new IllegalArgumentException("No session");
 		}
-
-		// Write through local cache.
-		HttpServletRequest httpReq = (HttpServletRequest) userData[0];
-		httpReq.setAttribute(LOCAL_KEY, session);
 		
 		// Remote
 		HttpClient httpClient = new HttpClient();
-		HttpResponse resp = httpClient.put(apiEndpointUrl + "session/" + session.getId(), ((VariantSessionImpl)session).toJson());
+		HttpResponse resp = httpClient.put(apiEndpointUrl + "session/" + session.getId(), ((CoreSessionImpl)session).toJson());
 		
 		if (resp.getStatus() != HttpStatus.SC_OK) {
 			throw new VariantHttpClientException(resp);
@@ -104,18 +79,18 @@ public class SessionStoreRemote implements VariantSessionStore {
 	 * 
 	 */
 	@Override
-	public void initialized(InitializationParams initParams) throws Exception {
+	public void initialized(VariantCoreInitParams initParams) throws Exception {
 
 		apiEndpointUrl = (String) initParams.getOrThrow(
 				"apiEndpoint", 
-				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), CoreProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
+				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), CorePropertiesImpl.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
 		
 		sessionTimeoutMillis = (Integer) initParams.getOr("sessionTimeoutSecs",  "900") * 1000;
 		
-		coreApi = ((InitializationParamsImpl)initParams).getCoreApi();
+		coreApi = ((VariantCoreInitParamsImpl)initParams).getCoreApi();
 		
 		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) {
-			apiEndpointUrl = coreApi.getProperties().get(CoreProperties.Key.SERVER_ENDPOINT_URL);
+			apiEndpointUrl = coreApi.getProperties().get(CorePropertiesImpl.Key.SERVER_ENDPOINT_URL);
 		}
 		if (!apiEndpointUrl.endsWith("/")) apiEndpointUrl += "/";
 	}

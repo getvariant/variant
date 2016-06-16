@@ -10,7 +10,7 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * Represents a state request, as instantiated by {@link com.variant.core.Variant#targetForState(VariantSession, State, Object)}.
+ * Represents a state request, as instantiated by {@link com.variant.core.Variant#targetForState(VariantCoreSession, State, Object)}.
  * 
  * @author Igor Urisman
  * @since 0.6
@@ -21,14 +21,14 @@ public interface VariantStateRequest {
 	/**
 	 * This request's Variant session.
 	 * 
-	 * @return Variant session as an instance of {@link com.variant.core.VariantSession}.
+	 * @return Variant session as an instance of {@link com.variant.core.VariantCoreSession}.
 	 * @since 0.6
 	 */
-	public VariantSession getSession();
+	public VariantCoreSession getSession();
 	
 	/**
 	 * The state for which this request was generated, i.e. that was passed to 
-	 * {@link com.variant.core.Variant#targetForState(VariantSession, State, Object)}.
+	 * {@link com.variant.core.Variant#targetForState(VariantCoreSession, State, Object)}.
 	 * 
 	 * @return State as an instance of {@link com.variant.core.schema.State}
 	 * @since 0.6
@@ -56,8 +56,11 @@ public interface VariantStateRequest {
 	 * 
 	 * @return An instance of type  {@link com.variant.core.VariantTargetingTracker}.
 	 * @since 0.6
-	 */
+	 *
 	public VariantTargetingTracker getTargetingTracker();
+	should live in session because we say that session scoped targeting stability is automatically guaranteed.
+	should probably live on client.
+	*/
 
 	/**
 	 * Get all targeted experiences from active tests. A test is active if it has been
@@ -106,8 +109,8 @@ public interface VariantStateRequest {
      * 
 	 * @param request The state request to be committed.
 	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
-	 *                 to the implementations of {@link com.variant.core.VariantSessionIdTracker#save(String, Object...)}
-	 *                 and {@link com.variant.core.VariantSessionStore#save(VariantSession, Object...)}.
+	 *                 to the implementations of {@link com.variant.client.VariantSessionIdTracker#save(String, Object...)}
+	 *                 and {@link com.variant.core.VariantSessionStore#save(VariantCoreSession, Object...)}.
      *
 	 * @since 0.6
 	 */

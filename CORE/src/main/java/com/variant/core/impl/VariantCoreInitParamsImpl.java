@@ -3,10 +3,10 @@ package com.variant.core.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.variant.core.InitializationParams;
+import com.variant.core.VariantCoreInitParams;
 import com.variant.core.exception.VariantRuntimeException;
 
-public class InitializationParamsImpl extends HashMap<String, Object> implements InitializationParams {
+public class VariantCoreInitParamsImpl extends HashMap<String, Object> implements VariantCoreInitParams {
 		
 	/**
 	 */
@@ -18,8 +18,9 @@ public class InitializationParamsImpl extends HashMap<String, Object> implements
 	 * @param coreApi
 	 * @param map
 	 */
-	InitializationParamsImpl(VariantCore coreApi, Map<String,String> map) {
-		super(map);
+	@SuppressWarnings("unchecked")
+	protected VariantCoreInitParamsImpl(VariantCore coreApi, CorePropertiesImpl.Key key) {
+		super(coreApi.getProperties().get(key, Map.class));
 		this.coreApi = coreApi;
 	}
 	

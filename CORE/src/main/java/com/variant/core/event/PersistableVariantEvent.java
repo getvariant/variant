@@ -2,7 +2,7 @@ package com.variant.core.event;
 
 import java.util.Collection;
 
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -26,7 +26,7 @@ public interface PersistableVariantEvent extends VariantEvent {
 	 * 
 	 * @since 0.6
 	 */
-	public VariantSession getSession();
+	public VariantCoreSession getSession();
 	
 	/**
 	 * <p>Test experiences that:

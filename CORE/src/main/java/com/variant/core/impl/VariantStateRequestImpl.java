@@ -10,9 +10,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.VariantSession;
+import com.variant.client.VariantTargetingTracker;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.VariantTargetingTracker;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.exception.VariantInternalException;
@@ -23,7 +23,6 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.impl.StateImpl;
-import com.variant.core.session.VariantSessionImpl;
 import com.variant.core.srvstub.TestExperienceServerStub;
 
 /**
@@ -38,7 +37,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private VariantSessionImpl session;	
+	private CoreSessionImpl session;	
 	private State state;
 	private Status status = Status.OK;
 	private Map<String,String> resolvedParameterMap;
@@ -56,7 +55,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	 * Regular constructor
 	 * @param session
 	 */
-	VariantStateRequestImpl(VariantSessionImpl session, StateImpl state) {
+	VariantStateRequestImpl(CoreSessionImpl session, StateImpl state) {
 		this.session = session;
 		this.state = state;
 		session.setStateRequest(this);
@@ -64,12 +63,12 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 
 	/**
 	 * Transitional server side constructor that has state name instead
-	 * of the fully instantiated State object, which we cannot instatiate
+	 * of the fully instantiated State object, which we cannot instantiate
 	 * without a schema, which we don't yet have on server.
 	 * 
 	 * @param session
 	 */
-	VariantStateRequestImpl(VariantSessionImpl session, String stateName) {
+	VariantStateRequestImpl(CoreSessionImpl session, String stateName) {
 		this.session = session;
 		this.stateName = stateName;
 		session.setStateRequest(this);
@@ -90,10 +89,14 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		event = new StateVisitedEvent(state);
 	}
 	
-	
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
 	/**
-	 * Commit this state request and flush the state visited event to an implementation of EventPersister. 
+	 * Commit this state request and trigger the state visited event. 
 	 */
+	@Override
 	public void commit(Object...userData) {
 		
 		if (isCommitted()) throw new IllegalStateException("Request already committed");
@@ -121,12 +124,8 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 
 	}
 
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
-
 	@Override
-	public VariantSession getSession() {
+	public VariantCoreSession getSession() {
 		return session;
 	}
 
@@ -141,11 +140,13 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	}
 
 
+	/* move to session
 	@Override
 	public VariantTargetingTracker getTargetingTracker() {
 		return targetingTracker;
 	}
-
+	*/
+	
 	@Override
 	public void setStatus(Status status) {
 		this.status = status;
@@ -286,7 +287,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	 * @param fields
 	 * @return
 	 */
-	public static VariantStateRequestImpl fromJson(VariantCore coreApi, VariantSessionImpl session, Map<String,?> fields) {
+	public static VariantStateRequestImpl fromJson(VariantCore coreApi, CoreSessionImpl session, Map<String,?> fields) {
 		
 		Object stateName = fields.get(FIELD_NAME_STATE);
 		if (stateName == null) 

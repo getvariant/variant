@@ -5,9 +5,9 @@ import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_INIT_PRO
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import com.variant.core.InitializationParams;
+import com.variant.core.VariantCoreInitParams;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.CoreProperties;
+import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.jdbc.EventPersisterJdbc;
 import com.variant.core.jdbc.JdbcService.Vendor;
 import com.variant.open.securestring.SecureString;
@@ -19,18 +19,18 @@ public class EventPersisterH2 extends EventPersisterJdbc {
 	SecureString password = null;  // TODO: change to securestring
 	
 	@Override
-	public void initialized(InitializationParams initParams) throws Exception {
+	public void initialized(VariantCoreInitParams initParams) throws Exception {
 		url = (String) initParams.getOrThrow(
 				"url", 
-				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), CoreProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
+				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), CorePropertiesImpl.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
 		
 		user = (String) initParams.getOrThrow(
 				"user", 
-				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", this.getClass().getName(), CoreProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
+				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", this.getClass().getName(), CorePropertiesImpl.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
 		
 		String passString = (String) initParams.getOrThrow(
 				"password", 
-				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", this.getClass().getName(), CoreProperties.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
+				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", this.getClass().getName(), CorePropertiesImpl.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
 		password = new SecureString(passString.toCharArray());
 	}
 

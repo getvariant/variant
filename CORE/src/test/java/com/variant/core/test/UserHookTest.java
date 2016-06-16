@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.StateParsedHook;
@@ -92,7 +92,7 @@ public class UserHookTest extends BaseTestCore {
 		assertTrue(nullListener.testList.isEmpty());
 		Schema schema = api.getSchema();
 		State state1 = schema.getState("state1");
-		VariantSession ssn = api.getSession("foo");
+		VariantCoreSession ssn = api.getSession("foo");
 		VariantStateRequest request = ssn.targetForState(state1, "");
 		assertEquals(1, ssn.getTraversedStates().size());
 		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
@@ -137,7 +137,7 @@ public class UserHookTest extends BaseTestCore {
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = api.getSchema();
 		state1 = schema.getState("state1");
-		VariantSession ssn2 = api.getSession("foo2");
+		VariantCoreSession ssn2 = api.getSession("foo2");
 		request = ssn2.targetForState(state1, targetingTrackerString("test2.D","Test1.A"));
 		assertEquals(1, ssn2.getTraversedStates().size());
 		assertEquals(state1, ssn2.getTraversedStates().iterator().next().arg1());
@@ -165,7 +165,7 @@ public class UserHookTest extends BaseTestCore {
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = api.getSchema();
 		state1 = schema.getState("state1");
-		VariantSession ssn3 = api.getSession("foo3");
+		VariantCoreSession ssn3 = api.getSession("foo3");
 		assertTrue(ssn3.getTraversedStates().isEmpty());
 		assertTrue(ssn3.getTraversedTests().isEmpty());
 		request = ssn3.targetForState(state1, targetingTrackerString("test1.B","test2.D","Test1.A"));
@@ -178,7 +178,7 @@ public class UserHookTest extends BaseTestCore {
 				new Pair<com.variant.core.schema.Test, Boolean>(schema.getTest("Test1"), false));
 
 		// ssn3 hasn't yet been committed, so if we re-get the session, we won't see the traversed elements.
-		VariantSession ssn3uncommitted = api.getSession("foo3");
+		VariantCoreSession ssn3uncommitted = api.getSession("foo3");
 		assertTrue(ssn3uncommitted.getTraversedStates().isEmpty());
 		assertTrue(ssn3uncommitted.getTraversedTests().isEmpty());
 		System.out.println(ssn3.getId() + ", " + ssn3uncommitted.getId());

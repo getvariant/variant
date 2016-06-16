@@ -20,7 +20,7 @@ import com.variant.core.util.Tuples.Pair;
  * @author Igor Urisman
  * @since 0.5
  */
-public interface VariantSession {
+public interface VariantCoreSession {
 
 	/**
 	 * <p>Get this session's ID.
@@ -64,7 +64,7 @@ public interface VariantSession {
 	 *
 	 * @since 0.5
 	 */
-	public VariantStateRequest targetForState(State state, Object...targetingTrackerUserData);
+	public VariantStateRequest targetForState(State state);
 
 	/**
 	 * <p> The collection of tests traversed by this session so far and their  qualifications. 

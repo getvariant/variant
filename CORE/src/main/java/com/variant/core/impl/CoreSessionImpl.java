@@ -1,4 +1,4 @@
-package com.variant.core.session;
+package com.variant.core.impl;
 
 import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
 import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
@@ -14,20 +14,16 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.VariantSession;
+import com.variant.client.VariantTargetingTracker;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.VariantTargetingTracker;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.VariantEventDecoratorImpl;
-import com.variant.core.impl.CoreProperties.Key;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.VariantComptime;
-import com.variant.core.impl.VariantCore;
-import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.util.Tuples.Pair;
@@ -38,7 +34,7 @@ import com.variant.core.util.VariantCollectionsUtils;
  * @author Igor
  *
  */
-public class VariantSessionImpl implements VariantSession, Serializable {
+public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	
 	///
 	private static final long serialVersionUID = 1L;
@@ -49,20 +45,25 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
 	private HashMap<Test, Boolean> traversedTests = new HashMap<Test, Boolean>();
 	private VariantCore coreApi;
+	private SessionScopedTargetingStabile targetingStable;
 	private String schemaId;
 	
 	/**
 	 * 
 	 * @param id
 	 */
-	public VariantSessionImpl(VariantCore coreApi, String id) {
+	protected CoreSessionImpl(String id, VariantCore coreApi, SessionScopedTargetingStabile targetingStable) {
+		
 		this.coreApi = coreApi;
+		this.targetingStable = targetingStable;
+		
 		// No schema ID on server yet. 
 		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) 
 			this.schemaId = coreApi.getSchema().getId();
 		this.id = id;
-	}
 		
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -115,35 +116,16 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	 * 
 	 */
 	@Override
-	public VariantStateRequest targetForState(State state, Object...targetingPersisterUserData) {
+	public VariantStateRequest targetForState(State state) {
 		
 		// Can't have two requests at one time
 		if (currentRequest != null && !currentRequest.isCommitted()) {
 			throw new VariantRuntimeException (RUN_ACTIVE_REQUEST);
 		}
 		
-		// init Targeting Persister with the same user data.
-		VariantTargetingTracker tp = null;
-		String className = coreApi.getProperties().get(Key.TARGETING_TRACKER_CLASS_NAME, String.class);
-		
-		try {
-			Object object = Class.forName(className).newInstance();
-			if (object instanceof VariantTargetingTracker) {
-				tp = (VariantTargetingTracker) object;
-			}
-			else {
-				throw new VariantBootstrapException(BOOT_TARGETING_TRACKER_NO_INTERFACE, className, VariantTargetingTracker.class.getName());
-			}
-		}
-		catch (Exception e) {
-			throw new VariantInternalException("Unable to instantiate targeting persister class [" + className +"]", e);
-		}
-			
-		tp.initialized(this, targetingPersisterUserData);
-
 		addTraversedState(state);
 		
-		return coreApi.getRuntime().targetSessionForState(this, state, tp);
+		return coreApi.getRuntime().targetSessionForState(this, state);
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -274,7 +256,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static VariantSessionImpl fromJson(VariantCore coreApi, String json) {
+	public static CoreSessionImpl fromJson(VariantCore coreApi, String json) {
 
 		ObjectMapper mapper = new ObjectMapper();		
 		Map<String,?> fields = null;
@@ -303,7 +285,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 			return null;
 		}
 		
-		VariantSessionImpl result = new VariantSessionImpl(coreApi, (String)idObj);
+		CoreSessionImpl result = new CoreSessionImpl(coreApi, (String)idObj);
 
 		Object tsObj = fields.get(FIELD_NAME_TIMESTAMP);
 		if (tsObj == null) 
@@ -367,7 +349,7 @@ public class VariantSessionImpl implements VariantSession, Serializable {
 	@Override
 	public boolean equals(Object o) {
 		try {
-			VariantSessionImpl other = (VariantSessionImpl) o;
+			CoreSessionImpl other = (CoreSessionImpl) o;
 			return id.equals(other.id);
 		}
 		catch(ClassCastException e) {

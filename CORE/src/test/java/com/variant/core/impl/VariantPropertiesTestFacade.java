@@ -4,10 +4,10 @@ import com.variant.core.util.Tuples.Pair;
 
 public class VariantPropertiesTestFacade {
 
-	CoreProperties props;
+	CorePropertiesImpl props;
 	
-	public VariantPropertiesTestFacade(CoreProperties props) {
-		this.props = (CoreProperties) props;
+	public VariantPropertiesTestFacade(CorePropertiesImpl props) {
+		this.props = (CorePropertiesImpl) props;
 	}
 	
 	public Pair<String, String> getString(String key) {

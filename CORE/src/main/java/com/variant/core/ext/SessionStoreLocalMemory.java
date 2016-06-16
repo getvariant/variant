@@ -2,13 +2,13 @@ package com.variant.core.ext;
 
 import java.util.HashMap;
 
-import com.variant.core.InitializationParams;
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreInitParams;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantException;
-import com.variant.core.impl.InitializationParamsImpl;
+import com.variant.core.impl.VariantCoreInitParamsImpl;
+import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.session.VariantSessionImpl;
 
 /**
  * Session store implementation in local memory that uses JSON marshalling for better
@@ -32,17 +32,17 @@ public class SessionStoreLocalMemory implements VariantSessionStore {
 	public SessionStoreLocalMemory() { }
 	
 	@Override
-	public void initialized(InitializationParams initParams) {
-		coreApi =  ((InitializationParamsImpl)initParams).getCoreApi();
+	public void initialized(VariantCoreInitParams initParams) {
+		coreApi =  ((VariantCoreInitParamsImpl)initParams).getCoreApi();
 	}
 
 	/**
 	 * 
 	 */
 	@Override
-	public VariantSession get(String sessionId, Object...userData) {
+	public VariantCoreSession get(String sessionId, Object...userData) {
 		String json = map.get(sessionId);
-		return json == null ? new VariantSessionImpl(coreApi, sessionId) : VariantSessionImpl.fromJson(coreApi, json);
+		return json == null ? new CoreSessionImpl(coreApi, sessionId) : CoreSessionImpl.fromJson(coreApi, json);
 	}
 
 	/**
@@ -51,8 +51,8 @@ public class SessionStoreLocalMemory implements VariantSessionStore {
 	 * @throws VariantException 
 	 */
 	@Override
-	public void save(VariantSession session, Object...userData) throws VariantException {
-			map.put(session.getId(), ((VariantSessionImpl)session).toJson());
+	public void save(VariantCoreSession session, Object...userData) throws VariantException {
+			map.put(session.getId(), ((CoreSessionImpl)session).toJson());
 	}
 	
 	@Override

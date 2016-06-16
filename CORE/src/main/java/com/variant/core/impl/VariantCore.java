@@ -15,16 +15,15 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.InitializationParams;
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreInitParams;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
-import com.variant.core.impl.CoreProperties.Key;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.UserHook;
+import com.variant.core.impl.CorePropertiesImpl.Key;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -35,7 +34,6 @@ import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
-import com.variant.core.session.SessionService;
 import com.variant.core.util.VariantIoUtils;
 
 /**
@@ -50,9 +48,8 @@ public class VariantCore implements Serializable {
 	
 	private Schema schema = null;
 	private EventWriter eventWriter = null;
-	private SessionService sessionService = null;
 	private UserHooker hooker = new UserHooker();
-	private CoreProperties properties;
+	private CorePropertiesImpl properties;
 	private VariantRuntime runtime;
 	private VariantComptime comptime;
 		
@@ -68,7 +65,7 @@ public class VariantCore implements Serializable {
 	 */
 	private void setupSystemProperties(String...resourceNames) {
 
-		properties = new CoreProperties(this);
+		properties = new CorePropertiesImpl(this);
 
 		// Override system props in left-to-right scan.
 		for (int i = resourceNames.length - 1; i >= 0; i--) {
@@ -90,8 +87,8 @@ public class VariantCore implements Serializable {
 		}
 		catch (Exception e) {} // Not an error if wasn't found.
 
-		String runTimePropsResourceName = System.getProperty(CoreProperties.COMMANDLINE_RESOURCE_NAME);
-		String runTimePropsFileName = System.getProperty(CoreProperties.COMMANDLINE_FILE_NAME);
+		String runTimePropsResourceName = System.getProperty(CorePropertiesImpl.COMMANDLINE_RESOURCE_NAME);
+		String runTimePropsFileName = System.getProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME);
 		
 		if (runTimePropsResourceName != null && runTimePropsFileName!= null) {
 			throw new VariantRuntimeException(BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN);
@@ -101,7 +98,7 @@ public class VariantCore implements Serializable {
 			try {
 				properties.overrideWith(
 						VariantIoUtils.openResourceAsStream(runTimePropsResourceName), 
-						"-D" + CoreProperties.COMMANDLINE_RESOURCE_NAME + "=" + runTimePropsResourceName);
+						"-D" + CorePropertiesImpl.COMMANDLINE_RESOURCE_NAME + "=" + runTimePropsResourceName);
 			}
 			catch (Exception e) {
 				throw new VariantRuntimeException(BOOT_CONFIG_RESOURCE_NOT_FOUND, e, runTimePropsResourceName);
@@ -111,7 +108,7 @@ public class VariantCore implements Serializable {
 			try {
 				properties.overrideWith(
 						VariantIoUtils.openFileAsStream(runTimePropsFileName),
-						 "-D" + CoreProperties.COMMANDLINE_FILE_NAME + "=" + runTimePropsFileName);
+						 "-D" + CorePropertiesImpl.COMMANDLINE_FILE_NAME + "=" + runTimePropsFileName);
 			}
 			catch (Exception e) {
 				throw new VariantRuntimeException(BOOT_CONFIG_FILE_NOT_FOUND, e, runTimePropsFileName);
@@ -127,7 +124,7 @@ public class VariantCore implements Serializable {
 		
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("+-- Bootstrapping Variant with following application properties: --");
-			for (CoreProperties.Key key: CoreProperties.Key.values()) {
+			for (CorePropertiesImpl.Key key: CorePropertiesImpl.Key.values()) {
 				LOG.debug("| " + key.propName() + " = " + properties.get(key, String.class) + " : " + properties.getSource(key));
 			}
 			LOG.debug("+------------- Fingers crossed, this is not PRODUCTION -------------");
@@ -148,7 +145,7 @@ public class VariantCore implements Serializable {
 			Object eventPersisterObject = Class.forName(eventPersisterClassName).newInstance();
 			if (eventPersisterObject instanceof EventPersister) {
 				eventPersister = (EventPersister) eventPersisterObject;
-				eventPersister.initialized(properties.get(Key.EVENT_PERSISTER_CLASS_INIT, InitializationParams.class));
+				eventPersister.initialized(properties.get(Key.EVENT_PERSISTER_CLASS_INIT, VariantCoreInitParams.class));
 			}
 			else {
 				throw new VariantRuntimeException (BOOT_EVENT_PERSISTER_NO_INTERFACE, eventPersisterClassName, EventPersister.class.getName());
@@ -165,11 +162,6 @@ public class VariantCore implements Serializable {
 		// Instantiate event writer.
 		eventWriter = new EventWriter(eventPersister, properties);
 				
-		//
-		// Instantiate session service.
-		//
-		sessionService = new SessionService(this);
-
 		//
 		// Instantiate runtime.
 		//
@@ -220,11 +212,11 @@ public class VariantCore implements Serializable {
 	/**
 	 * <p>This API's application properties
 	 * 
-	 * @return An instance of the {@link CoreProperties} type.
+	 * @return An instance of the {@link CorePropertiesImpl} type.
 	 * 
 	 * @since 0.6
 	 */
-	public CoreProperties getProperties() {
+	public CorePropertiesImpl getProperties() {
 		return properties;
 	}
 
@@ -284,15 +276,16 @@ public class VariantCore implements Serializable {
 	 * call this method on an idle instance, i.e. before a valid schema has been parsed. 
 	 * 
 	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
-	 *                 to the implementations of {@link com.variant.core.VariantSessionIdTracker#get(Object...)}
+	 *                 to the implementations of {@link com.variant.client.VariantSessionIdTracker#get(Object...)}
 	 *                 and {@link com.variant.core.VariantSessionStore#get(Object...)}.
 	 * @since 0.5
 	 * @return An instance of {@link VariantSession}.
-	 */
+	 *
 	public VariantSession getSession(Object...userData) {
 		return sessionService.getSession(userData);
 	}
-
+    */
+	
 	/**
 	 * <p>Register a {@link com.variant.core.hook.HookListener}. The caller must provide 
 	 * an implementation of the {@link com.variant.core.hook.HookListener} interface 
@@ -333,11 +326,11 @@ public class VariantCore implements Serializable {
 
 	/** 
 	 * @return
-	 */
+	 *
 	public SessionService getSessionService() {
 		return sessionService;
 	}
-
+	*/
 	/**
 	 * 
 	 */

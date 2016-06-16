@@ -9,9 +9,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.VariantSession;
+import com.variant.client.VariantTargetingTracker;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.VariantTargetingTracker;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.schema.Schema;
@@ -1114,7 +1114,7 @@ public class VariantRuntimeTest extends BaseTestCore {
 		State state1 = schema.getState("state1");
 		long timestamp = System.currentTimeMillis();
 		String persisterString = timestamp + ".test2.B";
-		VariantSession ssn = api.getSession("foo-key");
+		VariantCoreSession ssn = api.getSession("foo-key");
 		// Core implementation makes no distinction between session udser data and targeting persister user data.
 		VariantStateRequest req = ssn.targetForState(state1, persisterString);
 		VariantTargetingTracker tp = req.getTargetingTracker();

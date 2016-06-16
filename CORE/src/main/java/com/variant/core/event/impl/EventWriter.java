@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.PersistableVariantEvent;
-import com.variant.core.impl.CoreProperties;
+import com.variant.core.impl.CorePropertiesImpl;
 
 public class EventWriter {
 	
@@ -54,13 +54,13 @@ public class EventWriter {
 	/**
 	 * Constructor
 	 */
-	public EventWriter(EventPersister persisterImpl, CoreProperties properties) {
+	public EventWriter(EventPersister persisterImpl, CorePropertiesImpl properties) {
 		
 		this.persisterImpl = persisterImpl;
-		this.queueSize = properties.get(CoreProperties.Key.EVENT_WRITER_BUFFER_SIZE, Integer.class);
-		this.pctFullSize = queueSize * properties.get(CoreProperties.Key.EVENT_WRITER_PERCENT_FULL, Integer.class) / 100;
+		this.queueSize = properties.get(CorePropertiesImpl.Key.EVENT_WRITER_BUFFER_SIZE, Integer.class);
+		this.pctFullSize = queueSize * properties.get(CorePropertiesImpl.Key.EVENT_WRITER_PERCENT_FULL, Integer.class) / 100;
 		this.pctEmptySize = (int) Math.ceil(queueSize * 0.1);
-		this.maxPersisterDelayMillis = properties.get(CoreProperties.Key.EVENT_WRITER_MAX_DELAY_MILLIS, Integer.class);
+		this.maxPersisterDelayMillis = properties.get(CorePropertiesImpl.Key.EVENT_WRITER_MAX_DELAY_MILLIS, Integer.class);
 		
 		eventQueue = new ConcurrentLinkedQueue<PersistableVariantEvent>();
 		
@@ -108,7 +108,7 @@ public class EventWriter {
 		}
 		else {
 			LOG.error(
-					"Dropped event due to full memory buffer. Consider increasing " + CoreProperties.Key.EVENT_WRITER_BUFFER_SIZE.propName() + 
+					"Dropped event due to full memory buffer. Consider increasing " + CorePropertiesImpl.Key.EVENT_WRITER_BUFFER_SIZE.propName() + 
 					" system property (current value [" + queueSize + "])");
 		}
 		

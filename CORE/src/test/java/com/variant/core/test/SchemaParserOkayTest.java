@@ -9,7 +9,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
@@ -137,7 +137,7 @@ public class SchemaParserOkayTest extends BaseTestCore {
 		ParserResponse response = api.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantSession session = api.getSession(VariantStringUtils.random64BitString(rand));
+		VariantCoreSession session = api.getSession(VariantStringUtils.random64BitString(rand));
 		State state1 = api.getSchema().getState("state1");
 		api.clearHookListeners();
 		VariantStateRequest req = session.targetForState(state1, "");
@@ -262,7 +262,7 @@ public class SchemaParserOkayTest extends BaseTestCore {
 		ParserResponse response = api.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantSession session = api.getSession(VariantStringUtils.random64BitString(rand));
+		VariantCoreSession session = api.getSession(VariantStringUtils.random64BitString(rand));
 		State state1 = api.getSchema().getState("state1");
 		com.variant.core.schema.Test test2 = api.getSchema().getTest("test2");
 		api.clearHookListeners();
@@ -391,7 +391,7 @@ public class SchemaParserOkayTest extends BaseTestCore {
 		ParserResponse response = api.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantSession session = api.getSession(VariantStringUtils.random64BitString(rand));
+		VariantCoreSession session = api.getSession(VariantStringUtils.random64BitString(rand));
 		State state1 = api.getSchema().getState("state1");
 		com.variant.core.schema.Test test1 = api.getSchema().getTest("test1");
 		com.variant.core.schema.Test test2 = api.getSchema().getTest("test2");

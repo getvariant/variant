@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
-import com.variant.core.InitializationParams;
+import com.variant.core.VariantCoreInitParams;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.jdbc.EventPersisterJdbc;
 import com.variant.core.jdbc.JdbcService.Vendor;
@@ -19,7 +19,7 @@ public class EventPersisterPostgres extends EventPersisterJdbc {
 	private SecureString password = null;
 	
 	@Override
-	public void initialized(InitializationParams initParams) throws Exception {
+	public void initialized(VariantCoreInitParams initParams) throws Exception {
 		url = (String) initParams.getOrThrow(
 				"url", new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName()));
 		

@@ -13,7 +13,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.variant.client.VariantClient;
-import com.variant.client.VariantClientTestFacade;
+import com.variant.client.impl.VariantClientTestFacade;
 import com.variant.client.mock.HttpServletRequestMock;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.mock.HttpSessionMock;

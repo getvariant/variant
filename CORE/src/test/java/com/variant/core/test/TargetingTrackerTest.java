@@ -5,9 +5,9 @@ import static org.junit.Assert.*;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Test;
 
-import com.variant.core.VariantSession;
-import com.variant.core.VariantTargetingTracker;
-import com.variant.core.ext.TargetingTrackerString;
+import com.variant.client.VariantTargetingTracker;
+import com.variant.client.util.TargetingTrackerString;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
 
@@ -25,7 +25,7 @@ public class TargetingTrackerTest extends BaseTestCore {
 		
 		Schema schema = api.getSchema();
 		
-		VariantSession ssn = api.getSession("key1");
+		VariantCoreSession ssn = api.getSession("key1");
 		assertNull(ssn.getStateRequest());
 
 		long timestamp = System.currentTimeMillis();

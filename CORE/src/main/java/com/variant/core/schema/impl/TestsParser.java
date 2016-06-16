@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.CoreProperties;
+import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserMessage;
@@ -70,7 +70,7 @@ public class TestsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parseTests(Object testsObject, ParserResponseImpl response, CoreProperties properties) throws VariantRuntimeException {
+	static void parseTests(Object testsObject, ParserResponseImpl response, CorePropertiesImpl properties) throws VariantRuntimeException {
 		List<Map<String, ?>> rawTests = null;
 		try {
 			rawTests = (List<Map<String, ?>>) testsObject;
@@ -98,7 +98,7 @@ public class TestsParser implements Keywords {
 	 * @param response
 	 * @throws VariantRuntimeException 
 	 */
-	private static Test parseTest(Map<String, ?> test, ParserResponseImpl response, CoreProperties properties) 
+	private static Test parseTest(Map<String, ?> test, ParserResponseImpl response, CorePropertiesImpl properties) 
 			throws VariantRuntimeException {
 		
 		List<TestImpl> covarTests = new ArrayList<TestImpl>();

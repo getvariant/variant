@@ -5,9 +5,9 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.variant.core.VariantSession;
+import com.variant.client.VariantTargetingTracker;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantStateRequest;
-import com.variant.core.VariantTargetingTracker;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -16,29 +16,27 @@ import com.variant.core.schema.Test.Experience;
 public class ClientStateRequestWrapper implements VariantStateRequest {
 
 	private VariantStateRequest variantRequest;
-	private Object[] userData;
-	private VariantSession clientSession;
+	private VariantCoreSession clientSession;
 	
 	public ClientStateRequestWrapper(
-			VariantSession clientSession, VariantStateRequest variantRequest, Object...targetingTrackerUserData) 
+			VariantCoreSession clientSession, VariantStateRequest variantRequest) 
 	{
 		this.variantRequest = variantRequest;
-		this.userData = targetingTrackerUserData;
 		this.clientSession = clientSession;
 	}
 
-	/// Extra Methods ///
+	/** Extra Methods WE SNOULD NOT NEED THIS///
 	public HttpServletRequest getHttpServletRequest() {
 		return (HttpServletRequest) userData[0];
 	}
-	
+	**/
 	public VariantStateRequest getOriginalRequest() {
 		return variantRequest;
 	}
 	
 	/// Pass-through methods ///
 	@Override
-	public VariantSession getSession() {
+	public VariantCoreSession getSession() {
 		return clientSession;
 	}
 
@@ -51,12 +49,7 @@ public class ClientStateRequestWrapper implements VariantStateRequest {
 	public Map<String, String> getResolvedParameterMap() {
 		return variantRequest.getResolvedParameterMap();
 	}
-
-	@Override
-	public VariantTargetingTracker getTargetingTracker() {
-		return variantRequest.getTargetingTracker();
-	}
-
+	
 	@Override
 	public Collection<Experience> getTargetedExperiences() {
 		return variantRequest.getTargetedExperiences();

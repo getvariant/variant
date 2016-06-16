@@ -1,4 +1,4 @@
-package com.variant.client.util;
+package com.variant.client.servlet.util;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;

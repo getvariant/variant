@@ -1,5 +1,6 @@
 package com.variant.client.http;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
@@ -27,6 +28,7 @@ public class HttpClient {
 	 */
 	public HttpResponse get(String url) { 		
 		CloseableHttpResponse resp = null;
+		long start = System.currentTimeMillis();
 		try {
 			HttpGet get = new HttpGet(url);
 			resp = client.execute(get);
@@ -39,7 +41,7 @@ public class HttpClient {
 			// connection cannot be safely re-used and will be shut down and discarded
 			// by the connection manager.
 			if (LOG.isTraceEnabled()) {
-				LOG.trace(String.format("GET %s => %s", url, resp.getStatusLine()));
+				LOG.trace(String.format("GET %s : %s in %s", url, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
 			}
 			return new HttpResponse(get, resp);
 		}
@@ -61,13 +63,14 @@ public class HttpClient {
 	 */
 	public HttpResponse put(String url, String body) {
 		CloseableHttpResponse resp = null;
+		long start = System.currentTimeMillis();
 		try {
 			HttpPut put = new HttpPut(url);
 			put.setHeader("Content-Type", "application/json");
 			put.setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
 			resp = client.execute(put);
 			if (LOG.isTraceEnabled()) {
-				LOG.trace(String.format("PUT %s [%s] => %s", url, body, resp.getStatusLine()));
+				LOG.trace(String.format("PUT %s [%s] : %s in %s", url, body, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
 			}
 		    return new HttpResponse(put, resp);
 		}

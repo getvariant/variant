@@ -11,8 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantSession;
-import com.variant.core.VariantTargetingTracker;
+import com.variant.client.VariantTargetingTracker;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;
@@ -24,7 +24,6 @@ import com.variant.core.schema.Test.OnState;
 import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
-import com.variant.core.session.VariantSessionImpl;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantStringUtils;
 
@@ -44,12 +43,12 @@ public class VariantRuntime {
 	 */
 	private static class TestQualificationHookImpl implements TestQualificationHook {
 		
-		private VariantSession ssn;
+		private VariantCoreSession ssn;
 		private Test test;
 		private boolean qualified = true;
 		private boolean removeFromTT = false;
 		
-		private TestQualificationHookImpl(VariantSession ssn, Test test) {
+		private TestQualificationHookImpl(VariantCoreSession ssn, Test test) {
 			this.ssn = ssn;
 			this.test = test;
 		}
@@ -70,7 +69,7 @@ public class VariantRuntime {
 		}
 		
 		@Override
-		public VariantSession getSession() {
+		public VariantCoreSession getSession() {
 			return ssn;
 		}
 
@@ -91,17 +90,17 @@ public class VariantRuntime {
 	 */
 	private static class TestTargetingHookImpl implements TestTargetingHook {
 
-		private VariantSession session;
+		private VariantCoreSession session;
 		private Test test;
 		private Experience targetedExperience = null;
 		
-		private TestTargetingHookImpl(VariantSession session, Test test) {
+		private TestTargetingHookImpl(VariantCoreSession session, Test test) {
 			this.session = session;
 			this.test = test;
 		}
 		
 		@Override
-		public VariantSession getSession() {
+		public VariantCoreSession getSession() {
 			return session;
 		}
 
@@ -163,7 +162,7 @@ public class VariantRuntime {
 	private Map<String,String> targetSessionForState(VariantStateRequestImpl req) {
 
 		Schema schema = coreApi.getSchema();
-		VariantSessionImpl session = (VariantSessionImpl) req.getSession();
+		CoreSessionImpl session = (CoreSessionImpl) req.getSession();
 		State state = req.getState();
 		VariantTargetingTracker tt = req.getTargetingTracker();
 		
@@ -192,7 +191,7 @@ public class VariantRuntime {
 				}
 				
 				// If this test is on, add it to the traversed list.
-				if (test.isOn()) ((VariantSessionImpl) req.getSession()).addTraversedTest(test, hook.qualified);
+				if (test.isOn()) ((CoreSessionImpl) req.getSession()).addTraversedTest(test, hook.qualified);
 			}
 		}
 		
@@ -514,15 +513,15 @@ public class VariantRuntime {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Implementation of {@link Variant#targetForState(VariantSession, State, Object...)}
+	 * Implementation of {@link Variant#targetForState(VariantCoreSession, State, Object...)}
 	 * @param ssn
 	 * @param view
 	 * @return
 	 */
-	public VariantStateRequestImpl targetSessionForState(VariantSession ssn, State state, VariantTargetingTracker targetingPersister) {
+	public VariantStateRequestImpl targetSessionForState(VariantCoreSession ssn, State state, VariantTargetingTracker targetingPersister) {
 
 		// Resolve the path and get all tests instrumented on the given view targeted.
-		VariantStateRequestImpl result = new VariantStateRequestImpl((VariantSessionImpl)ssn, (StateImpl) state);
+		VariantStateRequestImpl result = new VariantStateRequestImpl((CoreSessionImpl)ssn, (StateImpl) state);
 		result.setTargetingPersister(targetingPersister);
 		
 		Map<String,String> resolvedParams = targetSessionForState(result);		

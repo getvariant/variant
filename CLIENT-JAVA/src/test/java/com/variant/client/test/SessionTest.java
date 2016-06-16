@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.variant.client.impl.ClientStateRequestWrapper;
 import com.variant.client.impl.VariantClientSession;
 import com.variant.client.mock.HttpServletResponseMock;
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.impl.VariantStateRequestImpl;
 import com.variant.core.schema.Schema;
@@ -63,7 +63,7 @@ public class SessionTest extends BaseTestClient {
 		final HttpServletRequest httpReq = mockHttpServletRequest("JSESSIONID", null); // no vssn.
 		final HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		final VariantSession ssn1 = client.getSession(httpReq, httpResp);
+		final VariantCoreSession ssn1 = client.getSession(httpReq, httpResp);
 		coreApi.getSessionService().saveSession(((VariantClientSession)ssn1).getCoreSession(), httpReq);     // succeeds
 		String oldSchemaId = client.getSchema().getId();
 		
@@ -96,7 +96,7 @@ public class SessionTest extends BaseTestClient {
 		HttpServletRequest httpReq = mockHttpServletRequest("JSESSIONID", null);  // no vssn.
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		VariantSession ssn1 = client.getSession(httpReq, httpResp);
+		VariantCoreSession ssn1 = client.getSession(httpReq, httpResp);
 		assertNotNull(ssn1);
 		assertNotNull(ssn1.getId());
 		assertEquals(ssn1.getSchemaId(), schema.getId());
@@ -105,7 +105,7 @@ public class SessionTest extends BaseTestClient {
 		assertEquals(0, ssn1.getTraversedTests().size());
 		assertEquals(1, httpResp.getCookies().length);
 		
-		VariantSession ssn2 = client.getSession(httpReq, httpResp);
+		VariantCoreSession ssn2 = client.getSession(httpReq, httpResp);
 		assertNotNull(ssn2);
 		
 		// getSession() should be idempotent.
@@ -156,7 +156,7 @@ public class SessionTest extends BaseTestClient {
 		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
 
 		// Commit should have saved the session.
-		VariantSession ssn3 = client.getSession(httpReq, httpResp);
+		VariantCoreSession ssn3 = client.getSession(httpReq, httpResp);
 		assertEquals(ssn3, ssn2);
 		assertEquals(ssn3.getSchemaId(), schema.getId());
 		assertEquals(
@@ -186,7 +186,7 @@ public class SessionTest extends BaseTestClient {
 		HttpServletRequest httpReq = mockHttpServletRequest("JSESSIONID", sessionId);
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		VariantSession ssn1 = client.getSession(httpReq, httpResp);
+		VariantCoreSession ssn1 = client.getSession(httpReq, httpResp);
 		assertNotNull(ssn1);
 		assertEquals(sessionId, ssn1.getId());
 		assertEquals(ssn1.getSchemaId(), schema.getId());
@@ -221,7 +221,7 @@ public class SessionTest extends BaseTestClient {
 		// Create a new HTTP request with the same VRNT-SSNID cookie.  Should fetch the same session.
 		HttpServletRequest httpReq2 = mockHttpServletRequest("JSESSIONID", sessionId);
 		HttpServletResponseMock httpResp2 = mockHttpServletResponse();
-		VariantSession ssn2 = client.getSession(httpReq2, httpResp2);
+		VariantCoreSession ssn2 = client.getSession(httpReq2, httpResp2);
 		assertEquals(ssn2, varReq.getSession());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(ssn2.getStateRequest().getResolvedParameterMap(), varReq.getSession().getStateRequest().getResolvedParameterMap());

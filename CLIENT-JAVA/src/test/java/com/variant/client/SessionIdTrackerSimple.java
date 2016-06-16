@@ -1,18 +1,18 @@
-package com.variant.core.ext;
+package com.variant.client;
 
-import com.variant.core.InitializationParams;
-import com.variant.core.VariantSessionIdTracker;
+import com.variant.client.VariantSessionIdTracker;
+import com.variant.core.VariantCoreInitParams;
 import com.variant.core.exception.VariantInternalException;
 
 /**
  * A simple implementation of a session ID tracker.
  * No tracking in external state, simply treats first elem of the userData array
- * as the session ID. Suitable for tests using the in-memory implementation of the session store.
+ * as the session ID. Suitable for tests only.
  */
 public class SessionIdTrackerSimple implements VariantSessionIdTracker {
 
 	@Override
-	public void initialized(InitializationParams initParams) throws Exception {}
+	public void initialized(VariantCoreInitParams initParams) throws Exception {}
 
 	@Override
 	public String get(Object...userData) {

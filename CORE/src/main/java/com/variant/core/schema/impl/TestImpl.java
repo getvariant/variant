@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.impl.CoreProperties;
+import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -19,7 +19,7 @@ public class TestImpl implements Test {
 	
 	// As defined:
 	private String name;
-	private CoreProperties properties;
+	private CorePropertiesImpl properties;
 	private Integer idleDaysToLive = null;
 	private boolean isOn = true;
 	private List<TestImpl> covariantTests;
@@ -34,7 +34,7 @@ public class TestImpl implements Test {
 	 * 
 	 * @param name
 	 */
-	TestImpl(String name, CoreProperties properties) {
+	TestImpl(String name, CorePropertiesImpl properties) {
 		this.name = name;
 		this.properties = properties;
 	}
@@ -191,7 +191,7 @@ public class TestImpl implements Test {
 	 */
 	public int getIdleDaysToLive() {
 		return idleDaysToLive == null ? 
-				properties.get(CoreProperties.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class) : 
+				properties.get(CorePropertiesImpl.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class) : 
 				idleDaysToLive;
 	}
 

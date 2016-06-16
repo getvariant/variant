@@ -1,29 +1,32 @@
-package com.variant.core.ext;
+package com.variant.core.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
-import com.variant.core.VariantTargetingTracker;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * Basic implementation of a targeting persister as a list in memory.
- * Implements all operations except for initialized() and persist(),
- * which are the input and the output for this implementation and are
- * external. Concrete subclasses will worry about that.
+ * Session scoped targeting stabilizer provides session scoped targeting stability.
+ * Manipulates targeted experiences in a linked list and lives in session.
  * 
  * @author Igor
  *
  */
-abstract public class TargetingTrackerSupport implements VariantTargetingTracker {
+public class SessionScopedTargetingStabile {
 
-	/**
-	 * 
-	 */
-	protected static class Entry {
+
+	// Entries are held in a map keyed by test name
+	protected LinkedHashMap<String, Entry> entryMap = new LinkedHashMap<String, Entry>();
+		
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
+	
+	public static class Entry {
 		
 		private Experience experience;
 		private long timestamp;
@@ -33,22 +36,27 @@ abstract public class TargetingTrackerSupport implements VariantTargetingTracker
 			this.timestamp = timestamp;
 		}
 		
+		/**
+		 */
 		public Experience getExperience() {return experience;}
-		public long getTimestamp() {return timestamp;}
-	}
-
-	// Experiences are held in a map keyed by test name
-	protected LinkedHashMap<String, Entry> entryMap = new LinkedHashMap<String, Entry>();
 		
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
+		/**
+		 */
+		public long getTimestamp() {return timestamp;}		
+	}
+	
+	/**
+	 * Constructor initializes the state with an empty entry list.
+	 * 
+	 * @param experiences
+	 * @param timestamp
+	 */
+	public SessionScopedTargetingStabile() {}
 
 	/**
 	 * 
 	 * @return
 	 */
-	@Override
 	public Collection<Experience> getAll() {
 		ArrayList<Experience> result = new ArrayList<Test.Experience>();
 		for (Entry entry: entryMap.values()) result.add(entry.experience);
@@ -60,7 +68,6 @@ abstract public class TargetingTrackerSupport implements VariantTargetingTracker
 	 * @param test
 	 * @return
 	 */
-	@Override
 	public Experience get(Test test) {
 		Entry result = entryMap.get(test.getName());
 		return result == null ? null : result.experience;
@@ -71,7 +78,6 @@ abstract public class TargetingTrackerSupport implements VariantTargetingTracker
 	 * @param experience
 	 * @return
 	 */
-	@Override
 	public Experience remove(Test test) {
 		Entry result = entryMap.remove(test.getName());
 		return result == null ? null : result.experience;
@@ -82,7 +88,6 @@ abstract public class TargetingTrackerSupport implements VariantTargetingTracker
 	 * @param experience
 	 * @return
 	 */
-	@Override
 	public Experience add(Experience experience, long timestamp) {
 		Entry result = entryMap.put(experience.getTest().getName(), new Entry(experience, timestamp));
 		return result == null ? null : result.experience;
@@ -93,17 +98,9 @@ abstract public class TargetingTrackerSupport implements VariantTargetingTracker
 	 * @param experience
 	 * @return
 	 */
-	@Override
 	public void touch(Test test) {
 		Entry entry = entryMap.remove(test.getName());
 		if (entry != null) entry.timestamp = System.currentTimeMillis();
 	}
-
-	//---------------------------------------------------------------------------------------------//
-	//                                        PUBLIC EXT                                           //
-	//---------------------------------------------------------------------------------------------//
-
-	public void addAll(Collection<Experience> experiences, long timestamp) {
-		for (Experience e: experiences) add(e, timestamp);
-	}
+	
 }

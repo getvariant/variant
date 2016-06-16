@@ -9,7 +9,7 @@ import com.variant.core.exception.VariantRuntimeException;
  * @author Igor Urisman
  * @since 0.6
  */
-public interface InitializationParams {
+public interface VariantCoreInitParams {
 
 	/**
 	 * The value of an init parameter.

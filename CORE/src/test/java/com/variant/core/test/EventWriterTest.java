@@ -14,7 +14,7 @@ import java.util.Map;
 import org.apache.commons.collections4.Predicate;
 import org.junit.Test;
 
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
@@ -46,11 +46,11 @@ public class EventWriterTest extends BaseTestCore {
 		State s1 = schema.getState("state1");
 		State s2 = schema.getState("state2");
 		
-		VariantSession ssn1 = api.getSession("ssn1");
+		VariantCoreSession ssn1 = api.getSession("ssn1");
 		VariantStateRequest request = ssn1.targetForState(s1, targetingTrackerString("test1.A","test2.B","test3.C","test4.A","test5.B","test6.C"));
 		assertNotNull(request.getStateVisitedEvent());
 
-		VariantSession ssn2 = api.getSession("ssn2");
+		VariantCoreSession ssn2 = api.getSession("ssn2");
 		request = ssn2.targetForState(s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		assertNotNull(request.getStateVisitedEvent());
 
@@ -160,7 +160,7 @@ public class EventWriterTest extends BaseTestCore {
 		Schema schema = api.getSchema();
 		State s2 = schema.getState("state2");
 		
-		VariantSession ssn3 = api.getSession("ssn3");
+		VariantCoreSession ssn3 = api.getSession("ssn3");
 		VariantStateRequest request = ssn3.targetForState(s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
 		customEvent.getParameterMap().put("param-key", "param-value");
@@ -277,7 +277,7 @@ public class EventWriterTest extends BaseTestCore {
 		api.addHookListener(new TestQualificationHookListenerDisqualifyTest(true, "ssn4", schema.getTest("test2")));
 		api.addHookListener(new TestQualificationHookListenerDisqualifyTest(false, "ssn4", schema.getTest("test3")));
 		
-		VariantSession ssn4 = api.getSession("ssn4");
+		VariantCoreSession ssn4 = api.getSession("ssn4");
 		VariantStateRequest request = ssn4.targetForState(s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
 		customEvent.getParameterMap().put("param-key", "param-value");

@@ -2,7 +2,7 @@ package com.variant.core.event;
 
 import java.util.Collection;
 
-import com.variant.core.InitializationParams;
+import com.variant.core.VariantCoreInitParams;
 
 /**
  * <p>Container-instantiated implementation will use external mechanisms to persist Variant events.
@@ -22,7 +22,7 @@ public interface EventPersister {
 	 * 
 	 * @since 0.5
 	 */
-	public void initialized(InitializationParams initParams) throws Exception;
+	public void initialized(VariantCoreInitParams initParams) throws Exception;
 	
 	/**
 	 * <p>Persist events to some storage mechanism.
