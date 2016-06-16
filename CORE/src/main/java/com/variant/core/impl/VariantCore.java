@@ -1,10 +1,7 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
-import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
+import static com.variant.core.VariantCoreProperties.*;
+import static com.variant.core.schema.impl.MessageTemplate.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +20,6 @@ import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.UserHook;
-import com.variant.core.impl.CorePropertiesImpl.Key;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -121,15 +117,7 @@ public class VariantCore implements Serializable {
 	 * @throws Exception
 	 */
 	private void instantiate() throws Exception {
-		
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("+-- Bootstrapping Variant with following application properties: --");
-			for (CorePropertiesImpl.Key key: CorePropertiesImpl.Key.values()) {
-				LOG.debug("| " + key.propName() + " = " + properties.get(key, String.class) + " : " + properties.getSource(key));
-			}
-			LOG.debug("+------------- Fingers crossed, this is not PRODUCTION -------------");
-		}
-		
+				
 		//
 		// Init comptime service. 
 		//
@@ -138,14 +126,14 @@ public class VariantCore implements Serializable {
 		//
 		// Instantiate event persister.
 		//
-		String eventPersisterClassName = properties.get(Key.EVENT_PERSISTER_CLASS_NAME, String.class);
+		String eventPersisterClassName = properties.get(EVENT_PERSISTER_CLASS_NAME, String.class);
 		
 		EventPersister eventPersister = null;
 		try {
 			Object eventPersisterObject = Class.forName(eventPersisterClassName).newInstance();
 			if (eventPersisterObject instanceof EventPersister) {
 				eventPersister = (EventPersister) eventPersisterObject;
-				eventPersister.initialized(properties.get(Key.EVENT_PERSISTER_CLASS_INIT, VariantCoreInitParams.class));
+				eventPersister.initialized(properties.get(EVENT_PERSISTER_CLASS_INIT, VariantCoreInitParams.class));
 			}
 			else {
 				throw new VariantRuntimeException (BOOT_EVENT_PERSISTER_NO_INTERFACE, eventPersisterClassName, EventPersister.class.getName());

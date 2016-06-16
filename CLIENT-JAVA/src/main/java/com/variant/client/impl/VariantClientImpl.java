@@ -2,14 +2,14 @@ package com.variant.client.impl;
 
 import java.io.InputStream;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantProperties;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.hook.HookListener;
-import com.variant.core.impl.CoreProperties;
+import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
@@ -27,6 +27,8 @@ import com.variant.core.util.VariantStringUtils;
  */
 public class VariantClientImpl implements VariantClient {
 	
+	private static final Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
+			
 	private VariantCore core = null;
 	private VariantPropertiesImpl properties = null;
 	private SessionService sessionService = null;
@@ -63,6 +65,16 @@ public class VariantClientImpl implements VariantClient {
 		
 		sessionService = new SessionService(this);
 		properties = new VariantPropertiesImpl(core.getProperties());
+
+/* TODO
+		if (LOG.isDebugEnabled()) {
+			LOG.debug("+-- Bootstrapping Variant with following application properties: --");
+			for (CorePropertiesImpl.Key key: CorePropertiesImpl.Key.values()) {
+				LOG.debug("| " + key.propName() + " = " + properties.get(key, String.class) + " : " + properties.getSource(key));
+			}
+			LOG.debug("+------------- Fingers crossed, this is not PRODUCTION -------------");
+		}
+*/
 	}
 
 	/**

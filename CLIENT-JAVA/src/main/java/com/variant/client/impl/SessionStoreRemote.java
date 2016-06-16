@@ -1,6 +1,7 @@
 package com.variant.client.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET;
+import static com.variant.core.schema.impl.MessageTemplate.*;
+import static com.variant.client.VariantProperties.*;
 
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
@@ -83,14 +84,14 @@ public class SessionStoreRemote implements VariantSessionStore {
 
 		apiEndpointUrl = (String) initParams.getOrThrow(
 				"apiEndpoint", 
-				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), CorePropertiesImpl.Key.EVENT_PERSISTER_CLASS_INIT.propName()));
+				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), EVENT_PERSISTER_CLASS_INIT.propertyName()));
 		
 		sessionTimeoutMillis = (Integer) initParams.getOr("sessionTimeoutSecs",  "900") * 1000;
 		
 		coreApi = ((VariantCoreInitParamsImpl)initParams).getCoreApi();
 		
 		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) {
-			apiEndpointUrl = coreApi.getProperties().get(CorePropertiesImpl.Key.SERVER_ENDPOINT_URL);
+			apiEndpointUrl = coreApi.getProperties().get(SERVER_ENDPOINT_URL);
 		}
 		if (!apiEndpointUrl.endsWith("/")) apiEndpointUrl += "/";
 	}

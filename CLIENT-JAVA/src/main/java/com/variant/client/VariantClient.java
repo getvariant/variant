@@ -115,7 +115,7 @@ public interface VariantClient {
 		 * @return Instance of the {@link VariantClient} type
 		 * @since 0.6
 		 */
-		public VariantClient getInstance(String...resourceNames) {
+		public static VariantClient getInstance(String...resourceNames) {
 			
 			return new VariantClientImpl(resourceNames);
 		}

@@ -43,15 +43,15 @@ public class VariantFilter implements Filter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantFilter.class);
 	
-	private VariantClient client;
+	private VariantServletClient client;
 	
 	/**
 	 * HTTP API will override these two methods.  The rest of this filter is the same for both.
 	 * 
 	 * @return
 	 */
-	protected VariantClient getClient() { return new VariantClient();}
-	protected VariantClient getClient(String configName) { return new VariantClient(configName);}
+	//protected VariantClient getClient() { return new VariantClient();}
+	//protected VariantClient getClient(String configName) { return new VariantClient(configName);}
 
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -65,7 +65,7 @@ public class VariantFilter implements Filter {
 	public void init(FilterConfig config) throws ServletException {
 
 		String name = config.getInitParameter("propsResourceName");
-		client = name == null ? getClient() : getClient(name);
+		client = name == null ? new VariantServletClient() : new VariantServletClient(name);
 			
 		name = config.getInitParameter("schemaResourceName");
 		
@@ -131,7 +131,7 @@ public class VariantFilter implements Filter {
 			else {
 			
 				// Yes, this path is mapped in Variant.
-				variantSsn = client.getSession(httpRequest, httpResponse);
+				variantSsn = client.getSession(httpRequest);
 				variantRequest = variantSsn.targetForState(state, httpRequest);
 				resolvedPath = variantRequest.getResolvedParameterMap().get("path");
 				isForwarding = !resolvedPath.equals(state.getParameterMap().get("path"));

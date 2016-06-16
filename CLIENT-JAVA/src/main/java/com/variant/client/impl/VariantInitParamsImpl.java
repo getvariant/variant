@@ -1,5 +1,6 @@
 package com.variant.client.impl;
 
+import static com.variant.client.VariantProperties.*;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantInitParams;
 import com.variant.core.impl.CorePropertiesImpl;
@@ -11,7 +12,7 @@ public class VariantInitParamsImpl extends VariantCoreInitParamsImpl implements 
 	private VariantClientImpl client;
 
 	VariantInitParamsImpl(VariantClientImpl client, CorePropertiesImpl.Key key) {
-		super(client.getCoreApi(), CorePropertiesImpl.Key.SESSION_STORE_CLASS_INIT);
+		super(client.getCoreApi(), SESSION_STORE_CLASS_INIT);
 		this.client = client;
 	}
 

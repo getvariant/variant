@@ -1,5 +1,11 @@
 package com.variant.client.impl;
 
+import static com.variant.client.VariantProperties.SESSION_ID_TRACKER_CLASS_INIT;
+import static com.variant.client.VariantProperties.SESSION_ID_TRACKER_CLASS_NAME;
+import static com.variant.client.VariantProperties.TARGETING_TRACKER_CLASS_INIT;
+import static com.variant.client.VariantProperties.TARGETING_TRACKER_CLASS_NAME;
+import static com.variant.core.VariantCoreProperties.SESSION_STORE_CLASS_INIT;
+import static com.variant.core.VariantCoreProperties.SESSION_STORE_CLASS_NAME;
 import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
@@ -15,8 +21,6 @@ import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.CorePropertiesImpl;
-import com.variant.core.impl.CorePropertiesImpl.Key;
 import com.variant.core.schema.impl.MessageTemplate;
 
 public class SessionService {
@@ -33,13 +37,13 @@ public class SessionService {
 	 */
 	private VariantSessionIdTracker initSessionIdTracker(Object...userData) {
 		// Session ID tracker.
-		String sidTrackerClassName = client.getProperties().get(CorePropertiesImpl.Key.SESSION_ID_TRACKER_CLASS_NAME, String.class);
+		String sidTrackerClassName = client.getProperties().get(SESSION_ID_TRACKER_CLASS_NAME, String.class);
 		try {
 			Class<?> sidTrackerClass = Class.forName(sidTrackerClassName);
 			Object sidTrackerObject = sidTrackerClass.newInstance();
 			if (sidTrackerObject instanceof VariantSessionIdTracker) {
 				VariantSessionIdTracker result = (VariantSessionIdTracker) sidTrackerObject;
-				VariantInitParamsImpl initParams = new VariantInitParamsImpl(client, CorePropertiesImpl.Key.SESSION_ID_TRACKER_CLASS_INIT);
+				VariantInitParamsImpl initParams = new VariantInitParamsImpl(client, SESSION_ID_TRACKER_CLASS_INIT);
 				result.initialized(initParams, userData);
 				return result;
 			}
@@ -62,13 +66,13 @@ public class SessionService {
 	private VariantTargetingTracker initTargetingTracker(Object...userData) {
 		
 		// Instantiate targeting tracker.
-		String className = client.getCoreApi().getProperties().get(Key.TARGETING_TRACKER_CLASS_NAME, String.class);
+		String className = client.getCoreApi().getProperties().get(TARGETING_TRACKER_CLASS_NAME, String.class);
 		
 		try {
 			Object object = Class.forName(className).newInstance();
 			if (object instanceof VariantTargetingTracker) {
 				VariantTargetingTracker result = (VariantTargetingTracker) object;
-				VariantInitParamsImpl initParams = new VariantInitParamsImpl(client, CorePropertiesImpl.Key.TARGETING_TRACKER_CLASS_INIT);
+				VariantInitParamsImpl initParams = new VariantInitParamsImpl(client, TARGETING_TRACKER_CLASS_INIT);
 				result.initialized(initParams, userData);
 				return result;
 			}
@@ -95,13 +99,13 @@ public class SessionService {
 		this.client = (VariantClientImpl) client;
 		
 		// Session store.
-		String storeClassName = client.getProperties().get(CorePropertiesImpl.Key.SESSION_STORE_CLASS_NAME, String.class);
+		String storeClassName = client.getProperties().get(SESSION_STORE_CLASS_NAME, String.class);
 		try {
 			Class<?> storeClass = Class.forName(storeClassName);
 			Object storeObject = storeClass.newInstance();
 			if (storeObject instanceof VariantSessionStore) {
 				sessionStore = (VariantSessionStore) storeObject;
-				sessionStore.initialized(client.getProperties().get(CorePropertiesImpl.Key.SESSION_STORE_CLASS_INIT, VariantCoreInitParams.class));
+				sessionStore.initialized(client.getProperties().get(SESSION_STORE_CLASS_INIT, VariantCoreInitParams.class));
 			}
 			else {
 				throw new VariantBootstrapException(MessageTemplate.BOOT_SESSION_STORE_NO_INTERFACE, storeClassName, VariantSessionStore.class.getName());

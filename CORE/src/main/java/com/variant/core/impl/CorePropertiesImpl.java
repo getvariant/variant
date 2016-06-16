@@ -49,7 +49,7 @@ public class CorePropertiesImpl implements VariantCoreProperties{
 	 * Override with properties sourced from an InputStream.
 	 * @param resourceName
 	 */
-	private void overrideWith(InputStream is, String comment) {
+	void overrideWith(InputStream is, String comment) {
 					
 		try {
 			Properties properties = new Properties();
