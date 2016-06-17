@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
@@ -28,21 +29,25 @@ public class SessionScopedTargetingStabile {
 	
 	public static class Entry {
 		
-		private Experience experience;
+		private String testName;
+		private String experienceName;
 		private long timestamp;
 		
-		private Entry(Experience experience, long timestamp) { 
-			this.experience = experience;
+		private Entry(String testName, String experienceName, long timestamp) {
+			this.testName = testName;
+			this.experienceName = experienceName;
 			this.timestamp = timestamp;
 		}
 		
-		/**
-		 */
-		public Experience getExperience() {return experience;}
+		public String getTestName() {return testName;}				
+		public String getExperienceName() {return experienceName;}		
+		public long getTimestamp() {return timestamp;}		
 		
 		/**
 		 */
-		public long getTimestamp() {return timestamp;}		
+		public String toString() {
+			return testName + "." + experienceName + "." + timestamp;
+		}
 	}
 	
 	/**
@@ -57,9 +62,34 @@ public class SessionScopedTargetingStabile {
 	 * 
 	 * @return
 	 */
-	public Collection<Experience> getAll() {
-		ArrayList<Experience> result = new ArrayList<Test.Experience>();
-		for (Entry entry: entryMap.values()) result.add(entry.experience);
+	public int size() {
+		return entryMap.size();
+	}
+		
+	/**
+	 * 
+	 * @return
+	 */
+	public Collection<Entry> getAll() {
+		ArrayList<Entry> result = new ArrayList<Entry>();
+		for (Entry entry: entryMap.values()) result.add(entry);
+		return Collections.unmodifiableList(result);
+	}
+
+	/**
+	 * Get all as experiences, looked up in caller-provided schema.
+	 * @param schema
+	 * @return
+	 */
+	public Collection<Experience> getAllAsExperiences(Schema schema) {
+		ArrayList<Experience> result = new ArrayList<Experience>();
+		for (Entry entry: entryMap.values()) {
+			Test test = schema.getTest(entry.getExperienceName());
+			if (test != null) {
+				Experience experience = test.getExperience(entry.experienceName);
+				if (experience != null) result.add(experience);
+			}
+		}
 		return Collections.unmodifiableList(result);
 	}
 
@@ -68,9 +98,9 @@ public class SessionScopedTargetingStabile {
 	 * @param test
 	 * @return
 	 */
-	public Experience get(Test test) {
-		Entry result = entryMap.get(test.getName());
-		return result == null ? null : result.experience;
+	public Entry get(String testName) {
+		Entry result = entryMap.get(testName);
+		return result == null ? null : result;
 	}
 
 	/**
@@ -78,9 +108,8 @@ public class SessionScopedTargetingStabile {
 	 * @param experience
 	 * @return
 	 */
-	public Experience remove(Test test) {
-		Entry result = entryMap.remove(test.getName());
-		return result == null ? null : result.experience;
+	public Entry remove(String testName) {
+		return entryMap.remove(testName);
 	}
 
 	/**
@@ -88,9 +117,8 @@ public class SessionScopedTargetingStabile {
 	 * @param experience
 	 * @return
 	 */
-	public Experience add(Experience experience, long timestamp) {
-		Entry result = entryMap.put(experience.getTest().getName(), new Entry(experience, timestamp));
-		return result == null ? null : result.experience;
+	public Entry add(String testName, String experienceName, long timestamp) {
+		return entryMap.put(testName, new Entry(testName, experienceName, timestamp));
 	}
 
 	/**
@@ -98,8 +126,18 @@ public class SessionScopedTargetingStabile {
 	 * @param experience
 	 * @return
 	 */
-	public void touch(Test test) {
-		Entry entry = entryMap.remove(test.getName());
+	public Entry add(Experience experience, long timestamp) {
+		String testName = experience.getTest().getName();
+		return entryMap.put(testName, new Entry(testName, experience.getName(), timestamp));
+	}
+
+	/**
+	 * 
+	 * @param experience
+	 * @return
+	 */
+	public void touch(String testName) {
+		Entry entry = entryMap.remove(testName);
 		if (entry != null) entry.timestamp = System.currentTimeMillis();
 	}
 	

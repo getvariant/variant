@@ -12,7 +12,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.exception.VariantInternalException;
@@ -30,7 +30,7 @@ import com.variant.core.srvstub.TestExperienceServerStub;
  * @author Igor
  *
  */
-public class VariantStateRequestImpl implements VariantStateRequest, Serializable {
+public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Serializable {
 
 	/**
 	 * Needs serializable because we keep it in session.
@@ -43,7 +43,6 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	private Map<String,String> resolvedParameterMap;
 	private StateVisitedEvent event = null;
 	private boolean committed = false;
-	private VariantTargetingTracker targetingTracker = null;
 	
 	// For transitional server side use only.
 	private String stateName = null;
@@ -55,7 +54,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	 * Regular constructor
 	 * @param session
 	 */
-	VariantStateRequestImpl(CoreSessionImpl session, StateImpl state) {
+	VariantCoreStateRequestImpl(CoreSessionImpl session, StateImpl state) {
 		this.session = session;
 		this.state = state;
 		session.setStateRequest(this);
@@ -68,18 +67,10 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	 * 
 	 * @param session
 	 */
-	VariantStateRequestImpl(CoreSessionImpl session, String stateName) {
+	VariantCoreStateRequestImpl(CoreSessionImpl session, String stateName) {
 		this.session = session;
 		this.stateName = stateName;
 		session.setStateRequest(this);
-	}
-
-	/**
-	 * 
-	 * @param targetingPersister
-	 */
-	void setTargetingPersister(VariantTargetingTracker targetingPersister) {
-		this.targetingTracker = targetingPersister;
 	}
 	
 	/**
@@ -102,7 +93,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		if (isCommitted()) throw new IllegalStateException("Request already committed");
 				
 		// Persist targeting info.  Note that we expect the userData to apply to both!
-		getTargetingTracker().save(userData);
+		session.get().save(userData);
 		
 		// We won't have an event if nothing is instrumented on this state
 		if (event != null) {
@@ -163,7 +154,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		if (targetedExperiencesCache == null) {
 			ArrayList<Experience> result = new ArrayList<Experience>();
 			for (Test test: state.getInstrumentedTests()) {
-				if (!(test.isOn() && session.isQualified(test))) continue;
+				if (!(test.isOn() && session.isQualifiedFor(test))) continue;
 				Experience e = targetingTracker.get(test);
 				if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found in targeting tracker.");
 				result.add(e);
@@ -287,7 +278,7 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 	 * @param fields
 	 * @return
 	 */
-	public static VariantStateRequestImpl fromJson(VariantCore coreApi, CoreSessionImpl session, Map<String,?> fields) {
+	public static VariantCoreStateRequestImpl fromJson(VariantCore coreApi, CoreSessionImpl session, Map<String,?> fields) {
 		
 		Object stateName = fields.get(FIELD_NAME_STATE);
 		if (stateName == null) 
@@ -298,9 +289,9 @@ public class VariantStateRequestImpl implements VariantStateRequest, Serializabl
 		// If we're on the server, we don't have the schema => we can't instantiate a State object,
 		// but we need the state name to log events.
 		
-		VariantStateRequestImpl result =  ((VariantCore)coreApi).getComptime().getComponent() == VariantComptime.Component.SERVER ?
-				new VariantStateRequestImpl(session, (String)stateName) :
-				new VariantStateRequestImpl(session, (StateImpl) coreApi.getSchema().getState((String)stateName));
+		VariantCoreStateRequestImpl result =  ((VariantCore)coreApi).getComptime().getComponent() == VariantComptime.Component.SERVER ?
+				new VariantCoreStateRequestImpl(session, (String)stateName) :
+				new VariantCoreStateRequestImpl(session, (StateImpl) coreApi.getSchema().getState((String)stateName));
 		
 		Object statusStr = fields.get(FIELD_NAME_STATUS);
 		if (statusStr == null) 

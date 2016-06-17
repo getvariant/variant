@@ -11,7 +11,7 @@ import java.util.Map;
 
 import com.variant.client.VariantTargetingTracker;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.schema.Schema;
@@ -1116,7 +1116,7 @@ public class VariantRuntimeTest extends BaseTestCore {
 		String persisterString = timestamp + ".test2.B";
 		VariantCoreSession ssn = api.getSession("foo-key");
 		// Core implementation makes no distinction between session udser data and targeting persister user data.
-		VariantStateRequest req = ssn.targetForState(state1, persisterString);
+		VariantCoreStateRequest req = ssn.targetForState(state1, persisterString);
 		VariantTargetingTracker tp = req.getTargetingTracker();
 
 		// test2 is off, but TP has a variant experience for it, which will be substituted for the purposes of lookup with control.

@@ -2,7 +2,7 @@ package com.variant.client;
 
 import java.util.Collection;
 
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.schema.Test.Experience;
 
 /**
@@ -59,7 +59,7 @@ public interface VariantTargetingTracker {
 	 * Flush the state of this object to the underlying persistence mechanism.
 	 * 
 	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...)} 
+	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantCoreStateRequest, Object...)} 
 	 *                 will pass here without interpretation.
 	 *                 
 	 * @since 0.6

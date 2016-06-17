@@ -1,7 +1,7 @@
 package com.variant.client;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 
 
 /**
@@ -62,7 +62,7 @@ public interface VariantSessionIdTracker {
 	 * Flush the state of this object to the underlying persistence mechanism.
 	 * 
 	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...)} 
+	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantCoreStateRequest, Object...)} 
 	 *                 will pass here without interpretation.
 	 *                 
 	 * @since 0.6

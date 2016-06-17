@@ -1,6 +1,5 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
 import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
 
 import java.io.Serializable;
@@ -14,18 +13,17 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.client.VariantTargetingTracker;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.VariantEventDecoratorImpl;
-import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantCollectionsUtils;
 
@@ -41,21 +39,21 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 
 	private String id;
 	private long timestamp = System.currentTimeMillis();
-	private VariantStateRequestImpl currentRequest = null;
+	private VariantCoreStateRequestImpl currentRequest = null;
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
 	private HashMap<Test, Boolean> traversedTests = new HashMap<Test, Boolean>();
 	private VariantCore coreApi;
-	private SessionScopedTargetingStabile targetingStable;
+	private SessionScopedTargetingStabile targetingStabile;
 	private String schemaId;
 	
 	/**
 	 * 
 	 * @param id
 	 */
-	protected CoreSessionImpl(String id, VariantCore coreApi, SessionScopedTargetingStabile targetingStable) {
+	protected CoreSessionImpl(String id, VariantCore coreApi, SessionScopedTargetingStabile targetingStabile) {
 		
 		this.coreApi = coreApi;
-		this.targetingStable = targetingStable;
+		this.targetingStabile = targetingStabile;
 		
 		// No schema ID on server yet. 
 		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) 
@@ -90,7 +88,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	}
 	
 	@Override
-	public VariantStateRequest getStateRequest() {
+	public VariantCoreStateRequest getStateRequest() {
 		return currentRequest;
 	}
 
@@ -116,7 +114,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * 
 	 */
 	@Override
-	public VariantStateRequest targetForState(State state) {
+	public VariantCoreStateRequest targetForState(State state) {
 		
 		// Can't have two requests at one time
 		if (currentRequest != null && !currentRequest.isCommitted()) {
@@ -125,7 +123,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		
 		addTraversedState(state);
 		
-		return coreApi.getRuntime().targetSessionForState(this, state);
+		return coreApi.getRuntime().targetSessionForState(this, (StateImpl) state);
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -144,7 +142,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * 
 	 * @param req
 	 */
-	public void setStateRequest(VariantStateRequestImpl req) {
+	public void setStateRequest(VariantCoreStateRequestImpl req) {
 		currentRequest = req;
 	}
 
@@ -153,9 +151,17 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * @param test
 	 * @return
 	 */
-	public boolean isQualified(Test test) {
+	public boolean isQualifiedFor(Test test) {
 		Boolean result = traversedTests.get(test);
 		return result != null && result;
+	}
+	
+	/**
+	 * The {@link SessionScopedTargetingStabile} object associated with this session.
+	 * @return
+	 */
+	SessionScopedTargetingStabile getTargetingStabile() {
+		return targetingStabile;
 	}
 	
 	/**
@@ -203,6 +209,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	private static final String FIELD_NAME_COUNT = "count";
 	private static final String FIELD_NAME_TEST = "test";
 	private static final String FIELD_NAME_QUALIFIED = "qual";
+	private static final String FIELD_NAME_TARGETING_STABIL = "stabil";
 	
 	/**
 	 * Serialize as JSON.
@@ -217,10 +224,12 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 			jsonGen.writeStringField(FIELD_NAME_ID, id);
 			jsonGen.writeNumberField(FIELD_NAME_TIMESTAMP, timestamp);
 			jsonGen.writeStringField(FIELD_NAME_SCHEMA_ID, schemaId);
+			
 			if (currentRequest != null) {
 				jsonGen.writeFieldName(FIELD_NAME_CURRENT_REQUEST);
 				jsonGen.writeRawValue(currentRequest.toJson());
 			}
+			
 			if (traversedStates.size() > 0) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_TRAVERSED_STATES);
 				for (Map.Entry<State, Integer> e: traversedStates.entrySet()) {
@@ -231,6 +240,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 				}
 				jsonGen.writeEndArray();
 			}
+			
 			if (traversedTests.size() > 0) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_TRAVERSED_TESTS);
 				for (Map.Entry<Test, Boolean> e: traversedTests.entrySet()) {
@@ -240,7 +250,15 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 					jsonGen.writeEndObject();
 				}
 				jsonGen.writeEndArray();
-			}		
+			}
+			
+			if (targetingStabile.size() > 0) {
+				jsonGen.writeArrayFieldStart(FIELD_NAME_TARGETING_STABIL);
+				for (SessionScopedTargetingStabile.Entry entry: targetingStabile.getAll()) {
+					jsonGen.writeString(entry.toString());
+				}
+				jsonGen.writeEndArray();
+			}
 			jsonGen.writeEndObject();
 			jsonGen.flush();
 			return result.toString();
@@ -285,7 +303,23 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 			return null;
 		}
 		
-		CoreSessionImpl result = new CoreSessionImpl(coreApi, (String)idObj);
+		SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
+		Object stabileObj = fields.get(FIELD_NAME_TARGETING_STABIL);
+		if (stabileObj != null) {
+			try {
+				List<?> listRaw = (List<?>) stabileObj; 
+				for (Object obj: listRaw) {
+					String entryString = (String) obj;
+					String[] tokens = entryString.split("\\.");
+					targetingStabile.add(tokens[0], tokens[1], Long.parseLong(tokens[2]));
+				}
+			}
+			catch (Exception e) {
+				throw new VariantInternalException("Unable to deserialzie session: bad states spec", e);
+			}
+		}
+			
+		CoreSessionImpl result = new CoreSessionImpl((String)idObj, coreApi, targetingStabile);
 
 		Object tsObj = fields.get(FIELD_NAME_TIMESTAMP);
 		if (tsObj == null) 
@@ -299,7 +333,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		if (currentRequestObj != null) {
 			if (!(currentRequestObj instanceof Map<?,?>)) 
 			throw new VariantInternalException("Unable to deserialzie session: currentRequest not map: [" + json + "]");
-			result.currentRequest = VariantStateRequestImpl.fromJson(coreApi, result, (Map<String,?>)currentRequestObj);
+			result.currentRequest = VariantCoreStateRequestImpl.fromJson(coreApi, result, (Map<String,?>)currentRequestObj);
 		}
 		
 		// If server, don't deserialize traversed tests and states because we don't have the schema.

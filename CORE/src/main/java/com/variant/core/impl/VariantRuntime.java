@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.VariantTargetingTracker;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.TestQualificationHook;
@@ -159,12 +158,12 @@ public class VariantRuntime {
      * 7. Resolve the path. For OFF tests, substitute non-control experiences with control ones.
 	 * 
 	 */
-	private Map<String,String> targetSessionForState(VariantStateRequestImpl req) {
+	private Map<String,String> targetSessionForState(VariantCoreStateRequestImpl req) {
 
 		Schema schema = coreApi.getSchema();
 		CoreSessionImpl session = (CoreSessionImpl) req.getSession();
+		SessionScopedTargetingStabile targetingStabile = session.getTargetingStabile();
 		State state = req.getState();
-		VariantTargetingTracker tt = req.getTargetingTracker();
 		
 		// It is illegal to call this with a view that is not in schema, e.g. before runtime.
 		State schemaState = schema.getState(state.getName());
@@ -187,7 +186,7 @@ public class VariantRuntime {
 				TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
 				coreApi.getUserHooker().post(hook);
 				if (!hook.qualified) {
-					if (hook.removeFromTT) tt.remove(test);
+					if (hook.removeFromTT) targetingStabile.remove(test.getName());
 				}
 				
 				// If this test is on, add it to the traversed list.
@@ -195,9 +194,9 @@ public class VariantRuntime {
 			}
 		}
 		
-		// Pre-targeted experiences from the targeting tracker. Keep original order for
+		// Pre-targeted experiences from the targeting stabile. Keep original order for
 		// test determinism.
-		LinkedHashSet<Experience> alreadyTargetedExperiences = new LinkedHashSet<Experience>(tt.getAll());
+		LinkedHashSet<Experience> alreadyTargetedExperiences = new LinkedHashSet<Experience>(targetingStabile.getAllAsExperiences(schema));
 		
 		// Remove from the pre-targeted experience list the experiences corresponding to currently
 		// disqualified tests: we won't need to resolve them anyway.
@@ -229,7 +228,7 @@ public class VariantRuntime {
 				if (LOG.isDebugEnabled()) LOG.debug("Targeting tracker resolvable for session [" + session.getId() + "]");
 			}
 			else {
-				for (Experience e: minUnresolvableSubvector) tt.remove(e.getTest());
+				for (Experience e: minUnresolvableSubvector) targetingStabile.remove(e.getTest().getName());
 
 				LOG.info(
 						"Targeting tracker not resolvable for session [" + session.getId() + "]. " +
@@ -244,7 +243,7 @@ public class VariantRuntime {
 		ArrayList<Experience> vector = new ArrayList<Experience>();
 		
 		// First add all from from TP.
-		for (Experience e: tt.getAll()) {
+		for (Experience e: targetingStabile.getAllAsExperiences(schema)) {
 
 			if (!e.getTest().isOn()) {
 				Experience ce = e.getTest().getControlExperience();
@@ -276,7 +275,7 @@ public class VariantRuntime {
 		// Then target and add the rest from the ITL.
 		for (Test test: state.getInstrumentedTests()) {
 						
-			if (tt.get(test) == null) {
+			if (targetingStabile.get(test.getName()) == null) {
 								
 				if (!test.isOn()) {
 					Experience e = test.getControlExperience();
@@ -296,7 +295,7 @@ public class VariantRuntime {
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}										
 				}
-				else if (isTargetable(test, tt.getAll())) {
+				else if (isTargetable(test, targetingStabile.getAllAsExperiences(schema))) {
 					// Target this test. First post possible user hook listeners.
 					TestTargetingHookImpl hook = new TestTargetingHookImpl(session, test);
 					coreApi.getUserHooker().post(hook);
@@ -307,7 +306,7 @@ public class VariantRuntime {
 					}
 										
 					vector.add(targetedExperience);
-					tt.add(targetedExperience, System.currentTimeMillis());
+					targetingStabile.add(targetedExperience, System.currentTimeMillis());
 					if (LOG.isTraceEnabled()) {
 						LOG.trace(
 								"Session [" + session.getId() + "] targeted for test [" + 
@@ -318,7 +317,7 @@ public class VariantRuntime {
 				else {
 					Experience e = test.getControlExperience();
 					vector.add(e);
-					tt.add(e, System.currentTimeMillis());
+					targetingStabile.add(e, System.currentTimeMillis());
 					if (LOG.isTraceEnabled()) {
 						LOG.trace(
 								"Session [" + session.getId() + "] targeted for untargetable test [" + 
@@ -518,20 +517,22 @@ public class VariantRuntime {
 	 * @param view
 	 * @return
 	 */
-	public VariantStateRequestImpl targetSessionForState(VariantCoreSession ssn, State state, VariantTargetingTracker targetingPersister) {
+	public VariantCoreStateRequestImpl targetSessionForState(CoreSessionImpl ssn, StateImpl state) {
 
 		// Resolve the path and get all tests instrumented on the given view targeted.
-		VariantStateRequestImpl result = new VariantStateRequestImpl((CoreSessionImpl)ssn, (StateImpl) state);
-		result.setTargetingPersister(targetingPersister);
+		VariantCoreStateRequestImpl result = new VariantCoreStateRequestImpl(ssn, state);
 		
 		Map<String,String> resolvedParams = targetSessionForState(result);		
 		result.setResolvedParameters(resolvedParams);
+		
+		// Targeting stabile contains targeted experiences.
+		SessionScopedTargetingStabile targetingStabile = ssn.getTargetingStabile();
 		
 		if (LOG.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Session [").append(ssn.getId()).append("] resolved state [").append(state.getName()).append("] as [");
 			sb.append(VariantStringUtils.toString(resolvedParams,","));
-			sb.append("] for experience vector [").append(StringUtils.join(targetingPersister.getAll().toArray(), ",")).append("]");
+			sb.append("] for experience vector [").append(StringUtils.join(targetingStabile.getAll().toArray(), ",")).append("]");
 			LOG.trace(sb.toString());
 		}   
 			

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.StateParsedHook;
 import com.variant.core.hook.TestParsedHook;
@@ -93,7 +93,7 @@ public class UserHookTest extends BaseTestCore {
 		Schema schema = api.getSchema();
 		State state1 = schema.getState("state1");
 		VariantCoreSession ssn = api.getSession("foo");
-		VariantStateRequest request = ssn.targetForState(state1, "");
+		VariantCoreStateRequest request = ssn.targetForState(state1, "");
 		assertEquals(1, ssn.getTraversedStates().size());
 		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
 		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());

@@ -1,5 +1,6 @@
 package com.variant.core.schema.impl;
 
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test;
 
 // Remove public modifier is the result of exposing the server side
@@ -49,6 +50,10 @@ public class TestExperienceImpl implements Test.Experience  {
 		return weight;
 	}
 
+	//---------------------------------------------------------------------------------------------//
+	//                                        PUBLIC EXT                                           //
+	//---------------------------------------------------------------------------------------------//
+
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof TestExperienceImpl)) return false;
@@ -64,5 +69,5 @@ public class TestExperienceImpl implements Test.Experience  {
 	@Override
 	public String toString() {
 		return test.getName() + "." + name;
-	}
+	}	
 }

@@ -20,7 +20,7 @@ import com.variant.client.VariantClient;
 import com.variant.client.impl.StateSelectorByRequestPath;
 import com.variant.client.servlet.util.VariantWebUtils;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
@@ -107,7 +107,7 @@ public class VariantFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		VariantCoreSession variantSsn = null; 
-		VariantStateRequest variantRequest = null;
+		VariantCoreStateRequest variantRequest = null;
 		
 		long start = System.currentTimeMillis();
 
@@ -155,7 +155,7 @@ public class VariantFilter implements Filter {
 			LOG.error("Unhandled exception in Variant for path [" + VariantWebUtils.requestUrl(httpRequest) + "]", t);
 			isForwarding = false;
 			if (variantRequest != null) {
-				variantRequest.setStatus(VariantStateRequest.Status.FAIL);
+				variantRequest.setStatus(VariantCoreStateRequest.Status.FAIL);
 			}
 		}
 
@@ -178,7 +178,7 @@ public class VariantFilter implements Filter {
 						VariantWebUtils.requestUrl(httpRequest) + 
 						"] and session [" + variantRequest.getSession().getId() + "]", t);
 				
-				variantRequest.setStatus(VariantStateRequest.Status.FAIL);
+				variantRequest.setStatus(VariantCoreStateRequest.Status.FAIL);
 			}
 		}
 	}

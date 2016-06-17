@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -122,14 +122,14 @@ public class SessionTest extends BaseTestCore {
 		Schema schema = api.getSchema();
 		VariantCoreSession ssn = api.getSession("foo");
 		assertNull(ssn.getStateRequest());
-		VariantStateRequest req1 = ssn.targetForState(schema.getState("state1"), "");
+		VariantCoreStateRequest req1 = ssn.targetForState(schema.getState("state1"), "");
 		assertNotNull(req1);
 		assertEquals(req1, ssn.getStateRequest());
 		assertNotNull(req1.getStateVisitedEvent());
 		String json = ((CoreSessionImpl)ssn).toJson();
 		CoreSessionImpl deserializedSsn = CoreSessionImpl.fromJson(api, json);
 		assertEquals("foo", deserializedSsn.getId());
-		VariantStateRequest deserializedReq = deserializedSsn.getStateRequest();
+		VariantCoreStateRequest deserializedReq = deserializedSsn.getStateRequest();
 		assertEquals(deserializedReq.getSession(), deserializedSsn);
 		assertEquals(req1.getState(), deserializedReq.getState());
 		assertEqualAsSets(req1.getResolvedParameterMap(), deserializedReq.getResolvedParameterMap());
@@ -141,7 +141,7 @@ public class SessionTest extends BaseTestCore {
 		req1.commit("");
 		System.out.println(((CoreSessionImpl)ssn).toJson());
 		// Nothing is instrumented on state2
-		VariantStateRequest req2 = ssn.targetForState(schema.getState("state2"), "");
+		VariantCoreStateRequest req2 = ssn.targetForState(schema.getState("state2"), "");
 		assertNotNull(req2);
 		assertNotEquals(req1, req2);
 		assertNull(req2.getStateVisitedEvent());
@@ -171,7 +171,7 @@ public class SessionTest extends BaseTestCore {
 		Schema schema = api.getSchema();
 		VariantCoreSession ssn1 = api.getSession("foo2");
 		State state1 = schema.getState("state1");
-		VariantStateRequest req = ssn1.targetForState(state1, "");
+		VariantCoreStateRequest req = ssn1.targetForState(state1, "");
 		req.commit("");  // Saves the session.
 
 		Thread.sleep(10);

@@ -15,7 +15,7 @@ import org.apache.commons.collections4.Predicate;
 import org.junit.Test;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.hook.HookListener;
@@ -47,7 +47,7 @@ public class EventWriterTest extends BaseTestCore {
 		State s2 = schema.getState("state2");
 		
 		VariantCoreSession ssn1 = api.getSession("ssn1");
-		VariantStateRequest request = ssn1.targetForState(s1, targetingTrackerString("test1.A","test2.B","test3.C","test4.A","test5.B","test6.C"));
+		VariantCoreStateRequest request = ssn1.targetForState(s1, targetingTrackerString("test1.A","test2.B","test3.C","test4.A","test5.B","test6.C"));
 		assertNotNull(request.getStateVisitedEvent());
 
 		VariantCoreSession ssn2 = api.getSession("ssn2");
@@ -161,7 +161,7 @@ public class EventWriterTest extends BaseTestCore {
 		State s2 = schema.getState("state2");
 		
 		VariantCoreSession ssn3 = api.getSession("ssn3");
-		VariantStateRequest request = ssn3.targetForState(s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
+		VariantCoreStateRequest request = ssn3.targetForState(s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
 		customEvent.getParameterMap().put("param-key", "param-value");
 		ssn3.triggerEvent(customEvent);
@@ -278,7 +278,7 @@ public class EventWriterTest extends BaseTestCore {
 		api.addHookListener(new TestQualificationHookListenerDisqualifyTest(false, "ssn4", schema.getTest("test3")));
 		
 		VariantCoreSession ssn4 = api.getSession("ssn4");
-		VariantStateRequest request = ssn4.targetForState(s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
+		VariantCoreStateRequest request = ssn4.targetForState(s2, targetingTrackerString("test2.C","test3.A","test4.A","test5.B","test6.C"));
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
 		customEvent.getParameterMap().put("param-key", "param-value");
 		ssn4.triggerEvent(customEvent);

@@ -17,8 +17,8 @@ import com.variant.client.impl.ClientStateRequestWrapper;
 import com.variant.client.impl.VariantClientSession;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantStateRequest;
-import com.variant.core.impl.VariantStateRequestImpl;
+import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.impl.VariantCoreStateRequestImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -117,13 +117,13 @@ public class SessionTest extends BaseTestClient {
 		assertEquals(1, httpResp.getCookies().length);
 
 		State state1 = schema.getState("state1");		
-		VariantStateRequest varReq = ssn2.targetForState(state1, httpReq);
+		VariantCoreStateRequest varReq = ssn2.targetForState(state1, httpReq);
 		//System.out.println(((VariantSessionImpl)ssn2).toJson());
 		assertEquals(state1, varReq.getState());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(
-				((VariantStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
-				((VariantStateRequestImpl)ssn2.getStateRequest()).toJson());
+				((VariantCoreStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
+				((VariantCoreStateRequestImpl)ssn2.getStateRequest()).toJson());
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
@@ -147,8 +147,8 @@ public class SessionTest extends BaseTestClient {
 		// The session shouldn't have changed after commit.
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(
-				((VariantStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
-				((VariantStateRequestImpl)ssn2.getStateRequest()).toJson());
+				((VariantCoreStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
+				((VariantCoreStateRequestImpl)ssn2.getStateRequest()).toJson());
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
@@ -160,8 +160,8 @@ public class SessionTest extends BaseTestClient {
 		assertEquals(ssn3, ssn2);
 		assertEquals(ssn3.getSchemaId(), schema.getId());
 		assertEquals(
-				((VariantStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
-				((VariantStateRequestImpl)ssn3.getStateRequest()).toJson());
+				((VariantCoreStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
+				((VariantCoreStateRequestImpl)ssn3.getStateRequest()).toJson());
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn3.getTraversedStates().toArray()));
@@ -196,12 +196,12 @@ public class SessionTest extends BaseTestClient {
 		assertEquals(0, httpResp.getCookies().length);  // We didn't drop the ssnid cookie, because there was one in request.
 		
 		State state2 = schema.getState("state2");		
-		VariantStateRequest varReq = ssn1.targetForState(state2, httpReq);
+		VariantCoreStateRequest varReq = ssn1.targetForState(state2, httpReq);
 		assertEquals(ssn1, varReq.getSession());
 		assertEquals(ssn1.getSchemaId(), schema.getId());
 		assertEquals(
-				((VariantStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
-				((VariantStateRequestImpl)ssn1.getStateRequest()).toJson());
+				((VariantCoreStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
+				((VariantCoreStateRequestImpl)ssn1.getStateRequest()).toJson());
 		assertEquals(
 				"[(state2, 1)]", 
 				Arrays.toString(ssn1.getTraversedStates().toArray()));

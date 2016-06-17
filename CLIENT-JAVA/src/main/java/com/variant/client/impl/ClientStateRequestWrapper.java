@@ -7,19 +7,19 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.variant.client.VariantTargetingTracker;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
-public class ClientStateRequestWrapper implements VariantStateRequest {
+public class ClientStateRequestWrapper implements VariantCoreStateRequest {
 
-	private VariantStateRequest variantRequest;
+	private VariantCoreStateRequest variantRequest;
 	private VariantCoreSession clientSession;
 	
 	public ClientStateRequestWrapper(
-			VariantCoreSession clientSession, VariantStateRequest variantRequest) 
+			VariantCoreSession clientSession, VariantCoreStateRequest variantRequest) 
 	{
 		this.variantRequest = variantRequest;
 		this.clientSession = clientSession;
@@ -30,7 +30,7 @@ public class ClientStateRequestWrapper implements VariantStateRequest {
 		return (HttpServletRequest) userData[0];
 	}
 	**/
-	public VariantStateRequest getOriginalRequest() {
+	public VariantCoreStateRequest getOriginalRequest() {
 		return variantRequest;
 	}
 	

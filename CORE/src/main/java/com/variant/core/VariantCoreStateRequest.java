@@ -16,7 +16,7 @@ import com.variant.core.schema.Test.Experience;
  * @since 0.6
  *
  */
-public interface VariantStateRequest {
+public interface VariantCoreStateRequest {
 
 	/**
 	 * This request's Variant session.
@@ -122,7 +122,7 @@ public interface VariantStateRequest {
 	public Status getStatus();
 
 	/**
-	 * Status of a {@link com.variant.core.VariantStateRequest}.
+	 * Status of a {@link com.variant.core.VariantCoreStateRequest}.
 	 */
 	public static enum Status {
 		OK, FAIL
