@@ -16,6 +16,7 @@ public interface VariantCoreProperties {
 	/**
 	 * Keys of all known core properties.
 	 */
+	public final static Key TEST_MAX_IDLE_DAYS_TO_TARGET = new Key();
 	public final static Key EVENT_PERSISTER_CLASS_NAME = new Key();
 	public final static Key EVENT_PERSISTER_CLASS_INIT = new Key();
 	public final static Key EVENT_WRITER_BUFFER_SIZE = new Key();

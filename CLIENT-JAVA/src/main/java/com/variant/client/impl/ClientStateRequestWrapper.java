@@ -1,5 +1,5 @@
 package com.variant.client.impl;
-
+/*
 import java.util.Collection;
 import java.util.Map;
 
@@ -25,11 +25,11 @@ public class ClientStateRequestWrapper implements VariantCoreStateRequest {
 		this.clientSession = clientSession;
 	}
 
-	/** Extra Methods WE SNOULD NOT NEED THIS///
-	public HttpServletRequest getHttpServletRequest() {
-		return (HttpServletRequest) userData[0];
-	}
-	**/
+	// Extra Methods WE SNOULD NOT NEED THIS
+	//public HttpServletRequest getHttpServletRequest() {
+	//	return (HttpServletRequest) userData[0];
+	//}
+
 	public VariantCoreStateRequest getOriginalRequest() {
 		return variantRequest;
 	}
@@ -80,4 +80,11 @@ public class ClientStateRequestWrapper implements VariantCoreStateRequest {
 		variantRequest.commit(userData);
 	}
 
+	@Override
+	public void commit() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
+*/

@@ -50,7 +50,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * 
 	 * @param id
 	 */
-	protected CoreSessionImpl(String id, VariantCore coreApi, SessionScopedTargetingStabile targetingStabile) {
+	public CoreSessionImpl(String id, VariantCore coreApi, SessionScopedTargetingStabile targetingStabile) {
 		
 		this.coreApi = coreApi;
 		this.targetingStabile = targetingStabile;
@@ -61,7 +61,15 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		this.id = id;
 		
 	}
-	
+
+	/**
+	 * Empty targeting stabile
+	 * @param id
+	 */
+	public CoreSessionImpl(String id, VariantCore coreApi) {
+		this(id, coreApi, new SessionScopedTargetingStabile());
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//

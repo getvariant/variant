@@ -108,13 +108,10 @@ public interface VariantCoreStateRequest {
      * life cycle.
      * 
 	 * @param request The state request to be committed.
-	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
-	 *                 to the implementations of {@link com.variant.client.VariantSessionIdTracker#save(String, Object...)}
-	 *                 and {@link com.variant.core.VariantSessionStore#save(VariantCoreSession, Object...)}.
      *
 	 * @since 0.6
 	 */
-	public void commit(Object...userData);
+	public void commit();
 
 	/**
 	 * Current status of this request.

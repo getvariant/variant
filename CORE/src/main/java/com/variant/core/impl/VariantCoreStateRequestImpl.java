@@ -10,7 +10,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.client.VariantTargetingTracker;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
@@ -88,12 +87,9 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 	 * Commit this state request and trigger the state visited event. 
 	 */
 	@Override
-	public void commit(Object...userData) {
+	public void commit() {
 		
 		if (isCommitted()) throw new IllegalStateException("Request already committed");
-				
-		// Persist targeting info.  Note that we expect the userData to apply to both!
-		session.get().save(userData);
 		
 		// We won't have an event if nothing is instrumented on this state
 		if (event != null) {
@@ -108,9 +104,6 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 			event = null;
 		}
 		
-		// Save the session in session store.
-		session.getCoreApi().getSessionService().saveSession(session, userData);
-
 		committed = true;
 
 	}
@@ -152,12 +145,15 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 	public Collection<Experience> getTargetedExperiences() {
 		
 		if (targetedExperiencesCache == null) {
+
+			SessionScopedTargetingStabile stabile = session.getTargetingStabile();
 			ArrayList<Experience> result = new ArrayList<Experience>();
+
 			for (Test test: state.getInstrumentedTests()) {
 				if (!(test.isOn() && session.isQualifiedFor(test))) continue;
-				Experience e = targetingTracker.get(test);
-				if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found in targeting tracker.");
-				result.add(e);
+				SessionScopedTargetingStabile.Entry entry = stabile.get(test.getName());
+				if (entry == null) throw new VariantInternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
+				result.add(test.getExperience(entry.getExperienceName()));
 			}
 			targetedExperiencesCache = result;
 		}
@@ -173,11 +169,12 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 
 			if (!t.equals(test)) continue;
 			found = true;
-			if (!t.isOn() || session.isDisqualified(test)) continue;
+
+			if (!t.isOn() || session.isDisqualified(test)) return null;
 			
-			Experience e = targetingTracker.get(test);
-			if (e == null) throw new VariantInternalException("Experience for test [" + test.getName() + "] not found in targeting tracker.");
-			return e;
+			SessionScopedTargetingStabile.Entry entry = session.getTargetingStabile().get(test.getName());
+			if (entry == null) throw new VariantInternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
+			return test.getExperience(entry.getExperienceName());
 		}
 		
 		if (!found) throw new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, state.getName(), test.getName());

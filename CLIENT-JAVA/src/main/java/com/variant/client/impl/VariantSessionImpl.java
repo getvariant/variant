@@ -3,13 +3,19 @@ package com.variant.client.impl;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
+import com.variant.client.VariantStateRequest;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.SessionScopedTargetingStabile;
 import com.variant.core.impl.VariantCore;
+import com.variant.core.impl.VariantCoreStateRequestImpl;
+import com.variant.core.schema.State;
 
 /**
- * Client side session implementation. Adds client API to session state.
+ * Client side session implementation.
+ * Augments core session with client-side functionality.
+ * Creates core session via inheritance because session construction
+ * happens on the client.
  * 
  * @author Igor
  *
@@ -31,6 +37,22 @@ public class VariantSessionImpl extends CoreSessionImpl implements VariantSessio
 		return result;
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
+	VariantSessionIdTracker getSessionIdTracker() {
+		return sessionIdTracker;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	VariantTargetingTracker getTargetingTracker() {
+		return targetingTracker;
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -44,5 +66,12 @@ public class VariantSessionImpl extends CoreSessionImpl implements VariantSessio
 	}
 
 	
+	@Override
+	public VariantStateRequest targetForState(State state) {
 
+		VariantCoreStateRequestImpl coreReq = (VariantCoreStateRequestImpl) super.targetForState(state);
+		
+		return new VariantStateRequestImpl(coreReq, this);
+	}
+	
 }

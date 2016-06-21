@@ -13,10 +13,12 @@ import com.variant.core.schema.Test.Experience;
 
 public class VariantStateRequestImpl implements VariantStateRequest {
 
+	private VariantSessionImpl session;
 	private VariantCoreStateRequestImpl coreStateRequest;
 	
-	public VariantStateRequestImpl(VariantCoreStateRequestImpl coreStateRequest) {
+	public VariantStateRequestImpl(VariantCoreStateRequestImpl coreStateRequest, VariantSessionImpl session) {
 		this.coreStateRequest = coreStateRequest;
+		this.session = session;
 	}
 
 	@Override
@@ -55,9 +57,23 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		coreStateRequest.setStatus(status);
 	}
 
+	/**
+	 * Plug the no argument invocation and channel it via the varargs.
+	 * TODO In 8, this should move to the interface.
+	 */
+	@Override
+	public void commit() {
+		commit((Object[])null);
+	}
+	
 	@Override
 	public void commit(Object... userData) {
-		coreStateRequest.commit(userData);
+		
+		coreStateRequest.commit();
+		
+		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
+		session.getTargetingTracker().save(userData);
+		session.getSessionIdTracker().save(userData);
 	}
 
 	@Override

@@ -20,7 +20,6 @@ public class TestImpl implements Test {
 	// As defined:
 	private String name;
 	private CorePropertiesImpl properties;
-	private Integer idleDaysToLive = null;
 	private boolean isOn = true;
 	private List<TestImpl> covariantTests;
 	private List<TestExperienceImpl> experiences;
@@ -62,15 +61,7 @@ public class TestImpl implements Test {
 	void setIsOn(boolean isOn) {
 		this.isOn = isOn;
 	}
-	
-	/**
-	 * 
-	 * @param isOn
-	 */
-	void setIdleDaysToLive(int days) {
-		this.idleDaysToLive = days;
-	}
-	
+		
 	/**
 	 * Caller must ensure that the covarTests are sorted in ordinal order.
 	 * @param tests
@@ -186,15 +177,6 @@ public class TestImpl implements Test {
 		return isOn;
 	}
 	
-	/**
-	 * 
-	 */
-	public int getIdleDaysToLive() {
-		return idleDaysToLive == null ? 
-				properties.get(CorePropertiesImpl.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class) : 
-				idleDaysToLive;
-	}
-
 	//---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC EXTENSION                                         //
 	//---------------------------------------------------------------------------------------------//

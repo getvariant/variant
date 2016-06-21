@@ -25,8 +25,6 @@ import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATEREF_DUPE;
 import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATEREF_MISSING;
 import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATEREF_NOT_STRING;
 import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATEREF_UNDEFINED;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_TEST_IDLE_DAYS_TO_LIVE_NEGATIVE;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_TEST_IDLE_DAYS_TO_LIVE_NOT_INT;
 import static com.variant.core.schema.impl.MessageTemplate.PARSER_TEST_ISON_NOT_BOOLEAN;
 import static com.variant.core.schema.impl.MessageTemplate.PARSER_TEST_NAME_DUPE;
 import static com.variant.core.schema.impl.MessageTemplate.PARSER_TEST_NAME_MISSING;
@@ -224,6 +222,7 @@ public class TestsParser implements Keywords {
 					response.addMessage(PARSER_TEST_ISON_NOT_BOOLEAN, name);					
 				}
 			}
+			/* idleDaysToLive is out for now (0.6.1)
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_IDLE_DAYS_TO_LIVE)) {
 				try {
 					Integer days = (Integer) entry.getValue();
@@ -238,6 +237,7 @@ public class TestsParser implements Keywords {
 					response.addMessage(PARSER_TEST_IDLE_DAYS_TO_LIVE_NOT_INT, name);					
 				}
 			}
+			*/
 		}
 		
 		// Resort covariant tests in ordinal order before adding to the result.
@@ -250,7 +250,7 @@ public class TestsParser implements Keywords {
 		// Pass 4: Parse onViews.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
-			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS, KEYWORD_IS_ON, KEYWORD_IDLE_DAYS_TO_LIVE)) continue;
+			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS, KEYWORD_IS_ON)) continue;
 
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_STATES)) {
 				Object onViewsObject = entry.getValue();

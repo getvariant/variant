@@ -42,7 +42,7 @@ public class SessionStoreLocalMemory implements VariantSessionStore {
 	@Override
 	public VariantCoreSession get(String sessionId) {
 		String json = map.get(sessionId);
-		return json == null ? new CoreSessionImpl(coreApi, sessionId) : CoreSessionImpl.fromJson(coreApi, json);
+		return json == null ? new CoreSessionImpl(sessionId, coreApi) : CoreSessionImpl.fromJson(coreApi, json);
 	}
 
 	/**

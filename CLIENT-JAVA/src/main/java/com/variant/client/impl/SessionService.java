@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.VariantClient;
+import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.core.VariantCoreInitParams;
@@ -136,7 +137,7 @@ public class SessionService {
 	 * @param userData opaque object(s) as passed to Variant.getSession()
 	 * @return 
 	 */
-	public VariantCoreSession getSession(Object...userData) throws VariantRuntimeException {
+	public VariantSession getSession(Object...userData) throws VariantRuntimeException {
 		
 		if (client.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 
@@ -165,7 +166,7 @@ public class SessionService {
 	 * @param session
 	 * TODO Make this async
 	 */
-	public void saveSession(VariantCoreSession session, Object...userData) {
+	public void saveSession(VariantSession session, Object...userData) {
 		if (client.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 		if (!client.getSchema().getId().equals(session.getSchemaId())) 
 			throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_REPLACED, client.getSchema().getId(), session.getSchemaId());

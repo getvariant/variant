@@ -7,9 +7,8 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantProperties;
-import com.variant.core.VariantCoreSession;
+import com.variant.client.VariantSession;
 import com.variant.core.hook.HookListener;
-import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
@@ -47,6 +46,14 @@ public class VariantClientImpl implements VariantClient {
 		return core;
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	SessionService getSessionService() {
+		return sessionService;
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -166,7 +173,7 @@ public class VariantClientImpl implements VariantClient {
 	 * @return
 	 */
 	@Override
-	public VariantCoreSession getSession(Object... userData) {
+	public VariantSession getSession(Object... userData) {
 		return sessionService.getSession(userData);
 	}
 			

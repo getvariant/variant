@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantProperties;
+import com.variant.client.VariantSession;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.hook.HookListener;
 import com.variant.core.impl.CorePropertiesImpl;
@@ -129,7 +130,7 @@ public class VariantServletClient {
 	 * @since 0.6
 	 * @return
 	 */
-	public VariantCoreSession getSession(HttpServletRequest request) {
+	public VariantSession getSession(HttpServletRequest request) {
 		return client.getSession(request);
 	}
 

@@ -1,6 +1,7 @@
 package com.variant.client;
 
 import com.variant.core.VariantCoreSession;
+import com.variant.core.schema.State;
 
 /**
  * <p>Represents a Variant user session. Variant has its own notion of user session, 
@@ -16,5 +17,16 @@ import com.variant.core.VariantCoreSession;
  * @since 0.6
  */
 public interface VariantSession extends VariantCoreSession {
+
+	/**
+     * <p>Target session for a state. Overrides core's return type.
+     *  
+	 * @return An instance of the {@link com.variant.core.VariantCoreStateRequest} object, which
+	 *         may be further examined for more information about targeting.  
+	 *
+	 * @since 0.5
+	 */
+	@Override
+	public VariantStateRequest targetForState(State state);
 
 }

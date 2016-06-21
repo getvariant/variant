@@ -10,6 +10,7 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantInitParams;
+import com.variant.client.VariantProperties;
 import com.variant.client.VariantSession;
 import com.variant.client.impl.VariantSessionImpl;
 import com.variant.client.impl.VariantClientImpl;
@@ -24,11 +25,13 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 
 	private TargetingCookie cookie;
 	private Collection<Entry> entries = new ArrayList<Entry>();
+	private VariantClient client;
 	
 	/**
 	 * 
 	 */
 	private void _initialized(VariantInitParamsImpl initParams, HttpServletRequest request) {
+		client = initParams.getVariantClient();
 		cookie = new TargetingCookie(request);
 		String input = cookie.getValue();
 		// If the targeting cookie existed and returned a value, the superclass will parse it.
@@ -67,6 +70,14 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 		public int getMaxAge() {
 			return (int) DateUtils.MILLIS_PER_DAY / 1000 * 365;
 		}
+	}
+
+	/**
+	 * Superclass needs properties but doesn't have them.
+	 */
+	@Override
+	protected VariantProperties getProperties() {
+		return client.getProperties();
 	}
 
 	//---------------------------------------------------------------------------------------------//

@@ -35,11 +35,6 @@ public class TestServerStub implements Test {
 	}
 
 	@Override
-	public int getIdleDaysToLive() {
-		throw new VariantInternalException("Method not supported");
-	}
-
-	@Override
 	public String getName() {
 		return name;
 	}

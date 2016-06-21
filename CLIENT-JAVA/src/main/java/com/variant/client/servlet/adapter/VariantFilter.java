@@ -17,6 +17,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.VariantClient;
+import com.variant.client.VariantSession;
+import com.variant.client.VariantStateRequest;
 import com.variant.client.impl.StateSelectorByRequestPath;
 import com.variant.client.servlet.util.VariantWebUtils;
 import com.variant.core.VariantCoreSession;
@@ -106,8 +108,8 @@ public class VariantFilter implements Filter {
 		
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		VariantCoreSession variantSsn = null; 
-		VariantCoreStateRequest variantRequest = null;
+		VariantSession variantSsn = null; 
+		VariantStateRequest variantRequest = null;
 		
 		long start = System.currentTimeMillis();
 
@@ -132,7 +134,7 @@ public class VariantFilter implements Filter {
 			
 				// Yes, this path is mapped in Variant.
 				variantSsn = client.getSession(httpRequest);
-				variantRequest = variantSsn.targetForState(state, httpRequest);
+				variantRequest = variantSsn.targetForState(state);
 				resolvedPath = variantRequest.getResolvedParameterMap().get("path");
 				isForwarding = !resolvedPath.equals(state.getParameterMap().get("path"));
 				
