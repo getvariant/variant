@@ -1,12 +1,12 @@
-package com.variant.core.ext;
+package com.variant.core.session;
 
-import com.variant.core.VariantCoreInitParams;
+import java.util.Map;
+
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantException;
-import com.variant.core.impl.VariantCoreInitParamsImpl;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
+import com.variant.core.session.SessionStore;
 
 /**
  * Session store that avoids any storage and always generates new session on get().
@@ -17,23 +17,23 @@ import com.variant.core.impl.VariantCore;
  * @author Igor
  *
  */
-public class SessionStoreNull implements VariantSessionStore {
+public class SessionStoreImplNull implements SessionStore {
 
-	private VariantCore coreApi = null;
+	private VariantCore core = null;
 	
-	public SessionStoreNull() { }
+	public SessionStoreImplNull() { }
 	
 	@Override
-	public void initialized(VariantCoreInitParams initParams) {
-		coreApi = ((VariantCoreInitParamsImpl)initParams).getCoreApi();
+	public void init(VariantCore core, Map<String, Object> initObject) {
+		this.core = core;
 	}
 
 	/**
 	 * 
 	 */
 	@Override
-	public VariantCoreSession get(String sessionId, Object...userData) {
-		return new CoreSessionImpl(coreApi, sessionId);
+	public VariantCoreSession get(String sessionId) {
+		return new CoreSessionImpl(sessionId, core);
 	}
 
 	/**
@@ -42,11 +42,12 @@ public class SessionStoreNull implements VariantSessionStore {
 	 * @throws VariantException 
 	 */
 	@Override
-	public void save(VariantCoreSession session, Object...userData) throws VariantException {
+	public void save(VariantCoreSession session) throws VariantException {
 		// don't save anything
 	}
 	
 	@Override
 	public void shutdown() {}
+
 
 }

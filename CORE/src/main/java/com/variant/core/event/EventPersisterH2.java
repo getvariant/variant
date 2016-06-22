@@ -1,4 +1,4 @@
-package com.variant.core.ext;
+package com.variant.core.event;
 
 import static com.variant.core.VariantCoreProperties.EVENT_PERSISTER_CLASS_INIT;
 import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET;

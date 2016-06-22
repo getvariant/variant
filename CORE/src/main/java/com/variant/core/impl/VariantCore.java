@@ -1,7 +1,12 @@
 package com.variant.core.impl;
 
-import static com.variant.core.VariantCoreProperties.*;
-import static com.variant.core.schema.impl.MessageTemplate.*;
+import static com.variant.core.VariantCoreProperties.EVENT_PERSISTER_CLASS_INIT;
+import static com.variant.core.VariantCoreProperties.EVENT_PERSISTER_CLASS_NAME;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
+import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +17,6 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantCoreInitParams;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.exception.VariantException;
@@ -133,7 +137,7 @@ public class VariantCore implements Serializable {
 			Object eventPersisterObject = Class.forName(eventPersisterClassName).newInstance();
 			if (eventPersisterObject instanceof EventPersister) {
 				eventPersister = (EventPersister) eventPersisterObject;
-				eventPersister.initialized(properties.get(EVENT_PERSISTER_CLASS_INIT, VariantCoreInitParams.class));
+				eventPersister.initialized(new VariantCoreInitParamsImpl(this, EVENT_PERSISTER_CLASS_INIT));
 			}
 			else {
 				throw new VariantRuntimeException (BOOT_EVENT_PERSISTER_NO_INTERFACE, eventPersisterClassName, EventPersister.class.getName());
@@ -189,7 +193,7 @@ public class VariantCore implements Serializable {
 			throw e;
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to instantiate Core", e);
+			throw new VariantInternalException("Unable to instantiate Variant Core", e);
 		}
 		LOG.info(
 				String.format("Variant Core %s bootstrapped in %s.",

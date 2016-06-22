@@ -1,4 +1,4 @@
-package com.variant.core.ext;
+package com.variant.core.event;
 
 import java.util.Collection;
 import java.util.Map;
@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantCoreInitParams;
-import com.variant.core.event.EventPersister;
-import com.variant.core.event.PersistableVariantEvent;
 import com.variant.core.schema.Test.Experience;
 
 public class EventPersisterAppLogger implements EventPersister {

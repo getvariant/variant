@@ -128,10 +128,10 @@ public class JdbcService {
 	 */
 	public Vendor getVendor() {
 		// Figure out the JDBC vendor, if we can.
-		if (getEventPersister() instanceof com.variant.core.ext.EventPersisterPostgres) {
+		if (getEventPersister() instanceof com.variant.core.event.EventPersisterPostgres) {
 			return Vendor.POSTGRES;
 		}
-		else if (getEventPersister() instanceof com.variant.core.ext.EventPersisterH2) {
+		else if (getEventPersister() instanceof com.variant.core.event.EventPersisterH2) {
 			return Vendor.H2;
 		}
 		else return null;

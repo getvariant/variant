@@ -1,4 +1,4 @@
-package com.variant.core.ext;
+package com.variant.core.session;
 /*
 import java.util.Map;
 

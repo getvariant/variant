@@ -10,9 +10,8 @@ import org.junit.Test;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.event.EventPersisterNull;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.ext.EventPersisterNull;
-import com.variant.core.ext.SessionStoreNull;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestTargetingHook;
 import com.variant.core.impl.CorePropertiesImpl;
@@ -21,6 +20,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.session.SessionStoreImplNull;
 
 public class TargetingTest extends BaseTestCore {
 
@@ -38,7 +38,7 @@ public class TargetingTest extends BaseTestCore {
 				EventPersisterNull.class.getName());
 		System.setProperty(
 				CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.Key.SESSION_STORE_CLASS_NAME.propName(),
-				SessionStoreNull.class.getName());
+				SessionStoreImplNull.class.getName());
 
 	}
 	

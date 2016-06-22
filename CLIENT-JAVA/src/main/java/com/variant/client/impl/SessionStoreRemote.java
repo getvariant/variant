@@ -12,15 +12,15 @@ import com.variant.client.http.HttpResponse;
 import com.variant.client.http.VariantHttpClientException;
 import com.variant.core.VariantCoreInitParams;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantCoreInitParamsImpl;
+import com.variant.core.session.SessionStore;
 
-public class SessionStoreRemote implements VariantSessionStore {
+public class SessionStoreRemote implements SessionStore {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SessionStoreRemote.class);
 	

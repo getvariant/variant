@@ -2,12 +2,10 @@ package com.variant.client.impl;
 
 import java.io.InputStream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.variant.client.VariantClient;
 import com.variant.client.VariantProperties;
 import com.variant.client.VariantSession;
+import com.variant.client.session.SessionService;
 import com.variant.core.hook.HookListener;
 import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
@@ -26,7 +24,7 @@ import com.variant.core.util.VariantStringUtils;
  */
 public class VariantClientImpl implements VariantClient {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
+	//private static final Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
 			
 	private VariantCore core = null;
 	private VariantPropertiesImpl properties = null;
@@ -35,16 +33,6 @@ public class VariantClientImpl implements VariantClient {
 	//---------------------------------------------------------------------------------------------//
 	//                                         PACKAGE                                             //
 	//---------------------------------------------------------------------------------------------//
-
-	/**
-	 * <p>Expose Core API to tests.
-	 * 
-	 * @return Core API Object.
-	 * @since 0.5
-	 */
-	VariantCore getCoreApi() {
-		return core;
-	}
 
 	/**
 	 * 
@@ -177,4 +165,16 @@ public class VariantClientImpl implements VariantClient {
 		return sessionService.getSession(userData);
 	}
 			
+	//---------------------------------------------------------------------------------------------//
+	//                                      PUBLIC EXT                                             //
+	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 * @return Core API Object.
+	 * @since 0.5
+	 */
+	public VariantCore getCoreApi() {
+		return core;
+	}
+
 }

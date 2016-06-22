@@ -29,16 +29,9 @@ public class VariantPropertiesTest {
 		
 		Properties defaultProps = new Properties();
 		defaultProps.load(VariantIoUtils.openResourceAsStream("/variant/defaults.props"));
-		Properties internalProps = new Properties();
-		internalProps.load(VariantIoUtils.openResourceAsStream("/variant/internal.7F1BDFD1F67FA313.props"));
 
-		assertEquals(internalProps.size() + defaultProps.size(), CorePropertiesImpl.Key.values().length);
-
-		for (CorePropertiesImpl.Key key: CorePropertiesImpl.Key.values()) {
-			if (defaultProps.containsKey(key.propName())) 
-				assertEquals(defaultProps.getProperty(key.propName()), api.getProperties().get(key, String.class));
-			else
-				assertEquals(internalProps.getProperty(key.propName()), api.getProperties().get(key, String.class));				
+		for (CorePropertiesImpl.Key key: CorePropertiesImpl.Key.propertyNames()) {
+			assertTrue(defaultProps.containsKey(key.propertyName()));
 		}
 		
 		// Compile time override
@@ -88,8 +81,8 @@ public class VariantPropertiesTest {
 		final String TMP_FILE_NAME = "/tmp/VariantPropertiesTest.props";
 		System.setProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
 		PrintWriter tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
-		tmpFile.println(CorePropertiesImpl.Key.TARGETING_TRACKER_CLASS_NAME.propName() + " = FileOverride");
-		tmpFile.println(CorePropertiesImpl.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName() + " = FileOverride");	
+		tmpFile.println(CorePropertiesImpl.EVENT_PERSISTER_CLASS_NAME.propertyName() + " = FileOverride");
+		tmpFile.println(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE.propertyName() + " = FileOverride");	
 		tmpFile.close();
 		
 		api = new VariantCore();
@@ -108,8 +101,8 @@ public class VariantPropertiesTest {
 		// Comp time override from class path + run time override from file system.
 		System.setProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
 		tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
-		tmpFile.println(CorePropertiesImpl.Key.TARGETING_TRACKER_CLASS_NAME + " = FileOverride");
-		tmpFile.println(CorePropertiesImpl.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE + " = FileTimeOverride");	
+		tmpFile.println(CorePropertiesImpl.EVENT_PERSISTER_CLASS_NAME.propertyName() + " = FileOverride");
+		tmpFile.println(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE.propertyName() + " = FileTimeOverride");	
 		tmpFile.close();
 		
 		api = new VariantCore("/variant-test.props");
@@ -128,20 +121,20 @@ public class VariantPropertiesTest {
 		// System props override. 
 		int randomInt = new Random().nextInt();
 		api = new VariantCore();
-		assertNotEquals(randomInt, api.getProperties().get(CorePropertiesImpl.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE,  Integer.class).intValue());
-		System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName(), String.valueOf(randomInt));
-		assertEquals(randomInt, api.getProperties().get(CorePropertiesImpl.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class).intValue());
+		assertNotEquals(randomInt, api.getProperties().get(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE,  Integer.class).intValue());
+		System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE.propertyName(), String.valueOf(randomInt));
+		assertEquals(randomInt, api.getProperties().get(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
 
 		api = new VariantCore();
-		assertEquals(randomInt, api.getProperties().get(CorePropertiesImpl.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class).intValue());
-		System.clearProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE.propName());
-		assertNotEquals(randomInt, api.getProperties().get(CorePropertiesImpl.Key.TARGETING_TRACKER_IDLE_DAYS_TO_LIVE, Integer.class).intValue());
+		assertEquals(randomInt, api.getProperties().get(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
+		System.clearProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE.propertyName());
+		assertNotEquals(randomInt, api.getProperties().get(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
 		
 		// JSON parsing errors
 		{
 			// Invalid JSON
 			final String BAD_JSON = "{\"foo\":\"FOO\"\"bar\":\"BAR\"}";
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.Key.EVENT_PERSISTER_CLASS_INIT.propName(), BAD_JSON);
+			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_PERSISTER_CLASS_INIT.propertyName(), BAD_JSON);
 			boolean exceptionThrown = false;
 			try {
 				api = new VariantCore();
@@ -152,7 +145,7 @@ public class VariantPropertiesTest {
 						new VariantRuntimeException(
 								MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON, 
 								BAD_JSON, 
-								CorePropertiesImpl.Key.EVENT_PERSISTER_CLASS_INIT.propName()
+								CorePropertiesImpl.EVENT_PERSISTER_CLASS_INIT.propertyName()
 								).getMessage(), 
 						e.getMessage());
 			}
@@ -161,8 +154,8 @@ public class VariantPropertiesTest {
 		
 		{
 			// missing password
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.Key.EVENT_PERSISTER_CLASS_NAME.propName(), "com.variant.core.ext.EventPersisterH2"); 
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.Key.EVENT_PERSISTER_CLASS_INIT.propName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
+			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_PERSISTER_CLASS_NAME.propertyName(), "com.variant.core.ext.EventPersisterH2"); 
+			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_PERSISTER_CLASS_INIT.propertyName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
 			boolean exceptionThrown = false;
 			try {
 				api = new VariantCore();
@@ -173,8 +166,8 @@ public class VariantPropertiesTest {
 						new VariantRuntimeException(
 								MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET, 
 								"password", 
-								api.getProperties().get(CorePropertiesImpl.Key.EVENT_PERSISTER_CLASS_NAME, String.class),
-								CorePropertiesImpl.Key.EVENT_PERSISTER_CLASS_INIT.propName()
+								api.getProperties().get(CorePropertiesImpl.EVENT_PERSISTER_CLASS_NAME, String.class),
+								CorePropertiesImpl.EVENT_PERSISTER_CLASS_INIT.propertyName()
 								).getMessage(), 
 						e.getMessage());
 			}

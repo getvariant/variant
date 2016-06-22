@@ -1,6 +1,8 @@
-package com.variant.core;
+package com.variant.core.session;
 
+import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantException;
+import com.variant.core.util.inject.Injectable;
 
 
 /**
@@ -13,17 +15,8 @@ import com.variant.core.exception.VariantException;
  * @author Igor Urisman
  * @since 0.5
  */
-public interface VariantSessionStore {
+public interface SessionStore extends Injectable {
 	
-	/**
-	 * <p>The container will call this method immediately following the instantiation with
-	 * the init parameter map, as specified by the <code>session.store.class.init</code>
-	 * application property. 
-	 * 
-	 * @since 0.5
-	 */
-	public void initialized(VariantCoreInitParams initParams) throws Exception ;
-
 	/**
 	 * Get a session from the store by its ID. 
 	 * @param sessionId The ID of the session of interest.
@@ -40,12 +33,5 @@ public interface VariantSessionStore {
 	 */
 	public void save(VariantCoreSession session) throws VariantException;	
 		
-	/**
-	 * Shutdown this session store. Releases all resources. All subsequent calls to this session store will
-	 * result in an exception.
-	 * 
-	 * @since 0.5
-	 */
-	public void shutdown();
 
 }

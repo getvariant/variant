@@ -11,8 +11,8 @@ import com.variant.core.schema.State;
  * 
  * @author Igor
  *
- */
-public class StateSelectorPathString /*implements StateSelector*/ {
+ *
+public class StateSelectorPathString  {
 
 	//@Override
 	public State select(Map<String,String> parameters, Collection<State> states) {
@@ -24,5 +24,5 @@ public class StateSelectorPathString /*implements StateSelector*/ {
 
 	}
 		
-
 }
+*/

@@ -1,4 +1,4 @@
-package com.variant.client.impl;
+package com.variant.client.session;
 
 import static com.variant.client.VariantProperties.SESSION_ID_TRACKER_CLASS_INIT;
 import static com.variant.client.VariantProperties.SESSION_ID_TRACKER_CLASS_NAME;
@@ -16,19 +16,21 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
+import com.variant.client.impl.VariantClientImpl;
+import com.variant.client.impl.VariantInitParamsImpl;
+import com.variant.client.impl.VariantSessionImpl;
 import com.variant.core.VariantCoreInitParams;
-import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantSessionStore;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.impl.MessageTemplate;
+import com.variant.core.session.SessionStore;
 
 public class SessionService {
 
 	private static final Logger LOG  = LoggerFactory.getLogger(SessionService.class);
 	private VariantClientImpl client = null;
-	private VariantSessionStore sessionStore = null;
+	private SessionStore sessionStore = null;
 	
 	/**
 	 * Instantiate session ID tracker.
@@ -49,7 +51,7 @@ public class SessionService {
 				return result;
 			}
 			else {
-				throw new VariantBootstrapException(MessageTemplate.BOOT_SESSION_ID_TRACKER_NO_INTERFACE, sidTrackerClassName, VariantSessionStore.class.getName());
+				throw new VariantBootstrapException(MessageTemplate.BOOT_SESSION_ID_TRACKER_NO_INTERFACE, sidTrackerClassName, SessionStore.class.getName());
 			}
 		}
 		catch (Exception e) {
@@ -104,12 +106,12 @@ public class SessionService {
 		try {
 			Class<?> storeClass = Class.forName(storeClassName);
 			Object storeObject = storeClass.newInstance();
-			if (storeObject instanceof VariantSessionStore) {
-				sessionStore = (VariantSessionStore) storeObject;
+			if (storeObject instanceof SessionStore) {
+				sessionStore = (SessionStore) storeObject;
 				sessionStore.initialized(client.getProperties().get(SESSION_STORE_CLASS_INIT, VariantCoreInitParams.class));
 			}
 			else {
-				throw new VariantBootstrapException(MessageTemplate.BOOT_SESSION_STORE_NO_INTERFACE, storeClassName, VariantSessionStore.class.getName());
+				throw new VariantBootstrapException(MessageTemplate.BOOT_SESSION_STORE_NO_INTERFACE, storeClassName, SessionStore.class.getName());
 			}
 		}
 		catch (Exception e) {

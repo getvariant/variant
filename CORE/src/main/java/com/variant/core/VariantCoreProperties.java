@@ -1,5 +1,8 @@
 package com.variant.core;
 
+import java.util.Collection;
+import java.util.LinkedList;
+
 
 /**
  * Application properties of Variant core API.
@@ -16,31 +19,35 @@ public interface VariantCoreProperties {
 	/**
 	 * Keys of all known core properties.
 	 */
-	public final static Key TEST_MAX_IDLE_DAYS_TO_TARGET = new Key();
-	public final static Key EVENT_PERSISTER_CLASS_NAME = new Key();
-	public final static Key EVENT_PERSISTER_CLASS_INIT = new Key();
-	public final static Key EVENT_WRITER_BUFFER_SIZE = new Key();
-	public final static Key EVENT_WRITER_MAX_DELAY_MILLIS = new Key();
-	public final static Key EVENT_WRITER_PERCENT_FULL = new Key();
-	public final static Key SESSION_STORE_CLASS_NAME = new Key();
-	public final static Key SESSION_STORE_CLASS_INIT = new Key();
+	public final static Key TEST_MAX_IDLE_DAYS_TO_TARGET = new Key("test.max.idle.days.to.target");
+	public final static Key EVENT_PERSISTER_CLASS_NAME = new Key("event.persister.class.name");
+	public final static Key EVENT_PERSISTER_CLASS_INIT = new Key("event.persister.class.init");
+	public final static Key EVENT_WRITER_BUFFER_SIZE = new Key("event.writer.buffer.size");
+	public final static Key EVENT_WRITER_MAX_DELAY_MILLIS = new Key("event.writer.max.delay.millis");
+	public final static Key EVENT_WRITER_PERCENT_FULL = new Key("event.writer.percent.full");
 	
-	public final Key SERVER_ENDPOINT_URL = new Key();
+	public final Key SERVER_ENDPOINT_URL = new Key("SERVER_ENDPOINT_URL");
 
 	/**
 	 * <p>Property key. The corresponding name is derived by lower-casing
 	 * and replacing all underscores ('_') with periods ('.').
 	 */
 	public static class Key {
-		public Key() {}
+		
+		private static LinkedList<Key> allKeys = new LinkedList<Key>(); 
+		private String propName;
+		
+		public static Collection<Key> propertyNames() {
+			return allKeys;
+		}
+		
+		public Key(String propName) {
+			this.propName = propName;
+			allKeys.add(this);
+		}
+		
 		public String propertyName() {
-			StringBuilder result = new StringBuilder(getClass().getSimpleName().toLowerCase());
-			for (int i = 0; i < result.length(); i++) {
-				if (result.charAt(i) == '_') {
-					result.setCharAt(i, '.');
-				}
-			}
-			return result.toString();
+			return propName;
 		}
 	}
 	

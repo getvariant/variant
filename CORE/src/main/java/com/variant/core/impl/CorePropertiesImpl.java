@@ -1,7 +1,6 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON;
-import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_NOT_SET;
+import static com.variant.core.schema.impl.MessageTemplate.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,7 +17,6 @@ import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.PropertiesChain;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantIoUtils;
-import com.variant.core.util.VariantStringUtils;
 
 /**
  * Static singleton interface to system properties.
@@ -39,8 +37,6 @@ public class CorePropertiesImpl implements VariantCoreProperties{
 	protected CorePropertiesImpl(VariantCore coreApi) {
 		this.coreApi = coreApi;
 		propsChain = new PropertiesChain();
-		// Internal is the last on the chain
-		overrideWith(VariantIoUtils.openResourceAsStream("/variant/internal." + VariantStringUtils.RESOURCE_POSTFIX + ".props"), "INTERNAL");
 		// Publicly visible defaults.props is actually the second to last on the chain.
 		overrideWith(VariantIoUtils.openResourceAsStream("/variant/defaults.props"), "/variant/defaults.props");
 	}

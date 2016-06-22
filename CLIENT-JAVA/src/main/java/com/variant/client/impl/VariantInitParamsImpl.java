@@ -11,7 +11,7 @@ public class VariantInitParamsImpl extends VariantCoreInitParamsImpl implements 
 	private static final long serialVersionUID = 1L;
 	private VariantClientImpl client;
 
-	VariantInitParamsImpl(VariantClientImpl client, CorePropertiesImpl.Key key) {
+	public VariantInitParamsImpl(VariantClientImpl client, CorePropertiesImpl.Key key) {
 		super(client.getCoreApi(), SESSION_STORE_CLASS_INIT);
 		this.client = client;
 	}
