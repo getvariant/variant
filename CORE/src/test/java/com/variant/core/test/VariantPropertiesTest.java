@@ -11,6 +11,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import com.variant.core.VariantCoreProperties;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.CorePropertiesImpl;
@@ -24,16 +25,29 @@ public class VariantPropertiesTest {
 	@Test
 	public void test() throws Exception {
 		
-		// Core default
+		// Core default.
 		VariantCore api = new VariantCore();
 		
 		Properties defaultProps = new Properties();
 		defaultProps.load(VariantIoUtils.openResourceAsStream("/variant/defaults.props"));
 
-		for (CorePropertiesImpl.Key key: CorePropertiesImpl.Key.propertyNames()) {
-			assertTrue(defaultProps.containsKey(key.propertyName()));
+		// All declared keys must have defaults.
+		for (CorePropertiesImpl.Key key: VariantCoreProperties.Key.keySet()) {
+			assertTrue(String.format("No default for key %s", key.propertyName()), defaultProps.containsKey(key.propertyName()));
 		}
+
 		
+		for (Object defaultKeyName: defaultProps.keySet()) {
+			boolean found = false;
+			for (VariantCoreProperties.Key declaredKey: VariantCoreProperties.Key.keySet()) {
+				if (declaredKey.propertyName().equals(defaultKeyName)) {
+					found = true;
+					break;
+				}
+			}
+			assertTrue(String.format("No key for default property %s", defaultKeyName), found);
+		}
+
 		// Compile time override
 		api = new VariantCore("/variant-test.props");
 		Properties testProps = new Properties();
@@ -81,8 +95,8 @@ public class VariantPropertiesTest {
 		final String TMP_FILE_NAME = "/tmp/VariantPropertiesTest.props";
 		System.setProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
 		PrintWriter tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
-		tmpFile.println(CorePropertiesImpl.EVENT_PERSISTER_CLASS_NAME.propertyName() + " = FileOverride");
-		tmpFile.println(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE.propertyName() + " = FileOverride");	
+		tmpFile.println(CorePropertiesImpl.EVENT_PERSISTER_CLASS_INIT.propertyName() + " = {'foo':'bar'}");
+		tmpFile.println(CorePropertiesImpl.EVENT_WRITER_MAX_DELAY_MILLIS.propertyName() + " = 12345678");	
 		tmpFile.close();
 		
 		api = new VariantCore();
@@ -101,8 +115,7 @@ public class VariantPropertiesTest {
 		// Comp time override from class path + run time override from file system.
 		System.setProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
 		tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
-		tmpFile.println(CorePropertiesImpl.EVENT_PERSISTER_CLASS_NAME.propertyName() + " = FileOverride");
-		tmpFile.println(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE.propertyName() + " = FileTimeOverride");	
+		tmpFile.println(CorePropertiesImpl.EVENT_WRITER_MAX_DELAY_MILLIS.propertyName() + " = 12345678");	
 		tmpFile.close();
 		
 		api = new VariantCore("/variant-test.props");
@@ -154,7 +167,7 @@ public class VariantPropertiesTest {
 		
 		{
 			// missing password
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_PERSISTER_CLASS_NAME.propertyName(), "com.variant.core.ext.EventPersisterH2"); 
+			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_PERSISTER_CLASS_NAME.propertyName(), "com.variant.core.event.EventPersisterH2"); 
 			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_PERSISTER_CLASS_INIT.propertyName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
 			boolean exceptionThrown = false;
 			try {

@@ -15,7 +15,7 @@ public class EventPersisterAppLogger implements EventPersister {
 
 	@Override
 	public void initialized(VariantCoreInitParams initParams) {
-		LOG.info("Initialized");
+		LOG.debug("Bootstrapped");
 	}
 
 	@Override

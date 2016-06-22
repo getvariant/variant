@@ -1,7 +1,7 @@
 package com.variant.core;
 
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 
 /**
@@ -26,18 +26,16 @@ public interface VariantCoreProperties {
 	public final static Key EVENT_WRITER_MAX_DELAY_MILLIS = new Key("event.writer.max.delay.millis");
 	public final static Key EVENT_WRITER_PERCENT_FULL = new Key("event.writer.percent.full");
 	
-	public final Key SERVER_ENDPOINT_URL = new Key("SERVER_ENDPOINT_URL");
-
 	/**
 	 * <p>Property key. The corresponding name is derived by lower-casing
 	 * and replacing all underscores ('_') with periods ('.').
 	 */
 	public static class Key {
 		
-		private static LinkedList<Key> allKeys = new LinkedList<Key>(); 
+		private static LinkedHashSet<Key> allKeys = new LinkedHashSet<Key>(); 
 		private String propName;
 		
-		public static Collection<Key> propertyNames() {
+		public static Set<Key> keySet() {
 			return allKeys;
 		}
 		
