@@ -89,9 +89,16 @@ public class Injector {
 		implMap = result;
 	}
 	
+	/**
+	 * 
+	 * @param clazz
+	 * @param core
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
 	public static<T extends Injectable> T inject(Class<T> clazz, VariantCore core) {
 		if (implMap == null) lazyInit(core);
-		return null;
+		return (T) implMap.get(clazz);
 	}
 	
 }

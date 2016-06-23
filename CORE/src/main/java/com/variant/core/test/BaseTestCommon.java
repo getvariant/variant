@@ -1,6 +1,7 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -9,9 +10,13 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.impl.CoreSessionImpl;
+import com.variant.core.impl.SessionScopedTargetingStabile;
+import com.variant.core.impl.VariantCore;
+import com.variant.core.impl.VariantCoreSessionTestFacade;
 import com.variant.core.jdbc.JdbcService;
-import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserMessage;
@@ -24,17 +29,16 @@ import com.variant.core.util.PropertiesChain;
 
 abstract public class BaseTestCommon {
 	
-	abstract protected JdbcService getJdbcService();
-	abstract protected Schema getSchema();
+	abstract protected JdbcService getJdbcService(VariantCore core);
 	
 	/**
 	 * @throws Exception 
 	 * 
 	 */
-	protected void recreateSchema() throws Exception {
+	protected void recreateSchema(VariantCore core) throws Exception {
 		try {
 			
-			JdbcService jdbc = getJdbcService();
+			JdbcService jdbc = getJdbcService(core);
 			
 			switch (jdbc.getVendor()) {
 			case POSTGRES: 
@@ -81,23 +85,21 @@ abstract public class BaseTestCommon {
 	 * @param name
 	 * @return
 	 */
-	protected Experience experience(String name) {
+	protected Experience experience(String name, VariantCore core) {
 		String[] tokens = name.split("\\.");
-		return getSchema().getTest(tokens[0]).getExperience(tokens[1]);
+		return core.getSchema().getTest(tokens[0]).getExperience(tokens[1]);
 	}
 
-    protected String targetingTrackerString(String...experiences) {
+	/**
+	 * @param ssn The session which will receive this stabile.
+	 * @param experiences are expected as "test.exp" 
+	 * @return
+	 */
+    protected void setTargetingStabile(VariantCoreSession ssn, String...experiences) {
 		long timestamp = System.currentTimeMillis();
-		StringBuilder result = new StringBuilder();
-		boolean first = true;
-		for (String experienceString: experiences) {
-			if (first) first = false;
-			else result.append("|");
-			result.append(timestamp).
-				append(".").
-				append(experience(experienceString).toString());
-		}
-		return result.toString();
+		SessionScopedTargetingStabile stabile = new SessionScopedTargetingStabile();
+		for (String exp: experiences) stabile.add(experience(exp, ((CoreSessionImpl)ssn).getCoreApi()), timestamp);
+		VariantCoreSessionTestFacade.setTargetingStabile((CoreSessionImpl)ssn, stabile);
 	}
 	//---------------------------------------------------------------------------------------------//
 	//                                        ASSERTION                                            //

@@ -165,7 +165,7 @@ public class VariantRuntime {
 		SessionScopedTargetingStabile targetingStabile = session.getTargetingStabile();
 		State state = req.getState();
 		
-		// It is illegal to call this with a view that is not in schema, e.g. before runtime.
+		// State must be in schema.
 		State schemaState = schema.getState(state.getName());
 		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
 			throw new VariantInternalException("State [" + state.getName() + "] is not in schema");
@@ -519,7 +519,7 @@ public class VariantRuntime {
 	 */
 	public VariantCoreStateRequestImpl targetSessionForState(CoreSessionImpl ssn, StateImpl state) {
 
-		// Resolve the path and get all tests instrumented on the given view targeted.
+		// Resolve the path and get all tests instrumented on the state.
 		VariantCoreStateRequestImpl result = new VariantCoreStateRequestImpl(ssn, state);
 		
 		Map<String,String> resolvedParams = targetSessionForState(result);		

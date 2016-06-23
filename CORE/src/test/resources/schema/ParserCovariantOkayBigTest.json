@@ -182,7 +182,6 @@
      },                                                                  
      {                                                                   
         'name':'test3',
-        'idleDaysToLive':1,
         'covariantTestRefs': ['test2'],                                                  
         'experiences':[                                                  
            {                                                             
@@ -342,7 +341,6 @@
      },                                                                  
      {                                                                   
         'name':'test4',                                                  
-        'idleDaysToLive':0,
         'covariantTestRefs': ['test1'],                                  
         'experiences':[                                                  
            {                                                             

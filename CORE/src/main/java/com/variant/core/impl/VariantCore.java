@@ -17,6 +17,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.VariantCoreSession;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.exception.VariantException;
@@ -34,6 +35,7 @@ import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
+import com.variant.core.session.CoreSessionService;
 import com.variant.core.util.VariantIoUtils;
 
 /**
@@ -52,6 +54,7 @@ public class VariantCore implements Serializable {
 	private CorePropertiesImpl properties;
 	private VariantRuntime runtime;
 	private VariantComptime comptime;
+	private CoreSessionService sessionService;
 		
 	//---------------------------------------------------------------------------------------------//
 	//                                     PRIVARE HELPERS                                         //
@@ -154,11 +157,11 @@ public class VariantCore implements Serializable {
 		// Instantiate event writer.
 		eventWriter = new EventWriter(eventPersister, properties);
 				
-		//
 		// Instantiate runtime.
-		//
 		runtime = new VariantRuntime(this);
 
+		// Instantiate session service
+		sessionService = new CoreSessionService(this);
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -263,20 +266,17 @@ public class VariantCore implements Serializable {
 	}
 		
 	/**
-	 * Get user's Variant session. The contract of this method is that multiple calls with the same arguments
+	 * Get user session. The contract of this method is that multiple calls with the same argument
 	 * will return the same object, provided the session did not expire between calls.  It is an error to
 	 * call this method on an idle instance, i.e. before a valid schema has been parsed. 
 	 * 
-	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
-	 *                 to the implementations of {@link com.variant.client.VariantSessionIdTracker#get(Object...)}
-	 *                 and {@link com.variant.core.VariantSessionStore#get(Object...)}.
-	 * @since 0.5
-	 * @return An instance of {@link VariantSession}.
-	 *
-	public VariantSession getSession(Object...userData) {
-		return sessionService.getSession(userData);
+	 * @param id Session ID.
+	 * @since 0.5 
+	 * @return An instance of {@link VariantCoreSession}.
+	 */
+	public VariantCoreSession getSession(String id) {
+		return sessionService.getSession(id);
 	}
-    */
 	
 	/**
 	 * <p>Register a {@link com.variant.core.hook.HookListener}. The caller must provide 

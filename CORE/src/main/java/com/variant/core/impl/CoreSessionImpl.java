@@ -43,17 +43,16 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
 	private HashMap<Test, Boolean> traversedTests = new HashMap<Test, Boolean>();
 	private VariantCore coreApi;
-	private SessionScopedTargetingStabile targetingStabile;
+	private SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
 	private String schemaId;
 	
 	/**
 	 * 
 	 * @param id
 	 */
-	public CoreSessionImpl(String id, VariantCore coreApi, SessionScopedTargetingStabile targetingStabile) {
+	public CoreSessionImpl(String id, VariantCore coreApi) {
 		
 		this.coreApi = coreApi;
-		this.targetingStabile = targetingStabile;
 		
 		// No schema ID on server yet. 
 		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) 
@@ -63,11 +62,18 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	}
 
 	/**
-	 * Empty targeting stabile
-	 * @param id
+	 * @param targetintStabile
 	 */
-	public CoreSessionImpl(String id, VariantCore coreApi) {
-		this(id, coreApi, new SessionScopedTargetingStabile());
+	void setTargetingStabile(SessionScopedTargetingStabile targetingStabile) {
+		this.targetingStabile = targetingStabile;
+	}
+	
+	/**
+	 * The {@link SessionScopedTargetingStabile} object associated with this session.
+	 * @return
+	 */
+	SessionScopedTargetingStabile getTargetingStabile() {
+		return targetingStabile;
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -163,15 +169,8 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		Boolean result = traversedTests.get(test);
 		return result != null && result;
 	}
-	
-	/**
-	 * The {@link SessionScopedTargetingStabile} object associated with this session.
-	 * @return
-	 */
-	SessionScopedTargetingStabile getTargetingStabile() {
-		return targetingStabile;
-	}
-	
+
+		
 	/**
 	 * Traversed and disqualified?
 	 * @param test
@@ -327,8 +326,9 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 			}
 		}
 			
-		CoreSessionImpl result = new CoreSessionImpl((String)idObj, coreApi, targetingStabile);
-
+		CoreSessionImpl result = new CoreSessionImpl((String)idObj, coreApi);
+		result.setTargetingStabile(targetingStabile);
+		
 		Object tsObj = fields.get(FIELD_NAME_TIMESTAMP);
 		if (tsObj == null) 
 			throw new VariantInternalException("Unable to deserialzie session: no timestamp: [" + json + "]");

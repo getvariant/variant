@@ -10,9 +10,7 @@ import com.variant.core.schema.Schema;
  * Base class for all Core JUnit tests.
  */
 public class BaseTestCore extends BaseTestCommon {
-	
-	protected VariantCore api = null;
-	
+		
 	private static Boolean sqlSchemaCreated = false;
 	
 	/**
@@ -24,10 +22,9 @@ public class BaseTestCore extends BaseTestCommon {
 	 */
 	@Before
 	public void _beforeTest() throws Exception {
-		rebootApi(); // in each instance 
 		synchronized (sqlSchemaCreated) { // once per JVM
 			if (!sqlSchemaCreated) {
-				recreateSchema();
+				recreateSchema(rebootApi());
 				sqlSchemaCreated = true;
 			}
 		}
@@ -37,17 +34,14 @@ public class BaseTestCore extends BaseTestCommon {
 	 * @throws Exception 
 	 * 
 	 */
-	protected void rebootApi() throws Exception {
-		api = new VariantCore("/variant-test.props");
+	protected VariantCore rebootApi() throws Exception {
+		return new VariantCore("/variant-test.props");
 	}
 
 	@Override
-	protected JdbcService getJdbcService() {
-		return new JdbcService(api);
+	protected JdbcService getJdbcService(VariantCore core) {
+		return new JdbcService(core);
 	}
 
-	@Override
-	protected Schema getSchema() {
-		return api.getSchema();
-	}
+
 }

@@ -84,7 +84,7 @@ public class SessionScopedTargetingStabile {
 	public Collection<Experience> getAllAsExperiences(Schema schema) {
 		ArrayList<Experience> result = new ArrayList<Experience>();
 		for (Entry entry: entryMap.values()) {
-			Test test = schema.getTest(entry.getExperienceName());
+			Test test = schema.getTest(entry.testName);
 			if (test != null) {
 				Experience experience = test.getExperience(entry.experienceName);
 				if (experience != null) result.add(experience);
