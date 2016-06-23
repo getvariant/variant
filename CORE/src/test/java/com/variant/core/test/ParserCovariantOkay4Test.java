@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponse;
@@ -27,6 +28,8 @@ import com.variant.core.util.VariantCollectionsUtils;
  */
 public class ParserCovariantOkay4Test extends BaseTestCore {
 	
+	private VariantCore core = rebootApi();
+
 	/**
 	 * 
 	 */
@@ -430,11 +433,11 @@ public class ParserCovariantOkay4Test extends BaseTestCore {
 	     	    "  ]                                                                      \n" +
 	    	    "}                                                                         ";
 
-		ParserResponse response = api.parseSchema(SCHEMA);
+		ParserResponse response = core.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		Schema schema = api.getSchema();
+		Schema schema = core.getSchema();
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");
@@ -445,13 +448,6 @@ public class ParserCovariantOkay4Test extends BaseTestCore {
 		assertEquals(0, test1.getCovariantTests().size());
 		assertEquals(VariantCollectionsUtils.list(test1), test2.getCovariantTests());
 		assertEquals(VariantCollectionsUtils.list(test1), test3.getCovariantTests());
-
-		// 
-		// Runtime test covariance.
-		//
-		//assertEquals(VariantCollectionsUtils.list(test2, test3), VariantRuntime.getCovariantTests(test1));
-		//assertEquals(VariantCollectionsUtils.list(test1), VariantRuntime.getCovariantTests(test2));
-		//assertEquals(VariantCollectionsUtils.list(test1), VariantRuntime.getCovariantTests(test3));
 
 		// 
 		// test1 OnView objects

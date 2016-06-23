@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponse;
@@ -27,6 +28,8 @@ import com.variant.core.util.VariantCollectionsUtils;
  */
 public class ParserCovariantOkay3Test extends BaseTestCore {
 	
+	private VariantCore core = rebootApi();
+
 	/**
 	 * 
 	 */
@@ -430,11 +433,11 @@ public class ParserCovariantOkay3Test extends BaseTestCore {
 	     	    "  ]                                                                      \n" +
 	    	    "}                                                                         ";
 
-		ParserResponse response = api.parseSchema(SCHEMA);
+		ParserResponse response = core.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		Schema schema = api.getSchema();
+		Schema schema = core.getSchema();
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");

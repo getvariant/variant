@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -16,17 +17,19 @@ import com.variant.core.util.VariantCollectionsUtils;
  */
 public class ParserCovariantOkayBigTest extends BaseTestCore {
 
+	private VariantCore core = rebootApi();
+
 	/**
 	 * 
 	 */
 	@org.junit.Test
 	public void test() throws Exception {
 		
-		ParserResponse response = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		ParserResponse response = core.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		Schema schema = api.getSchema();
+		Schema schema = core.getSchema();
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");

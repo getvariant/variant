@@ -33,7 +33,7 @@ public class BaseTestCore extends BaseTestCommon {
 	 * @throws Exception 
 	 * 
 	 */
-	protected VariantCore rebootApi() throws Exception {
+	protected VariantCore rebootApi() {
 		return new VariantCore("/variant-test.props");
 	}
 

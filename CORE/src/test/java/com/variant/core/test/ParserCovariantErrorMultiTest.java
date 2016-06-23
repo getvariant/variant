@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.impl.ParserMessageImplFacade;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.parser.ParserMessage;
@@ -21,6 +22,8 @@ import com.variant.core.schema.parser.Severity;
  */
 public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	
+	private VariantCore core = rebootApi();
+
 	/**
 	 * PARSER_COVARIANT_VARIANT_DUPE
 	 * 
@@ -503,7 +506,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(api, config);
+		ParserResponse response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -979,7 +982,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(api, config);
+		ParserResponse response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());

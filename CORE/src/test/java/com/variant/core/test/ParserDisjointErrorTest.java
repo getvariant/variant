@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.impl.ParserMessageImplFacade;
 import com.variant.core.schema.impl.ParserResponseImpl;
@@ -19,6 +20,8 @@ import com.variant.core.schema.parser.Severity;
  *
  */
 public class ParserDisjointErrorTest extends BaseTestCore {
+	
+	private VariantCore core = rebootApi();
 	
 	/**
 	 * JSON_PARSE
@@ -68,7 +71,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(api, config);
+		ParserResponse response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
@@ -89,7 +92,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 				"{                                                             \n" +			    	   
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(2, response.getMessages().size());
@@ -144,7 +147,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(2, response.getMessages().size());
@@ -200,7 +203,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(2, response.getMessages().size());
@@ -267,7 +270,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 		
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
@@ -333,7 +336,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
@@ -341,132 +344,6 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATE_NAME_NOT_STRING).getText(), error.getText());
 	}
 	
-	/**
-	 * PARSER_TEST_IDLE_DAYS_TO_LIVE_NOT_INT
-	 * @throws Exception
-	 */
-	@Test
-	public void testTestIdleDaysToLiveNotInt_Test() throws Exception {
-		
-		String config = 
-				"{                                                             \n" +
-			    "   'states':[                                                 \n" +
-			    "     {  'name':'state1',                                      \n" +
-	    	    "        'parameters': {                                       \n" +
-			    "           'path':'/path/to/state1'                           \n" +
-			    "        }                                                     \n" +
-			    "     },                                                       \n" +
-	    	    "     {  'parameters': {                                       \n" +
-			    "           'path':'/path/to/state2'                           \n" +
-			    "        },                                                    \n" +
-			    "        'name':'state2'                                       \n" +
-			    "     }                                                        \n" +
-			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
-			    "     {                                                        \n" +
-			    "        'name':'Test1',                                       \n" +
-			    "        'isOn':false,                                         \n" +
-			    "        'idleDaysToLive':false,                               \n" +
-			    "        'experiences':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'B',                                     \n" +
-			    "              'weight':50,                                    \n" +
-			    "              'isControl':true                                \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    //----------------------------------------------------------------//	
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
-
-		assertTrue(response.hasMessages());
-		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_TEST_IDLE_DAYS_TO_LIVE_NOT_INT, "Test1").getText(), error.getText());
-	}
-
-	/**
-	 * PARSER_TEST_IDLE_DAYS_TO_LIVE_NEGATIVE
-	 * @throws Exception
-	 */
-	@Test
-	public void testTestIdleDaysToLiveNigative_Test() throws Exception {
-		
-		String config = 
-				"{                                                             \n" +
-			    "   'states':[                                                 \n" +
-			    "     {  'name':'state1',                                      \n" +
-	    	    "        'parameters': {                                       \n" +
-			    "           'path':'/path/to/state1'                           \n" +
-			    "        }                                                     \n" +
-			    "     },                                                       \n" +
-	    	    "     {  'parameters': {                                       \n" +
-			    "           'path':'/path/to/state2'                           \n" +
-			    "        },                                                    \n" +
-			    "        'name':'state2'                                       \n" +
-			    "     }                                                        \n" +
-			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
-			    "     {                                                        \n" +
-			    "        'name':'Test1',                                       \n" +
-			    "        'isOn':false,                                         \n" +
-			    "        'idleDaysToLive':-8,                                  \n" +
-			    "        'experiences':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'B',                                     \n" +
-			    "              'weight':50,                                    \n" +
-			    "              'isControl':true                                \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    //----------------------------------------------------------------//	
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
-
-		assertTrue(response.hasMessages());
-		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_TEST_IDLE_DAYS_TO_LIVE_NEGATIVE, "Test1").getText(), error.getText());
-	}
-
 	/**
 	 * PARSER_TEST_ISON_NOT_BOOLEAN
 	 * @throws Exception
@@ -521,7 +398,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
@@ -582,7 +459,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 
@@ -646,7 +523,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
@@ -677,7 +554,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 		
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
@@ -710,7 +587,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 		
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
@@ -773,7 +650,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 				"  'invalid clause': 'throw an error'                          \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.WARN, response.highestMessageSeverity());
@@ -837,7 +714,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -899,7 +776,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -990,7 +867,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 		
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1054,7 +931,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 	
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.WARN, response.highestMessageSeverity());
@@ -1107,7 +984,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1168,7 +1045,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1239,7 +1116,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1306,7 +1183,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1370,7 +1247,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 	
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1433,7 +1310,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1497,7 +1374,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 	
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.WARN, response.highestMessageSeverity());
@@ -1560,7 +1437,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 	
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1611,7 +1488,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 	
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1662,7 +1539,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 	
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1725,7 +1602,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 	
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1787,7 +1664,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1861,7 +1738,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1925,7 +1802,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -1989,7 +1866,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2053,7 +1930,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2111,7 +1988,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2175,7 +2052,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2239,7 +2116,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2294,7 +2171,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2350,7 +2227,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2419,7 +2296,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2491,7 +2368,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2554,7 +2431,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2626,7 +2503,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2687,7 +2564,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2754,7 +2631,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2825,7 +2702,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2898,7 +2775,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -2968,7 +2845,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponseImpl response = SchemaParser.parse(api, config);
+		ParserResponseImpl response = SchemaParser.parse(core, config);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
