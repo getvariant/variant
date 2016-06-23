@@ -22,7 +22,7 @@ public class EventPersisterNull implements EventPersister {
 	
 	@Override
 	public void initialized(VariantCoreInitParams initParams) {}
-
+	
 	@Override
 	public void persist(Collection<PersistableVariantEvent> events) throws Exception {
 			LOG.debug(String.format("Discarded %s events.", events.size()));

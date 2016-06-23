@@ -25,9 +25,11 @@ import com.variant.core.util.VariantIoUtils;
 public class Injector {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Injector.class);
-	private static final String INJECTOR_CONFIG_RESOURCE_NAME = "/variant/injector.json";
+	private static final String DEFAULT_CONFIG_RESOURCE_NAME = "/variant/injector.json";
 	private static HashMap<Class<? extends Injectable>, Entry> entryMap = null;
-		
+	
+	private static String configName = DEFAULT_CONFIG_RESOURCE_NAME;
+	
 	private static class Entry {
 		Class<? extends Injectable> type;
 		String implName;
@@ -77,7 +79,7 @@ public class Injector {
 	@SuppressWarnings("unchecked")
 	private static void lazyInit() {
 		
-		InputStream configStream = VariantIoUtils.openResourceAsStream(INJECTOR_CONFIG_RESOURCE_NAME);
+		InputStream configStream = VariantIoUtils.openResourceAsStream(configName);
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
 		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 		
@@ -88,7 +90,7 @@ public class Injector {
 			parseTree = jacksonDataMapper.readValue(configStream, List.class);
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to parse injector config [" + INJECTOR_CONFIG_RESOURCE_NAME + "]", e);
+			throw new VariantInternalException("Unable to parse injector config [" + configName + "]", e);
 		}
 		
 		HashMap<Class<? extends Injectable>, Entry> result = new HashMap<Class<? extends Injectable>, Entry>();
@@ -118,6 +120,27 @@ public class Injector {
 		
 		// Single assignment is thread safe.
 		entryMap = result;
+	}
+	
+    //---------------------------------------------------------------------------------------------//
+	//                                           PUBLIC                                            //
+	//---------------------------------------------------------------------------------------------//	
+
+	/**
+	 * 
+	 * @param configName
+	 */
+	public static void setConfigNameAsResource(String configName) {
+		Injector.configName = configName;
+		entryMap = null;
+	}
+
+	/**
+	 * 
+	 */
+	public static void restoreDefaultConfig() {
+		Injector.configName = DEFAULT_CONFIG_RESOURCE_NAME;
+		entryMap = null;
 	}
 	
 	/**

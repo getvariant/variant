@@ -2,7 +2,11 @@ package com.variant.core.test;
 
 import org.junit.Before;
 
+import com.variant.core.VariantCoreSession;
+import com.variant.core.impl.CoreSessionImpl;
+import com.variant.core.impl.SessionScopedTargetingStabile;
 import com.variant.core.impl.VariantCore;
+import com.variant.core.impl.VariantCoreSessionTestFacade;
 import com.variant.core.jdbc.JdbcService;
 
 /**
@@ -40,6 +44,18 @@ public class BaseTestCore extends BaseTestCommon {
 	@Override
 	protected JdbcService getJdbcService(VariantCore core) {
 		return new JdbcService(core);
+	}
+
+	/**
+	 * @param ssn The session which will receive this stabile.
+	 * @param experiences are expected as "test.exp" 
+	 * @return
+	 */
+    protected void setTargetingStabile(VariantCoreSession ssn, String...experiences) {
+		long timestamp = System.currentTimeMillis();
+		SessionScopedTargetingStabile stabile = new SessionScopedTargetingStabile();
+		for (String exp: experiences) stabile.add(experience(exp, ((CoreSessionImpl)ssn).getCoreApi()), timestamp);
+		VariantCoreSessionTestFacade.setTargetingStabile((CoreSessionImpl)ssn, stabile);
 	}
 
 

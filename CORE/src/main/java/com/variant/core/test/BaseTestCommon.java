@@ -10,12 +10,8 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.CoreSessionImpl;
-import com.variant.core.impl.SessionScopedTargetingStabile;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.impl.VariantCoreSessionTestFacade;
 import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.MessageTemplate;
@@ -90,17 +86,6 @@ abstract public class BaseTestCommon {
 		return core.getSchema().getTest(tokens[0]).getExperience(tokens[1]);
 	}
 
-	/**
-	 * @param ssn The session which will receive this stabile.
-	 * @param experiences are expected as "test.exp" 
-	 * @return
-	 */
-    protected void setTargetingStabile(VariantCoreSession ssn, String...experiences) {
-		long timestamp = System.currentTimeMillis();
-		SessionScopedTargetingStabile stabile = new SessionScopedTargetingStabile();
-		for (String exp: experiences) stabile.add(experience(exp, ((CoreSessionImpl)ssn).getCoreApi()), timestamp);
-		VariantCoreSessionTestFacade.setTargetingStabile((CoreSessionImpl)ssn, stabile);
-	}
 	//---------------------------------------------------------------------------------------------//
 	//                                        ASSERTION                                            //
 	//---------------------------------------------------------------------------------------------//
