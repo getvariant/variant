@@ -4,7 +4,6 @@ import org.junit.Before;
 
 import com.variant.core.impl.VariantCore;
 import com.variant.core.jdbc.JdbcService;
-import com.variant.core.schema.Schema;
 
 /**
  * Base class for all Core JUnit tests.

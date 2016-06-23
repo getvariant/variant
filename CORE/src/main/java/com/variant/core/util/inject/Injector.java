@@ -13,7 +13,8 @@ import com.variant.core.util.VariantIoUtils;
 
 /**
  * Implementation injection, deferred to run time.
- * Lazily instantiated by first invocation.  Always look for injector.json on classpath.
+ * Lazily parse /variant/injector.json from the classpath once, upon first invocation of inject().
+ * Defer instantiating implementation until injection time, because it depends on the core instance.
  * 
  * @author Igor
  * @since 0.6
@@ -21,13 +22,56 @@ import com.variant.core.util.VariantIoUtils;
 public class Injector {
 
 	private static final String INJECTOR_CONFIG_RESOURCE_NAME = "/variant/injector.json";
-	private static HashMap<Class<? extends Injectable>, Object> implMap = null;
+	private static HashMap<Class<? extends Injectable>, Entry> entryMap = null;
 		
+	private static class Entry {
+		Class<? extends Injectable> type;
+		String implName;
+		Map<String, Object> init;
+		
+		/**
+		 * 
+		 * @param type
+		 * @param implName
+		 * @param init
+		 */
+		Entry(Class<? extends Injectable> type, String implName, Map<String, Object> init) {
+			this.type = type;
+			this.implName = implName;
+			this.init = init;
+		}
+		
+		/**
+		 * 
+		 * @return
+		 */
+		Injectable newInstance(VariantCore core) {
+
+			// Create new instance
+			Object implObject;
+			try {
+				Class<?> implClass = Class.forName(implName);
+				implObject = implClass.newInstance();
+			}
+			catch (Exception e) {
+				throw new VariantInternalException("Unable to instantiate implementation class [" + implName + "]", e);
+			}
+
+			if (!type.isInstance(implObject)) 
+				throw new VariantInternalException("Class [" + implName + "] must be of type [" + type.getName() + "]");
+						
+			// Initialize new instance.
+			Injectable implInjectable = (Injectable) implObject;
+			implInjectable.init(core, init);
+			
+			return implInjectable;
+		}
+	}
 	/**
 	 * 
 	 */
 	@SuppressWarnings("unchecked")
-	private static void lazyInit(VariantCore core) {
+	private static void lazyInit() {
 		
 		InputStream configStream = VariantIoUtils.openResourceAsStream(INJECTOR_CONFIG_RESOURCE_NAME);
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
@@ -43,7 +87,7 @@ public class Injector {
 			throw new VariantInternalException("Unable to parse injector config [" + INJECTOR_CONFIG_RESOURCE_NAME + "]", e);
 		}
 		
-		HashMap<Class<? extends Injectable>, Object> result = new HashMap<Class<? extends Injectable>, Object>();
+		HashMap<Class<? extends Injectable>, Entry> result = new HashMap<Class<? extends Injectable>, Entry>();
 		
 		// for each config entry
 		for (Map<String, ?> entry: parseTree) {
@@ -63,30 +107,13 @@ public class Injector {
 				throw new VariantInternalException("Type [" + typeString + "] must extend [" + Injectable.class.getName() + "]");
 			}
 			
-			// Instantiate the implementation
-			String implString = (String) entry.get("impl");
-			Object implObject;
-			try {
-				Class<?> implClass = Class.forName(implString);
-				implObject = implClass.newInstance();
-			}
-			catch (Exception e) {
-				throw new VariantInternalException("Unable to instantiate implementation class [" + implString + "]", e);
-			}
-
-			if (!typeClass.isInstance(implObject)) 
-				throw new VariantInternalException("Class [" + implString + "] must be of type [" + typeString + "]");
-			
-			// Initialize the implementation.
-			Injectable implInjectable = (Injectable) implObject;
-			implInjectable.init(core, (Map<String, Object>)entry.get("init"));
-			
 			// Store in implMap, keyed by type
-			result.put((Class<Injectable>) typeClass, implInjectable);
+			Entry mapEntry = new Entry((Class<Injectable>) typeClass, (String) entry.get("impl"), (Map<String, Object>)entry.get("init"));
+			result.put((Class<Injectable>)typeClass, mapEntry);
 		}
 		
 		// Single assignment is thread safe.
-		implMap = result;
+		entryMap = result;
 	}
 	
 	/**
@@ -97,8 +124,8 @@ public class Injector {
 	 */
 	@SuppressWarnings("unchecked")
 	public static<T extends Injectable> T inject(Class<T> clazz, VariantCore core) {
-		if (implMap == null) lazyInit(core);
-		return (T) implMap.get(clazz);
+		if (entryMap == null) lazyInit();
+		return (T) entryMap.get(clazz).newInstance(core);
 	}
 	
 }
