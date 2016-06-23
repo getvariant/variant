@@ -164,6 +164,14 @@ public class VariantCore implements Serializable {
 		sessionService = new CoreSessionService(this);
 	}
 	
+	/**
+	 * Expose session service to tests.
+	 * @return
+	 */
+	CoreSessionService getSessionService() {
+		return sessionService;
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//

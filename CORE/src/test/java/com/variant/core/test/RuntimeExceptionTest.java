@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.impl.MessageTemplate;
@@ -15,16 +16,18 @@ import com.variant.core.schema.parser.ParserResponse;
 
 public class RuntimeExceptionTest extends BaseTestCore {
 	
+	private VariantCore core = rebootApi();
+
 	/**
 	 * RUN_VIEW_NOT_INSTRUMENTED_FOR_TEST
 	 */
 	@Test
 	public void runViewNotInstrumentedForTest_Test() throws Exception {
 		
-		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		final Schema schema = api.getSchema();
+		final Schema schema = core.getSchema();
 		
 		State view = schema.getState("state1");
 		try {
@@ -77,10 +80,10 @@ public class RuntimeExceptionTest extends BaseTestCore {
 	@Test
 	public void runNoViewForPath_Test() throws Exception {
 
-		ParserResponse response = api.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		final Schema schema = api.getSchema();		
+		final Schema schema = core.getSchema();		
 		assertNull(schema.getState("non-existent"));
 
 	}

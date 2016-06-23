@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
@@ -18,6 +19,8 @@ import com.variant.core.schema.parser.ParserResponse;
 
 public class SchemaParserDisjointOkayTest extends BaseTestCore {
 	
+	private VariantCore core = rebootApi();
+
 	// Happy path schema is used by other tests too.
 	public static final String SCHEMA = 
 
@@ -208,7 +211,7 @@ public class SchemaParserDisjointOkayTest extends BaseTestCore {
 	@Test
 	public void happyPathTest() throws Exception {
 		
-		ParserResponse response = api.parseSchema(SCHEMA);
+		ParserResponse response = core.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
@@ -231,7 +234,7 @@ public class SchemaParserDisjointOkayTest extends BaseTestCore {
 						
 		};
 
-		final Schema schema = api.getSchema();
+		final Schema schema = core.getSchema();
 		
 		// Verify views returned as a list.
 		List<State> actualStates = schema.getStates();

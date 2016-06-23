@@ -13,6 +13,7 @@ import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.Tuples.Pair;
@@ -22,7 +23,9 @@ import com.variant.core.util.VariantStringUtils;
 public class SchemaParserOkayTest extends BaseTestCore {
 	
 	private static final Random rand = new Random();
-	
+
+	private VariantCore core = rebootApi();
+
 	/**
 	 * All tests are off.
 	 */
@@ -58,7 +61,6 @@ public class SchemaParserOkayTest extends BaseTestCore {
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test1',                                                  \n" +
 			    	    "        'isOn':false,                                                    \n" +
-			    	    "        'idleDaysToLive':0,                                              \n" +
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'A',                                                \n" +
@@ -88,7 +90,6 @@ public class SchemaParserOkayTest extends BaseTestCore {
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test2',                                                  \n" +
 			    	    "        'isOn': false,                                                   \n" +
-			    	    "        'idleDaysToLive':3,                                              \n" +
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'C',                                                \n" +
@@ -134,13 +135,13 @@ public class SchemaParserOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = api.parseSchema(SCHEMA);
+		ParserResponse response = core.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantCoreSession session = api.getSession(VariantStringUtils.random64BitString(rand));
-		State state1 = api.getSchema().getState("state1");
-		api.clearHookListeners();
-		VariantCoreStateRequest req = session.targetForState(state1, "");
+		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand));
+		State state1 = core.getSchema().getState("state1");
+		core.clearHookListeners();
+		VariantCoreStateRequest req = session.targetForState(state1);
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals(1, session.getTraversedStates().size());
 		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
@@ -183,7 +184,6 @@ public class SchemaParserOkayTest extends BaseTestCore {
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test1',                                                  \n" +
 			    	    "        'isOn':false,                                                    \n" +
-			    	    "        'idleDaysToLive':0,                                              \n" +
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'A',                                                \n" +
@@ -213,7 +213,6 @@ public class SchemaParserOkayTest extends BaseTestCore {
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test2',                                                  \n" +
 			    	    "        'isOn': true,                                                    \n" +
-			    	    "        'idleDaysToLive':3,                                              \n" +
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'C',                                                \n" +
@@ -259,15 +258,15 @@ public class SchemaParserOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = api.parseSchema(SCHEMA);
+		ParserResponse response = core.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantCoreSession session = api.getSession(VariantStringUtils.random64BitString(rand));
-		State state1 = api.getSchema().getState("state1");
-		com.variant.core.schema.Test test2 = api.getSchema().getTest("test2");
-		api.clearHookListeners();
-		api.addHookListener(new TestDisqualifier(test2));
-		VariantCoreStateRequest req = session.targetForState(state1, "");
+		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand));
+		State state1 = core.getSchema().getState("state1");
+		com.variant.core.schema.Test test2 = core.getSchema().getTest("test2");
+		core.clearHookListeners();
+		core.addHookListener(new TestDisqualifier(test2));
+		VariantCoreStateRequest req = session.targetForState(state1);
 		assertEquals(1, session.getTraversedStates().size());
 		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
 		assertEqualAsSets(
@@ -312,7 +311,6 @@ public class SchemaParserOkayTest extends BaseTestCore {
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test1',                                                  \n" +
 			    	    "        'isOn':true ,                                                    \n" +
-			    	    "        'idleDaysToLive':0,                                              \n" +
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'A',                                                \n" +
@@ -342,7 +340,6 @@ public class SchemaParserOkayTest extends BaseTestCore {
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test2',                                                  \n" +
 			    	    "        'isOn': true,                                                    \n" +
-			    	    "        'idleDaysToLive':3,                                              \n" +
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'C',                                                \n" +
@@ -388,17 +385,17 @@ public class SchemaParserOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = api.parseSchema(SCHEMA);
+		ParserResponse response = core.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantCoreSession session = api.getSession(VariantStringUtils.random64BitString(rand));
-		State state1 = api.getSchema().getState("state1");
-		com.variant.core.schema.Test test1 = api.getSchema().getTest("test1");
-		com.variant.core.schema.Test test2 = api.getSchema().getTest("test2");
-		api.clearHookListeners();
-		api.addHookListener(new TestDisqualifier(test1));
-		api.addHookListener(new TestDisqualifier(test2));
-		VariantCoreStateRequest req = session.targetForState(state1, "");
+		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand));
+		State state1 = core.getSchema().getState("state1");
+		com.variant.core.schema.Test test1 = core.getSchema().getTest("test1");
+		com.variant.core.schema.Test test2 = core.getSchema().getTest("test2");
+		core.clearHookListeners();
+		core.addHookListener(new TestDisqualifier(test1));
+		core.addHookListener(new TestDisqualifier(test2));
+		VariantCoreStateRequest req = session.targetForState(state1);
 		assertEquals(1, session.getTraversedStates().size());
 		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
 		assertEqualAsSets(

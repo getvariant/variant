@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.exception.VariantInternalException;
@@ -21,6 +24,7 @@ import com.variant.core.util.VariantIoUtils;
  */
 public class Injector {
 
+	private static final Logger LOG = LoggerFactory.getLogger(Injector.class);
 	private static final String INJECTOR_CONFIG_RESOURCE_NAME = "/variant/injector.json";
 	private static HashMap<Class<? extends Injectable>, Entry> entryMap = null;
 		
@@ -125,7 +129,11 @@ public class Injector {
 	@SuppressWarnings("unchecked")
 	public static<T extends Injectable> T inject(Class<T> clazz, VariantCore core) {
 		if (entryMap == null) lazyInit();
-		return (T) entryMap.get(clazz).newInstance(core);
+		T result = (T) entryMap.get(clazz).newInstance(core);
+		if (LOG.isDebugEnabled()) {
+			LOG.debug(String.format("Injected an instance of %s for type %s", result.getClass().getName(), clazz.getName()));
+		}
+		return result;
 	}
 	
 }

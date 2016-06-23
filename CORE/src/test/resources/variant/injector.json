@@ -1,7 +1,7 @@
 [
    {
       'type':'com.variant.core.session.SessionStore',
-      'impl':'com.variant.core.session.SessionStoreImplNull',
+      'impl':'com.variant.core.session.SessionStoreImplLocalMemory',
       'init':{}
    }
 ]
