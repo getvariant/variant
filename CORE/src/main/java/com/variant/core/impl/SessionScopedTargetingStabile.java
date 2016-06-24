@@ -99,8 +99,7 @@ public class SessionScopedTargetingStabile {
 	 * @return
 	 */
 	public Entry get(String testName) {
-		Entry result = entryMap.get(testName);
-		return result == null ? null : result;
+		return entryMap.get(testName);
 	}
 
 	/**

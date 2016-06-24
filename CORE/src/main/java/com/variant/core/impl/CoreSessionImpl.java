@@ -61,21 +61,6 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		
 	}
 
-	/**
-	 * @param targetintStabile
-	 */
-	void setTargetingStabile(SessionScopedTargetingStabile targetingStabile) {
-		this.targetingStabile = targetingStabile;
-	}
-	
-	/**
-	 * The {@link SessionScopedTargetingStabile} object associated with this session.
-	 * @return
-	 */
-	SessionScopedTargetingStabile getTargetingStabile() {
-		return targetingStabile;
-	}
-
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -388,6 +373,21 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		return result;
 	}
 	
+	/**
+	 * @param targetintStabile
+	 */
+	public void setTargetingStabile(SessionScopedTargetingStabile targetingStabile) {
+		this.targetingStabile = targetingStabile;
+	}
+	
+	/**
+	 * The {@link SessionScopedTargetingStabile} object associated with this session.
+	 * @return
+	 */
+	public SessionScopedTargetingStabile getTargetingStabile() {
+		return targetingStabile;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		try {

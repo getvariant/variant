@@ -10,9 +10,13 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.impl.CoreSessionImpl;
+import com.variant.core.impl.SessionScopedTargetingStabile;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.jdbc.JdbcService;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserMessage;
@@ -50,6 +54,21 @@ abstract public class BaseTestCommon {
 
 	}
 
+	/**
+	 * @param ssn The session which will receive this stabile.
+	 * @param experiences are expected as "test.exp" 
+	 * @return
+	 */
+    protected void setTargetingStabile(VariantCoreSession ssn, String...experiences) {
+		long timestamp = System.currentTimeMillis();
+		SessionScopedTargetingStabile stabile = new SessionScopedTargetingStabile();
+		for (String e: experiences) {
+			Experience exp = experience(e, ((CoreSessionImpl)ssn).getCoreApi().getSchema());
+			stabile.add(exp, timestamp);
+		}
+		((CoreSessionImpl)ssn).setTargetingStabile(stabile);
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                         HELPERS                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -81,9 +100,9 @@ abstract public class BaseTestCommon {
 	 * @param name
 	 * @return
 	 */
-	protected Experience experience(String name, VariantCore core) {
+	protected Experience experience(String name, Schema schema) {
 		String[] tokens = name.split("\\.");
-		return core.getSchema().getTest(tokens[0]).getExperience(tokens[1]);
+		return schema.getTest(tokens[0]).getExperience(tokens[1]);
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -236,7 +255,7 @@ abstract public class BaseTestCommon {
 		 * Call this if you want assertion always thrown.
 		 */
 		final public void assertThrown() throws Exception {
-			assertTrue("Assertion of type [" + Class.class.getName() + "] was not thrown when expected", run() != null);
+			assertTrue("Assertion of type [" + getExceptionClass().getName() + "] was not thrown when expected", run() != null);
 		}
 
 	}
