@@ -44,7 +44,7 @@ public class UserHooker {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void post(UserHook hook) {
 		for (HookListener listener: listeners) {
-			if (listener.getHookClass().isInstance(hook)) 
+			if (listener.getHookClass().isInstance(hook))
 				listener.post(hook);
 		}
 	}

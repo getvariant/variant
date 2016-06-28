@@ -48,10 +48,16 @@ public interface VariantCoreSession {
 	public String getSchemaId();
 	
 	/**
-	 * <p> The collection of states traversed by this session so far and their counts.
+	 * <p> The collection of states traversed by this session so far and their counts. For each state S,
+	 * the traversal count in incremented by one whenever all of the following conditions are met: 
+     * <ul> 
+     * <li>The session is targeted for the state S</li>
+     * <li>There exists a test T, which a) instruments state S, b) is not OFF, and c) this session qualified for.</li>
+     * </ul>
+
 	 * 
 	 * @return A collection of {@link Pair}s of type <{@link State}, Integer> corresponding
-	 *         the traversed states. Use <code>arg1()</code> to obtain the state and 
+	 *         to the traversed states. Use <code>arg1()</code> to obtain the state and 
 	 *         <code>arg2()</code> to obtain the count of times this state has been traversed.
 	 */
 	public Collection<Pair<State, Integer>> getTraversedStates(); 
@@ -67,17 +73,21 @@ public interface VariantCoreSession {
 	public VariantCoreStateRequest targetForState(State state);
 
 	/**
-	 * <p> The collection of tests traversed by this session so far and their  qualifications. 
-	 * Each time a session requests a new state, the tests instrumented on this 
-	 * state but not yet traversed by this session will be re-qualified. The outcome of this 
-	 * qualification will be cached for the duration of this session.
+	 * <p> The collection of tests traversed by this session so far. A test T is traversed by
+	 * a session when the session is targeted for a state, which a) is instrumented by T,
+	 * b) T is not OFF, and c) this session qualified for T.
 	 * 
-	 * @return A collection of {@link Pair}s of type <{@link Test}, Boolean> corresponding
-	 *         to traversed Tests. Use <code>arg1()</code> to obtain the test and 
-	 *         <code>arg2()</code> to obtain the its qualification.
+	 * @return A collection of object of type {@link Test}.
 	 */
-	public Collection<Pair<Test, Boolean>> getTraversedTests(); 
+	public Collection<Test> getTraversedTests(); 
 	
+	/**
+	 * <p>The collection of tests that this session has been disqualified for.
+	 * 
+	 * @return A collection of {@link Test}s which this session has been disqualified for. 
+	 */
+	public Collection<Test> getDisqualifiedTests();
+		
 	/**
 	 * Trigger a custom event.
 	 * 

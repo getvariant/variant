@@ -4,10 +4,13 @@ import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
 
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -41,7 +44,8 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	private long timestamp = System.currentTimeMillis();
 	private VariantCoreStateRequestImpl currentRequest = null;
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
-	private HashMap<Test, Boolean> traversedTests = new HashMap<Test, Boolean>();
+	private List<Test> traversedTests = new ArrayList<Test>();
+	private List<Test> disqualTests = new ArrayList<Test>();
 	private VariantCore coreApi;
 	private SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
 	private String schemaId;
@@ -97,8 +101,13 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	}
 
 	@Override
-	public Collection<Pair<Test, Boolean>> getTraversedTests() {
-		return VariantCollectionsUtils.mapToPairs(traversedTests);
+	public Collection<Test> getTraversedTests() {
+		return CollectionUtils.unmodifiableCollection(traversedTests);
+	}
+
+	@Override
+	public Collection<Test> getDisqualifiedTests() {
+		return CollectionUtils.unmodifiableCollection(disqualTests);
 	}
 
 	@Override
@@ -144,39 +153,31 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	public void setStateRequest(VariantCoreStateRequestImpl req) {
 		currentRequest = req;
 	}
-
-	/**
-	 * Traversed and qualified?
-	 * @param test
-	 * @return
-	 */
-	public boolean isQualifiedFor(Test test) {
-		Boolean result = traversedTests.get(test);
-		return result != null && result;
-	}
-
 		
 	/**
-	 * Traversed and disqualified?
+	 * 
 	 * @param test
-	 * @return
 	 */
-	public boolean isDisqualified(Test test) {
-		Boolean result = traversedTests.get(test);
-		return result != null && !result;
+	public void addTraversedTest(Test test) {
+
+		if (traversedTests.contains(test)) 
+			throw new VariantInternalException(
+					String.format("Test [%s] already contained in the traversed list", test.getName()));
+		
+		traversedTests.add(test);
 	}
 
 	/**
 	 * 
 	 * @param test
 	 */
-	public void addTraversedTest(Test test, boolean qualified) {
+	public void addDisqualifiedTest(Test test) {
 
-		if (traversedTests.get(test) != null) 
-			throw new VariantInternalException(
-					String.format("Test [%s] already exists in the traversed list", test.getName()));
-					
-		traversedTests.put(test, qualified);
+		if (disqualTests.contains(test)) {
+				throw new VariantInternalException(
+						String.format("Test [%s] already contained in the disqual list", test.getName()));
+		}	
+		disqualTests.add(test);
 	}
 
 	/**
@@ -192,15 +193,15 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	}
 
 	private static final String FIELD_NAME_ID = "sid";
-	private static final String FIELD_NAME_TIMESTAMP = "ts";
+	private static final String FIELD_NAME_TIMESTAMP = "time";
 	private static final String FIELD_NAME_SCHEMA_ID = "schid";
 	private static final String FIELD_NAME_CURRENT_REQUEST = "req";
-	private static final String FIELD_NAME_TRAVERSED_STATES = "states";
-	private static final String FIELD_NAME_TRAVERSED_TESTS = "tests";
+	private static final String FIELD_NAME_TRAVERSED_STATES = "ts";
+	private static final String FIELD_NAME_TRAVERSED_TESTS = "tts";
+	private static final String FIELD_NAME_DISQUAL_TESTS = "dts";
 	private static final String FIELD_NAME_STATE = "state";
 	private static final String FIELD_NAME_COUNT = "count";
 	private static final String FIELD_NAME_TEST = "test";
-	private static final String FIELD_NAME_QUALIFIED = "qual";
 	private static final String FIELD_NAME_TARGETING_STABIL = "stabil";
 	
 	/**
@@ -235,15 +236,20 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 			
 			if (traversedTests.size() > 0) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_TRAVERSED_TESTS);
-				for (Map.Entry<Test, Boolean> e: traversedTests.entrySet()) {
-					jsonGen.writeStartObject();
-					jsonGen.writeStringField(FIELD_NAME_TEST, e.getKey().getName());
-					jsonGen.writeBooleanField(FIELD_NAME_QUALIFIED, e.getValue());
-					jsonGen.writeEndObject();
+				for (Test t: traversedTests) {
+					jsonGen.writeString(t.getName());
 				}
 				jsonGen.writeEndArray();
 			}
 			
+			if (disqualTests.size() > 0) {
+				jsonGen.writeArrayFieldStart(FIELD_NAME_DISQUAL_TESTS);
+				for (Test t: traversedTests) {
+					jsonGen.writeString(t.getName());
+				}
+				jsonGen.writeEndArray();
+			}
+
 			if (targetingStabile.size() > 0) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_TARGETING_STABIL);
 				for (SessionScopedTargetingStabile.Entry entry: targetingStabile.getAll()) {
@@ -352,21 +358,35 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		
 			Object testsObj = fields.get(FIELD_NAME_TRAVERSED_TESTS);
 			if (testsObj != null) {
-				HashMap<Test, Boolean> testsMap = new HashMap<Test, Boolean>();
+				ArrayList<Test> tests = new ArrayList<Test>();
 				try {
-					List<?> testsListRaw = (List<?>) testsObj; 
-					for (Object obj: testsListRaw) {
-						Map<?,?> objMap = (Map<?,?>) obj;
-						String testName = (String) objMap.get(FIELD_NAME_TEST);
-						Test test = coreApi.getSchema().getTest(testName);
-						Boolean qualified =  (Boolean) objMap.get(FIELD_NAME_QUALIFIED);
-						testsMap.put(test, qualified);
+					List<String> testList = (List<String>) testsObj; 
+					for (String testName: testList) {
+						tests.add(coreApi.getSchema().getTest(testName));
 					}
 				}
 				catch (Exception e) {
 					throw new VariantInternalException("Unable to deserialzie session: bad tests spec", e);
 				}
-				result.traversedTests = testsMap;
+				result.traversedTests = tests;
+			}
+			
+			testsObj = fields.get(FIELD_NAME_DISQUAL_TESTS);
+			if (testsObj != null) {
+				
+				ArrayList<Test> tests = new ArrayList<Test>();
+			
+				try {
+					List<String> testList = (List<String>) testsObj; 
+					for (String testName: testList) {
+						tests.add(coreApi.getSchema().getTest(testName));
+					
+					}
+				}
+				catch (Exception e) {
+					throw new VariantInternalException("Unable to deserialzie session: bad disqual tests spec", e);
+				}
+				result.disqualTests = tests;
 			}
 		}
 		

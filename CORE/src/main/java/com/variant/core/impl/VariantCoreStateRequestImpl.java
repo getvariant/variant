@@ -47,7 +47,7 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 	private String stateName = null;
 	
 	// This doesn't change over the life of a request, so we'll only compute this once.
-	private Collection<Experience> targetedExperiencesCache; 
+	private Collection<Experience> targetedExperiences; 
 		
 	/**
 	 * Regular constructor
@@ -144,20 +144,20 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 	@Override
 	public Collection<Experience> getTargetedExperiences() {
 		
-		if (targetedExperiencesCache == null) {
+		if (targetedExperiences == null) {
 
 			SessionScopedTargetingStabile stabile = session.getTargetingStabile();
 			ArrayList<Experience> result = new ArrayList<Experience>();
 
 			for (Test test: state.getInstrumentedTests()) {
-				if (!(test.isOn() && session.isQualifiedFor(test))) continue;
+				if (!test.isOn() || session.getDisqualifiedTests().contains(test)) continue;
 				SessionScopedTargetingStabile.Entry entry = stabile.get(test.getName());
 				if (entry == null) throw new VariantInternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
 				result.add(test.getExperience(entry.getExperienceName()));
 			}
-			targetedExperiencesCache = result;
+			targetedExperiences = result;
 		}
-		return targetedExperiencesCache;
+		return targetedExperiences;
 	}
 
 	@Override
@@ -170,7 +170,7 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 			if (!t.equals(test)) continue;
 			found = true;
 
-			if (!t.isOn() || session.isDisqualified(test)) return null;
+			if (!t.isOn() || session.getDisqualifiedTests().contains(test)) return null;
 			
 			SessionScopedTargetingStabile.Entry entry = session.getTargetingStabile().get(test.getName());
 			if (entry == null) throw new VariantInternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
@@ -345,7 +345,7 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 			catch (Exception e) {
 				throw new VariantInternalException("Unable to deserialzie request: bad params spec", e);
 			}
-			result.targetedExperiencesCache = experiencesList;
+			result.targetedExperiences = experiencesList;
 		}
 
 		return result;

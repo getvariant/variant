@@ -34,7 +34,7 @@ public interface State {
 	/**
 	 * All tests instrumented on this state.  Includes both, tests
 	 * that have variants for this state as well as those where this
-	 * state is nonvariant.
+	 * state is nonvariant. Includes OFF tests.
 	 * 
 	 * @return List of tests in ordinal order, i.e. order they were defined.
 	 * @since 0.5

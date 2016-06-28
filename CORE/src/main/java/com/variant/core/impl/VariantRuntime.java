@@ -23,7 +23,6 @@ import com.variant.core.schema.Test.OnState;
 import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
-import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -174,23 +173,22 @@ public class VariantRuntime {
 		// by this session, by triggering the qualification user hook.
 		for (Test test: state.getInstrumentedTests()) {
 
-			Pair<Test, Boolean> foundPair = null;
-			for (Pair<Test, Boolean> pair: session.getTraversedTests()) {
-				if (pair.arg1().equals(test)) {
-					foundPair = pair;
-					break;
-				}
-			}
+			// OFF tests are neither qualified nor traversed.
+			if (!test.isOn()) continue;
 			
-			if (foundPair == null) {
+			if (!session.getTraversedTests().contains(test) && !session.getDisqualifiedTests().contains(test)) {
+					
 				TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
 				coreApi.getUserHooker().post(hook);
+				
 				if (!hook.qualified) {
+					session.addDisqualifiedTest(test);
 					if (hook.removeFromTT) targetingStabile.remove(test.getName());
 				}
-				
-				// If this test is on, add it to the traversed list.
-				if (test.isOn()) ((CoreSessionImpl) req.getSession()).addTraversedTest(test, hook.qualified);
+				else {
+					// If this test is on, add it to the traversed list.
+					session.addTraversedTest(test);
+				}
 			}
 		}
 		
@@ -201,19 +199,9 @@ public class VariantRuntime {
 		// Remove from the pre-targeted experience list the experiences corresponding to currently
 		// disqualified tests: we won't need to resolve them anyway.
 		Iterator<Experience> alreadyTargetedExperiencesIterator = alreadyTargetedExperiences.iterator();
-		while (alreadyTargetedExperiencesIterator.hasNext()) {
-			
+		while (alreadyTargetedExperiencesIterator.hasNext()) {			
 			Experience e = alreadyTargetedExperiencesIterator.next();
-			
-			Pair<Test, Boolean> foundPair = null;
-			for (Pair<Test, Boolean> pair: session.getTraversedTests()) {
-				if (pair.arg1().equals(e.getTest())) {
-					foundPair = pair;
-					break;
-				}
-			}
-			
-			if (foundPair != null && !foundPair.arg2()) 
+			if (session.getDisqualifiedTests().contains(e.getTest())) 
 				alreadyTargetedExperiencesIterator.remove();
 		}
 		
@@ -237,12 +225,12 @@ public class VariantRuntime {
 		
 		}
 		
-		// Actual experience vector we'll end up resolving will be different from the content of TP
-		// because OFF tests (and potentially disqualified tests) retain their entry in TP, even though
+		// Actual experience vector we'll end up resolving will be different from the content of the targeting stabile
+		// because OFF tests (and potentially disqualified tests) retain their entry in targeting tracker, even though
 		// we'll sub that with control for actual resolution.
 		ArrayList<Experience> vector = new ArrayList<Experience>();
 		
-		// First add all from from TP.
+		// First add all from from targeting stabile.
 		for (Experience e: targetingStabile.getAllAsExperiences(schema)) {
 
 			if (!e.getTest().isOn()) {
@@ -254,7 +242,7 @@ public class VariantRuntime {
 							" but substituted control experience [" + ce + "] because test is OFF");
 				}													
 			}
-			else if (session.isDisqualified(e.getTest())) {
+			else if (session.getDisqualifiedTests().contains(e.getTest())) {
 				Experience ce = e.getTest().getControlExperience();
 				vector.add(ce);
 				if (LOG.isTraceEnabled()) {
@@ -286,7 +274,7 @@ public class VariantRuntime {
 								test.getName() +"] with control experience [" + e.getName() + "]");
 					}
 				}
-				else if (session.isDisqualified(test)) {
+				else if (session.getDisqualifiedTests().contains(test)) {
 					Experience e = test.getControlExperience();
 					vector.add(e);
 					if (LOG.isTraceEnabled()) {

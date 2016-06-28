@@ -11,7 +11,7 @@ package com.variant.core.hook;
  * registered.
  * 
  * @see com.variant.core.Variant#addHookListener(HookListener)
- * @author Igor
+ * @author Igor Urisman
  * @since 0.5
  *
  */
@@ -19,8 +19,9 @@ package com.variant.core.hook;
 public interface HookListener <H extends UserHook> {
 
 	/**
-	 * Implementation must tell the container what concrete user hook type(s) it wants to listen for.
-	 * If this method returns a super-type, this listener will be posted with each descendant hook.
+	 * Implementation must tell the server what user hook type(s) it wants to listen for.
+	 * If this method returns a super-type, this listener will be posted with each descendant 
+	 * type hook.
 	 * 
 	 * @return A {@link java.lang.Class} object associated with the hooks(s) of interest.
      * @since 0.5
