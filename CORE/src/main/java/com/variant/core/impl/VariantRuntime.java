@@ -541,6 +541,8 @@ public class VariantRuntime {
 			}   			
 		}
 		else {
+			// Real state hit.
+			ssn.addTraversedState(state);
 			result.createStateVisitedEvent();
 		}
 	

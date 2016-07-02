@@ -128,9 +128,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		if (currentRequest != null && !currentRequest.isCommitted()) {
 			throw new VariantRuntimeException (RUN_ACTIVE_REQUEST);
 		}
-		
-		addTraversedState(state);
-		
+				
 		return coreApi.getRuntime().targetSessionForState(this, (StateImpl) state);
 	}
 

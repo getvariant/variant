@@ -192,7 +192,6 @@ public class UserHookTest extends BaseTestCore {
 		assertEqualAsSets(ssn3.getTraversedTests(), schema.getTest("test1"));
 		assertEqualAsSets(ssn3.getDisqualifiedTests(), schema.getTest("Test1"));
 
-		// ssn3 hasn't yet been committed, so if we re-get the session, we won't see the traversed elements.
 		VariantCoreSession ssn3uncommitted = core.getSession("foo3");
 		assertTrue(ssn3uncommitted.getTraversedStates().isEmpty());
 		assertTrue(ssn3uncommitted.getTraversedTests().isEmpty());
@@ -217,10 +216,7 @@ public class UserHookTest extends BaseTestCore {
 		state2 = schema.getState("state2");
 		setTargetingStabile(ssn3, "test1.B","test2.D","Test1.A");
 		request = ssn3.targetForState(state2);
-		assertEqualAsSets(
-				ssn3.getTraversedStates(), 
-				new Pair<State, Integer>(state1, 1),
-				new Pair<State, Integer>(state2, 1));
+		assertEqualAsSets(ssn3.getTraversedStates(), new Pair<State, Integer>(state1, 1));
 
 		assertEqualAsSets(ssn3.getTraversedTests(), schema.getTest("test1"));
 
@@ -232,10 +228,7 @@ public class UserHookTest extends BaseTestCore {
 		assertTrue(disqualListener.testList.isEmpty());
 		assertEquals("/path/to/state2", request.getResolvedParameterMap().get("path"));
 		request.commit();
-		assertEqualAsSets(
-				ssn3.getTraversedStates(), 
-				new Pair<State, Integer>(state1, 1), 
-				new Pair<State, Integer>(state2, 1));
+		assertEqualAsSets(ssn3.getTraversedStates(), new Pair<State, Integer>(state1, 1));
 
 		assertEqualAsSets(ssn3.getTraversedTests(), schema.getTest("test1"));
 	}
