@@ -1,4 +1,4 @@
-package com.variant.core.impl;
+package com.variant.core.session;
 
 import java.util.ArrayList;
 import java.util.Collection;

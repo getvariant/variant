@@ -9,10 +9,10 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.variant.core.impl.CoreSessionImpl;
-import com.variant.core.impl.SessionScopedTargetingStabile;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.session.SessionScopedTargetingStabile;
 
 public class TargetingStabileTest extends BaseTestCore {
 	

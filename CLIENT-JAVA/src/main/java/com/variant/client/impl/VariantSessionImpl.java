@@ -6,10 +6,10 @@ import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantStateRequest;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.core.impl.CoreSessionImpl;
-import com.variant.core.impl.SessionScopedTargetingStabile;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantCoreStateRequestImpl;
 import com.variant.core.schema.State;
+import com.variant.core.session.SessionScopedTargetingStabile;
 
 /**
  * Client side session implementation.

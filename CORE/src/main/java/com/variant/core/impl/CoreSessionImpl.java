@@ -27,6 +27,7 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.impl.StateImpl;
+import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantCollectionsUtils;
 

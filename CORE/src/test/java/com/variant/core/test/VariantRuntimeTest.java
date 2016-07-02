@@ -13,7 +13,6 @@ import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.CoreSessionImpl;
-import com.variant.core.impl.SessionScopedTargetingStabile;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.schema.Schema;
@@ -21,6 +20,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.VariantCollectionsUtils;
 
 

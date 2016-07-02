@@ -23,6 +23,7 @@ import com.variant.core.schema.Test.OnState;
 import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
+import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.VariantStringUtils;
 
 /**
