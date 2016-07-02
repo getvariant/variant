@@ -143,8 +143,7 @@ public class SchemaParserOkayTest extends BaseTestCore {
 		core.clearHookListeners();
 		VariantCoreStateRequest req = session.targetForState(state1);
 		assertTrue(req.getTargetedExperiences().isEmpty());
-		assertEquals(1, session.getTraversedStates().size());
-		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
+		assertTrue(session.getTraversedStates().isEmpty());
 		assertTrue(session.getTraversedTests().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
 	}
@@ -267,11 +266,8 @@ public class SchemaParserOkayTest extends BaseTestCore {
 		core.clearHookListeners();
 		core.addHookListener(new TestDisqualifier(test2));
 		VariantCoreStateRequest req = session.targetForState(state1);
-		assertEquals(1, session.getTraversedStates().size());
-		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
-		assertEqualAsSets(
-				session.getTraversedTests(), 
-				new Pair<com.variant.core.schema.Test, Boolean>(test2, false));
+		assertEquals(0, session.getTraversedStates().size());
+		assertEquals(0, session.getTraversedTests().size());
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
 	}
@@ -396,12 +392,8 @@ public class SchemaParserOkayTest extends BaseTestCore {
 		core.addHookListener(new TestDisqualifier(test1));
 		core.addHookListener(new TestDisqualifier(test2));
 		VariantCoreStateRequest req = session.targetForState(state1);
-		assertEquals(1, session.getTraversedStates().size());
-		assertEquals(1, session.getTraversedStates().iterator().next().arg2().intValue());
-		assertEqualAsSets(
-				session.getTraversedTests(), 
-				new Pair<com.variant.core.schema.Test, Boolean>(test1, false), 
-				new Pair<com.variant.core.schema.Test, Boolean>(test2, false));
+		assertTrue(session.getTraversedStates().isEmpty());
+		assertTrue(session.getTraversedTests().isEmpty());
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
 	}

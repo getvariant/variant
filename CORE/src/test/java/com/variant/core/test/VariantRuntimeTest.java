@@ -9,10 +9,12 @@ import static org.junit.Assert.assertTrue;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.client.VariantTargetingTracker;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.impl.CoreSessionImpl;
+import com.variant.core.impl.SessionScopedTargetingStabile;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -27,19 +29,21 @@ import com.variant.core.util.VariantCollectionsUtils;
  */
 public class VariantRuntimeTest extends BaseTestCore {
 
+	private VariantCore core = rebootApi();
+
 	/**
 	 * 
 	 */
 	@org.junit.Test
 	public void pathResolution() throws Exception {
 		
-		VariantRuntimeTestFacade runtimeFacade = new VariantRuntimeTestFacade(api.getRuntime());
+		VariantRuntimeTestFacade runtimeFacade = new VariantRuntimeTestFacade(core.getRuntime());
 		
-		ParserResponse response = api.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		ParserResponse response = core.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		Schema schema = api.getSchema();
+		Schema schema = core.getSchema();
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");
@@ -62,7 +66,7 @@ public class VariantRuntimeTest extends BaseTestCore {
 		Map<String,String> params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test1.A")   // control, not instrumented
+						experience("test1.A", schema)   // control, not instrumented
 				)
 		);
 		assertEquals("/path/to/state1", params.get("path"));
@@ -70,7 +74,7 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test1.B")   // not instrumented
+						experience("test1.B", schema)   // not instrumented
 				)
 		);
 		assertEquals("/path/to/state1", params.get("path"));
@@ -78,8 +82,8 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test1.A"),  // control
-						experience("test2.A")   // nonvariant.
+						experience("test1.A", schema),  // control
+						experience("test2.A", schema)   // nonvariant.
 				)
 		);
 		assertEquals("/path/to/state1", params.get("path"));
@@ -87,8 +91,8 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test1.A"),  // control
-						experience("test2.B")   // nonvariant
+						experience("test1.A", schema),  // control
+						experience("test2.B", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state1", params.get("path"));
@@ -96,9 +100,9 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test1.A"),  // control
-						experience("test2.B"),  // nonvariant
-						experience("test3.A")   // nonvariant
+						experience("test1.A", schema),  // control
+						experience("test2.B", schema),  // nonvariant
+						experience("test3.A", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state1", params.get("path"));
@@ -108,10 +112,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 			runtimeFacade.resolveState(
 					state1, 
 					VariantCollectionsUtils.list(
-							experience("test1.A"),  // not instrumented
-							experience("test2.B"),  // nonvariant
-							experience("test3.A"),  // nonvariant
-							experience("test1.B")   // dupe test
+							experience("test1.A", schema),  // not instrumented
+							experience("test2.B", schema),  // nonvariant
+							experience("test3.A", schema),  // nonvariant
+							experience("test1.B", schema)   // dupe test
 					)
 			);
 		}
@@ -124,10 +128,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test1.A"),  // not instrumented
-						experience("test2.B"),  // nonvariant
-						experience("test3.A"),  // nonvariant
-						experience("test4.B")   // variant
+						experience("test1.A", schema),  // not instrumented
+						experience("test2.B", schema),  // nonvariant
+						experience("test3.A", schema),  // nonvariant
+						experience("test4.B", schema)   // variant
 				)
 		);
 		assertEquals("/path/to/state1/test4.B", params.get("path"));
@@ -135,10 +139,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test4.B"),  // variant
-						experience("test2.B"),  // nonvariant
-						experience("test1.A"),  // control
-						experience("test3.A")   // control, nonvariant
+						experience("test4.B", schema),  // variant
+						experience("test2.B", schema),  // nonvariant
+						experience("test1.A", schema),  // control
+						experience("test3.A", schema)   // control, nonvariant
 				)
 		);
 		assertEquals("/path/to/state1/test4.B", params.get("path"));
@@ -146,11 +150,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test4.B"),  // variant
-						experience("test2.B"),  // nonvariant
-						experience("test1.A"),  // control
-						experience("test6.C"),  // variant
-						experience("test3.A")   // control, nonvariant
+						experience("test4.B", schema),  // variant
+						experience("test2.B", schema),  // nonvariant
+						experience("test1.A", schema),  // control
+						experience("test6.C", schema),  // variant
+						experience("test3.A", schema)   // control, nonvariant
 				)
 		);
 		assertEquals("/path/to/state1/test4.B+test6.C", params.get("path"));
@@ -158,11 +162,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test4.B"),  // variant
-						experience("test2.B"),  // nonvariant
-						experience("test1.C"),  // nonvariant
-						experience("test6.B"),  // variant
-						experience("test3.A")   // control, nonvariant
+						experience("test4.B", schema),  // variant
+						experience("test2.B", schema),  // nonvariant
+						experience("test1.C", schema),  // nonvariant
+						experience("test6.B", schema),  // variant
+						experience("test3.A", schema)   // control, nonvariant
 				)
 		);
 		assertEquals("/path/to/state1/test4.B+test6.B", params.get("path"));
@@ -170,10 +174,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test4.A"),  // control
-						experience("test2.B"),  // nonvariant
-						experience("test5.C"),  // variant
-						experience("test3.B")   // nonvariant
+						experience("test4.A", schema),  // control
+						experience("test2.B", schema),  // nonvariant
+						experience("test5.C", schema),  // variant
+						experience("test3.B", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state1/test5.C", params.get("path"));
@@ -181,10 +185,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test4.C"),  // variant
-						experience("test2.B"),  // nonvariant
-						experience("test5.C"),  // variant
-						experience("test3.B")   // nonvariant
+						experience("test4.C", schema),  // variant
+						experience("test2.B", schema),  // nonvariant
+						experience("test5.C", schema),  // variant
+						experience("test3.B", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state1/test4.C+test5.C", params.get("path"));
@@ -192,11 +196,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test6.A"),  // control
-						experience("test4.C"),  // variant
-						experience("test2.B"),  // nonvariant
-						experience("test5.C"),  // variant
-						experience("test3.B")   // variant
+						experience("test6.A", schema),  // control
+						experience("test4.C", schema),  // variant
+						experience("test2.B", schema),  // nonvariant
+						experience("test5.C", schema),  // variant
+						experience("test3.B", schema)   // variant
 				)
 		);
 		assertEquals("/path/to/state1/test4.C+test5.C", params.get("path"));
@@ -204,11 +208,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
-						experience("test4.C"),  // variant
-						experience("test6.B"),  // variant
-						experience("test2.B"),  // nonvariant
-						experience("test5.C"),  // variant
-						experience("test3.B")   // nonvariant
+						experience("test4.C", schema),  // variant
+						experience("test6.B", schema),  // variant
+						experience("test2.B", schema),  // nonvariant
+						experience("test5.C", schema),  // variant
+						experience("test3.B", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state1/test4.C+test5.C+test6.B", params.get("path"));
@@ -219,7 +223,7 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test1.A")   // control
+						experience("test1.A", schema)   // control
 				)
 		);
 		assertEquals("/path/to/state2", params.get("path"));
@@ -227,7 +231,7 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test1.B")   // variant
+						experience("test1.B", schema)   // variant
 				)
 		);
 		assertEquals("/path/to/state2/test1.B", params.get("path"));
@@ -235,8 +239,8 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test1.A"),  // control
-						experience("test2.B")   // variant
+						experience("test1.A", schema),  // control
+						experience("test2.B", schema)   // variant
 				)
 		);
 		assertEquals("/path/to/state2/test2.B", params.get("path"));
@@ -244,8 +248,8 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test1.A"),  // control
-						experience("test2.A")   // control
+						experience("test1.A", schema),  // control
+						experience("test2.A", schema)   // control
 				)
 		);
 		assertEquals("/path/to/state2", params.get("path"));
@@ -253,9 +257,9 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test1.A"),  // control
-						experience("test2.B"),  // variant
-						experience("test3.A")   // control
+						experience("test1.A", schema),  // control
+						experience("test2.B", schema),  // variant
+						experience("test3.A", schema)   // control
 				)
 		);
 		assertEquals("/path/to/state2/test2.B", params.get("path"));
@@ -265,10 +269,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 			runtimeFacade.resolveState(
 					state2, 
 					VariantCollectionsUtils.list(
-							experience("test1.A"),  // control
-							experience("test2.B"),  // nonvariant
-							experience("test3.A"),  // control, nonvariant
-							experience("test3.A")   // dupe test
+							experience("test1.A", schema),  // control
+							experience("test2.B", schema),  // nonvariant
+							experience("test3.A", schema),  // control, nonvariant
+							experience("test3.A", schema)   // dupe test
 					)
 			);
 		}
@@ -281,10 +285,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test1.A"),  // control
-						experience("test2.B"),  // variant
-						experience("test3.A"),  // control
-						experience("test4.B")   // variant, unsupported
+						experience("test1.A", schema),  // control
+						experience("test2.B", schema),  // variant
+						experience("test3.A", schema),  // control
+						experience("test4.B", schema)   // variant, unsupported
 				)
 		);
 		assertNull(params);
@@ -292,10 +296,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test4.B"),  // variant, unsupported
-						experience("test2.B"),  // variant
-						experience("test1.A"),  // control
-						experience("test3.A")   // control
+						experience("test4.B", schema),  // variant, unsupported
+						experience("test2.B", schema),  // variant
+						experience("test1.A", schema),  // control
+						experience("test3.A", schema)   // control
 				)
 		);
 		assertNull(params);
@@ -303,11 +307,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test4.B"),  // variant
-						experience("test2.A"),  // control
-						experience("test1.C"),  // variant
-						experience("test6.C"),  // nonvariant
-						experience("test3.A")   // control
+						experience("test4.B", schema),  // variant
+						experience("test2.A", schema),  // control
+						experience("test1.C", schema),  // variant
+						experience("test6.C", schema),  // nonvariant
+						experience("test3.A", schema)   // control
 				)
 		);
 		assertEquals("/path/to/state2/test1.C+test4.B", params.get("path"));
@@ -315,11 +319,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test4.B"),  // variant
-						experience("test2.A"),  // control
-						experience("test1.C"),  // variant
-						experience("test6.B"),  // nonvariant
-						experience("test3.A")   // control
+						experience("test4.B", schema),  // variant
+						experience("test2.A", schema),  // control
+						experience("test1.C", schema),  // variant
+						experience("test6.B", schema),  // nonvariant
+						experience("test3.A", schema)   // control
 				)
 		);
 		assertEquals("/path/to/state2/test1.C+test4.B", params.get("path"));
@@ -327,10 +331,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test4.A"),  // control
-						experience("test2.B"),  // variant
-						experience("test5.C"),  // variant
-						experience("test3.B")   // variant, unsupported.
+						experience("test4.A", schema),  // control
+						experience("test2.B", schema),  // variant
+						experience("test5.C", schema),  // variant
+						experience("test3.B", schema)   // variant, unsupported.
 				)
 		);
 		assertNull(params);
@@ -338,10 +342,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test4.C"),  // variant
-						experience("test2.B"),  // variant
-						experience("test5.C"),  // variant
-						experience("test3.A")   // control
+						experience("test4.C", schema),  // variant
+						experience("test2.B", schema),  // variant
+						experience("test5.C", schema),  // variant
+						experience("test3.A", schema)   // control
 				)
 		);
 		assertEquals("/path/to/state2/test2.B+test4.C+test5.C", params.get("path"));
@@ -349,11 +353,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test6.A"),  // control
-						experience("test4.C"),  // variant
-						experience("test2.B"),  // variant
-						experience("test5.C"),  // variant
-						experience("test3.B")   // variant, unsupported.
+						experience("test6.A", schema),  // control
+						experience("test4.C", schema),  // variant
+						experience("test2.B", schema),  // variant
+						experience("test5.C", schema),  // variant
+						experience("test3.B", schema)   // variant, unsupported.
 				)
 		);
 		assertNull(params);
@@ -361,11 +365,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test4.C"),  // variant
-						experience("test6.B"),  // nonvariant
-						experience("test2.B"),  // variant
-						experience("test5.C"),  // variant
-						experience("test3.A")   // control
+						experience("test4.C", schema),  // variant
+						experience("test6.B", schema),  // nonvariant
+						experience("test2.B", schema),  // variant
+						experience("test5.C", schema),  // variant
+						experience("test3.A", schema)   // control
 				)
 		);
 		assertEquals("/path/to/state2/test2.B+test4.C+test5.C", params.get("path"));
@@ -375,7 +379,7 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test2.A")   // control
+						experience("test2.A", schema)   // control
 				)
 		);
 		assertEquals("/path/to/state3", params.get("path"));
@@ -383,7 +387,7 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test4.B")   // not instrumented
+						experience("test4.B", schema)   // not instrumented
 				)
 		);
 		assertEquals("/path/to/state3", params.get("path"));
@@ -391,7 +395,7 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test3.B")   // nonvariant
+						experience("test3.B", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state3", params.get("path"));
@@ -399,7 +403,7 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test2.B")   // variant
+						experience("test2.B", schema)   // variant
 				)
 		);
 		assertEquals("/path/to/state3/test2.B", params.get("path"));
@@ -407,8 +411,8 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test1.B"),  // variant
-						experience("test2.A")   // control
+						experience("test1.B", schema),  // variant
+						experience("test2.A", schema)   // control
 				)
 		);
 		assertEquals("/path/to/state3/test1.B", params.get("path"));
@@ -416,8 +420,8 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test1.A"),  // control
-						experience("test2.A")   // control
+						experience("test1.A", schema),  // control
+						experience("test2.A", schema)   // control
 				)
 		);
 		assertEquals("/path/to/state2", params.get("path"));
@@ -425,9 +429,9 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test1.A"),  // control
-						experience("test2.B"),  // variant
-						experience("test3.A")   // nonvariant
+						experience("test1.A", schema),  // control
+						experience("test2.B", schema),  // variant
+						experience("test3.A", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state2/test2.B", params.get("path"));
@@ -437,10 +441,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 			runtimeFacade.resolveState(
 					state3, 
 					VariantCollectionsUtils.list(
-							experience("test1.A"),  // control
-							experience("test2.B"),  // variant
-							experience("test3.A"),  // nonvariant
-							experience("test2.A")   // dupe test
+							experience("test1.A", schema),  // control
+							experience("test2.B", schema),  // variant
+							experience("test3.A", schema),  // nonvariant
+							experience("test2.A", schema)   // dupe test
 					)
 			);
 		}
@@ -453,10 +457,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test1.C"),  // variant
-						experience("test2.B"),  // variant, unsupported
-						experience("test3.A"),  // nonvariant
-						experience("test4.B")   // uninstrumented
+						experience("test1.C", schema),  // variant
+						experience("test2.B", schema),  // variant, unsupported
+						experience("test3.A", schema),  // nonvariant
+						experience("test4.B", schema)   // uninstrumented
 				)
 		);
 		assertNull(params);
@@ -464,10 +468,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test4.B"),  // uninstrumented
-						experience("test2.B"),  // variant
-						experience("test1.A"),  // control
-						experience("test3.C")   // nonvariant
+						experience("test4.B", schema),  // uninstrumented
+						experience("test2.B", schema),  // variant
+						experience("test1.A", schema),  // control
+						experience("test3.C", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state3/test2.B", params.get("path"));
@@ -475,11 +479,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test4.B"),  // uninstrumented
-						experience("test2.A"),  // control
-						experience("test1.C"),  // variant
-						experience("test6.C"),  // variant
-						experience("test3.A")   // nonvariant
+						experience("test4.B", schema),  // uninstrumented
+						experience("test2.A", schema),  // control
+						experience("test1.C", schema),  // variant
+						experience("test6.C", schema),  // variant
+						experience("test3.A", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state3/test1.C+test6.C", params.get("path"));
@@ -487,11 +491,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test4.B"),  // uninstrumented
-						experience("test2.B"),  // variant
-						experience("test1.C"),  // variant
-						experience("test6.B"),  // variant
-						experience("test3.A")   // nonvariant
+						experience("test4.B", schema),  // uninstrumented
+						experience("test2.B", schema),  // variant
+						experience("test1.C", schema),  // variant
+						experience("test6.B", schema),  // variant
+						experience("test3.A", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state3/test1.C+test2.B+test6.B", params.get("path"));
@@ -499,10 +503,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test4.A"),  // uninstrumented
-						experience("test2.B"),  // variant
-						experience("test5.C"),  // nonvariant
-						experience("test3.B")   // nonvariant
+						experience("test4.A", schema),  // uninstrumented
+						experience("test2.B", schema),  // variant
+						experience("test5.C", schema),  // nonvariant
+						experience("test3.B", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state3/test2.B", params.get("path"));
@@ -510,10 +514,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test4.C"),  // uninstrumented
-						experience("test2.B"),  // variant
-						experience("test5.C"),  // nonvariant
-						experience("test1.A")   // control
+						experience("test4.C", schema),  // uninstrumented
+						experience("test2.B", schema),  // variant
+						experience("test5.C", schema),  // nonvariant
+						experience("test1.A", schema)   // control
 				)
 		);
 		assertEquals("/path/to/state3/test2.B", params.get("path"));
@@ -521,11 +525,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test6.A"),  // control
-						experience("test4.C"),  // uninstrumented
-						experience("test2.B"),  // variant, unsupported
-						experience("test5.C"),  // nonvariant
-						experience("test1.B")   // variant
+						experience("test6.A", schema),  // control
+						experience("test4.C", schema),  // uninstrumented
+						experience("test2.B", schema),  // variant, unsupported
+						experience("test5.C", schema),  // nonvariant
+						experience("test1.B", schema)   // variant
 				)
 		);
 		assertNull(params);
@@ -533,11 +537,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test4.C"),  // uninstrumented
-						experience("test6.B"),  // variant
-						experience("test2.B"),  // variant
-						experience("test5.C"),  // uninstrumented
-						experience("test3.A")   // nonvariant
+						experience("test4.C", schema),  // uninstrumented
+						experience("test6.B", schema),  // variant
+						experience("test2.B", schema),  // variant
+						experience("test5.C", schema),  // uninstrumented
+						experience("test3.A", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state3/test2.B+test6.B", params.get("path"));
@@ -549,171 +553,171 @@ public class VariantRuntimeTest extends BaseTestCore {
 		Collection<Experience> subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.A")));
+								experience("test1.A", schema)));
 		assertTrue(subVector.isEmpty());
 		
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.B")));
+								experience("test1.B", schema)));
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.A"), 
-								experience("test2.B")));
+								experience("test1.A", schema), 
+								experience("test2.B", schema)));
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.C"), 
-								experience("test2.B")));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C")), subVector);
+								experience("test1.C", schema), 
+								experience("test2.B", schema)));
+		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema)), subVector);
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.A"), 
-								experience("test2.B"), 
-								experience("test3.A")));
+								experience("test1.A", schema), 
+								experience("test2.B", schema), 
+								experience("test3.A", schema)));
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.A"), 
-								experience("test2.B"), 
-								experience("test3.C")));
+								experience("test1.A", schema), 
+								experience("test2.B", schema), 
+								experience("test3.C", schema)));
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.C"), 
-								experience("test2.B"), 
-								experience("test3.C")));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C")), subVector);
+								experience("test1.C", schema), 
+								experience("test2.B", schema), 
+								experience("test3.C", schema)));
+		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema)), subVector);
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.A"), 
-								experience("test2.B"), 
-								experience("test3.C"),
-								experience("test4.A")));
+								experience("test1.A", schema), 
+								experience("test2.B", schema), 
+								experience("test3.C", schema),
+								experience("test4.A", schema)));
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.C"), 
-								experience("test2.B"), 
-								experience("test3.C"),
-								experience("test4.A")));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C")), subVector);
+								experience("test1.C", schema), 
+								experience("test2.B", schema), 
+								experience("test3.C", schema),
+								experience("test4.A", schema)));
+		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema)), subVector);
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.C"), 
-								experience("test2.B"), 
-								experience("test3.C"),
-								experience("test4.B")));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test4.B")), subVector);
+								experience("test1.C", schema), 
+								experience("test2.B", schema), 
+								experience("test3.C", schema),
+								experience("test4.B", schema)));
+		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test4.B", schema)), subVector);
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.C"), 
-								experience("test2.B"), 
-								experience("test3.C"),
-								experience("test5.B"),
-								experience("test4.B")));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test3.C")), subVector);
+								experience("test1.C", schema), 
+								experience("test2.B", schema), 
+								experience("test3.C", schema),
+								experience("test5.B", schema),
+								experience("test4.B", schema)));
+		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test3.C", schema)), subVector);
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.C"), 
-								experience("test2.A"), 
-								experience("test3.C"),
-								experience("test5.B"),
-								experience("test4.B")));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test3.C")), subVector);
+								experience("test1.C", schema), 
+								experience("test2.A", schema), 
+								experience("test3.C", schema),
+								experience("test5.B", schema),
+								experience("test4.B", schema)));
+		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test3.C", schema)), subVector);
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.C"), 
-								experience("test2.A"), 
-								experience("test3.C"),
-								experience("test5.B"),
-								experience("test4.A")));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test3.C")), subVector);
+								experience("test1.C", schema), 
+								experience("test2.A", schema), 
+								experience("test3.C", schema),
+								experience("test5.B", schema),
+								experience("test4.A", schema)));
+		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test3.C", schema)), subVector);
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.C"), 
-								experience("test2.A"), 
-								experience("test3.C"),
-								experience("test5.A"),
-								experience("test4.A")));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C")), subVector);
+								experience("test1.C", schema), 
+								experience("test2.A", schema), 
+								experience("test3.C", schema),
+								experience("test5.A", schema),
+								experience("test4.A", schema)));
+		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema)), subVector);
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test6.C"), 
-								experience("test1.C"), 
-								experience("test2.B"), 
-								experience("test3.C"),
-								experience("test5.A"),
-								experience("test4.A")));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C")), subVector);
+								experience("test6.C", schema), 
+								experience("test1.C", schema), 
+								experience("test2.B", schema), 
+								experience("test3.C", schema),
+								experience("test5.A", schema),
+								experience("test4.A", schema)));
+		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema)), subVector);
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test6.C"), 
-								experience("test1.C"), 
-								experience("test2.B"), 
-								experience("test3.C"),
-								experience("test5.A"),
-								experience("test4.C")));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test4.C")), subVector);
+								experience("test6.C", schema), 
+								experience("test1.C", schema), 
+								experience("test2.B", schema), 
+								experience("test3.C", schema),
+								experience("test5.A", schema),
+								experience("test4.C", schema)));
+		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test4.C", schema)), subVector);
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test6.C"), 
-								experience("test1.C"), 
-								experience("test2.B"), 
-								experience("test3.C"),
-								experience("test5.B"),
-								experience("test4.C")));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C"), experience("test3.C")), subVector);
+								experience("test6.C", schema), 
+								experience("test1.C", schema), 
+								experience("test2.B", schema), 
+								experience("test3.C", schema),
+								experience("test5.B", schema),
+								experience("test4.C", schema)));
+		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test3.C", schema)), subVector);
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test6.C"), 
-								experience("test1.A"), 
-								experience("test2.B"), 
-								experience("test3.A"),
-								experience("test5.B"),
-								experience("test4.C")));
+								experience("test6.C", schema), 
+								experience("test1.A", schema), 
+								experience("test2.B", schema), 
+								experience("test3.A", schema),
+								experience("test5.B", schema),
+								experience("test4.C", schema)));
 		assertTrue(subVector.isEmpty());
 
 		subVector = 
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test6.C"), 
-								experience("test2.B"), 
-								experience("test5.B"),
-								experience("test4.C")));
+								experience("test6.C", schema), 
+								experience("test2.B", schema), 
+								experience("test5.B", schema),
+								experience("test4.C", schema)));
 		assertTrue(subVector.isEmpty());
 
 		//
@@ -725,10 +729,10 @@ public class VariantRuntimeTest extends BaseTestCore {
 			runtimeFacade.isTargetable(
 				test5, 
 				VariantCollectionsUtils.list(
-						experience("test1.A"),
-						experience("test3.B"),
-						experience("test5.A"),
-						experience("test6.A")));
+						experience("test1.A", schema),
+						experience("test3.B", schema),
+						experience("test5.A", schema),
+						experience("test6.A", schema)));
 		}
 		catch (VariantInternalException e) {
 			thrown = true;
@@ -741,11 +745,11 @@ public class VariantRuntimeTest extends BaseTestCore {
 			runtimeFacade.isTargetable(
 				test6, 
 				VariantCollectionsUtils.list(
-						experience("test1.C"), 
-						experience("test2.A"), 
-						experience("test3.C"),
-						experience("test5.B"),
-						experience("test4.A")));
+						experience("test1.C", schema), 
+						experience("test2.A", schema), 
+						experience("test3.C", schema),
+						experience("test5.B", schema),
+						experience("test4.A", schema)));
 		}
 		catch (VariantInternalException e) {
 			thrown = true;
@@ -755,104 +759,104 @@ public class VariantRuntimeTest extends BaseTestCore {
 
 		assertTrue(runtimeFacade.isTargetable(
 				test1, 
-				VariantCollectionsUtils.list(experience("test2.A"))));
+				VariantCollectionsUtils.list(experience("test2.A", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test1, 
-				VariantCollectionsUtils.list(experience("test2.B"))));
+				VariantCollectionsUtils.list(experience("test2.B", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test1,
 				VariantCollectionsUtils.list(
-						experience("test2.A"), 
-						experience("test3.C"),
-						experience("test5.A"),
-						experience("test4.A"))));
+						experience("test2.A", schema), 
+						experience("test3.C", schema),
+						experience("test5.A", schema),
+						experience("test4.A", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test1,
 				VariantCollectionsUtils.list(
-						experience("test6.C"), 
-						experience("test2.B"), 
-						experience("test3.C"),
-						experience("test5.A"),
-						experience("test4.A"))));
+						experience("test6.C", schema), 
+						experience("test2.B", schema), 
+						experience("test3.C", schema),
+						experience("test5.A", schema),
+						experience("test4.A", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test2,
 				VariantCollectionsUtils.list(
-						experience("test6.C"), 
-						experience("test3.C"),
-						experience("test5.A"),
-						experience("test4.A"))));
+						experience("test6.C", schema), 
+						experience("test3.C", schema),
+						experience("test5.A", schema),
+						experience("test4.A", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test3,
 				VariantCollectionsUtils.list(
-						experience("test6.C"), 
-						experience("test2.B"), 
-						experience("test5.A"),
-						experience("test4.A"))));
+						experience("test6.C", schema), 
+						experience("test2.B", schema), 
+						experience("test5.A", schema),
+						experience("test4.A", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test6,
 				VariantCollectionsUtils.list(
-						experience("test2.B"), 
-						experience("test3.C"),
-						experience("test5.A"),
-						experience("test4.A"))));
+						experience("test2.B", schema), 
+						experience("test3.C", schema),
+						experience("test5.A", schema),
+						experience("test4.A", schema))));
 		
 		assertFalse(runtimeFacade.isTargetable(
 				test1,
 				VariantCollectionsUtils.list(
-						experience("test6.C"), 
-						experience("test2.B"), 
-						experience("test3.C"),
-						experience("test5.A"))));
+						experience("test6.C", schema), 
+						experience("test2.B", schema), 
+						experience("test3.C", schema),
+						experience("test5.A", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test6,
 				VariantCollectionsUtils.list(
-						experience("test1.A"), 
-						experience("test2.B"), 
-						experience("test3.A"),
-						experience("test5.B"),
-						experience("test4.C"))));
+						experience("test1.A", schema), 
+						experience("test2.B", schema), 
+						experience("test3.A", schema),
+						experience("test5.B", schema),
+						experience("test4.C", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test2,
 				VariantCollectionsUtils.list(
-						experience("test6.C"), 
-						experience("test1.A"), 
-						experience("test3.A"),
-						experience("test5.B"),
-						experience("test4.C"))));
+						experience("test6.C", schema), 
+						experience("test1.A", schema), 
+						experience("test3.A", schema),
+						experience("test5.B", schema),
+						experience("test4.C", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test4,
 				VariantCollectionsUtils.list(
-						experience("test6.C"), 
-						experience("test1.A"), 
-						experience("test2.B"), 
-						experience("test3.A"),
-						experience("test5.B"))));
+						experience("test6.C", schema), 
+						experience("test1.A", schema), 
+						experience("test2.B", schema), 
+						experience("test3.A", schema),
+						experience("test5.B", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test5,
 				VariantCollectionsUtils.list(
-						experience("test6.C"), 
-						experience("test1.B"), 
-						experience("test2.A"), 
-						experience("test3.A"),
-						experience("test4.C"))));
+						experience("test6.C", schema), 
+						experience("test1.B", schema), 
+						experience("test2.A", schema), 
+						experience("test3.A", schema),
+						experience("test4.C", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test3,
 				VariantCollectionsUtils.list(
-						experience("test6.C"), 
-						experience("test2.B"), 
-						experience("test5.B"),
-						experience("test4.C"))));
+						experience("test6.C", schema), 
+						experience("test2.B", schema), 
+						experience("test5.B", schema),
+						experience("test4.C", schema))));
 
 		
 	}
@@ -1106,25 +1110,23 @@ public class VariantRuntimeTest extends BaseTestCore {
 			    	    "}                                                                         ";
 
 
-		ParserResponse response = api.parseSchema(SCHEMA);
+		ParserResponse response = core.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		Schema schema = api.getSchema();
+		Schema schema = core.getSchema();
 		State state1 = schema.getState("state1");
-		long timestamp = System.currentTimeMillis();
-		String persisterString = timestamp + ".test2.B";
-		VariantCoreSession ssn = api.getSession("foo-key");
-		// Core implementation makes no distinction between session udser data and targeting persister user data.
-		VariantCoreStateRequest req = ssn.targetForState(state1, persisterString);
-		VariantTargetingTracker tp = req.getTargetingTracker();
+		VariantCoreSession ssn = core.getSession("foo-key");
+		setTargetingStabile(ssn, "test2.B");
+		VariantCoreStateRequest req = ssn.targetForState(state1);
+		SessionScopedTargetingStabile stabile = ((CoreSessionImpl)ssn).getTargetingStabile();
 
-		// test2 is off, but TP has a variant experience for it, which will be substituted for the purposes of lookup with control.
+		// test2 is off, but stabile has a variant experience for it, which will be substituted for the purposes of lookup with control.
 		// test1 is disjoint with test2, so has to default to control.
 		// test3 is covariant with test1, so it is targeted unconstrained.
-		assertEquals(3, tp.getAll().size());
+		assertEquals(3, stabile.getAll().size());
 		// We didn't touch test2.B entry in the TP, even though we used control for resolution.
-		assertEquals(experience("test2.B"), tp.get(schema.getTest("test2")));
+		assertEquals("test2.B", stabile.get("test2").getTestName() + "." + stabile.get("test2").getExperienceName());
 		String path = req.getResolvedParameterMap().get("path");
 		assertMatches("/path/to/state1(/test3\\.[B,C])?", path);
 		assertEquals(ssn, req.getSession());
