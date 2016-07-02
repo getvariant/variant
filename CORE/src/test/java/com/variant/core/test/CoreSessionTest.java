@@ -20,7 +20,7 @@ import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 
-public class SessionTest extends BaseTestCore {
+public class CoreSessionTest extends BaseTestCore {
 
 	private VariantCore core = rebootApi();
 
@@ -45,7 +45,7 @@ public class SessionTest extends BaseTestCore {
 
 		
 		// Create schema. We should be able to get and save.
-		response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
@@ -61,7 +61,7 @@ public class SessionTest extends BaseTestCore {
 		VariantCoreTestFacade.getSessionService(core).saveSession((CoreSessionImpl)ssn);
 
 		// Successful parse invalidates existing schemas.
-		response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
@@ -79,7 +79,7 @@ public class SessionTest extends BaseTestCore {
 	@Test
 	public void sessionCreationTest() throws Exception {
 			
-		ParserResponse response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
@@ -119,7 +119,7 @@ public class SessionTest extends BaseTestCore {
 	@Test
 	public void  stateRequestTest() throws Exception {
 				
-		ParserResponse response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		
@@ -168,7 +168,7 @@ public class SessionTest extends BaseTestCore {
 	@Test
 	public void  crossSchemaTest() throws Exception {
 				
-		ParserResponse response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		
@@ -184,7 +184,7 @@ public class SessionTest extends BaseTestCore {
 	    assertEquals(ssn1.creationTimestamp(), ssn2.creationTimestamp());
 
 	    // new schema.
-		response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 	    
@@ -205,7 +205,7 @@ public class SessionTest extends BaseTestCore {
 		core = rebootApi();
 		assertNull(core.getSchema());
 		
-		response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		

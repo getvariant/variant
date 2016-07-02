@@ -27,7 +27,7 @@ import com.variant.core.util.VariantCollectionsUtils;
 /**
  * @author Igor
  */
-public class VariantRuntimeTest extends BaseTestCore {
+public class CoreRuntimeTest extends BaseTestCore {
 
 	private VariantCore core = rebootApi();
 

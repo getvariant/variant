@@ -4,12 +4,6 @@
 # Default values for all Variant Core properties.
 #
 
-# Number of idle days after which a test experience will be honored in
-# targeting tracker.  In other words, an experience found in targeting tracker
-# that is older than this will be ignored, as if the user had never gone
-# through this test before.  0 => forever.
-test.max.idle.days.to.target = 0
-
 # Event Writer
 # Max number of events held in memory queue 
 event.writer.buffer.size = 20000

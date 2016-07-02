@@ -17,7 +17,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
 
 
-public class SchemaParserDisjointOkayTest extends BaseTestCore {
+public class ParserDisjointOkayTest extends BaseTestCore {
 	
 	private VariantCore core = rebootApi();
 

@@ -16,6 +16,12 @@ session.id.tracker.class.init = {}
 # Targeting tracker in cookie.
 targeting.tracker.class.name = com.variant.client.servlet.adapter.TargetingTrackerHttpCookie
 
+# Number of idle days after which a test experience will be ignored in
+# targeting tracker.  In other words, an experience found in targeting tracker
+# that is older than this number of days will be discarded, as if the user had never gone
+# through this test before.  0 == forever.
+test.max.idle.days.to.target = 0
+
 # Postgres Event Persister
 #event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
 #event.persister.class.init = {"vendor":"postgres","url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}

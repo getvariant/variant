@@ -14,7 +14,7 @@ import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
 
 
-public class RuntimeExceptionTest extends BaseTestCore {
+public class CoreRuntimeExceptionTest extends BaseTestCore {
 	
 	private VariantCore core = rebootApi();
 
@@ -24,7 +24,7 @@ public class RuntimeExceptionTest extends BaseTestCore {
 	@Test
 	public void runViewNotInstrumentedForTest_Test() throws Exception {
 		
-		ParserResponse response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		final Schema schema = core.getSchema();
@@ -80,7 +80,7 @@ public class RuntimeExceptionTest extends BaseTestCore {
 	@Test
 	public void runNoViewForPath_Test() throws Exception {
 
-		ParserResponse response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		final Schema schema = core.getSchema();		

@@ -44,7 +44,7 @@ public class UserHookTest extends BaseTestCore {
 				
 		StateParsedHookListenerImpl listener = new StateParsedHookListenerImpl();
 		core.addHookListener(listener);
-		ParserResponse response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		assertEquals(core.getSchema().getStates(), listener.stateList);
 		assertEquals(core.getSchema().getStates().size(), response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
@@ -60,7 +60,7 @@ public class UserHookTest extends BaseTestCore {
 		TestParsedHookListenerImpl listener = new TestParsedHookListenerImpl();
 		core.clearHookListeners();
 		core.addHookListener(listener);
-		ParserResponse response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		assertEquals(core.getSchema().getTests(), listener.testList);
 		assertEquals(core.getSchema().getTests().size(), response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
@@ -71,7 +71,7 @@ public class UserHookTest extends BaseTestCore {
 
 		StateParsedHookListenerImpl stateListener = new StateParsedHookListenerImpl();
 		core.addHookListener(stateListener);
-		response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		assertEquals(VariantCollectionsUtils.list(core.getSchema().getTests(), core.getSchema().getTests()), listener.testList);
 		assertEquals(core.getSchema().getStates(), stateListener.stateList);
 		assertEquals(core.getSchema().getTests().size() + core.getSchema().getStates().size(), response.getMessages().size());
@@ -90,7 +90,7 @@ public class UserHookTest extends BaseTestCore {
 		TestQualificationHookListenerNullImpl nullListener = new TestQualificationHookListenerNullImpl();
 		core.clearHookListeners();
 		core.addHookListener(nullListener);
-		ParserResponse response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		
@@ -149,7 +149,7 @@ public class UserHookTest extends BaseTestCore {
 		// New session. Disqualify, but keep in TT.
 		TestQualificationHookListenerDisqualifyImpl disqualListener = new TestQualificationHookListenerDisqualifyImpl(false, schema.getTest("test1"));
 		core.addHookListener(disqualListener);
-		response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertTrue(nullListener.testList.isEmpty());
@@ -177,7 +177,7 @@ public class UserHookTest extends BaseTestCore {
 		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"));
 		core.addHookListener(disqualListener);
 		
-		response = core.parseSchema(SchemaParserDisjointOkayTest.SCHEMA);
+		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertTrue(disqualListener.testList.isEmpty());

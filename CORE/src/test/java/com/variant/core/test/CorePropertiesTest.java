@@ -20,7 +20,7 @@ import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantIoUtils;
 
-public class VariantPropertiesTest {
+public class CorePropertiesTest {
 
 	@Test
 	public void test() throws Exception {
@@ -32,7 +32,7 @@ public class VariantPropertiesTest {
 		defaultProps.load(VariantIoUtils.openResourceAsStream("/variant/defaults.props"));
 
 		// All declared keys must have defaults.
-		for (CorePropertiesImpl.Key key: VariantCoreProperties.Key.keySet()) {
+		for (VariantCoreProperties.Key key: VariantCoreProperties.Key.keySet()) {
 			assertTrue(String.format("No default for key %s", key.propertyName()), defaultProps.containsKey(key.propertyName()));
 		}
 
