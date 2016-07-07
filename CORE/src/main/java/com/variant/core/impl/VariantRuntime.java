@@ -2,7 +2,6 @@ package com.variant.core.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -36,53 +35,6 @@ public class VariantRuntime {
 
 	// Logger
 	private static final Logger LOG = LoggerFactory.getLogger(VariantRuntime.class);
-
-	/**
-	 * 
-	 */
-	private static class TestQualificationHookImpl implements TestQualificationHook {
-		
-		private VariantCoreSession ssn;
-		private Test test;
-		private boolean qualified = true;
-		private boolean removeFromTT = false;
-		
-		private TestQualificationHookImpl(VariantCoreSession ssn, Test test) {
-			this.ssn = ssn;
-			this.test = test;
-		}
-		
-		@Override
-		public Test getTest() {
-			return test;
-		}
-
-		@Override
-		public boolean isQualified() {
-			return qualified;
-		}
-		
-		@Override
-		public boolean isRemoveFromTargetingTracker() {
-			return removeFromTT;
-		}
-		
-		@Override
-		public VariantCoreSession getSession() {
-			return ssn;
-		}
-
-		@Override
-		public void setQualified(boolean qualified) {
-			this.qualified = qualified;
-		}
-
-		@Override
-		public void setRemoveFromTargetingTracker(boolean remove) {
-			removeFromTT = remove;
-		}
-
-	};
 
 	/**
 	 * 
@@ -133,30 +85,45 @@ public class VariantRuntime {
 	/**
 	 * Target this session for all active tests.
 	 * 
-	 * 1. Find all the tests instrumented on this state - the state's instrumented test list (ITL),
-	 *    i.e. the list of tests that may have to be targeted before we can resolve the state.
-	 * 2. For each test on the ITL, if this test has already been traversed by this session and
-	 *    disqualified, remove this test from the ITL as we won't really need to resolve it.
-	 *    Otherwise, if this test has not yet been traversed by this session, post qualification
-	 *    hooks. If client code disqualified a test, remove it from the ITL. If client code also
-	 *    requested removal from targeting persister (TP), remove this test from targeting persister.
-	 * 3. Some of these tests may be already targeted via the experience persistence mechanism.
-	 *    Determine this already targeted subset.
-     * 4. If such a subset exists, confirm that we are still able to resolve this test cell. 
-     *    The reason we may not is, e.g., if two tests used to be covariant and the experience
-     *    persister reports two already targeted variant experiences, but in a recent config 
-     *    change these two tests are no longer covariant and hence we don't know how to resolve
-     *    this test cell.
-     * 5. If we're still able to resolve the pre-targeted vector, continue with the rest of the tests 
-     *    on the view's list in the order they were defined, and target each test via the regular 
-     *    targeting mechanism.
-     * 5. If we're unable to resolve the pre-targeted vector, compute the minimal unresolvable subset
-     *    and remove those experiences from the experience persistence.
-     * 6. Given the new pre-targeted experience set, target the rest of the tests instrumented on
-     *    this view via each test's regular targeting mechanism, in ordinal order.  Do not target
-     *    tests that are OFF or disqualified tests. Instead, default them to control experiences.
-     * 7. Resolve the path. For OFF tests, substitute non-control experiences with control ones.
+	 * 1. Build the active test list (ATL). Start by putting on it all the active tests instrumented 
+	 *    on this state, i.e. the tests which may require targeting as part of state resolution. This 
+	 *    list comprises all declared instrumentations, as defined by State.getInstrumentedTests(),
+	 *    minus the OFF tests. Note that we include in this non-variant (NV) instrumentation, i.e. if the
+	 *    first state hit is a NV test, we will target.
+	 *    
+	 * 2. For each test on the ATL, if it has already been disqualified by this session, remove it
+	 *    from the ATL, because it's not active and we won't need to resolve it. Otherwise, if this test 
+	 *    has not yet been traversed by this session, post qualification hooks. If client code disqualifies 
+	 *    the test, remove it from the ATL. If client code also requested removal from targeting tracker (TT), 
+	 *    remove this test from TT, if present.
+	 *    
+	 * 3. Remaining tests are active and must be targeted, if not yet targeted. Each active test is one of:
+	 *      *) Already targeted in this session, if it's in the TT and on the traversed tests list (TTL).
+	 *      *) Pre-targeted, if it's in TT only, but not in TTL. Need to confirm targeting,
+	 *         see step 4 below.
+	 *      *) Not yet targeted, or free, if it's in neither in TTL nor in TT.  Will be targeted after
+	 *         the pre-targets are confirmed.
+     * 
+     * 4. If we still have pre-targeted tests, confirm that their targeting is compatible with this
+     *    session's current targeting. In other words, confirm that the test cell given by the combination
+     *    of the targeted and the pre-targeted experiences is resolvable in the current schema.
+     *    The reason we may not is, e.g., if two tests used to be covariant and the TT contains a variant
+     *    experience for one, and the currently targeted list contains a variant experience for the other.
+     *    If, in the current schema, they are no longer covariant, this combination is no longer resolvable.
+     *    
+     * 5. If pre-targeted list is not compatible with the currently targeted list, compute the maximal 
+     *    compatible subset, i.e. one that of possible compatible subsets is the longest. Remove from the
+     *    TT those experiences that did not make the compatible subset. These tests will be treated as 
+     *    untargeted, i.e. as if they had never been targeted in the past.
+     *    
+     * 6. For each test that is on ATL but not in TTL: if test is targetable, post the targeting hook 
+     *    and, if the hook returns an experience, add it to TT. If the test is not targetable, target
+     *    for control.
+     *    
+     * 7. Resolve the state params for the resulting list of active experiences.
 	 * 
+	 * 
+	 * TODO: IP.
 	 */
 	private Map<String,String> targetSessionForState(VariantCoreStateRequestImpl req) {
 
@@ -165,240 +132,247 @@ public class VariantRuntime {
 		SessionScopedTargetingStabile targetingStabile = session.getTargetingStabile();
 		State state = req.getState();
 		
-		// State must be in schema.
+		// State must be in current schema.
 		State schemaState = schema.getState(state.getName());
 		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
 			throw new VariantInternalException("State [" + state.getName() + "] is not in schema");
 		
-		// Re-qualify the tests we're about to traverse and that haven't yet been qualified
-		// by this session, by triggering the qualification user hook.
+		// 1. Build the active test list.
+		ArrayList<Test> activeTestList = new ArrayList<Test>();
 		for (Test test: state.getInstrumentedTests()) {
+			if (test.isOn()) activeTestList.add(test);
+		}
 
-			// OFF tests are neither qualified nor traversed.
-			if (!test.isOn()) continue;
-			
-			if (!session.getTraversedTests().contains(test) && !session.getDisqualifiedTests().contains(test)) {
-					
-				TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
-				coreApi.getUserHooker().post(hook);
-				
-				if (!hook.qualified) {
-					session.addDisqualifiedTest(test);
-					if (hook.removeFromTT) targetingStabile.remove(test.getName());
-				}
-				else {
-					// If this test is on, add it to the traversed list.
-					session.addTraversedTest(test);
-				}
+		// 2. Remove from ATL those already disqualified, qualify others and remove if disqualified.
+		for (Iterator<Test> iter = activeTestList.iterator(); iter.hasNext();) {
+			Test test = iter.next();
+			if (session.getDisqualifiedTests().contains(test)) {
+				iter.remove();
+			}
+			else if (!session.getTraversedTests().contains(test) && !qualifyTest(test, session)) {
+				iter.remove();
 			}
 		}
 		
-		// Pre-targeted experiences from the targeting stabile. Keep original order for
-		// test determinism.
-		LinkedHashSet<Experience> alreadyTargetedExperiences = new LinkedHashSet<Experience>(targetingStabile.getAllAsExperiences(schema));
+		// 3. ATL contains only active, qualified tests at this point. Build the already targeted 
+		//    (in TT and in TTL), pre-targeted (in TT but not in TTL) and free (neither) experience lists.
+		LinkedHashSet<Experience> alreadyTargeted = new LinkedHashSet<Experience>();
+		LinkedHashSet<Experience> preTargeted = new LinkedHashSet<Experience>();
+		LinkedHashSet<Test> free = new LinkedHashSet<Test>();
 		
-		// Remove from the pre-targeted experience list the experiences corresponding to currently
-		// disqualified tests: we won't need to resolve them anyway.
-		Iterator<Experience> alreadyTargetedExperiencesIterator = alreadyTargetedExperiences.iterator();
-		while (alreadyTargetedExperiencesIterator.hasNext()) {			
-			Experience e = alreadyTargetedExperiencesIterator.next();
-			if (session.getDisqualifiedTests().contains(e.getTest())) 
-				alreadyTargetedExperiencesIterator.remove();
+		for (Test test: activeTestList) {
+			if (session.getTraversedTests().contains(test)) {
+				// Already traversed, hence must be already targeted.
+				Experience exp = targetingStabile.getAsExperience(test.getName(), schema);
+				if (exp == null)
+					throw new VariantInternalException(
+							"Active traversed test [" + test.getName() + "] not in targeting stabile");
+				alreadyTargeted.add(exp);
+			}
+			else  {
+				// Not yet traversed. Add to the pre-targeted experience list, if in TT. If not in TT,
+				// it's a free test that will be targeted after the pre-targets.
+				Experience exp = targetingStabile.getAsExperience(test.getName(), schema);
+				if (exp == null) free.add(test); 
+				else preTargeted.add(exp);
+				
+				session.addTraversedTest(test);
+			}
 		}
-		
-		// If not empty, alreadyTargetedEperience least contains experiences we need to resolve for.
-		if (!alreadyTargetedExperiences.isEmpty()) {
+				
+		// 4. If not empty, preTargeted list contains experiences we need to confirm are
+		//    compatible with those already targeted, i.e. in TT and in TTL
+		if (!preTargeted.isEmpty()) {
 			
-			// Resolvable?  If not, find largest resolvable subset and discard the rest.
-			Collection<Experience> minUnresolvableSubvector = 
-					minUnresolvableSubvector(alreadyTargetedExperiences);
+			// Resolvable?  If not, find max resolvable subset and discard the rest.
+			Collection<Experience> minUnresolvableSubvector = minUnresolvableSubvector(alreadyTargeted, preTargeted);
 			
 			if (minUnresolvableSubvector.isEmpty()) {
-				if (LOG.isDebugEnabled()) LOG.debug("Targeting tracker resolvable for session [" + session.getId() + "]");
+				if (LOG.isDebugEnabled()) 
+					LOG.debug("Targeting tracker resolvable for session [" + session.getId() + "]");
 			}
 			else {
+				// 5. Remove unresolvable experiences from TT. We don't need to keep track of them because they
+				//    will not become targetable in this session.
 				for (Experience e: minUnresolvableSubvector) targetingStabile.remove(e.getTest().getName());
-
 				LOG.info(
 						"Targeting tracker not resolvable for session [" + session.getId() + "]. " +
 						"Discarded experiences [" + StringUtils.join(minUnresolvableSubvector.toArray()) + "].");
 			}
-		
 		}
-		
-		// Actual experience vector we'll end up resolving will be different from the content of the targeting stabile
-		// because OFF tests (and potentially disqualified tests) retain their entry in targeting tracker, even though
-		// we'll sub that with control for actual resolution.
-		ArrayList<Experience> vector = new ArrayList<Experience>();
-		
-		// First add all from from targeting stabile.
-		for (Experience e: targetingStabile.getAllAsExperiences(schema)) {
 
-			if (!e.getTest().isOn()) {
-				Experience ce = e.getTest().getControlExperience();
-				vector.add(ce);
+		// The actual experience vector we will be resolving is: alreadyTargeted + preTargeted + possibly
+		// free, if they are targetable, and happen to fall on a non-control experience.
+		// 
+		ArrayList<Experience> vector = new ArrayList<Experience>();
+		vector.addAll(alreadyTargeted);
+		vector.addAll(preTargeted);
+		
+		// Target free tests.  They are already on the ATL.
+		for (Test ft: free) {
+
+			if (isTargetable(ft, vector)) {
+				// Target this test. First post targeting hooks.
+				TestTargetingHookImpl hook = new TestTargetingHookImpl(session, ft);
+				coreApi.getUserHooker().post(hook);
+				Experience targetedExperience = hook.targetedExperience;
+				// If no listeners or no action by client code, do the random default.
+				if (targetedExperience == null) {
+					targetedExperience = new TestTargeterDefault().target(ft, session);
+				}
+										
+				vector.add(targetedExperience);
+				targetingStabile.add(targetedExperience);
+				
 				if (LOG.isTraceEnabled()) {
 					LOG.trace(
-							"Session [" + session.getId() + "] recognized persisted experience [" + e +"]" +
-							" but substituted control experience [" + ce + "] because test is OFF");
-				}													
-			}
-			else if (session.getDisqualifiedTests().contains(e.getTest())) {
-				Experience ce = e.getTest().getControlExperience();
-				vector.add(ce);
-				if (LOG.isTraceEnabled()) {
-					LOG.trace(
-							"Session [" + session.getId() + "] recognized persisted experience [" + e +"]" +
-							" but substituted control experience [" + ce + "] because test is disqualified");
-				}													
+							"Session [" + session.getId() + "] targeted for test [" + 
+							ft.getName() +"] with experience [" + targetedExperience.getName() + "]");
+				}
+
 			}
 			else {
+				Experience e = ft.getControlExperience();
 				vector.add(e);
+				targetingStabile.add(e);
 				if (LOG.isTraceEnabled()) {
 					LOG.trace(
-							"Session [" + session.getId() + "] honored persisted experience [" + e + "]");
-				}									
-			}
-		}
-		
-		// Then target and add the rest from the ITL.
-		for (Test test: state.getInstrumentedTests()) {
-						
-			if (targetingStabile.get(test.getName()) == null) {
-								
-				if (!test.isOn()) {
-					Experience e = test.getControlExperience();
-					vector.add(e);
-					if (LOG.isTraceEnabled()) {
-						LOG.trace(
-								"Session [" + session.getId() + "] temporarily targeted for OFF test [" + 
-								test.getName() +"] with control experience [" + e.getName() + "]");
-					}
-				}
-				else if (session.getDisqualifiedTests().contains(test)) {
-					Experience e = test.getControlExperience();
-					vector.add(e);
-					if (LOG.isTraceEnabled()) {
-						LOG.trace(
-								"Session [" + session.getId() + "] temporarily targeted for disqualified test [" + 
-								test.getName() +"] with control experience [" + e.getName() + "]");
-					}										
-				}
-				else if (isTargetable(test, targetingStabile.getAllAsExperiences(schema))) {
-					// Target this test. First post possible user hook listeners.
-					TestTargetingHookImpl hook = new TestTargetingHookImpl(session, test);
-					coreApi.getUserHooker().post(hook);
-					Experience targetedExperience = hook.targetedExperience;
-					// If no listeners or no action by client code, do the random default.
-					if (targetedExperience == null) {
-						targetedExperience = new TestTargeterDefault().target(test, session);
-					}
-										
-					vector.add(targetedExperience);
-					targetingStabile.add(targetedExperience, System.currentTimeMillis());
-					if (LOG.isTraceEnabled()) {
-						LOG.trace(
-								"Session [" + session.getId() + "] targeted for test [" + 
-								test.getName() +"] with experience [" + targetedExperience.getName() + "]");
-					}
-
-				}
-				else {
-					Experience e = test.getControlExperience();
-					vector.add(e);
-					targetingStabile.add(e, System.currentTimeMillis());
-					if (LOG.isTraceEnabled()) {
-						LOG.trace(
-								"Session [" + session.getId() + "] targeted for untargetable test [" + 
-								test.getName() +"] with control experience [" + e.getName() + "]");
-					}
+							"Session [" + session.getId() + "] targeted for untargetable test [" + 
+							ft.getName() +"] with control experience [" + e.getName() + "]");
 				}
 			}
 		}
 				
-		// vector at this point contains the actual experiences to be resolved, which may be different from what's in TP.
+		// vector at this point contains active, non-control experiences to be resolved.
 		return resolveState(state, vector);
 		
 	}
 
 	/**
-	 * Find the shortest sub-vector V' of the input vector V, so that V\V' is resolvable.
-	 * A vector is resolvable if the current schema contains a variant for every view where it is relevant.
-	 * A vector is relevant to a view if at least one of its experiences is instrumented.
-	 * We do not alter semantics for OFF tests in this algorithm.
-     *
-	 * 1. Build a set of views relevant to the input.
-	 * 2. For each relevant view, try to resolve the input vector.
-	 * 3. As we go, maintain a set of views which failed to resolve, Sv
-	 * 4. If the size of Sv is 0, return empty list.
-	 * 5. Otherwise, create a list of tests St instrumented on Sv.
-	 * 6. For each test T in St: remove it from the input vector and cal
-	 *    this method recursively with the resulting vector.
-	 * 7. Find the shortest result (take any if there's more than one) and
-	 *    add to it the corresponding T. Return that collection.
-	 * 
-	 * Package scope for testing.
-	 * 
-	 * TODO: GETME.
-	 * 
-	 * @param coordinates
-	 * @return the list of experiences from the input vector.
+	 * Qualify a test by posting the qualification hook.
+	 * If not qualified, add to session's disqualified tests list and,
+	 * if requested by the hook listener, remove from the targeting tracker.
+	 * @param session
+	 * @param test
 	 */
-	Collection<Experience> minUnresolvableSubvector(Collection<Experience> vector) {
-		
-		Collection<Experience> result = new ArrayList<Experience>();
+	private boolean qualifyTest(Test test, CoreSessionImpl session) {
+
+		/**
+		 * 
+		 */
+		class TestQualificationHookImpl implements TestQualificationHook {
 			
-		// 1. Build a set of all instrumented states.
-		LinkedHashSet<State> instrumentedStates = new LinkedHashSet<State>();
+			private VariantCoreSession ssn;
+			private Test test;
+			private boolean qualified = true;
+			private boolean removeFromTT = false;
+			
+			private TestQualificationHookImpl(VariantCoreSession ssn, Test test) {
+				this.ssn = ssn;
+				this.test = test;
+			}
+			
+			@Override
+			public Test getTest() {
+				return test;
+			}
+
+			@Override
+			public boolean isQualified() {
+				return qualified;
+			}
+			
+			@Override
+			public boolean isRemoveFromTargetingTracker() {
+				return removeFromTT;
+			}
+			
+			@Override
+			public VariantCoreSession getSession() {
+				return ssn;
+			}
+
+			@Override
+			public void setQualified(boolean qualified) {
+				this.qualified = qualified;
+			}
+
+			@Override
+			public void setRemoveFromTargetingTracker(boolean remove) {
+				removeFromTT = remove;
+			}
+
+		};
+
+		TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
+		coreApi.getUserHooker().post(hook);
+
+		if (!hook.qualified) {
+			session.addDisqualifiedTest(test);
+			if (hook.removeFromTT) session.getTargetingStabile().remove(test.getName());
+		}				
+		
+		return hook.qualified;
+	}
+	
+	/**
+	 * Is a vector resolvable? I.e., does the current schema contains a variant def for every state 
+	 * where it is relevant. A vector is relevant to a state if at least one of its tests is 
+	 * instrumented in a variantful fashion.
+	 * @param vector
+	 * @return
+	 */
+	boolean isResolvable(Collection<Experience> vector) {
+
+		LinkedHashSet<State> states = new LinkedHashSet<State>();
 		for (Experience e: vector) {
-			for (OnState tov: e.getTest().getOnStates()) {
-				if (!tov.getState().isNonvariantIn(e.getTest())) {
-					instrumentedStates.add(tov.getState());
+			for (OnState tos: e.getTest().getOnStates()) {
+				if (!tos.getState().isNonvariantIn(e.getTest())) {
+					states.add(tos.getState());
 				}
 			}
 		}
-			
-		// 2,3. Try to resolve them all.
-		ArrayList<State> unresolvedStates = new ArrayList<State>();
-		for (State state: instrumentedStates) {
-			if (resolveState(state, vector) == null) {
-				unresolvedStates.add(state);
-			}
-		}
-				
-		// 4.
-		if (unresolvedStates.isEmpty()) return result;
-		
-		// 5. Build the set of tests instrumented on any of the unresolved states.
-		HashSet<Test> testsInstumentedOnUnresolvedStates = new HashSet<Test>();  
-		for (State uv: unresolvedStates) {
-			for (Test t: uv.getInstrumentedTests()) {
-				if (!uv.isNonvariantIn(t)) testsInstumentedOnUnresolvedStates.add(t);
-			}
+
+		for (State state: states) {
+			if (resolveState(state, vector) == null) return false;
 		}
 		
-		// 6. 
-		int shortestLength = vector.size();
-		Experience shortestExperience = null;
-		Collection<Experience> shortestSubvector = null;
-		
-		for (Experience inputExperience: vector) {
-		
-			if (!testsInstumentedOnUnresolvedStates.contains(inputExperience.getTest())) continue;
-			
-			Collection<Experience> newInputVector = new ArrayList<Experience>(vector);
-			newInputVector.remove(inputExperience);
-			Collection<Experience> newMinUnresolvableSubvector = minUnresolvableSubvector(newInputVector);
-			if (shortestLength > newMinUnresolvableSubvector.size()) {
-				shortestLength = newMinUnresolvableSubvector.size();
-				shortestExperience = inputExperience;
-				shortestSubvector = newMinUnresolvableSubvector;
-			}
-		}
+		return true;
+	}
 	
-		result.add(shortestExperience);
-		result.addAll(shortestSubvector);
-		return result;
+	/**
+	 * Given a resolvable experience vector V and arbitrary experience vector W, find longest sub-vector w of W,
+	 * so that V+w is resolvable. 
+     *
+	 * Package scope for testing.
+	 * 
+	 * @param V
+	 * @param W becomes w, as a side effect of this call. V+w is the resolvable.
+	 * @return W minus w, i.e remainder of W that makes V+W unresolvable.
+	 */
+	Collection<Experience> minUnresolvableSubvector(Collection<Experience> v, Collection<Experience> w) {
+					
+
+		if (!isResolvable(v))
+			throw new VariantInternalException("Unexpected unresolvable vector [" + StringUtils.join(v.toArray()) + "]");
+		
+		Collection<Experience> currentlyResolvable = new LinkedHashSet<Experience>(v);
+		Collection<Experience> remainder = new LinkedHashSet<Experience>();
+
+		for (Iterator<Experience> iter = w.iterator(); iter.hasNext();) {
+			Experience e = iter.next();
+			Collection<Experience> toTry = new LinkedHashSet<Experience>(currentlyResolvable);
+			toTry.add(e);
+			if (isResolvable(toTry)) {
+				currentlyResolvable.add(e);
+				w.remove(e);
+			}
+			else {
+				LOG.info(String.format("Experience[%s] dropped from targeting because it could not be "));
+				remainder.add(e);
+			}
+		}
+		return remainder;
 	}
 
 	/**
@@ -414,21 +388,19 @@ public class VariantRuntime {
 	 * @return
 	 */
 	boolean isTargetable(Test test, Collection<Experience> alreadyTargetedExperiences) {
-		
+
+		// alreadyTargetedExperiences should not contain an experience for the input test.
 		for (Experience e: alreadyTargetedExperiences) {
 			if (test.equals(e.getTest())) 
 				throw new VariantInternalException("Input test [" + test + "] is already targeted");
 		}
-		
-		if (!minUnresolvableSubvector(alreadyTargetedExperiences).isEmpty()) {
+
+		if (!isResolvable(alreadyTargetedExperiences))
 			throw new VariantInternalException(
-					"Input set [" +
-				    StringUtils.join(alreadyTargetedExperiences, ",") +
-				    "] is already unresolvable");
-		}
+					"Input set [" + StringUtils.join(alreadyTargetedExperiences, ",") + "] is already unresolvable");
 		
-		ArrayList<Experience> vector = new ArrayList<Experience>(alreadyTargetedExperiences);
-		
+		// Find some non-control experience
+		ArrayList<Experience> vector = new ArrayList<Experience>();		
 		for (Experience e: test.getExperiences()) {
 			if (!e.isControl()) {
 				vector.add(e);
@@ -436,25 +408,27 @@ public class VariantRuntime {
 			}
 		}
 		
-		return minUnresolvableSubvector(vector).isEmpty();
+		return minUnresolvableSubvector(alreadyTargetedExperiences, vector).isEmpty();
 	}
 
 	/**
 	 * Find a view variant for a given set of experiences. It is caller's responsibility
-	 * to ensure that all experiences are independent, i.e. the input vector does not contain
-	 * a pair e1,e2 such that <code>e1.getTest().equals(e2.getTest())</code>
+	 * to ensure that 
+	 *   o) all experiences are independent, i.e. the input vector does not contain
+	 *      a pair e1,e2 such that <code>e1.getTest().equals(e2.getTest())</code>
+	 *   o) there are no control experiences
+	 *   o) each experience's test is instrumented.
 	 * 
 	 * 0. Verify that vector has at least 1 experience. 
 	 * 1. Resort the experience vector in ordinal order. 
 	 * 2. As we go, remove experiences that are either control in their test, or their test
-	 *    is not instrumented on the given view.
+	 *    is not instrumented on the given state.
 	 * 3. Keep track if any of the experiences in vector were discarded in step 2.
 	 * 4. In the sorted list, the last experience corresponds to the highest order test Th.
-	 * 5. Find the Test.OnView object corresponding to Th and the given view.  If does not
+	 * 5. Find the Test.OnState object corresponding to Th and the given state.  If does not
 	 *    exist, return null.
-	 * 6. Find the Test.OnView.Variant object there.  If does not exist, return null;
+	 * 6. Find the Test.OnState.Variant object there.  If does not exist, return null;
 	 * 
-	 * TODO: GETME.
 	 * Package scope for testing
 	 * 
 	 * @param state
@@ -463,27 +437,38 @@ public class VariantRuntime {
 	 */
 	Map<String,String> resolveState(State state, Collection<Experience> vector) {
 
-		if (vector.size() == 0) 
-			throw new VariantInternalException("No experiences in input vector");
 		
 		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
+			
 		for (Test t: coreApi.getSchema().getTests()) {
 			boolean found = false;
 			for (Experience e: vector) {
 				if (e.getTest().equals(t)) {
 					if (found) {
-						throw new VariantInternalException("Duplicate test [" + t + "] in input");
+						throw new VariantInternalException("Duplicate test [" + t + "] in input vector");
 					}
 					else {
+						
+						if (e.isControl())
+							throw new VariantInternalException("Control experience [" + e + "] in input vector");
+						
+						if (!state.isInstrumentedBy(e.getTest()))
+							throw new VariantInternalException("Uninstrumented test [" + e + "] in input vector");
+						
 						found = true;
-						if (!e.isControl() && state.isInstrumentedBy(e.getTest()) && !state.isNonvariantIn(e.getTest())) 
+
+						// Non-variant instrumentation are resolved for, as control.
+						if (!state.isNonvariantIn(e.getTest())) { 
 							sortedList.add(e);
+							// Continue down the vector, to ensure that there's no other experience for this test.
+						}
 					}
 				}
 			}
 		}
-
-		// All experiences were control or uninstumented?
+		
+		// If no variant experiences (all input experiences were control or uninstrumented or off.
+		// on the input state), return the state params.
 		if (sortedList.size() == 0) return state.getParameterMap();
 		
 		Test highOrderTest = sortedList.get(sortedList.size() - 1).getTest();

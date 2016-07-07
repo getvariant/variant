@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
+import org.apache.commons.collections4.Predicate;
+
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -48,6 +50,7 @@ public class SessionScopedTargetingStabile {
 		public String toString() {
 			return testName + "." + experienceName + "." + timestamp;
 		}
+
 	}
 	
 	/**
@@ -70,10 +73,24 @@ public class SessionScopedTargetingStabile {
 	 * 
 	 * @return
 	 */
-	public Collection<Entry> getAll() {
+	public Collection<Entry> getAll(Predicate<Entry> filter) {
 		ArrayList<Entry> result = new ArrayList<Entry>();
-		for (Entry entry: entryMap.values()) result.add(entry);
+		for (Entry entry: entryMap.values()) {
+			if (filter.evaluate(entry)) result.add(entry);
+		}
 		return Collections.unmodifiableList(result);
+	}
+
+	/**
+	 * No predicate.
+	 * @return
+	 */
+	public Collection<Entry> getAll() {
+		return getAll(
+			new Predicate<Entry>() {
+				@Override public boolean evaluate(Entry object) { return true;}
+			}
+		);
 	}
 
 	/**
@@ -104,6 +121,19 @@ public class SessionScopedTargetingStabile {
 
 	/**
 	 * 
+	 * @param test
+	 * @return
+	 */
+	public Experience getAsExperience(String testName, Schema schema) {
+		Entry entry =  entryMap.get(testName);
+		if (entry != null) {
+			return schema.getTest(entry.testName).getExperience(entry.experienceName);
+		}
+		return null;
+	}
+
+	/**
+	 * 
 	 * @param experience
 	 * @return
 	 */
@@ -125,9 +155,9 @@ public class SessionScopedTargetingStabile {
 	 * @param experience
 	 * @return
 	 */
-	public Entry add(Experience experience, long timestamp) {
+	public Entry add(Experience experience) {
 		String testName = experience.getTest().getName();
-		return entryMap.put(testName, new Entry(testName, experience.getName(), timestamp));
+		return entryMap.put(testName, new Entry(testName, experience.getName(), System.currentTimeMillis()));
 	}
 
 	/**

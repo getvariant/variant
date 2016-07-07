@@ -32,10 +32,10 @@ public interface State {
 	public Map<String,String> getParameterMap();
 
 	/**
-	 * All tests instrumented on this state.  Includes both, tests
-	 * that have variants for this state as well as those where this
-	 * state is nonvariant. Includes OFF tests.
-	 * 
+	 * <p>All tests instrumented on this state. Comprises all declared instrumentations,
+	 * including off tests, as well as live tests with or without variants.
+	 * </p>
+	 *  
 	 * @return List of tests in ordinal order, i.e. order they were defined.
 	 * @since 0.5
 	 */

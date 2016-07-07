@@ -1,25 +1,12 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_MISSING;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_NOT_STRING;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_PARAMS_NOT_OBJECT;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_VARIANT_NOT_OBJECT;
+import static com.variant.core.schema.impl.MessageTemplate.*;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
@@ -159,12 +146,23 @@ public class VariantParser implements Keywords {
 						response.addMessage(PARSER_COVARIANT_EXPERIENCE_DUPE, covarTestRef, covarExperienceRef, tov.getTest().getName(), tov.getState().getName(), experienceRef);
 						return null;
 					}
-	
+
+					// if multiple covarint experience refs, they can only reference pairwise covariant tests.
+					for (TestExperienceImpl e: covarTestExperiences) {
+						if (!e.getTest().isCovariantWith(covarExperience.getTest())) {
+							response.addMessage(
+									PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, 
+									tov.getTest().getName(), 
+									tov.getState().getName(), 
+									experienceRef,
+									VariantStringUtils.toString(VariantCollectionsUtils.list(e, covarExperience), ","));
+							return null;
+						}
+					}
+
 					covarTestExperiences.add(covarExperience);
 				}
-				
 			}
-
 		}
 
 		

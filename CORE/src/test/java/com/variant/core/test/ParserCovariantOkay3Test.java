@@ -443,8 +443,29 @@ public class ParserCovariantOkay3Test extends BaseTestCore {
 		final Test test3 = schema.getTest("test3");
 
 		// 
-		// Test covariance.
+		// Test concurrence.
 		//
+		assertFalse(test1.isSerialWith(test2));
+		assertFalse(test1.isSerialWith(test3));
+		assertFalse(test2.isSerialWith(test1));
+		assertFalse(test2.isSerialWith(test3));
+		assertFalse(test3.isSerialWith(test1));
+		assertFalse(test3.isSerialWith(test2));
+
+		assertTrue(test1.isConcurrentWith(test2));
+		assertTrue(test1.isConcurrentWith(test3));
+		assertTrue(test2.isConcurrentWith(test1));
+		assertTrue(test2.isConcurrentWith(test3));
+		assertTrue(test3.isConcurrentWith(test1));
+		assertTrue(test3.isConcurrentWith(test2));
+
+		assertTrue(test1.isCovariantWith(test2));
+		assertFalse(test1.isCovariantWith(test3));
+		assertTrue(test2.isCovariantWith(test1));
+		assertTrue(test2.isCovariantWith(test3));
+		assertFalse(test3.isCovariantWith(test1));
+		assertTrue(test3.isCovariantWith(test2));
+
 		assertEquals(0, test1.getCovariantTests().size());
 		assertEquals(VariantCollectionsUtils.list(test1), test2.getCovariantTests());
 		assertEquals(VariantCollectionsUtils.list(test2), test3.getCovariantTests());

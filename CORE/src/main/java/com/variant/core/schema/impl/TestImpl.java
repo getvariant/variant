@@ -176,7 +176,17 @@ public class TestImpl implements Test {
 	public boolean isOn() {
 		return isOn;
 	}
-	
+
+	@Override
+	public boolean isConcurrentWith(Test other) {
+		return !isSerialWith(other);
+	}
+
+	@Override
+	public boolean isCovariantWith(Test other) {
+		return covariantTests.contains(other) || ((TestImpl)other).covariantTests.contains(this);		
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC EXTENSION                                         //
 	//---------------------------------------------------------------------------------------------//

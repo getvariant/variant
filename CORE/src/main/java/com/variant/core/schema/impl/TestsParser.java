@@ -509,7 +509,9 @@ public class TestsParser implements Keywords {
 				else {
 					response.addMessage(
 							PARSER_COVARIANT_VARIANT_MISSING, 
-							VariantStringUtils.toString(point.getCovariantExperiences(),  ","), test.getName(), stateRef, point.getExperience().getName());
+							point.getExperience().getName(),
+							VariantStringUtils.toString(point.getCovariantExperiences(),  ","), 
+							test.getName(), stateRef);
 				}
 			}
 		}

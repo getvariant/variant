@@ -7,16 +7,14 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Random;
 
-import org.junit.Test;
-
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantStringUtils;
 
 
@@ -29,7 +27,7 @@ public class ParserOkayTest extends BaseTestCore {
 	/**
 	 * All tests are off.
 	 */
-	@Test
+	@org.junit.Test
 	public void allTestsOffTest() throws Exception {
 		
 		final String SCHEMA = 
@@ -140,18 +138,29 @@ public class ParserOkayTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand));
 		State state1 = core.getSchema().getState("state1");
+		Test test1 = core.getSchema().getTest("test1");
+		Test test2 = core.getSchema().getTest("test2");
 		core.clearHookListeners();
 		VariantCoreStateRequest req = session.targetForState(state1);
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertTrue(session.getTraversedStates().isEmpty());
 		assertTrue(session.getTraversedTests().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
+		assertFalse(test1.isOn());
+		assertFalse(test2.isOn());
+		assertFalse(test1.isSerialWith(test2));
+		assertFalse(test2.isSerialWith(test1));
+		assertTrue(test1.isConcurrentWith(test2));
+		assertTrue(test2.isConcurrentWith(test1));
+		assertFalse(test1.isCovariantWith(test2));
+		assertFalse(test2.isCovariantWith(test1));
+
 	}
 
 	/**
 	 * One test is off, one disqualified.
 	 */
-	@Test
+	@org.junit.Test
 	public void oneOffOneDisqualifiedTest() throws Exception {
 		
 		final String SCHEMA = 
@@ -262,7 +271,8 @@ public class ParserOkayTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand));
 		State state1 = core.getSchema().getState("state1");
-		com.variant.core.schema.Test test2 = core.getSchema().getTest("test2");
+		Test test1 = core.getSchema().getTest("test1");
+		Test test2 = core.getSchema().getTest("test2");
 		core.clearHookListeners();
 		core.addHookListener(new TestDisqualifier(test2));
 		VariantCoreStateRequest req = session.targetForState(state1);
@@ -270,12 +280,21 @@ public class ParserOkayTest extends BaseTestCore {
 		assertEquals(0, session.getTraversedTests().size());
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
+		assertFalse(test1.isOn());
+		assertTrue(test2.isOn());
+		assertFalse(test1.isSerialWith(test2));
+		assertFalse(test2.isSerialWith(test1));
+		assertTrue(test1.isConcurrentWith(test2));
+		assertTrue(test2.isConcurrentWith(test1));
+		assertFalse(test1.isCovariantWith(test2));
+		assertFalse(test2.isCovariantWith(test1));
+
 	}
 
 	/**
 	 * All tests are disqualified.
 	 */
-	@Test
+	@org.junit.Test
 	public void allTestsDisqualifiedTest() throws Exception {
 		
 		final String SCHEMA = 
@@ -386,8 +405,8 @@ public class ParserOkayTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand));
 		State state1 = core.getSchema().getState("state1");
-		com.variant.core.schema.Test test1 = core.getSchema().getTest("test1");
-		com.variant.core.schema.Test test2 = core.getSchema().getTest("test2");
+		Test test1 = core.getSchema().getTest("test1");
+		Test test2 = core.getSchema().getTest("test2");
 		core.clearHookListeners();
 		core.addHookListener(new TestDisqualifier(test1));
 		core.addHookListener(new TestDisqualifier(test2));
@@ -396,6 +415,14 @@ public class ParserOkayTest extends BaseTestCore {
 		assertTrue(session.getTraversedTests().isEmpty());
 		assertTrue(req.getTargetedExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
+		assertTrue(test1.isOn());
+		assertTrue(test2.isOn());
+		assertFalse(test1.isSerialWith(test2));
+		assertFalse(test2.isSerialWith(test1));
+		assertTrue(test1.isConcurrentWith(test2));
+		assertTrue(test2.isConcurrentWith(test1));
+		assertFalse(test1.isCovariantWith(test2));
+		assertFalse(test2.isCovariantWith(test1));
 	}
 	
 	/**

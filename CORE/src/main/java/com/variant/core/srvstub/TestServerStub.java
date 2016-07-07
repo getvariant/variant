@@ -59,5 +59,15 @@ public class TestServerStub implements Test {
 		throw new VariantInternalException("Method not supported");
 	}
 
+	@Override
+	public boolean isConcurrentWith(Test other) {
+		throw new VariantInternalException("Method not supported");
+	}
+
+	@Override
+	public boolean isCovariantWith(Test other) {
+		throw new VariantInternalException("Method not supported");
+	}
+
 	
 }

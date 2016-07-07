@@ -71,17 +71,6 @@ public interface Test {
 	 * @since 0.5
 	 */
 	public OnState getOnView(State state);
-
-	/**
-	 * Is this test disjoint with the other test?
-	 * This is to say that there does not exist a view on which both
-	 * this and the other test are instrumented. It is illegal if this.equal(other) is true;
-	 * 
-	 * @param other
-	 * @return
-	 * @since 0.5
-	 */
-	public boolean isSerialWith(Test other);
 		
 	/**
 	 * Get a list of tests covariant with this test, i.e. listed in this tests's covariant clause.
@@ -91,6 +80,37 @@ public interface Test {
 	 */
 	public List<Test> getCovariantTests();
 		
+	/**
+	 * Is this test serial with the other test? Two tests are serial when there does not exist a state
+	 * instrumented by both this and the other test. Serial tests can be targeted independently. 
+	 * 
+	 * @param other
+	 * @return
+	 * @since 0.5
+	 */
+	public boolean isSerialWith(Test other);
+
+	/**
+	 * Is this test concurrent with the other test? This is equivalent to
+	 * <code>!isSerialWith(other)</code>. 
+	 * Concurrent tests can only be targeted independently if they are covariant.
+	 * 
+	 * @param other
+	 * @return
+	 * @since 0.5
+	 */
+	public boolean isConcurrentWith(Test other);
+
+	/**
+	 * Is this test covariantly concurrent with the other test? Covariantly concurrent tests 
+	 * can be targeted independently.
+	 * 
+	 * @param other
+	 * @return
+	 * @since 0.5
+	 */
+	public boolean isCovariantWith(Test other);
+
 	/**
 	 * Representation of a test experience.
 	 * 

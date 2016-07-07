@@ -341,18 +341,32 @@ public class ParserCovariantOkay2Test extends BaseTestCore {
 		final Test test3 = schema.getTest("test3");
 
 		// 
-		// Declared test covariance.
+		// Test concurrence.
 		//
+		assertFalse(test1.isSerialWith(test2));
+		assertFalse(test1.isSerialWith(test3));
+		assertFalse(test2.isSerialWith(test1));
+		assertFalse(test2.isSerialWith(test3));
+		assertFalse(test3.isSerialWith(test1));
+		assertFalse(test3.isSerialWith(test2));
+
+		assertTrue(test1.isConcurrentWith(test2));
+		assertTrue(test1.isConcurrentWith(test3));
+		assertTrue(test2.isConcurrentWith(test1));
+		assertTrue(test2.isConcurrentWith(test3));
+		assertTrue(test3.isConcurrentWith(test1));
+		assertTrue(test3.isConcurrentWith(test2));
+
+		assertFalse(test1.isCovariantWith(test2));
+		assertTrue(test1.isCovariantWith(test3));
+		assertFalse(test2.isCovariantWith(test1));
+		assertFalse(test2.isCovariantWith(test3));
+		assertTrue(test3.isCovariantWith(test1));
+		assertFalse(test3.isCovariantWith(test2));
+
 		assertEquals(0, test1.getCovariantTests().size());
 		assertEquals(0, test2.getCovariantTests().size());
 		assertEquals(VariantCollectionsUtils.list(test1), test3.getCovariantTests());
-
-		// 
-		// Runtime test covariance.
-		//
-		//assertEquals(VariantCollectionsUtils.list(test3), VariantRuntime.getCovariantTests(test1));
-		//assertEquals(0, VariantRuntime.getCovariantTests(test2).size());
-		//assertEquals(VariantCollectionsUtils.list(test1), VariantRuntime.getCovariantTests(test3));
 
 		// 
 		// test1 OnView objects

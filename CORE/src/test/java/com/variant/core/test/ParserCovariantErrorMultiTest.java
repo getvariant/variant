@@ -32,7 +32,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	@Test
 	public void covariantVariantDupe_Test() throws Exception {
 		
-		String config = 
+		String schema = 
 				"{                                                             \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
@@ -506,7 +506,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(core, config);
+		ParserResponse response = SchemaParser.parse(core, schema);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -525,7 +525,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	@Test
 	public void covariantExperienceDupe_Test() throws Exception {
 		
-		String config = 
+		String schema = 
 				"{                                                             \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
@@ -982,7 +982,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(core, config);
+		ParserResponse response = SchemaParser.parse(core, schema);
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
@@ -996,4 +996,264 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 
 	}
 
+	/**
+	 * 
+	 */
+	@Test
+	public void testBlah() throws Exception {
+		
+		final String schema = 
+
+		"{                                                                                \n" +
+	    	    //==========================================================================//
+	    	   
+	    	    "   'states':[                                                             \n" +
+	    	    "     {  'name':'state1',                                                  \n" +
+	    	    "        'parameters': {                                                   \n" +
+	    	    "           'path':'/path/to/state1'                                          \n" +
+	    	    "        }                                                                  \n" +
+	    	    "     },                                                                  \n" +
+	    	    "     {  'NAME':'state2',                                                  \n" +
+	    	    "        'parameters': {                                                   \n" +
+	    	    "           'path':'/path/to/state2'                                          \n" +
+	    	    "        }                                                                  \n" +
+	    	    "     },                                                                  \n" +
+	    	    "     {  'nAmE':'state3',                                                  \n" +
+	    	    "        'parameters': {                                                   \n" +
+	    	    "           'path':'/path/to/state3'                                          \n" +
+	    	    "        }                                                                  \n" +
+	    	    "     }                                                                   \n" +
+	            "  ],                                                                     \n" +
+	            
+	    	    //=========================================================================//
+	    	    
+		        "  'tests':[                                                              \n" +
+	    	    "     {                                                                   \n" +
+	    	    "        'name':'test1',                                                  \n" +
+	    	    "        'experiences':[                                                  \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'name':'A',                                                \n" +
+	    	    "              'weight':10,                                               \n" +
+	    	    "              'isControl':true                                           \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'name':'B',                                                \n" +
+	    	    "              'weight':20                                                \n" +
+	    	    "           }                                                             \n" +
+	    	    "        ],                                                               \n" +
+	    	    "        'onStates':[                                                     \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'stateRef':'state2',                                       \n" +
+	    	    "              'variants':[                                               \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test1.B'                  \n" +
+	    	    "                    }                                                    \n" +
+	    	    "                 }                                                       \n" +
+	    	    "              ]                                                          \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'stateRef':'state3',                                       \n" +
+	    	    "              'variants':[                                               \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state3/test1.B'                  \n" +
+	    	    "                    }                                                    \n" +
+	    	    "                 }                                                       \n" +
+	    	    "              ]                                                          \n" +
+	    	    "           }                                                             \n" +
+	    	    "        ]                                                                \n" +
+	    	    "     },                                                                  \n" +
+	    	    //--------------------------------------------------------------------------//	
+	    	    "     {                                                                   \n" +
+	    	    "        'name':'test2',                                                  \n" +
+	    	    "        'experiences':[                                                  \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'name':'A',                                                \n" +
+	    	    "              'weight':10,                                               \n" +
+	    	    "              'isControl':true                                           \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'name':'B',                                                \n" +
+	    	    "              'weight':20                                                \n" +
+	    	    "           }                                                             \n" +
+	    	    "        ],                                                               \n" +
+	    	    "        'onStates':[                                                     \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'stateRef':'state1',                                       \n" +
+	    	    "              'isNonvariant':true                                        \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'stateRef':'state2',                                       \n" +
+	    	    "              'variants':[                                               \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test2.B'                  \n" +
+	    	    "                    }                                                    \n" +
+	    	    "                 }                                                       \n" +
+	    	    "              ]                                                          \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'stateRef':'state3',                                       \n" +
+	    	    "              'variants':[                                               \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state3/test2.B'                  \n" +
+	    	    "                    }                                                    \n" +
+	    	    "                 }                                                       \n" +
+	    	    "              ]                                                          \n" +
+	    	    "           }                                                             \n" +
+	    	    "        ]                                                                \n" +
+	    	    "     },                                                                  \n" +
+	    	    //--------------------------------------------------------------------------//	
+	    	    "     {                                                                   \n" +
+	    	    "        'name':'test3',                                                  \n" +
+	    	    "        'covariantTestRefs': ['test2', 'test1'],                         \n" +
+	    	    "        'experiences':[                                                  \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'name':'A',                                                \n" +
+	    	    "              'weight':10,                                               \n" +
+	    	    "              'isControl':true                                           \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'name':'B',                                                \n" +
+	    	    "              'weight':20                                                \n" +
+	    	    "           }                                                             \n" +
+	    	    "        ],                                                               \n" +
+	    	    "        'onStates':[                                                      \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'stateRef':'state1',                                         \n" +
+	    	    "              'variants':[                                               \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state1/test3.B'                      \n" +
+	    	    "                    }                                                       \n" +
+	    	    "                 }                                                       \n" +
+	    	    "              ]                                                          \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'stateRef':'state2',                                         \n" +
+	    	    "              'variants':[                                               \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test3.B'                  \n" +
+	    	    "                    }                                                    \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'experienceRef': 'B'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test1.B+test3.B'              \n" +
+	    	    "                    }                                                       \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'experienceRef': 'B'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test2.B+test3.B'              \n" +
+	    	    "                    }                                                       \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +  // Invalid because T1 and T2 are not covariant.
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'experienceRef': 'B'                           \n" +
+	    	    "                       },                                                \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'experienceRef': 'B'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test1.B+test2.B+test3.B'              \n" +
+	    	    "                    }                                                       \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not covariant + there's no T2.C
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'experienceRef': 'B'                           \n" +
+	    	    "                       },                                                \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'experienceRef': 'C'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test1.B+test2.C+test3.B'              \n" +
+	    	    "                    }                                                       \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not covariant + there's no T1.C
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'experienceRef': 'C'                           \n" +
+	    	    "                       },                                                \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'experienceRef': 'B'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test1.C+test2.B+test3.B'              \n" +
+	    	    "                    }                                                       \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not covariant + there's no T1.C nor T2.C
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'experienceRef': 'C'                           \n" +
+	    	    "                       },                                                \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'experienceRef': 'C'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test1.C+test2.C+test3.B'  \n" +
+	    	    "                    }                                                    \n" +
+	    	    "                 }                                                       \n" +
+	    	    "              ]                                                          \n" +
+	    	    "           },                                                            \n" +
+	    	    "           {                                                             \n" +
+	    	    "              'stateRef':'state3',                                        \n" +
+	    	    "              'isNonvariant':true                                         \n" +
+	    	    "           }                                                             \n" +
+	    	    "        ]                                                                \n" +
+	    	    "     }                                                                   \n" +
+	    	    //--------------------------------------------------------------------------//	
+	     	    "  ]                                                                      \n" +
+	    	    "}                                                                         ";
+
+		ParserResponse response = SchemaParser.parse(core, schema);
+		printMessages(response);
+		assertTrue(response.hasMessages());
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(2, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "state2", "C").getText(), error.getText());
+
+	}
+
+	
 }

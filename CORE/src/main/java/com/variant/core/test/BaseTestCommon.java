@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.variant.core.VariantCoreSession;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
@@ -60,11 +61,10 @@ abstract public class BaseTestCommon {
 	 * @return
 	 */
     protected void setTargetingStabile(VariantCoreSession ssn, String...experiences) {
-		long timestamp = System.currentTimeMillis();
 		SessionScopedTargetingStabile stabile = new SessionScopedTargetingStabile();
 		for (String e: experiences) {
 			Experience exp = experience(e, ((CoreSessionImpl)ssn).getCoreApi().getSchema());
-			stabile.add(exp, timestamp);
+			stabile.add(exp);
 		}
 		((CoreSessionImpl)ssn).setTargetingStabile(stabile);
 	}
@@ -111,22 +111,24 @@ abstract public class BaseTestCommon {
 
 	/**
 	 * 
-	 * @param args
+	 * @param pattern
+	 * @param string
 	 * @return
 	 */
-	protected void assertMatches(String pattern, String string) {
+	protected static void assertMatches(String regex, String string) {
 		assertTrue(
-				"Pattern '" + pattern + "' does not match string '" + string + "'", 
-				Pattern.compile(pattern).matcher(string).matches());
+				"Regular expression '" + regex + "' does not match string '" + string + "'", 
+				Pattern.compile(regex).matcher(string).matches());
 	}
 
 	/**
 	 * 
-	 * @param args
 	 * @return
 	 */
-	protected void assertNotMatches(String pattern, String string) {
-		assertTrue(!Pattern.compile(pattern).matcher(string).matches());
+	protected static void assertNotMatches(String regex, String string) {
+		assertTrue(
+				"Regular expression '" + regex + "' matches string '" + string + "'",
+				!Pattern.compile(regex).matcher(string).matches());
 	}
 
 	/**
@@ -134,7 +136,7 @@ abstract public class BaseTestCommon {
 	 * @param actual
 	 * @param expected
 	 */
-	protected void assertEqualsMulti(Object actual, Object...expected) {
+	protected static void assertEqualsMulti(Object actual, Object...expected) {
 		boolean result = false;
 		for (Object e: expected) {
 			if (actual.equals(e)) {
@@ -152,7 +154,7 @@ abstract public class BaseTestCommon {
 	 *  
 	 * @param 
 	 */	
-	protected <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected, Comparator<T> comp) {
+	protected static <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected, Comparator<T> comp) {
 		
 		for (T a: actual) {
 			boolean found = false;
@@ -182,7 +184,7 @@ abstract public class BaseTestCommon {
 	 *  
 	 * @param 
 	 */	
-	protected <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected) {
+	protected static <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected) {
 
 		Comparator<T> comp = new Comparator<T>() {
 			@Override
@@ -261,7 +263,7 @@ abstract public class BaseTestCommon {
 	}
 	
 	/**
-	 * Exception interceptor for VariantRuntimeException
+	 * Concrete exception intercepter for VariantRuntimeException
 	 *
 	 */
 	protected static abstract class VariantRuntimeExceptionInterceptor 
@@ -279,6 +281,27 @@ abstract public class BaseTestCommon {
 			VariantRuntimeException result = super.run();
 			assertEquals(new VariantRuntimeException(template, templateArgs).getMessage(), result.getMessage());
 		}
-
 	}
+	
+	/**
+	 * Concrete exception intercepter for VariantInternalException
+	 *
+	 */
+	protected static abstract class VariantInternalExceptionInterceptor 
+		extends ExceptionInterceptor<VariantInternalException> {
+		
+		@Override
+		final public Class<VariantInternalException> getExceptionClass() {
+			return VariantInternalException.class;
+		}
+		
+		/**
+		 * Call this if you want assertion always thrown.
+		 */
+		final public void assertThrown(String regex) throws Exception {
+			VariantInternalException result = super.run();
+			assertMatches(regex, result.getMessage());
+		}
+	}
+
 }

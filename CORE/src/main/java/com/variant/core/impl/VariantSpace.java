@@ -17,7 +17,7 @@ import com.variant.core.util.VariantStringUtils;
 /**
  * Variant Space is a cartesian space with the basis given by a list of tests,
  * coordinates are a list of experiences, exactly one for each basis test,
- * and value an instance of Test.OnView.Variant. 
+ * and value an instance of Test.OnState.Variant. 
  * 
  * @author Igor
  *
@@ -41,15 +41,15 @@ public class VariantSpace {
 	 * @param basis
 	 * @throws VariantRuntimeException 
 	 */
-	public VariantSpace(TestOnStateImpl tovImpl)  {
+	public VariantSpace(TestOnStateImpl tosImpl)  {
 		
-		if (tovImpl.isNonvariant()) 
+		if (tosImpl.isNonvariant()) 
 			throw new VariantInternalException("Cannot crate VariantSpace for an nonvariant Test.OnView instance");
 		
 		// Build basis sorted in ordinal order.
 		basis = new LinkedHashSet<Test>();
-		basis.add(tovImpl.getTest());
-		basis.addAll(tovImpl.getTest().getCovariantTests());
+		basis.add(tosImpl.getTest());
+		basis.addAll(tosImpl.getTest().getCovariantTests());
 
 		// Pass 1. Build empty space, i.e. all Points with nulls for Variant values, for now.
 		for (Test t: basis) {
@@ -71,7 +71,7 @@ public class VariantSpace {
 			else {
 				// 2nd and on test is a covariant test.  Skip it if it's not instrumented on this view or is nonvariant on this view.
 				// Otherwise, compute the cartеsian product of what's already in the table and this current tests's experience list.
-				if (!tovImpl.getState().isInstrumentedBy(t) || tovImpl.getState().isNonvariantIn(t)) continue;
+				if (!tosImpl.getState().isInstrumentedBy(t) || tosImpl.getState().isNonvariantIn(t)) continue;
 				for (Experience exp: t.getExperiences()) {
 					if (exp.isControl()) continue;
 					for (Coordinates oldKey: oldKeys) {
@@ -84,7 +84,7 @@ public class VariantSpace {
 		}
 		
 		// Pass 2. Add variants.
-		for (Test.OnState.Variant variant: tovImpl.getVariants()) {
+		for (Test.OnState.Variant variant: tosImpl.getVariants()) {
 
 			// Build coordinate experience list. Must be concurrent with the basis.
 			List<Experience> coordinateExperiences = new ArrayList<Experience>(basis.size());

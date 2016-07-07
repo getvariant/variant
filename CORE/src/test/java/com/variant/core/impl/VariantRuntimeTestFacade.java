@@ -26,11 +26,21 @@ public class VariantRuntimeTestFacade {
 	
 	/**
 	 * 
-	 * @param vector
+	 * @param V
 	 * @return
 	 */
-	public Collection<Experience> minUnresolvableSubvector(Collection<Experience> vector) {
-		return runtime.minUnresolvableSubvector(vector);
+	public boolean isResolvable(Collection<Experience> v) {
+		return runtime.isResolvable(v);
+	}
+
+	/**
+	 * 
+	 * @param V
+	 * @param W
+	 * @return
+	 */
+	public Collection<Experience> minUnresolvableSubvector(Collection<Experience> v, Collection<Experience> w) {
+		return runtime.minUnresolvableSubvector(v, w);
 	}
 
 	/**

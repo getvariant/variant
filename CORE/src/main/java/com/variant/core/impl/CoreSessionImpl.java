@@ -4,9 +4,9 @@ import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
 
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -45,8 +45,8 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	private long timestamp = System.currentTimeMillis();
 	private VariantCoreStateRequestImpl currentRequest = null;
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
-	private List<Test> traversedTests = new ArrayList<Test>();
-	private List<Test> disqualTests = new ArrayList<Test>();
+	private LinkedHashSet<Test> traversedTests = new LinkedHashSet<Test>();
+	private LinkedHashSet<Test> disqualTests = new LinkedHashSet<Test>();
 	private VariantCore coreApi;
 	private SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
 	private String schemaId;
@@ -308,7 +308,10 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 				for (Object obj: listRaw) {
 					String entryString = (String) obj;
 					String[] tokens = entryString.split("\\.");
-					targetingStabile.add(tokens[0], tokens[1], Long.parseLong(tokens[2]));
+					targetingStabile.add(
+							tokens[0], 
+							tokens[1], 
+							Long.parseLong(tokens[2]));
 				}
 			}
 			catch (Exception e) {
@@ -357,7 +360,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		
 			Object testsObj = fields.get(FIELD_NAME_TRAVERSED_TESTS);
 			if (testsObj != null) {
-				ArrayList<Test> tests = new ArrayList<Test>();
+				LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
 				try {
 					List<String> testList = (List<String>) testsObj; 
 					for (String testName: testList) {
@@ -373,7 +376,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 			testsObj = fields.get(FIELD_NAME_DISQUAL_TESTS);
 			if (testsObj != null) {
 				
-				ArrayList<Test> tests = new ArrayList<Test>();
+				LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
 			
 				try {
 					List<String> testList = (List<String>) testsObj; 
