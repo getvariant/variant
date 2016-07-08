@@ -419,7 +419,7 @@ public class TestsParser implements Keywords {
 			return null;
 		}
 		
-		TestOnStateImpl tov = new TestOnStateImpl(refState, test);
+		TestOnStateImpl tos = new TestOnStateImpl(refState, test);
 
 		// Pass 2. Parse the rest of elems.
 		List<Object> rawVariants = null;
@@ -435,7 +435,7 @@ public class TestsParser implements Keywords {
 				catch (Exception e) {
 					response.addMessage(PARSER_ISNONVARIANT_NOT_BOOLEAN, test.getName(), stateRef);
 				}
-				tov.setNonvariant(isNonvariant);
+				tos.setNonvariant(isNonvariant);
 			}
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_VARIANTS)) {
 				try {
@@ -450,10 +450,10 @@ public class TestsParser implements Keywords {
 					return null;					
 				}
 				for (Object variantObject: rawVariants) {
-					TestOnViewVariantImpl variant = VariantParser.parseVariant(variantObject, tov, response);
+					TestOnViewVariantImpl variant = VariantParser.parseVariant(variantObject, tos, response);
 					if (variant != null) {
 						boolean dupe = false;
-						for (Test.OnState.Variant v: tov.getVariants()) {
+						for (Test.OnState.Variant v: tos.getVariants()) {
 							if (v.getExperience().equals(variant.getExperience())) { 
 								if (v.getCovariantExperiences().isEmpty() && variant.getCovariantExperiences().isEmpty()) {
 									// Dupe local experience ref and no covariant experiences in this view.
@@ -477,7 +477,7 @@ public class TestsParser implements Keywords {
 						}
 					    // Don't add a dupe.
 						if (!dupe) {
-							tov.addVariant(variant);
+							tos.addVariant(variant);
 						}
 					}
 				}
@@ -485,9 +485,9 @@ public class TestsParser implements Keywords {
 		}
 		
 		// 'isNonvariant' is incompatible with 'variants', but one or the other is required.
-		if (tov.isNonvariant()) {
-			if (tov.getVariants().isEmpty()) {
-				return tov;
+		if (tos.isNonvariant()) {
+			if (tos.getVariants().isEmpty()) {
+				return tos;
 			}
 			else {
 				response.addMessage(PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE, test.getName(), stateRef);
@@ -501,7 +501,7 @@ public class TestsParser implements Keywords {
 		
 		// Confirm Must have a variant for each vector in the variant space
 		// defined by the local and covariant experiences.
-		for (VariantSpace.Point point: tov.variantSpace().getAll()) {
+		for (VariantSpace.Point point: tos.variantSpace().getAll()) {
 			if (point.getVariant() == null) {
 				if (point.getCovariantExperiences().size() == 0) {
 					response.addMessage(PARSER_VARIANT_MISSING, point.getExperience().getName(), test.getName(), stateRef);
@@ -516,7 +516,7 @@ public class TestsParser implements Keywords {
 			}
 		}
 		
-		return tov;
+		return tos;
 	}
 	
 }

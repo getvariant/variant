@@ -6,7 +6,7 @@ Refactor and freeze Java Client.
 Separate client servlet adapter into own jar so that client has no dependency on servlet api.
 
 
-
+Bugs: #30 Variant space builder should not assume pairwise covariance of a test's covariant list.
 
 
 

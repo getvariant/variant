@@ -9,7 +9,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
 /**
- * An element of the onViews array of the test definition.
+ * An element of the onState array of the test definition.
  * @author Igor
  */
 public class TestOnStateImpl implements Test.OnState {

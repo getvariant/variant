@@ -77,7 +77,7 @@ public enum MessageTemplate {
 	PARSER_VARIANTS_ISNONVARIANT_XOR                      (Severity.ERROR, "Property 'tests/onStates' must specify one of: 'isNonvariant' or 'variants' (Test [%s], StateRef [%s])"), 
 	PARSER_VARIANT_NOT_OBJECT                             (Severity.ERROR, "'tests/onStates/variants' list element must be an object (Test [%s], StateRef [%s])"), 
 	PARSER_VARIANT_DUPE                                   (Severity.ERROR, "Duplicate list element 'tests/onStates/variants' references experience [%s] (Test [%s], StateRef [%s])"), 
-	PARSER_COVARIANT_VARIANT_DUPE                         (Severity.ERROR, "Duplicate list element 'tests/onStates/variants' references covariant experiences [%s] (Test [%s], StateRef [%s], Experience [%s])"), 
+	PARSER_COVARIANT_VARIANT_DUPE                         (Severity.ERROR, "Duplicate list element 'tests/onStates/variants' references covariant experience(s) [%s] (Test [%s], StateRef [%s], Experience [%s])"), 
 	PARSER_VARIANT_MISSING                                (Severity.ERROR, "Variant element 'tests/onStates/variants' missing for experience [%s] (Test [%s], StateRef [%s])"), 
 	PARSER_COVARIANT_VARIANT_MISSING                      (Severity.ERROR, "'tests/onStates/variants' list element missing for proper experience [%s] and covariant experience(s) [%s] (Test [%s], StateRef [%s])"), 	
 	PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT           (Severity.ERROR, "Variant element 'tests/onStates/variants' for covariant experience [%s.%s] cannot refer to a non-covariant test (Test [%s], StateRef [%s])"), 	

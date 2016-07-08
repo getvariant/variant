@@ -1,8 +1,6 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_DUPE;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_MISSING;
+import static com.variant.core.schema.impl.MessageTemplate.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -293,72 +291,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 				"                    'parameters':{                            \n" +
 			    "                      'path':'/path/to/state2/test2.C+test3.B'   \n" +
 			    "                    }                                           \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test2.B+test3.B'   \n" +
-			    "                    }                                           \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test2.C+test3.B'   \n" +
-			    "                    }                                           \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test2.B+test3.B'   \n" +
-			    "                    }                                           \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test2.C+test3.B'   \n" +
-			    "                    }                                           \n" +
-			    "                 },                                           \n" +
-
+			    "                 },                                             \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
 				"                    'parameters':{                            \n" +
@@ -413,85 +346,16 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                      'path':'/path/to/state2/test2.C+test3.C'   \n" +
 			    "                    }                                           \n" +
 			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test2.B+test3.C'   \n" +
-			    "                    }                                           \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test2.C+test3.C'   \n" +
-			    "                    }                                           \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
+			    "                 {                                            \n" + // Dupe variant
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'covariantExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ],                                       \n" +
 				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test2.B+test3.C'   \n" +
-			    "                    }                                           \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test2.C+test3.C'   \n" +
-			    "                    }                                           \n" +
-			    "                 },                                           \n" +
-			    // DUPE:
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       },                                     \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test2.B+test3.C'   \n" +
+			    "                      'path':'/path/to/state2/test1.C+test3.C'   \n" +
 			    "                    }                                           \n" +
 			    "                 }                                           \n" +
 			    "              ]                                               \n" +
@@ -512,7 +376,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_DUPE, "test1.B, test2.B", "test3", "state2", "C").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_DUPE, "test1.C", "test3", "state2", "C").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -589,6 +453,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
+                "        'covariantTestRefs': ['test1'],                       \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -604,9 +469,9 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "              'weight':30                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
+			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
+			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -632,9 +497,57 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
+			    "                    'experienceRef': 'B',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.B'   \n" +
+			    "                    }                                            \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'B',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'C'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.B'   \n" +
+			    "                    }                                            \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
 				"                    'parameters':{                            \n" +
 			    "                      'path':'/path/to/state2/test1.C'           \n" +
+			    "                    }                                            \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'C',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.C'   \n" +
+			    "                    }                                            \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'C',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'C'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+				"                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.C'   \n" +
 			    "                    }                                            \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
@@ -985,19 +898,21 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		ParserResponse response = SchemaParser.parse(core, schema);
 
 		assertTrue(response.hasMessages());
+		printMessages(response);
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "state2", "C").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "test1.B,test2.B", "test3", "state2", "C").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "C", "test1.B,test2.B", "test3", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
 
 	/**
-	 * 
+	 * PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT
+	 * PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED
 	 */
 	@Test
 	public void testBlah() throws Exception {
@@ -1246,12 +1161,17 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	    	    "}                                                                         ";
 
 		ParserResponse response = SchemaParser.parse(core, schema);
-		printMessages(response);
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
-		assertEquals(2, response.getMessages().size());
+		assertEquals(4, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "state2", "C").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, "test3", "state2", "B", "test1.B,test2.B").getText(), error.getText());
+		error = response.getMessages().get(1);
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test2", "C", "test3", "state2", "B").getText(), error.getText());
+		error = response.getMessages().get(2);
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C", "test3", "state2", "B").getText(), error.getText());
+		error = response.getMessages().get(3);
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C", "test3", "state2", "B").getText(), error.getText());
 
 	}
 

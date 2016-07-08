@@ -32,19 +32,89 @@ public class VariantSpace {
 	private LinkedHashMap<Coordinates, Point> table = new LinkedHashMap<Coordinates, Point>();
 	
 	/**
-	 * Crate the variant space for a particular Test.OnView object. 
-	 * Assumes that the testOnViewImpl object is fully formed, but does not
+	 * Cell coordinates in this space.
+	 */
+	private static class Coordinates {
+	
+		private ArrayList<Experience> coordinates = new ArrayList<Experience>();
+		
+		/**
+		 * 1-dimensional coordinate vector.
+		 * 
+		 * @param experience
+		 */
+		private Coordinates(Experience experience) {
+			coordinates.add(experience);
+		}
+		
+		/**
+		 * N+1 dimensional vector.
+		 * @param experiences
+		 */
+		private Coordinates(Coordinates coordinates, Experience experience) {
+			this.coordinates.addAll(coordinates.coordinates);
+			this.coordinates.add(experience);
+		}
+		
+		/**
+		 * Client code access.
+		 * @param experiences
+		 */
+		private Coordinates(List<Experience> experiences) {
+			coordinates.addAll(experiences);
+		}
+		
+		/**
+		 * Can this coordinate vector be combined with a new dimension, i.e. a new test?
+		 * A new dimension can only be added to a vector whose all existing dimensions are
+		 * covariant with the given test.
+		 * 
+		 * @param test
+		 * @return true, if test is pair-wise covariant with all tests in this 
+		 */
+		private boolean isCombinableWith(Test test) {
+			for (Experience e: coordinates)
+				if (! e.getTest().isCovariantWith(test)) return false;
+			return true;
+		}
+		
+		/**
+		 */
+		@Override
+		public boolean equals(Object o) {
+			if (!(o instanceof Coordinates)) return false;
+			Coordinates other = (Coordinates) o;
+			return coordinates.equals(other.coordinates);
+		}
+		
+		/**
+		 */
+		@Override
+		public int hashCode() {
+			return coordinates.hashCode();
+		}
+		
+		/**
+		 */
+		@Override
+		public String toString() {
+			return VariantStringUtils.toString(coordinates, ",");
+		}
+	}
+
+	/**
+	 * Crate the variant space for a particular Test.OnState instrumentation object. 
+	 * Assumes that the testOnStateImpl object is fully formed, but does not
 	 * assume anything else of the schema.  This is critical because this is called
-	 * in the middle of the new schema construction, where the existing publically visible
-	 * schema is obsolete, but the new schema doesn't yet exist.
+	 * in the middle of the new schema construction, where the existing publicly visible
+	 * schema is, potentially, obsolete, but the new schema doesn't yet exist.
 	 * 
-	 * @param basis
-	 * @throws VariantRuntimeException 
+	 * @param tosImpl
 	 */
 	public VariantSpace(TestOnStateImpl tosImpl)  {
 		
 		if (tosImpl.isNonvariant()) 
-			throw new VariantInternalException("Cannot crate VariantSpace for an nonvariant Test.OnView instance");
+			throw new VariantInternalException("Cannot crate VariantSpace for a nonvariant instrumentation");
 		
 		// Build basis sorted in ordinal order.
 		basis = new LinkedHashSet<Test>();
@@ -60,24 +130,26 @@ public class VariantSpace {
 			
 			
 			if (oldKeys.size() == 0) {
-				// First test is the local test - add all non-control experiences.
+				// First test is the proper test - add all non-control experiences.
 				for (Experience exp: t.getExperiences()) {
 					if (exp.isControl()) continue;
 					Coordinates coordinates = new Coordinates(exp);
 					table.put(coordinates, new Point(coordinates));
-					//System.out.println("Added [" + exp + "], Test [" + tovImpl.getTest().getName() + "], View [" + tovImpl.getView().getName() + "] " + coordinates.hashCode());
 				}
 			}
 			else {
-				// 2nd and on test is a covariant test.  Skip it if it's not instrumented on this view or is nonvariant on this view.
+				// 2nd and on test is a covariant test.  Skip it, if it's not instrumented or is nonvariant on this state.
 				// Otherwise, compute the cartеsian product of what's already in the table and this current tests's experience list.
-				if (!tosImpl.getState().isInstrumentedBy(t) || tosImpl.getState().isNonvariantIn(t)) continue;
+				if (!tosImpl.getState().isInstrumentedBy(t) || tosImpl.getState().isNonvariantIn(t)) continue;				
+				
 				for (Experience exp: t.getExperiences()) {
 					if (exp.isControl()) continue;
 					for (Coordinates oldKey: oldKeys) {
-						Coordinates coordinates = new Coordinates(oldKey, exp);
-						table.put(coordinates, new Point(coordinates));
-						//System.out.println("Added c[" + VariantStringUtils.toString(coordinates.coordinates, ",") + "], Test [" + tovImpl.getTest().getName() + "], View [" + tovImpl.getView().getName() + "] " + coordinates.hashCode());
+						// #30: Only multiply by this dimension, if it is covariant with all tests already in the table. 
+						if (oldKey.isCombinableWith(t)) {
+							Coordinates coordinates = new Coordinates(oldKey, exp);
+							table.put(coordinates, new Point(coordinates));
+						}
 					}
 				}
 			}
@@ -190,54 +262,5 @@ public class VariantSpace {
 			return variant;
 		}
 		
-	}
-	
-	/**
-	 * Cell coordinates in this space.
-	 * In all constructors, caller makes sure that experience lists' order
-	 * is the same as in basis and that none of the experiences are control.
-	 */
-	private static class Coordinates {
-	
-		private ArrayList<Experience> coordinates = new ArrayList<Experience>();
-		
-		/**
-		 * 1-dimensional vector.
-		 * 
-		 * @param experience
-		 */
-		private Coordinates(Experience experience) {
-			coordinates.add(experience);
-		}
-		
-		/**
-		 * N+1 dimensional vector
-		 * @param experiences
-		 */
-		private Coordinates(Coordinates coordinates, Experience experience) {
-			this.coordinates.addAll(coordinates.coordinates);
-			this.coordinates.add(experience);
-		}
-		
-		/**
-		 * Client code access.
-		 * @param experiences
-		 */
-		private Coordinates(List<Experience> experiences) {
-			coordinates.addAll(experiences);
-		}
-				
-		@Override
-		public boolean equals(Object o) {
-			if (!(o instanceof Coordinates)) return false;
-			Coordinates other = (Coordinates) o;
-			return coordinates.equals(other.coordinates);
-		}
-		
-		@Override
-		public int hashCode() {
-			return coordinates.hashCode();
-		}
-	}
-	
+	}	
 }
