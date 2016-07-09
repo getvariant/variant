@@ -681,7 +681,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST, "test2", "state2", "C").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "state2", "C").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "C", "test1.B", "test2", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -863,7 +863,6 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "}                                                             \n";
 		
 		ParserResponseImpl response = SchemaParser.parse(core, config);
-
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
@@ -871,7 +870,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT, "test2", "state2", "B").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "test1.C", "test2", "state2", "B").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "B", "test1.C", "test2", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1070,7 +1069,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING, "test2", "state2", "C").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(2);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "state2", "C").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "C", "test1.B", "test2", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1265,7 +1264,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED, "bad", "test2", "state2", "C").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "state2", "C").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "C", "test1.B", "test2", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1462,7 +1461,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "Bad", "test2", "state2", "C").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "test1.B", "test2", "state2", "C").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING,  "C", "test1.B", "test2", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1901,6 +1900,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
+                "        'covariantTestRefs': ['test1'],                       \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -1944,9 +1944,57 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "                    }                                            \n" +
 			    "                 },                                           \n" +
 */			    "                 {                                            \n" +
+			    "                    'experienceRef': 'B',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+			    "                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.B'   \n" +
+			    "                    }                                            \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'B',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'C'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+			    "                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.B'   \n" +
+			    "                    }                                            \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
 			    "                    'parameters':{                            \n" +
 			    "                      'path':'/path/to/state2/test1.C'           \n" +
+			    "                    }                                            \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'C',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+			    "                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.B+test2.C'   \n" +
+			    "                    }                                            \n" +
+			    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'C',                     \n" +
+	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'experienceRef': 'C'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ],                                       \n" +
+			    "                    'parameters':{                            \n" +
+			    "                      'path':'/path/to/state2/test1.C+test2.C'   \n" +
 			    "                    }                                            \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
@@ -2295,7 +2343,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "}                                                             \n";
 		
 		ParserResponseImpl response = SchemaParser.parse(core, config);
-		
+
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(3, response.getMessages().size());
@@ -2303,10 +2351,10 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertEquals(new ParserMessageImplFacade(PARSER_VARIANT_MISSING, "B", "test2", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "test2.C", "test3", "state1", "B").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "B", "test2.C", "test3", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(2);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "test1.B,test2.B", "test3", "state2", "B").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "B", "test1.B,test2.B", "test3", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}

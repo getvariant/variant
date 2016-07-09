@@ -19,10 +19,8 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.test.BaseTestCommon.VariantRuntimeExceptionInterceptor;
 import com.variant.core.util.VariantCollectionsUtils;
 
 
@@ -74,7 +72,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Control experience \\[test1\\.A\\] in input vector");
+		}.assertThrown("Control experience [test1.A] in input vector");
 		
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
@@ -85,7 +83,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Uninstrumented test \\[test1\\.B\\] in input vector");
+		}.assertThrown("Uninstrumented test [test1.B] in input vector");
 
 		Map<String,String> params = runtimeFacade.resolveState(
 				state1, 
@@ -105,7 +103,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Control experience \\[test1\\.A\\] in input vector");
+		}.assertThrown("Control experience [test1.A] in input vector");
 
 		params = runtimeFacade.resolveState(
 				state1, 
@@ -127,7 +125,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Duplicate test \\[test2\\] in input vector");	
+		}.assertThrown("Duplicate test [test2] in input vector");	
 		
 		params = runtimeFacade.resolveState(
 				state1, 
@@ -151,7 +149,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Uninstrumented test \\[test1\\.C\\] in input vector");
+		}.assertThrown("Uninstrumented test [test1.C] in input vector");
 
 		params = runtimeFacade.resolveState(
 				state1, 
@@ -210,7 +208,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Control experience \\[test1\\.A\\] in input vector");
+		}.assertThrown("Control experience [test1.A] in input vector");
 
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
@@ -222,7 +220,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Control experience \\[test1\\.A\\] in input vector");
+		}.assertThrown("Control experience [test1.A] in input vector");
 
 		params = runtimeFacade.resolveState(
 				state2, 
@@ -252,7 +250,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 					)
 				);
 			}
-		}.assertThrown("Duplicate test \\[test2\\] in input vector");
+		}.assertThrown("Duplicate test [test2] in input vector");
 		
 		params = runtimeFacade.resolveState(
 				state2, 
@@ -298,19 +296,17 @@ public class CoreRuntimeTest extends BaseTestCore {
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.C", schema),  // variant
-						experience("test2.B", schema),  // variant
 						experience("test5.C", schema)   // variant
 				)
 		);
-		assertEquals("/path/to/state2/test2.B+test4.C+test5.C", params.get("path"));
+		assertEquals("/path/to/state2/test4.C+test5.C", params.get("path"));
 
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.C", schema),  // variant
 						experience("test2.B", schema),  // variant
-						experience("test5.C", schema),  // variant
-						experience("test3.B", schema)   // variant, unsupported.
+						experience("test5.C", schema)   // variant, unsupported
 				)
 		);
 		assertNull(params);
@@ -318,13 +314,24 @@ public class CoreRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
-						experience("test4.C", schema),  // variant
-						experience("test6.B", schema),  // nonvariant
+						experience("test4.C", schema),  // variant unsupported
 						experience("test2.B", schema),  // variant
+						experience("test5.C", schema),  // variant
+						experience("test3.B", schema)   // variant
+				)
+		);
+		assertNull(params);
+
+		params = runtimeFacade.resolveState(
+				state2, 
+				VariantCollectionsUtils.list(
+						experience("test4.C", schema),  // variant unsupported
+						experience("test6.B", schema),  // nonvariant
+						experience("test2.B", schema),  // variant 
 						experience("test5.C", schema)   // variant
 				)
 		);
-		assertEquals("/path/to/state2/test2.B+test4.C+test5.C", params.get("path"));
+		assertNull(params);
 
 		// state3
 
@@ -337,7 +344,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Control experience \\[test2\\.A\\] in input vector");
+		}.assertThrown("Control experience [test2.A] in input vector");
 
 		params = runtimeFacade.resolveState(
 				state3, 
@@ -356,7 +363,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Uninstrumented test \\[test4\\.B\\] in input vector");
+		}.assertThrown("Uninstrumented test [test4.B] in input vector");
 
 		params = runtimeFacade.resolveState(
 				state3, 
@@ -403,7 +410,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 							)
 					);
 			}
-		}.assertThrown("Duplicate test \\[test2\\] in input vector");
+		}.assertThrown("Duplicate test [test2] in input vector");
 
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
@@ -417,7 +424,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Uninstrumented test \\[test4\\.B\\] in input vector");
+		}.assertThrown("Uninstrumented test [test4.B] in input vector");
 		
 		params = runtimeFacade.resolveState(
 				state3, 
@@ -450,19 +457,19 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Uninstrumented test \\[test4\\.B\\] in input vector");
+		}.assertThrown("Uninstrumented test [test4.B] in input vector");
 		
 
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test2.B", schema),  // variant
+						experience("test2.B", schema),  // variant unsupported
 						experience("test1.C", schema),  // variant
 						experience("test6.B", schema),  // variant
 						experience("test3.C", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state3/test1.C+test2.B+test6.B", params.get("path"));
+		assertNull(params);
 
 		params = runtimeFacade.resolveState(
 				state3, 
@@ -488,228 +495,250 @@ public class CoreRuntimeTest extends BaseTestCore {
 		params = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test4.C", schema),  // uninstrumented
 						experience("test6.B", schema),  // variant
 						experience("test2.B", schema),  // variant
-						experience("test5.C", schema),  // uninstrumented
-						experience("test3.A", schema)   // nonvariant
+						experience("test5.C", schema)   // nonvariant
 				)
 		);
 		assertEquals("/path/to/state3/test2.B+test6.B", params.get("path"));
 		
 		//
-		// State resolutions
+		// Coordinates resolvability
 		//
 
-		assertTrue(
+		new VariantInternalExceptionInterceptor() { 
+			@Override public void toRun() {
 				runtimeFacade.isResolvable(VariantCollectionsUtils.list(
-						experience("test1.A", schema))));
-
+						experience("test1.A", schema)));
+			}
+		}.assertThrown("Control experience [test1.A] in input vector");
 		
 		assertTrue(
 				runtimeFacade.isResolvable(VariantCollectionsUtils.list(
 						experience("test1.B", schema))));
 
-		assertTrue(
-				runtimeFacade.isResolvable(
-						VariantCollectionsUtils.list(
-								experience("test1.A", schema), 
-								experience("test2.B", schema))));
-
-		Collection<Experience> subVector =
+		new VariantInternalExceptionInterceptor() { 
+			@Override public void toRun() {
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test1.A", schema), 
 								experience("test2.B", schema)),
 						VariantCollectionsUtils.list(
+								experience("test3.C", schema), 
+								experience("test4.B", schema)));
+			}
+		}.assertThrown("Control experience [test1.A] in input vector");
+
+		new VariantInternalExceptionInterceptor() { 
+			@Override public void toRun() {
+				runtimeFacade.minUnresolvableSubvector(
+						VariantCollectionsUtils.list(
+								experience("test2.B", schema)),
+						VariantCollectionsUtils.list(
+								experience("test3.A", schema), 
+								experience("test4.B", schema)));
+			}
+		}.assertThrown("Control experience [test3.A] in input vector");
+
+		new VariantInternalExceptionInterceptor() { 
+			@Override public void toRun() {
+				runtimeFacade.minUnresolvableSubvector(
+						VariantCollectionsUtils.list(
+								experience("test1.C", schema), 
+								experience("test2.B", schema)),
+						VariantCollectionsUtils.list(
 								experience("test1.C", schema), 
 								experience("test2.B", schema)));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema)), subVector);
-/*
-		subVector = 
-				runtimeFacade.isResolvable(
+			}
+		}.assertThrown("Input vector [test1.C,test2.B] must be resolvable, but is not");
+
+		new VariantInternalExceptionInterceptor() { 
+			@Override public void toRun() {
+				runtimeFacade.minUnresolvableSubvector(
+						VariantCollectionsUtils.list(
+								experience("test1.C", schema)),
+						VariantCollectionsUtils.list(
+								experience("test1.B", schema), 
+								experience("test2.B", schema)));
+			}
+		}.assertThrown("Experience [test1.B] in second argument contradicts experience [test1.C] in first argument");
+
+		new VariantInternalExceptionInterceptor() { 
+			@Override public void toRun() {
+				runtimeFacade.minUnresolvableSubvector(
+						VariantCollectionsUtils.list(
+								experience("test2.B", schema), 
+								experience("test3.C", schema)),
 						VariantCollectionsUtils.list(
 								experience("test1.A", schema), 
+								experience("test3.B", schema)));
+			}
+		}.assertThrown("Experience [test3.B] in second argument contradicts experience [test3.C] in first argument");
+
+		Collection<Experience> subVector =
+				runtimeFacade.minUnresolvableSubvector(
+						VariantCollectionsUtils.list(
+								experience("test2.B", schema)),
+						VariantCollectionsUtils.list(
+								experience("test1.B", schema))
+						);
+		assertEqualAsSets(VariantCollectionsUtils.list(experience("test1.B", schema)), subVector);
+
+		subVector =
+				runtimeFacade.minUnresolvableSubvector(
+						VariantCollectionsUtils.list(
 								experience("test2.B", schema), 
-								experience("test3.A", schema)));
+								experience("test3.C", schema)),	
+						VariantCollectionsUtils.list(
+								experience("test1.B", schema))
+				);
+		assertEqualAsSets(VariantCollectionsUtils.list(experience("test1.B", schema)), subVector);
+
+		subVector = runtimeFacade.minUnresolvableSubvector(
+						VariantCollectionsUtils.list(
+								experience("test3.C", schema)),
+						VariantCollectionsUtils.list(
+								experience("test2.B", schema))
+				);
 		assertTrue(subVector.isEmpty());
 
-		subVector = 
-				runtimeFacade.isResolvable(
+		subVector = runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.A", schema), 
-								experience("test2.B", schema), 
+								experience("test3.C", schema)),
+						VariantCollectionsUtils.list(
+								experience("test2.B", schema),
+								experience("test5.C", schema))
+				);
+		assertEqualAsSets(VariantCollectionsUtils.list(experience("test5.C", schema)), subVector);
+
+		subVector = runtimeFacade.minUnresolvableSubvector(
+						VariantCollectionsUtils.list(
+								experience("test2.C", schema)),
+						VariantCollectionsUtils.list(
+								experience("test1.C", schema), 
 								experience("test3.C", schema)));
-		assertTrue(subVector.isEmpty());
+		assertEqualAsSets(VariantCollectionsUtils.list(experience("test1.C", schema)), subVector);
 
-		subVector = 
-				runtimeFacade.isResolvable(
+		subVector = runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.C", schema), 
-								experience("test2.B", schema), 
-								experience("test3.C", schema)));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema)), subVector);
+								experience("test1.C", schema)),
+						VariantCollectionsUtils.list(
+								experience("test4.B", schema), 
+								experience("test5.C", schema)));
+		assertEqualAsSets(VariantCollectionsUtils.list(experience("test5.C", schema)), subVector);
 
-		subVector = 
-				runtimeFacade.isResolvable(
+		subVector = runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
-								experience("test1.A", schema), 
-								experience("test2.B", schema), 
-								experience("test3.C", schema),
-								experience("test4.A", schema)));
-		assertTrue(subVector.isEmpty());
+								experience("test2.C", schema)),
+						VariantCollectionsUtils.list(
+								experience("test4.B", schema), 
+								experience("test5.C", schema)));
+		assertEqualAsSets(VariantCollectionsUtils.list(experience("test4.B", schema)), subVector);
 
-		subVector = 
-				runtimeFacade.isResolvable(
-						VariantCollectionsUtils.list(
-								experience("test1.C", schema), 
-								experience("test2.B", schema), 
-								experience("test3.C", schema),
-								experience("test4.A", schema)));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema)), subVector);
+		subVector = runtimeFacade.minUnresolvableSubvector(
+				VariantCollectionsUtils.list(
+						experience("test2.C", schema)),
+				VariantCollectionsUtils.list(
+						experience("test3.B", schema), 
+						experience("test5.C", schema)));
+		assertEqualAsSets(VariantCollectionsUtils.list(experience("test5.C", schema)), subVector);
 
-		subVector = 
-				runtimeFacade.isResolvable(
-						VariantCollectionsUtils.list(
-								experience("test1.C", schema), 
-								experience("test2.B", schema), 
-								experience("test3.C", schema),
-								experience("test4.B", schema)));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test4.B", schema)), subVector);
+		subVector = runtimeFacade.minUnresolvableSubvector(
+				VariantCollectionsUtils.list(
+						experience("test1.C", schema),
+						experience("test4.C", schema)),
+				VariantCollectionsUtils.list(
+						experience("test3.B", schema), 
+						experience("test5.C", schema)));
+		assertEqualAsSets(
+				VariantCollectionsUtils.list(
+						experience("test3.B", schema), 
+						experience("test5.C", schema)), 
+				subVector);
 
-		subVector = 
-				runtimeFacade.isResolvable(
-						VariantCollectionsUtils.list(
-								experience("test1.C", schema), 
-								experience("test2.B", schema), 
-								experience("test3.C", schema),
-								experience("test5.B", schema),
-								experience("test4.B", schema)));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test3.C", schema)), subVector);
-
-		subVector = 
-				runtimeFacade.isResolvable(
-						VariantCollectionsUtils.list(
-								experience("test1.C", schema), 
-								experience("test2.A", schema), 
-								experience("test3.C", schema),
-								experience("test5.B", schema),
-								experience("test4.B", schema)));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test3.C", schema)), subVector);
-
-		subVector = 
-				runtimeFacade.isResolvable(
-						VariantCollectionsUtils.list(
-								experience("test1.C", schema), 
-								experience("test2.A", schema), 
-								experience("test3.C", schema),
-								experience("test5.B", schema),
-								experience("test4.A", schema)));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test3.C", schema)), subVector);
-
-		subVector = 
-				runtimeFacade.isResolvable(
-						VariantCollectionsUtils.list(
-								experience("test1.C", schema), 
-								experience("test2.A", schema), 
-								experience("test3.C", schema),
-								experience("test5.A", schema),
-								experience("test4.A", schema)));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema)), subVector);
-
-		subVector = 
-				runtimeFacade.isResolvable(
-						VariantCollectionsUtils.list(
-								experience("test6.C", schema), 
-								experience("test1.C", schema), 
-								experience("test2.B", schema), 
-								experience("test3.C", schema),
-								experience("test5.A", schema),
-								experience("test4.A", schema)));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema)), subVector);
-
-		subVector = 
-				runtimeFacade.isResolvable(
-						VariantCollectionsUtils.list(
-								experience("test6.C", schema), 
-								experience("test1.C", schema), 
-								experience("test2.B", schema), 
-								experience("test3.C", schema),
-								experience("test5.A", schema),
-								experience("test4.C", schema)));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test4.C", schema)), subVector);
-
-		subVector = 
-				runtimeFacade.minUnresolvableSubvector(
-						VariantCollectionsUtils.list(
-								experience("test6.C", schema), 
-								experience("test1.C", schema), 
-								experience("test2.B", schema), 
-								experience("test3.C", schema),
-								experience("test5.B", schema),
-								experience("test4.C", schema)));
-		assertEquals(VariantCollectionsUtils.list(experience("test1.C", schema), experience("test3.C", schema)), subVector);
-
-		subVector = 
-				runtimeFacade.minUnresolvableSubvector(
-						VariantCollectionsUtils.list(
-								experience("test6.C", schema), 
-								experience("test1.A", schema), 
-								experience("test2.B", schema), 
-								experience("test3.A", schema),
-								experience("test5.B", schema),
-								experience("test4.C", schema)));
-		assertTrue(subVector.isEmpty());
-
-		subVector = 
-				runtimeFacade.minUnresolvableSubvector(
-						VariantCollectionsUtils.list(
-								experience("test6.C", schema), 
-								experience("test2.B", schema), 
-								experience("test5.B", schema),
-								experience("test4.C", schema)));
-		assertTrue(subVector.isEmpty());
-*/
+		subVector = runtimeFacade.minUnresolvableSubvector(
+				VariantCollectionsUtils.list(
+						experience("test2.C", schema),
+						experience("test3.C", schema)),
+				VariantCollectionsUtils.list(
+						experience("test1.C", schema)));
+		assertEqualAsSets(
+				VariantCollectionsUtils.list(
+						experience("test1.C", schema)), 
+				subVector);
+		
+		subVector = runtimeFacade.minUnresolvableSubvector(
+				VariantCollectionsUtils.list(
+						experience("test2.C", schema),
+						experience("test3.C", schema)),
+				VariantCollectionsUtils.list(
+						experience("test1.C", schema), 
+						experience("test4.C", schema)));
+		assertEqualAsSets(
+				VariantCollectionsUtils.list(
+						experience("test1.C", schema), 
+						experience("test4.C", schema)), 
+				subVector);
+		
+		subVector = runtimeFacade.minUnresolvableSubvector(
+				VariantCollectionsUtils.list(
+						experience("test6.C", schema),
+						experience("test1.B", schema)),
+				VariantCollectionsUtils.list(
+						experience("test5.C", schema), 
+						experience("test4.C", schema)));
+		assertEqualAsSets(
+				VariantCollectionsUtils.list(
+						experience("test5.C", schema)), 
+				subVector);
+		
+		subVector = runtimeFacade.minUnresolvableSubvector(
+				VariantCollectionsUtils.list(
+						experience("test5.C", schema),
+						experience("test4.B", schema)),
+				VariantCollectionsUtils.list(
+						experience("test1.C", schema), 
+						experience("test2.C", schema)));
+		assertEqualAsSets(
+				VariantCollectionsUtils.list(
+						experience("test1.C", schema), 
+						experience("test2.C", schema)),
+				subVector);
+		
 		//
 		// Test targetability
 		//
 		
-		boolean thrown = false;
-		try{
-			runtimeFacade.isTargetable(
-				test5, 
-				VariantCollectionsUtils.list(
-						experience("test1.A", schema),
-						experience("test3.B", schema),
-						experience("test5.A", schema),
-						experience("test6.A", schema)));
-		}
-		catch (VariantInternalException e) {
-			thrown = true;
-			assertEquals("Input test [test5] is already targeted", e.getMessage());
-		}
-		assertTrue(thrown);
-		
-		thrown = false;
-		try{
-			runtimeFacade.isTargetable(
-				test6, 
-				VariantCollectionsUtils.list(
-						experience("test1.C", schema), 
-						experience("test2.A", schema), 
-						experience("test3.C", schema),
-						experience("test5.B", schema),
-						experience("test4.A", schema)));
-		}
-		catch (VariantInternalException e) {
-			thrown = true;
-			assertEquals("Input set [test1.C,test2.A,test3.C,test5.B,test4.A] is already unresolvable", e.getMessage());
-		}
-		assertTrue(thrown);
+		new VariantInternalExceptionInterceptor() { 
+			@Override public void toRun() {
+				runtimeFacade.isTargetable(
+						test5, 
+						VariantCollectionsUtils.list(
+								experience("test5.A", schema),
+								experience("test2.A", schema)));
+			}
+		}.assertThrown("Input test [test5] is already targeted");
 
-		assertTrue(runtimeFacade.isTargetable(
-				test1, 
-				VariantCollectionsUtils.list(experience("test2.A", schema))));
+
+		new VariantInternalExceptionInterceptor() { 
+			@Override public void toRun() {
+				runtimeFacade.isTargetable(
+					test6, 
+					VariantCollectionsUtils.list(
+							experience("test1.C", schema), 
+							experience("test3.C", schema),
+							experience("test5.B", schema)));
+			}
+		}.assertThrown("Input vector [test1.C,test3.C,test5.B] is already unresolvable");
+
+		new VariantInternalExceptionInterceptor() { 
+			@Override public void toRun() {
+				runtimeFacade.isTargetable(
+					test1, 
+					VariantCollectionsUtils.list(experience("test2.A", schema)));
+			}
+		}.assertThrown("Control experience [test2.A] in input vector");
+
 
 		assertFalse(runtimeFacade.isTargetable(
 				test1, 
@@ -718,96 +747,117 @@ public class CoreRuntimeTest extends BaseTestCore {
 		assertFalse(runtimeFacade.isTargetable(
 				test1,
 				VariantCollectionsUtils.list(
-						experience("test2.A", schema), 
-						experience("test3.C", schema),
-						experience("test5.A", schema),
-						experience("test4.A", schema))));
+						experience("test5.B", schema),
+						experience("test4.C", schema))));
+
+		assertTrue(runtimeFacade.isTargetable(
+				test1,
+				VariantCollectionsUtils.list(
+						experience("test6.B", schema))));
+
+		assertTrue(runtimeFacade.isTargetable(
+				test1,
+				VariantCollectionsUtils.list(
+						experience("test4.C", schema),
+						experience("test6.B", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test1,
 				VariantCollectionsUtils.list(
-						experience("test6.C", schema), 
-						experience("test2.B", schema), 
-						experience("test3.C", schema),
-						experience("test5.A", schema),
-						experience("test4.A", schema))));
+						experience("test6.C", schema),
+						experience("test5.B", schema))));
+
+		assertFalse(runtimeFacade.isTargetable(
+				test1,
+				VariantCollectionsUtils.list(
+						experience("test4.C", schema),
+						experience("test5.C", schema),
+						experience("test6.B", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test2,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema), 
-						experience("test3.C", schema),
-						experience("test5.A", schema),
-						experience("test4.A", schema))));
+						experience("test5.C", schema))));
 
+		assertTrue(runtimeFacade.isTargetable(
+				test2,
+				VariantCollectionsUtils.list(
+						experience("test6.C", schema), 
+						experience("test3.C", schema))));
+
+		assertFalse(runtimeFacade.isTargetable(
+				test2,
+				VariantCollectionsUtils.list(
+						experience("test5.C", schema), 
+						experience("test4.C", schema))));
+
+		assertFalse(runtimeFacade.isTargetable(
+				test2,
+				VariantCollectionsUtils.list(
+						experience("test6.C", schema), 
+						experience("test4.C", schema), 
+						experience("test1.C", schema))));
+
+		assertFalse(runtimeFacade.isTargetable(
+				test2,
+				VariantCollectionsUtils.list(
+						experience("test6.C", schema), 
+						experience("test4.C", schema), 
+						experience("test1.C", schema))));
+
+		// Targetable because 6 and 3 are logically disjoint, i.e.
+		// even though some states are instrumebnted by both, none is
+		// a variantful instrumentation.
 		assertTrue(runtimeFacade.isTargetable(
 				test3,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema), 
-						experience("test2.B", schema), 
-						experience("test5.A", schema),
-						experience("test4.A", schema))));
-
-		assertTrue(runtimeFacade.isTargetable(
-				test6,
-				VariantCollectionsUtils.list(
-						experience("test2.B", schema), 
-						experience("test3.C", schema),
-						experience("test5.A", schema),
-						experience("test4.A", schema))));
-		
-		assertFalse(runtimeFacade.isTargetable(
-				test1,
-				VariantCollectionsUtils.list(
-						experience("test6.C", schema), 
-						experience("test2.B", schema), 
-						experience("test3.C", schema),
-						experience("test5.A", schema))));
-
-		assertTrue(runtimeFacade.isTargetable(
-				test6,
-				VariantCollectionsUtils.list(
-						experience("test1.A", schema), 
-						experience("test2.B", schema), 
-						experience("test3.A", schema),
-						experience("test5.B", schema),
-						experience("test4.C", schema))));
-
-		assertTrue(runtimeFacade.isTargetable(
-				test2,
-				VariantCollectionsUtils.list(
-						experience("test6.C", schema), 
-						experience("test1.A", schema), 
-						experience("test3.A", schema),
-						experience("test5.B", schema),
-						experience("test4.C", schema))));
-
-		assertTrue(runtimeFacade.isTargetable(
-				test4,
-				VariantCollectionsUtils.list(
-						experience("test6.C", schema), 
-						experience("test1.A", schema), 
-						experience("test2.B", schema), 
-						experience("test3.A", schema),
-						experience("test5.B", schema))));
+						experience("test2.C", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test5,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema), 
-						experience("test1.B", schema), 
-						experience("test2.A", schema), 
-						experience("test3.A", schema),
-						experience("test4.C", schema))));
+						experience("test4.C", schema), 
+						experience("test1.C", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
-				test3,
+				test5,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema), 
-						experience("test2.B", schema), 
-						experience("test5.B", schema),
-						experience("test4.C", schema))));
+						experience("test4.C", schema), 
+						experience("test1.C", schema))));
 
+		assertTrue(runtimeFacade.isTargetable(
+				test5,
+				VariantCollectionsUtils.list(
+						experience("test2.C", schema))));
+
+		assertTrue(runtimeFacade.isTargetable(
+				test6,
+				VariantCollectionsUtils.list(
+						experience("test4.C", schema), 
+						experience("test1.C", schema))));
+
+		assertTrue(runtimeFacade.isTargetable(
+				test6,
+				VariantCollectionsUtils.list(
+						experience("test5.C", schema), 
+						experience("test2.C", schema))));
+
+		// See comment about test3 and test6 above
+		assertTrue(runtimeFacade.isTargetable(
+				test6,
+				VariantCollectionsUtils.list(
+						experience("test3.C", schema))));
+
+		// Ditto
+		assertTrue(runtimeFacade.isTargetable(
+				test6,
+				VariantCollectionsUtils.list(
+						experience("test3.C", schema), 
+						experience("test2.C", schema))));
 		
 	}
 	
@@ -816,7 +866,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 	 * Targeting with OFF tests.
 	 * @throws Exception
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void offTestsTest() throws Exception {
 		
 		final String SCHEMA = 
@@ -1072,13 +1122,12 @@ public class CoreRuntimeTest extends BaseTestCore {
 		SessionScopedTargetingStabile stabile = ((CoreSessionImpl)ssn).getTargetingStabile();
 
 		// test2 is off, but stabile has a variant experience for it, which will be substituted for the purposes of lookup with control.
-		// test1 is disjoint with test2, so has to default to control.
 		// test3 is covariant with test1, so it is targeted unconstrained.
 		assertEquals(3, stabile.getAll().size());
 		// We didn't touch test2.B entry in the TP, even though we used control for resolution.
 		assertEquals("test2.B", stabile.get("test2").getTestName() + "." + stabile.get("test2").getExperienceName());
 		String path = req.getResolvedParameterMap().get("path");
-		assertMatches("/path/to/state1(/test3\\.[B,C])?", path);
+		assertMatches("/path/to/state1(/test[1,3]\\.[B,C])?(\\+test[1,3]\\.[B,C])?", path);
 		assertEquals(ssn, req.getSession());
 		assertEquals(state1, req.getState());
 		

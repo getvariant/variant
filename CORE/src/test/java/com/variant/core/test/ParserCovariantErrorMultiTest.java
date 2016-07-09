@@ -898,7 +898,6 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		ParserResponse response = SchemaParser.parse(core, schema);
 
 		assertTrue(response.hasMessages());
-		printMessages(response);
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);

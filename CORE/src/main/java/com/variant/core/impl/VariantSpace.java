@@ -221,7 +221,7 @@ public class VariantSpace {
 		if (vector.size() > sortedVector.size()) return null;
 		
 		Point result = table.get(new Coordinates(sortedVector));
-		return result.variant;
+		return result == null? null : result.variant;
 	}
 
 	

@@ -221,7 +221,7 @@ public class VariantRuntime {
 					targetedExperience = new TestTargeterDefault().target(ft, session);
 				}
 										
-				vector.add(targetedExperience);
+				if (!targetedExperience.isControl()) vector.add(targetedExperience);
 				targetingStabile.add(targetedExperience);
 				
 				if (LOG.isTraceEnabled()) {
@@ -324,17 +324,26 @@ public class VariantRuntime {
 	 */
 	boolean isResolvable(Collection<Experience> vector) {
 
-		LinkedHashSet<State> states = new LinkedHashSet<State>();
+		// Build the set of unique relevant states. 
+		// Many of them may be dupes, so no need to attempt to resolve all of them.
+		LinkedHashSet<State> relevantStates = new LinkedHashSet<State>();
 		for (Experience e: vector) {
 			for (OnState tos: e.getTest().getOnStates()) {
 				if (!tos.getState().isNonvariantIn(e.getTest())) {
-					states.add(tos.getState());
+					relevantStates.add(tos.getState());
 				}
 			}
 		}
 
-		for (State state: states) {
-			if (resolveState(state, vector) == null) return false;
+		for (State state: relevantStates) {
+			// Only try the experiences of tests that are insturmented on state.
+			// Otherwise resolveState() with throw an exception.
+			Collection<Experience> instumentedVector = new ArrayList<Experience>();
+			for (Experience e: vector) {
+				if (state.isInstrumentedBy(e.getTest())) 
+					instumentedVector.add(e);
+			}
+			if (resolveState(state, instumentedVector) == null) return false;
 		}
 		
 		return true;
@@ -352,9 +361,19 @@ public class VariantRuntime {
 	 */
 	Collection<Experience> minUnresolvableSubvector(Collection<Experience> v, Collection<Experience> w) {
 					
-
+		// V must be resolvable.
 		if (!isResolvable(v))
-			throw new VariantInternalException("Unexpected unresolvable vector [" + StringUtils.join(v.toArray()) + "]");
+			throw new VariantInternalException(
+					String.format("Input vector [%s] must be resolvable, but is not", VariantStringUtils.toString(v, ",")));
+
+		// W must not contain experiences that contradict those in V
+		for (Experience ew: w) {
+			for (Experience ev: v) {
+				if (ew.getTest().equals(ev.getTest()))
+					throw new VariantInternalException(
+							String.format("Experience [%s] in second argument contradicts experience [%s] in first argument", ew, ev));
+			}
+		}
 		
 		Collection<Experience> currentlyResolvable = new LinkedHashSet<Experience>(v);
 		Collection<Experience> remainder = new LinkedHashSet<Experience>();
@@ -365,10 +384,9 @@ public class VariantRuntime {
 			toTry.add(e);
 			if (isResolvable(toTry)) {
 				currentlyResolvable.add(e);
-				w.remove(e);
+				iter.remove();
 			}
 			else {
-				LOG.info(String.format("Experience[%s] dropped from targeting because it could not be "));
 				remainder.add(e);
 			}
 		}
@@ -397,7 +415,7 @@ public class VariantRuntime {
 
 		if (!isResolvable(alreadyTargetedExperiences))
 			throw new VariantInternalException(
-					"Input set [" + StringUtils.join(alreadyTargetedExperiences, ",") + "] is already unresolvable");
+					"Input vector [" + StringUtils.join(alreadyTargetedExperiences, ",") + "] is already unresolvable");
 		
 		// Find some non-control experience
 		ArrayList<Experience> vector = new ArrayList<Experience>();		

@@ -298,9 +298,9 @@ abstract public class BaseTestCommon {
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
-		final public void assertThrown(String regex) throws Exception {
+		final public void assertThrown(String msg) throws Exception {
 			VariantInternalException result = super.run();
-			assertMatches(regex, result.getMessage());
+			assertEquals(msg, result.getMessage());
 		}
 	}
 
