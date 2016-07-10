@@ -310,70 +310,6 @@ public class ParserCovariantOkay5Test extends BaseTestCore {
 	    	    "                       'path':'/path/to/state2/test2.C+test3.B'              \n" +
 	    	    "                    }                                                       \n" +
 	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
-	    	    "                          'experienceRef': 'B'                           \n" +
-	    	    "                       },                                                \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
-	    	    "                          'experienceRef': 'B'                           \n" +
-	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.B+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
-	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
-	    	    "                          'experienceRef': 'B'                           \n" +
-	    	    "                       },                                                \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
-	    	    "                          'experienceRef': 'C'                           \n" +
-	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.C+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
-	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
-	    	    "                          'experienceRef': 'C'                           \n" +
-	    	    "                       },                                                \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
-	    	    "                          'experienceRef': 'B'                           \n" +
-	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.B+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
-	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
-	    	    "                          'experienceRef': 'C'                           \n" +
-	    	    "                       },                                                \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
-	    	    "                          'experienceRef': 'C'                           \n" +
-	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.C+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
-	    	    "                 },                                                      \n" +
                 // C
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -427,70 +363,6 @@ public class ParserCovariantOkay5Test extends BaseTestCore {
 	    	    "                     ],                                                  \n" +
 	    	    "                    'parameters': {                                      \n" +
 	    	    "                       'path':'/path/to/state2/test2.C+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
-	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
-	    	    "                          'experienceRef': 'B'                           \n" +
-	    	    "                       },                                                \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
-	    	    "                          'experienceRef': 'B'                           \n" +
-	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.B+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
-	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
-	    	    "                          'experienceRef': 'B'                           \n" +
-	    	    "                       },                                                \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
-	    	    "                          'experienceRef': 'C'                           \n" +
-	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.C+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
-	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
-	    	    "                          'experienceRef': 'C'                           \n" +
-	    	    "                       },                                                \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
-	    	    "                          'experienceRef': 'B'                           \n" +
-	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.B+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
-	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
-	    	    "                          'experienceRef': 'C'                           \n" +
-	    	    "                       },                                                \n" +
-	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
-	    	    "                          'experienceRef': 'C'                           \n" +
-	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.C+test3.C'              \n" +
 	    	    "                    }                                                       \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
@@ -695,7 +567,7 @@ public class ParserCovariantOkay5Test extends BaseTestCore {
 		assertFalse(onView.isNonvariant());
 		assertEquals(schema.getState("state2"), onView.getState());
 		variants = onView.getVariants();
-		assertEquals(18, variants.size());
+		assertEquals(10, variants.size());
 
 		variant = variants.get(0);
 		assertEquals(variant.getExperience(), test3.getExperience("B"));
@@ -727,89 +599,33 @@ public class ParserCovariantOkay5Test extends BaseTestCore {
 		assertEquals("/path/to/state2/test2.C+test3.B", variant.getParameterMap().get("path"));
 
 		variant = variants.get(5);
-		assertEquals(variant.getExperience(), test3.getExperience("B"));
-		assertEquals(2, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals(test2.getExperience("B"), variant.getCovariantExperiences().get(1));
-		assertEquals("/path/to/state2/test1.B+test2.B+test3.B", variant.getParameterMap().get("path"));
-
-		variant = variants.get(6);
-		assertEquals(variant.getExperience(), test3.getExperience("B"));
-		assertEquals(2, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals(test2.getExperience("C"), variant.getCovariantExperiences().get(1));
-		assertEquals("/path/to/state2/test1.B+test2.C+test3.B", variant.getParameterMap().get("path"));
-
-		variant = variants.get(7);
-		assertEquals(variant.getExperience(), test3.getExperience("B"));
-		assertEquals(2, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals(test2.getExperience("B"), variant.getCovariantExperiences().get(1));
-		assertEquals("/path/to/state2/test1.C+test2.B+test3.B", variant.getParameterMap().get("path"));
-
-		variant = variants.get(8);
-		assertEquals(variant.getExperience(), test3.getExperience("B"));
-		assertEquals(2, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals(test2.getExperience("C"), variant.getCovariantExperiences().get(1));
-		assertEquals("/path/to/state2/test1.C+test2.C+test3.B", variant.getParameterMap().get("path"));
-
-		variant = variants.get(9);
 		assertEquals(variant.getExperience(), test3.getExperience("C"));
 		assertEquals("/path/to/state2/test3.C", variant.getParameterMap().get("path"));
 		assertEquals(0, variant.getCovariantExperiences().size());
 		
-		variant = variants.get(10);
+		variant = variants.get(6);
 		assertEquals(variant.getExperience(), test3.getExperience("C"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
 		assertEquals("/path/to/state2/test1.B+test3.C", variant.getParameterMap().get("path"));
 
-		variant = variants.get(11);
+		variant = variants.get(7);
 		assertEquals(variant.getExperience(), test3.getExperience("C"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
 		assertEquals("/path/to/state2/test1.C+test3.C", variant.getParameterMap().get("path"));
 
-		variant = variants.get(12);
+		variant = variants.get(8);
 		assertEquals(variant.getExperience(), test3.getExperience("C"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test2.getExperience("B"), variant.getCovariantExperiences().get(0));
 		assertEquals("/path/to/state2/test2.B+test3.C", variant.getParameterMap().get("path"));
 
-		variant = variants.get(13);
+		variant = variants.get(9);
 		assertEquals(variant.getExperience(), test3.getExperience("C"));
 		assertEquals(1, variant.getCovariantExperiences().size());
 		assertEquals(test2.getExperience("C"), variant.getCovariantExperiences().get(0));
 		assertEquals("/path/to/state2/test2.C+test3.C", variant.getParameterMap().get("path"));
-
-		variant = variants.get(14);
-		assertEquals(variant.getExperience(), test3.getExperience("C"));
-		assertEquals(2, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals(test2.getExperience("B"), variant.getCovariantExperiences().get(1));
-		assertEquals("/path/to/state2/test1.B+test2.B+test3.C", variant.getParameterMap().get("path"));
-
-		variant = variants.get(15);
-		assertEquals(variant.getExperience(), test3.getExperience("C"));
-		assertEquals(2, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("B"), variant.getCovariantExperiences().get(0));
-		assertEquals(test2.getExperience("C"), variant.getCovariantExperiences().get(1));
-		assertEquals("/path/to/state2/test1.B+test2.C+test3.C", variant.getParameterMap().get("path"));
-
-		variant = variants.get(16);
-		assertEquals(variant.getExperience(), test3.getExperience("C"));
-		assertEquals(2, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals(test2.getExperience("B"), variant.getCovariantExperiences().get(1));
-		assertEquals("/path/to/state2/test1.C+test2.B+test3.C", variant.getParameterMap().get("path"));
-
-		variant = variants.get(17);
-		assertEquals(variant.getExperience(), test3.getExperience("C"));
-		assertEquals(2, variant.getCovariantExperiences().size());
-		assertEquals(test1.getExperience("C"), variant.getCovariantExperiences().get(0));
-		assertEquals(test2.getExperience("C"), variant.getCovariantExperiences().get(1));
-		assertEquals("/path/to/state2/test1.C+test2.C+test3.C", variant.getParameterMap().get("path"));
 		
 		// state3
 		onView = onStates.get(2);

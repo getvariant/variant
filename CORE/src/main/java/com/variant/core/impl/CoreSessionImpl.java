@@ -20,7 +20,7 @@ import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
-import com.variant.core.event.impl.VariantEventDecoratorImpl;
+import com.variant.core.event.impl.PersistableEventImpl;
 import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
@@ -116,7 +116,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 
 		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
 		EventWriter ew = ((VariantCore) coreApi).getEventWriter();
-		ew.write(new VariantEventDecoratorImpl(event, this));
+		ew.write(new PersistableEventImpl(event, this));
 	}
 
 	/**

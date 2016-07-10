@@ -25,9 +25,9 @@ import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.test.jdbc.EventExperienceFromDatabase;
 import com.variant.core.test.jdbc.EventReader;
 import com.variant.core.test.jdbc.VariantEventFromDatabase;
-import com.variant.core.test.jdbc.VariantEventVariantFromDatabase;
 
 public class EventWriterTest extends BaseTestCore {
 		
@@ -50,6 +50,8 @@ public class EventWriterTest extends BaseTestCore {
 		State s2 = schema.getState("state2");
 		
 		VariantCoreSession ssn1 = core.getSession("ssn1");
+		// test5.B will be dropped as incompatible, T1 will be control because it's uninstrumented,
+		// T2, T3 will be controls because they're nonvariant, hence we will expect toresolve totest6.C.
 		setTargetingStabile(ssn1,"test1.A","test2.B","test3.C","test4.A","test5.B","test6.C");
 		VariantCoreStateRequest request = ssn1.targetForState(s1);
 		assertNotNull(request.getStateVisitedEvent());
@@ -82,29 +84,29 @@ public class EventWriterTest extends BaseTestCore {
 				assertEquals("ssn1", e.getSessionId());
 				assertEquals("state1", e.getEventValue());
 				assertEquals(2, e.getParameterMap().size());
-				assertEquals("/path/to/state1/test5.B+test6.C", e.getParameterMap().get("PATH"));
+				assertEquals("/path/to/state1/test6.C", e.getParameterMap().get("PATH"));
 				assertEquals("OK", e.getParameterMap().get("REQ_STATUS"));
-				assertEquals(5, e.getEventVariants().size());
-				for (VariantEventVariantFromDatabase ee: e.getEventVariants()) {
+				assertEquals(5, e.getEventExperiences().size());
+				for (EventExperienceFromDatabase ee: e.getEventExperiences()) {
 					if (ee.getTestName().equals("test2")) {
 						assertEquals("B", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test3")) {
-						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertEquals("C", ee.getExperienceName());
+						assertFalse(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test5")) {
-						assertEquals("B", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertEquals("A", ee.getExperienceName());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}
@@ -115,31 +117,31 @@ public class EventWriterTest extends BaseTestCore {
 				assertEquals(2, e.getParameterMap().size());
 				assertEquals("/path/to/state2/test2.C+test5.B", e.getParameterMap().get("PATH"));
 				assertEquals("OK", e.getParameterMap().get("REQ_STATUS"));
-				assertEquals(6, e.getEventVariants().size());
-				for (VariantEventVariantFromDatabase ee: e.getEventVariants()) {
+				assertEquals(6, e.getEventExperiences().size());
+				for (EventExperienceFromDatabase ee: e.getEventExperiences()) {
 					if (ee.getTestName().equals("test1")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test2")) {
 						assertEquals("C", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test3")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test5")) {
 						assertEquals("B", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}
@@ -199,31 +201,31 @@ public class EventWriterTest extends BaseTestCore {
 				assertEquals("bar", e.getEventValue());
 				assertEquals(1, e.getParameterMap().size());
 				assertEquals("param-value", e.getParameterMap().get("param-key"));
-				assertEquals(6, e.getEventVariants().size());
-				for (VariantEventVariantFromDatabase ee: e.getEventVariants()) {
+				assertEquals(6, e.getEventExperiences().size());
+				for (EventExperienceFromDatabase ee: e.getEventExperiences()) {
 					if (ee.getTestName().equals("test1")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test2")) {
 						assertEquals("C", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test3")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test5")) {
 						assertEquals("B", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}
@@ -235,31 +237,31 @@ public class EventWriterTest extends BaseTestCore {
 				assertEquals(2, e.getParameterMap().size());
 				assertEquals("/path/to/state2/test2.C+test5.B", e.getParameterMap().get("PATH"));
 				assertEquals("OK", e.getParameterMap().get("REQ_STATUS"));
-				assertEquals(6, e.getEventVariants().size());
-				for (VariantEventVariantFromDatabase ee: e.getEventVariants()) {
+				assertEquals(6, e.getEventExperiences().size());
+				for (EventExperienceFromDatabase ee: e.getEventExperiences()) {
 					if (ee.getTestName().equals("test1")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test2")) {
 						assertEquals("C", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test3")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test5")) {
 						assertEquals("B", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}
@@ -284,14 +286,15 @@ public class EventWriterTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 
 		Schema schema = core.getSchema();
-		State s2 = schema.getState("state2");
+		State state2 = schema.getState("state2");
 		
+		// Disqual test2 and test3 when traversed by ssn4
 		core.addHookListener(new TestQualificationHookListenerDisqualifyTest(true, "ssn4", schema.getTest("test2")));
 		core.addHookListener(new TestQualificationHookListenerDisqualifyTest(false, "ssn4", schema.getTest("test3")));
 		
 		VariantCoreSession ssn4 = core.getSession("ssn4");
 		setTargetingStabile(ssn4, "test2.C","test3.A","test4.A","test5.B","test6.C");
-		VariantCoreStateRequest request = ssn4.targetForState(s2);
+		VariantCoreStateRequest request = ssn4.targetForState(state2);
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
 		customEvent.getParameterMap().put("param-key", "param-value");
 		ssn4.triggerEvent(customEvent);
@@ -311,7 +314,6 @@ public class EventWriterTest extends BaseTestCore {
 					}
 				});
 		assertEquals(2, events.size());
-		assertEquals(2, events.size());
 
 		for (VariantEventFromDatabase e: events) {
 			if (e.getEventValue().equals("bar")) {
@@ -320,23 +322,24 @@ public class EventWriterTest extends BaseTestCore {
 				assertEquals("bar", e.getEventValue());
 				assertEquals(1, e.getParameterMap().size());
 				assertEquals("param-value", e.getParameterMap().get("param-key"));
-				assertEquals(4, e.getEventVariants().size());
-				for (VariantEventVariantFromDatabase ee: e.getEventVariants()) {
+				Collection<EventExperienceFromDatabase> exs = e.getEventExperiences();
+				assertEquals(4, e.getEventExperiences().size());
+				for (EventExperienceFromDatabase ee: e.getEventExperiences()) {
 					if (ee.getTestName().equals("test1")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test5")) {
 						assertEquals("B", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}
@@ -348,23 +351,23 @@ public class EventWriterTest extends BaseTestCore {
 				assertEquals(2, e.getParameterMap().size());
 				assertEquals("/path/to/state2/test5.B", e.getParameterMap().get("PATH"));
 				assertEquals("OK", e.getParameterMap().get("REQ_STATUS"));
-				assertEquals(4, e.getEventVariants().size());
-				for (VariantEventVariantFromDatabase ee: e.getEventVariants()) {
+				assertEquals(4, e.getEventExperiences().size());
+				for (EventExperienceFromDatabase ee: e.getEventExperiences()) {
 					if (ee.getTestName().equals("test1")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test4")) {
 						assertEquals("A", ee.getExperienceName());
-						assertTrue(ee.isExperienceControl());
+						assertTrue(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test5")) {
 						assertEquals("B", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else if (ee.getTestName().equals("test6")) {
 						assertEquals("C", ee.getExperienceName());
-						assertFalse(ee.isExperienceControl());
+						assertFalse(ee.isControl());
 					}
 					else assertTrue("Not supposed to be here", false);
 				}
@@ -377,7 +380,7 @@ public class EventWriterTest extends BaseTestCore {
 	}
 
 	/**
-	 * 
+	 * Disqualify the test(s) in a session.
 	 */
 	private static class TestQualificationHookListenerDisqualifyTest implements HookListener<TestQualificationHook> {
 
@@ -399,7 +402,6 @@ public class EventWriterTest extends BaseTestCore {
 
 		@Override
 		public void post(TestQualificationHook hook) {
-			
 			if (! hook.getSession().getId().equals(sessionId)) return;
 			
 			boolean found = false;

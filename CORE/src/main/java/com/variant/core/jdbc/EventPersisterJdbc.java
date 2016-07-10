@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.PersistableVariantEvent;
+import com.variant.core.event.VariantPersistableEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test;
 import static com.variant.core.jdbc.JdbcService.Vendor;
@@ -44,7 +44,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	 * Persist a collection of events.
 	 */
 	@Override
-	final public void persist(final Collection<PersistableVariantEvent> events) throws Exception {
+	final public void persist(final Collection<VariantPersistableEvent> events) throws Exception {
 				
 		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
@@ -54,13 +54,13 @@ abstract public class EventPersisterJdbc implements EventPersister {
 				getVendor() == Vendor.H2 ?
 						"VALUES (events_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
 
-		final String INSERT_EVENT_VARIANTS_SQL = 
-				"INSERT INTO event_variants " +
-			    "(id, event_id, test_name, experience_name, is_experience_control) " +
+		final String INSERT_EVENT_EXPERIENCES_SQL = 
+				"INSERT INTO event_experiences " +
+			    "(id, event_id, test_name, experience_name, is_control) " +
 				(getVendor() == Vendor.POSTGRES ?
-						"VALUES (NEXTVAL('event_variants_id_seq'), ?, ?, ?, ?)" :
+						"VALUES (NEXTVAL('event_experiences_id_seq'), ?, ?, ?, ?)" :
 				getVendor() == Vendor.H2 ?
-						"VALUES (event_variants_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
+						"VALUES (event_experiences_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
 
 		final String INSERT_EVENT_PARAMETERS_SQL = 
 				"INSERT INTO event_params " +
@@ -80,7 +80,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
-					for (PersistableVariantEvent event: events) {
+					for (VariantPersistableEvent event: events) {
 						stmt.setString(1, event.getSession().getId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getEventName());
@@ -114,7 +114,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_PARAMETERS_SQL);
 					index = 0;
-					for (PersistableVariantEvent event: events) {
+					for (VariantPersistableEvent event: events) {
 						long eventId = eventIds[index++];
 						for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
 
@@ -130,11 +130,11 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					stmt.close();
 					
 					//
-					// 3. Insert into EVENT_VARIANTS.
+					// 3. Insert into EVENT_EXPERIENCES.
 					//
-					stmt = conn.prepareStatement(INSERT_EVENT_VARIANTS_SQL);
+					stmt = conn.prepareStatement(INSERT_EVENT_EXPERIENCES_SQL);
 					index = 0;
-					for (PersistableVariantEvent event: events) {
+					for (VariantPersistableEvent event: events) {
 						long eventId = eventIds[index++];
 						for (Test.Experience exp: event.getActiveExperiences()) {
 							stmt.setLong(1, eventId);

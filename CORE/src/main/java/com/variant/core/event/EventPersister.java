@@ -32,6 +32,6 @@ public interface EventPersister {
 	 * @see EventPersisterH2, EventPersisterPostgres
 	 * @since 0.5
 	 */
-	public void persist(Collection<PersistableVariantEvent> events) throws Exception;
+	public void persist(Collection<VariantPersistableEvent> events) throws Exception;
 
 }

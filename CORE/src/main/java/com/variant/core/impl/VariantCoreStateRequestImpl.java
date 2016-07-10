@@ -48,7 +48,7 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 	private String stateName = null;
 	
 	// This doesn't change over the life of a request, so we'll only compute this once.
-	private Collection<Experience> targetedExperiences; 
+	private Collection<Experience> activeExperiences; 
 		
 	/**
 	 * Regular constructor
@@ -143,9 +143,9 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 	}
 
 	@Override
-	public Collection<Experience> getTargetedExperiences() {
+	public Collection<Experience> getActiveExperiences() {
 		
-		if (targetedExperiences == null) {
+		if (activeExperiences == null) {
 
 			SessionScopedTargetingStabile stabile = session.getTargetingStabile();
 			ArrayList<Experience> result = new ArrayList<Experience>();
@@ -156,13 +156,13 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 				if (entry == null) throw new VariantInternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
 				result.add(test.getExperience(entry.getExperienceName()));
 			}
-			targetedExperiences = result;
+			activeExperiences = result;
 		}
-		return targetedExperiences;
+		return activeExperiences;
 	}
 
 	@Override
-	public Experience getTargetedExperience(Test test) {
+	public Experience getActiveExperience(Test test) {
 		
 		boolean found = false;
 		
@@ -256,7 +256,7 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 			jsonGen.writeEndArray();
 		}
 		
-		Collection<Experience> targetedExperiences = getTargetedExperiences();
+		Collection<Experience> targetedExperiences = getActiveExperiences();
 		if (targetedExperiences.size() > 0) {
 			jsonGen.writeArrayFieldStart(FIELD_NAME_EXPERIENCES);
 			for (Experience e: targetedExperiences) {
@@ -346,7 +346,7 @@ public class VariantCoreStateRequestImpl implements VariantCoreStateRequest, Ser
 			catch (Exception e) {
 				throw new VariantInternalException("Unable to deserialzie request: bad params spec", e);
 			}
-			result.targetedExperiences = experiencesList;
+			result.activeExperiences = experiencesList;
 		}
 
 		return result;

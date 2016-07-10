@@ -48,9 +48,9 @@ public class EventReader {
 				"SELECT e.id, e.session_id, e.created_on, e.event_name, e.event_value, p.key, p.value " +
 				"FROM events e LEFT OUTER JOIN event_params p ON e.id = p.event_id";
 
-		final String SELECT_EVENT_VARIANTS_SQL =
-				"SELECT id, event_id, test_name, experience_name, is_experience_control " +
-				"FROM event_variants";
+		final String SELECT_EVENT_EXPERIENCES_SQL =
+				"SELECT id, event_id, test_name, experience_name, is_control " +
+				"FROM event_experiences";
 		
 		return JdbcAdapter.executeQuery(
 			jdbcService.getConnection(), 
@@ -76,7 +76,7 @@ public class EventReader {
 							event.createdOn = rs.getDate(3);
 							event.name = rs.getString(4);
 							event.value = rs.getString(5);
-							event.eventVariants = new HashSet<VariantEventVariantFromDatabase>();
+							event.eventExperiences = new HashSet<EventExperienceFromDatabase>();
 							event.params = new HashMap<String,String>();
 							eventMap.put(id, event);
 						}
@@ -84,39 +84,39 @@ public class EventReader {
 						if (key != null) event.params.put(key, rs.getString(7));
 					}
 					
-					// Read event_variants
+					// Read event_experiences
 					// Keep items in a map (keyed by event ID) of maps (keyed by by event_experience ID) for easy access.
-					HashMap<Long, Map<Long, VariantEventVariantFromDatabase>> outerMap = new HashMap<Long, Map<Long, VariantEventVariantFromDatabase>>();
-					rs = stmt.executeQuery(SELECT_EVENT_VARIANTS_SQL);
+					HashMap<Long, Map<Long, EventExperienceFromDatabase>> outerMap = new HashMap<Long, Map<Long, EventExperienceFromDatabase>>();
+					rs = stmt.executeQuery(SELECT_EVENT_EXPERIENCES_SQL);
 					
 					while (rs.next()) {
 						
 						Long eventId = rs.getLong(2);
-						Map<Long, VariantEventVariantFromDatabase> innerMap = outerMap.get(eventId);
+						Map<Long, EventExperienceFromDatabase> innerMap = outerMap.get(eventId);
 						if (innerMap == null) {
-							innerMap = new HashMap<Long, VariantEventVariantFromDatabase>();
+							innerMap = new HashMap<Long, EventExperienceFromDatabase>();
 							outerMap.put(eventId, innerMap);
 						}
 						
 						long evId = rs.getLong(1);
-						VariantEventVariantFromDatabase ev = innerMap.get(evId);
+						EventExperienceFromDatabase ev = innerMap.get(evId);
 						if (ev == null) {
-							ev = new VariantEventVariantFromDatabase();
+							ev = new EventExperienceFromDatabase();
 							ev.id = evId;
 							ev.eventId = eventId;
 							ev.testName = rs.getString(3);
 							ev.experienceName = rs.getString(4);
-							ev.isExperienceControl = rs.getBoolean(5);
+							ev.isControl = rs.getBoolean(5);
 							innerMap.put(evId, ev);
 						}
 						
 					}
 					
 					// Attach event_experiences to events
-					for (Map.Entry<Long, Map<Long, VariantEventVariantFromDatabase>> outerEntry: outerMap.entrySet()) {
+					for (Map.Entry<Long, Map<Long, EventExperienceFromDatabase>> outerEntry: outerMap.entrySet()) {
 						VariantEventFromDatabase event = eventMap.get(outerEntry.getKey());
-						for (Map.Entry<Long, VariantEventVariantFromDatabase> innerEntry: outerEntry.getValue().entrySet()) {
-							event.eventVariants.add(innerEntry.getValue());
+						for (Map.Entry<Long, EventExperienceFromDatabase> innerEntry: outerEntry.getValue().entrySet()) {
+							event.eventExperiences.add(innerEntry.getValue());
 						}
 					}
 					

@@ -142,7 +142,7 @@ public class ParserOkayTest extends BaseTestCore {
 		Test test2 = core.getSchema().getTest("test2");
 		core.clearHookListeners();
 		VariantCoreStateRequest req = session.targetForState(state1);
-		assertTrue(req.getTargetedExperiences().isEmpty());
+		assertTrue(req.getActiveExperiences().isEmpty());
 		assertTrue(session.getTraversedStates().isEmpty());
 		assertTrue(session.getTraversedTests().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
@@ -278,7 +278,7 @@ public class ParserOkayTest extends BaseTestCore {
 		VariantCoreStateRequest req = session.targetForState(state1);
 		assertEquals(0, session.getTraversedStates().size());
 		assertEquals(0, session.getTraversedTests().size());
-		assertTrue(req.getTargetedExperiences().isEmpty());
+		assertTrue(req.getActiveExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
 		assertFalse(test1.isOn());
 		assertTrue(test2.isOn());
@@ -413,7 +413,7 @@ public class ParserOkayTest extends BaseTestCore {
 		VariantCoreStateRequest req = session.targetForState(state1);
 		assertTrue(session.getTraversedStates().isEmpty());
 		assertTrue(session.getTraversedTests().isEmpty());
-		assertTrue(req.getTargetedExperiences().isEmpty());
+		assertTrue(req.getActiveExperiences().isEmpty());
 		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
 		assertTrue(test1.isOn());
 		assertTrue(test2.isOn());

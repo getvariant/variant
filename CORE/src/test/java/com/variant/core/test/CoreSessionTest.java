@@ -138,12 +138,12 @@ public class CoreSessionTest extends BaseTestCore {
 		assertEquals(req1.getState(), deserializedReq.getState());
 		assertEqualAsSets(req1.getResolvedParameterMap(), deserializedReq.getResolvedParameterMap());
 		assertEquals(req1.getStatus(), deserializedReq.getStatus());
-		assertEqualAsSets(req1.getTargetedExperiences(), deserializedReq.getTargetedExperiences());
+		assertEqualAsSets(req1.getActiveExperiences(), deserializedReq.getActiveExperiences());
 		assertNull(deserializedReq.getStateVisitedEvent());
 		assertEqualAsSets(ssn.getTraversedStates(), deserializedSsn.getTraversedStates());
 		assertEqualAsSets(ssn.getTraversedTests(), deserializedSsn.getTraversedTests());
 		req1.commit();
-		System.out.println(((CoreSessionImpl)ssn).toJson());
+		//System.out.println(((CoreSessionImpl)ssn).toJson());
 		// Nothing is instrumented on state2
 		VariantCoreStateRequest req2 = ssn.targetForState(schema.getState("state2"));
 		assertNotNull(req2);
@@ -158,7 +158,7 @@ public class CoreSessionTest extends BaseTestCore {
 		assertEquals(req2.getState(), deserializedReq.getState());
 		assertEqualAsSets(req2.getResolvedParameterMap(), deserializedReq.getResolvedParameterMap());
 		assertEquals(req2.getStatus(), deserializedReq.getStatus());
-		assertEqualAsSets(req2.getTargetedExperiences(), deserializedReq.getTargetedExperiences());
+		assertEqualAsSets(req2.getActiveExperiences(), deserializedReq.getActiveExperiences());
 		assertNull(deserializedReq.getStateVisitedEvent());
 		assertEqualAsSets(ssn.getTraversedStates(), deserializedSsn.getTraversedStates());
 		assertEqualAsSets(ssn.getTraversedTests(), deserializedSsn.getTraversedTests());

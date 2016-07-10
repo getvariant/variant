@@ -18,7 +18,7 @@ public class VariantEventFromDatabase {
 	String value;
 	Date createdOn;
 	Map<String,String> params;
-    Collection<VariantEventVariantFromDatabase> eventVariants;
+    Collection<EventExperienceFromDatabase> eventExperiences;
     
 	VariantEventFromDatabase() {}
 	
@@ -28,16 +28,16 @@ public class VariantEventFromDatabase {
 	public String getSessionId() { return sessionId; }
 	public Date getCreatedOn() { return createdOn; }
 	public Map<String,String> getParameterMap() { return params; }
-	public Collection<VariantEventVariantFromDatabase> getEventVariants() { return eventVariants; }
+	public Collection<EventExperienceFromDatabase> getEventExperiences() { return eventExperiences; }
 
 	/**
 	 * Predicate base selection.
 	 * @param p
 	 * @return
 	 */
-	public Collection<VariantEventVariantFromDatabase> getEventVariants(Predicate<VariantEventVariantFromDatabase> p) { 
-		HashSet<VariantEventVariantFromDatabase> result = new HashSet<VariantEventVariantFromDatabase>();
-		for (VariantEventVariantFromDatabase ee: eventVariants) if (p.evaluate(ee)) result.add(ee);
+	public Collection<EventExperienceFromDatabase> getEventExperiences(Predicate<EventExperienceFromDatabase> p) { 
+		HashSet<EventExperienceFromDatabase> result = new HashSet<EventExperienceFromDatabase>();
+		for (EventExperienceFromDatabase ee: eventExperiences) if (p.evaluate(ee)) result.add(ee);
 		return result; 	
 	}
 

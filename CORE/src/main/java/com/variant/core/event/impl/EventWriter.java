@@ -11,7 +11,7 @@ import static com.variant.core.VariantCoreProperties.*;
 
 import com.variant.core.VariantCoreProperties;
 import com.variant.core.event.EventPersister;
-import com.variant.core.event.PersistableVariantEvent;
+import com.variant.core.event.VariantPersistableEvent;
 
 public class EventWriter {
 	
@@ -21,7 +21,7 @@ public class EventWriter {
 	// The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
 	// refusing inserts that will put the queue size over the limit, but not worrying about
 	// a possible overage due to concurrency.
-	private ConcurrentLinkedQueue<PersistableVariantEvent> eventQueue = null;
+	private ConcurrentLinkedQueue<VariantPersistableEvent> eventQueue = null;
 
 	// Max queue size (soft).
 	private int queueSize;
@@ -64,7 +64,7 @@ public class EventWriter {
 		this.pctEmptySize = (int) Math.ceil(queueSize * 0.1);
 		this.maxPersisterDelayMillis = properties.get(EVENT_WRITER_MAX_DELAY_MILLIS, Integer.class);
 		
-		eventQueue = new ConcurrentLinkedQueue<PersistableVariantEvent>();
+		eventQueue = new ConcurrentLinkedQueue<VariantPersistableEvent>();
 		
 		persisterThread = new PersisterThread();
 		
@@ -97,7 +97,7 @@ public class EventWriter {
 	 *                   
 	 * @return number of elements actually written.
 	 */
-	public void write(PersistableVariantEvent event) {
+	public void write(VariantPersistableEvent event) {
 				
 		// We don't worry about possible concurrent writes because the underlying
 		// queue implementation is thread safe and unbound.  It's okay to temporarily 
@@ -183,9 +183,9 @@ public class EventWriter {
 		 */
 		private void flush() throws Exception {
 
-			LinkedList<PersistableVariantEvent> events = new LinkedList<PersistableVariantEvent>();
+			LinkedList<VariantPersistableEvent> events = new LinkedList<VariantPersistableEvent>();
 
-			PersistableVariantEvent event;
+			VariantPersistableEvent event;
 			while ((event = eventQueue.poll()) != null) events.add(event);
 
 			if (events.isEmpty()) return;

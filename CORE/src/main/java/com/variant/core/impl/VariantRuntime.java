@@ -192,9 +192,10 @@ public class VariantRuntime {
 					LOG.debug("Targeting tracker resolvable for session [" + session.getId() + "]");
 			}
 			else {
-				// 5. Remove unresolvable experiences from TT. We don't need to keep track of them because they
-				//    will not become targetable in this session.
-				for (Experience e: minUnresolvableSubvector) targetingStabile.remove(e.getTest().getName());
+				// 5. Replace the unresolvable experiences from TT with control.
+				for (Experience e: minUnresolvableSubvector) {
+					targetingStabile.add(e.getTest().getControlExperience());
+				}
 				LOG.info(
 						"Targeting tracker not resolvable for session [" + session.getId() + "]. " +
 						"Discarded experiences [" + StringUtils.join(minUnresolvableSubvector.toArray()) + "].");
@@ -221,7 +222,7 @@ public class VariantRuntime {
 					targetedExperience = new TestTargeterDefault().target(ft, session);
 				}
 										
-				if (!targetedExperience.isControl()) vector.add(targetedExperience);
+				vector.add(targetedExperience);
 				targetingStabile.add(targetedExperience);
 				
 				if (LOG.isTraceEnabled()) {
@@ -233,7 +234,6 @@ public class VariantRuntime {
 			}
 			else {
 				Experience e = ft.getControlExperience();
-				vector.add(e);
 				targetingStabile.add(e);
 				if (LOG.isTraceEnabled()) {
 					LOG.trace(
@@ -384,10 +384,10 @@ public class VariantRuntime {
 			toTry.add(e);
 			if (isResolvable(toTry)) {
 				currentlyResolvable.add(e);
-				iter.remove();
 			}
 			else {
-				remainder.add(e);
+				iter.remove();    // Remove from W
+				remainder.add(e); // Add to result
 			}
 		}
 		return remainder;
@@ -467,16 +467,13 @@ public class VariantRuntime {
 					}
 					else {
 						
-						if (e.isControl())
-							throw new VariantInternalException("Control experience [" + e + "] in input vector");
-						
 						if (!state.isInstrumentedBy(e.getTest()))
 							throw new VariantInternalException("Uninstrumented test [" + e + "] in input vector");
 						
 						found = true;
 
-						// Non-variant instrumentation are resolved for, as control.
-						if (!state.isNonvariantIn(e.getTest())) { 
+						// Non-variant instrumentation are resolved for, as control, skip them and control experiences.
+						if (!state.isNonvariantIn(e.getTest()) && !e.isControl()) { 
 							sortedList.add(e);
 							// Continue down the vector, to ensure that there's no other experience for this test.
 						}
@@ -537,7 +534,7 @@ public class VariantRuntime {
 						state.getName() +"] that does not have any instrumented tests.");
 			}   
 		}
-		else if (result.getTargetedExperiences().isEmpty()) {
+		else if (result.getActiveExperiences().isEmpty()) {
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(
 						"Session [" + ssn.getId() + "] requested state [" + 

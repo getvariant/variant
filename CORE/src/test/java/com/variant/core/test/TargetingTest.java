@@ -118,7 +118,7 @@ public class TargetingTest extends BaseTestCore {
 		for (int i = 0; i < TRIALS; i++) {
 			VariantCoreSession ssn = core.getSession("foo" + i);
 			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getTargetedExperience(test).getName();
+			String expName = req.getActiveExperience(test).getName();
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
@@ -136,7 +136,7 @@ public class TargetingTest extends BaseTestCore {
 		for (int i = 0; i < TRIALS; i++) {
 			VariantCoreSession ssn = core.getSession("foo" + i);
 			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getTargetedExperience(test).getName();			
+			String expName = req.getActiveExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
@@ -155,7 +155,7 @@ public class TargetingTest extends BaseTestCore {
 		for (int i = 0; i < TRIALS; i++) {
 			VariantCoreSession ssn = core.getSession("foo" + i);
 			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getTargetedExperience(test).getName();			
+			String expName = req.getActiveExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
@@ -175,7 +175,7 @@ public class TargetingTest extends BaseTestCore {
 		for (int i = 0; i < TRIALS; i++) {
 			VariantCoreSession ssn = core.getSession("foo" + i);
 			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getTargetedExperience(test).getName();			
+			String expName = req.getActiveExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
@@ -196,7 +196,7 @@ public class TargetingTest extends BaseTestCore {
 		for (int i = 0; i < TRIALS; i++) {
 			VariantCoreSession ssn = core.getSession("foo" + i);
 			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getTargetedExperience(test).getName();	
+			String expName = req.getActiveExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
@@ -214,7 +214,7 @@ public class TargetingTest extends BaseTestCore {
 		for (int i = 0; i < TRIALS; i++) {
 			VariantCoreSession ssn = core.getSession("foo" + i);
 			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getTargetedExperience(test).getName();	
+			String expName = req.getActiveExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;
@@ -236,7 +236,7 @@ public class TargetingTest extends BaseTestCore {
 		for (int i = 0; i < TRIALS; i++) {
 			VariantCoreSession ssn = core.getSession("foo" + i);
 			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getTargetedExperience(test).getName();	
+			String expName = req.getActiveExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
 			else if (expName.equals("B")) counts[1]++;
 			else if (expName.equals("C")) counts[2]++;

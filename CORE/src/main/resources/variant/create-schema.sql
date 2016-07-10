@@ -22,24 +22,24 @@ CREATE TABLE event_params (
 
 CREATE INDEX event_params_ix1 on event_params (event_id);
 
-CREATE TABLE event_variants ( 
+CREATE TABLE event_experiences ( 
   id                    BIGINT       NOT NULL,     -- Sequence generated opaque ID
   event_id              BIGINT REFERENCES events(id) ON DELETE CASCADE,
   test_name             VARCHAR(128) NOT NULL,     -- Test name
   experience_name       VARCHAR(128) NOT NULL,     -- Experience name
-  is_experience_control BOOLEAN NOT NULL,          -- Is experience control for the test?
-  CONSTRAINT event_variants_pk PRIMARY KEY (id),
-  CONSTRAINT event_variants_ix1 UNIQUE (event_id, test_name, experience_name)
+  is_control            BOOLEAN NOT NULL,          -- Is experience control?
+  CONSTRAINT event_experiences_pk PRIMARY KEY (id),
+  CONSTRAINT event_experiences_ix1 UNIQUE (event_id, test_name, experience_name)
  );
 
-CREATE SEQUENCE event_variants_id_seq
+CREATE SEQUENCE event_experiences_id_seq
   START WITH 1
   INCREMENT BY 1
   NO CYCLE;
 
 CREATE VIEW events_v AS
-  SELECT e.*, ev.test_name, ev.experience_name, ev.is_experience_control,
+  SELECT e.*, ev.test_name, ev.experience_name, ev.is_control,
          (SELECT string_agg('''' || key || '''=''' || value || '''', ',') FROM event_params where event_id = e.id) event_params
-  FROM events e left outer join event_variants ev ON e.id = ev.event_id
+  FROM events e left outer join event_experiences ev ON e.id = ev.event_id
   ORDER BY event_id
 ;

@@ -63,14 +63,18 @@ public interface VariantCoreStateRequest {
 	*/
 
 	/**
-	 * Get all targeted experiences from active tests. A test is active if it has been
-	 * traversed by the current session. Off tests and disqualified tests are excluded,
-	 * as are control-only experiences on current state.
+	 * <p>Get all active experiences on this state, i.e. those from tests that are
+	 * <ul>
+	 * <li>instrumented on this state,</li>
+	 * <li>are not off,</li>
+	 * <li>are not disqualified in this session</li>
+	 * 
+	 * Both, variantful and non-variant instrumentations are included.
 	 * 
 	 * @return Collection of {@link com.variant.core.schema.Test.Experience}s.
 	 * @since 0.6
 	 */
-	public Collection<Experience> getTargetedExperiences();
+	public Collection<Experience> getActiveExperiences();
 
 	/**
 	 * The targeted experience in a given test, if any.
@@ -85,7 +89,7 @@ public interface VariantCoreStateRequest {
 	 * 
 	 * @since 0.6
 	 */
-	public Experience getTargetedExperience(Test test);
+	public Experience getActiveExperience(Test test);
 		
 	/** Get the pending state visited event. This is useful if the caller wants to add parameters to this
 	 *  event before it is flushed to external storage.

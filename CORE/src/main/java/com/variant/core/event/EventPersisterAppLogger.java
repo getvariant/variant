@@ -19,10 +19,10 @@ public class EventPersisterAppLogger implements EventPersister {
 	}
 
 	@Override
-	public void persist(Collection<PersistableVariantEvent> events)
+	public void persist(Collection<VariantPersistableEvent> events)
 			throws Exception {
 
-		for (PersistableVariantEvent event: events) {
+		for (VariantPersistableEvent event: events) {
 			StringBuilder msg = new StringBuilder();
 			msg.append("EVENT:{")
 			.append("session_id:'").append(event.getSession().getId()).append("', ")
@@ -34,21 +34,21 @@ public class EventPersisterAppLogger implements EventPersister {
 			LOG.info(msg.toString());
 		}
 								
-		for (PersistableVariantEvent event: events) {
+		for (VariantPersistableEvent event: events) {
 			for (Experience e: event.getActiveExperiences()) {
 				StringBuilder msg = new StringBuilder();
-				msg.append("EVENT_VARIANTS:{")
+				msg.append("EVENT_EXPERIENCES:{")
 				.append("event_name:'").append(event.getEventName()).append("', ")
 				.append("test_name:'").append(e.getTest().getName()).append("', ")
 				.append("experience_name:'").append(e.getName()).append("', ")
-				.append("is_experience_control:").append(e.isControl()).append("', ")
+				.append("is_control:").append(e.isControl()).append("', ")
 				.append("}");
 
 				LOG.info(msg.toString());
 			}
 		}
 		
-		for (PersistableVariantEvent event: events) {
+		for (VariantPersistableEvent event: events) {
 			for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
 
 				StringBuilder msg = new StringBuilder();

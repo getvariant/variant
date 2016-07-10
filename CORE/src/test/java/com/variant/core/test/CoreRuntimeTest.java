@@ -22,6 +22,7 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.VariantCollectionsUtils;
+import com.variant.core.util.VariantStringUtils;
 
 
 /**
@@ -62,17 +63,6 @@ public class CoreRuntimeTest extends BaseTestCore {
 		//
 		
 		// state1
-
-		new VariantInternalExceptionInterceptor() { 
-			@Override public void toRun() {
-				runtimeFacade.resolveState(
-						state1, 
-						VariantCollectionsUtils.list(
-							experience("test1.A", schema)   // control, not instrumented
-						)
-				);
-			}
-		}.assertThrown("Control experience [test1.A] in input vector");
 		
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
@@ -103,7 +93,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 						)
 				);
 			}
-		}.assertThrown("Control experience [test1.A] in input vector");
+		}.assertThrown("Uninstrumented test [test1.A] in input vector");
 
 		params = runtimeFacade.resolveState(
 				state1, 
@@ -199,28 +189,22 @@ public class CoreRuntimeTest extends BaseTestCore {
 		
 		// state2
 
-		new VariantInternalExceptionInterceptor() { 
-			@Override public void toRun() {
-				runtimeFacade.resolveState(
-						state2, 
-						VariantCollectionsUtils.list(
-								experience("test1.A", schema)   // control
+		params = runtimeFacade.resolveState(
+				state2, 
+				VariantCollectionsUtils.list(
+						experience("test1.A", schema)   // control
 						)
 				);
-			}
-		}.assertThrown("Control experience [test1.A] in input vector");
+		assertEquals("/path/to/state2", params.get("PATH"));
 
-		new VariantInternalExceptionInterceptor() { 
-			@Override public void toRun() {
-				runtimeFacade.resolveState(
-						state2, 
-						VariantCollectionsUtils.list(
-								experience("test1.A", schema),  // control
-								experience("test2.B", schema)   // variant
+		params = runtimeFacade.resolveState(
+				state2, 
+				VariantCollectionsUtils.list(
+						experience("test1.A", schema),  // control
+						experience("test2.B", schema)   // variant
 						)
 				);
-			}
-		}.assertThrown("Control experience [test1.A] in input vector");
+		assertEquals("/path/to/state2/test2.B", params.get("PATH"));
 
 		params = runtimeFacade.resolveState(
 				state2, 
@@ -335,16 +319,13 @@ public class CoreRuntimeTest extends BaseTestCore {
 
 		// state3
 
-		new VariantInternalExceptionInterceptor() { 
-			@Override public void toRun() {
-				runtimeFacade.resolveState(
-						state3, 
-						VariantCollectionsUtils.list(
-								experience("test2.A", schema)   // control
-						)
-				);
-			}
-		}.assertThrown("Control experience [test2.A] in input vector");
+		params = runtimeFacade.resolveState(
+				state3, 
+				VariantCollectionsUtils.list(
+						experience("test2.A", schema)   // control
+				)
+		);
+		assertEquals("/path/to/state3", params.get("path"));
 
 		params = runtimeFacade.resolveState(
 				state3, 
@@ -506,39 +487,13 @@ public class CoreRuntimeTest extends BaseTestCore {
 		// Coordinates resolvability
 		//
 
-		new VariantInternalExceptionInterceptor() { 
-			@Override public void toRun() {
+		assertTrue(
 				runtimeFacade.isResolvable(VariantCollectionsUtils.list(
-						experience("test1.A", schema)));
-			}
-		}.assertThrown("Control experience [test1.A] in input vector");
+						experience("test1.A", schema))));
 		
 		assertTrue(
 				runtimeFacade.isResolvable(VariantCollectionsUtils.list(
 						experience("test1.B", schema))));
-
-		new VariantInternalExceptionInterceptor() { 
-			@Override public void toRun() {
-				runtimeFacade.minUnresolvableSubvector(
-						VariantCollectionsUtils.list(
-								experience("test1.A", schema), 
-								experience("test2.B", schema)),
-						VariantCollectionsUtils.list(
-								experience("test3.C", schema), 
-								experience("test4.B", schema)));
-			}
-		}.assertThrown("Control experience [test1.A] in input vector");
-
-		new VariantInternalExceptionInterceptor() { 
-			@Override public void toRun() {
-				runtimeFacade.minUnresolvableSubvector(
-						VariantCollectionsUtils.list(
-								experience("test2.B", schema)),
-						VariantCollectionsUtils.list(
-								experience("test3.A", schema), 
-								experience("test4.B", schema)));
-			}
-		}.assertThrown("Control experience [test3.A] in input vector");
 
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
@@ -575,7 +530,24 @@ public class CoreRuntimeTest extends BaseTestCore {
 			}
 		}.assertThrown("Experience [test3.B] in second argument contradicts experience [test3.C] in first argument");
 
-		Collection<Experience> subVector =
+		Collection<Experience> subVector = runtimeFacade.minUnresolvableSubvector(
+				VariantCollectionsUtils.list(
+						experience("test1.A", schema), 
+						experience("test2.B", schema)),
+				VariantCollectionsUtils.list(
+						experience("test3.C", schema), 
+						experience("test4.B", schema)));
+		assertEqualAsSets(VariantCollectionsUtils.list(experience("test4.B", schema)), subVector);
+		
+		subVector = runtimeFacade.minUnresolvableSubvector(
+				VariantCollectionsUtils.list(
+						experience("test2.B", schema)),
+				VariantCollectionsUtils.list(
+						experience("test3.A", schema), 
+						experience("test4.B", schema)));
+		assertEqualAsSets(VariantCollectionsUtils.list(experience("test4.B", schema)), subVector);
+
+		subVector =
 				runtimeFacade.minUnresolvableSubvector(
 						VariantCollectionsUtils.list(
 								experience("test2.B", schema)),
@@ -730,15 +702,6 @@ public class CoreRuntimeTest extends BaseTestCore {
 							experience("test5.B", schema)));
 			}
 		}.assertThrown("Input vector [test1.C,test3.C,test5.B] is already unresolvable");
-
-		new VariantInternalExceptionInterceptor() { 
-			@Override public void toRun() {
-				runtimeFacade.isTargetable(
-					test1, 
-					VariantCollectionsUtils.list(experience("test2.A", schema)));
-			}
-		}.assertThrown("Control experience [test2.A] in input vector");
-
 
 		assertFalse(runtimeFacade.isTargetable(
 				test1, 

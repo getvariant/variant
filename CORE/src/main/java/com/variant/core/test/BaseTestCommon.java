@@ -65,6 +65,7 @@ abstract public class BaseTestCommon {
 		for (String e: experiences) {
 			Experience exp = experience(e, ((CoreSessionImpl)ssn).getCoreApi().getSchema());
 			stabile.add(exp);
+			//((CoreSessionImpl)ssn).addTraversedTest(exp.getTest());
 		}
 		((CoreSessionImpl)ssn).setTargetingStabile(stabile);
 	}
