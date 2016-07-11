@@ -1,7 +1,6 @@
 package com.variant.core.impl;
 
 import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON;
-import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_NOT_SET;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +16,6 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.PropertiesChain;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.util.VariantIoUtils;
 
 /**
  * Static singleton interface to system properties.
@@ -27,7 +25,7 @@ import com.variant.core.util.VariantIoUtils;
  * @author Igor
  *
  */
-public class CorePropertiesImpl implements VariantCoreProperties{
+public class CorePropertiesImpl implements VariantCoreProperties {
 	
 	private PropertiesChain propsChain = new PropertiesChain();
 	private VariantCore coreApi;
@@ -38,8 +36,6 @@ public class CorePropertiesImpl implements VariantCoreProperties{
 	protected CorePropertiesImpl(VariantCore coreApi) {
 		this.coreApi = coreApi;
 		propsChain = new PropertiesChain();
-		// Publicly visible defaults.props is actually the second to last on the chain.
-		overrideWith(VariantIoUtils.openResourceAsStream("/variant/defaults.props"), "/variant/defaults.props");
 	}
 
 	/**
@@ -62,7 +58,7 @@ public class CorePropertiesImpl implements VariantCoreProperties{
 	 * @param key
 	 * @return
 	 */
-	private Integer getInteger(String key) {
+	private Integer getInteger(Key key) {
 		return Integer.parseInt(getString(key).arg1());
 	}
 
@@ -81,16 +77,23 @@ public class CorePropertiesImpl implements VariantCoreProperties{
 	 * @param name
 	 * @return
 	 */
-	Pair<String, String> getString(String key) {		
-		String value = System.getProperty(COMMANDLINE_PROP_PREFIX + key);
+	Pair<String, String> getString(Key key) {
+		
+		Pair<String,String> result = null;
+		
+		// Try override via JVM prop
+		String value = System.getProperty(COMMANDLINE_PROP_PREFIX + key.propertyName());
+		
 		if (value == null) {
-			Pair<String, String> result = propsChain.getProperty(key);
-			if (result == null) throw new VariantRuntimeException(RUN_PROPERTY_NOT_SET, key);
-			else return result;
+			// No JVM override
+			result = propsChain.getProperty(key.propertyName());
 		}
 		else {
-			return new Pair<String, String>(value, "JVM Property");
+			// JVM override takes precedence.
+			result = new Pair<String, String>(value, "JVM Property");
 		}
+		
+		return result == null ? new Pair<String, String>(key.defaultValue(), "Default") : result;
 	}
 
 	/**
@@ -103,7 +106,7 @@ public class CorePropertiesImpl implements VariantCoreProperties{
 	 * @throws JsonParseException 
 	 */
 	@SuppressWarnings("unchecked")
-	Map<String, String> getMap(String key) {
+	Map<String, String> getMap(Key key) {
 		String raw = getString(key).arg1();
 		try {
 			ObjectMapper jacksonDataMapper = new ObjectMapper();
@@ -111,7 +114,7 @@ public class CorePropertiesImpl implements VariantCoreProperties{
 			return jacksonDataMapper.readValue(raw, Map.class);
 		}
 		catch (Exception e) {
-			throw new VariantRuntimeException(RUN_PROPERTY_INIT_INVALID_JSON, raw, key);
+			throw new VariantRuntimeException(RUN_PROPERTY_INIT_INVALID_JSON, raw, key.propertyName());
 		}
 	}
 
@@ -126,11 +129,11 @@ public class CorePropertiesImpl implements VariantCoreProperties{
 	@SuppressWarnings("unchecked")
 	public <T> T get(Key key, Class<T> clazz) {
 		if (clazz == String.class)
-			return (T) getString(key.propertyName()).arg1();
+			return (T) getString(key).arg1();
 		else if (clazz == Integer.class)
-			return (T) getInteger(key.propertyName());
+			return (T) getInteger(key);
 		else if (clazz == Map.class)
-			return (T) getMap(key.propertyName());
+			return (T) getMap(key);
 		else 
 			throw new VariantRuntimeException(MessageTemplate.RUN_PROPERTY_BAD_CLASS, clazz.getName());
 	}
@@ -143,7 +146,7 @@ public class CorePropertiesImpl implements VariantCoreProperties{
 	 * @return Raw String value.
 	 */	
 	public String get(Key key) {
-		return getString(key.propertyName()).arg1();
+		return getString(key).arg1();
 	}
 
 	/**
@@ -153,7 +156,7 @@ public class CorePropertiesImpl implements VariantCoreProperties{
 	 * @return
 	 */
 	public String getSource(Key key) {
-		return getString(key.propertyName()).arg2();
+		return getString(key).arg2();
 	}
 
 }

@@ -19,11 +19,11 @@ public interface VariantCoreProperties {
 	/**
 	 * Keys of all known core properties.
 	 */
-	public final static Key EVENT_PERSISTER_CLASS_NAME = new Key("event.persister.class.name");
-	public final static Key EVENT_PERSISTER_CLASS_INIT = new Key("event.persister.class.init");
-	public final static Key EVENT_WRITER_BUFFER_SIZE = new Key("event.writer.buffer.size");
-	public final static Key EVENT_WRITER_MAX_DELAY_MILLIS = new Key("event.writer.max.delay.millis");
-	public final static Key EVENT_WRITER_PERCENT_FULL = new Key("event.writer.percent.full");
+	public final static Key EVENT_PERSISTER_CLASS_NAME = new Key("event.persister.class.name", "com.variant.core.event.EventPersisterAppLogger");
+	public final static Key EVENT_PERSISTER_CLASS_INIT = new Key("event.persister.class.init", "{}");
+	public final static Key EVENT_WRITER_BUFFER_SIZE = new Key("event.writer.buffer.size", "20000");
+	public final static Key EVENT_WRITER_MAX_DELAY_MILLIS = new Key("event.writer.max.delay.millis", "30000");
+	public final static Key EVENT_WRITER_PERCENT_FULL = new Key("event.writer.percent.full", "90");
 	
 	/**
 	 * <p>Property key. The corresponding name is derived by lower-casing
@@ -31,6 +31,8 @@ public interface VariantCoreProperties {
 	 */
 	public static class Key {
 		
+		String defaultValue = null;
+
 		private static LinkedHashSet<Key> allKeys = new LinkedHashSet<Key>(); 
 		private String propName;
 		
@@ -38,13 +40,18 @@ public interface VariantCoreProperties {
 			return allKeys;
 		}
 		
-		public Key(String propName) {
+		public Key(String propName, String defaultValue) {
 			this.propName = propName;
+			this.defaultValue = defaultValue;
 			allKeys.add(this);
 		}
 		
 		public String propertyName() {
 			return propName;
+		}
+		
+		public String defaultValue() {
+			return defaultValue;
 		}
 	}
 	

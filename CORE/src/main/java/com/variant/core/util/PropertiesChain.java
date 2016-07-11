@@ -93,8 +93,6 @@ public class PropertiesChain  {
 	 */
 	public Pair<String, String> getProperty(String key) {
 
-		if (propsList.size() == 0) throw new IllegalStateException("Empty properties chain.");
-
 		Iterator<Properties> propsIter = propsList.iterator();
 		Iterator<String> sourceIter = sourceList.iterator();
 		while (propsIter.hasNext()) {

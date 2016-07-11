@@ -11,10 +11,9 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.variant.core.VariantCoreProperties;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.CorePropertiesImpl;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantPropertiesTestFacade;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.Tuples.Pair;
@@ -25,39 +24,18 @@ public class CorePropertiesTest {
 	@Test
 	public void test() throws Exception {
 		
-		// Core default.
 		VariantCore api = new VariantCore();
 		
-		Properties defaultProps = new Properties();
-		defaultProps.load(VariantIoUtils.openResourceAsStream("/variant/defaults.props"));
-
-		// All declared keys must have defaults.
-		for (VariantCoreProperties.Key key: VariantCoreProperties.Key.keySet()) {
-			assertTrue(String.format("No default for key %s", key.propertyName()), defaultProps.containsKey(key.propertyName()));
-		}
-
-		
-		for (Object defaultKeyName: defaultProps.keySet()) {
-			boolean found = false;
-			for (VariantCoreProperties.Key declaredKey: VariantCoreProperties.Key.keySet()) {
-				if (declaredKey.propertyName().equals(defaultKeyName)) {
-					found = true;
-					break;
-				}
-			}
-			assertTrue(String.format("No key for default property %s", defaultKeyName), found);
-		}
-
 		// Compile time override
 		api = new VariantCore("/variant-test.props");
 		Properties testProps = new Properties();
 		testProps.load(VariantIoUtils.openResourceAsStream("/variant-test.props"));
 		VariantPropertiesTestFacade actualProps = new VariantPropertiesTestFacade(api.getProperties());
-		for (String prop: testProps.stringPropertyNames()) {
+		for (String propName: testProps.stringPropertyNames()) {
 			assertEquals(
-			   "Property Name: [" + prop + "]", 
-			   new Pair<String, String>(testProps.getProperty(prop), "/variant-test.props"), 
-			   actualProps.getString(prop));
+			   "Property Name: [" + propName + "]", 
+			   new Pair<String, String>(testProps.getProperty(propName), "/variant-test.props"), 
+			   actualProps.getString(propName));
 		}
 
 		// Run time override from classpath

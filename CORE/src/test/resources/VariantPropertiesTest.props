@@ -1,7 +1,6 @@
 #
 # Command line override.
-# see <code>VariantPropertiesTest.java</code>
+# see <code>CorePropertiesTest.java</code>
 #
 
-targeting.persister.idle.days.to.live = 12345678
-event.persister.jdbc.password = ResurceOverride
+event.writer.buffer.size = 12345678
