@@ -8,10 +8,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Random;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.hook.HookListener;
+import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantRuntimeTestFacade;
@@ -31,7 +33,8 @@ import com.variant.core.util.VariantStringUtils;
 public class CoreRuntimeTest extends BaseTestCore {
 
 	private VariantCore core = rebootApi();
-
+	private Random rand = new Random();
+	
 	/**
 	 * 
 	 */
@@ -1079,7 +1082,8 @@ public class CoreRuntimeTest extends BaseTestCore {
 
 		Schema schema = core.getSchema();
 		State state1 = schema.getState("state1");
-		VariantCoreSession ssn = core.getSession("foo-key");
+		String sessionId = VariantStringUtils.random64BitString(rand);
+		VariantCoreSession ssn = core.getSession(sessionId);
 		setTargetingStabile(ssn, "test2.B");
 		VariantCoreStateRequest req = ssn.targetForState(state1);
 		SessionScopedTargetingStabile stabile = ((CoreSessionImpl)ssn).getTargetingStabile();
@@ -1097,6 +1101,53 @@ public class CoreRuntimeTest extends BaseTestCore {
 		// View Serve Event.
 		assertNotNull(req.getStateVisitedEvent());
 	}
-	
+
+	/**
+	 * 
+	 */
+	@org.junit.Test
+	public void disqualifyAllTestsTest() {
+				
+		ParserResponse response = core.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		
+		core.clearHookListeners();
+		core.addHookListener(new DisqualAllHookListener());
+		
+		String sessionId = VariantStringUtils.random64BitString(rand);
+		VariantCoreSession ssnIn = core.getSession(sessionId);
+		assertTrue(ssnIn.getTraversedStates().isEmpty());
+		assertTrue(ssnIn.getTraversedTests().isEmpty());
+		assertNull(ssnIn.getStateRequest());
+	    	      	    	      
+		for (String stateName: new String[] {"state1", "state2", "state3", "state4", "state5"}) {
+	    	         
+			VariantCoreStateRequest req = ssnIn.targetForState(core.getSchema().getState(stateName));
+			CoreSessionImpl ssn = (CoreSessionImpl) req.getSession();
+			assertEquals(ssn, ssnIn);
+			assertTrue(ssn.getTraversedStates().isEmpty());
+			assertTrue(ssn.getTraversedTests().isEmpty());
+			assertEquals(req, ssn.getStateRequest());
+			req.commit();
+			assertTrue(ssn.getTraversedStates().isEmpty());
+			assertTrue(ssn.getTraversedTests().isEmpty());
+			assertEquals(req, ssn.getStateRequest());
+		}
+	}
+	    
+	private static class DisqualAllHookListener implements HookListener<TestQualificationHook> {
+
+		@Override
+		public Class<TestQualificationHook> getHookClass() {
+			return TestQualificationHook.class;
+		}
+
+		@Override
+		public void post(TestQualificationHook hook) {
+			hook.setQualified(false);
+		}
+		
+	}
 }
 

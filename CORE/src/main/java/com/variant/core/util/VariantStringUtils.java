@@ -42,6 +42,24 @@ public class VariantStringUtils {
 	}
 
 	/**
+	 * Object[] toString();
+	 * @param c
+	 * @param separator
+	 * @return
+	 */
+	public static String toString(Object[] objectArray, String separator) {
+
+		StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (Object o: objectArray) {
+			if (first) first = false;
+			else result.append(separator);
+			result.append(o);
+		}
+		return result.toString();
+	}
+
+	/**
 	 * Collection toString();
 	 * @param c
 	 * @param separator
@@ -58,7 +76,6 @@ public class VariantStringUtils {
 		}
 		return result.toString();
 	}
-
 	/**
 	 * Collection toString();
 	 * @param c

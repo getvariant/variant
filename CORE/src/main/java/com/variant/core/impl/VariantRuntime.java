@@ -125,7 +125,7 @@ public class VariantRuntime {
 	 * 
 	 * TODO: IP.
 	 */
-	private Map<String,String> targetSessionForState(VariantCoreStateRequestImpl req) {
+	private Map<String,String> targetSessionForState(CoreStateRequestImpl req) {
 
 		Schema schema = coreApi.getSchema();
 		CoreSessionImpl session = (CoreSessionImpl) req.getSession();
@@ -506,10 +506,10 @@ public class VariantRuntime {
 	 * @param view
 	 * @return
 	 */
-	public VariantCoreStateRequestImpl targetSessionForState(CoreSessionImpl ssn, StateImpl state) {
+	public CoreStateRequestImpl targetSessionForState(CoreSessionImpl ssn, StateImpl state) {
 
 		// Resolve the path and get all tests instrumented on the state.
-		VariantCoreStateRequestImpl result = new VariantCoreStateRequestImpl(ssn, state);
+		CoreStateRequestImpl result = new CoreStateRequestImpl(ssn, state);
 		
 		Map<String,String> resolvedParams = targetSessionForState(result);		
 		result.setResolvedParameters(resolvedParams);

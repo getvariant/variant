@@ -43,7 +43,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 
 	private String id;
 	private long timestamp = System.currentTimeMillis();
-	private VariantCoreStateRequestImpl currentRequest = null;
+	private CoreStateRequestImpl currentRequest = null;
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
 	private LinkedHashSet<Test> traversedTests = new LinkedHashSet<Test>();
 	private LinkedHashSet<Test> disqualTests = new LinkedHashSet<Test>();
@@ -149,7 +149,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * 
 	 * @param req
 	 */
-	public void setStateRequest(VariantCoreStateRequestImpl req) {
+	public void setStateRequest(CoreStateRequestImpl req) {
 		currentRequest = req;
 	}
 		
@@ -243,7 +243,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 			
 			if (disqualTests.size() > 0) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_DISQUAL_TESTS);
-				for (Test t: traversedTests) {
+				for (Test t: disqualTests) {
 					jsonGen.writeString(t.getName());
 				}
 				jsonGen.writeEndArray();
@@ -299,6 +299,23 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER && !coreApi.getSchema().getId().equals(schidObj)) {
 			return null;
 		}
+					
+		CoreSessionImpl result = new CoreSessionImpl((String)idObj, coreApi);
+				
+		Object tsObj = fields.get(FIELD_NAME_TIMESTAMP);
+		if (tsObj == null) 
+			throw new VariantInternalException("Unable to deserialzie session: no timestamp: [" + json + "]");
+		if (!(tsObj instanceof Number)) 
+			throw new VariantInternalException("Unable to deserialzie session: id not number: [" + json + "]");
+
+		result.timestamp = ((Number)tsObj).longValue();
+		
+		Object currentRequestObj = fields.get(FIELD_NAME_CURRENT_REQUEST);
+		if (currentRequestObj != null) {
+			if (!(currentRequestObj instanceof Map<?,?>)) 
+			throw new VariantInternalException("Unable to deserialzie session: currentRequest not map: [" + json + "]");
+			result.currentRequest = CoreStateRequestImpl.fromJson(coreApi, result, (Map<String,?>)currentRequestObj);
+		}
 		
 		SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
 		Object stabileObj = fields.get(FIELD_NAME_TARGETING_STABIL);
@@ -315,28 +332,11 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 				}
 			}
 			catch (Exception e) {
-				throw new VariantInternalException("Unable to deserialzie session: bad states spec", e);
+				throw new VariantInternalException("Unable to deserialzie session: bad statil spec", e);
 			}
 		}
-			
-		CoreSessionImpl result = new CoreSessionImpl((String)idObj, coreApi);
 		result.setTargetingStabile(targetingStabile);
-		
-		Object tsObj = fields.get(FIELD_NAME_TIMESTAMP);
-		if (tsObj == null) 
-			throw new VariantInternalException("Unable to deserialzie session: no timestamp: [" + json + "]");
-		if (!(tsObj instanceof Number)) 
-			throw new VariantInternalException("Unable to deserialzie session: id not number: [" + json + "]");
 
-		result.timestamp = ((Number)tsObj).longValue();
-		
-		Object currentRequestObj = fields.get(FIELD_NAME_CURRENT_REQUEST);
-		if (currentRequestObj != null) {
-			if (!(currentRequestObj instanceof Map<?,?>)) 
-			throw new VariantInternalException("Unable to deserialzie session: currentRequest not map: [" + json + "]");
-			result.currentRequest = VariantCoreStateRequestImpl.fromJson(coreApi, result, (Map<String,?>)currentRequestObj);
-		}
-		
 		// If server, don't deserialize traversed tests and states because we don't have the schema.
 		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) {
 			Object statesObj = fields.get(FIELD_NAME_TRAVERSED_STATES);

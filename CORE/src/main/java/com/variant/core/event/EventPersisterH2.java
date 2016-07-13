@@ -1,6 +1,5 @@
 package com.variant.core.event;
 
-import static com.variant.core.VariantCoreProperties.EVENT_PERSISTER_CLASS_INIT;
 import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET;
 
 import java.sql.Connection;
@@ -11,6 +10,8 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.jdbc.EventPersisterJdbc;
 import com.variant.core.jdbc.JdbcService.Vendor;
 import com.variant.open.securestring.SecureString;
+
+import static com.variant.core.VariantCorePropertyKeys.*;
 
 public class EventPersisterH2 extends EventPersisterJdbc {
 	

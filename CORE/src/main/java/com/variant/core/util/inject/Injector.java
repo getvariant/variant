@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.util.VariantIoUtils;
+import com.variant.core.util.VariantStringUtils;
 
 /**
  * Implementation injection, deferred to run time.
@@ -25,10 +26,10 @@ import com.variant.core.util.VariantIoUtils;
 public class Injector {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Injector.class);
-	private static final String DEFAULT_CONFIG_RESOURCE_NAME = "/variant/injector.json";
+	private static final String[] DEFAULT_CONFIG_RESOURCE_NAMES = {"/injector.json", "/variant/injector.json"};
 	private static HashMap<Class<? extends Injectable>, Entry> entryMap = null;
 	
-	private static String configName = DEFAULT_CONFIG_RESOURCE_NAME;
+	private static String[] configNames = DEFAULT_CONFIG_RESOURCE_NAMES;
 	
 	private static class Entry {
 		Class<? extends Injectable> type;
@@ -79,7 +80,7 @@ public class Injector {
 	@SuppressWarnings("unchecked")
 	private static void lazyInit() {
 		
-		InputStream configStream = VariantIoUtils.openResourceAsStream(configName);
+		InputStream configStream = VariantIoUtils.openResourceAsStream(configNames);
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
 		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 		
@@ -90,7 +91,7 @@ public class Injector {
 			parseTree = jacksonDataMapper.readValue(configStream, List.class);
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to parse injector config [" + configName + "]", e);
+			throw new VariantInternalException("Unable to parse injector config [" + VariantStringUtils.toString(configNames, ",") + "]", e);
 		}
 		
 		HashMap<Class<? extends Injectable>, Entry> result = new HashMap<Class<? extends Injectable>, Entry>();
@@ -131,7 +132,7 @@ public class Injector {
 	 * @param configName
 	 */
 	public static void setConfigNameAsResource(String configName) {
-		Injector.configName = configName;
+		configNames = new String[] {configName};
 		entryMap = null;
 	}
 
@@ -139,7 +140,7 @@ public class Injector {
 	 * 
 	 */
 	public static void restoreDefaultConfig() {
-		Injector.configName = DEFAULT_CONFIG_RESOURCE_NAME;
+		Injector.configNames = DEFAULT_CONFIG_RESOURCE_NAMES;
 		entryMap = null;
 	}
 	

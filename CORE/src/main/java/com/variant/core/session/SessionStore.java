@@ -11,7 +11,6 @@ import com.variant.core.util.inject.Injectable;
  * will be different from that used to track session ID. The implementation
  * must also supply an implementation of {@link VariantSessionIdTracker}
  * 
- * @see VariantSessionIdTracker
  * @author Igor Urisman
  * @since 0.5
  */

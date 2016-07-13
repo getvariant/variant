@@ -1,12 +1,6 @@
 package com.variant.core.impl;
 
-import static com.variant.core.VariantCoreProperties.EVENT_PERSISTER_CLASS_INIT;
-import static com.variant.core.VariantCoreProperties.EVENT_PERSISTER_CLASS_NAME;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
-import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
+import static com.variant.core.schema.impl.MessageTemplate.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +11,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
@@ -85,7 +80,7 @@ public class VariantCore implements Serializable {
 		try {
 			properties.overrideWith(VariantIoUtils.openResourceAsStream("/variant.props"), "/variant.props");
 			if (LOG.isDebugEnabled()) {
-				LOG.debug("Processed application properties resource file [/variant.props]]");
+				LOG.debug("Processed application properties resource file [/variant.props]");
 			}
 		}
 		catch (Exception e) {} // Not an error if wasn't found.
@@ -133,14 +128,14 @@ public class VariantCore implements Serializable {
 		//
 		// Instantiate event persister.
 		//
-		String eventPersisterClassName = properties.get(EVENT_PERSISTER_CLASS_NAME, String.class);
+		String eventPersisterClassName = properties.get(VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_NAME, String.class);
 		
 		EventPersister eventPersister = null;
 		try {
 			Object eventPersisterObject = Class.forName(eventPersisterClassName).newInstance();
 			if (eventPersisterObject instanceof EventPersister) {
 				eventPersister = (EventPersister) eventPersisterObject;
-				eventPersister.initialized(new VariantCoreInitParamsImpl(this, EVENT_PERSISTER_CLASS_INIT));
+				eventPersister.initialized(new VariantCoreInitParamsImpl(this, VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT));
 			}
 			else {
 				throw new VariantRuntimeException (BOOT_EVENT_PERSISTER_NO_INTERFACE, eventPersisterClassName, EventPersister.class.getName());
@@ -204,7 +199,9 @@ public class VariantCore implements Serializable {
 			throw e;
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to instantiate Variant Core", e);
+			String message = "Unable to instantiate Variant Core";
+			LOG.error(message + ": " + e.getMessage());
+			throw new VariantInternalException(message, e);
 		}
 		LOG.info(
 				String.format("Variant Core %s bootstrapped in %s.",

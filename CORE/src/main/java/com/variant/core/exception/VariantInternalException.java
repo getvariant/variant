@@ -17,6 +17,15 @@ public class VariantInternalException extends VariantException {
 	 * @param msg
 	 * @param t
 	 */
+	public VariantInternalException(Throwable t) {
+		super(t);
+	}
+
+	/**
+	 * 
+	 * @param msg
+	 * @param t
+	 */
 	public VariantInternalException(String msg, Throwable t) {
 		super(msg, t);
 	}

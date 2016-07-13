@@ -11,7 +11,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.VariantCoreProperties;
+import com.variant.core.VariantCorePropertyKeys.Key;
+import com.variant.core.VariantProperties;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.PropertiesChain;
@@ -25,8 +26,12 @@ import com.variant.core.util.Tuples.Pair;
  * @author Igor
  *
  */
-public class CorePropertiesImpl implements VariantCoreProperties {
+public class CorePropertiesImpl implements VariantProperties {
 	
+	public static final String COMMANDLINE_RESOURCE_NAME = "variant.props.resource";
+	public static final String COMMANDLINE_FILE_NAME = "varaint.props.file";
+	public static final String COMMANDLINE_PROP_PREFIX = "varaint.";
+
 	private PropertiesChain propsChain = new PropertiesChain();
 	private VariantCore coreApi;
 
@@ -35,6 +40,7 @@ public class CorePropertiesImpl implements VariantCoreProperties {
 	 */
 	protected CorePropertiesImpl(VariantCore coreApi) {
 		this.coreApi = coreApi;
+		// if we're called by a subclass, coreApi will already have a properties chain.
 		propsChain = new PropertiesChain();
 	}
 
@@ -139,7 +145,7 @@ public class CorePropertiesImpl implements VariantCoreProperties {
 	}
 	
 	/**
-	 * <p> Equivalent to <code>get(key, Class<String>)</code>.
+	 * <p> Equivalent to <code>get(key, String.class)</code>.
 	 * 
 	 * @param key Property key
 	 *              

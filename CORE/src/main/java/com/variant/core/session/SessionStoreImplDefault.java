@@ -18,7 +18,7 @@ public class SessionStoreImplDefault implements SessionStore {
 	
 	@Override
 	public void init(VariantCore core, Map<String, Object> initObject) {
-		throw new UnsupportedOperationException(MESSAGE);
+		// Don't throw exception from lifecycle methods - we may never be called.
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class SessionStoreImplDefault implements SessionStore {
 	
 	@Override
 	public void shutdown() {
-		throw new UnsupportedOperationException(MESSAGE);
+		// Don't throw exception from lifecycle methods - we may never be called.		
 	}
 
 }

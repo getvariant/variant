@@ -231,8 +231,9 @@ public class UserHookTest extends BaseTestCore {
 		assertEqualAsSets(ssn3.getTraversedStates(), new Pair<State, Integer>(state1, 1));
 
 		assertEqualAsSets(ssn3.getTraversedTests(), schema.getTest("test1"));
-	}
 
+	}
+	
 	/**
 	 * 
 	 */

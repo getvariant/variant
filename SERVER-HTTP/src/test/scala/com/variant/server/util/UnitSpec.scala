@@ -11,13 +11,13 @@ import org.scalatest.OptionValues
 import org.scalatest.Inspectors
 import org.scalatest.Inside
 import org.scalatest.BeforeAndAfterAll
-import com.variant.server.boot.ServerBoot
 import net.liftweb.http.testing.TestKit
 import net.liftweb.http.testing.ReportFailure
 import com.variant.core.jdbc.JdbcService
 import com.variant.core.impl.VariantCore
 import scala.util.Random
 import com.variant.core.impl.VariantComptime
+import com.variant.server.ServerBoot
 
 /**
  * 
@@ -40,11 +40,9 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
    
    lazy val baseUrl = JettyTestServer.baseUrl
 
-   ServerBoot.init("/variant-test.props")
-   val serverCore = ServerBoot.core
    // We'll need the client side api too.
-   val clientCore = new VariantCore("/variant-test.props")
-   clientCore.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.0");
+   val clientCore = new VariantCore()
+   clientCore.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.1");
 
    /**
     * 
@@ -84,8 +82,8 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
 
    private def jvmSetup = {
       startJetty
-      ServerBoot.init("/variant-test.props")
-      new JdbcService(ServerBoot.core).createSchema
+      //ServerBoot.boot("/variant-test.props")
+      new JdbcService(ServerBoot.getCore).createSchema
    }
 
    private def jvmShutdown = {

@@ -3,10 +3,8 @@ package com.variant.server.test
 import net.liftweb.http.testing.{TestKit,ReportFailure,HttpResponse}
 import com.variant.server.util.JettyStartupAndShutdown
 import com.variant.server.util.JettyTestServer
-import com.variant.core.session.VariantSessionImpl
 import com.variant.server.util.UnitSpec
 import com.variant.server.SessionCache
-import com.variant.server.boot.ServerBoot
 import org.apache.http.HttpStatus
 import com.variant.core.schema.Schema
 import scala.collection.JavaConversions._
@@ -14,8 +12,8 @@ import UnitSpec._
 import com.variant.core.hook.TestQualificationHook
 import com.variant.core.hook.HookListener
 import scala.util.Random
-import com.variant.core.impl.CoreProperties
 import net.liftweb.json.JsonAST.JValue
+import com.variant.core.impl.CoreSessionImpl
 
 /**
  */
@@ -51,9 +49,9 @@ class ServerSessionTest extends UnitSpec {
       val httpGetResp1 = get("/session/" + id) ! "Jetty not running"
       httpGetResp1.code should be (HttpStatus.SC_NO_CONTENT)
 
-      val ssn = clientCore.getSession(id)
+      val ssn = new CoreSessionImpl(id, clientCore)
       ssn should not be (null)
-      val json = ssn.asInstanceOf[VariantSessionImpl].toJson()
+      val json = ssn.asInstanceOf[CoreSessionImpl].toJson()
       val httpPutResp =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server "
       httpPutResp.code should be (HttpStatus.SC_OK)
       httpPutResp.bodyAsString.openOrThrowException("Unexpected null response").length should be (0)
@@ -69,9 +67,9 @@ class ServerSessionTest extends UnitSpec {
             
       val id = this.getClass.getSimpleName + rand.nextInt();
       SessionCache.get(id) should be (null)      
-      val ssn = clientCore.getSession(id)
+      val ssn = new CoreSessionImpl(id, clientCore)
       ssn should not be (null)      
-      val json = ssn.asInstanceOf[VariantSessionImpl].toJson()
+      val json = ssn.asInstanceOf[CoreSessionImpl].toJson()
       val httpPutResp1 =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server "
       httpPutResp1.code should be (HttpStatus.SC_OK)
       httpPutResp1.bodyAsString.openOrThrowException("Unexpected null response").length should be (0)
@@ -93,17 +91,17 @@ class ServerSessionTest extends UnitSpec {
  
       val id = this.getClass.getSimpleName + rand.nextInt();
       SessionCache.get(id) should be (null)
-      val ssn = clientCore.getSession(id)
+      val ssn = new CoreSessionImpl(id, clientCore)
       ssn should not be (null)      
       ssn.getSchemaId should not be (null)
       val httpPutResp1 =  put(
             "/session/" + id, 
-            ssn.asInstanceOf[VariantSessionImpl].toJson().getBytes, "application/json"
+            ssn.asInstanceOf[CoreSessionImpl].toJson().getBytes, "application/json"
             ) ! "No response from server "
       httpPutResp1.code should be (HttpStatus.SC_OK)
-      val req = ssn.targetForState(clientCore.getSchema.getState("state4"), "")
+      val req = ssn.targetForState(clientCore.getSchema.getState("state4"))
       req.getSession shouldBe ssn // Identity
-      val json = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
+      val json = req.getSession.asInstanceOf[CoreSessionImpl].toJson()
       val httpPutResp2 =  put("/session/" + id, json.getBytes, "application/json") ! "No response from server "
       httpPutResp2.code should be (HttpStatus.SC_OK)
       httpPutResp2.bodyAsString.openOrThrowException("Unexpected null response").length should be (0)
@@ -113,22 +111,22 @@ class ServerSessionTest extends UnitSpec {
       val httpGetResp = get("/session/" + id) ! "Jetty is not running"
       httpGetResp.code should be (HttpStatus.SC_OK)
       httpGetResp.bodyAsString should equal (json)
-      req.commit("")
+      req.commit()
    }
 
    "Session storage" should "preserve traversed tests" in {
       
       val id = this.getClass.getSimpleName + rand.nextInt();
 
-      val ssnIn = clientCore.getSession(id)
+      val ssnIn = new CoreSessionImpl(id, clientCore)
       ssnIn.getTraversedStates().toList should be ('empty)
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)
 
       for (state <- "state1" :: "state2" :: "state3" :: "state4" :: "state5" :: Nil) {
 
-         val req = ssnIn.targetForState(clientCore.getSchema.getState(state), "")
-         val jsonIn = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
+         val req = ssnIn.targetForState(clientCore.getSchema.getState(state))
+         val jsonIn = req.getSession.asInstanceOf[CoreSessionImpl].toJson()
          
          val httpPutResp =  put("/session/" + id, jsonIn.getBytes, "application/json") ! "No response from server "
          httpPutResp.code should be (HttpStatus.SC_OK)
@@ -138,25 +136,25 @@ class ServerSessionTest extends UnitSpec {
          httpGetResp.code should be (HttpStatus.SC_OK)
          val jsonOut = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
          jsonOut should equal (jsonIn)
-         val ssnOut = VariantSessionImpl.fromJson(clientCore, jsonOut)
+         val ssnOut = CoreSessionImpl.fromJson(clientCore, jsonOut)
          for (testIn <- ssnIn.getTraversedTests) ssnOut.getTraversedTests.exists(p => p.equals(testIn)) should be (true)
         
-         req.commit("")
+         req.commit()
       }      
    }
 
    it should "preserve traversed states" in {
       
       val id = this.getClass.getSimpleName + rand.nextInt();
-      val ssnIn = clientCore.getSession(id)
+      val ssnIn = new CoreSessionImpl(id, clientCore)
       ssnIn.getTraversedStates().toList should be ('empty)
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)
       
       for (state <- "state1" :: "state2" :: "state3" :: "state4" :: "state5" :: Nil) {
          
-         val req = ssnIn.targetForState(clientCore.getSchema.getState(state), "")
-         val jsonIn = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
+         val req = ssnIn.targetForState(clientCore.getSchema.getState(state))
+         val jsonIn = req.getSession.asInstanceOf[CoreSessionImpl].toJson()
          
          val httpPutResp =  put("/session/" + id, jsonIn.getBytes, "application/json") ! "No response from server "
          httpPutResp.code should be (HttpStatus.SC_OK)
@@ -166,25 +164,25 @@ class ServerSessionTest extends UnitSpec {
          httpGetResp.code should be (HttpStatus.SC_OK)
          val jsonOut = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
          jsonOut should equal (jsonIn)
-         val ssnOut = VariantSessionImpl.fromJson(clientCore, jsonOut)
+         val ssnOut = CoreSessionImpl.fromJson(clientCore, jsonOut)
          for (stateIn <- ssnIn.getTraversedStates) ssnOut.getTraversedStates.exists(p => p.equals(stateIn)) should be (true)
         
-         req.commit("")
+         req.commit()
       }
    }
 
    it should "preserve targeted experiences" in {
       
       val id = this.getClass.getSimpleName + rand.nextInt();
-      val ssnIn = clientCore.getSession(id)
+      val ssnIn = new CoreSessionImpl(id, clientCore)
       ssnIn.getTraversedStates().toList should be ('empty)
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)
       
       for (state <- "state1" :: "state2" :: "state3" :: "state4" :: "state5" :: Nil) {
          
-         val req = ssnIn.targetForState(clientCore.getSchema.getState(state), "")
-         val jsonIn = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
+         val req = ssnIn.targetForState(clientCore.getSchema.getState(state))
+         val jsonIn = req.getSession.asInstanceOf[CoreSessionImpl].toJson()
          
          val httpPutResp =  put("/session/" + id, jsonIn.getBytes, "application/json") ! "No response from server "
          httpPutResp.code should be (HttpStatus.SC_OK)
@@ -194,25 +192,25 @@ class ServerSessionTest extends UnitSpec {
          httpGetResp.code should be (HttpStatus.SC_OK)
          val jsonOut = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
          jsonOut should equal (jsonIn)
-         val ssnOut = VariantSessionImpl.fromJson(clientCore, jsonOut)
+         val ssnOut = CoreSessionImpl.fromJson(clientCore, jsonOut)
          ssnOut should not be (null)
          val reqOutBeforeCommit = ssnOut.getStateRequest()
          reqOutBeforeCommit should not be (null)
          for (test <- clientCore.getSchema.getState(state).getInstrumentedTests) {
-            reqOutBeforeCommit.getTargetedExperiences.exists { exp => exp.getTest equals test } should be (true)
+            reqOutBeforeCommit.getActiveExperiences.exists { exp => exp.getTest equals test } should be (true)
          }
-         for (exp <- reqOutBeforeCommit.getTargetedExperiences) {
+         for (exp <- reqOutBeforeCommit.getActiveExperiences) {
             clientCore.getSchema.getState(state).getInstrumentedTests.exists { t => exp.getTest equals t } should be (true)
          }
 
-         req.commit("")
+         req.commit()
          
          val reqOutAfterCommit = ssnOut.getStateRequest()
          reqOutAfterCommit shouldBe reqOutBeforeCommit
          for (test <- clientCore.getSchema.getState(state).getInstrumentedTests) {
-            reqOutAfterCommit.getTargetedExperiences.exists { exp => exp.getTest equals test } should be (true)
+            reqOutAfterCommit.getActiveExperiences.exists { exp => exp.getTest equals test } should be (true)
          }
-         for (exp <- reqOutAfterCommit.getTargetedExperiences) {
+         for (exp <- reqOutAfterCommit.getActiveExperiences) {
             clientCore.getSchema.getState(state).getInstrumentedTests.exists { t => exp.getTest equals t } should be (true)
          }
 
@@ -222,7 +220,7 @@ class ServerSessionTest extends UnitSpec {
    it should "preserve targeted experiences when they are empty list if we hit a state with no instrumented tests" in {
       
       val id = this.getClass.getSimpleName + rand.nextInt
-      val ssnIn = clientCore.getSession(id)
+      val ssnIn = new CoreSessionImpl(id, clientCore)
       ssnIn.getTraversedStates().toList should be ('empty)
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)
@@ -232,10 +230,10 @@ class ServerSessionTest extends UnitSpec {
       
       for (state <- "state1" :: "state2" :: "state3" :: "state4" :: "state5" :: Nil) {
          
-         val req = ssnIn.targetForState(clientCore.getSchema.getState(state), "")
-         val jsonIn = req.getSession.asInstanceOf[VariantSessionImpl].toJson()
-         req.getTargetedExperiences should be ('empty)
-         
+         val req = ssnIn.targetForState(clientCore.getSchema.getState(state))
+         val jsonIn = req.getSession.asInstanceOf[CoreSessionImpl].toJson()
+         req.getActiveExperiences should be ('empty)
+         println("IN " + jsonIn)
          val httpPutResp =  put("/session/" + id, jsonIn.getBytes, "application/json") ! "No response from server "
          httpPutResp.code should be (HttpStatus.SC_OK)
          httpPutResp.bodyAsString.openOrThrowException("Unexpected null response").length should be (0) 
@@ -244,13 +242,13 @@ class ServerSessionTest extends UnitSpec {
          httpGetResp.code should be (HttpStatus.SC_OK)
          val jsonOut = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
          jsonOut should equal (jsonIn)
-         val ssnOut = VariantSessionImpl.fromJson(clientCore, jsonOut)
+         val ssnOut = CoreSessionImpl.fromJson(clientCore, jsonOut)
          ssnOut should not be (null)
          val reqOut = ssnOut.getStateRequest
          reqOut should not be (null)
-         reqOut.getTargetedExperiences should be ('empty)
+         reqOut.getActiveExperiences should be ('empty)
          
-         req.commit("")
+         req.commit()
       }
       
       /**

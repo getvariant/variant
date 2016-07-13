@@ -7,13 +7,15 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.variant.core.VariantCoreProperties;
+import com.variant.core.VariantCorePropertyKeys;
+import com.variant.core.VariantProperties;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.EventPersisterNull;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestTargetingHook;
+import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -34,7 +36,7 @@ public class TargetingTest extends BaseTestCore {
 	//@BeforeClass
 	static {
 		System.setProperty(
-				VariantCoreProperties.COMMANDLINE_PROP_PREFIX + VariantCoreProperties.EVENT_PERSISTER_CLASS_NAME.propertyName(), 
+				CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_NAME.propertyName(), 
 				EventPersisterNull.class.getName());
 		
 		Injector.setConfigNameAsResource("/variant/injector-session-store-null.json");

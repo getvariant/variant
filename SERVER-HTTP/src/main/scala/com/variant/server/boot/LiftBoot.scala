@@ -7,6 +7,7 @@ import net.liftweb.http.Bootable
 import net.liftweb.http.provider.HTTPParam
 import net.liftweb.http.Req
 import com.typesafe.scalalogging.LazyLogging
+import com.variant.server.ServerBoot
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -35,9 +36,9 @@ class LiftBoot extends Bootable with LazyLogging {
             ("Access-Control-Allow-Origin", "*"),
             ("Access-Control-Allow-Credentials", "true")
          ))
-       
-      ServerBoot.init()
       
-      logger.info("Variant Server 0.6.0 listening on " + LiftRules.context.path + "/")
+      ServerBoot.boot()
+      
+      logger.info("Variant " + ServerBoot.getCore.getComptime.getComponent + " listening on " + LiftRules.context.path + "/")
   }
 }

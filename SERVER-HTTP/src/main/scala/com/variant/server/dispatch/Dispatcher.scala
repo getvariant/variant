@@ -2,7 +2,6 @@ package com.variant.server.dispatch
 
 import java.io.OutputStream
 import java.util.Date
-import com.variant.core.session.VariantSessionImpl
 import com.variant.server.SessionCache
 import com.variant.server.boot.UserError
 import net.liftweb.common.Box

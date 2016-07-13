@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.variant.core.VariantCoreInitParams;
+import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.exception.VariantRuntimeException;
 
 public class VariantCoreInitParamsImpl extends HashMap<String, Object> implements VariantCoreInitParams {
@@ -19,7 +20,7 @@ public class VariantCoreInitParamsImpl extends HashMap<String, Object> implement
 	 * @param map
 	 */
 	@SuppressWarnings("unchecked")
-	protected VariantCoreInitParamsImpl(VariantCore coreApi, CorePropertiesImpl.Key key) {
+	protected VariantCoreInitParamsImpl(VariantCore coreApi, VariantCorePropertyKeys.Key key) {
 		super(coreApi.getProperties().get(key, Map.class));
 		this.coreApi = coreApi;
 	}

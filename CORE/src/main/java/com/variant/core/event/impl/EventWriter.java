@@ -7,9 +7,9 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.variant.core.VariantCoreProperties.*;
+import static com.variant.core.VariantCorePropertyKeys.*;
 
-import com.variant.core.VariantCoreProperties;
+import com.variant.core.VariantProperties;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantPersistableEvent;
 
@@ -56,7 +56,7 @@ public class EventWriter {
 	/**
 	 * Constructor
 	 */
-	public EventWriter(EventPersister persisterImpl, VariantCoreProperties properties) {
+	public EventWriter(EventPersister persisterImpl, VariantProperties properties) {
 		
 		this.persisterImpl = persisterImpl;
 		this.queueSize = properties.get(EVENT_WRITER_BUFFER_SIZE, Integer.class);

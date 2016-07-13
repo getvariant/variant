@@ -111,7 +111,7 @@ public enum MessageTemplate {
 	RUN_WEIGHT_MISSING                                    (Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found."),
 	RUN_ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first."),
 	RUN_SCHEMA_REPLACED                                   (Severity.ERROR, "Opereation not allowed because the current schema ID [%s] differs from that with which this session was created [%s]."),
-	RUN_SCHEMA_UNDEFINED                                  (Severity.ERROR, "Cannot create a session on an idle Variant instance. Parse a schema first."),
+	RUN_SCHEMA_UNDEFINED                                  (Severity.ERROR, "Cannot create a session on an idle Variant instance. Deploy a schema first."),
 	RUN_SESSION_ID_NULL                                   (Severity.WARN,  "Session id tracker [%s] generated a null key"),
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                  GENERAL MESSAGES                                                      //

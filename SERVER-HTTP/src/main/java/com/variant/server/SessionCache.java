@@ -7,11 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.InitializationParams;
-import com.variant.core.VariantSession;
-import com.variant.core.impl.CoreProperties;
-import com.variant.core.session.VariantSessionImpl;
-import com.variant.server.boot.ServerBoot;
+import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantProperties;
+import com.variant.core.impl.CoreSessionImpl;
 
 /**
  * Sessions are stored serialized as JSON strings because most of the time
@@ -43,24 +41,23 @@ public class SessionCache {
 
 		private VacuumThread() {
 			
-			// Session expiration interval is defined in the session.store.class.init map
-			// and is also used by the client.
-			InitializationParams params = ServerBoot.core().getProperties().get(CoreProperties.Key.SESSION_STORE_CLASS_INIT, InitializationParams.class);
-			sessionTimeoutMillis = (Integer) params.getOr("sessionTimeoutSecs",  new Integer(15 * 60) /*15 min default*/) * 1000;
-			// Vacuuming frequency is same place but only used on the server.
-			vacuumingFrequencyMillis = (Integer) params.getOr("vacuumingFrequencySecs",  new Integer(60) /*1 min default*/)  * 1000;
+			VariantProperties props = ServerBoot.getCore().getProperties();
+			sessionTimeoutMillis = props.get(ServerProperties.SESSION_TIMEOUT_SECS, Integer.class) * 1000;
+			vacuumingFrequencyMillis = props.get(ServerProperties.SESSION_STORE_VACUUM_INTERVAL_SECS, Integer.class) * 1000;
 		}
 
 		@Override
 		public void run() {
 
-			LOG.debug("Vacuuming thread " + Thread.currentThread().getName() + " started.");
+			if (LOG.isDebugEnabled())
+				LOG.debug("Vacuuming thread " + Thread.currentThread().getName() + " started.");
 			
 			boolean interrupted = false;
 			boolean timeToGo = false;
 			
 			while (!timeToGo) {
-			
+							
+				
 				try {
 					long now = System.currentTimeMillis();					
 					Iterator<Map.Entry<String, Entry>> iter = cacheMap.entrySet().iterator();
@@ -68,10 +65,11 @@ public class SessionCache {
 						Map.Entry<String, Entry> e = iter.next();
 						if (sessionTimeoutMillis > 0 && e.getValue().lastAccessTimestamp + sessionTimeoutMillis < now) {
 							iter.remove();
-							if (LOG.isTraceEnabled()) LOG.trace(String.format("Vacuumed expired session ID [%s]", e.getKey()));
+							if (LOG.isTraceEnabled()) 
+								LOG.trace(String.format("Vacuumed expired session ID [%s]", e.getKey()));
 						}
 					}
-					
+	
 					sleep(vacuumingFrequencyMillis);
 
 				}
@@ -124,7 +122,7 @@ public class SessionCache {
 	public static class Entry {
 		// Store as json and only deserialize if needed.
 		private byte[] json = null;
-		private VariantSession session = null;
+		private VariantCoreSession session = null;
 		private long lastAccessTimestamp = System.currentTimeMillis();
 
 		/**
@@ -146,10 +144,10 @@ public class SessionCache {
 		 * Lazily deserialize from json, if we have it.
 		 * @return
 		 */
-		public VariantSession getSession() {
+		public VariantCoreSession getSession() {
 			if (session == null && json != null) {
 				//session = new SessionServerWrapper(VariantSessionImpl.fromJson(VariantCore.api(), new String(json)));
-				session = VariantSessionImpl.fromJson(ServerBoot.core(), new String(json));
+				session = CoreSessionImpl.fromJson(ServerBoot.getCore(), new String(json));
 			}
 			return session;
 		}

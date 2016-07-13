@@ -11,6 +11,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantCore;
@@ -73,8 +74,8 @@ public class CorePropertiesTest {
 		final String TMP_FILE_NAME = "/tmp/VariantPropertiesTest.props";
 		System.setProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
 		PrintWriter tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
-		tmpFile.println(CorePropertiesImpl.EVENT_PERSISTER_CLASS_INIT.propertyName() + " = {'foo':'bar'}");
-		tmpFile.println(CorePropertiesImpl.EVENT_WRITER_MAX_DELAY_MILLIS.propertyName() + " = 12345678");	
+		tmpFile.println(VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT.propertyName() + " = {'foo':'bar'}");
+		tmpFile.println(VariantCorePropertyKeys.EVENT_WRITER_MAX_DELAY_MILLIS.propertyName() + " = 12345678");	
 		tmpFile.close();
 		
 		api = new VariantCore();
@@ -93,7 +94,7 @@ public class CorePropertiesTest {
 		// Comp time override from class path + run time override from file system.
 		System.setProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
 		tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
-		tmpFile.println(CorePropertiesImpl.EVENT_WRITER_MAX_DELAY_MILLIS.propertyName() + " = 12345678");	
+		tmpFile.println(VariantCorePropertyKeys.EVENT_WRITER_MAX_DELAY_MILLIS.propertyName() + " = 12345678");	
 		tmpFile.close();
 		
 		api = new VariantCore("/variant-test.props");
@@ -112,20 +113,20 @@ public class CorePropertiesTest {
 		// System props override. 
 		int randomInt = new Random().nextInt();
 		api = new VariantCore();
-		assertNotEquals(randomInt, api.getProperties().get(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE,  Integer.class).intValue());
-		System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE.propertyName(), String.valueOf(randomInt));
-		assertEquals(randomInt, api.getProperties().get(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
+		assertNotEquals(randomInt, api.getProperties().get(VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE,  Integer.class).intValue());
+		System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE.propertyName(), String.valueOf(randomInt));
+		assertEquals(randomInt, api.getProperties().get(VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
 
 		api = new VariantCore();
-		assertEquals(randomInt, api.getProperties().get(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
-		System.clearProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE.propertyName());
-		assertNotEquals(randomInt, api.getProperties().get(CorePropertiesImpl.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
+		assertEquals(randomInt, api.getProperties().get(VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
+		System.clearProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE.propertyName());
+		assertNotEquals(randomInt, api.getProperties().get(VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
 		
 		// JSON parsing errors
 		{
 			// Invalid JSON
 			final String BAD_JSON = "{\"foo\":\"FOO\"\"bar\":\"BAR\"}";
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_PERSISTER_CLASS_INIT.propertyName(), BAD_JSON);
+			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT.propertyName(), BAD_JSON);
 			boolean exceptionThrown = false;
 			try {
 				api = new VariantCore();
@@ -136,7 +137,7 @@ public class CorePropertiesTest {
 						new VariantRuntimeException(
 								MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON, 
 								BAD_JSON, 
-								CorePropertiesImpl.EVENT_PERSISTER_CLASS_INIT.propertyName()
+								VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT.propertyName()
 								).getMessage(), 
 						e.getMessage());
 			}
@@ -145,8 +146,8 @@ public class CorePropertiesTest {
 		
 		{
 			// missing password
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_PERSISTER_CLASS_NAME.propertyName(), "com.variant.core.event.EventPersisterH2"); 
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + CorePropertiesImpl.EVENT_PERSISTER_CLASS_INIT.propertyName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
+			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_NAME.propertyName(), "com.variant.core.event.EventPersisterH2"); 
+			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT.propertyName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
 			boolean exceptionThrown = false;
 			try {
 				api = new VariantCore();
@@ -157,8 +158,8 @@ public class CorePropertiesTest {
 						new VariantRuntimeException(
 								MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET, 
 								"password", 
-								api.getProperties().get(CorePropertiesImpl.EVENT_PERSISTER_CLASS_NAME, String.class),
-								CorePropertiesImpl.EVENT_PERSISTER_CLASS_INIT.propertyName()
+								api.getProperties().get(VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_NAME, String.class),
+								VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT.propertyName()
 								).getMessage(), 
 						e.getMessage());
 			}
