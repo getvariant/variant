@@ -1,9 +1,8 @@
 package com.variant.client.impl;
 
-import static com.variant.client.VariantProperties.*;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantInitParams;
-import com.variant.core.impl.CorePropertiesImpl;
+import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.impl.VariantCoreInitParamsImpl;
 
 public class VariantInitParamsImpl extends VariantCoreInitParamsImpl implements VariantInitParams {
@@ -11,11 +10,19 @@ public class VariantInitParamsImpl extends VariantCoreInitParamsImpl implements 
 	private static final long serialVersionUID = 1L;
 	private VariantClientImpl client;
 
-	public VariantInitParamsImpl(VariantClientImpl client, CorePropertiesImpl.Key key) {
-		super(client.getCoreApi(), SESSION_STORE_CLASS_INIT);
+	/**
+	 * 
+	 * @param client
+	 * @param key
+	 */
+	public VariantInitParamsImpl(VariantClientImpl client, VariantCorePropertyKeys.Key key) {
+		super(client.getCoreApi(), key);
 		this.client = client;
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public VariantClient getVariantClient() {
 		return client;

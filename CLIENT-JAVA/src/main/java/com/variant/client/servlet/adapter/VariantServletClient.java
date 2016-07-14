@@ -5,9 +5,8 @@ import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import com.variant.client.VariantClient;
-import com.variant.client.VariantProperties;
 import com.variant.client.VariantSession;
-import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantProperties;
 import com.variant.core.hook.HookListener;
 import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.schema.Schema;

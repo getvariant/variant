@@ -1,0 +1,7 @@
+[
+   {
+      'type':'com.variant.core.session.SessionStore',
+      'impl':'com.variant.client.session.SessionStoreImplRemote',
+      'init':{}
+   }
+]

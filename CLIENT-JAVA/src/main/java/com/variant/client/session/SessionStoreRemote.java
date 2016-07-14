@@ -1,32 +1,25 @@
-package com.variant.client.impl;
+package com.variant.client.session;
 
-import static com.variant.core.schema.impl.MessageTemplate.*;
-import static com.variant.client.VariantProperties.*;
+import static com.variant.client.VariantClientPropertyKeys.SERVER_ENDPOINT_URL;
+
+import java.util.Map;
 
 import org.apache.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.variant.client.http.HttpClient;
 import com.variant.client.http.HttpResponse;
 import com.variant.client.http.VariantHttpClientException;
-import com.variant.core.VariantCoreInitParams;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.CoreSessionImpl;
-import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.impl.VariantCoreInitParamsImpl;
 import com.variant.core.session.SessionStore;
 
 public class SessionStoreRemote implements SessionStore {
 
-	private static final Logger LOG = LoggerFactory.getLogger(SessionStoreRemote.class);
+	//private static final Logger LOG = LoggerFactory.getLogger(SessionStoreRemote.class);
 	
 	private String apiEndpointUrl = null;
-	private VariantCore coreApi;
-	private long sessionTimeoutMillis;  // dont need on client.
+	private VariantCore coreApi = null;
 
 	/**
 	 * GET or create session by ID.
@@ -80,23 +73,16 @@ public class SessionStoreRemote implements SessionStore {
 	 * 
 	 */
 	@Override
-	public void initialized(VariantCoreInitParams initParams) throws Exception {
+	public void shutdown() {}
 
-		apiEndpointUrl = (String) initParams.getOrThrow(
-				"apiEndpoint", 
-				new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), EVENT_PERSISTER_CLASS_INIT.propertyName()));
-		
-		sessionTimeoutMillis = (Integer) initParams.getOr("sessionTimeoutSecs",  "900") * 1000;
-		
-		coreApi = ((VariantCoreInitParamsImpl)initParams).getCoreApi();
-		
-		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) {
-			apiEndpointUrl = coreApi.getProperties().get(SERVER_ENDPOINT_URL);
-		}
+	/**
+	 * 
+	 */
+	@Override
+	public void init(VariantCore core, Map<String, Object> initObject) {
+		coreApi = core;
+		apiEndpointUrl = coreApi.getProperties().get(SERVER_ENDPOINT_URL);
 		if (!apiEndpointUrl.endsWith("/")) apiEndpointUrl += "/";
 	}
-
-	@Override
-	public void shutdown() {}
 	
 }

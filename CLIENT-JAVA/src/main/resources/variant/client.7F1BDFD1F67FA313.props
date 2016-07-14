@@ -1,7 +1,7 @@
 #
 # Copyright Variant, Inc. All Rights Reserved.
 #
-# Variant Java Client system property overrides.
+# Sample Variant Java Client system property overrides.
 #
 
 # Session store on a remote server accessed via an HTTP service.
@@ -20,7 +20,7 @@ targeting.tracker.class.name = com.variant.client.servlet.adapter.TargetingTrack
 # targeting tracker.  In other words, an experience found in targeting tracker
 # that is older than this number of days will be discarded, as if the user had never gone
 # through this test before.  0 == forever.
-test.max.idle.days.to.target = 0
+# test.max.idle.days.to.target = 0
 
 # Postgres Event Persister
 #event.persister.class.name = com.variant.core.ext.EventPersisterPostgres

@@ -2,7 +2,7 @@ package com.variant.server;
 
 import com.variant.core.VariantCorePropertyKeys;
 
-public interface ServerProperties extends VariantCorePropertyKeys {
+public interface ServerPropertyKeys extends VariantCorePropertyKeys {
 
 	// Default session timeout = 15 min.
 	public final static Key SESSION_TIMEOUT_SECS = new Key("session.timeout.secs", "900");

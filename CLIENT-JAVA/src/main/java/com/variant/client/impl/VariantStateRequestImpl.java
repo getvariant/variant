@@ -6,7 +6,7 @@ import java.util.Map;
 import com.variant.client.VariantStateRequest;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.impl.VariantCoreStateRequestImpl;
+import com.variant.core.impl.CoreStateRequestImpl;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -14,9 +14,9 @@ import com.variant.core.schema.Test.Experience;
 public class VariantStateRequestImpl implements VariantStateRequest {
 
 	private VariantSessionImpl session;
-	private VariantCoreStateRequestImpl coreStateRequest;
+	private CoreStateRequestImpl coreStateRequest;
 	
-	public VariantStateRequestImpl(VariantCoreStateRequestImpl coreStateRequest, VariantSessionImpl session) {
+	public VariantStateRequestImpl(CoreStateRequestImpl coreStateRequest, VariantSessionImpl session) {
 		this.coreStateRequest = coreStateRequest;
 		this.session = session;
 	}
@@ -37,14 +37,14 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	}
 
 	@Override
-	public Collection<Experience> getTargetedExperiences() {
+	public Collection<Experience> getActiveExperiences() {
 		// TODO Auto-generated method stub
-		return coreStateRequest.getTargetedExperiences();
+		return coreStateRequest.getActiveExperiences();
 	}
 
 	@Override
-	public Experience getTargetedExperience(Test test) {
-		return coreStateRequest.getTargetedExperience(test);
+	public Experience getActiveExperience(Test test) {
+		return coreStateRequest.getActiveExperience(test);
 	}
 
 	@Override

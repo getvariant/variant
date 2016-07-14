@@ -2,10 +2,17 @@ package com.variant.client.impl;
 
 import java.io.InputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.variant.client.VariantClient;
-import com.variant.client.VariantProperties;
+import com.variant.client.VariantClientPropertyKeys;
+
+import static com.variant.client.VariantClientPropertyKeys.Key;
+
 import com.variant.client.VariantSession;
-import com.variant.client.session.SessionService;
+import com.variant.client.session.ClientSessionService;
+import com.variant.core.VariantProperties;
 import com.variant.core.hook.HookListener;
 import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
@@ -24,11 +31,11 @@ import com.variant.core.util.VariantStringUtils;
  */
 public class VariantClientImpl implements VariantClient {
 	
-	//private static final Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
 			
 	private VariantCore core = null;
-	private VariantPropertiesImpl properties = null;
-	private SessionService sessionService = null;
+	private VariantProperties properties = null;
+	private ClientSessionService sessionService = null;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                         PACKAGE                                             //
@@ -38,7 +45,7 @@ public class VariantClientImpl implements VariantClient {
 	 * 
 	 * @return
 	 */
-	SessionService getSessionService() {
+	ClientSessionService getSessionService() {
 		return sessionService;
 	}
 	
@@ -58,18 +65,17 @@ public class VariantClientImpl implements VariantClient {
 
 		core.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.0");
 		
-		sessionService = new SessionService(this);
-		properties = new VariantPropertiesImpl(core.getProperties());
+		sessionService = new ClientSessionService(this);
+		properties = core.getProperties();
 
-/* TODO
+
 		if (LOG.isDebugEnabled()) {
-			LOG.debug("+-- Bootstrapping Variant with following application properties: --");
-			for (CorePropertiesImpl.Key key: CorePropertiesImpl.Key.values()) {
-				LOG.debug("| " + key.propName() + " = " + properties.get(key, String.class) + " : " + properties.getSource(key));
+			LOG.debug("+-- Bootstrapping Variant Client with following application properties: --");
+			for (Key key: Key.keys(VariantClientPropertyKeys.class)) {
+				LOG.debug("| " + key.propertyName() + " = " + properties.get(key, String.class) + " : " + properties.getSource(key));
 			}
 			LOG.debug("+------------- Fingers crossed, this is not PRODUCTION -------------");
 		}
-*/
 	}
 
 	/**

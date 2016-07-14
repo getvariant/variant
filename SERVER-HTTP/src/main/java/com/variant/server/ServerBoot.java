@@ -7,6 +7,8 @@ import com.variant.core.VariantProperties;
 import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
 
+import static com.variant.server.ServerPropertyKeys.Key;
+
 public class ServerBoot {
 
 	public static final long bootTime = System.currentTimeMillis();
@@ -28,7 +30,7 @@ public class ServerBoot {
 			// Touch ServerProperties class to cause it's instantiation and hence registration of keys with superclass.
 			//ServerProperties.SESSION_STORE_VACUUM_INTERVAL_SECS;
 			LOG.debug("+-- Bootstrapping Variant Server with following application properties: --");
-			for (ServerProperties.Key key: ServerProperties.Key.keys(ServerProperties.class)) {
+			for (Key key: Key.keys(ServerPropertyKeys.class)) {
 				LOG.debug("| " + key.propertyName() + " = " + props.get(key, String.class) + " : " + props.getSource(key));
 			}
 			LOG.debug("+------------- Fingers crossed, this is not PRODUCTION -------------");

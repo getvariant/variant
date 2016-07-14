@@ -1,5 +1,5 @@
 package com.variant.client.impl;
-
+/*
 import com.variant.client.VariantProperties;
 import com.variant.core.impl.CorePropertiesImpl;
 
@@ -7,7 +7,7 @@ import com.variant.core.impl.CorePropertiesImpl;
  * 
  * @author Igor Urisman
  * @since 0.6
- */
+ *
 public class VariantPropertiesImpl implements VariantProperties {
 
 	CorePropertiesImpl coreProperties;
@@ -20,5 +20,10 @@ public class VariantPropertiesImpl implements VariantProperties {
 	public <T> T get(Key key, Class<T> clazz) {
 		return coreProperties.get(key, clazz);
 	}
-	
+
+	@Override
+	public String getSource(Key key) {
+		return coreProperties.getSource(key);
+	}
 }
+*/

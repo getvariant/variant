@@ -191,6 +191,25 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		traversedStates.put(state, count);
 	}
 
+	/**
+	 * @param targetintStabile
+	 */
+	public void setTargetingStabile(SessionScopedTargetingStabile targetingStabile) {
+		this.targetingStabile = targetingStabile;
+	}
+	
+	/**
+	 * The {@link SessionScopedTargetingStabile} object associated with this session.
+	 * @return
+	 */
+	public SessionScopedTargetingStabile getTargetingStabile() {
+		return targetingStabile;
+	}
+
+	//---------------------------------------------------------------------------------------------//
+	//                                       Serialization                                          //
+	//---------------------------------------------------------------------------------------------//
+
 	private static final String FIELD_NAME_ID = "sid";
 	private static final String FIELD_NAME_TIMESTAMP = "time";
 	private static final String FIELD_NAME_SCHEMA_ID = "schid";
@@ -200,7 +219,6 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	private static final String FIELD_NAME_DISQUAL_TESTS = "dts";
 	private static final String FIELD_NAME_STATE = "state";
 	private static final String FIELD_NAME_COUNT = "count";
-	private static final String FIELD_NAME_TEST = "test";
 	private static final String FIELD_NAME_TARGETING_STABIL = "stabil";
 	
 	/**
@@ -395,21 +413,6 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		return result;
 	}
 	
-	/**
-	 * @param targetintStabile
-	 */
-	public void setTargetingStabile(SessionScopedTargetingStabile targetingStabile) {
-		this.targetingStabile = targetingStabile;
-	}
-	
-	/**
-	 * The {@link SessionScopedTargetingStabile} object associated with this session.
-	 * @return
-	 */
-	public SessionScopedTargetingStabile getTargetingStabile() {
-		return targetingStabile;
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		try {

@@ -1,4 +1,4 @@
-package com.variant.client.impl;
+package com.variant.client.session;
 /*
 import javax.servlet.http.HttpServletRequest;
 

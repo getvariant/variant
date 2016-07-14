@@ -10,16 +10,10 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantInitParams;
-import com.variant.client.VariantProperties;
-import com.variant.client.VariantSession;
-import com.variant.client.impl.VariantSessionImpl;
-import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.impl.VariantInitParamsImpl;
 import com.variant.client.servlet.util.TargetingTrackerString;
 import com.variant.client.servlet.util.VariantCookie;
-import com.variant.core.VariantCoreInitParams;
-import com.variant.core.VariantCoreSession;
-import com.variant.core.schema.Schema;
+import com.variant.core.VariantProperties;
 
 public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 

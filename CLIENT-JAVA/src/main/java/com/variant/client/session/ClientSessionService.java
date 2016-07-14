@@ -1,12 +1,7 @@
 package com.variant.client.session;
 
-import static com.variant.client.VariantProperties.SESSION_ID_TRACKER_CLASS_INIT;
-import static com.variant.client.VariantProperties.SESSION_ID_TRACKER_CLASS_NAME;
-import static com.variant.client.VariantProperties.TARGETING_TRACKER_CLASS_INIT;
-import static com.variant.client.VariantProperties.TARGETING_TRACKER_CLASS_NAME;
-import static com.variant.core.VariantCoreProperties.SESSION_STORE_CLASS_INIT;
-import static com.variant.core.VariantCoreProperties.SESSION_STORE_CLASS_NAME;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
+import static com.variant.client.VariantClientPropertyKeys.*;
+import static com.variant.core.schema.impl.MessageTemplate.*;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
@@ -23,12 +18,12 @@ import com.variant.core.VariantCoreInitParams;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.schema.impl.MessageTemplate;
+import com.variant.core.session.CoreSessionService;
 import com.variant.core.session.SessionStore;
 
-public class SessionService {
+public class ClientSessionService extends CoreSessionService {
 
-	private static final Logger LOG  = LoggerFactory.getLogger(SessionService.class);
+	private static final Logger LOG  = LoggerFactory.getLogger(ClientSessionService.class);
 	private VariantClientImpl client = null;
 	private SessionStore sessionStore = null;
 	
@@ -51,7 +46,7 @@ public class SessionService {
 				return result;
 			}
 			else {
-				throw new VariantBootstrapException(MessageTemplate.BOOT_SESSION_ID_TRACKER_NO_INTERFACE, sidTrackerClassName, SessionStore.class.getName());
+				throw new VariantBootstrapException(BOOT_SESSION_ID_TRACKER_NO_INTERFACE, sidTrackerClassName, SessionStore.class.getName());
 			}
 		}
 		catch (Exception e) {
@@ -97,27 +92,11 @@ public class SessionService {
 	 * @param config
 	 * @throws VariantBootstrapException 
 	 */
-	public SessionService(VariantClient client) throws VariantBootstrapException {
+	public ClientSessionService(VariantClientImpl client) throws VariantBootstrapException {
 		
+		super(client.getCoreApi());
 		this.client = (VariantClientImpl) client;
 		
-		// Session store.
-		String storeClassName = client.getProperties().get(SESSION_STORE_CLASS_NAME, String.class);
-		try {
-			Class<?> storeClass = Class.forName(storeClassName);
-			Object storeObject = storeClass.newInstance();
-			if (storeObject instanceof SessionStore) {
-				sessionStore = (SessionStore) storeObject;
-				sessionStore.initialized(client.getProperties().get(SESSION_STORE_CLASS_INIT, VariantCoreInitParams.class));
-			}
-			else {
-				throw new VariantBootstrapException(MessageTemplate.BOOT_SESSION_STORE_NO_INTERFACE, storeClassName, SessionStore.class.getName());
-			}
-		}
-		catch (Exception e) {
-			throw new VariantInternalException("Unable to instantiate session store class [" + storeClassName + "]", e);
-		}
-
 	}
 	
 	/**
@@ -126,41 +105,31 @@ public class SessionService {
 	 */
 	public void shutdown() {
 		long now = System.currentTimeMillis();
-		sessionStore.shutdown();
-		sessionStore = null;
+		super.shutdown();
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(
-					"Session Service shutdown in " + (DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
+					"Session Service shutdown in " + 
+					(DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
 		}
 	}
 	
 	/**
 	 * Get or create user session.
-	 * @param userData opaque object(s) as passed to Variant.getSession()
+	 * @param userData opaque object(s) passed to the session ID tracker without inspection.
 	 * @return 
 	 */
 	public VariantSession getSession(Object...userData) throws VariantRuntimeException {
 		
-		if (client.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 
 		// Get session ID from the session ID tracker.
 		VariantSessionIdTracker sidTracker = initSessionIdTracker(userData);
 		String sessionId = sidTracker.get();
 		// Should never return null!
 		if (sessionId == null) 
-			throw new VariantRuntimeException(MessageTemplate.RUN_SESSION_ID_NULL, sidTracker.getClass().getSimpleName());
-
-		// Get the session by ID from the session store.  NULL if desn't exist or expired.
-		VariantSessionImpl result = (VariantSessionImpl) sessionStore.get(sessionId);
-
-		// If none, create new and save in store.
-		if (result == null) {
-			VariantTargetingTracker targetingTracker = initTargetingTracker(userData);
-			result = new VariantSessionImpl(client, sidTracker, targetingTracker);
-			sessionStore.save(result);
-		}
+			throw new VariantRuntimeException(RUN_SESSION_ID_NULL, sidTracker.getClass().getSimpleName());
 		
-		return result;	
+		VariantTargetingTracker trgTracker = initTargetingTracker(userData);
+		return new VariantSessionImpl(super.getSession(sessionId), sidTracker, trgTracker);	
 	}
 	
 	/**
@@ -169,9 +138,9 @@ public class SessionService {
 	 * TODO Make this async
 	 */
 	public void saveSession(VariantSession session, Object...userData) {
-		if (client.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
+		if (client.getSchema() == null) throw new VariantRuntimeException(RUN_SCHEMA_UNDEFINED);
 		if (!client.getSchema().getId().equals(session.getSchemaId())) 
-			throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_REPLACED, client.getSchema().getId(), session.getSchemaId());
+			throw new VariantRuntimeException(RUN_SCHEMA_REPLACED, client.getSchema().getId(), session.getSchemaId());
 		sessionStore.save(session);
 	}
 }

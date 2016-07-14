@@ -3,6 +3,7 @@ package com.variant.client;
 import java.io.InputStream;
 
 import com.variant.client.impl.VariantClientImpl;
+import com.variant.core.VariantProperties;
 import com.variant.core.hook.HookListener;
 import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.schema.Schema;

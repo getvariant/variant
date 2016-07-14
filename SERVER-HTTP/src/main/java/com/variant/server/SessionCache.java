@@ -42,8 +42,8 @@ public class SessionCache {
 		private VacuumThread() {
 			
 			VariantProperties props = ServerBoot.getCore().getProperties();
-			sessionTimeoutMillis = props.get(ServerProperties.SESSION_TIMEOUT_SECS, Integer.class) * 1000;
-			vacuumingFrequencyMillis = props.get(ServerProperties.SESSION_STORE_VACUUM_INTERVAL_SECS, Integer.class) * 1000;
+			sessionTimeoutMillis = props.get(ServerPropertyKeys.SESSION_TIMEOUT_SECS, Integer.class) * 1000;
+			vacuumingFrequencyMillis = props.get(ServerPropertyKeys.SESSION_STORE_VACUUM_INTERVAL_SECS, Integer.class) * 1000;
 		}
 
 		@Override

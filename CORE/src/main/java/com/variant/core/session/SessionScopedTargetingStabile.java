@@ -155,9 +155,19 @@ public class SessionScopedTargetingStabile {
 	 * @param experience
 	 * @return
 	 */
+	public Entry add(Experience experience, long timestamp) {
+		String tname = experience.getTest().getName();
+		String ename = experience.getName();
+		return entryMap.put(tname, new Entry(tname, ename, timestamp));
+	}
+
+	/**
+	 * 
+	 * @param experience
+	 * @return
+	 */
 	public Entry add(Experience experience) {
-		String testName = experience.getTest().getName();
-		return entryMap.put(testName, new Entry(testName, experience.getName(), System.currentTimeMillis()));
+		return add(experience, System.currentTimeMillis());
 	}
 
 	/**
