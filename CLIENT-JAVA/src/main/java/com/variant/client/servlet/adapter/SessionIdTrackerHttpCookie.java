@@ -30,26 +30,6 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	
 	private SsnIdCookie cookie = null;
 
-	private void _initialized(HttpServletRequest request) {
-
-		cookie = new SsnIdCookie(request);
-		if (cookie == null || cookie.getValue() == null) {
-			cookie = new SsnIdCookie(VariantStringUtils.random64BitString(rand));
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Created new variant session ID [" + cookie.getValue() + "] for HTTP session [" + request.getSession().getId());
-			}
-		}
-		else {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Retrieved existing variant session ID [" + cookie.getValue() + "] for HTTP session [" + request.getSession().getId());
-			}			
-		}
-	}
-
-	private void _save(HttpServletResponse response) {
-		cookie.send(response);		
-	}
-
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -65,23 +45,36 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	 * @return session Id.
 	 */
 	@Override
-	public void initialized(VariantInitParams initParams, Object... userData) throws Exception {
-		HttpServletRequest request = (HttpServletRequest) userData[0];
-		_initialized(request);
+	public void initialized(VariantInitParams initParams) {
+		// Nothing.
 	}
 	
-	public String get() {
+	public String get(Object... userData) {
+		
+		HttpServletRequest request = (HttpServletRequest) userData[0];
+		cookie = new SsnIdCookie(request);
+		if (cookie == null || cookie.getValue() == null) {
+			cookie = new SsnIdCookie(VariantStringUtils.random64BitString(rand));
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Created new variant session ID [" + cookie.getValue() + "] for HTTP session [" + request.getSession().getId());
+			}
+		}
+		else {
+			if (LOG.isDebugEnabled()) {
+				LOG.debug("Retrieved existing variant session ID [" + cookie.getValue() + "] for HTTP session [" + request.getSession().getId());
+			}			
+		}
 		return cookie.getValue();
 	}
 
 	/**
-	 * We expect one 
+	 * Save
 	 * @param userData
 	 */
 	@Override
 	public void save(Object... userData) {
 		HttpServletResponse response = (HttpServletResponse) userData[0];
-		_save(response);
+		cookie.send(response);		
 	}
 
 	/**

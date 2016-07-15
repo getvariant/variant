@@ -118,6 +118,7 @@ public class JdbcService {
 	}
 
 	public JdbcService(VariantCore coreApi) {
+		if (coreApi == null) throw new IllegalArgumentException("Core API cannot be null");
 		this.coreApi = coreApi;
 	}
 

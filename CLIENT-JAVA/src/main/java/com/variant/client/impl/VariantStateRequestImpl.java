@@ -3,8 +3,10 @@ package com.variant.client.impl;
 import java.util.Collection;
 import java.util.Map;
 
+import com.variant.client.VariantSession;
 import com.variant.client.VariantStateRequest;
 import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.impl.CoreStateRequestImpl;
 import com.variant.core.schema.State;
@@ -16,11 +18,14 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	private VariantSessionImpl session;
 	private CoreStateRequestImpl coreStateRequest;
 	
-	public VariantStateRequestImpl(CoreStateRequestImpl coreStateRequest, VariantSessionImpl session) {
-		this.coreStateRequest = coreStateRequest;
-		this.session = session;
+	public VariantStateRequestImpl(VariantCoreStateRequest coreStateRequest, VariantSession session) {
+		this.coreStateRequest = (CoreStateRequestImpl) coreStateRequest;
+		this.session = (VariantSessionImpl) session;
 	}
 
+	//---------------------------------------------------------------------------------------------//
+	//                                     PUBLIC PASS-THRU                                        //
+	//---------------------------------------------------------------------------------------------//
 	@Override
 	public VariantCoreSession getSession() {
 		return coreStateRequest.getSession();
@@ -79,5 +84,13 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	@Override
 	public Status getStatus() {
 		return coreStateRequest.getStatus();
+	}
+	
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC EXT                                         //
+	//---------------------------------------------------------------------------------------------//
+
+	public CoreStateRequestImpl getCoreStateRequest () {
+		return coreStateRequest;
 	}
 }

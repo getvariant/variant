@@ -30,16 +30,16 @@ import com.variant.core.util.PropertiesChain;
 
 abstract public class BaseTestCommon {
 	
-	abstract protected JdbcService getJdbcService(VariantCore core);
+	abstract protected VariantCore getCoreApi();
 	
 	/**
 	 * @throws Exception 
 	 * 
 	 */
-	protected void recreateSchema(VariantCore core) throws Exception {
+	protected void recreateSchema() throws Exception {
 		try {
 			
-			JdbcService jdbc = getJdbcService(core);
+			JdbcService jdbc = new JdbcService(getCoreApi());
 			
 			switch (jdbc.getVendor()) {
 			case POSTGRES: 

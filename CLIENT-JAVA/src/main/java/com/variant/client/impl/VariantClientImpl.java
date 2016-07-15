@@ -57,13 +57,9 @@ public class VariantClientImpl implements VariantClient {
 	 */
 	public VariantClientImpl(String...resourceNames) {
 		
-		core = new VariantCore(
-				VariantArrayUtils.concat(
-						resourceNames,
-						"/variant/client." + VariantStringUtils.RESOURCE_POSTFIX + ".props",
-						String.class));
+		core = new VariantCore(resourceNames);
 
-		core.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.0");
+		core.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.1");
 		
 		sessionService = new ClientSessionService(this);
 		properties = core.getProperties();

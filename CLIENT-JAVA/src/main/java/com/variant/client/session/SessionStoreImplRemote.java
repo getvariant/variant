@@ -14,7 +14,7 @@ import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.session.SessionStore;
 
-public class SessionStoreRemote implements SessionStore {
+public class SessionStoreImplRemote implements SessionStore {
 
 	//private static final Logger LOG = LoggerFactory.getLogger(SessionStoreRemote.class);
 	

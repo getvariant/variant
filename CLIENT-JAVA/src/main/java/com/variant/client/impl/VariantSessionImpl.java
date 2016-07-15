@@ -17,30 +17,30 @@ import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 
 /**
- * Client side session implementation.
- * Augments core session with client-side functionality by wrapping it.
+ * Client side session implementation. Augments core session with client-side
+ * functionality by wrapping it.
  * 
  * @author Igor
  *
  */
 public class VariantSessionImpl implements VariantSession {
 
-	
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
-	
+
 	private CoreSessionImpl coreSession;
 	private VariantSessionIdTracker sessionIdTracker;
 	private VariantTargetingTracker targetingTracker;
-	
-	private static SessionScopedTargetingStabile toTargetingStable(VariantTargetingTracker tt) {
-	
+
+	private static SessionScopedTargetingStabile toTargetingStable(
+			VariantTargetingTracker tt) {
+
 		SessionScopedTargetingStabile result = new SessionScopedTargetingStabile();
-		for (VariantTargetingTracker.Entry e: tt.get()) 
+		for (VariantTargetingTracker.Entry e : tt.get())
 			result.add(e.getExperience(), e.getTimestamp());
 		return result;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -48,7 +48,7 @@ public class VariantSessionImpl implements VariantSession {
 	VariantSessionIdTracker getSessionIdTracker() {
 		return sessionIdTracker;
 	}
-	
+
 	/**
 	 * 
 	 * @return
@@ -56,30 +56,33 @@ public class VariantSessionImpl implements VariantSession {
 	VariantTargetingTracker getTargetingTracker() {
 		return targetingTracker;
 	}
-	
-	//---------------------------------------------------------------------------------------------//
-	//                                     PUBLIC AUGMENTED                                        //
-	//---------------------------------------------------------------------------------------------//
 
-	public VariantSessionImpl(VariantCoreSession coreSession, VariantSessionIdTracker sessionIdTracker, VariantTargetingTracker targetingTracker) {
+	// ---------------------------------------------------------------------------------------------//
+	// PUBLIC AUGMENTED //
+	// ---------------------------------------------------------------------------------------------//
+
+	public VariantSessionImpl(VariantCoreSession coreSession,
+			VariantSessionIdTracker sessionIdTracker,
+			VariantTargetingTracker targetingTracker) {
 		this.coreSession = (CoreSessionImpl) coreSession;
-		this.coreSession.setTargetingStabile(toTargetingStable(targetingTracker));
+		this.coreSession
+				.setTargetingStabile(toTargetingStable(targetingTracker));
 		this.sessionIdTracker = sessionIdTracker;
 		this.targetingTracker = targetingTracker;
 	}
 
-	
 	@Override
 	public VariantStateRequest targetForState(State state) {
 
-		CoreStateRequestImpl coreReq = (CoreStateRequestImpl) coreSession.targetForState(state);
-		
+		CoreStateRequestImpl coreReq = (CoreStateRequestImpl) coreSession
+				.targetForState(state);
+
 		return new VariantStateRequestImpl(coreReq, this);
 	}
 
-	//---------------------------------------------------------------------------------------------//
-	//                                     PUBLIC PASS-THRU                                        //
-	//---------------------------------------------------------------------------------------------//
+	// ---------------------------------------------------------------------------------------------//
+	// PUBLIC PASS-THRU //
+	// ---------------------------------------------------------------------------------------------//
 
 	@Override
 	public String getId() {
@@ -117,8 +120,9 @@ public class VariantSessionImpl implements VariantSession {
 	}
 
 	@Override
-	public VariantCoreStateRequest getStateRequest() {
-		return coreSession.getStateRequest();
+	public VariantStateRequest getStateRequest() {
+		VariantCoreStateRequest coreRequest = coreSession.getStateRequest();
+		return coreRequest == null ? null : new VariantStateRequestImpl(coreRequest, this);
 	}
 
 }

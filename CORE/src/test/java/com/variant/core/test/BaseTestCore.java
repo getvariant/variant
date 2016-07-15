@@ -3,7 +3,6 @@ package com.variant.core.test;
 import org.junit.Before;
 
 import com.variant.core.impl.VariantCore;
-import com.variant.core.jdbc.JdbcService;
 
 /**
  * Base class for all Core JUnit tests.
@@ -12,6 +11,7 @@ public class BaseTestCore extends BaseTestCommon {
 		
 	private static Boolean sqlSchemaCreated = false;
 	
+	private VariantCore core;
 	/**
 	 * Each case runs in its own JVM. Each test runs in its
 	 * own instance of the test case. We want the jdbc schema
@@ -23,7 +23,8 @@ public class BaseTestCore extends BaseTestCommon {
 	public void _beforeTest() throws Exception {
 		synchronized (sqlSchemaCreated) { // once per JVM
 			if (!sqlSchemaCreated) {
-				recreateSchema(rebootApi());
+				rebootApi();
+				recreateSchema();
 				sqlSchemaCreated = true;
 			}
 		}
@@ -34,11 +35,12 @@ public class BaseTestCore extends BaseTestCommon {
 	 * 
 	 */
 	protected VariantCore rebootApi() {
-		return new VariantCore("/variant-test.props");
+		core = new VariantCore("/variant-test.props");
+		return core;
 	}
 
 	@Override
-	protected JdbcService getJdbcService(VariantCore core) {
-		return new JdbcService(core);
+	protected VariantCore getCoreApi() {
+		return core;
 	}
 }

@@ -19,8 +19,6 @@ import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.mock.HttpSessionMock;
 import com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.jdbc.JdbcService;
-import com.variant.core.schema.Schema;
 import com.variant.core.test.BaseTestCommon;
 
 /**
@@ -53,21 +51,16 @@ public abstract class BaseTestClient extends BaseTestCommon {
 		}
 	}
 	
+	@Override
+	protected VariantCore getCoreApi() {
+		return coreApi;
+	}
+
 	/**
 	 * Subclasses will be able to override this
 	 */
 	protected VariantClient rebootApi() {
-		return new VariantClient("/variant-test.props");
-	}
-
-	@Override
-	protected JdbcService getJdbcService() {
-		return new JdbcService(coreApi);
-	}
-
-	@Override
-	protected Schema getSchema() {
-		return client.getSchema();
+		return VariantClient.Factory.getInstance("/variant-test.props");
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -110,7 +103,7 @@ public abstract class BaseTestClient extends BaseTestCommon {
 	}
 	
 	/**
-	 * In implementation of Answer that overrides Mockito's defaults.
+	 * An implementation of Answer that overrides Mockito's defaults.
 	 * 1. Unstubbed void methods will throw an exception, instead of doing nothing. 
 	 * 2. ?
 	 * Note that doing the same to methods returning a value will make it impossible to use the when() style

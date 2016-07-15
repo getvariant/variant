@@ -47,8 +47,6 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 	 */
 	private static class TargetingCookie extends VariantCookie {
 
-		private static final String COOKIE_NAME = "vrnt-target";
-
 		private TargetingCookie() {
 			super(COOKIE_NAME);
 		}
@@ -78,6 +76,8 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
+	public static final String COOKIE_NAME = "vrnt-target";
+
 	/**
 	 * User data is expected as an <code>HttpServletRequest</code> object.
 	 */
@@ -91,7 +91,7 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 	 */
 	@Override
 	public void save(Object...userData) {
-		_save((HttpServletResponse) userData[1]);
+		_save((HttpServletResponse) userData[0]);
 	}
 
 	@Override

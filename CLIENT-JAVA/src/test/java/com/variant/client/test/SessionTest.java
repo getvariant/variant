@@ -13,18 +13,18 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.variant.client.impl.ClientStateRequestWrapper;
-import com.variant.client.impl.VariantClientSession;
+import com.variant.client.VariantSession;
+import com.variant.client.VariantStateRequest;
+import com.variant.client.impl.VariantClientTestFacade;
+import com.variant.client.impl.VariantStateRequestImpl;
 import com.variant.client.mock.HttpServletResponseMock;
-import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.impl.CoreStateRequestImpl;
+import com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie;
+import com.variant.client.servlet.adapter.TargetingTrackerHttpCookie;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.util.Tuples.Pair;
 import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantStringUtils;
 
@@ -63,8 +63,8 @@ public class SessionTest extends BaseTestClient {
 		final HttpServletRequest httpReq = mockHttpServletRequest("JSESSIONID", null); // no vssn.
 		final HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		final VariantCoreSession ssn1 = client.getSession(httpReq, httpResp);
-		coreApi.getSessionService().saveSession(((VariantClientSession)ssn1).getCoreSession(), httpReq);     // succeeds
+		final VariantSession ssn1 = client.getSession(httpReq, httpResp);
+		VariantClientTestFacade.getSessionService(client).saveSession(ssn1, httpReq);     // succeeds
 		String oldSchemaId = client.getSchema().getId();
 		
 		// replace the schema and the session save should fail.
@@ -74,8 +74,8 @@ public class SessionTest extends BaseTestClient {
 		assertNull(response.highestMessageSeverity());
 		
 		new VariantRuntimeExceptionInterceptor() {
-			@Override public void toRun() { coreApi.getSessionService().saveSession(((VariantClientSession)ssn1).getCoreSession(), httpReq); }
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_REPLACED, getSchema().getId(), oldSchemaId);
+			@Override public void toRun() { VariantClientTestFacade.getSessionService(client).saveSession(ssn1, httpReq); }
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_REPLACED, client.getSchema().getId(), oldSchemaId);
 	}
 
 	/**
@@ -96,59 +96,59 @@ public class SessionTest extends BaseTestClient {
 		HttpServletRequest httpReq = mockHttpServletRequest("JSESSIONID", null);  // no vssn.
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		VariantCoreSession ssn1 = client.getSession(httpReq, httpResp);
+		VariantSession ssn1 = client.getSession(httpReq);
 		assertNotNull(ssn1);
 		assertNotNull(ssn1.getId());
 		assertEquals(ssn1.getSchemaId(), schema.getId());
 		assertNull(ssn1.getStateRequest());		
 		assertEquals(0, ssn1.getTraversedStates().size());
 		assertEquals(0, ssn1.getTraversedTests().size());
-		assertEquals(1, httpResp.getCookies().length);
+		assertEquals(0, httpResp.getCookies().length);
+		//assertEquals(1, httpResp.getCookies().length);  Cookie should be added after commit;
 		
-		VariantCoreSession ssn2 = client.getSession(httpReq, httpResp);
+		VariantSession ssn2 = client.getSession(httpReq);
 		assertNotNull(ssn2);
 		
-		// getSession() should be idempotent.
-		assertEquals(ssn1, ssn2);
+		// No guarantee that consequtive calls to getSession() with the same args will return the same object.
+		//assertEquals(ssn1, ssn2); 
 		assertNull(ssn2.getStateRequest());		
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(0, ssn2.getTraversedStates().size());
 		assertEquals(0, ssn2.getTraversedTests().size());
-		assertEquals(1, httpResp.getCookies().length);
 
 		State state1 = schema.getState("state1");		
-		VariantCoreStateRequest varReq = ssn2.targetForState(state1, httpReq);
+		VariantStateRequest varReq = ssn2.targetForState(state1);
 		//System.out.println(((VariantSessionImpl)ssn2).toJson());
 		assertEquals(state1, varReq.getState());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(
-				((CoreStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
-				((CoreStateRequestImpl)ssn2.getStateRequest()).toJson());
+				((VariantStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((VariantStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
 		
-		Collection<Pair<Test,Boolean>> expectedTests = VariantCollectionsUtils.list(
-				new Pair<Test,Boolean>(schema.getTest("test2"), true), 
-				new Pair<Test,Boolean>(schema.getTest("test3"), true), 
-				new Pair<Test,Boolean>(schema.getTest("test4"), true), 
-				new Pair<Test,Boolean>(schema.getTest("test5"), true), 
-				new Pair<Test,Boolean>(schema.getTest("test6"), true));
+		Collection<Test> expectedTests = VariantCollectionsUtils.list(
+				schema.getTest("test2"), 
+				schema.getTest("test3"), 
+				schema.getTest("test4"), 
+				schema.getTest("test5"), 
+				schema.getTest("test6"));
 		
 		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
 
-		varReq.commit(httpReq, httpResp);
+		varReq.commit(httpResp);
 
 		// commit() has added the targeting tracker cookie.
-		Cookie[] outgoingCookies = httpResp.getCookies();
-		assertEquals(2, outgoingCookies.length);
-		assertEquals(ssn1.getId(), outgoingCookies[0].getValue());
+		assertEquals(2, httpResp.getCookies().length);
+		assertEquals(ssn1.getId(), httpResp.getCookie(SessionIdTrackerHttpCookie.COOKIE_NAME).getValue());
+		assertEquals("", httpResp.getCookie(TargetingTrackerHttpCookie.COOKIE_NAME).getValue());
 		
 		// The session shouldn't have changed after commit.
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(
-				((CoreStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
-				((CoreStateRequestImpl)ssn2.getStateRequest()).toJson());
+				((VariantStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((VariantStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
@@ -156,12 +156,12 @@ public class SessionTest extends BaseTestClient {
 		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
 
 		// Commit should have saved the session.
-		VariantCoreSession ssn3 = client.getSession(httpReq, httpResp);
+		VariantSession ssn3 = client.getSession(httpReq, httpResp);
 		assertEquals(ssn3, ssn2);
 		assertEquals(ssn3.getSchemaId(), schema.getId());
 		assertEquals(
-				((CoreStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
-				((CoreStateRequestImpl)ssn3.getStateRequest()).toJson());
+				((VariantStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((VariantStateRequestImpl)ssn3.getStateRequest()).getCoreStateRequest().toJson());
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn3.getTraversedStates().toArray()));
@@ -186,7 +186,7 @@ public class SessionTest extends BaseTestClient {
 		HttpServletRequest httpReq = mockHttpServletRequest("JSESSIONID", sessionId);
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		VariantCoreSession ssn1 = client.getSession(httpReq, httpResp);
+		VariantSession ssn1 = client.getSession(httpReq, httpResp);
 		assertNotNull(ssn1);
 		assertEquals(sessionId, ssn1.getId());
 		assertEquals(ssn1.getSchemaId(), schema.getId());
@@ -196,23 +196,23 @@ public class SessionTest extends BaseTestClient {
 		assertEquals(0, httpResp.getCookies().length);  // We didn't drop the ssnid cookie, because there was one in request.
 		
 		State state2 = schema.getState("state2");		
-		VariantCoreStateRequest varReq = ssn1.targetForState(state2, httpReq);
+		VariantStateRequest varReq = ssn1.targetForState(state2);
 		assertEquals(ssn1, varReq.getSession());
 		assertEquals(ssn1.getSchemaId(), schema.getId());
 		assertEquals(
-				((CoreStateRequestImpl)((ClientStateRequestWrapper)varReq).getOriginalRequest()).toJson(), 
-				((CoreStateRequestImpl)ssn1.getStateRequest()).toJson());
+				((VariantStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((VariantStateRequestImpl)ssn1.getStateRequest()).getCoreStateRequest().toJson());
 		assertEquals(
 				"[(state2, 1)]", 
 				Arrays.toString(ssn1.getTraversedStates().toArray()));
 		
-		Collection<Pair<Test,Boolean>> expectedTests = VariantCollectionsUtils.list(
-				new Pair<Test,Boolean>(schema.getTest("test1"), true), 
-				new Pair<Test,Boolean>(schema.getTest("test2"), true), 
-				new Pair<Test,Boolean>(schema.getTest("test3"), true), 
-				new Pair<Test,Boolean>(schema.getTest("test4"), true), 
-				new Pair<Test,Boolean>(schema.getTest("test5"), true), 
-				new Pair<Test,Boolean>(schema.getTest("test6"), true));
+		Collection<Test> expectedTests = VariantCollectionsUtils.list(
+				schema.getTest("test1"), 
+				schema.getTest("test2"), 
+				schema.getTest("test3"), 
+				schema.getTest("test4"), 
+				schema.getTest("test5"), 
+				schema.getTest("test6"));
 
 		assertEqualAsSets(expectedTests, ssn1.getTraversedTests());		
 
@@ -221,7 +221,7 @@ public class SessionTest extends BaseTestClient {
 		// Create a new HTTP request with the same VRNT-SSNID cookie.  Should fetch the same session.
 		HttpServletRequest httpReq2 = mockHttpServletRequest("JSESSIONID", sessionId);
 		HttpServletResponseMock httpResp2 = mockHttpServletResponse();
-		VariantCoreSession ssn2 = client.getSession(httpReq2, httpResp2);
+		VariantSession ssn2 = client.getSession(httpReq2, httpResp2);
 		assertEquals(ssn2, varReq.getSession());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(ssn2.getStateRequest().getResolvedParameterMap(), varReq.getSession().getStateRequest().getResolvedParameterMap());

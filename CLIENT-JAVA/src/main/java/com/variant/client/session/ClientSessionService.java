@@ -1,20 +1,25 @@
 package com.variant.client.session;
 
-import static com.variant.client.VariantClientPropertyKeys.*;
-import static com.variant.core.schema.impl.MessageTemplate.*;
+import static com.variant.client.VariantClientPropertyKeys.SESSION_ID_TRACKER_CLASS_INIT;
+import static com.variant.client.VariantClientPropertyKeys.SESSION_ID_TRACKER_CLASS_NAME;
+import static com.variant.client.VariantClientPropertyKeys.TARGETING_TRACKER_CLASS_INIT;
+import static com.variant.client.VariantClientPropertyKeys.TARGETING_TRACKER_CLASS_NAME;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_SESSION_ID_TRACKER_NO_INTERFACE;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
+import static com.variant.core.schema.impl.MessageTemplate.RUN_SCHEMA_REPLACED;
+import static com.variant.core.schema.impl.MessageTemplate.RUN_SCHEMA_UNDEFINED;
+import static com.variant.core.schema.impl.MessageTemplate.RUN_SESSION_ID_NULL;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.impl.VariantInitParamsImpl;
 import com.variant.client.impl.VariantSessionImpl;
-import com.variant.core.VariantCoreInitParams;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
@@ -33,7 +38,7 @@ public class ClientSessionService extends CoreSessionService {
 	 * @param userData
 	 * @return
 	 */
-	private VariantSessionIdTracker initSessionIdTracker(Object...userData) {
+	private VariantSessionIdTracker initSessionIdTracker() {
 		// Session ID tracker.
 		String sidTrackerClassName = client.getProperties().get(SESSION_ID_TRACKER_CLASS_NAME, String.class);
 		try {
@@ -42,7 +47,7 @@ public class ClientSessionService extends CoreSessionService {
 			if (sidTrackerObject instanceof VariantSessionIdTracker) {
 				VariantSessionIdTracker result = (VariantSessionIdTracker) sidTrackerObject;
 				VariantInitParamsImpl initParams = new VariantInitParamsImpl(client, SESSION_ID_TRACKER_CLASS_INIT);
-				result.initialized(initParams, userData);
+				result.initialized(initParams);
 				return result;
 			}
 			else {
@@ -122,8 +127,8 @@ public class ClientSessionService extends CoreSessionService {
 		
 
 		// Get session ID from the session ID tracker.
-		VariantSessionIdTracker sidTracker = initSessionIdTracker(userData);
-		String sessionId = sidTracker.get();
+		VariantSessionIdTracker sidTracker = initSessionIdTracker();
+		String sessionId = sidTracker.get(userData);
 		// Should never return null!
 		if (sessionId == null) 
 			throw new VariantRuntimeException(RUN_SESSION_ID_NULL, sidTracker.getClass().getSimpleName());

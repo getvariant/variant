@@ -1,6 +1,7 @@
 package com.variant.client;
 
 import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.schema.State;
 
 /**
@@ -28,5 +29,15 @@ public interface VariantSession extends VariantCoreSession {
 	 */
 	@Override
 	public VariantStateRequest targetForState(State state);
+
+	/**
+	 * <p>Get most recent state request, which may be still in progress or already committed.
+	 * 
+	 * @return An object of type {@link VariantStateRequest}, or null, if none yet for this
+	 *         session.
+	 *  
+	 * @since 0.5
+	 */
+	public VariantStateRequest getStateRequest();
 
 }

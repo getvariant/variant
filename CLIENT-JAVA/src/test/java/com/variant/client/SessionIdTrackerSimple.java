@@ -1,7 +1,5 @@
 package com.variant.client;
 
-import com.variant.client.VariantSessionIdTracker;
-import com.variant.core.VariantCoreInitParams;
 import com.variant.core.exception.VariantInternalException;
 
 /**
@@ -12,20 +10,20 @@ import com.variant.core.exception.VariantInternalException;
 public class SessionIdTrackerSimple implements VariantSessionIdTracker {
 
 	@Override
-	public void initialized(VariantCoreInitParams initParams) throws Exception {}
+	public void initialized(VariantInitParams initParams) throws Exception {}
+
+	@Override
+	public void save(Object... userData) {}
 
 	@Override
 	public String get(Object...userData) {
 		try {
 			return (String) userData[0];
 		}
-		catch (Exception e) {
+		catch (ClassCastException e) {
 			throw new VariantInternalException(
-					"User data object was of type " + userData.getClass().getName() + ", but expected String", e);
+					"User data object was of type " + userData.getClass().getName() + ", but expected String");
 		}
 	}
-
-	@Override
-	public void shutdown() {}
 		
 }

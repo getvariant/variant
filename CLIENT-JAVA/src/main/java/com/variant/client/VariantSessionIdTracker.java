@@ -40,7 +40,7 @@ public interface VariantSessionIdTracker {
 	 * 
 	 * @since 0.6
 	 */
-	public void initialized(VariantInitParams initParams, Object...userData) throws Exception;
+	public void initialized(VariantInitParams initParams) throws Exception;
 
 	/**
 	 * <p>Retrieve the session ID from the tracker. If the session ID did not exist,
@@ -56,7 +56,7 @@ public interface VariantSessionIdTracker {
 	 * @see com.variant.core.Variant#dispatchRequestRequest(VariantSession, com.variant.core.schema.State, Object).
 	 * @since 0.6
 	 */
-	public String get();
+	public String get(Object...userData);
 	
 	/**
 	 * Flush the state of this object to the underlying persistence mechanism.

@@ -1,13 +1,9 @@
 #
-# Base properties for some JUnit Tests.
+# Copyright Variant, Inc. All Rights Reserved.
+#
+# Sample Variant Java Client system property overrides.
 #
 
-# We expect server to run here
-# server.endpoint.url=http://localhost:8080/
-
-event.writer.buffer.size = 10000
-event.writer.max.delay.millis = 100
-      
 # Session ID tracker in HTTP cookie.
 session.id.tracker.class.name = com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie
 session.id.tracker.class.init = {}
@@ -15,4 +11,3 @@ session.id.tracker.class.init = {}
 # Targeting tracker in cookie.
 targeting.tracker.class.name = com.variant.client.servlet.adapter.TargetingTrackerHttpCookie
 session.id.tracker.class.init = {}
-      

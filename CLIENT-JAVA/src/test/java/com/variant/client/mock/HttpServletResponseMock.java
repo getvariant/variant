@@ -16,7 +16,23 @@ public abstract class HttpServletResponseMock implements HttpServletResponse {
 		addedCookies.add(cookie);
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public Cookie[] getCookies() { 
 		return addedCookies == null ? new Cookie[0] : addedCookies.toArray(new Cookie[addedCookies.size()]); 
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public Cookie getCookie(String name) { 
+		for (Cookie cookie: addedCookies) {
+			if (cookie.getName().equals(name)) return cookie;
+		}
+		return null;
+	}
+
 }
