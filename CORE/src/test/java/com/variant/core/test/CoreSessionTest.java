@@ -13,7 +13,6 @@ import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.impl.VariantCoreTestFacade;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.impl.MessageTemplate;
@@ -52,13 +51,13 @@ public class CoreSessionTest extends BaseTestCore {
 		VariantCoreSession ssn = core.getSession("bar");
 		assertNotNull(ssn);
 
-		VariantCoreTestFacade.getSessionService(core).saveSession((CoreSessionImpl)ssn);
+		core.saveSession((CoreSessionImpl)ssn);
 
 		// Unsuccessful parse will not replace the existing schema, so still should be able to save.
 		response = core.parseSchema("UNPARSABLE JUNK");
 		assertEquals(Severity.FATAL, response.highestMessageSeverity());
 		
-		VariantCoreTestFacade.getSessionService(core).saveSession((CoreSessionImpl)ssn);
+		core.saveSession((CoreSessionImpl)ssn);
 
 		// Successful parse invalidates existing schemas.
 		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
@@ -68,7 +67,7 @@ public class CoreSessionTest extends BaseTestCore {
 		final VariantCoreSession ssnFinal = ssn;  // No closures in Java.
 		
 		new VariantRuntimeExceptionInterceptor() { 
-			@Override public void toRun() { VariantCoreTestFacade.getSessionService(core).saveSession((CoreSessionImpl)ssnFinal); }
+			@Override public void toRun() { core.saveSession((CoreSessionImpl)ssnFinal); }
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), ssnFinal.getSchemaId());
 
 	}

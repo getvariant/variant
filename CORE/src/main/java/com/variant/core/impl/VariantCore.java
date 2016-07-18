@@ -303,6 +303,15 @@ public class VariantCore implements Serializable {
 	}
 
 	/**
+	 * Save user session in session store.
+	 * @param session
+	 * TODO Make this async
+	 */
+	public void saveSession(VariantCoreSession session) {
+		sessionService.saveSession(session);
+	}
+
+	/**
 	 * <p>Register a {@link com.variant.core.hook.HookListener}. The caller must provide 
 	 * an implementation of the {@link com.variant.core.hook.HookListener} interface 
 	 * which listens to a pre-defined {@link com.variant.core.hook.UserHook} type. Whenever 
