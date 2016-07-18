@@ -1,8 +1,8 @@
 package com.variant.core.session;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.impl.MessageTemplate;
@@ -24,7 +24,7 @@ public class CoreSessionService {
 	 * @param config
 	 * @throws VariantBootstrapException 
 	 */
-	public CoreSessionService(VariantCore core) throws VariantBootstrapException {
+	public CoreSessionService(VariantCore core) {
 		this.core = (VariantCore) core;
 		this.sessionStore = Injector.inject(SessionStore.class, core);
 	}
@@ -38,23 +38,13 @@ public class CoreSessionService {
 	}
 	
 	/**
-	 * Get or create user session.
+	 * Get a session from the underlying session store. 
+	 * Recreate if does not exist and <code>create</code> is true.
 	 * @return 
 	 */
-	public VariantCoreSession getSession(String id) throws VariantRuntimeException {
-		
-		if (core.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
-
-		// Get the session by ID from the session store.  NULL if desn't exist or expired.
-		CoreSessionImpl result =  (CoreSessionImpl) sessionStore.get(id);
-
-		// If none, create new and save in store.
-		if (result == null) {
-			result = new CoreSessionImpl(id, core);
-			sessionStore.save(result);
-		}
-		
-		return result;	
+	public VariantCoreSession getSession(String id, boolean create) throws VariantRuntimeException {
+		if (core.getSchema() == null) throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
+		return  (CoreSessionImpl) sessionStore.get(id, create);
 	}
 	
 	/**
@@ -62,12 +52,12 @@ public class CoreSessionService {
 	 * @param session
 	 * TODO Make this async
 	 */
-	public void saveSession(CoreSessionImpl session) {
+	public void saveSession(VariantCoreSession session) {
 		
-		if (core.getSchema() == null) throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
+		if (core.getSchema() == null) throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 		
 		if (!core.getSchema().getId().equals(session.getSchemaId())) 
-			throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_REPLACED, core.getSchema().getId(), session.getSchemaId());
+			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), session.getSchemaId());
 		
 		sessionStore.save(session);
 	}

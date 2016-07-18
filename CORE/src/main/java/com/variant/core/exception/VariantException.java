@@ -6,7 +6,7 @@ package com.variant.core.exception;
  * @author Igor
  *
  */
-public class VariantException extends RuntimeException {
+public class VariantException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 

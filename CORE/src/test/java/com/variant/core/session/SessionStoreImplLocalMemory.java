@@ -39,9 +39,19 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	 * 
 	 */
 	@Override
-	public VariantCoreSession get(String sessionId) {
+	public VariantCoreSession get(String sessionId, boolean create) {
+		CoreSessionImpl result = null;
 		String json = map.get(sessionId);
-		return json == null ? null : CoreSessionImpl.fromJson(core, json);
+		if (json == null) {
+			if (create) {
+				result = new CoreSessionImpl(sessionId, core);
+				map.put(sessionId, result.toJson());
+			}
+		}
+		else {
+			result = CoreSessionImpl.fromJson(core, json);
+		}
+		return result;
 	}
 
 	/**
@@ -50,7 +60,7 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	 * @throws VariantException 
 	 */
 	@Override
-	public void save(VariantCoreSession session) throws VariantException {
+	public void save(VariantCoreSession session) {
 			map.put(session.getId(), ((CoreSessionImpl)session).toJson());
 	}
 	

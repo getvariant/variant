@@ -3,7 +3,6 @@ package com.variant.core.session;
 import java.util.Map;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.exception.VariantException;
 import com.variant.core.impl.VariantCore;
 
 /**
@@ -22,12 +21,12 @@ public class SessionStoreImplDefault implements SessionStore {
 	}
 
 	@Override
-	public VariantCoreSession get(String sessionId) {
+	public VariantCoreSession get(String sessionId, boolean create) {
 		throw new UnsupportedOperationException(MESSAGE);
 	}
 
 	@Override
-	public void save(VariantCoreSession session) throws VariantException {
+	public void save(VariantCoreSession session) {
 		throw new UnsupportedOperationException(MESSAGE);
 	}
 	

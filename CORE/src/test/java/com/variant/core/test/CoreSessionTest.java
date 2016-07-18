@@ -69,7 +69,7 @@ public class CoreSessionTest extends BaseTestCore {
 		
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { VariantCoreTestFacade.getSessionService(core).saveSession((CoreSessionImpl)ssnFinal); }
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_REPLACED, core.getSchema().getId(), ssnFinal.getSchemaId());
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), ssnFinal.getSchemaId());
 
 	}
 	
@@ -172,9 +172,9 @@ public class CoreSessionTest extends BaseTestCore {
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		
-		Schema schema = core.getSchema();
+		Schema schema1 = core.getSchema();
 		VariantCoreSession ssn1 = core.getSession("foo2");
-		State state1 = schema.getState("state1");
+		State state1 = schema1.getState("state1");
 		VariantCoreStateRequest req = ssn1.targetForState(state1);
 		req.commit();  // Saves the session.
 
@@ -182,21 +182,20 @@ public class CoreSessionTest extends BaseTestCore {
 		
 		VariantCoreSession ssn2 = core.getSession("foo2");
 	    assertEquals(ssn1.creationTimestamp(), ssn2.creationTimestamp());
-
+	    
 	    // new schema.
 		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-	    
-		ssn2 = core.getSession("foo2");  // should be a new session because schema's changed
-		assertEquals("foo2", ssn2.getId());
-		assertNull(ssn2.getStateRequest());
-		assertEquals(0,ssn2.getTraversedStates().size());
-		assertEquals(0, ssn2.getTraversedTests().size());
-	    assertTrue(ssn1.creationTimestamp() < ssn2.creationTimestamp());
-		
 	    Schema schema2 = core.getSchema();
-	    assertNotEquals(schema.getId(), schema2.getId());
+	    assertNotEquals(schema1.getId(), schema2.getId());
+	    
+		new VariantRuntimeExceptionInterceptor() { 
+			@Override public void toRun() { 
+				core.getSession("foo2"); 
+			}
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
+		
 	    state1 = schema2.getState("state1");
 		req = ssn2.targetForState(state1);
 		req.commit();  // Saves the session.

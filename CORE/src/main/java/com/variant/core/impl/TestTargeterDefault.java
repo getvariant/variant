@@ -5,7 +5,7 @@ import static com.variant.core.schema.impl.MessageTemplate.RUN_WEIGHT_MISSING;
 import java.util.Random;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
@@ -26,7 +26,7 @@ class TestTargeterDefault {
 			if (e.getWeight() == null ) {
 				// It's not a syntax error not to supply the weight, but if we're
 				// here it means that no targeter hook fired, and that's a runtime error.
-				throw new VariantRuntimeException(RUN_WEIGHT_MISSING, e.getTest().getName(), e.getName());
+				throw new VariantRuntimeUserErrorException(RUN_WEIGHT_MISSING, e.getTest().getName(), e.getName());
 			}
 			weightSum += e.getWeight().doubleValue();
 		}

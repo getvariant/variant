@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -39,7 +39,7 @@ public class SchemaImpl implements Schema {
 	 */
 	private void checkInternalState() {
 		if (state == InternalState.UNDEPLOYED)
-			throw new VariantRuntimeException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
+			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 		else if (state == InternalState.FAILED)
 			throw new VariantInternalException("Called on a FAILED schema");
 	}

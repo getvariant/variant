@@ -15,7 +15,7 @@ import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -178,7 +178,7 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 			return test.getExperience(entry.getExperienceName());
 		}
 		
-		if (!found) throw new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, state.getName(), test.getName());
+		if (!found) throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, state.getName(), test.getName());
 
 		return null;
 	}

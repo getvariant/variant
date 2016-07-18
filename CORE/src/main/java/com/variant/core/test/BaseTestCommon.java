@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.jdbc.JdbcService;
@@ -280,7 +281,7 @@ abstract public class BaseTestCommon {
 		 */
 		final public void assertThrown(MessageTemplate template, Object...templateArgs) throws Exception {
 			VariantRuntimeException result = super.run();
-			assertEquals(new VariantRuntimeException(template, templateArgs).getMessage(), result.getMessage());
+			assertEquals(new VariantRuntimeUserErrorException(template, templateArgs).getMessage(), result.getMessage());
 		}
 	}
 	

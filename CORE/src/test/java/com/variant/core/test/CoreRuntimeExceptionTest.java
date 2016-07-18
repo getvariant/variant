@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 import org.junit.Test;
 
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -39,7 +40,7 @@ public class CoreRuntimeExceptionTest extends BaseTestCore {
 			assertFalse(view.isNonvariantIn(schema.getTest("test2")));
 		}
 		catch (VariantRuntimeException vre ) { 
-			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state1", "test2").getMessage(), vre.getMessage());
+			assertEquals(new VariantRuntimeUserErrorException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state1", "test2").getMessage(), vre.getMessage());
 		}
 
 		view = schema.getState("state2");
@@ -47,13 +48,13 @@ public class CoreRuntimeExceptionTest extends BaseTestCore {
 			assertFalse(view.isNonvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
-			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state2", "test1").getMessage(), vre.getMessage());
+			assertEquals(new VariantRuntimeUserErrorException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state2", "test1").getMessage(), vre.getMessage());
 		}
 		try {
 			assertFalse(view.isNonvariantIn(schema.getTest("Test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
-			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state2", "Test1").getMessage(), vre.getMessage());
+			assertEquals(new VariantRuntimeUserErrorException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state2", "Test1").getMessage(), vre.getMessage());
 		}
 
 		view = schema.getState("state4");
@@ -61,7 +62,7 @@ public class CoreRuntimeExceptionTest extends BaseTestCore {
 			assertFalse(view.isNonvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
-			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state4", "test1").getMessage(), vre.getMessage());
+			assertEquals(new VariantRuntimeUserErrorException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state4", "test1").getMessage(), vre.getMessage());
 		}
 		
 		view = schema.getState("state5");
@@ -69,7 +70,7 @@ public class CoreRuntimeExceptionTest extends BaseTestCore {
 			assertFalse(view.isNonvariantIn(schema.getTest("test1")));
 		}
 		catch (VariantRuntimeException vre ) { 
-			assertEquals(new VariantRuntimeException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state5", "test1").getMessage(), vre.getMessage());
+			assertEquals(new VariantRuntimeUserErrorException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, "state5", "test1").getMessage(), vre.getMessage());
 		}
 
 	}

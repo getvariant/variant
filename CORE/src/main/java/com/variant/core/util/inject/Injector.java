@@ -154,9 +154,7 @@ public class Injector {
 	public static<T extends Injectable> T inject(Class<T> clazz, VariantCore core) {
 		if (entryMap == null) lazyInit();
 		T result = (T) entryMap.get(clazz).newInstance(core);
-		if (LOG.isDebugEnabled()) {
-			LOG.debug(String.format("Injected an instance of %s for type %s", result.getClass().getName(), clazz.getName()));
-		}
+		LOG.info(String.format("Injected an instance of %s for type %s", result.getClass().getName(), clazz.getName()));
 		return result;
 	}
 	

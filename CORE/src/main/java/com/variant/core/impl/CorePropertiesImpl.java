@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.VariantCorePropertyKeys.Key;
 import com.variant.core.VariantProperties;
-import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.PropertiesChain;
 import com.variant.core.util.Tuples.Pair;
@@ -120,7 +120,7 @@ public class CorePropertiesImpl implements VariantProperties {
 			return jacksonDataMapper.readValue(raw, Map.class);
 		}
 		catch (Exception e) {
-			throw new VariantRuntimeException(RUN_PROPERTY_INIT_INVALID_JSON, raw, key.propertyName());
+			throw new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_INVALID_JSON, raw, key.propertyName());
 		}
 	}
 
@@ -141,7 +141,7 @@ public class CorePropertiesImpl implements VariantProperties {
 		else if (clazz == Map.class)
 			return (T) getMap(key);
 		else 
-			throw new VariantRuntimeException(MessageTemplate.RUN_PROPERTY_BAD_CLASS, clazz.getName());
+			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_PROPERTY_BAD_CLASS, clazz.getName());
 	}
 	
 	/**

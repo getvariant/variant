@@ -1,7 +1,6 @@
 package com.variant.core.session;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.exception.VariantException;
 import com.variant.core.util.inject.Injectable;
 
 
@@ -23,14 +22,13 @@ public interface SessionStore extends Injectable {
 	 *         found in the store, or null if not.
 	 * @since 0.5
 	 */
-	public VariantCoreSession get(String sessionId) throws VariantException;
+	public VariantCoreSession get(String sessionId, boolean create);
 
 	/**
 	 * Save the session.
 	 * @param session The session to be saved in the store.
 	 * @since 0.5
 	 */
-	public void save(VariantCoreSession session) throws VariantException;	
-		
+	public void save(VariantCoreSession session);	
 
 }

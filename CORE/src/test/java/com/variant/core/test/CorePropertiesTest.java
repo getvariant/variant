@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantPropertiesTestFacade;
@@ -134,7 +135,7 @@ public class CorePropertiesTest {
 			catch (VariantRuntimeException e) {
 				exceptionThrown = true;
 				assertEquals(
-						new VariantRuntimeException(
+						new VariantRuntimeUserErrorException(
 								MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON, 
 								BAD_JSON, 
 								VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT.propertyName()
@@ -155,7 +156,7 @@ public class CorePropertiesTest {
 			catch (VariantRuntimeException e) {
 				exceptionThrown = true;
 				assertEquals(
-						new VariantRuntimeException(
+						new VariantRuntimeUserErrorException(
 								MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET, 
 								"password", 
 								api.getProperties().get(VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_NAME, String.class),

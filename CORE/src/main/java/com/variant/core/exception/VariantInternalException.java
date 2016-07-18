@@ -1,6 +1,6 @@
 package com.variant.core.exception;
 
-public class VariantInternalException extends VariantException {
+public class VariantInternalException extends VariantRuntimeException {
 
 	private static final long serialVersionUID = 1L;
 

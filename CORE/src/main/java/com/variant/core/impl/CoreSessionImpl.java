@@ -1,7 +1,5 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
-
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -21,11 +19,13 @@ import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.PersistableEventImpl;
-import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
+import com.variant.core.exception.VariantSchemaModifiedException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
@@ -127,7 +127,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		
 		// Can't have two requests at one time
 		if (currentRequest != null && !currentRequest.isCommitted()) {
-			throw new VariantRuntimeException (RUN_ACTIVE_REQUEST);
+			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_ACTIVE_REQUEST);
 		}
 				
 		return coreApi.getRuntime().targetSessionForState(this, (StateImpl) state);
@@ -226,7 +226,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * @return
 	 * @throws JsonProcessingException 
 	 */
-	public String toJson() throws VariantException {
+	public String toJson() throws VariantRuntimeException {
 		try {
 			StringWriter result = new StringWriter(2048);
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
@@ -313,9 +313,9 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		if (!(schidObj instanceof String)) 
 			throw new VariantInternalException("Unable to deserialzie session: schema id not string: [" + json + "]");
 
-		// If schema has changed, return null. But remember that we don't yet have a schema on server.
+		// If schema has changed, we may not be able to deserialize it. Remember that we don't yet have a schema on server.
 		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER && !coreApi.getSchema().getId().equals(schidObj)) {
-			return null;
+			throw new VariantSchemaModifiedException(coreApi.getSchema().getId(), (String)schidObj);
 		}
 					
 		CoreSessionImpl result = new CoreSessionImpl((String)idObj, coreApi);

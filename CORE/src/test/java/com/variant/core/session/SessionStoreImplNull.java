@@ -32,7 +32,7 @@ public class SessionStoreImplNull implements SessionStore {
 	 * 
 	 */
 	@Override
-	public VariantCoreSession get(String sessionId) {
+	public VariantCoreSession get(String sessionId, boolean create) {
 		return new CoreSessionImpl(sessionId, core);
 	}
 
@@ -42,7 +42,7 @@ public class SessionStoreImplNull implements SessionStore {
 	 * @throws VariantException 
 	 */
 	@Override
-	public void save(VariantCoreSession session) throws VariantException {
+	public void save(VariantCoreSession session) {
 		// don't save anything
 	}
 	

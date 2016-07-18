@@ -8,11 +8,11 @@ import java.util.Random;
 import org.junit.Test;
 
 import com.variant.core.VariantCorePropertyKeys;
-import com.variant.core.VariantProperties;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.EventPersisterNull;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestTargetingHook;
 import com.variant.core.impl.CorePropertiesImpl;
@@ -339,7 +339,7 @@ public class TargetingTest extends BaseTestCore {
 		new ExceptionInterceptor<VariantRuntimeException>() {
 			@Override public void toRun() { ssn.targetForState(state); }
 			@Override public void onThrown(VariantRuntimeException e) { 
-				assertEquals(e.getMessage(), new VariantRuntimeException(MessageTemplate.RUN_WEIGHT_MISSING, "test1", "B").getMessage()); 
+				assertEquals(e.getMessage(), new VariantRuntimeUserErrorException(MessageTemplate.RUN_WEIGHT_MISSING, "test1", "B").getMessage()); 
 			}
 			@Override public Class<VariantRuntimeException> getExceptionClass() { return VariantRuntimeException.class; }
 		}.assertThrown();

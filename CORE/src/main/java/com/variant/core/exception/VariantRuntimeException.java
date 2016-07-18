@@ -1,41 +1,39 @@
 package com.variant.core.exception;
 
-import com.variant.core.schema.impl.MessageTemplate;
-import com.variant.core.schema.parser.Severity;
 
-public class VariantRuntimeException extends VariantException {
+public class VariantRuntimeException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
-	private MessageTemplate template;
-	private Object[] args;
 	
-	public VariantRuntimeException(MessageTemplate template, Object...args) {
-		super();
-		this.template = template;
-		this.args = args;
-	}
+	/**
+	 * 
+	 */
+	public VariantRuntimeException() {}
 
-	public VariantRuntimeException(MessageTemplate template, Throwable t, Object...args) {
+	/**
+	 * 
+	 * @param msg
+	 */
+	public VariantRuntimeException(String msg) {
+		super(msg);
+	}
+	
+	/**
+	 * 
+	 * @param msg
+	 * @param t
+	 */
+	public VariantRuntimeException(Throwable t) {
 		super(t);
-		this.template = template;
-		this.args = args;
 	}
 
 	/**
 	 * 
-	 * @return
+	 * @param msg
+	 * @param t
 	 */
-	public Severity getSeverity() {
-		return template.getSeverity();
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	@Override
-	public String getMessage() {
-		return String.format(template.getFormat(), (Object[]) args);
+	public VariantRuntimeException(String msg, Throwable t) {
+		super(msg, t);
 	}
 
 }

@@ -7,7 +7,7 @@ import java.sql.DriverManager;
 import java.util.Properties;
 
 import com.variant.core.VariantCoreInitParams;
-import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.jdbc.EventPersisterJdbc;
 import com.variant.core.jdbc.JdbcService.Vendor;
 import com.variant.open.securestring.SecureString;
@@ -21,13 +21,13 @@ public class EventPersisterPostgres extends EventPersisterJdbc {
 	@Override
 	public void initialized(VariantCoreInitParams initParams) throws Exception {
 		url = (String) initParams.getOrThrow(
-				"url", new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName()));
+				"url", new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName()));
 		
 		user = (String) initParams.getOrThrow(
-				"user", new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", this.getClass().getName()));
+				"user", new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", this.getClass().getName()));
 		
 		String passString = (String) initParams.getOrThrow(
-				"password", new VariantRuntimeException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", this.getClass().getName()));
+				"password", new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", this.getClass().getName()));
 
 		password = new SecureString(passString.toCharArray());
 	}

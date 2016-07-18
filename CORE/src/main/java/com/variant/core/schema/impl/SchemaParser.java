@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.impl.VariantCore;
@@ -111,7 +110,7 @@ public class SchemaParser implements Keywords {
 				try {
 					hooker.post(new StateParsedHookImpl(state, response));
 				}
-				catch (VariantException e) {
+				catch (VariantRuntimeException e) {
 					response.addMessage(MessageTemplate.HOOK_LISTENER_EXCEPTION, StateParsedHookImpl.class.getName(), e.getMessage());
 				}
 			}
@@ -135,7 +134,7 @@ public class SchemaParser implements Keywords {
 				try {
 					hooker.post(new TestParsedHookImpl(test, response));
 				}
-				catch (VariantException e) {
+				catch (VariantRuntimeException e) {
 					response.addMessage(MessageTemplate.HOOK_LISTENER_EXCEPTION, TestParsedHookImpl.class.getName(), e.getMessage());
 				}
 			}

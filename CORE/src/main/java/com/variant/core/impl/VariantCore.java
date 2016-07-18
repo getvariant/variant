@@ -1,6 +1,10 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.*;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
+import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,9 +19,9 @@ import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
-import com.variant.core.exception.VariantException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.UserHook;
 import com.variant.core.schema.Schema;
@@ -89,7 +93,7 @@ public class VariantCore implements Serializable {
 		String runTimePropsFileName = System.getProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME);
 		
 		if (runTimePropsResourceName != null && runTimePropsFileName!= null) {
-			throw new VariantRuntimeException(BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN);
+			throw new VariantRuntimeUserErrorException(BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN);
 		}
 		
 		if (runTimePropsResourceName != null) {
@@ -99,7 +103,7 @@ public class VariantCore implements Serializable {
 						"-D" + CorePropertiesImpl.COMMANDLINE_RESOURCE_NAME + "=" + runTimePropsResourceName);
 			}
 			catch (Exception e) {
-				throw new VariantRuntimeException(BOOT_CONFIG_RESOURCE_NOT_FOUND, e, runTimePropsResourceName);
+				throw new VariantRuntimeUserErrorException(BOOT_CONFIG_RESOURCE_NOT_FOUND, e, runTimePropsResourceName);
 			}
 		}
 		else if (runTimePropsFileName != null) {
@@ -109,7 +113,7 @@ public class VariantCore implements Serializable {
 						 "-D" + CorePropertiesImpl.COMMANDLINE_FILE_NAME + "=" + runTimePropsFileName);
 			}
 			catch (Exception e) {
-				throw new VariantRuntimeException(BOOT_CONFIG_FILE_NOT_FOUND, e, runTimePropsFileName);
+				throw new VariantRuntimeUserErrorException(BOOT_CONFIG_FILE_NOT_FOUND, e, runTimePropsFileName);
 			}			
 		}
 	}
@@ -138,7 +142,7 @@ public class VariantCore implements Serializable {
 				eventPersister.initialized(new VariantCoreInitParamsImpl(this, VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT));
 			}
 			else {
-				throw new VariantRuntimeException (BOOT_EVENT_PERSISTER_NO_INTERFACE, eventPersisterClassName, EventPersister.class.getName());
+				throw new VariantRuntimeUserErrorException (BOOT_EVENT_PERSISTER_NO_INTERFACE, eventPersisterClassName, EventPersister.class.getName());
 			}
 		}
 		catch (VariantRuntimeException e) {
@@ -195,7 +199,7 @@ public class VariantCore implements Serializable {
 			setupSystemProperties(resourceNames);
 			instantiate();
 		}
-		catch (final VariantException e) {
+		catch (final VariantRuntimeException e) {
 			throw e;
 		}
 		catch (Exception e) {
@@ -271,6 +275,21 @@ public class VariantCore implements Serializable {
 	}
 		
 	/**
+	 * Get or create user session. The contract of this method is that multiple calls with the same argument
+	 * will return the same object, provided the session did not expire between calls.  It is an error to
+	 * call this method on an idle instance, i.e. before a valid schema has been parsed. If the session has
+	 * not expired, but the schema has changed since it was created, the VariantSchemaChanged unchecked exception
+	 * will be thrown.
+	 * 
+	 * @param id Session ID.
+	 * @since 0.6
+	 * @return An instance of {@link VariantCoreSession}.
+	 */
+	public VariantCoreSession getSession(String id, boolean create) {
+		return sessionService.getSession(id, create);
+	}
+	
+	/**
 	 * Get user session. The contract of this method is that multiple calls with the same argument
 	 * will return the same object, provided the session did not expire between calls.  It is an error to
 	 * call this method on an idle instance, i.e. before a valid schema has been parsed. 
@@ -280,9 +299,9 @@ public class VariantCore implements Serializable {
 	 * @return An instance of {@link VariantCoreSession}.
 	 */
 	public VariantCoreSession getSession(String id) {
-		return sessionService.getSession(id);
+		return sessionService.getSession(id, true);
 	}
-	
+
 	/**
 	 * <p>Register a {@link com.variant.core.hook.HookListener}. The caller must provide 
 	 * an implementation of the {@link com.variant.core.hook.HookListener} interface 
