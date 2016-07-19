@@ -49,7 +49,10 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	
 	// This doesn't change over the life of a request, so we'll only compute this once.
 	private Collection<Experience> activeExperiences; 
-		
+			
+	//---------------------------------------------------------------------------------------------//
+	//                                          PACKAGE                                            //
+	//---------------------------------------------------------------------------------------------//
 	/**
 	 * Regular constructor
 	 * @param session
@@ -90,6 +93,8 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	@Override
 	public void commit() {
 		
+		session.checkState();
+		
 		if (isCommitted()) throw new IllegalStateException("Request already committed");
 		
 		// We won't have an event if nothing is instrumented on this state
@@ -105,8 +110,9 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 			event = null;
 		}
 		
+		session.save();
+		
 		committed = true;
-
 	}
 
 	@Override

@@ -7,6 +7,7 @@ import java.util.List;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantSpace;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
@@ -18,6 +19,7 @@ import com.variant.core.schema.Test;
 public class TestImpl implements Test {
 	
 	// As defined:
+	private Schema schema;
 	private String name;
 	private CorePropertiesImpl properties;
 	private boolean isOn = true;
@@ -33,7 +35,8 @@ public class TestImpl implements Test {
 	 * 
 	 * @param name
 	 */
-	TestImpl(String name, CorePropertiesImpl properties) {
+	TestImpl(Schema schema, String name, CorePropertiesImpl properties) {
+		this.schema = schema;
 		this.name = name;
 		this.properties = properties;
 	}
@@ -83,8 +86,13 @@ public class TestImpl implements Test {
 	//---------------------------------------------------------------------------------------------//
 	
 	/**
-	 * View's declared name
-	 * @return
+	 */
+	@Override
+	public Schema getSchema() {
+		return schema;
+	}
+
+	/**
 	 */
 	@Override
 	public String getName() {
@@ -92,7 +100,6 @@ public class TestImpl implements Test {
 	}
 
 	/**
-	 * 
 	 */
 	@Override
 	@SuppressWarnings("unchecked")

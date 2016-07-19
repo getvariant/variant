@@ -12,6 +12,14 @@ import java.util.Map;
 public interface Test {
 
 	/**
+	 * The schema that created this Test.
+	 * 
+	 * @return An object of type {@link Schema}
+	 * @since 0.6
+	 */
+	public Schema getSchema();
+
+	/**
 	 * The name of this test.
 	 * 
 	 * @return The name of this test.

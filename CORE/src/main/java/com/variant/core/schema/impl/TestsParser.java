@@ -129,7 +129,7 @@ public class TestsParser implements Keywords {
 			return null;
 		}
 		
-		TestImpl result = new TestImpl(name, properties);
+		TestImpl result = new TestImpl(response.getSchema(), name, properties);
 		
 		// Pass 2: Parse experiences.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {

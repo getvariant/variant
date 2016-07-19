@@ -51,6 +51,10 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	private SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
 	private String schemaId;
 	
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
 	/**
 	 * 
 	 * @param id
@@ -65,11 +69,6 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		this.id = id;
 		
 	}
-
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
-
 	/**
 	 * 
 	 */
@@ -124,6 +123,8 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 */
 	@Override
 	public VariantCoreStateRequest targetForState(State state) {
+				
+		checkState();
 		
 		// Can't have two requests at one time
 		if (currentRequest != null && !currentRequest.isCommitted()) {
@@ -206,6 +207,19 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		return targetingStabile;
 	}
 
+	/**
+	 * 
+	 */
+	public void save() {
+		coreApi.getSessionService().saveSession(this);
+	}
+	
+	public void checkState() {
+		if (!schemaId.equals(coreApi.getSchema().getId())) {
+			throw new VariantSchemaModifiedException(coreApi.getSchema().getId(), schemaId);		
+		}
+	}
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                       Serialization                                          //
 	//---------------------------------------------------------------------------------------------//

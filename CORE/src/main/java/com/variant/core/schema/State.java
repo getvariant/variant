@@ -13,6 +13,13 @@ import com.variant.core.exception.VariantRuntimeException;
  */
 public interface State {
 
+	/**
+	 * The schema that created this State.
+	 * 
+	 * @return An object of type {@link Schema}
+	 * @since 0.6
+	 */
+	public Schema getSchema();
 	
 	/**
 	 * The name of this test.

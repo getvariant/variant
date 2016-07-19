@@ -51,25 +51,34 @@ public class CoreSessionTest extends BaseTestCore {
 		VariantCoreSession ssn = core.getSession("bar");
 		assertNotNull(ssn);
 
-		core.saveSession((CoreSessionImpl)ssn);
+		//core.saveSession((CoreSessionImpl)ssn);
 
 		// Unsuccessful parse will not replace the existing schema, so still should be able to save.
 		response = core.parseSchema("UNPARSABLE JUNK");
 		assertEquals(Severity.FATAL, response.highestMessageSeverity());
 		
-		core.saveSession((CoreSessionImpl)ssn);
+		//core.saveSession((CoreSessionImpl)ssn);
 
 		// Successful parse invalidates existing schemas.
 		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		final VariantCoreSession ssnFinal = ssn;  // No closures in Java.
+		final VariantCoreSession ssnFinal = ssn;  // No closures in Java
 		
 		new VariantRuntimeExceptionInterceptor() { 
-			@Override public void toRun() { core.saveSession((CoreSessionImpl)ssnFinal); }
+			@Override public void toRun() { 
+				core.getSession("bar"); 
+			}
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), ssnFinal.getSchemaId());
 
+		
+		new VariantRuntimeExceptionInterceptor() { 
+			@Override public void toRun() { 
+				VariantCoreStateRequest req = ssnFinal.targetForState(core.getSchema().getState("state1"));
+				req.commit();
+			}
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), ssnFinal.getSchemaId());
 	}
 	
 	/**
@@ -174,30 +183,49 @@ public class CoreSessionTest extends BaseTestCore {
 		Schema schema1 = core.getSchema();
 		VariantCoreSession ssn1 = core.getSession("foo2");
 		State state1 = schema1.getState("state1");
-		VariantCoreStateRequest req = ssn1.targetForState(state1);
+		final VariantCoreStateRequest req = ssn1.targetForState(state1);
 		req.commit();  // Saves the session.
 
 		Thread.sleep(10);
 		
-		VariantCoreSession ssn2 = core.getSession("foo2");
-	    assertEquals(ssn1.creationTimestamp(), ssn2.creationTimestamp());
+		final VariantCoreSession ssn2 = core.getSession("foo2");
+		assertEquals(ssn1, ssn2);
 	    
 	    // new schema.
 		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-	    Schema schema2 = core.getSchema();
+		
+	    final Schema schema2 = core.getSchema();
 	    assertNotEquals(schema1.getId(), schema2.getId());
 	    
+	    // can't get session with the same sessionId because schema changed.
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { 
-				core.getSession("foo2"); 
+				core.getSession("foo2", false); 
 			}
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
 		
-	    state1 = schema2.getState("state1");
-		req = ssn2.targetForState(state1);
-		req.commit();  // Saves the session.
+	    // ditto, even with recreate
+		new VariantRuntimeExceptionInterceptor() { 
+			@Override public void toRun() { 
+				core.getSession("foo2", true); 
+			}
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
+
+		// ditto, target a session created by older schema to a state in a newer schema;
+		new VariantRuntimeExceptionInterceptor() { 
+			@Override public void toRun() { 
+				ssn2.targetForState(schema2.getState("state1"));
+			}
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
+
+		// ditto, can't commit
+		new VariantRuntimeExceptionInterceptor() { 
+			@Override public void toRun() { 
+				req.commit();  // Saves the session.
+			}
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
 	    
 		// new API
 		core = rebootApi();

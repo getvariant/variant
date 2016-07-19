@@ -39,6 +39,11 @@ public class StateImpl implements State {
 	//---------------------------------------------------------------------------------------------//
 
 	@Override
+	public Schema getSchema() {
+		return schema;
+	}
+
+	@Override
 	public String getName() {
 		return name;
 	}

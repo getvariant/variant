@@ -3,6 +3,7 @@ package com.variant.core.srvstub;
 import java.util.List;
 
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
@@ -37,6 +38,11 @@ public class TestServerStub implements Test {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public Schema getSchema() {
+		throw new VariantInternalException("Method not supported");
 	}
 
 	@Override
