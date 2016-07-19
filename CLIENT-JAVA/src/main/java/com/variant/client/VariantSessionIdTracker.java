@@ -31,7 +31,7 @@ public interface VariantSessionIdTracker {
 
 	/**
 	 * <p>Called by Variant client immediately following the instantiation within the scope of the
-	 * {@link VariantClient#getSession(Object...userData)} method.
+	 * {@link VariantClient#getSession(Object...userData)} method.</p>
 	 * 
 	 * @param initParams The init parameter map, as specified by the <code>targeting.tracker.class.init</code>
 	 *                   application property. 
@@ -43,23 +43,20 @@ public interface VariantSessionIdTracker {
 	public void initialized(VariantInitParams initParams) throws Exception;
 
 	/**
-	 * <p>Retrieve the session ID from the tracker. If the session ID did not exist,
-	 * the implementation should create it and, if needed, save it in the tracker.
-	 * The contract of this method is that multiple calls with the same arguments
-	 * will return the same value. 
+	 * <p>Retrieve the session ID from the tracker.</p>
 	 *  
 	 * @param userData An array of 0 or more opaque objects which 
 	 *                 {@link com.variant.core.Variant#targetForState(VariantCoreSession, com.variant.core.schema.State, Object)} 
 	 *                 will pass here without interpretation.
 	 * 
-	 * @return Session ID. Should never be null.
-	 * @see com.variant.core.Variant#dispatchRequestRequest(VariantSession, com.variant.core.schema.State, Object).
+	 * @return Session ID, if present in the tracker or null if not present.
 	 * @since 0.6
 	 */
 	public String get(Object...userData);
 	
 	/**
-	 * Flush the state of this object to the underlying persistence mechanism.
+	 * <p>Set the session ID, tracked by this object,, to the provided value and flush the state of this object 
+	 * to the underlying persistence mechanism.</p>
 	 * 
 	 * @param userData An array of 0 or more opaque objects which 
 	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantCoreStateRequest, Object...)} 
@@ -67,7 +64,7 @@ public interface VariantSessionIdTracker {
 	 *                 
 	 * @since 0.6
 	 */
-	public void save(Object...userData);
+	public void save(String sessionId, Object...userData);
 
 }
 

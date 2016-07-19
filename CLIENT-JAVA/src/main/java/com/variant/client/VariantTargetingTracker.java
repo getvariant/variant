@@ -31,7 +31,7 @@ public interface VariantTargetingTracker {
 	 * 
 	 * @since 0.6
 	 */
-	public void initialized(VariantInitParams initParams, Object...userData) throws Exception;
+	public void initialized(VariantInitParams initParams) throws Exception;
 
 	
 	/**
@@ -42,7 +42,7 @@ public interface VariantTargetingTracker {
 	 * @return Collection of objects of type {@link Entry}.
 	 * @since 0.6
 	 */
-	public Collection<Entry> get();
+	public Collection<Entry> get(Object...userData);
 		
 	/**
 	 * Set the value of all currently tracked test experiences. The implementation must guarantee 

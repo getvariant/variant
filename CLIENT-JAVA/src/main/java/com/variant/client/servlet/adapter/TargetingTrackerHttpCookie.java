@@ -1,6 +1,5 @@
 package com.variant.client.servlet.adapter;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +9,6 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantInitParams;
-import com.variant.client.impl.VariantInitParamsImpl;
 import com.variant.client.servlet.util.TargetingTrackerString;
 import com.variant.client.servlet.util.VariantCookie;
 import com.variant.core.VariantProperties;
@@ -18,28 +16,8 @@ import com.variant.core.VariantProperties;
 public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 
 	private TargetingCookie cookie;
-	private Collection<Entry> entries = new ArrayList<Entry>();
 	private VariantClient client;
 	
-	/**
-	 * 
-	 */
-	private void _initialized(VariantInitParamsImpl initParams, HttpServletRequest request) {
-		client = initParams.getVariantClient();
-		cookie = new TargetingCookie(request);
-		String input = cookie.getValue();
-		// If the targeting cookie existed and returned a value, the superclass will parse it.
-		if (input != null) entries = fromString(cookie.getValue(), initParams.getVariantClient().getSchema());
-	}
-
-	/**
-	 * 
-	 */
-	private void _save(HttpServletResponse response) {		
-		cookie.setValue(toString(entries));
-		cookie.send(response);
-	}
-
 	//private Logger LOG = LoggerFactory.getLogger(TargetingTrackerHttpCookie.class);
 	
 	/**
@@ -82,8 +60,8 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 	 * User data is expected as an <code>HttpServletRequest</code> object.
 	 */
 	@Override
-	public void initialized(VariantInitParams initParams, Object... userData) throws Exception {
-		_initialized((VariantInitParamsImpl) initParams, (HttpServletRequest) userData[0]);
+	public void initialized(VariantInitParams initParams) throws Exception {
+		client = initParams.getVariantClient();
 	}		
 
 	/**
@@ -91,17 +69,25 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 	 */
 	@Override
 	public void save(Object...userData) {
-		_save((HttpServletResponse) userData[0]);
+		HttpServletResponse response = (HttpServletResponse) userData[0];
+		cookie.send(response);
 	}
 
+	/**
+	 * Expecting userData[0] to be the HttpServletRequest.
+	 */
 	@Override
-	public Collection<Entry> get() {
-		return entries;
+	public Collection<Entry> get(Object... userData) {
+		HttpServletRequest request =  (HttpServletRequest) userData[0];
+		cookie = new TargetingCookie(request);
+		String input = cookie.getValue();
+		// If the targeting cookie existed and returned a value, the superclass will parse it.
+		return input == null ? null : fromString(cookie.getValue(), client.getSchema());
 	}
 
 	@Override
 	public void set(Collection<Entry> entries) {
-		this.entries = entries;
+		cookie.setValue(toString(entries));
 	}
 
 }

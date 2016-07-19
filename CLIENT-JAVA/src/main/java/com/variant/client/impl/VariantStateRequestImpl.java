@@ -78,7 +78,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		
 		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 		session.getTargetingTracker().save(userData);
-		session.getSessionIdTracker().save(userData);
+		session.getSessionIdTracker().save(session.getId(), userData);
 	}
 
 	@Override

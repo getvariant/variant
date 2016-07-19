@@ -58,15 +58,15 @@ public class VariantSessionImpl implements VariantSession {
 	}
 
 	// ---------------------------------------------------------------------------------------------//
-	// PUBLIC AUGMENTED //
+	//                                       PUBLIC AUGMENTED                                       //
 	// ---------------------------------------------------------------------------------------------//
 
 	public VariantSessionImpl(VariantCoreSession coreSession,
 			VariantSessionIdTracker sessionIdTracker,
 			VariantTargetingTracker targetingTracker) {
+		
 		this.coreSession = (CoreSessionImpl) coreSession;
-		this.coreSession
-				.setTargetingStabile(toTargetingStable(targetingTracker));
+		this.coreSession.setTargetingStabile(toTargetingStable(targetingTracker));
 		this.sessionIdTracker = sessionIdTracker;
 		this.targetingTracker = targetingTracker;
 	}
@@ -81,7 +81,7 @@ public class VariantSessionImpl implements VariantSession {
 	}
 
 	// ---------------------------------------------------------------------------------------------//
-	// PUBLIC PASS-THRU //
+	//                                      PUBLIC PASS-THRU                                        //
 	// ---------------------------------------------------------------------------------------------//
 
 	@Override
@@ -125,4 +125,15 @@ public class VariantSessionImpl implements VariantSession {
 		return coreRequest == null ? null : new VariantStateRequestImpl(coreRequest, this);
 	}
 
+	// ---------------------------------------------------------------------------------------------//
+	//                                           PUBLIC EXT                                         //
+	// ---------------------------------------------------------------------------------------------//
+
+	/**
+	 * 
+	 * @param coreSession
+	 */
+	public void replaceCoreSession(VariantCoreSession coreSession) {
+		this.coreSession = (CoreSessionImpl) coreSession;
+	}
 }

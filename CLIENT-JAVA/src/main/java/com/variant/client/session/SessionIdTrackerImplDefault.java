@@ -17,7 +17,7 @@ public class SessionIdTrackerImplDefault implements VariantSessionIdTracker {
 	public void initialized(VariantInitParams initParams) throws Exception {}
 
 	@Override
-	public void save(Object... userData) {
+	public void save(String sessionId, Object... userData) {
 		throw new UnsupportedOperationException(MESSAGE);
 	}
 

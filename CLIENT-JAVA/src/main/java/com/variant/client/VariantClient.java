@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.VariantProperties;
+import com.variant.core.exception.VariantSchemaModifiedException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.schema.Schema;
@@ -83,14 +84,38 @@ public interface VariantClient {
 	public Schema getSchema();
 
 	/**
-	 * <p>Get user's Variant session.
+	 * <p>Get caller's Variant session. If the session ID exists in the underlying implementation of 
+	 * {@link VariantSessionIdTracker} and the session with this session ID has not expired on the server,
+	 * this session is returned. Otherwise, a new session is created, if <code>create</code> is true. If
+	 * the session has not expired but the schema has changed since it was created, this call will throw
+	 * an unchecked {@link VariantSchemaModifiedException}.
+	 * </p>
 	 * 
-	 * @param userData
+	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
+	 *                 to the implementations of {@link com.variant.client.VariantSessionIdTracker#get(Object...)}.
+     *
+	 * @since 0.6
+	 * @return An object of type {@link VariantSession}. This call is guaranteed to be idempotent, i.e. a subsequent
+	 *         invocation with the same arguments will return the same object, unless the session expired between the
+	 *         invocations, in which case <code>null</code> will be returned if <code>create</code> is false, or a
+	 *         new object if <code>create</code> is true.
+	 */
+	public VariantSession getSession(boolean create, Object... userData);
+			
+	/**
+	 * <p>Equivalent to <code>getSession(true, userData)</code>
+	 * </p>
+	 * 
+	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
+	 *                 to the implementations of {@link com.variant.client.VariantSessionIdTracker#get(Object...)}.
+     *
 	 * @since 0.5
-	 * @return
+	 * @return An object of type {@link VariantSession}. This call is guaranteed to be idempotent, i.e. a subsequent
+	 *         invocation with the same arguments will return the same object, unless the session expired between the
+	 *         invocations, in which case <code>null</code> will be returned if <code>create</code> is false, or a
+	 *         new object if <code>create</code> is true.
 	 */
 	public VariantSession getSession(Object... userData);
-			
 	
 	/**
 	 * <p>Factory class

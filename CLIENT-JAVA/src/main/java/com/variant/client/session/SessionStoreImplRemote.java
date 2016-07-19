@@ -24,13 +24,12 @@ public class SessionStoreImplRemote implements SessionStore {
 	/**
 	 * GET or create session by ID.
 	 * In 0.6 we're not able to create session on the server because the server
-	 * does not understand schemas. To avoid an extra trip to the server, we'll
-	 * pre-create a blank session and send it in the body of the GET request,
+	 * does not understand schemas.
 	 * 
 	 * @since 0.6
 	 */
 	@Override
-	public VariantCoreSession get(String sessionId) {
+	public VariantCoreSession get(String sessionId, boolean create) {
 
 		if (sessionId == null || sessionId.length() == 0) {
 			throw new IllegalArgumentException("No session ID");
@@ -43,7 +42,14 @@ public class SessionStoreImplRemote implements SessionStore {
 			return CoreSessionImpl.fromJson(coreApi, resp.getBody());
 		}
 		else if (resp.getStatus() == HttpStatus.SC_NO_CONTENT) {
-			return null;
+			if (create) {
+				VariantCoreSession result = new CoreSessionImpl(sessionId, coreApi);
+				save(result);
+				return result;
+			}
+			else {
+				return null;
+			}
 		}
 		else {
 			throw new VariantHttpClientException(resp);

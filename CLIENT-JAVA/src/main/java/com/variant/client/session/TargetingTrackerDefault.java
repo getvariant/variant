@@ -20,7 +20,7 @@ public class TargetingTrackerDefault implements VariantTargetingTracker {
 					VariantClientPropertyKeys.TARGETING_TRACKER_CLASS_NAME.propertyName();
 
 	@Override
-	public void initialized(VariantInitParams initParams, Object... userData) throws Exception {}		
+	public void initialized(VariantInitParams initParams) throws Exception {}		
 
 	/**
 	 * User data is expected as an <code>HttpServletResponse</code> object.
@@ -31,7 +31,7 @@ public class TargetingTrackerDefault implements VariantTargetingTracker {
 	}
 
 	@Override
-	public Collection<Entry> get() {
+	public Collection<Entry> get(Object... userData) {
 		throw new UnsupportedOperationException(MESSAGE);
 	}
 

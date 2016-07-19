@@ -1,17 +1,11 @@
 package com.variant.client.servlet.adapter;
 
-import java.util.Random;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.variant.client.VariantInitParams;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.servlet.util.VariantCookie;
-import com.variant.core.util.VariantStringUtils;
 
 /**
  * HTTP Cookie based session ID tracker. Session ID is saved in an HTTP cookie.
@@ -24,10 +18,7 @@ import com.variant.core.util.VariantStringUtils;
  * @since 0.5
  */
 public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
-		
-	private static final Logger LOG = LoggerFactory.getLogger(SessionIdTrackerHttpCookie.class);
-	private static final Random rand = new Random(System.currentTimeMillis());
-	
+			
 	private SsnIdCookie cookie = null;
 
 	//---------------------------------------------------------------------------------------------//
@@ -49,22 +40,12 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 		// Nothing.
 	}
 	
+	@Override
 	public String get(Object... userData) {
 		
 		HttpServletRequest request = (HttpServletRequest) userData[0];
 		cookie = new SsnIdCookie(request);
-		if (cookie == null || cookie.getValue() == null) {
-			cookie = new SsnIdCookie(VariantStringUtils.random64BitString(rand));
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Created new variant session ID [" + cookie.getValue() + "] for HTTP session [" + request.getSession().getId());
-			}
-		}
-		else {
-			if (LOG.isDebugEnabled()) {
-				LOG.debug("Retrieved existing variant session ID [" + cookie.getValue() + "] for HTTP session [" + request.getSession().getId());
-			}			
-		}
-		return cookie.getValue();
+		return cookie == null || cookie.getValue() == null ?  null : cookie.getValue();
 	}
 
 	/**
@@ -72,7 +53,8 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	 * @param userData
 	 */
 	@Override
-	public void save(Object... userData) {
+	public void save(String sessionId, Object... userData) {
+		cookie.setValue(sessionId);
 		HttpServletResponse response = (HttpServletResponse) userData[0];
 		cookie.send(response);		
 	}
