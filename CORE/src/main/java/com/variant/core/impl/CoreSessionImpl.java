@@ -303,54 +303,66 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static CoreSessionImpl fromJson(VariantCore coreApi, String json) {
-
-		ObjectMapper mapper = new ObjectMapper();		
-		Map<String,?> fields = null;
+	public static CoreSessionImpl fromJson(VariantCore core, String rawJson) {
 		
 		try {
-			fields = mapper.readValue(json, Map.class);
+			ObjectMapper mapper = new ObjectMapper();		
+			Map<String,?> fields = mapper.readValue(rawJson, Map.class);
+			return fromJson(core, fields);
+		}
+		catch (VariantRuntimeException e) {
+			throw e;
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to deserialzie session: [" + json + "]");
+			throw new VariantInternalException("Unable to deserialzie session: [" + rawJson + "]", e);
 		}
-		
-		Object idObj = fields.get(FIELD_NAME_ID);
-		if (idObj == null) 
-			throw new VariantInternalException("Unable to deserialzie session: no id: [" + json + "]");
-		if (!(idObj instanceof String)) 
-			throw new VariantInternalException("Unable to deserialzie session: id not string: [" + json + "]");
 
-		Object schidObj = fields.get(FIELD_NAME_SCHEMA_ID);
+	}
+	
+	/**
+	 * Deserialize from JSON
+	 * @param json
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static CoreSessionImpl fromJson(VariantCore core, Map<String,?> parsedJson) {
+		
+		Object idObj = parsedJson.get(FIELD_NAME_ID);
+		if (idObj == null) 
+			throw new VariantInternalException("No id");
+		if (!(idObj instanceof String)) 
+			throw new VariantInternalException("id not string");
+
+		Object schidObj = parsedJson.get(FIELD_NAME_SCHEMA_ID);
 		if (schidObj == null ) 
-			throw new VariantInternalException("Unable to deserialzie session: no schema id: [" + json + "]");
+			throw new VariantInternalException("No schema id");
 		if (!(schidObj instanceof String)) 
-			throw new VariantInternalException("Unable to deserialzie session: schema id not string: [" + json + "]");
+			throw new VariantInternalException("Schema id not string");
 
 		// If schema has changed, we may not be able to deserialize it. Remember that we don't yet have a schema on server.
-		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER && !coreApi.getSchema().getId().equals(schidObj)) {
-			throw new VariantSchemaModifiedException(coreApi.getSchema().getId(), (String)schidObj);
+		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER && !core.getSchema().getId().equals(schidObj)) {
+			throw new VariantSchemaModifiedException(core.getSchema().getId(), (String)schidObj);
 		}
 					
-		CoreSessionImpl result = new CoreSessionImpl((String)idObj, coreApi);
+		CoreSessionImpl result = new CoreSessionImpl((String)idObj, core);
 				
-		Object tsObj = fields.get(FIELD_NAME_TIMESTAMP);
+		Object tsObj = parsedJson.get(FIELD_NAME_TIMESTAMP);
 		if (tsObj == null) 
-			throw new VariantInternalException("Unable to deserialzie session: no timestamp: [" + json + "]");
+			throw new VariantInternalException("No timestamp");
 		if (!(tsObj instanceof Number)) 
-			throw new VariantInternalException("Unable to deserialzie session: id not number: [" + json + "]");
+			throw new VariantInternalException("Timestamp is not number");
 
 		result.timestamp = ((Number)tsObj).longValue();
 		
-		Object currentRequestObj = fields.get(FIELD_NAME_CURRENT_REQUEST);
+		Object currentRequestObj = parsedJson.get(FIELD_NAME_CURRENT_REQUEST);
 		if (currentRequestObj != null) {
 			if (!(currentRequestObj instanceof Map<?,?>)) 
-			throw new VariantInternalException("Unable to deserialzie session: currentRequest not map: [" + json + "]");
-			result.currentRequest = CoreStateRequestImpl.fromJson(coreApi, result, (Map<String,?>)currentRequestObj);
+			throw new VariantInternalException("currentRequest not map");
+			result.currentRequest = CoreStateRequestImpl.fromJson(core, result, (Map<String,?>)currentRequestObj);
 		}
 		
 		SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
-		Object stabileObj = fields.get(FIELD_NAME_TARGETING_STABIL);
+		Object stabileObj = parsedJson.get(FIELD_NAME_TARGETING_STABIL);
 		if (stabileObj != null) {
 			try {
 				List<?> listRaw = (List<?>) stabileObj; 
@@ -370,8 +382,8 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		result.setTargetingStabile(targetingStabile);
 
 		// If server, don't deserialize traversed tests and states because we don't have the schema.
-		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) {
-			Object statesObj = fields.get(FIELD_NAME_TRAVERSED_STATES);
+		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER) {
+			Object statesObj = parsedJson.get(FIELD_NAME_TRAVERSED_STATES);
 			if (statesObj != null) {
 				HashMap<State,Integer> statesMap = new HashMap<State, Integer>();
 				try {
@@ -379,7 +391,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 					for (Object obj: statesListRaw) {
 						Map<?,?> objMap = (Map<?,?>) obj;
 						String stateName = (String) objMap.get(FIELD_NAME_STATE);
-						State state = coreApi.getSchema().getState(stateName);
+						State state = core.getSchema().getState(stateName);
 						Integer count =  (Integer) objMap.get(FIELD_NAME_COUNT);
 						statesMap.put(state, count);
 					}
@@ -390,13 +402,13 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 				result.traversedStates = statesMap;
 			}
 		
-			Object testsObj = fields.get(FIELD_NAME_TRAVERSED_TESTS);
+			Object testsObj = parsedJson.get(FIELD_NAME_TRAVERSED_TESTS);
 			if (testsObj != null) {
 				LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
 				try {
 					List<String> testList = (List<String>) testsObj; 
 					for (String testName: testList) {
-						tests.add(coreApi.getSchema().getTest(testName));
+						tests.add(core.getSchema().getTest(testName));
 					}
 				}
 				catch (Exception e) {
@@ -405,7 +417,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 				result.traversedTests = tests;
 			}
 			
-			testsObj = fields.get(FIELD_NAME_DISQUAL_TESTS);
+			testsObj = parsedJson.get(FIELD_NAME_DISQUAL_TESTS);
 			if (testsObj != null) {
 				
 				LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
@@ -413,7 +425,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 				try {
 					List<String> testList = (List<String>) testsObj; 
 					for (String testName: testList) {
-						tests.add(coreApi.getSchema().getTest(testName));
+						tests.add(core.getSchema().getTest(testName));
 					
 					}
 				}

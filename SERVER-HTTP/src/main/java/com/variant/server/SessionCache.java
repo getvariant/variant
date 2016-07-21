@@ -130,7 +130,7 @@ public class SessionCache {
 		 */
 		private Entry(byte[] json) { this.json = json;}
 
-		private Entry(String json) { this.json = json.getBytes();}
+		//private Entry(String json) { this.json = json.getBytes();}
 	
 		/**
 		 * Raw payload.

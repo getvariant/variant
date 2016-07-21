@@ -1,9 +1,7 @@
 package com.variant.server.test
 
 import scala.collection.JavaConversions._
-
 import org.apache.http.HttpStatus
-
 import com.variant.core.impl.CoreSessionImpl
 import com.variant.core.test.jdbc.EventReader
 import com.variant.server.SessionCache
@@ -12,9 +10,9 @@ import com.variant.server.util.JettyStartupAndShutdown
 import com.variant.server.util.JettyTestServer
 import com.variant.server.util.UnitSpec
 import com.variant.server.util.UnitSpec._
-
 import net.liftweb.http.testing.HttpResponse
 import net.liftweb.http.testing.TestKit
+import com.variant.core.net.PayloadReader
 
 /**
  * 
@@ -230,7 +228,9 @@ class ServerPostEventTest extends UnitSpec {
       SessionCache.put(id, ssn.toJson())
       val getResp = get("/session/" + id) ! "Jetty is not running"
       getResp.code should be (HttpStatus.SC_OK)
-      var ssnIn = CoreSessionImpl.fromJson(clientCore, getResp.bodyAsString.openOrThrowException("Unexpected null response"));
+   
+      val payloadReader = new PayloadReader(getResp.bodyAsString.openOrThrowException("Unexpected null response"))
+      val ssnIn = CoreSessionImpl.fromJson(clientCore, payloadReader.getBody);
       ssnIn.getTraversedStates().toList should be ('empty)
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)

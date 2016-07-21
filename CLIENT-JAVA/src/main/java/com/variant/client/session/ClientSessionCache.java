@@ -1,5 +1,8 @@
 package com.variant.client.session;
 
+import java.util.HashMap;
+
+import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 
 /**
@@ -10,15 +13,34 @@ import com.variant.client.VariantSession;
  */
 public class ClientSessionCache {
 
-	private long sessionTimeoutMillis;
-
+	private VariantClient client = null;
+	private HashMap<String, Entry> map = new HashMap<String, Entry>();
+	
 	/**
-	 * Package instantiation
 	 */
-	ClientSessionCache(long sessionTimeoutMillis) {
-		this.sessionTimeoutMillis = sessionTimeoutMillis;
+	private static class Entry {
+		VariantSession session;
+		long accessTimestamp;
+		private Entry(VariantSession session) {
+			this.session = session;
+			accessTimestamp = System.currentTimeMillis();
+		}
 	}
 	
+	/**
+	 */
+	public ClientSessionCache(VariantClient client) {
+		this.client = client;
+	}
+	
+	/**
+	 * 
+	 * @param coreSession
+	 */
+	public void put(VariantSession session) {
+		map.put(session.getId(), new Entry(session));
+	}
+
 	/**
 	 * Get a session from cache. Touch access time.
 	 * @param sessionId
@@ -27,11 +49,7 @@ public class ClientSessionCache {
 	public VariantSession get(String sessionId) {
 		return null;
 	}
-	
-	public void put(VariantSession coreSession) {
 		
-	}
-	
 	/**
 	 * Expire locally a session that has already expired on the server.
 	 * @param sessionId

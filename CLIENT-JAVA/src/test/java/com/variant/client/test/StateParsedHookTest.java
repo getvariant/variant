@@ -71,7 +71,7 @@ public class StateParsedHookTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		VariantClient api = new VariantClient();
+		VariantClient api = VariantClient.Factory.getInstance();
 		api.addHookListener(new StateParsedHookListenerImpl());
 		ParserResponse response = api.parseSchema(IOUtils.toInputStream(schema));
 		assertEquals(1, response.getMessages().size());

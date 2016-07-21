@@ -151,7 +151,7 @@ public class CoreSessionTest extends BaseTestCore {
 		assertEqualAsSets(ssn.getTraversedStates(), deserializedSsn.getTraversedStates());
 		assertEqualAsSets(ssn.getTraversedTests(), deserializedSsn.getTraversedTests());
 		req1.commit();
-		//System.out.println(((CoreSessionImpl)ssn).toJson());
+		System.out.println(((CoreSessionImpl)ssn).toJson());
 		// Nothing is instrumented on state2
 		VariantCoreStateRequest req2 = ssn.targetForState(schema.getState("state2"));
 		assertNotNull(req2);

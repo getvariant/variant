@@ -1,4 +1,4 @@
-package com.variant.core.session;
+package com.variant.core.test;
 
 import java.util.HashMap;
 import java.util.Map;

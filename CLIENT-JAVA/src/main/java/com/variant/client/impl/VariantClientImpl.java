@@ -11,6 +11,7 @@ import static com.variant.core.schema.impl.MessageTemplate.RUN_SCHEMA_UNDEFINED;
 import java.io.InputStream;
 import java.util.Random;
 
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,10 +119,12 @@ public class VariantClientImpl implements VariantClient {
 	 */
 	public VariantClientImpl(String...resourceNames) {
 		
+		long now = System.currentTimeMillis();
+		
 		core = new VariantCore(resourceNames);
 		core.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.1");		
 		properties = core.getProperties();
-
+		cache = new ClientSessionCache(this);
 
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("+-- Bootstrapping Variant Client with following application properties: --");
@@ -130,6 +133,12 @@ public class VariantClientImpl implements VariantClient {
 			}
 			LOG.debug("+------------- Fingers crossed, this is not PRODUCTION -------------");
 		}
+
+		LOG.info(String.format(
+				"%s relese %s © 2015-16 getvariant.com. Bootstrapped in %s.", 
+				core.getComptime().getComponent(),
+				core.getComptime().getComponentVersion(),
+				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
 	}
 
 	/**
@@ -233,11 +242,13 @@ public class VariantClientImpl implements VariantClient {
 		
 		// Have session ID. Try the local cache first.
 		VariantSession ssnFromCache = cache.get(sessionId);
+		
+		// Local case miss.
 		if (ssnFromCache == null) {
 			if (create) {
 				// Session expired locally, recreate OK.  Don't bother with the server.
-				VariantCoreSession coreSession = new CoreSessionImpl(sessionId, core);
-				core.saveSession(coreSession);
+				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
+				coreSession.save();
 				VariantSessionImpl clientSession = new VariantSessionImpl(coreSession, sidTracker, initTargetingTracker());
 				cache.put(clientSession);
 				return clientSession;
@@ -248,7 +259,7 @@ public class VariantClientImpl implements VariantClient {
 			}
 		}		
 		
-		// If we had local session, attempt to get the core from the server.
+		// Local cache hit. Try the the server.
 		VariantCoreSession ssnFromStore = core.getSession(sessionId, create);
 		
 		if (ssnFromStore == null) {
@@ -256,8 +267,8 @@ public class VariantClientImpl implements VariantClient {
 			cache.expire(sessionId);
 			if (create) {
 				// Recreate from scratch
-				VariantCoreSession coreSession = new CoreSessionImpl(sessionId, core);
-				core.saveSession(coreSession);
+				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
+				coreSession.save();
 				VariantSessionImpl clientSession = new VariantSessionImpl(coreSession, sidTracker, initTargetingTracker());
 				cache.put(clientSession);
 				return clientSession;
@@ -267,11 +278,11 @@ public class VariantClientImpl implements VariantClient {
 				return null;
 			}
 		}
-		else {
-			// Have both sessions, local and on server.
-			((VariantSessionImpl)ssnFromCache).replaceCoreSession(ssnFromCache);
-			return ssnFromCache;	
-		}
+		
+		// Local and remote hits. Replace remote in local, as it may have been changed by another client,
+		// and return the existing local object.
+		((VariantSessionImpl)ssnFromCache).replaceCoreSession(ssnFromCache);
+		return ssnFromCache;	
 	}
 			
 	/**

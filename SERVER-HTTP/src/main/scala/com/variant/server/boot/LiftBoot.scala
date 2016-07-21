@@ -8,6 +8,7 @@ import net.liftweb.http.provider.HTTPParam
 import net.liftweb.http.Req
 import com.typesafe.scalalogging.LazyLogging
 import com.variant.server.ServerBoot
+import org.apache.commons.lang3.time.DurationFormatUtils
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -19,6 +20,8 @@ class LiftBoot extends Bootable with LazyLogging {
     * Lift calls this to boot us up.
     */
    def boot {   
+      
+      val now = System.currentTimeMillis();
       
       // Don't pipe /crossdomain.xml through Lift.
       LiftRules.liftRequest.append {
@@ -37,8 +40,14 @@ class LiftBoot extends Bootable with LazyLogging {
             ("Access-Control-Allow-Credentials", "true")
          ))
       
+      // Variant server
       ServerBoot.boot()
-      
-      logger.info("Variant " + ServerBoot.getCore.getComptime.getComponent + " listening on " + LiftRules.context.path + "/")
+      val comptime = ServerBoot.getCore.getComptime
+      logger.info(String.format(
+				"%s relese %s © 2015-16 getvariant.com. Bootstrapped in %s. Listening on %s/", 
+				comptime.getComponent(),
+				comptime.getComponentVersion(),
+				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"),
+				LiftRules.context.path));
   }
 }

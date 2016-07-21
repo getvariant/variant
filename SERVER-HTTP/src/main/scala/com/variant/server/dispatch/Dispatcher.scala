@@ -27,6 +27,10 @@ import com.typesafe.scalalogging.LazyLogging
 import net.liftweb.json.JsonAST.JArray
 import org.apache.http.HttpStatus
 import net.liftweb.http.PlainTextResponse
+import com.variant.core.net.PayloadWriter
+import com.variant.core.net.Payload
+import com.variant.server.ServerBoot
+import com.variant.server.ServerPropertyKeys
 
 /**
  * @author Igor
@@ -60,15 +64,15 @@ object Dispatcher extends RestHelper with LazyLogging {
     * @since 0.6
     */
    def getSession(id: String): LiftResponse = {
-
-      var result = SessionCache.get(id)
+      val result = SessionCache.get(id)
       if (result == null) {
          logger.trace("No session found for ID " + id)         
          NoContentResponse()
       }
       else {
          logger.trace("Session found for ID " + id)
-         OutputStreamResponse(out => {out.write(result.getJson)})
+         val payloadWriter = new ServerPayloadWriter(result.getJson)
+         OutputStreamResponse(out => {out.write(payloadWriter.getAsJson.getBytes)})
       }
    }
 
@@ -80,7 +84,7 @@ object Dispatcher extends RestHelper with LazyLogging {
    def updateSession(id:String, req: Req): Box[LiftResponse] = {      
       if (!req.body.isDefined || req.body.openOrThrowException("Unexpectged null request body").length == 0) 
          return UserError.errors(UserError.EmptyBody).toFailure()
-      
+     
       if (SessionCache.put(id, req.body.openOrThrowException("Unexpectged null request body")) == null)
          logger.trace("Saved session ID " + id)
       else
