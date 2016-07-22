@@ -1,10 +1,11 @@
 package com.variant.core.session;
 
-import com.variant.core.VariantCoreSession;
+import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
+import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.inject.Injector;
 
@@ -42,9 +43,11 @@ public class CoreSessionService {
 	 * Recreate if does not exist and <code>create</code> is true.
 	 * @return 
 	 */
-	public VariantCoreSession getSession(String id, boolean create) throws VariantRuntimeException {
+	public SessionPayloadReader getSession(String id, boolean create) throws VariantRuntimeException {
+		
 		if (core.getSchema() == null) throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
-		return  (CoreSessionImpl) sessionStore.get(id, create);
+		
+		return sessionStore.get(id, create);
 	}
 	
 	/**
@@ -52,7 +55,7 @@ public class CoreSessionService {
 	 * @param session
 	 * TODO Make this async
 	 */
-	public void saveSession(VariantCoreSession session) {
+	public void saveSession(CoreSessionImpl session) {
 		
 		if (core.getSchema() == null) throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 		

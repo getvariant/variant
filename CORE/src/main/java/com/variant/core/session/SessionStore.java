@@ -1,6 +1,7 @@
 package com.variant.core.session;
 
 import com.variant.core.VariantCoreSession;
+import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.util.inject.Injectable;
 
 
@@ -22,7 +23,7 @@ public interface SessionStore extends Injectable {
 	 *         found in the store, or null if not.
 	 * @since 0.5
 	 */
-	public VariantCoreSession get(String sessionId, boolean create);
+	public SessionPayloadReader get(String sessionId, boolean create);
 
 	/**
 	 * Save the session.

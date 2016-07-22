@@ -320,7 +320,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	}
 	
 	/**
-	 * Deserialize from JSON
+	 * Deserialize from parsed JSON
 	 * @param json
 	 * @return
 	 */

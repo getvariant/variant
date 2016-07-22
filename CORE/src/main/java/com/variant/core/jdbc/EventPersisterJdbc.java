@@ -12,8 +12,8 @@ import java.util.Map;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.VariantPersistableEvent;
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.jdbc.JdbcService.Vendor;
 import com.variant.core.schema.Test;
-import static com.variant.core.jdbc.JdbcService.Vendor;
 
 /**
  * JDBC persisters extend this class instead of implementing the EventPersister interface. 

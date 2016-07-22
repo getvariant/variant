@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.util.ReflectUtils;
+import com.variant.core.util.VariantReflectUtils;
 
 
 /**
@@ -38,7 +38,7 @@ public interface VariantCorePropertyKeys {
 		 */
 		public static Collection<Key> keys(Class<? extends VariantCorePropertyKeys> clazz) {
 			Collection<Key> result = new ArrayList<Key>();
-			for (Field field: ReflectUtils.getStaticFields(clazz, Key.class)) {
+			for (Field field: VariantReflectUtils.getStaticFields(clazz, Key.class)) {
 				try {
 					result.add((Key)field.get(null));
 				}

@@ -1,9 +1,5 @@
 package com.variant.core.ext;
 
-import java.util.Collection;
-import java.util.Map;
-
-import com.variant.core.schema.State;
 
 /**
  * Expects key "path" present in the map

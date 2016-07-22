@@ -136,7 +136,7 @@ public class ParserOkayTest extends BaseTestCore {
 		ParserResponse response = core.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand));
+		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand)).getBody();
 		State state1 = core.getSchema().getState("state1");
 		Test test1 = core.getSchema().getTest("test1");
 		Test test2 = core.getSchema().getTest("test2");
@@ -269,7 +269,7 @@ public class ParserOkayTest extends BaseTestCore {
 		ParserResponse response = core.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand));
+		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand)).getBody();
 		State state1 = core.getSchema().getState("state1");
 		Test test1 = core.getSchema().getTest("test1");
 		Test test2 = core.getSchema().getTest("test2");
@@ -403,7 +403,7 @@ public class ParserOkayTest extends BaseTestCore {
 		ParserResponse response = core.parseSchema(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand));
+		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand)).getBody();
 		State state1 = core.getSchema().getState("state1");
 		Test test1 = core.getSchema().getTest("test1");
 		Test test2 = core.getSchema().getTest("test2");

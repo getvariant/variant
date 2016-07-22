@@ -1,6 +1,5 @@
 package com.variant.core.schema.impl;
 
-import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test;
 
 // Remove public modifier is the result of exposing the server side

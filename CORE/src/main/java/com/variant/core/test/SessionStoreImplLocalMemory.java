@@ -7,6 +7,8 @@ import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantException;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
+import com.variant.core.net.PayloadWriter;
+import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.session.SessionStore;
 
 /**
@@ -39,19 +41,15 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	 * 
 	 */
 	@Override
-	public VariantCoreSession get(String sessionId, boolean create) {
-		CoreSessionImpl result = null;
-		String json = map.get(sessionId);
-		if (json == null) {
-			if (create) {
-				result = new CoreSessionImpl(sessionId, core);
-				map.put(sessionId, result.toJson());
-			}
+	public SessionPayloadReader get(String sessionId, boolean create) {
+		String jsonBody = map.get(sessionId);
+		if (jsonBody == null && create) {
+			// Emulate send/receive
+			jsonBody = new CoreSessionImpl(sessionId, core).toJson();
+			map.put(sessionId, jsonBody);
 		}
-		else {
-			result = CoreSessionImpl.fromJson(core, json);
-		}
-		return result;
+		String payload = jsonBody == null ? null : new PayloadWriter(jsonBody).getAsJson();
+		return new SessionPayloadReader(core, payload);
 	}
 
 	/**

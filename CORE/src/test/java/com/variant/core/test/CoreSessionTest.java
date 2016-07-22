@@ -48,7 +48,7 @@ public class CoreSessionTest extends BaseTestCore {
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		VariantCoreSession ssn = core.getSession("bar");
+		VariantCoreSession ssn = core.getSession("bar").getBody();
 		assertNotNull(ssn);
 
 		//core.saveSession((CoreSessionImpl)ssn);
@@ -91,7 +91,7 @@ public class CoreSessionTest extends BaseTestCore {
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		VariantCoreSession ssn = core.getSession("key");
+		VariantCoreSession ssn = core.getSession("key").getBody();
 		assertEquals("key", ssn.getId());
 		assertNull(ssn.getStateRequest());
 		assertEquals(0, ssn.getTraversedStates().size());
@@ -105,13 +105,13 @@ public class CoreSessionTest extends BaseTestCore {
 		
 		// Test for idempotency. ssn2 is a different object from ssn,
 		// but should have all props the same, except the creation timestamp.
-		VariantCoreSession ssn2 = core.getSession("key");
+		VariantCoreSession ssn2 = core.getSession("key").getBody();
 		assertEquals("key", ssn2.getId());
 		assertNull(ssn2.getStateRequest());
 		assertEquals(0, ssn2.getTraversedStates().size());
 		assertEquals(0, ssn2.getTraversedTests().size());
 				
-		VariantCoreSession ssn3 = core.getSession("another-key");
+		VariantCoreSession ssn3 = core.getSession("another-key").getBody();
 		assertNotEquals (ssn, ssn3);
 		assertNull(ssn.getStateRequest());
 		assertNull(ssn3.getStateRequest());
@@ -132,7 +132,7 @@ public class CoreSessionTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		
 		Schema schema = core.getSchema();
-		VariantCoreSession ssn = core.getSession("foo");
+		VariantCoreSession ssn = core.getSession("foo").getBody();
 		assertNull(ssn.getStateRequest());
 		VariantCoreStateRequest req1 = ssn.targetForState(schema.getState("state1"));
 		assertNotNull(req1);
@@ -181,14 +181,14 @@ public class CoreSessionTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		
 		Schema schema1 = core.getSchema();
-		VariantCoreSession ssn1 = core.getSession("foo2");
+		VariantCoreSession ssn1 = core.getSession("foo2").getBody();
 		State state1 = schema1.getState("state1");
 		final VariantCoreStateRequest req = ssn1.targetForState(state1);
 		req.commit();  // Saves the session.
 
 		Thread.sleep(10);
 		
-		final VariantCoreSession ssn2 = core.getSession("foo2");
+		final VariantCoreSession ssn2 = core.getSession("foo2").getBody();
 		assertEquals(ssn1, ssn2);
 	    
 	    // new schema.
@@ -238,7 +238,7 @@ public class CoreSessionTest extends BaseTestCore {
 		Schema schema3 = core.getSchema();
 		assertNotEquals(schema2.getId(), schema3.getId());
 		
-		VariantCoreSession ssn3 = core.getSession("foo2"); // should be a new session because api's changed
+		VariantCoreSession ssn3 = core.getSession("foo2").getBody(); // should be a new session because api's changed
 		assertEquals("foo2", ssn3.getId());
 		assertNull(ssn3.getStateRequest());
 		assertEquals(0,ssn3.getTraversedStates().size());

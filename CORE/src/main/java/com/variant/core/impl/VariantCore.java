@@ -24,6 +24,7 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.UserHook;
+import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -285,7 +286,7 @@ public class VariantCore implements Serializable {
 	 * @since 0.6
 	 * @return An instance of {@link VariantCoreSession}.
 	 */
-	public VariantCoreSession getSession(String id, boolean create) {
+	public SessionPayloadReader getSession(String id, boolean create) {
 		return sessionService.getSession(id, create);
 	}
 	
@@ -298,7 +299,7 @@ public class VariantCore implements Serializable {
 	 * @since 0.5 
 	 * @return An instance of {@link VariantCoreSession}.
 	 */
-	public VariantCoreSession getSession(String id) {
+	public SessionPayloadReader getSession(String id) {
 		return sessionService.getSession(id, true);
 	}
 

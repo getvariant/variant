@@ -1,6 +1,10 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.impl.MessageTemplate.*;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_DUPE;
+import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

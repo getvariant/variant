@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.Test.OnState.Variant;

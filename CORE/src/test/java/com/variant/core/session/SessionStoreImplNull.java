@@ -3,10 +3,10 @@ package com.variant.core.session;
 import java.util.Map;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.exception.VariantException;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.session.SessionStore;
+import com.variant.core.net.PayloadWriter;
+import com.variant.core.net.SessionPayloadReader;
 
 /**
  * Session store that avoids any storage and always generates new session on get().
@@ -27,27 +27,21 @@ public class SessionStoreImplNull implements SessionStore {
 	public void init(VariantCore core, Map<String, Object> initObject) {
 		this.core = core;
 	}
-
-	/**
-	 * 
-	 */
-	@Override
-	public VariantCoreSession get(String sessionId, boolean create) {
-		return new CoreSessionImpl(sessionId, core);
-	}
-
-	/**
-	 * @param session Session to save
-	 * @param  userData The sid, which is assumed to be managed by the caller.
-	 * @throws VariantException 
-	 */
-	@Override
-	public void save(VariantCoreSession session) {
-		// don't save anything
-	}
 	
 	@Override
 	public void shutdown() {}
+
+	@Override
+	public SessionPayloadReader get(String sessionId, boolean create) {
+		
+		String payload = new PayloadWriter(new CoreSessionImpl(sessionId, core).toJson()).getAsJson();
+		return new SessionPayloadReader(core, payload);
+	}
+
+	@Override
+	public void save(VariantCoreSession session) {
+		// Don't save anything		
+	}
 
 
 }

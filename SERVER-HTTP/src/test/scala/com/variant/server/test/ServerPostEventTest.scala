@@ -13,6 +13,7 @@ import com.variant.server.util.UnitSpec._
 import net.liftweb.http.testing.HttpResponse
 import net.liftweb.http.testing.TestKit
 import com.variant.core.net.PayloadReader
+import com.variant.core.net.SessionPayloadReader
 
 /**
  * 
@@ -229,8 +230,8 @@ class ServerPostEventTest extends UnitSpec {
       val getResp = get("/session/" + id) ! "Jetty is not running"
       getResp.code should be (HttpStatus.SC_OK)
    
-      val payloadReader = new PayloadReader(getResp.bodyAsString.openOrThrowException("Unexpected null response"))
-      val ssnIn = CoreSessionImpl.fromJson(clientCore, payloadReader.getBody);
+      val payloadReader = new SessionPayloadReader(clientCore, getResp.bodyAsString.openOrThrowException("Unexpected null response"))
+      val ssnIn = payloadReader.getBody
       ssnIn.getTraversedStates().toList should be ('empty)
       ssnIn.getTraversedTests().toList should be ('empty)
       ssnIn.getStateRequest should be (null)

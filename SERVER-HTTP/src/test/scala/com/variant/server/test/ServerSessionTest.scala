@@ -18,6 +18,7 @@ import com.variant.core.net.PayloadReader
 import com.variant.core.net.Payload
 import com.variant.server.ServerBoot
 import com.variant.server.ServerPropertyKeys
+import com.variant.core.net.SessionPayloadReader
 
 /**
  */
@@ -64,11 +65,11 @@ class ServerSessionTest extends UnitSpec {
       new String(cacheEntry.getJson) should equal (json)
       val httpGetResp2 = get("/session/" + id) ! "Jetty is not running"
       httpGetResp2.code should be (HttpStatus.SC_OK)
-      val payloadReader = new PayloadReader(httpGetResp2.bodyAsString.openOrThrowException("Unexpected null response"))
+      val payloadReader = new SessionPayloadReader(clientCore, httpGetResp2.bodyAsString.openOrThrowException("Unexpected null response"))
       payloadReader.getProperty(Payload.Property.SRV_REL) should equal (ServerBoot.getCore.getComptime.getComponentVersion)
       payloadReader.getProperty(Payload.Property.SSN_TIMEOUT) should equal (ServerBoot.getCore.getProperties.get(ServerPropertyKeys.SESSION_TIMEOUT_SECS))
-      val ssn2 = CoreSessionImpl.fromJson(clientCore, payloadReader.getBody)
-      ssn2.toJson() should equal (json)
+      val ssn2 = payloadReader.getBody();
+      ssn2.asInstanceOf[CoreSessionImpl].toJson() should equal (json)
    }
 
    "PUT expired session" should "quietly reinstate the session" in {
@@ -118,11 +119,11 @@ class ServerSessionTest extends UnitSpec {
       new String(cacheEntry.getJson) should equal (json)
       val httpGetResp = get("/session/" + id) ! "Jetty is not running"
       httpGetResp.code should be (HttpStatus.SC_OK)
-      val payloadReader = new PayloadReader(httpGetResp.bodyAsString.openOrThrowException("Unexpected null response"))
+      val payloadReader = new SessionPayloadReader(clientCore, httpGetResp.bodyAsString.openOrThrowException("Unexpected null response"))
       payloadReader.getProperty(Payload.Property.SRV_REL) should equal (ServerBoot.getCore.getComptime.getComponentVersion)
       payloadReader.getProperty(Payload.Property.SSN_TIMEOUT) should equal (ServerBoot.getCore.getProperties.get(ServerPropertyKeys.SESSION_TIMEOUT_SECS))
-      val ssn2 = CoreSessionImpl.fromJson(clientCore, payloadReader.getBody)
-      ssn2.toJson() should equal (json)
+      val ssn2 = payloadReader.getBody
+      ssn2.asInstanceOf[CoreSessionImpl].toJson() should equal (json)
    }
 
    "Session storage" should "preserve traversed tests" in {
@@ -145,11 +146,11 @@ class ServerSessionTest extends UnitSpec {
          
          val httpGetResp = get("/session/" + id) ! "Jetty is not running"
          httpGetResp.code should be (HttpStatus.SC_OK)
-         val payloadReader = new PayloadReader(httpGetResp.bodyAsString.openOrThrowException("Unexpected null response"))
+         val payloadReader = new SessionPayloadReader(clientCore, httpGetResp.bodyAsString.openOrThrowException("Unexpected null response"))
          payloadReader.getProperty(Payload.Property.SRV_REL) should equal (ServerBoot.getCore.getComptime.getComponentVersion)
          payloadReader.getProperty(Payload.Property.SSN_TIMEOUT) should equal (ServerBoot.getCore.getProperties.get(ServerPropertyKeys.SESSION_TIMEOUT_SECS))
-         val ssnOut = CoreSessionImpl.fromJson(clientCore, payloadReader.getBody)
-         ssnOut.toJson() should equal (jsonIn)
+         val ssnOut = payloadReader.getBody
+         ssnOut.asInstanceOf[CoreSessionImpl].toJson() should equal (jsonIn)
          for (testIn <- ssnIn.getTraversedTests) ssnOut.getTraversedTests.exists(p => p.equals(testIn)) should be (true)
          req.commit()
       }
@@ -175,11 +176,11 @@ class ServerSessionTest extends UnitSpec {
          val httpGetResp = get("/session/" + id) ! "Jetty is not running"
          httpGetResp.code should be (HttpStatus.SC_OK)
          val jsonOut = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
-         val payloadReader = new PayloadReader(httpGetResp.bodyAsString.openOrThrowException("Unexpected null response"))
+         val payloadReader = new SessionPayloadReader(clientCore, httpGetResp.bodyAsString.openOrThrowException("Unexpected null response"))
          payloadReader.getProperty(Payload.Property.SRV_REL) should equal (ServerBoot.getCore.getComptime.getComponentVersion)
          payloadReader.getProperty(Payload.Property.SSN_TIMEOUT) should equal (ServerBoot.getCore.getProperties.get(ServerPropertyKeys.SESSION_TIMEOUT_SECS))
-         val ssnOut = CoreSessionImpl.fromJson(clientCore, payloadReader.getBody)
-         ssnOut.toJson() should equal (jsonIn)
+         val ssnOut = payloadReader.getBody
+         ssnOut.asInstanceOf[CoreSessionImpl].toJson() should equal (jsonIn)
          for (stateIn <- ssnIn.getTraversedStates) ssnOut.getTraversedStates.exists(p => p.equals(stateIn)) should be (true)
         
          req.commit()
@@ -206,11 +207,11 @@ class ServerSessionTest extends UnitSpec {
          val httpGetResp = get("/session/" + id) ! "Jetty is not running"
          httpGetResp.code should be (HttpStatus.SC_OK)
          val jsonOut = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
-         val payloadReader = new PayloadReader(httpGetResp.bodyAsString.openOrThrowException("Unexpected null response"))
+         val payloadReader = new SessionPayloadReader(clientCore, httpGetResp.bodyAsString.openOrThrowException("Unexpected null response"))
          payloadReader.getProperty(Payload.Property.SRV_REL) should equal (ServerBoot.getCore.getComptime.getComponentVersion)
          payloadReader.getProperty(Payload.Property.SSN_TIMEOUT) should equal (ServerBoot.getCore.getProperties.get(ServerPropertyKeys.SESSION_TIMEOUT_SECS))
-         val ssnOut = CoreSessionImpl.fromJson(clientCore, payloadReader.getBody)
-         ssnOut.toJson() should equal (jsonIn)
+         val ssnOut = payloadReader.getBody
+         ssnOut.asInstanceOf[CoreSessionImpl].toJson() should equal (jsonIn)
          val reqOutBeforeCommit = ssnOut.getStateRequest()
          reqOutBeforeCommit should not be (null)
          for (test <- clientCore.getSchema.getState(state).getInstrumentedTests) {
@@ -258,10 +259,10 @@ class ServerSessionTest extends UnitSpec {
          val httpGetResp = get("/session/" + id) ! "Jetty is not running"
          httpGetResp.code should be (HttpStatus.SC_OK)
          val jsonOut = httpGetResp.bodyAsString.openOrThrowException("Unexpected null response")
-         val payloadReader = new PayloadReader(httpGetResp.bodyAsString.openOrThrowException("Unexpected null response"))
+         val payloadReader = new SessionPayloadReader(clientCore, httpGetResp.bodyAsString.openOrThrowException("Unexpected null response"))
          payloadReader.getProperty(Payload.Property.SRV_REL) should equal (ServerBoot.getCore.getComptime.getComponentVersion)
          payloadReader.getProperty(Payload.Property.SSN_TIMEOUT) should equal (ServerBoot.getCore.getProperties.get(ServerPropertyKeys.SESSION_TIMEOUT_SECS))
-         val ssnOut = CoreSessionImpl.fromJson(clientCore, payloadReader.getBody)
+         val ssnOut = payloadReader.getBody
          val reqOut = ssnOut.getStateRequest
          reqOut should not be (null)
          reqOut.getActiveExperiences should be ('empty)

@@ -3,7 +3,8 @@ package com.variant.core.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
-import static com.variant.core.util.Tuples.Pair;
+
+import com.variant.core.util.Tuples.Pair;
 
 /**
  * 
