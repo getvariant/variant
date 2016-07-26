@@ -20,10 +20,7 @@ import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.mock.HttpSessionMock;
 import com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.adapter.TargetingTrackerHttpCookie;
-import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.client.test.BareClientBaseTest;
-import com.variant.core.exception.VariantInternalException;
-import com.variant.core.schema.Schema;
 import com.variant.core.util.inject.Injector;
 
 /**
@@ -42,30 +39,58 @@ public abstract class ServletAdapterBaseTest extends BareClientBaseTest {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Mock HttpServletRequest. Will contain cookies 
+	 * Mock HttpServletRequest. Will contain variant related cookies from the passed response.
+	 * This immulates the preservation of cookies by the browser.
+	 * @return
+	 */
+	protected HttpServletRequestMock mockHttpServletRequest(HttpServletResponseMock resp) { 
+		
+		Cookie c = resp.getCookie(SessionIdTrackerHttpCookie.COOKIE_NAME);
+		String sidTrackerVal = c == null ? null : c.getValue();
+		
+		c = resp.getCookie(TargetingTrackerHttpCookie.COOKIE_NAME);
+		String targetingTrackerVal = c == null ? null : c.getValue();
+		
+		return mockHttpServletRequest(sidTrackerVal, targetingTrackerVal);
+	}
+
+	/**
+	 * Mock HttpServletRequest. Will contain variant related cookies as passed in arguments
 	 * @return
 	 */
 	protected HttpServletRequestMock mockHttpServletRequest(
 			String sessionId, Collection<VariantTargetingTracker.Entry> entries) { 
 		
-		//
+		String targetingTrackerVal = null;
+		if (entries != null && entries.size() > 0) {
+			targetingTrackerVal = TargetingTrackerHttpCookie.toString(entries);
+		}
+
+		return mockHttpServletRequest(sessionId, targetingTrackerVal);
+	}
+	
+	/**
+	 * Mock HttpServletRequest. Will contain variant related cookies as passed in arguments
+	 * @return
+	 */
+	protected HttpServletRequestMock mockHttpServletRequest(String sidTrackerVal, String targetingTrackerVal) { 
+
 		// Session
-		//
 		HttpSessionMock ssn = mock(HttpSessionMock.class, new DefaultAnswer());
-		//when(ssn.getId()).thenReturn(jsessionId);
 
 		// Request
 		HttpServletRequestMock result = mock(HttpServletRequestMock.class, new DefaultAnswer());
 		when(result.getSession()).thenReturn(ssn);
 		
 		ArrayList<Cookie> cookies = new ArrayList<Cookie>();
-		if (sessionId != null) {
-			cookies.add(new Cookie(SessionIdTrackerHttpCookie.COOKIE_NAME, sessionId)); 	
+		if (sidTrackerVal != null) {
+			cookies.add(new Cookie(SessionIdTrackerHttpCookie.COOKIE_NAME, sidTrackerVal)); 	
 		}
 
-		if (entries != null && entries.size() > 0) {
-			cookies.add(new Cookie(TargetingTrackerHttpCookie.COOKIE_NAME, TargetingTrackerHttpCookie.toString(entries)));
+		if (targetingTrackerVal != null) {
+			cookies.add(new Cookie(TargetingTrackerHttpCookie.COOKIE_NAME, targetingTrackerVal));
 		}
+		
 		when(result.getCookies()).thenReturn(cookies.toArray(new Cookie[] {}));
 		
 		return result;

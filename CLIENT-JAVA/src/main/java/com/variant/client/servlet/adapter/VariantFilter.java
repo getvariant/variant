@@ -16,9 +16,9 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.VariantSession;
 import com.variant.client.impl.StateSelectorByRequestPath;
 import com.variant.client.servlet.util.VariantWebUtils;
+import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;

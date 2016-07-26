@@ -8,7 +8,7 @@ import java.util.Random;
 import org.junit.Test;
 
 import com.variant.core.VariantCorePropertyKeys;
-import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.EventPersisterNull;
 import com.variant.core.exception.VariantRuntimeException;
@@ -118,7 +118,7 @@ public class TargetingTest extends BaseTestCore {
 		//
 		int[] counts = {0, 0, 0};
 		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i).getBody();
+			VariantSession ssn = core.getSession("foo" + i).getBody();
 			VariantStateRequest req = ssn.targetForState(state);
 			String expName = req.getActiveExperience(test).getName();
 			if (expName.equals("A")) counts[0]++;
@@ -136,7 +136,7 @@ public class TargetingTest extends BaseTestCore {
 		core.addHookListener(nullListener1);
 		counts[0] = counts[1] = counts[2] = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i).getBody();
+			VariantSession ssn = core.getSession("foo" + i).getBody();
 			VariantStateRequest req = ssn.targetForState(state);
 			String expName = req.getActiveExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
@@ -155,7 +155,7 @@ public class TargetingTest extends BaseTestCore {
 		counts[0] = counts[1] = counts[2] = 0;
 		nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i).getBody();
+			VariantSession ssn = core.getSession("foo" + i).getBody();
 			VariantStateRequest req = ssn.targetForState(state);
 			String expName = req.getActiveExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
@@ -175,7 +175,7 @@ public class TargetingTest extends BaseTestCore {
 		counts[0] = counts[1] = counts[2] = 0;
 		ABListener.postCount = nullListener2.postCount = nullListener1.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i).getBody();
+			VariantSession ssn = core.getSession("foo" + i).getBody();
 			VariantStateRequest req = ssn.targetForState(state);
 			String expName = req.getActiveExperience(test).getName();			
 			if (expName.equals("A")) counts[0]++;
@@ -196,7 +196,7 @@ public class TargetingTest extends BaseTestCore {
 		core.addHookListener(ACListener);
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i).getBody();
+			VariantSession ssn = core.getSession("foo" + i).getBody();
 			VariantStateRequest req = ssn.targetForState(state);
 			String expName = req.getActiveExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
@@ -214,7 +214,7 @@ public class TargetingTest extends BaseTestCore {
 		nullListener1.postCount = ACListener.postCount = 0;
 		counts[0] = counts[1] = counts[2] = 0;		
 		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i).getBody();
+			VariantSession ssn = core.getSession("foo" + i).getBody();
 			VariantStateRequest req = ssn.targetForState(state);
 			String expName = req.getActiveExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
@@ -236,7 +236,7 @@ public class TargetingTest extends BaseTestCore {
 		counts[0] = counts[1] = counts[2] = 0;
 		ABNullListener.postCount = ACListener.postCount = 0;
 		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i).getBody();
+			VariantSession ssn = core.getSession("foo" + i).getBody();
 			VariantStateRequest req = ssn.targetForState(state);
 			String expName = req.getActiveExperience(test).getName();	
 			if (expName.equals("A")) counts[0]++;
@@ -334,7 +334,7 @@ public class TargetingTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		Schema schema = core.getSchema();		
 		final State state = schema.getState("state1");
-		final VariantCoreSession ssn = core.getSession("foo").getBody();
+		final VariantSession ssn = core.getSession("foo").getBody();
 
 		new ExceptionInterceptor<VariantRuntimeException>() {
 			@Override public void toRun() { ssn.targetForState(state); }

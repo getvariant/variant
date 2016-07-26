@@ -2,7 +2,7 @@ package com.variant.core.session;
 
 import java.util.Map;
 
-import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantSession;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.PayloadWriter;
@@ -39,7 +39,7 @@ public class SessionStoreImplNull implements SessionStore {
 	}
 
 	@Override
-	public void save(VariantCoreSession session) {
+	public void save(VariantSession session) {
 		// Don't save anything		
 	}
 

@@ -10,7 +10,7 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * Represents a state request, as instantiated by {@link com.variant.core.Variant#targetForState(VariantCoreSession, State, Object)}.
+ * Represents a state request, as instantiated by {@link com.variant.core.Variant#targetForState(VariantSession, State, Object)}.
  * 
  * @author Igor Urisman
  * @since 0.6
@@ -21,14 +21,14 @@ public interface VariantStateRequest {
 	/**
 	 * This request's Variant session.
 	 * 
-	 * @return Variant session as an instance of {@link com.variant.core.VariantCoreSession}.
+	 * @return Variant session as an instance of {@link com.variant.core.VariantSession}.
 	 * @since 0.6
 	 */
-	public VariantCoreSession getSession();
+	public VariantSession getSession();
 	
 	/**
 	 * The state for which this request was generated, i.e. that was passed to 
-	 * {@link com.variant.core.Variant#targetForState(VariantCoreSession, State, Object)}.
+	 * {@link com.variant.core.Variant#targetForState(VariantSession, State, Object)}.
 	 * 
 	 * @return State as an instance of {@link com.variant.core.schema.State}
 	 * @since 0.6

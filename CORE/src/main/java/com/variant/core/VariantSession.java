@@ -20,7 +20,7 @@ import com.variant.core.util.Tuples.Pair;
  * @author Igor Urisman
  * @since 0.5
  */
-public interface VariantCoreSession {
+public interface VariantSession {
 
 	/**
 	 * <p>Get this session's ID.
@@ -105,4 +105,13 @@ public interface VariantCoreSession {
 	 * @since 0.5
 	 */
 	public VariantStateRequest getStateRequest();
+	
+	/**
+	 * <p>Has this session expired? An expired session cannot be used: calling any method on it
+	 * will throw the {@link VariantRuntimeUserErrorException}</p>
+	 * 
+	 * @return true if this session has expired or false otherwise.
+	 */
+	public boolean isExpired();
+
 }

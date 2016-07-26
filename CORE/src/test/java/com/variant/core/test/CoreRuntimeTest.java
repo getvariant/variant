@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
 
-import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
@@ -1083,7 +1083,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 		Schema schema = core.getSchema();
 		State state1 = schema.getState("state1");
 		String sessionId = VariantStringUtils.random64BitString(rand);
-		VariantCoreSession ssn = core.getSession(sessionId).getBody();
+		VariantSession ssn = core.getSession(sessionId).getBody();
 		setTargetingStabile(ssn, "test2.B");
 		VariantStateRequest req = ssn.targetForState(state1);
 		SessionScopedTargetingStabile stabile = ((CoreSessionImpl)ssn).getTargetingStabile();
@@ -1116,7 +1116,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 		core.addHookListener(new DisqualAllHookListener());
 		
 		String sessionId = VariantStringUtils.random64BitString(rand);
-		VariantCoreSession ssnIn = core.getSession(sessionId).getBody();
+		VariantSession ssnIn = core.getSession(sessionId).getBody();
 		assertTrue(ssnIn.getTraversedStates().isEmpty());
 		assertTrue(ssnIn.getTraversedTests().isEmpty());
 		assertNull(ssnIn.getStateRequest());

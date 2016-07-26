@@ -17,12 +17,13 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantClientPropertyKeys;
-import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.client.session.ClientSessionCache;
+import com.variant.client.session.ClientSessionImpl;
 import com.variant.core.VariantCorePropertyKeys.Key;
 import com.variant.core.VariantProperties;
+import com.variant.core.VariantSession;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
@@ -259,7 +260,7 @@ public class VariantClientImpl implements VariantClient {
 				// Session expired locally, recreate OK.  Don't bother with the server.
 				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
 				coreSession.save();
-				VariantSessionImpl clientSession = new VariantSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
+				ClientSessionImpl clientSession = new ClientSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
 				return clientSession;
 			}
@@ -292,7 +293,7 @@ public class VariantClientImpl implements VariantClient {
 				// Recreate from scratch
 				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
 				coreSession.save();
-				VariantSessionImpl clientSession = new VariantSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
+				ClientSessionImpl clientSession = new ClientSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
 				return clientSession;
 			}
@@ -305,7 +306,7 @@ public class VariantClientImpl implements VariantClient {
 		// Local and remote hits. 
 		// Replace remote in local, as it may have been changed by another client,
 		// update local timeout, and return the existing local object.
-		((VariantSessionImpl)ssnFromCache).replaceCoreSession(ssnFromStore);
+		((ClientSessionImpl)ssnFromCache).replaceCoreSession(ssnFromStore);
 		cache.add(ssnFromCache, payloadReader.getProperty(Payload.Property.SSN_TIMEOUT, Long.class));
 		return ssnFromCache;	
 	}

@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 
 

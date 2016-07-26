@@ -21,7 +21,10 @@ abstract public class Payload {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	public enum Property {SRV_REL, SSN_TIMEOUT}
+	public enum Property {
+		SVR_REL,          // Server release, for handshake with client
+		SSN_TIMEOUT       // Session timeout, seconds.
+	}
 
 	/**
 	 * 

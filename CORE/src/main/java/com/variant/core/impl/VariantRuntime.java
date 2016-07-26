@@ -10,7 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantSession;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;
@@ -41,17 +41,17 @@ public class VariantRuntime {
 	 */
 	private static class TestTargetingHookImpl implements TestTargetingHook {
 
-		private VariantCoreSession session;
+		private VariantSession session;
 		private Test test;
 		private Experience targetedExperience = null;
 		
-		private TestTargetingHookImpl(VariantCoreSession session, Test test) {
+		private TestTargetingHookImpl(VariantSession session, Test test) {
 			this.session = session;
 			this.test = test;
 		}
 		
 		@Override
-		public VariantCoreSession getSession() {
+		public VariantSession getSession() {
 			return session;
 		}
 
@@ -262,12 +262,12 @@ public class VariantRuntime {
 		 */
 		class TestQualificationHookImpl implements TestQualificationHook {
 			
-			private VariantCoreSession ssn;
+			private VariantSession ssn;
 			private Test test;
 			private boolean qualified = true;
 			private boolean removeFromTT = false;
 			
-			private TestQualificationHookImpl(VariantCoreSession ssn, Test test) {
+			private TestQualificationHookImpl(VariantSession ssn, Test test) {
 				this.ssn = ssn;
 				this.test = test;
 			}
@@ -288,7 +288,7 @@ public class VariantRuntime {
 			}
 			
 			@Override
-			public VariantCoreSession getSession() {
+			public VariantSession getSession() {
 				return ssn;
 			}
 
@@ -501,7 +501,7 @@ public class VariantRuntime {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Implementation of {@link Variant#targetForState(VariantCoreSession, State, Object...)}
+	 * Implementation of {@link Variant#targetForState(VariantSession, State, Object...)}
 	 * @param ssn
 	 * @param view
 	 * @return

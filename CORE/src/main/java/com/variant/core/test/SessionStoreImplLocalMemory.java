@@ -3,10 +3,11 @@ package com.variant.core.test;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantSession;
 import com.variant.core.exception.VariantException;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
+import com.variant.core.net.Payload;
 import com.variant.core.net.PayloadWriter;
 import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.session.SessionStore;
@@ -29,12 +30,16 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 
 	private HashMap<String, String> map = new HashMap<String, String>();
 	private VariantCore core = null;
+	private int sessionTimeoutSeconds;
+	private String serverRelease;
 	
 	public SessionStoreImplLocalMemory() { }
 	
 	@Override
 	public void init(VariantCore core, Map<String, Object> initObject) {
 		this.core =  core;
+		serverRelease = (String)initObject.get("svr_rel");
+		sessionTimeoutSeconds = (Integer)initObject.get("ssn_timeout_sec");
 	}
 
 	/**
@@ -44,12 +49,17 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	public SessionPayloadReader get(String sessionId, boolean create) {
 		String jsonBody = map.get(sessionId);
 		if (jsonBody == null && create) {
-			// Emulate send/receive
 			jsonBody = new CoreSessionImpl(sessionId, core).toJson();
 			map.put(sessionId, jsonBody);
-		}
-		String payload = jsonBody == null ? null : new PayloadWriter(jsonBody).getAsJson();
-		return new SessionPayloadReader(core, payload);
+		}  
+		
+		if (jsonBody == null) return new SessionPayloadReader(core, null);
+		
+		PayloadWriter pw = new PayloadWriter(jsonBody);
+		pw.setProperty(Payload.Property.SVR_REL, serverRelease);
+		pw.setProperty(Payload.Property.SSN_TIMEOUT, String.valueOf(sessionTimeoutSeconds));
+		
+		return new SessionPayloadReader(core, pw.getAsJson());
 	}
 
 	/**
@@ -58,7 +68,8 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	 * @throws VariantException 
 	 */
 	@Override
-	public void save(VariantCoreSession session) {
+	public void save(VariantSession session) {
+			System.out.println(((CoreSessionImpl)session).toJson());
 			map.put(session.getId(), ((CoreSessionImpl)session).toJson());
 	}
 	

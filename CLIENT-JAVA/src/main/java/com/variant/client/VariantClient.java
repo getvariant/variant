@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.VariantProperties;
+import com.variant.core.VariantSession;
 import com.variant.core.exception.VariantSchemaModifiedException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.impl.CorePropertiesImpl;

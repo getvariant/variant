@@ -9,7 +9,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantSession;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
@@ -60,7 +60,7 @@ abstract public class BaseTestCommon {
 	 * @param experiences are expected as "test.exp" 
 	 * @return
 	 */
-    protected void setTargetingStabile(VariantCoreSession ssn, String...experiences) {
+    protected void setTargetingStabile(VariantSession ssn, String...experiences) {
 		SessionScopedTargetingStabile stabile = new SessionScopedTargetingStabile();
 		for (String e: experiences) {
 			Experience exp = experience(e, ((CoreSessionImpl)ssn).getCoreApi().getSchema());

@@ -1,5 +1,5 @@
 package com.variant.client;
-
+/*
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
@@ -17,7 +17,7 @@ import com.variant.core.schema.State;
  * </p>
  * @author Igor Urisman
  * @since 0.6
- */
+ *
 public interface VariantSession extends VariantCoreSession {
 
 	/**
@@ -27,8 +27,8 @@ public interface VariantSession extends VariantCoreSession {
 	 *         may be further examined for more information about targeting.  
 	 *
 	 * @since 0.5
-	 */
-	@Override
+	 *
+    @Override
 	public VariantStateRequest targetForState(State state);
 
 	/**
@@ -38,7 +38,7 @@ public interface VariantSession extends VariantCoreSession {
 	 *         session.
 	 *  
 	 * @since 0.5
-	 */
+	 *
 	public VariantStateRequest getStateRequest();
 
 	/**
@@ -46,6 +46,8 @@ public interface VariantSession extends VariantCoreSession {
 	 * will throw the {@link VariantRuntimeUserErrorException}</p>
 	 * 
 	 * @return true if this session has expired or false otherwise.
-	 */
+	 *
 	public boolean isExpired();
 }
+
+*/

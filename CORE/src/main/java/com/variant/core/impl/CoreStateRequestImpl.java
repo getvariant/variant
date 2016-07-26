@@ -10,7 +10,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
@@ -112,9 +112,9 @@ public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
 			event = null;
 		}
 		
-		session.save();
-		
 		committed = true;
+		
+		session.save();
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
 	}
 
 	@Override
-	public VariantCoreSession getSession() {
+	public VariantSession getSession() {
 		return session;
 	}
 
@@ -203,7 +203,6 @@ public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * 
 	 * @param path
 	 */
 	public void setResolvedParameters(Map<String,String> parameterMap) {
@@ -211,7 +210,6 @@ public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
 	}
 		
 	/**
-	 * 
 	 * @return
 	 */
 	public Status getStatus() {
@@ -232,6 +230,10 @@ public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
 		return stateName;
 	}
 	
+	//---------------------------------------------------------------------------------------------//
+	//                                       SERIALIZATION                                         //
+	//---------------------------------------------------------------------------------------------//
+
 	private static final String FIELD_NAME_STATE = "state";
 	private static final String FIELD_NAME_STATUS = "status";
 	private static final String FILED_NAME_COMMITTED = "comm";

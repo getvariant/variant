@@ -70,25 +70,4 @@ abstract public class PayloadReader<T> extends Payload {
 		return body == null;
 	}
 	
-	/**
-	 * 
-	 * @return
-	 *
-	@SuppressWarnings("unchecked")
-	public T getBodyObject(Class<T> clazz) {
-		
-		// By contract (though not syntactically enforced) T is expected to have a 'deserialize' static method.
-		Method staticMethod = VariantReflectUtils.getStaticMethod(clazz, "deserialize");
-		if (staticMethod == null) 
-			throw new VariantInternalException(String.format("Payloadable class [%s] must implement method 'deserialize'", clazz.getName()));
-
-		// Invoke deserialize(), which should return what we want.
-		try {
-			return (T) staticMethod.invoke(null, core, body);
-		} catch (Exception e) {
-			throw new VariantInternalException(
-					String.format("Unable to invoke [%s.deserialize(VariantCore, Map<String,?>)]", clazz.getName()));
-		}
-	}
-*/
 }

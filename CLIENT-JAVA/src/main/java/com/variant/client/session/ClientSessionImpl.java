@@ -1,13 +1,12 @@
-package com.variant.client.impl;
+package com.variant.client.session;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
-import com.variant.client.session.TargetingTrackerEntryImpl;
-import com.variant.core.VariantCoreSession;
+import com.variant.client.impl.ClientStateRequestImpl;
+import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
@@ -26,7 +25,7 @@ import com.variant.core.util.Tuples.Pair;
  * @author Igor
  *
  */
-public class VariantSessionImpl implements VariantSession {
+public class ClientSessionImpl implements VariantSession {
 
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
@@ -80,7 +79,7 @@ public class VariantSessionImpl implements VariantSession {
 	/**
 	 * 
 	 */
-	public VariantSessionImpl(VariantCoreSession coreSession,
+	public ClientSessionImpl(CoreSessionImpl coreSession,
 			VariantSessionIdTracker sessionIdTracker,
 			VariantTargetingTracker targetingTracker) {
 		
@@ -186,7 +185,7 @@ public class VariantSessionImpl implements VariantSession {
 	 * 
 	 * @param coreSession
 	 */
-	public void replaceCoreSession(VariantCoreSession coreSession) {
+	public void replaceCoreSession(VariantSession coreSession) {
 		this.coreSession = (CoreSessionImpl) coreSession;
 	}
 	

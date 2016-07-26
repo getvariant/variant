@@ -9,9 +9,9 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
 
-import com.variant.client.VariantSession;
 import com.variant.client.impl.ClientStateRequestImpl;
-import com.variant.client.impl.VariantSessionImpl;
+import com.variant.client.session.ClientSessionImpl;
+import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -126,7 +126,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 
 		varReq.commit("");
 
-		assertEquals(5, ((VariantSessionImpl)ssn2).getTargetingTracker().get().size());
+		assertEquals(5, ((ClientSessionImpl)ssn2).getTargetingTracker().get().size());
 		assertEquals(5, varReq.getActiveExperiences().size());
 		for (Test expectedTest: expectedTests) {
 			assertNotNull(varReq.getActiveExperience(expectedTest));
