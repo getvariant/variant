@@ -2,7 +2,8 @@ package com.variant.client;
 
 import java.util.Collection;
 
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.VariantStateRequest;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
 
 /**
@@ -25,13 +26,13 @@ public interface VariantTargetingTracker {
 	 * 
 	 * @param initParams The init parameter map, as specified by the <code>targeting.tracker.class.init</code>
 	 *                   application property. 
-	 * @param client     Variant client that instantiated this tracker.
+	 * 
 	 * @param userData   An array of 0 or more opaque objects which {@link VariantClient#getSession(Object...userData)}  
 	 *                   will pass here without interpretation.
 	 * 
 	 * @since 0.6
 	 */
-	public void initialized(VariantInitParams initParams) throws Exception;
+	public void init(VariantInitParams initParams, Object...userData);
 
 	
 	/**
@@ -42,7 +43,7 @@ public interface VariantTargetingTracker {
 	 * @return Collection of objects of type {@link Entry}.
 	 * @since 0.6
 	 */
-	public Collection<Entry> get(Object...userData);
+	public Collection<Entry> get();
 		
 	/**
 	 * Set the value of all currently tracked test experiences. The implementation must guarantee 
@@ -59,7 +60,7 @@ public interface VariantTargetingTracker {
 	 * Flush the state of this object to the underlying persistence mechanism.
 	 * 
 	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantCoreStateRequest, Object...)} 
+	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...)} 
 	 *                 will pass here without interpretation.
 	 *                 
 	 * @since 0.6
@@ -69,18 +70,40 @@ public interface VariantTargetingTracker {
 	/**
 	 * A targeting tracker entry: a test experience plus the timestamp of when it was last touched by this
 	 * front end.
+	 * 
+	 * @since 0.6
 	 */
 	public static interface Entry {
 				
 		/**
-		 * Test Experience from targeting tracker.
-		 * @return
+		 * Test experience from targeting tracker.
+		 * 
+		 * @param schema Variant {@link Schema} where the experience will be looked for.
+		 * 
+		 * @return Test experience from the given schema whose name and test name match the content
+		 *         of this entry, or null if current schema does not have such an experience.
+    	 * @since 0.6
 		 */
-		public Experience getExperience();
+		public Experience getAsExperience(Schema schema);
 		
 		/**
-		 * Timestamp a state instrumented by this test has been last touched.
+		 * Test name.
+		 * @return Test name.
+    	 * @since 0.6
+		 */
+		public String getTestName();
+		
+		/**
+		 * Experience name.
+		 * @return Experience name.
+    	 * @since 0.6
+		 */
+		public String getExperienceName();
+		
+		/**
+		 * Timestamp when a state instrumented by this test has been last touched.
 		 * @return
+    	 * @since 0.6
 		 */
 		public long getTimestamp();
 	}

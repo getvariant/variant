@@ -10,12 +10,14 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import static com.variant.core.schema.impl.MessageTemplate.*;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.PersistableEventImpl;
@@ -25,7 +27,6 @@ import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.exception.VariantSchemaModifiedException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
@@ -47,7 +48,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
 	private LinkedHashSet<Test> traversedTests = new LinkedHashSet<Test>();
 	private LinkedHashSet<Test> disqualTests = new LinkedHashSet<Test>();
-	private VariantCore coreApi;
+	private VariantCore core;
 	private SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
 	private String schemaId;
 	
@@ -59,13 +60,19 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * 
 	 * @param id
 	 */
-	public CoreSessionImpl(String id, VariantCore coreApi) {
+	public CoreSessionImpl(String id, VariantCore core) {
 		
-		this.coreApi = coreApi;
+		this.core = core;
+
+		if (core.getComptime().getComponent() == VariantComptime.Component.SERVER)
+			throw new VariantInternalException("Cannot create schema on Server");
+
+		if (core.getSchema() == null) 
+			throw new VariantRuntimeUserErrorException(RUN_SCHEMA_UNDEFINED);
 		
 		// No schema ID on server yet. 
-		if (coreApi.getComptime().getComponent() != VariantComptime.Component.SERVER) 
-			this.schemaId = coreApi.getSchema().getId();
+		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER) 
+			this.schemaId = core.getSchema().getId();
 		this.id = id;
 		
 	}
@@ -91,7 +98,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	}
 	
 	@Override
-	public VariantCoreStateRequest getStateRequest() {
+	public VariantStateRequest getStateRequest() {
 		return currentRequest;
 	}
 
@@ -114,7 +121,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	public void triggerEvent(VariantEvent event) {
 
 		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
-		EventWriter ew = ((VariantCore) coreApi).getEventWriter();
+		EventWriter ew = ((VariantCore) core).getEventWriter();
 		ew.write(new PersistableEventImpl(event, this));
 	}
 
@@ -122,16 +129,16 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * 
 	 */
 	@Override
-	public VariantCoreStateRequest targetForState(State state) {
+	public VariantStateRequest targetForState(State state) {
 				
 		checkState();
 		
 		// Can't have two requests at one time
 		if (currentRequest != null && !currentRequest.isCommitted()) {
-			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_ACTIVE_REQUEST);
+			throw new VariantRuntimeUserErrorException(RUN_ACTIVE_REQUEST);
 		}
 				
-		return coreApi.getRuntime().targetSessionForState(this, (StateImpl) state);
+		return core.getRuntime().targetSessionForState(this, (StateImpl) state);
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -143,7 +150,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * @return
 	 */
 	public VariantCore getCoreApi() {
-		return coreApi;
+		return core;
 	}
 	
 	/**
@@ -211,12 +218,12 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * 
 	 */
 	public void save() {
-		coreApi.getSessionService().saveSession(this);
+		core.getSessionService().saveSession(this);
 	}
 	
 	public void checkState() {
-		if (!schemaId.equals(coreApi.getSchema().getId())) {
-			throw new VariantSchemaModifiedException(coreApi.getSchema().getId(), schemaId);		
+		if (!schemaId.equals(core.getSchema().getId())) {
+			throw new VariantSchemaModifiedException(core.getSchema().getId(), schemaId);		
 		}
 	}
 	

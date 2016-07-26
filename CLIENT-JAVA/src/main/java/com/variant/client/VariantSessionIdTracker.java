@@ -1,7 +1,7 @@
 package com.variant.client;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.VariantStateRequest;
 
 
 /**
@@ -40,31 +40,35 @@ public interface VariantSessionIdTracker {
 	 * 
 	 * @since 0.6
 	 */
-	public void initialized(VariantInitParams initParams) throws Exception;
+	public void init(VariantInitParams initParams, Object...userData);
 
 	/**
-	 * <p>Retrieve the session ID from the tracker.</p>
-	 *  
-	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#targetForState(VariantCoreSession, com.variant.core.schema.State, Object)} 
-	 *                 will pass here without interpretation.
+	 * <p>Retrieve the current value of the session ID from the tracker. This value may have been set by <code>init()</code>
+	 * or by the <code>set()</code></p>
 	 * 
-	 * @return Session ID, if present in the tracker or null if not present.
+	 * @return Session ID, if present in the tracker or null otherwise.
 	 * @since 0.6
 	 */
-	public String get(Object...userData);
+	public String get();
 	
 	/**
-	 * <p>Set the session ID, tracked by this object,, to the provided value and flush the state of this object 
-	 * to the underlying persistence mechanism.</p>
+	 * <p>Set the value of session ID.</p>
+	 * 
+	 * @return Session ID, if present in the tracker or null otherwise.
+	 * @since 0.6
+	 */
+	public void set(String sessionId);
+
+	/**
+	 * <p>Save the current value of session ID to the underlying persistence mechanism.</p>
 	 * 
 	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantCoreStateRequest, Object...)} 
+	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...)} 
 	 *                 will pass here without interpretation.
 	 *                 
 	 * @since 0.6
 	 */
-	public void save(String sessionId, Object...userData);
+	public void save(Object...userData);
 
 }
 

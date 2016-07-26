@@ -1,7 +1,8 @@
 package com.variant.client;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.VariantStateRequest;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.schema.State;
 
 /**
@@ -22,7 +23,7 @@ public interface VariantSession extends VariantCoreSession {
 	/**
      * <p>Target session for a state. Overrides core's return type.
      *  
-	 * @return An instance of the {@link com.variant.core.VariantCoreStateRequest} object, which
+	 * @return An instance of the {@link com.variant.core.VariantStateRequest} object, which
 	 *         may be further examined for more information about targeting.  
 	 *
 	 * @since 0.5
@@ -40,4 +41,11 @@ public interface VariantSession extends VariantCoreSession {
 	 */
 	public VariantStateRequest getStateRequest();
 
+	/**
+	 * <p>Has this session expired? An expired session cannot be used: calling any method on it
+	 * will throw the {@link VariantRuntimeUserErrorException}</p>
+	 * 
+	 * @return true if this session has expired or false otherwise.
+	 */
+	public boolean isExpired();
 }

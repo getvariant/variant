@@ -4,21 +4,20 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.variant.client.VariantSession;
-import com.variant.client.VariantStateRequest;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.impl.CoreStateRequestImpl;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
-public class VariantStateRequestImpl implements VariantStateRequest {
+public class ClientStateRequestImpl implements VariantStateRequest {
 
 	private VariantSessionImpl session;
 	private CoreStateRequestImpl coreStateRequest;
 	
-	public VariantStateRequestImpl(VariantCoreStateRequest coreStateRequest, VariantSession session) {
+	public ClientStateRequestImpl(VariantStateRequest coreStateRequest, VariantSession session) {
 		this.coreStateRequest = (CoreStateRequestImpl) coreStateRequest;
 		this.session = (VariantSessionImpl) session;
 	}
@@ -43,7 +42,6 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 
 	@Override
 	public Collection<Experience> getActiveExperiences() {
-		// TODO Auto-generated method stub
 		return coreStateRequest.getActiveExperiences();
 	}
 
@@ -61,16 +59,12 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	public void setStatus(Status status) {
 		coreStateRequest.setStatus(status);
 	}
-
-	/**
-	 * Plug the no argument invocation and channel it via the varargs.
-	 * TODO In 8, this should move to the interface.
-	 */
-	@Override
-	public void commit() {
-		commit((Object[])null);
-	}
 	
+	@Override
+	public boolean isCommitted() {
+		return coreStateRequest.isCommitted();
+	}
+
 	@Override
 	public void commit(Object... userData) {
 		
@@ -78,7 +72,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		
 		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 		session.getTargetingTracker().save(userData);
-		session.getSessionIdTracker().save(session.getId(), userData);
+		session.getSessionIdTracker().save(userData);
 	}
 
 	@Override
@@ -93,4 +87,13 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	public CoreStateRequestImpl getCoreStateRequest () {
 		return coreStateRequest;
 	}
+	
+	/**
+	 * Plug the no argument invocation and channel it via the varargs.
+	 * TODO In 8, this should move to the interface.
+	 */
+	public void commit() {
+		commit((Object[])null);
+	}
+
 }

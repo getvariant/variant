@@ -1,5 +1,5 @@
 package com.variant.client;
-
+/*
 import com.variant.core.VariantCoreStateRequest;
 
 public interface VariantStateRequest extends VariantCoreStateRequest {
@@ -15,7 +15,8 @@ public interface VariantStateRequest extends VariantCoreStateRequest {
 	 *                 and {@link com.variant.core.session.SessionStore#save(VariantCoreSession, Object...)}.
      *
 	 * @since 0.6
-	 */
+	 *
 	public void commit(Object...userData);
 
 }
+*/

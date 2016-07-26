@@ -11,7 +11,7 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.exception.VariantInternalException;
@@ -30,7 +30,7 @@ import com.variant.core.srvstub.TestExperienceServerStub;
  * @author Igor
  *
  */
-public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializable {
+public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
 
 	/**
 	 * Needs serializable because we keep it in session.
@@ -88,10 +88,12 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Commit this state request and trigger the state visited event. 
+	 * Commit this state request and trigger the state visited event.
+	 * We don't acutally need userData in this core implementation, but we want the method signature
+	 * ready for the client.
 	 */
 	@Override
-	public void commit() {
+	public void commit(Object...userData) {
 		
 		session.checkState();
 		
@@ -113,6 +115,13 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 		session.save();
 		
 		committed = true;
+	}
+
+	/**
+	 */
+	@Override
+	public boolean isCommitted() {
+		return committed;
 	}
 
 	@Override
@@ -200,15 +209,7 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	public void setResolvedParameters(Map<String,String> parameterMap) {
 		this.resolvedParameterMap = parameterMap;
 	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public boolean isCommitted() {
-		return committed;
-	}
-	
+		
 	/**
 	 * 
 	 * @return

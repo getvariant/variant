@@ -1,4 +1,4 @@
-package com.variant.client.servlet.util;
+package com.variant.client.session;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,31 +27,6 @@ public abstract class TargetingTrackerString implements VariantTargetingTracker 
 
 	private Logger LOG = LoggerFactory.getLogger(TargetingTrackerString.class);
 	
-	public static class EntryImpl implements VariantTargetingTracker.Entry {
-		
-		private Experience experience;
-		private long timestamp;
-		
-		private EntryImpl(Experience experience, long timestamp) { 
-			this.experience = experience;
-			this.timestamp = timestamp;
-		}
-		
-		/**
-		 */
-		@Override
-		public Experience getExperience() {return experience;}
-		
-		/**
-		 */
-		@Override
-		public long getTimestamp() {return timestamp;}
-		
-		@Override
-		public String toString() {
-			return timestamp + "." + experience.getTest().getName() + "." + experience.getName();
-		}
-	}
 
 	/**
 	 * 
@@ -67,6 +42,8 @@ public abstract class TargetingTrackerString implements VariantTargetingTracker 
 	public Collection<Entry> fromString(String input, Schema schema) {
 				
 		Collection<Entry> result = new ArrayList<Entry>();
+		
+		if (input == null || input.length() == 0) return result;
 		
 		for (String entry: input.split("\\|")) {
 			
@@ -104,7 +81,7 @@ public abstract class TargetingTrackerString implements VariantTargetingTracker 
 							continue;
 						}
 						
-						result.add(new EntryImpl(experience, timestamp));
+						result.add(new TargetingTrackerEntryImpl(experience, timestamp));
 					}
 					catch (Exception e) {
 						// any parsing error is due to end user's mucking with the string...
@@ -127,7 +104,7 @@ public abstract class TargetingTrackerString implements VariantTargetingTracker 
 	/**
 	 * 
 	 */
-	public String toString(Collection<Entry> entries) {
+	public static String toString(Collection<Entry> entries) {
 		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for (Entry e: entries) {

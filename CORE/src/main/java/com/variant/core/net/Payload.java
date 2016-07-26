@@ -2,6 +2,8 @@ package com.variant.core.net;
 
 import java.util.HashMap;
 
+import com.variant.core.exception.VariantInternalException;
+
 abstract public class Payload {
 
 	protected HashMap<String,String> propMap = new HashMap<String,String>();
@@ -39,5 +41,19 @@ abstract public class Payload {
 		return propMap.get(prop.toString());
 	}
 	
+	/**
+	 * 
+	 */
+	@SuppressWarnings("unchecked")
+	public <T> T getProperty(Property prop, Class<T> clazz) {
+		if (clazz == String.class)
+			return (T) getProperty(prop);
+		else if (clazz == Integer.class)
+			return (T) new Integer(getProperty(prop));
+		else if (clazz == Long.class)
+			return (T) new Long(getProperty(prop));
+		else 
+			throw new VariantInternalException("Unable to convert property value to instance of [" + clazz.getName() + "]");
+	}
 
 }

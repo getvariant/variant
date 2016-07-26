@@ -1,66 +1,40 @@
-package com.variant.client.test;
+package com.variant.client.test.servlet;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.servlet.http.Cookie;
 
-import org.junit.Before;
 import org.mockito.Answers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.variant.client.VariantClient;
-import com.variant.client.impl.VariantClientTestFacade;
+import com.variant.client.VariantTargetingTracker;
 import com.variant.client.mock.HttpServletRequestMock;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.mock.HttpSessionMock;
 import com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie;
-import com.variant.core.impl.VariantCore;
-import com.variant.core.test.BaseTestCommon;
+import com.variant.client.servlet.adapter.TargetingTrackerHttpCookie;
+import com.variant.client.session.TargetingTrackerEntryImpl;
+import com.variant.client.test.BareClientBaseTest;
+import com.variant.core.exception.VariantInternalException;
+import com.variant.core.schema.Schema;
+import com.variant.core.util.inject.Injector;
 
 /**
  * Base class for all Core JUnit tests.
  */
-public abstract class BaseTestClient extends BaseTestCommon {
-	
-	private static Boolean sqlSchemaCreated = false;
-
-	protected VariantClient client = null;
-	protected VariantCore coreApi = null;
-	
-	/**
-	 * Each case runs in its own JVM. Each test runs in its
-	 * own instance of the test case. We want the jdbc schema
-	 * created only once per jvm, but the api be instance scoped.
-	 * 
-	 * @throws Exception
-	 */
-	@Before
-	public void _beforeTestCase() throws Exception {
-		client = rebootApi();               // in each instance 
-		coreApi = VariantClientTestFacade.getCoreApi(client);
-		
-		synchronized (sqlSchemaCreated) {  // once per JVM
-			if (!sqlSchemaCreated) {
-				recreateSchema();
-				sqlSchemaCreated = true;
-			}
-		}
-	}
+public abstract class ServletAdapterBaseTest extends BareClientBaseTest {
 	
 	@Override
-	protected VariantCore getCoreApi() {
-		return coreApi;
-	}
-
-	/**
-	 * Subclasses will be able to override this
-	 */
 	protected VariantClient rebootApi() {
-		return VariantClient.Factory.getInstance("/variant-test.props");
+		Injector.setConfigNameAsResource("/variant/injector-servlet-adapter-test.json");
+		return VariantClient.Factory.getInstance("/variant/servlet-adapter-test.props");
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -68,22 +42,31 @@ public abstract class BaseTestClient extends BaseTestCommon {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Mock HttpServletRequest
+	 * Mock HttpServletRequest. Will contain cookies 
 	 * @return
 	 */
-	protected HttpServletRequestMock mockHttpServletRequest(String jsessionId, String vsessionId) { 
+	protected HttpServletRequestMock mockHttpServletRequest(
+			String sessionId, Collection<VariantTargetingTracker.Entry> entries) { 
 		
 		//
 		// Session
 		//
 		HttpSessionMock ssn = mock(HttpSessionMock.class, new DefaultAnswer());
-		when(ssn.getId()).thenReturn(jsessionId);
+		//when(ssn.getId()).thenReturn(jsessionId);
 
 		// Request
 		HttpServletRequestMock result = mock(HttpServletRequestMock.class, new DefaultAnswer());
 		when(result.getSession()).thenReturn(ssn);
-		Cookie[] cookies = { new Cookie(SessionIdTrackerHttpCookie.COOKIE_NAME, vsessionId) };
-		when(result.getCookies()).thenReturn(cookies);
+		
+		ArrayList<Cookie> cookies = new ArrayList<Cookie>();
+		if (sessionId != null) {
+			cookies.add(new Cookie(SessionIdTrackerHttpCookie.COOKIE_NAME, sessionId)); 	
+		}
+
+		if (entries != null && entries.size() > 0) {
+			cookies.add(new Cookie(TargetingTrackerHttpCookie.COOKIE_NAME, TargetingTrackerHttpCookie.toString(entries)));
+		}
+		when(result.getCookies()).thenReturn(cookies.toArray(new Cookie[] {}));
 		
 		return result;
 	}
@@ -131,6 +114,6 @@ public abstract class BaseTestClient extends BaseTestCommon {
 		private static boolean isMethodAbstract(InvocationOnMock invoc) {
 			return Modifier.isAbstract(invoc.getMethod().getModifiers());
 		}
-	}
+	}		
 }
 

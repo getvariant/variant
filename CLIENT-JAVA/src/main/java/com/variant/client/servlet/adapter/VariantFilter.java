@@ -16,13 +16,10 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
-import com.variant.client.VariantStateRequest;
 import com.variant.client.impl.StateSelectorByRequestPath;
 import com.variant.client.servlet.util.VariantWebUtils;
-import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
@@ -157,7 +154,7 @@ public class VariantFilter implements Filter {
 			LOG.error("Unhandled exception in Variant for path [" + VariantWebUtils.requestUrl(httpRequest) + "]", t);
 			isForwarding = false;
 			if (variantRequest != null) {
-				variantRequest.setStatus(VariantCoreStateRequest.Status.FAIL);
+				variantRequest.setStatus(VariantStateRequest.Status.FAIL);
 			}
 		}
 
@@ -180,7 +177,7 @@ public class VariantFilter implements Filter {
 						VariantWebUtils.requestUrl(httpRequest) + 
 						"] and session [" + variantRequest.getSession().getId() + "]", t);
 				
-				variantRequest.setStatus(VariantCoreStateRequest.Status.FAIL);
+				variantRequest.setStatus(VariantStateRequest.Status.FAIL);
 			}
 		}
 	}

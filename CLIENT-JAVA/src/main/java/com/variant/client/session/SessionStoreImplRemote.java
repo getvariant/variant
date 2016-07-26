@@ -12,6 +12,7 @@ import com.variant.client.http.VariantHttpClientException;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
+import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.session.SessionStore;
 
 public class SessionStoreImplRemote implements SessionStore {
@@ -29,7 +30,7 @@ public class SessionStoreImplRemote implements SessionStore {
 	 * @since 0.6
 	 */
 	@Override
-	public VariantCoreSession get(String sessionId, boolean create) {
+	public SessionPayloadReader get(String sessionId, boolean create) {
 
 		if (sessionId == null || sessionId.length() == 0) {
 			throw new IllegalArgumentException("No session ID");
@@ -39,13 +40,13 @@ public class SessionStoreImplRemote implements SessionStore {
 		HttpResponse resp = httpClient.get(apiEndpointUrl + "session/" + sessionId);
 
 		if (resp.getStatus() == HttpStatus.SC_OK) {
-			return CoreSessionImpl.fromJson(coreApi, resp.getBody());
+			return new SessionPayloadReader(coreApi, resp.getBody());
 		}
 		else if (resp.getStatus() == HttpStatus.SC_NO_CONTENT) {
 			if (create) {
-				VariantCoreSession result = new CoreSessionImpl(sessionId, coreApi);
-				save(result);
-				return result;
+				CoreSessionImpl newSession = new CoreSessionImpl(sessionId, coreApi);
+				save(newSession);
+				return new SessionPayloadReader(coreApi, newSession.toJson());
 			}
 			else {
 				return null;

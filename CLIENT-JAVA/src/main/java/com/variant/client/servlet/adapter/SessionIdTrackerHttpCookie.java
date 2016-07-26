@@ -36,16 +36,14 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	 * @return session Id.
 	 */
 	@Override
-	public void initialized(VariantInitParams initParams) {
-		// Nothing.
+	public void init(VariantInitParams initParams, Object...userData) {		
+		HttpServletRequest request = (HttpServletRequest) userData[0];
+		cookie = new SsnIdCookie(request);
 	}
 	
 	@Override
-	public String get(Object... userData) {
-		
-		HttpServletRequest request = (HttpServletRequest) userData[0];
-		cookie = new SsnIdCookie(request);
-		return cookie == null || cookie.getValue() == null ?  null : cookie.getValue();
+	public String get() {
+		return cookie == null ? null : cookie.getValue();
 	}
 
 	/**
@@ -53,8 +51,16 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	 * @param userData
 	 */
 	@Override
-	public void save(String sessionId, Object... userData) {
+	public void set(String sessionId) {
 		cookie.setValue(sessionId);
+	}
+
+	/**
+	 * Save
+	 * @param userData
+	 */
+	@Override
+	public void save(Object... userData) {
 		HttpServletResponse response = (HttpServletResponse) userData[0];
 		cookie.send(response);		
 	}

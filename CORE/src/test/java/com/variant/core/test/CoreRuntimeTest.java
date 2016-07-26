@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Random;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.CoreSessionImpl;
@@ -1085,7 +1085,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 		String sessionId = VariantStringUtils.random64BitString(rand);
 		VariantCoreSession ssn = core.getSession(sessionId).getBody();
 		setTargetingStabile(ssn, "test2.B");
-		VariantCoreStateRequest req = ssn.targetForState(state1);
+		VariantStateRequest req = ssn.targetForState(state1);
 		SessionScopedTargetingStabile stabile = ((CoreSessionImpl)ssn).getTargetingStabile();
 
 		// test2 is off, but stabile has a variant experience for it, which will be substituted for the purposes of lookup with control.
@@ -1123,7 +1123,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 	    	      	    	      
 		for (String stateName: new String[] {"state1", "state2", "state3", "state4", "state5"}) {
 	    	         
-			VariantCoreStateRequest req = ssnIn.targetForState(core.getSchema().getState(stateName));
+			VariantStateRequest req = ssnIn.targetForState(core.getSchema().getState(stateName));
 			CoreSessionImpl ssn = (CoreSessionImpl) req.getSession();
 			assertEquals(ssn, ssnIn);
 			assertTrue(ssn.getTraversedStates().isEmpty());

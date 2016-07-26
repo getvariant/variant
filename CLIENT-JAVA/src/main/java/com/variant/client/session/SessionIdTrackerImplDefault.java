@@ -14,16 +14,21 @@ public class SessionIdTrackerImplDefault implements VariantSessionIdTracker {
 			"Supply a better implementation in applicaiton property " + 
 					VariantClientPropertyKeys.SESSION_ID_TRACKER_CLASS_NAME.propertyName();
 	@Override
-	public void initialized(VariantInitParams initParams) throws Exception {}
+	public void init(VariantInitParams initParams, Object...userData) {}
 
 	@Override
-	public void save(String sessionId, Object... userData) {
+	public void save(Object... userData) {
 		throw new UnsupportedOperationException(MESSAGE);
 	}
 
 	@Override
-	public String get(Object...userData) {
+	public String get() {
 		throw new UnsupportedOperationException(MESSAGE);
 	}
-		
+
+	@Override
+	public void set(String sessionId) {
+		throw new UnsupportedOperationException(MESSAGE);
+	}
+
 }

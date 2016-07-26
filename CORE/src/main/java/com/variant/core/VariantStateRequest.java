@@ -16,7 +16,7 @@ import com.variant.core.schema.Test.Experience;
  * @since 0.6
  *
  */
-public interface VariantCoreStateRequest {
+public interface VariantStateRequest {
 
 	/**
 	 * This request's Variant session.
@@ -115,7 +115,15 @@ public interface VariantCoreStateRequest {
      *
 	 * @since 0.6
 	 */
-	public void commit();
+	public void commit(Object...userData);
+
+	/**
+	 * Is this request object represent a request that has been committed?
+     * 
+     *@return true if this request has ben committed, or false otherwise.
+	 * @since 0.6
+	 */
+	public boolean isCommitted();
 
 	/**
 	 * Current status of this request.
@@ -123,7 +131,7 @@ public interface VariantCoreStateRequest {
 	public Status getStatus();
 
 	/**
-	 * Status of a {@link com.variant.core.VariantCoreStateRequest}.
+	 * Status of a {@link com.variant.core.VariantStateRequest}.
 	 */
 	public static enum Status {
 		OK, FAIL

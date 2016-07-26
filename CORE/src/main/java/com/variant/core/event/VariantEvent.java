@@ -3,19 +3,19 @@ package com.variant.core.event;
 import java.util.Date;
 import java.util.Map;
 
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.schema.Test.OnState.Variant;
 
 /**
  * A Variant event. Events are generated either implicitly by the Variant RCE Container, 
  * or explicitly by the client code. Events are flushed to external storage once per state
- * request, during the {@link Variant#commitStateRequest(com.variant.core.VariantCoreStateRequest, Object...)}
+ * request, during the {@link Variant#commitStateRequest(com.variant.core.VariantStateRequest, Object...)}
  * method by an implementation of {@link com.variant.core.event.EventPersister}. Client code
  * may generate its own events by passing its own implementations to 
- * {@link VariantCoreStateRequest#triggerEvent(VariantEvent)}.
+ * {@link VariantStateRequest#triggerEvent(VariantEvent)}.
  * 
  * @author Igor Urisman.
- * @see VariantCoreStateRequest#triggerEvent(VariantEvent)
+ * @see VariantStateRequest#triggerEvent(VariantEvent)
  * @since 0.5
  *
  */

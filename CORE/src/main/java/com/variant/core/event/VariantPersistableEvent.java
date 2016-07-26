@@ -3,7 +3,7 @@ package com.variant.core.event;
 import java.util.Collection;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
@@ -22,7 +22,7 @@ public interface VariantPersistableEvent extends VariantEvent {
 	/**
 	 * The current variant session.
 	 * 
-	 * @return An object of type {@link VariantCoreStateRequest}.
+	 * @return An object of type {@link VariantStateRequest}.
 	 * 
 	 * @since 0.6
 	 */

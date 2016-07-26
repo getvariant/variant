@@ -39,7 +39,7 @@ public class SchemaImpl implements Schema {
 	 */
 	private void checkInternalState() {
 		if (state == InternalState.UNDEPLOYED)
-			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
+			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_OBSOLETE, ID);
 		else if (state == InternalState.FAILED)
 			throw new VariantInternalException("Called on a FAILED schema");
 	}

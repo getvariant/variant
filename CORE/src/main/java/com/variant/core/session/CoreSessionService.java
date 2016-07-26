@@ -45,7 +45,8 @@ public class CoreSessionService {
 	 */
 	public SessionPayloadReader getSession(String id, boolean create) throws VariantRuntimeException {
 		
-		if (core.getSchema() == null) throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
+		if (core.getSchema() == null) 
+			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 		
 		return sessionStore.get(id, create);
 	}

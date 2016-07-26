@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.VariantStateRequest;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.VariantCore;
@@ -141,7 +141,7 @@ public class ParserOkayTest extends BaseTestCore {
 		Test test1 = core.getSchema().getTest("test1");
 		Test test2 = core.getSchema().getTest("test2");
 		core.clearHookListeners();
-		VariantCoreStateRequest req = session.targetForState(state1);
+		VariantStateRequest req = session.targetForState(state1);
 		assertTrue(req.getActiveExperiences().isEmpty());
 		assertTrue(session.getTraversedStates().isEmpty());
 		assertTrue(session.getTraversedTests().isEmpty());
@@ -275,7 +275,7 @@ public class ParserOkayTest extends BaseTestCore {
 		Test test2 = core.getSchema().getTest("test2");
 		core.clearHookListeners();
 		core.addHookListener(new TestDisqualifier(test2));
-		VariantCoreStateRequest req = session.targetForState(state1);
+		VariantStateRequest req = session.targetForState(state1);
 		assertEquals(0, session.getTraversedStates().size());
 		assertEquals(0, session.getTraversedTests().size());
 		assertTrue(req.getActiveExperiences().isEmpty());
@@ -410,7 +410,7 @@ public class ParserOkayTest extends BaseTestCore {
 		core.clearHookListeners();
 		core.addHookListener(new TestDisqualifier(test1));
 		core.addHookListener(new TestDisqualifier(test2));
-		VariantCoreStateRequest req = session.targetForState(state1);
+		VariantStateRequest req = session.targetForState(state1);
 		assertTrue(session.getTraversedStates().isEmpty());
 		assertTrue(session.getTraversedTests().isEmpty());
 		assertTrue(req.getActiveExperiences().isEmpty());

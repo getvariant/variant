@@ -1,4 +1,4 @@
-package com.variant.client.test;
+package com.variant.client.test.servlet;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.variant.client.impl.StateSelectorByRequestPath;
 
-public class ViewSelectorByRequestPathTest {
+public class PathMatcherTest {
 
 	@Test
 	public void matcherTest() {

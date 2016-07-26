@@ -65,12 +65,12 @@ public interface VariantCoreSession {
 	/**
      * <p>Target session for a state. 
      *  
-	 * @return An instance of the {@link com.variant.core.VariantCoreStateRequest} object, which
+	 * @return An instance of the {@link com.variant.core.VariantStateRequest} object, which
 	 *         may be further examined for more information about targeting.  
 	 *
 	 * @since 0.5
 	 */
-	public VariantCoreStateRequest targetForState(State state);
+	public VariantStateRequest targetForState(State state);
 
 	/**
 	 * <p> The collection of tests traversed by this session so far. A test T is traversed by
@@ -99,10 +99,10 @@ public interface VariantCoreSession {
 	/**
 	 * <p>Get most recent state request, which may be still in progress or already committed.
 	 * 
-	 * @return An object of type {@link VariantCoreStateRequest}, or null, if none yet for this
+	 * @return An object of type {@link VariantStateRequest}, or null, if none yet for this
 	 *         session.
 	 *  
 	 * @since 0.5
 	 */
-	public VariantCoreStateRequest getStateRequest();
+	public VariantStateRequest getStateRequest();
 }

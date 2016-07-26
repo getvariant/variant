@@ -9,8 +9,8 @@ import org.apache.commons.lang3.time.DateUtils;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantInitParams;
-import com.variant.client.servlet.util.TargetingTrackerString;
 import com.variant.client.servlet.util.VariantCookie;
+import com.variant.client.session.TargetingTrackerString;
 import com.variant.core.VariantProperties;
 
 public class TargetingTrackerHttpCookie extends TargetingTrackerString {
@@ -42,6 +42,12 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 		}
 	}
 
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
+	public static final String COOKIE_NAME = "vrnt-target";
+
 	/**
 	 * Superclass needs properties but doesn't have them.
 	 */
@@ -50,18 +56,14 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 		return client.getProperties();
 	}
 
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
-
-	public static final String COOKIE_NAME = "vrnt-target";
-
 	/**
 	 * User data is expected as an <code>HttpServletRequest</code> object.
 	 */
 	@Override
-	public void initialized(VariantInitParams initParams) throws Exception {
+	public void init(VariantInitParams initParams, Object...userData){
 		client = initParams.getVariantClient();
+		HttpServletRequest request =  (HttpServletRequest) userData[0];
+		cookie = new TargetingCookie(request);
 	}		
 
 	/**
@@ -77,9 +79,7 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 	 * Expecting userData[0] to be the HttpServletRequest.
 	 */
 	@Override
-	public Collection<Entry> get(Object... userData) {
-		HttpServletRequest request =  (HttpServletRequest) userData[0];
-		cookie = new TargetingCookie(request);
+	public Collection<Entry> get() {
 		String input = cookie.getValue();
 		// If the targeting cookie existed and returned a value, the superclass will parse it.
 		return input == null ? null : fromString(cookie.getValue(), client.getSchema());

@@ -1,17 +1,16 @@
-package com.variant.client.test;
+package com.variant.client.test.servlet;
 
 import static org.junit.Assert.assertEquals;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import com.variant.client.VariantClient;
 import com.variant.client.servlet.adapter.StateParsedHookListenerImpl;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 
-public class StateParsedHookTest {
+public class StateParsedHookTest extends ServletAdapterBaseTest {
 
 	@Test
 	public void leadingSlashTest() {
@@ -71,9 +70,8 @@ public class StateParsedHookTest {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		VariantClient api = VariantClient.Factory.getInstance();
-		api.addHookListener(new StateParsedHookListenerImpl());
-		ParserResponse response = api.parseSchema(IOUtils.toInputStream(schema));
+		client.addHookListener(new StateParsedHookListenerImpl());
+		ParserResponse response = client.parseSchema(IOUtils.toInputStream(schema));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage msg = response.getMessages().get(0);
 		assertEquals(Severity.ERROR, msg.getSeverity());
