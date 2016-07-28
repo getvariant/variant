@@ -64,10 +64,8 @@ public class CoreSessionImpl implements VariantSession, Serializable {
 		
 		this.core = core;
 
-		if (core.getComptime().getComponent() == VariantComptime.Component.SERVER)
-			throw new VariantInternalException("Cannot create schema on Server");
-
-		if (core.getSchema() == null) 
+		// Have to have a schema, unless we're on the server.
+		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER && core.getSchema() == null) 
 			throw new VariantRuntimeUserErrorException(RUN_SCHEMA_UNDEFINED);
 		
 		// No schema ID on server yet. 

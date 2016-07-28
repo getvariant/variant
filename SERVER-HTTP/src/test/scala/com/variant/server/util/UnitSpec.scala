@@ -18,6 +18,7 @@ import com.variant.core.impl.VariantCore
 import scala.util.Random
 import com.variant.core.impl.VariantComptime
 import com.variant.server.ServerBoot
+import com.variant.core.util.inject.Injector
 
 /**
  * 
@@ -43,7 +44,7 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
    // We'll need the client side api too.
    val clientCore = new VariantCore()
    clientCore.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.1");
-
+   
    /**
     * 
     */

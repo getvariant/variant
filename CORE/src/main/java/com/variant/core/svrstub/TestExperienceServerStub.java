@@ -1,4 +1,4 @@
-package com.variant.core.srvstub;
+package com.variant.core.svrstub;
 
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test;

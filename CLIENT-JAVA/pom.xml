@@ -107,7 +107,8 @@
 			       <reuseForks>false</reuseForks>
 			       <systemPropertyVariables>
                       <variant.version>${variant.version}</variant.version>
-                  </systemPropertyVariables>
+                </systemPropertyVariables>
+                <excludedGroups>com.variant.client.test.servlet.Remote</excludedGroups>
                </configuration>
             </plugin>
             
@@ -115,6 +116,9 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-source-plugin</artifactId>
+              <configuration>
+                <excludedGroups>com.variant.client.test.servlet.Remote</excludedGroups>
+              </configuration>
               <executions>
                 <execution>
                   <id>attach-sources</id>

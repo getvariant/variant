@@ -5,7 +5,8 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Random;
 
-import com.variant.core.Variant;
+import com.variant.client.VariantClient;
+import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.jdbc.JdbcService;
@@ -24,12 +25,12 @@ public class EventDataPopulator {
 	@org.junit.Test
 	public void populate() throws Exception {
 
-		Variant coreApi = Variant.Factory.getInstance("/variant/variant-EventDataPopulator.props");
+		VariantClient client = VariantClient.Factory.getInstance("/variant/variant-EventDataPopulator.props");
 
 		// For getCoreApi() to work, we need to be in the right package.
-		new JdbcService(coreApi).recreateSchema();
+		new JdbcService(((VariantClientImpl)client).getCoreApi()).recreateSchema();
 
-		ParserResponse response = coreApi.parseSchema(EventDataPopulator.class.getResourceAsStream("/variant/schema.json"));
+		ParserResponse response = client.parseSchema(EventDataPopulator.class.getResourceAsStream("/variant/schema.json"));
 		if (response.hasMessages()) {
 			for (ParserMessage msg: response.getMessages()) {
 				System.out.println(msg);
@@ -37,7 +38,7 @@ public class EventDataPopulator {
 		}
 		assertFalse(response.hasMessages());
 
-		Schema schema = coreApi.getSchema();
+		Schema schema = client.getSchema();
 		Test test = schema.getTest("NewOwnerTest");
 		assertNotNull(test);
 		State newOwnerView = schema.getState("newOwner");
@@ -61,11 +62,11 @@ public class EventDataPopulator {
 						5 + new Random(thisSecond % 7 + test.getExperiences().get(2).hashCode()).nextInt(10) + new Random(test.getExperiences().get(2).hashCode()).nextInt(10)};
 			}
 			//System.out.println(countsPerSecond[0] + "," + countsPerSecond[1] + "," + countsPerSecond[2]);
-			VariantSession ssn = coreApi.getSession(String.valueOf(ssnId));
+			VariantSession ssn = client.getSession(String.valueOf(ssnId));
 			
 			// Everyone gets to the first page... Emulating new visits.
-			VariantStateRequest request = ssn.targetForState(newOwnerView, "");
-			Test.Experience exp = request.getTargetedExperience(test);
+			VariantStateRequest request = ssn.targetForState(newOwnerView);
+			Test.Experience exp = request.getActiveExperience(test);
 			
 			// If we've fulfilled quota for this experience and this second, stop untilt he end of current second;
 			if (exp.getName().equals("outOfTheBox")      && --countsPerSecond[0] <= 0 ||
@@ -85,7 +86,7 @@ public class EventDataPopulator {
 			else if (exp.getName().equals("tos&mailCheckbox")) skip = nextBoolean(0.93);
 			
 			if (!skip) {
-				request = ssn.targetForState(ownerDetailView, request.getTargetingTracker().toString());
+				request = ssn.targetForState(ownerDetailView);
 				request.commit(String.valueOf(ssnId));
 			}
 

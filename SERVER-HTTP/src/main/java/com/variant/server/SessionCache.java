@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantProperties;
 import com.variant.core.impl.CoreSessionImpl;
 
@@ -122,7 +121,7 @@ public class SessionCache {
 	public static class Entry {
 		// Store as json and only deserialize if needed.
 		private byte[] json = null;
-		private VariantCoreSession session = null;
+		private CoreSessionImpl session = null;
 		private long lastAccessTimestamp = System.currentTimeMillis();
 
 		/**
@@ -144,7 +143,7 @@ public class SessionCache {
 		 * Lazily deserialize from json, if we have it.
 		 * @return
 		 */
-		public VariantCoreSession getSession() {
+		public CoreSessionImpl getSession() {
 			if (session == null && json != null) {
 				//session = new SessionServerWrapper(VariantSessionImpl.fromJson(VariantCore.api(), new String(json)));
 				session = CoreSessionImpl.fromJson(ServerBoot.getCore(), new String(json));

@@ -7,7 +7,7 @@ import com.variant.server.ServerPropertyKeys
 
 class ServerPayloadWriter(body:String) extends PayloadWriter(body) {
   
-    setProperty(Payload.Property.SRV_REL, ServerBoot.getCore.getComptime.getComponentVersion)
+    setProperty(Payload.Property.SVR_REL, ServerBoot.getCore.getComptime.getComponentVersion)
     setProperty(Payload.Property.SSN_TIMEOUT, ServerBoot.getCore.getProperties.get(ServerPropertyKeys.SESSION_TIMEOUT_SECS))
 
     def this(bodyAsBytes:Array[Byte]) = this(new String(bodyAsBytes)) 

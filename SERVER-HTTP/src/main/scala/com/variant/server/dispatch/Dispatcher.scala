@@ -152,7 +152,7 @@ object Dispatcher extends RestHelper with LazyLogging {
       val ssnCacheEntry = SessionCache.get(sid.get)
       if (ssnCacheEntry == null) return  UserError.errors(UserError.SessionExpired).toFailure()
 
-      // We have the session. Must have no recent state request.
+      // We have the session. Must have a recent state request.
       if (ssnCacheEntry.getSession.getStateRequest == null) 
          return UserError.errors(UserError.UnknownState).toFailure()
  

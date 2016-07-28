@@ -23,7 +23,7 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.srvstub.TestExperienceServerStub;
+import com.variant.core.svrstub.TestExperienceServerStub;
 
 /**
  * 

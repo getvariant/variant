@@ -30,7 +30,7 @@ public abstract class ServletAdapterBaseTest extends BareClientBaseTest {
 	
 	@Override
 	protected VariantClient rebootApi() {
-		Injector.setConfigNameAsResource("/variant/injector-servlet-adapter-test.json");
+		Injector.setConfigNameAsResource("/variant/injector-servlet-adapter-local-test.json");
 		return VariantClient.Factory.getInstance("/variant/servlet-adapter-test.props");
 	}
 
