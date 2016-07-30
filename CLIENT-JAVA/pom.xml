@@ -108,7 +108,7 @@
 			       <systemPropertyVariables>
                       <variant.version>${variant.version}</variant.version>
                 </systemPropertyVariables>
-<!--                <excludedGroups>com.variant.client.test.servlet.Remote</excludedGroups> -->
+                <excludedGroups>com.variant.client.test.servlet.Remote</excludedGroups>
                </configuration>
             </plugin>
             

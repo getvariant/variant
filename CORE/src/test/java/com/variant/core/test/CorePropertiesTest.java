@@ -29,14 +29,14 @@ public class CorePropertiesTest {
 		VariantCore api = new VariantCore();
 		
 		// Compile time override
-		api = new VariantCore("/variant-test.props");
+		api = new VariantCore("/com/variant/core/conf/test.props");
 		Properties testProps = new Properties();
-		testProps.load(VariantIoUtils.openResourceAsStream("/variant-test.props"));
+		testProps.load(VariantIoUtils.openResourceAsStream("/com/variant/core/conf/test.props"));
 		VariantPropertiesTestFacade actualProps = new VariantPropertiesTestFacade(api.getProperties());
 		for (String propName: testProps.stringPropertyNames()) {
 			assertEquals(
 			   "Property Name: [" + propName + "]", 
-			   new Pair<String, String>(testProps.getProperty(propName), "/variant-test.props"), 
+			   new Pair<String, String>(testProps.getProperty(propName), "/com/variant/core/conf/test.props"), 
 			   actualProps.getString(propName));
 		}
 
@@ -58,7 +58,7 @@ public class CorePropertiesTest {
 
 		// Comp time override + run time override from classpath
 		System.setProperty(CorePropertiesImpl.COMMANDLINE_RESOURCE_NAME, "/VariantPropertiesTest.props");
-		api = new VariantCore("/variant-test.props");
+		api = new VariantCore("/com/variant/core/conf/test.props");
 		expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openResourceAsStream("/VariantPropertiesTest.props"));
 		actualProps = new VariantPropertiesTestFacade(api.getProperties());
@@ -98,7 +98,7 @@ public class CorePropertiesTest {
 		tmpFile.println(VariantCorePropertyKeys.EVENT_WRITER_MAX_DELAY_MILLIS.propertyName() + " = 12345678");	
 		tmpFile.close();
 		
-		api = new VariantCore("/variant-test.props");
+		api = new VariantCore("/com/variant/core/conf/test.props");
 		expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openFileAsStream(TMP_FILE_NAME));
 		actualProps = new VariantPropertiesTestFacade(api.getProperties());

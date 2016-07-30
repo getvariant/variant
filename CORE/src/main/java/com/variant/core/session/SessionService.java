@@ -15,7 +15,7 @@ import com.variant.core.util.inject.Injector;
  * @author Igor
  *
  */
-public class CoreSessionService {
+public class SessionService {
 	
 	VariantCore core;
 	SessionStore sessionStore;
@@ -25,7 +25,7 @@ public class CoreSessionService {
 	 * @param config
 	 * @throws VariantBootstrapException 
 	 */
-	public CoreSessionService(VariantCore core) {
+	public SessionService(VariantCore core) {
 		this.core = (VariantCore) core;
 		this.sessionStore = Injector.inject(SessionStore.class, core);
 	}

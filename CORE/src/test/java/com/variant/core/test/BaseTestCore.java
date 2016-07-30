@@ -3,6 +3,7 @@
 import org.junit.Before;
 
 import com.variant.core.impl.VariantCore;
+import com.variant.core.util.inject.Injector;
 
 /**
  * Base class for all Core JUnit tests.
@@ -10,9 +11,10 @@ import com.variant.core.impl.VariantCore;
 public class BaseTestCore extends CoreBaseTest {
 		
 	private static Boolean sqlSchemaCreated = false;
-	
-	private VariantCore core;
 		
+	// Default, but can be overridden by subclass, if needed.
+	protected static String injectorConfigAsResourceName = "/com/variant/core/conf/injector-session-store-local.json";
+
 	/**
 	 * Each case runs in its own JVM. Each test runs in its
 	 * own instance of the test case. We want the jdbc schema
@@ -24,7 +26,7 @@ public class BaseTestCore extends CoreBaseTest {
 	public void _beforeTest() throws Exception {
 		synchronized (sqlSchemaCreated) { // once per JVM
 			if (!sqlSchemaCreated) {
-				rebootApi();
+				VariantCore core = rebootApi();
 				recreateSchema(core);
 				sqlSchemaCreated = true;
 			}
@@ -32,12 +34,11 @@ public class BaseTestCore extends CoreBaseTest {
 	}
 	
 	/**
-	 * @throws Exception 
 	 * 
 	 */
 	protected VariantCore rebootApi() {
-		core = new VariantCore("/variant-test.props");
-		return core;
+		Injector.setConfigNameAsResource(injectorConfigAsResourceName);
+		return new VariantCore("/com/variant/core/conf/test.props");
 	}
 
 }

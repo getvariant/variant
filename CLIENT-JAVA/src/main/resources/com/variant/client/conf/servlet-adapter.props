@@ -1,7 +1,7 @@
 #
 # Copyright Variant, Inc. All Rights Reserved.
 #
-# Sample Variant Java Client system property overrides.
+# Java Servlet Adapter system properties.
 #
 
 # Session ID tracker in HTTP cookie.

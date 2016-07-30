@@ -44,7 +44,7 @@ public class VariantServletClient {
 	 * @since 0.6
 	 */		
 	public VariantServletClient(String...resourceNames) {
-		String[] newArgs = VariantArrayUtils.prepend("/com/variant/client/servlet/adapter/servlet-adapter.props", resourceNames, String.class);
+		String[] newArgs = VariantArrayUtils.prepend("/com/variant/client/conf/servlet-adapter.props", resourceNames, String.class);
 		this.client = VariantClient.Factory.getInstance(newArgs);
 	}
 

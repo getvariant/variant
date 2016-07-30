@@ -35,7 +35,7 @@ import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
-import com.variant.core.session.CoreSessionService;
+import com.variant.core.session.SessionService;
 import com.variant.core.util.VariantIoUtils;
 
 /**
@@ -54,7 +54,7 @@ public class VariantCore implements Serializable {
 	private CorePropertiesImpl properties;
 	private VariantRuntime runtime;
 	private VariantComptime comptime;
-	private CoreSessionService sessionService;
+	private SessionService sessionService;
 		
 	//---------------------------------------------------------------------------------------------//
 	//                                     PRIVARE HELPERS                                         //
@@ -161,14 +161,14 @@ public class VariantCore implements Serializable {
 		runtime = new VariantRuntime(this);
 
 		// Instantiate session service
-		sessionService = new CoreSessionService(this);
+		sessionService = new SessionService(this);
 	}
 	
 	/**
 	 * Expose session service to tests.
 	 * @return
 	 */
-	CoreSessionService getSessionService() {
+	SessionService getSessionService() {
 		return sessionService;
 	}
 	

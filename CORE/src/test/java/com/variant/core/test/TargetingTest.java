@@ -22,7 +22,6 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.util.inject.Injector;
 
 public class TargetingTest extends BaseTestCore {
 
@@ -33,17 +32,16 @@ public class TargetingTest extends BaseTestCore {
 	 * Use the null event persister and null session store, 
 	 * because the test will be generating lots sessions and events.
 	 */
-	//@BeforeClass
 	static {
 		System.setProperty(
 				CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_NAME.propertyName(), 
 				EventPersisterNull.class.getName());
 		
-		Injector.setConfigNameAsResource("/variant/injector-session-store-null.json");
+		injectorConfigAsResourceName = "/com/variant/core/conf/injector-session-store-null.json";
 	}
 
-	private VariantCore core = rebootApi();
-
+	VariantCore core = rebootApi();
+	
 	/**
 	 * Basic targeting
 	 * @throws Exception

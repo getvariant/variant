@@ -40,7 +40,7 @@ public class SessionStoreImplNull implements SessionStore {
 
 	@Override
 	public void save(VariantSession session) {
-		// Don't save anything		
+		// No-op.		
 	}
 
 

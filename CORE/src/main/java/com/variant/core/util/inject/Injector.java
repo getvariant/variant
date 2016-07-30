@@ -25,14 +25,13 @@ import com.variant.core.util.VariantIoUtils;
 public class Injector {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Injector.class);
-	private static final String DEFAULT_CONFIG_RESOURCE_NAME = "/variant/injector.json";
+	private static final String[] DEFAULT_CONFIG_RESOURCE_NAMES = {"/com/variant/core/conf/injector.json", "/com/variant/client/conf/injector.json"};
 	private static HashMap<Class<? extends Injectable>, Entry> entryMap = null;
 	
-	private static String configName = DEFAULT_CONFIG_RESOURCE_NAME;
+	private static String[] configNames = DEFAULT_CONFIG_RESOURCE_NAMES;
 	
 	private static class Entry {
-		Class<? extends Injectable> type;
-		String implName;
+		Class<? extends Injectable> impl;
 		Map<String, Object> init;
 		
 		/**
@@ -41,9 +40,8 @@ public class Injector {
 		 * @param implName
 		 * @param init
 		 */
-		Entry(Class<? extends Injectable> type, String implName, Map<String, Object> init) {
-			this.type = type;
-			this.implName = implName;
+		Entry(Class<? extends Injectable> impl, Map<String, Object> init) {
+			this.impl = impl;
 			this.init = init;
 		}
 		
@@ -54,23 +52,17 @@ public class Injector {
 		Injectable newInstance(VariantCore core) {
 
 			// Create new instance
-			Object implObject;
+			Injectable result;
 			try {
-				Class<?> implClass = Class.forName(implName);
-				implObject = implClass.newInstance();
+				result = impl.newInstance();
 			}
 			catch (Exception e) {
-				throw new VariantInternalException("Unable to instantiate implementation class [" + implName + "]", e);
+				throw new VariantInternalException("Unable to instantiate implementation class [" + impl.getName() + "]", e);
 			}
-
-			if (!type.isInstance(implObject)) 
-				throw new VariantInternalException("Class [" + implName + "] must be of type [" + type.getName() + "]");
 						
-			// Initialize new instance.
-			Injectable implInjectable = (Injectable) implObject;
-			implInjectable.init(core, init);
+			result.init(core, init);
 			
-			return implInjectable;
+			return result;
 		}
 	}
 	/**
@@ -79,7 +71,8 @@ public class Injector {
 	@SuppressWarnings("unchecked")
 	private static void lazyInit() {
 		
-		InputStream configStream = VariantIoUtils.openResourceAsStream(configName);
+		// This will open the first one found to exist
+		InputStream configStream = VariantIoUtils.openResourceAsStream(configNames);
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
 		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 		
@@ -90,7 +83,7 @@ public class Injector {
 			parseTree = jacksonDataMapper.readValue(configStream, List.class);
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to parse injector config [" + configName + "]", e);
+			throw new VariantInternalException("Unable to parse injector config [" + configNames + "]", e);
 		}
 		
 		HashMap<Class<? extends Injectable>, Entry> result = new HashMap<Class<? extends Injectable>, Entry>();
@@ -98,7 +91,7 @@ public class Injector {
 		// for each config entry
 		for (Map<String, ?> entry: parseTree) {
 			
-			// Instantiate the type class.
+			// Instantiate the type class and check that it is assignable to Injectable.
 			String typeString = (String) entry.get("type");
 			Class<?> typeClass;
 			try {
@@ -113,8 +106,21 @@ public class Injector {
 				throw new VariantInternalException("Type [" + typeString + "] must extend [" + Injectable.class.getName() + "]");
 			}
 			
+			// Instantiate the impl class and check that it is assignable to type class.
+			String implString = (String) entry.get("impl");
+			Class<?> implClass;
+			try {
+				implClass = Class.forName(implString);
+			}
+			catch (Exception e) {
+				throw new VariantInternalException("Unable to instantiate implementation class [" + implString + "]", e);
+			}
+
+			if (!typeClass.isAssignableFrom(implClass)) 
+				throw new VariantInternalException("Class [" + implString + "] must be of type [" + typeClass.getName() + "]");
+
 			// Store in implMap, keyed by type
-			Entry mapEntry = new Entry((Class<Injectable>) typeClass, (String) entry.get("impl"), (Map<String, Object>)entry.get("init"));
+			Entry mapEntry = new Entry((Class<Injectable>) implClass, (Map<String, Object>)entry.get("init"));
 			result.put((Class<Injectable>)typeClass, mapEntry);
 		}
 		
@@ -131,7 +137,7 @@ public class Injector {
 	 * @param configName
 	 */
 	public static void setConfigNameAsResource(String name) {
-		configName = name;
+		configNames = new String[] {name};
 		entryMap = null;
 	}
 
@@ -139,7 +145,7 @@ public class Injector {
 	 * 
 	 */
 	public static void restoreDefaultConfig() {
-		configName = DEFAULT_CONFIG_RESOURCE_NAME;
+		configNames = DEFAULT_CONFIG_RESOURCE_NAMES;
 		entryMap = null;
 	}
 	
@@ -153,7 +159,7 @@ public class Injector {
 	public static<T extends Injectable> T inject(Class<T> clazz, VariantCore core) {
 		if (entryMap == null) lazyInit();
 		T result = (T) entryMap.get(clazz).newInstance(core);
-		LOG.info(String.format("Injected an instance of %s for type %s", result.getClass().getName(), clazz.getName()));
+		LOG.info(String.format("Injected an instance of [%s] for type [%s]", result.getClass().getName(), clazz.getName()));
 		return result;
 	}
 	

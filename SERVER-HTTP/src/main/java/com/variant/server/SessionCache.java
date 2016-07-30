@@ -70,7 +70,10 @@ public class SessionCache {
 						}
 					}
 					
-					if (LOG.isDebugEnabled()) LOG.debug(String.format("Vacuumed %s session(s)", count));
+					if (LOG.isDebugEnabled() && count > 0) 
+						LOG.debug(String.format("Vacuumed %s session(s)", count));
+					else if (LOG.isTraceEnabled()) 
+						LOG.trace(String.format("Vacuumed %s session(s)", count));
 
 					sleep(vacuumingFrequencyMillis);
 
