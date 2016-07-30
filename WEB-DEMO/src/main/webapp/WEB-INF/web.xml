@@ -129,10 +129,12 @@ see here: http://static.springsource.org/spring/docs/current/spring-framework-re
            <param-name>schemaResourceName</param-name>
            <param-value>/variant/schema.json</param-value>
         </init-param>
+        <!-- use this if, somehow, /variant.props (always looked for) doesn't work for you.
         <init-param>
            <param-name>propsResourceName</param-name>
            <param-value>/variant/variant.props</param-value>
         </init-param>
+        -->
      </filter>
      
      <filter-mapping>

@@ -25,7 +25,10 @@ import com.variant.core.util.VariantIoUtils;
 public class Injector {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Injector.class);
-	private static final String[] DEFAULT_CONFIG_RESOURCE_NAMES = {"/com/variant/core/conf/injector.json", "/com/variant/client/conf/injector.json"};
+	private static final String[] DEFAULT_CONFIG_RESOURCE_NAMES = {
+		"/com/variant/client/conf/injector.json", // Try client first 
+		"/com/variant/core/conf/injector.json"};  // then core.
+	
 	private static HashMap<Class<? extends Injectable>, Entry> entryMap = null;
 	
 	private static String[] configNames = DEFAULT_CONFIG_RESOURCE_NAMES;

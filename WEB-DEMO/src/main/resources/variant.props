@@ -10,14 +10,6 @@ server.endpoint.url=http://localhost:8080/
 # no less frequently than once a second.
 event.writer.max.delay.millis = 1000
 
-# Session ID tracker in HTTP cookie.
-session.id.tracker.class.name = com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie
-session.id.tracker.class.init = {}
-
-# Targeting tracker in cookie.
-targeting.tracker.class.name = com.variant.client.servlet.adapter.TargetingTrackerHttpCookie
-session.id.tracker.class.init = {}
-
 # Postgres Event Persister comes with Variant and can be used out of the box.
 # The SQL schema required to support this Event Persister can be found in the
 # distribution db/postgres directory. The same scripts run on an H2 instance

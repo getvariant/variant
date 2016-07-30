@@ -20,7 +20,7 @@ public class ServletSessionRemoteTest extends ServletSessionTest {
 	
 	@Override
 	protected VariantServletClient newServletAdapterClient() {
-		Injector.setConfigNameAsResource("/variant/injector-servlet-adapter-remote-test.json");
+		//Injector.setConfigNameAsResource("/variant/injector-servlet-adapter-remote-test.json");  This is the default.
 		VariantServletClient result = new VariantServletClient("/variant/servlet-adapter-test.props");
 		core = ((VariantClientImpl)result.getBareClient()).getCoreApi();
 		return result;
