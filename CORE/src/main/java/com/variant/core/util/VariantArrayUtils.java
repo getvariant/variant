@@ -10,7 +10,7 @@ public class VariantArrayUtils {
 	 * @param e
 	 * @return
 	 */
-	public static <T> T[] concat(T[] a, T e, Class<T> type) {
+	public static <T> T[] append(T[] a, T e, Class<T> type) {
 		@SuppressWarnings("unchecked")
 		T[] result = (T[]) Array.newInstance(type, a.length + 1);
 		for (int i = 0; i < a.length; i++) result[i] = a[i];
@@ -24,7 +24,7 @@ public class VariantArrayUtils {
 	 * @param e
 	 * @return
 	 */
-	public static <T> T[] concat(T e, T[] a, Class<T> type) {
+	public static <T> T[] prepend(T e, T[] a, Class<T> type) {
 		@SuppressWarnings("unchecked")
 		T[] result = (T[]) Array.newInstance(type, a.length + 1);
 		result[0] = e;

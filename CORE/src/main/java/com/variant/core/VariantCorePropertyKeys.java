@@ -20,7 +20,7 @@ public interface VariantCorePropertyKeys {
 	public final static Key EVENT_PERSISTER_CLASS_INIT = new Key("event.persister.class.init", "{}");
 	public final static Key EVENT_WRITER_BUFFER_SIZE = new Key("event.writer.buffer.size", "20000");
 	public final static Key EVENT_WRITER_MAX_DELAY_MILLIS = new Key("event.writer.max.delay.millis", "30000");
-	public final static Key EVENT_WRITER_PERCENT_FULL = new Key("event.writer.percent.full", "90");
+	public final static Key EVENT_WRITER_PERCENT_FULL = new Key("event.writer.percent.full", "50");
 	
 	/**
 	 * <p>Property key. The corresponding name is derived by lower-casing

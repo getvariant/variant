@@ -11,7 +11,7 @@ import com.variant.client.VariantSessionIdTracker;
 public class SessionIdTrackerImplDefault implements VariantSessionIdTracker {
 
 	private final static String MESSAGE = 
-			"Supply a better implementation in applicaiton property " + 
+			"Supply a functional implementation in applicaiton property " + 
 					VariantClientPropertyKeys.SESSION_ID_TRACKER_CLASS_NAME.propertyName();
 	@Override
 	public void init(VariantInitParams initParams, Object...userData) {}

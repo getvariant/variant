@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientStateRequestImpl;
 import com.variant.client.session.ClientSessionImpl;
 import com.variant.core.VariantSession;
@@ -22,6 +23,8 @@ import com.variant.core.util.VariantCollectionsUtils;
 
 public class BareClientSessionTest extends BareClientBaseTest {
 
+	final VariantClient client = newBareClient();
+
 	/**
 	 * No Schema.
 	 *  
@@ -29,7 +32,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 	 */
 	@org.junit.Test
 	public void noSchemaTest() throws Exception {
-
+		
 		assertNull(client.getSchema());
 
 		new VariantRuntimeExceptionInterceptor() {

@@ -44,7 +44,7 @@ class LiftBoot extends Bootable with LazyLogging {
       ServerBoot.boot()
       val comptime = ServerBoot.getCore.getComptime
       logger.info(String.format(
-				"%s relese %s © 2015-16 getvariant.com. Bootstrapped in %s. Listening on %s/", 
+				"%s Release %s © 2015-16 getvariant.com. Bootstrapped in %s. Listening on %s/", 
 				comptime.getComponent(),
 				comptime.getComponentVersion(),
 				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"),

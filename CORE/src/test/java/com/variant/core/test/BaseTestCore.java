@@ -1,4 +1,4 @@
-package com.variant.core.test;
+ package com.variant.core.test;
 
 import org.junit.Before;
 
@@ -7,11 +7,12 @@ import com.variant.core.impl.VariantCore;
 /**
  * Base class for all Core JUnit tests.
  */
-public class BaseTestCore extends BaseTestCommon {
+public class BaseTestCore extends CoreBaseTest {
 		
 	private static Boolean sqlSchemaCreated = false;
 	
 	private VariantCore core;
+		
 	/**
 	 * Each case runs in its own JVM. Each test runs in its
 	 * own instance of the test case. We want the jdbc schema
@@ -24,7 +25,7 @@ public class BaseTestCore extends BaseTestCommon {
 		synchronized (sqlSchemaCreated) { // once per JVM
 			if (!sqlSchemaCreated) {
 				rebootApi();
-				recreateSchema();
+				recreateSchema(core);
 				sqlSchemaCreated = true;
 			}
 		}
@@ -39,8 +40,4 @@ public class BaseTestCore extends BaseTestCommon {
 		return core;
 	}
 
-	@Override
-	protected VariantCore getCoreApi() {
-		return core;
-	}
 }

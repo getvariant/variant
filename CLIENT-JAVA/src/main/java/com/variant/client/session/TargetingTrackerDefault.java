@@ -16,7 +16,7 @@ import com.variant.client.VariantTargetingTracker;
 public class TargetingTrackerDefault implements VariantTargetingTracker {
 	
 	private final static String MESSAGE = 
-			"Supply a better implementation in applicaiton property " + 
+			"Supply a functional implementation in applicaiton property " + 
 					VariantClientPropertyKeys.TARGETING_TRACKER_CLASS_NAME.propertyName();
 
 	@Override

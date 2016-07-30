@@ -6,11 +6,14 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
 import com.variant.client.servlet.adapter.StateParsedHookListenerImpl;
+import com.variant.client.servlet.adapter.VariantServletClient;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;
 
 public class StateParsedHookTest extends ServletAdapterBaseTest {
+
+	VariantServletClient client = newServletAdapterClient();
 
 	@Test
 	public void leadingSlashTest() {

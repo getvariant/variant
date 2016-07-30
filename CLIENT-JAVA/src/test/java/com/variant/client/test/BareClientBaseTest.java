@@ -9,18 +9,25 @@ import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
-import com.variant.core.test.BaseTestCommon;
+import com.variant.core.test.CoreBaseTest;
 import com.variant.core.util.inject.Injector;
 
 /**
  * Base class for all Core JUnit tests.
  */
-public abstract class BareClientBaseTest extends BaseTestCommon {
+public abstract class BareClientBaseTest extends CoreBaseTest {
 	
 	private static Boolean sqlSchemaCreated = false;
 
-	protected VariantClient client = null;
-	protected VariantCore coreApi = null;
+	private VariantCore core = null;
+	
+	/**
+	 * Subclasses will override this
+	 * @return
+	 */
+	protected VariantCore getCoreApi() {
+		return core;
+	}
 	
 	/**
 	 * Each case runs in its own JVM. Each test runs in its
@@ -31,29 +38,23 @@ public abstract class BareClientBaseTest extends BaseTestCommon {
 	 */
 	@Before
 	public void _beforeTestCase() throws Exception {
-
-		client = rebootApi();               // in each instance 
-		coreApi = VariantClientTestFacade.getCoreApi(client);
 		
-		synchronized (sqlSchemaCreated) {  // once per JVM
+		synchronized (sqlSchemaCreated) {     // once per JVM
 			if (!sqlSchemaCreated) {
-				recreateSchema();
+				recreateSchema(getCoreApi());
 				sqlSchemaCreated = true;
 			}
 		}
 	}
 	
-	@Override
-	protected VariantCore getCoreApi() {
-		return coreApi;
-	}
-
 	/**
 	 * Subclasses will be able to override this
 	 */
-	protected VariantClient rebootApi() {
+	protected VariantClient newBareClient() {
 		Injector.setConfigNameAsResource("/variant/injector-bare-client-test.json");
-		return VariantClient.Factory.getInstance("/variant/bare-client-test.props");
+		VariantClient result =  VariantClient.Factory.getInstance("/variant/bare-client-test.props");
+		core = VariantClientTestFacade.getCoreApi(result);
+		return result;
 	}
 
 	/**

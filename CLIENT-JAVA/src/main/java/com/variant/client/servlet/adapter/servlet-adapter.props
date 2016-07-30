@@ -1,0 +1,12 @@
+#
+# Base properties for some JUnit Tests.
+#
+      
+# Session ID tracker in HTTP cookie.
+session.id.tracker.class.name = com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie
+session.id.tracker.class.init = {}
+
+# Targeting tracker in cookie.
+targeting.tracker.class.name = com.variant.client.servlet.adapter.TargetingTrackerHttpCookie
+session.id.tracker.class.init = {}
+      

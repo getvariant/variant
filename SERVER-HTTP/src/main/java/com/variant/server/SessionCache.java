@@ -49,26 +49,29 @@ public class SessionCache {
 		public void run() {
 
 			if (LOG.isDebugEnabled())
-				LOG.debug("Vacuuming thread " + Thread.currentThread().getName() + " started.");
+				LOG.info("Vacuuming thread " + Thread.currentThread().getName() + " started.");
 			
 			boolean interrupted = false;
-			boolean timeToGo = false;
 			
-			while (!timeToGo) {
+			while (true) {
 							
 				
 				try {
-					long now = System.currentTimeMillis();					
+					long now = System.currentTimeMillis();
+					int count = 0;
 					Iterator<Map.Entry<String, Entry>> iter = cacheMap.entrySet().iterator();
 					while(iter.hasNext()) {
 						Map.Entry<String, Entry> e = iter.next();
 						if (sessionTimeoutMillis > 0 && e.getValue().lastAccessTimestamp + sessionTimeoutMillis < now) {
 							iter.remove();
+							count++;
 							if (LOG.isTraceEnabled()) 
 								LOG.trace(String.format("Vacuumed expired session ID [%s]", e.getKey()));
 						}
 					}
-	
+					
+					if (LOG.isDebugEnabled()) LOG.debug(String.format("Vacuumed %s session(s)", count));
+
 					sleep(vacuumingFrequencyMillis);
 
 				}
@@ -80,10 +83,9 @@ public class SessionCache {
 				}
 				
 				if (interrupted || isInterrupted()) {
-					if (LOG.isDebugEnabled())
-						LOG.debug("Vacuuming thread " + Thread.currentThread().getName() + " interrupted and exited.");
+					LOG.info("Vacuuming thread " + Thread.currentThread().getName() + " interrupted and exited.");
 					cacheMap = null;
-					timeToGo = true;
+					return;
 				}
 			}
 		}

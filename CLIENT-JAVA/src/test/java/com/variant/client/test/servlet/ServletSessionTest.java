@@ -11,12 +11,12 @@ import java.util.Collection;
 import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import com.variant.client.impl.ClientStateRequestImpl;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.adapter.TargetingTrackerHttpCookie;
+import com.variant.client.servlet.adapter.VariantServletClient;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.schema.Schema;
@@ -29,6 +29,8 @@ import com.variant.core.util.VariantStringUtils;
 
 public class ServletSessionTest extends ServletAdapterBaseTest {
 
+	VariantServletClient client = newServletAdapterClient();
+	
 	/**
 	 * No Schema.
 	 *  
@@ -39,10 +41,9 @@ public class ServletSessionTest extends ServletAdapterBaseTest {
 
 		assertNull(client.getSchema());
 		final HttpServletRequest httpReq = mockHttpServletRequest("foo", (String)null);  // no vssn.
-		final HttpServletResponse httpResp = mockHttpServletResponse();
 
 		new VariantRuntimeExceptionInterceptor() {
-			@Override public void toRun() { client.getSession(httpReq, httpResp); }
+			@Override public void toRun() { client.getSession(httpReq); }
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);	
 	}
 
@@ -218,7 +219,7 @@ public class ServletSessionTest extends ServletAdapterBaseTest {
 		HttpServletRequest httpReq = mockHttpServletRequest(sessionId, (String)null);
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		VariantSession ssn1 = client.getSession(httpReq, httpResp);
+		VariantSession ssn1 = client.getSession(httpReq);
 		assertNotNull(ssn1);
 		assertEquals(sessionId, ssn1.getId());
 		assertEquals(ssn1.getSchemaId(), schema.getId());
@@ -252,8 +253,7 @@ public class ServletSessionTest extends ServletAdapterBaseTest {
 		
 		// Create a new HTTP request with the same VRNT-SSNID cookie.  Should fetch the same session.
 		HttpServletRequest httpReq2 = mockHttpServletRequest(sessionId, (String)null);
-		HttpServletResponseMock httpResp2 = mockHttpServletResponse();
-		VariantSession ssn2 = client.getSession(httpReq2, httpResp2);
+		VariantSession ssn2 = client.getSession(httpReq2);
 		assertEquals(ssn2, varReq.getSession());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(ssn2.getStateRequest().getResolvedParameterMap(), varReq.getSession().getStateRequest().getResolvedParameterMap());

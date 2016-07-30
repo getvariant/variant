@@ -1,6 +1,7 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -28,19 +29,17 @@ import com.variant.core.util.PropertiesChain;
  * Common utility methods for all JUnit tests in all projects, hence we've put it in the main scope.
  */
 
-abstract public class BaseTestCommon {
-	
-	abstract protected VariantCore getCoreApi();
-	
+abstract public class CoreBaseTest {
+		
 	/**
 	 * @throws Exception 
 	 * 
 	 */
-	protected void recreateSchema() throws Exception {
-		try {
-			
-			JdbcService jdbc = new JdbcService(getCoreApi());
-			
+	protected void recreateSchema(VariantCore core) throws Exception {
+		
+		JdbcService jdbc = new JdbcService(core);
+		
+		try {			
 			switch (jdbc.getVendor()) {
 			case POSTGRES: 
 				jdbc.recreateSchema();

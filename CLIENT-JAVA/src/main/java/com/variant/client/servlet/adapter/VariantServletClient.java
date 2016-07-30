@@ -12,6 +12,7 @@ import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.util.VariantArrayUtils;
 
 /**
  * <p>Servlet-aware wrapper around {@link VariantClient} that replaces all environment contingent
@@ -40,12 +41,22 @@ public class VariantServletClient {
 	 * <p>Host application should hold on to and reuse the object returned by this method.
 	 * Not thread safe: the host application should not use more than one of these at a time.
 	 * 
-	 * @param  0 or more classpath resource names.
-	 * @return Instance of the {@link VariantClient} type
 	 * @since 0.6
 	 */		
-	public VariantServletClient(String...resourceNames) {	
-		this.client = VariantClient.Factory.getInstance(resourceNames);
+	public VariantServletClient(String...resourceNames) {
+		String[] newArgs = VariantArrayUtils.prepend("/com/variant/client/servlet/adapter/servlet-adapter.props", resourceNames, String.class);
+		this.client = VariantClient.Factory.getInstance(newArgs);
+	}
+
+	/**
+	 * <p>This API's application properties
+	 * 
+	 * @return An instance of the {@link CorePropertiesImpl} type.
+	 * 
+	 * @since 0.6
+	 */
+	public VariantClient getBareClient() {
+		return client;
 	}
 
 	/**

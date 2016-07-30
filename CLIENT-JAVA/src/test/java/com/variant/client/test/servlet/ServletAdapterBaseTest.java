@@ -15,12 +15,15 @@ import org.mockito.stubbing.Answer;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantTargetingTracker;
+import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.mock.HttpServletRequestMock;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.mock.HttpSessionMock;
 import com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.adapter.TargetingTrackerHttpCookie;
+import com.variant.client.servlet.adapter.VariantServletClient;
 import com.variant.client.test.BareClientBaseTest;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.util.inject.Injector;
 
 /**
@@ -28,10 +31,23 @@ import com.variant.core.util.inject.Injector;
  */
 public abstract class ServletAdapterBaseTest extends BareClientBaseTest {
 	
+	private VariantCore core;
+	
 	@Override
-	protected VariantClient rebootApi() {
+	protected VariantClient newBareClient() {
+		throw new UnsupportedOperationException("Servlet Adapter tests should call newAdapterClient() instead");
+	}
+
+	protected VariantServletClient newServletAdapterClient() {
 		Injector.setConfigNameAsResource("/variant/injector-servlet-adapter-local-test.json");
-		return VariantClient.Factory.getInstance("/variant/servlet-adapter-test.props");
+		VariantServletClient result = new VariantServletClient("/variant/servlet-adapter-test.props");
+		core = ((VariantClientImpl)result.getBareClient()).getCoreApi();
+		return result;
+	}
+
+	@Override
+	protected VariantCore getCoreApi() {
+		return core;
 	}
 
 	//---------------------------------------------------------------------------------------------//

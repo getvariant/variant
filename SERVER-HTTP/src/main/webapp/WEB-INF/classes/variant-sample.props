@@ -1,8 +1,24 @@
 #
-# Copyright Variant, Inc. All Rights Reserved.
+# Copyright © Variant. All rights reserved. Use is subject to license terms.
 #
-# Sample application properties file for Variant Server version 0.6.0.
+# Default values of all system properties
 #
 
-# Session timeout and vacuuming frequency can be changed here.
-#session.store.class.init = {"sessionTimeoutSecs":900, "vacuumingFrequencySecs":60}
+# User session is discarded by the next run of the session vacuum thread, but not
+# sooner that this many seconds:
+#session.timeout.secs = 900
+
+# Session vacuum thread runs every this many seconds:
+#session.store.vacuum.interval.secs = 10 
+
+# Default event persister appends events to the server log. See documentation for
+# other available event persisters or how to write and configure a custom implementation:
+#event.persister.class.name = com.variant.core.event.EventPersisterAppLogger
+#event.persister.class.init = {}
+
+# Asynchronous event writer holds at most this many events in a memory buffer:
+#event.writer.buffer.size = 20000
+# and will wake up when the buffer is at least this percent full:
+#event.writer.percent.full = 50
+# but no less frequently than this many milliseconds:
+#event.writer.max.delay.millis = 30000
