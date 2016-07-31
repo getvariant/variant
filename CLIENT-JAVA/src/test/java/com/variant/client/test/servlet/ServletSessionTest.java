@@ -14,9 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.variant.client.impl.ClientStateRequestImpl;
 import com.variant.client.mock.HttpServletResponseMock;
-import com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie;
-import com.variant.client.servlet.adapter.TargetingTrackerHttpCookie;
-import com.variant.client.servlet.adapter.VariantServletClient;
+import com.variant.client.servlet.SessionIdTrackerHttpCookie;
+import com.variant.client.servlet.TargetingTrackerHttpCookie;
+import com.variant.client.servlet.VariantServletClient;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.schema.Schema;

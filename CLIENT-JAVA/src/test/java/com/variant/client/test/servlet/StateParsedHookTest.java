@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 
-import com.variant.client.servlet.adapter.StateParsedHookListenerImpl;
-import com.variant.client.servlet.adapter.VariantServletClient;
+import com.variant.client.servlet.StateParsedHookListenerImpl;
+import com.variant.client.servlet.VariantServletClient;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.Severity;

@@ -3,8 +3,8 @@ package com.variant.client.test.servlet;
 import org.junit.experimental.categories.Category;
 
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.client.servlet.adapter.VariantServletClient;
-import com.variant.client.servlet.adapter.impl.ServletClientImpl;
+import com.variant.client.servlet.VariantServletClient;
+import com.variant.client.servlet.impl.ServletClientImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.util.inject.Injector;
 
