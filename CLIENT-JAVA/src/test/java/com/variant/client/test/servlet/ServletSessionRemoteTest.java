@@ -4,6 +4,7 @@ import org.junit.experimental.categories.Category;
 
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.servlet.adapter.VariantServletClient;
+import com.variant.client.servlet.adapter.impl.ServletClientImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.util.inject.Injector;
 
@@ -21,7 +22,7 @@ public class ServletSessionRemoteTest extends ServletSessionTest {
 	@Override
 	protected VariantServletClient newServletAdapterClient() {
 		//Injector.setConfigNameAsResource("/variant/injector-servlet-adapter-remote-test.json");  This is the default.
-		VariantServletClient result = new VariantServletClient("/variant/servlet-adapter-test.props");
+		ServletClientImpl result = (ServletClientImpl) VariantServletClient.Factory.getInstance("/variant/servlet-adapter-test.props");
 		core = ((VariantClientImpl)result.getBareClient()).getCoreApi();
 		return result;
 	}

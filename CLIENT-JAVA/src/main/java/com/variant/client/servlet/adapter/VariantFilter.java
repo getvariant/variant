@@ -64,7 +64,7 @@ public class VariantFilter implements Filter {
 	public void init(FilterConfig config) throws ServletException {
 
 		String name = config.getInitParameter("propsResourceName");
-		client = name == null ? new VariantServletClient() : new VariantServletClient(name);
+		client = name == null ? VariantServletClient.Factory.getInstance() : VariantServletClient.Factory.getInstance(name);
 			
 		name = config.getInitParameter("schemaResourceName");
 		

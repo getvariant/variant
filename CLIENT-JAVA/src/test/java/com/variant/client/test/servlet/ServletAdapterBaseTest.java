@@ -22,6 +22,7 @@ import com.variant.client.mock.HttpSessionMock;
 import com.variant.client.servlet.adapter.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.adapter.TargetingTrackerHttpCookie;
 import com.variant.client.servlet.adapter.VariantServletClient;
+import com.variant.client.servlet.adapter.impl.ServletClientImpl;
 import com.variant.client.test.BareClientBaseTest;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.util.inject.Injector;
@@ -40,7 +41,7 @@ public abstract class ServletAdapterBaseTest extends BareClientBaseTest {
 
 	protected VariantServletClient newServletAdapterClient() {
 		Injector.setConfigNameAsResource("/variant/injector-servlet-adapter-local-test.json");
-		VariantServletClient result = new VariantServletClient("/variant/servlet-adapter-test.props");
+		ServletClientImpl result = (ServletClientImpl) VariantServletClient.Factory.getInstance("/variant/servlet-adapter-test.props");
 		core = ((VariantClientImpl)result.getBareClient()).getCoreApi();
 		return result;
 	}
