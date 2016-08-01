@@ -1,7 +1,6 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -277,10 +276,12 @@ abstract public class CoreBaseTest {
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
-		final public void assertThrown(MessageTemplate template, Object...templateArgs) throws Exception {
+		final public void assertThrown(MessageTemplate template, Object...args) throws Exception {
 			VariantRuntimeException result = super.run();
-			assertEquals(new VariantRuntimeUserErrorException(template, templateArgs).getMessage(), result.getMessage());
+			assertNotNull("Expected exception not thrown", result);
+			assertEquals(new VariantRuntimeUserErrorException(template, args).getMessage(), result.getMessage());
 		}
+		
 	}
 	
 	/**
@@ -298,9 +299,32 @@ abstract public class CoreBaseTest {
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
-		final public void assertThrown(String msg) throws Exception {
+		final public void assertThrown(String format, Object...args) throws Exception {
 			VariantInternalException result = super.run();
-			assertEquals(msg, result.getMessage());
+			assertNotNull("Expected exception not thrown", result);
+			assertEquals(String.format(format, args), result.getMessage());
+		}
+	}
+
+	/**
+	 * Concrete exception intercepter for IllegalArgumentException
+	 *
+	 */
+	protected static abstract class IllegalArgumentExceptionInterceptor 
+		extends ExceptionInterceptor<IllegalArgumentException> {
+		
+		@Override
+		final public Class<IllegalArgumentException> getExceptionClass() {
+			return IllegalArgumentException.class;
+		}
+		
+		/**
+		 * Call this if you want assertion always thrown.
+		 */
+		final public void assertThrown(String format, Object...args) throws Exception {
+			IllegalArgumentException result = super.run();
+			assertNotNull("Expected exception not thrown", result);
+			assertEquals(String.format(format, args), result.getMessage());
 		}
 	}
 

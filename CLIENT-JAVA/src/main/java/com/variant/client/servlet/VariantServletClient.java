@@ -26,7 +26,7 @@ public interface VariantServletClient extends VariantClient {
 	 * @since 0.6
 	 * @return
 	 */
-	public VariantSession getSession(HttpServletRequest request);
+	public VariantSession getOrCreateSession(HttpServletRequest request);
 
 	/**
 	 * <p>Get user's Variant session. 
@@ -35,8 +35,13 @@ public interface VariantServletClient extends VariantClient {
 	 * @since 0.6
 	 * @return
 	 */
-	public VariantSession getSession(HttpServletRequest request, boolean create);
+	public VariantSession getSession(HttpServletRequest request);
 
+	/**
+	 * 
+	 * @author Igor Urisman
+	 * @since 0.6
+	 */
 	public static class Factory {
 		/**
 		 * <p>Instantiate an instance of Variant client Servlet adapter. Takes 0 or more of String arguments. 

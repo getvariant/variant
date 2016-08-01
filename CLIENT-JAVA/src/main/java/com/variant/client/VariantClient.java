@@ -85,11 +85,11 @@ public interface VariantClient {
 	public Schema getSchema();
 
 	/**
-	 * <p>Get caller's Variant session. If the session ID exists in the underlying implementation of 
-	 * {@link VariantSessionIdTracker} and the session with this session ID has not expired on the server,
-	 * this session is returned. Otherwise, a new session is created, if <code>create</code> is true. If
-	 * the session has not expired but the schema has changed since it was created, this call will throw
-	 * an unchecked {@link VariantSchemaModifiedException}.
+	 * <p>Get or create caller's Variant session. If the session ID exists in the underlying implementation 
+	 * of {@link VariantSessionIdTracker} and the session with this session ID has not expired on the server,
+	 * this session is returned. Otherwise, a new session is created. If the session has not expired but the 
+	 * schema has changed since it was created, this call will throw an unchecked 
+	 * {@link VariantSchemaModifiedException}.
 	 * </p>
 	 * 
 	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
@@ -101,20 +101,22 @@ public interface VariantClient {
 	 *         invocations, in which case <code>null</code> will be returned if <code>create</code> is false, or a
 	 *         new object if <code>create</code> is true.
 	 */
-	public VariantSession getSession(boolean create, Object... userData);
+	public VariantSession getOrCreateSession(Object... userData);
 			
 	/**
-	 * <p>Equivalent to <code>getSession(true, userData)</code>
+	 * <p>Get caller's Variant session, if it already exists. If the session ID exists in the underlying 
+	 * implementation of {@link VariantSessionIdTracker} and the session with this session ID has not 
+	 * expired on the server, this session is returned. If the session has not expired but the schema
+	 * has changed since it was created, this call will throw an unchecked {@link VariantSchemaModifiedException}.
 	 * </p>
 	 * 
 	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
 	 *                 to the implementations of {@link com.variant.client.VariantSessionIdTracker#get(Object...)}.
      *
 	 * @since 0.5
-	 * @return An object of type {@link VariantSession}. This call is guaranteed to be idempotent, i.e. a subsequent
-	 *         invocation with the same arguments will return the same object, unless the session expired between the
-	 *         invocations, in which case <code>null</code> will be returned if <code>create</code> is false, or a
-	 *         new object if <code>create</code> is true.
+	 * @return An object of type {@link VariantSession}, if session was found, or null otherwise. This call is 
+	 *         guaranteed to be idempotent, i.e. a subsequent invocation with the same arguments will return 
+	 *         the same object, or <code>null</code>.
 	 */
 	public VariantSession getSession(Object... userData);
 	

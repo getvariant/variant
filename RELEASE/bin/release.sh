@@ -4,8 +4,8 @@
 # 1. Core jar 
 
 #!/bin/bash
-
-full_version=${VARIANT_VERSION}-RC1
+version=0.6.1
+full_version=${version}-RC1
 
 function usage() {
     echo "$(basename $0) email"
@@ -46,7 +46,7 @@ cp target/scala-2.11/variant-server*.war ${stage_dir}/variant-server-${full_vers
 cd ${workspace_root_dir}/CLIENT-JAVA
 mvn clean package -DskipTests
 cp target/variant-client*.jar ${stage_dir}
-(cd src/main/java; jar -cvf ${stage_dir}/variant-client-adapter-source-${VARIANT_VERSION}.jar com/variant/client/adapter/*)
+(cd src/main/java; jar -cvf ${stage_dir}/variant-client-adapter-source-${version}.jar com/variant/client/adapter/*)
 
 #
 # WEB DEMO
@@ -65,6 +65,7 @@ rm -rf WEB-DEMO
 # DB
 #
 mkdir -p ${stage_dir}/db/postgres
+cp ${workspace_root_dir}/CORE/bin/schema.sh ${stage_dir}/db/
 cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql ${stage_dir}/db/postgres
 
 #

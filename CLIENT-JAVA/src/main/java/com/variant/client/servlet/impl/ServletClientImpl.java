@@ -76,34 +76,42 @@ public class ServletClientImpl implements VariantServletClient {
 	/**
 	 */
 	@Override
-	public VariantSession getSession(boolean create, Object... userData) {
+	public VariantSession getOrCreateSession(Object... userData) {
 		if (userData.length != 1)
-			throw new IllegalArgumentException("Invalid user data: single element array expected");
+			throw new IllegalArgumentException("Invalid user data: single element vararg expected");
 		else if (!(userData[0] instanceof HttpServletRequest))
-			throw new IllegalArgumentException("Invalid user data: HttpSerlvetRequest expected");
+			throw new IllegalArgumentException("Invalid user data: HttpServletRequest expected");
 
-		return client.getSession((HttpServletRequest) userData[0]);
+		return getOrCreateSession((HttpServletRequest)userData[0]);
 	}
 
 	/**
 	 */
 	@Override
 	public VariantSession getSession(Object...userData) {
-		return getSession(true, userData);
+		if (userData.length != 1)
+			throw new IllegalArgumentException("Invalid user data: single element vararg expected");
+		else if (!(userData[0] instanceof HttpServletRequest))
+			throw new IllegalArgumentException("Invalid user data: HttpServletRequest expected");
+
+		return getSession((HttpServletRequest)userData[0]);
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public VariantSession getOrCreateSession(HttpServletRequest request) {
+		return client.getOrCreateSession(request);
 	}
 
 	/**
 	 */
 	@Override
 	public VariantSession getSession(HttpServletRequest request) {
-		return client.getSession(request, true);
+		return client.getSession(request);
 	}
 
-	@Override
-	public VariantSession getSession(HttpServletRequest request, boolean create) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //

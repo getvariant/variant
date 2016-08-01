@@ -30,7 +30,7 @@ import com.variant.core.util.inject.Injector;
 /**
  * Base class for all Core JUnit tests.
  */
-public abstract class ServletAdapterBaseTest extends BareClientBaseTest {
+public abstract class ServletClientBaseTest extends BareClientBaseTest {
 	
 	private VariantCore core;
 	

@@ -38,7 +38,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 		new VariantRuntimeExceptionInterceptor() {
 			@Override public void toRun() { 
 				Object[] userData = userDataForSimpleIn(client.getSchema(), "foo");
-				client.getSession(userData); 
+				client.getOrCreateSession(userData); 
 			}
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);	
 	}
@@ -57,7 +57,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 		assertNull(response.highestMessageSeverity());
 
 		String oldSchemaId = client.getSchema().getId();
-		final VariantSession ssn1 = client.getSession(userDataForSimpleIn(client.getSchema(), "foo"));
+		final VariantSession ssn1 = client.getOrCreateSession(userDataForSimpleIn(client.getSchema(), "foo"));
 		VariantStateRequest req = ssn1.targetForState(client.getSchema().getState("state1"));
 		req.commit("");
 		
@@ -80,7 +80,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 	 * @throws Exception
 	 */
 	@org.junit.Test
-	public void noSessionIDInTrackerTest() throws Exception {
+	public void noSessionIdInTrackerTest() throws Exception {
 		
 		ParserResponse response = client.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
@@ -90,7 +90,10 @@ public class BareClientSessionTest extends BareClientBaseTest {
 		Schema schema = client.getSchema();
 		
 		VariantSession ssn1 = client.getSession("foo");
+		assertNull(ssn1);
+		ssn1 = client.getOrCreateSession("foo");
 		assertNotNull(ssn1);
+
 		assertNotNull(ssn1.getId());
 		assertEquals(ssn1.getSchemaId(), schema.getId());
 		assertNull(ssn1.getStateRequest());		

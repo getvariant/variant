@@ -121,6 +121,84 @@ public class VariantClientImpl implements VariantClient {
 		// Nothing for now.
 	}
 	
+	/**
+	 */
+	private VariantSession _getSession(boolean create, Object... userData) {
+		
+		// Get session ID from the session ID tracker.
+		VariantSessionIdTracker sidTracker = initSessionIdTracker(userData);
+		String sessionId = sidTracker.get();
+		if (sessionId == null) {
+			if (create) {
+				sessionId = VariantStringUtils.random64BitString(RAND);
+				sidTracker.set(sessionId);
+			}
+			else {
+				// No ID in the tracker and create wasn't given. Same as expired session.
+				return null;
+			}
+		}
+		
+		// Have session ID. Try the local cache first.
+		VariantSession ssnFromCache = cache.get(sessionId);
+		
+		// Local case miss.
+		if (ssnFromCache == null) {
+			if (create) {
+				// Session expired locally, recreate OK.  Don't bother with the server.
+				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
+				coreSession.save();
+				ClientSessionImpl clientSession = new ClientSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
+				cache.add(clientSession);
+				return clientSession;
+			}
+			else {
+				// Session expired locally, recreate not OK.
+				return null;
+			}
+		}		
+		
+		// Local cache hit. Try the the server.
+		// If session exists remotely, but the schema has changed, ignore the remote version.
+		SessionPayloadReader payloadReader = null;
+		CoreSessionImpl ssnFromStore = null;
+
+		try {
+			payloadReader = core.getSession(sessionId, create);
+		}
+		catch(VariantSchemaModifiedException e) {}
+
+		// Ensure we are compatible with the server.
+		if (payloadReader != null)	{
+			handshake(payloadReader);
+			ssnFromStore = (CoreSessionImpl) payloadReader.getBody();			
+		}
+		
+		if (ssnFromStore == null) {
+			// Session expired on server => expire it here too.
+			cache.expire(sessionId);
+			if (create) {
+				// Recreate from scratch
+				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
+				coreSession.save();
+				ClientSessionImpl clientSession = new ClientSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
+				cache.add(clientSession);
+				return clientSession;
+			}
+			else {
+				// Do not recreate.
+				return null;
+			}
+		}
+		
+		// Local and remote hits. 
+		// Replace remote in local, as it may have been changed by another client,
+		// update local timeout, and return the existing local object.
+		((ClientSessionImpl)ssnFromCache).replaceCoreSession(ssnFromStore);
+		cache.add(ssnFromCache, payloadReader.getProperty(Payload.Property.SSN_TIMEOUT, Long.class));
+		return ssnFromCache;	
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -235,92 +313,15 @@ public class VariantClientImpl implements VariantClient {
 	/**
 	 */
 	@Override
-	public VariantSession getSession(boolean create, Object... userData) {
-		
-		// Get session ID from the session ID tracker.
-		VariantSessionIdTracker sidTracker = initSessionIdTracker(userData);
-		String sessionId = sidTracker.get();
-		if (sessionId == null) {
-			if (create) {
-				sessionId = VariantStringUtils.random64BitString(RAND);
-				sidTracker.set(sessionId);
-			}
-			else {
-				// No ID in the tracker and create wasn't given. Same as expired session.
-				return null;
-			}
-		}
-		
-		// Have session ID. Try the local cache first.
-		VariantSession ssnFromCache = cache.get(sessionId);
-		
-		// Local case miss.
-		if (ssnFromCache == null) {
-			if (create) {
-				// Session expired locally, recreate OK.  Don't bother with the server.
-				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
-				coreSession.save();
-				ClientSessionImpl clientSession = new ClientSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
-				cache.add(clientSession);
-				return clientSession;
-			}
-			else {
-				// Session expired locally, recreate not OK.
-				return null;
-			}
-		}		
-		
-		// Local cache hit. Try the the server.
-		// If session exists remotely, but the schema has changed, ignore the remote version.
-		SessionPayloadReader payloadReader = null;
-		CoreSessionImpl ssnFromStore = null;
-
-		try {
-			payloadReader = core.getSession(sessionId, create);
-		}
-		catch(VariantSchemaModifiedException e) {}
-
-		// Ensure we are compatible with the server.
-		if (payloadReader != null)	{
-			handshake(payloadReader);
-			ssnFromStore = (CoreSessionImpl) payloadReader.getBody();			
-		}
-		
-		if (ssnFromStore == null) {
-			// Session expired on server => expire it here too.
-			cache.expire(sessionId);
-			if (create) {
-				// Recreate from scratch
-				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
-				coreSession.save();
-				ClientSessionImpl clientSession = new ClientSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
-				cache.add(clientSession);
-				return clientSession;
-			}
-			else {
-				// Do not recreate.
-				return null;
-			}
-		}
-		
-		// Local and remote hits. 
-		// Replace remote in local, as it may have been changed by another client,
-		// update local timeout, and return the existing local object.
-		((ClientSessionImpl)ssnFromCache).replaceCoreSession(ssnFromStore);
-		cache.add(ssnFromCache, payloadReader.getProperty(Payload.Property.SSN_TIMEOUT, Long.class));
-		return ssnFromCache;	
+	public VariantSession getOrCreateSession(Object... userData) {
+		return _getSession(true, userData);
 	}
 			
 	/**
-	 * <p>Get user's Variant session.
-	 * 
-	 * @param httpRequest Current <code>HttpServletRequest</code>.
-	 * @since 0.5
-	 * @return
 	 */
 	@Override
 	public VariantSession getSession(Object... userData) {
-		return getSession(true, userData);
+		return _getSession(false, userData);
 	}
 
 	//---------------------------------------------------------------------------------------------//
