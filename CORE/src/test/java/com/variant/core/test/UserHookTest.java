@@ -98,7 +98,7 @@ public class UserHookTest extends BaseTestCore {
 		Schema schema = core.getSchema();
 		State state1 = schema.getState("state1");
 		State state2 = schema.getState("state2");
-		VariantSession ssn = core.getSession("foo").getBody();
+		VariantSession ssn = core.getSession("foo", true).getBody();
 
 		VariantStateRequest request = ssn.targetForState(state1);
 		assertEquals(1, ssn.getTraversedStates().size());
@@ -156,7 +156,7 @@ public class UserHookTest extends BaseTestCore {
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = core.getSchema();
 		state1 = schema.getState("state1");
-		VariantSession ssn2 = core.getSession("foo2").getBody();
+		VariantSession ssn2 = core.getSession("foo2", true).getBody();
 		setTargetingStabile(ssn2, "test2.D", "Test1.A");
 		request = ssn2.targetForState(state1);
 		assertEquals(1, ssn2.getTraversedStates().size());
@@ -183,7 +183,7 @@ public class UserHookTest extends BaseTestCore {
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = core.getSchema();
 		state1 = schema.getState("state1");
-		CoreSessionImpl ssn3 = (CoreSessionImpl) core.getSession("foo3").getBody();
+		CoreSessionImpl ssn3 = (CoreSessionImpl) core.getSession("foo3", true).getBody();
 		assertTrue(ssn3.getTraversedStates().isEmpty());
 		assertTrue(ssn3.getTraversedTests().isEmpty());
 		setTargetingStabile(ssn3, "test1.B","test2.D","Test1.A");
@@ -192,7 +192,7 @@ public class UserHookTest extends BaseTestCore {
 		assertEqualAsSets(ssn3.getTraversedTests(), schema.getTest("test1"));
 		assertEqualAsSets(ssn3.getDisqualifiedTests(), schema.getTest("Test1"));
 
-		VariantSession ssn3uncommitted = core.getSession("foo3").getBody();
+		VariantSession ssn3uncommitted = core.getSession("foo3", true).getBody();
 		assertTrue(ssn3uncommitted.getTraversedStates().isEmpty());
 		assertTrue(ssn3uncommitted.getTraversedTests().isEmpty());
 

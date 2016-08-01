@@ -291,19 +291,6 @@ public class VariantCore implements Serializable {
 	}
 	
 	/**
-	 * Get user session. The contract of this method is that multiple calls with the same argument
-	 * will return the same object, provided the session did not expire between calls.  It is an error to
-	 * call this method on an idle instance, i.e. before a valid schema has been parsed. 
-	 * 
-	 * @param id Session ID.
-	 * @since 0.5 
-	 * @return An instance of {@link VariantSession}.
-	 */
-	public SessionPayloadReader getSession(String id) {
-		return sessionService.getSession(id, true);
-	}
-
-	/**
 	 * Save user session in session store.
 	 * @param session
 	 * TODO Make this async

@@ -1083,7 +1083,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 		Schema schema = core.getSchema();
 		State state1 = schema.getState("state1");
 		String sessionId = VariantStringUtils.random64BitString(rand);
-		VariantSession ssn = core.getSession(sessionId).getBody();
+		VariantSession ssn = core.getSession(sessionId, true).getBody();
 		setTargetingStabile(ssn, "test2.B");
 		VariantStateRequest req = ssn.targetForState(state1);
 		SessionScopedTargetingStabile stabile = ((CoreSessionImpl)ssn).getTargetingStabile();
@@ -1116,7 +1116,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 		core.addHookListener(new DisqualAllHookListener());
 		
 		String sessionId = VariantStringUtils.random64BitString(rand);
-		VariantSession ssnIn = core.getSession(sessionId).getBody();
+		VariantSession ssnIn = core.getSession(sessionId, true).getBody();
 		assertTrue(ssnIn.getTraversedStates().isEmpty());
 		assertTrue(ssnIn.getTraversedTests().isEmpty());
 		assertNull(ssnIn.getStateRequest());

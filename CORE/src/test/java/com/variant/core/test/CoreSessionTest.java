@@ -32,14 +32,14 @@ public class CoreSessionTest extends BaseTestCore {
 		// Can't create session if no schema.
 		assertNull(core.getSchema());
 		new VariantRuntimeExceptionInterceptor() { 
-			@Override public void toRun() { core.getSession("foo"); }
+			@Override public void toRun() { core.getSession("foo", true); }
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 
 		// Unsuccessful parse will not create a schema, so we still should not be able to get a session.
 		ParserResponse response = core.parseSchema("UNPARSABLE JUNK");
 		assertEquals(Severity.FATAL, response.highestMessageSeverity());
 		new VariantRuntimeExceptionInterceptor() { 
-			@Override public void toRun() { core.getSession("foo"); }
+			@Override public void toRun() { core.getSession("foo", true); }
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);
 
 		
@@ -48,7 +48,7 @@ public class CoreSessionTest extends BaseTestCore {
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		VariantSession ssn = core.getSession("bar").getBody();
+		VariantSession ssn = core.getSession("bar", true).getBody();
 		assertNotNull(ssn);
 
 		//core.saveSession((CoreSessionImpl)ssn);
@@ -68,7 +68,7 @@ public class CoreSessionTest extends BaseTestCore {
 		
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { 
-				core.getSession("bar"); 
+				core.getSession("bar", true); 
 			}
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), ssnFinal.getSchemaId());
 
@@ -91,7 +91,7 @@ public class CoreSessionTest extends BaseTestCore {
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		VariantSession ssn = core.getSession("key").getBody();
+		VariantSession ssn = core.getSession("key", true).getBody();
 		assertEquals("key", ssn.getId());
 		assertNull(ssn.getStateRequest());
 		assertEquals(0, ssn.getTraversedStates().size());
@@ -105,13 +105,13 @@ public class CoreSessionTest extends BaseTestCore {
 		
 		// Test for idempotency. ssn2 is a different object from ssn,
 		// but should have all props the same, except the creation timestamp.
-		VariantSession ssn2 = core.getSession("key").getBody();
+		VariantSession ssn2 = core.getSession("key", true).getBody();
 		assertEquals("key", ssn2.getId());
 		assertNull(ssn2.getStateRequest());
 		assertEquals(0, ssn2.getTraversedStates().size());
 		assertEquals(0, ssn2.getTraversedTests().size());
 				
-		VariantSession ssn3 = core.getSession("another-key").getBody();
+		VariantSession ssn3 = core.getSession("another-key", true).getBody();
 		assertNotEquals (ssn, ssn3);
 		assertNull(ssn.getStateRequest());
 		assertNull(ssn3.getStateRequest());
@@ -132,7 +132,7 @@ public class CoreSessionTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		
 		Schema schema = core.getSchema();
-		VariantSession ssn = core.getSession("foo").getBody();
+		VariantSession ssn = core.getSession("foo", true).getBody();
 		assertNull(ssn.getStateRequest());
 		VariantStateRequest req1 = ssn.targetForState(schema.getState("state1"));
 		assertNotNull(req1);
@@ -181,14 +181,14 @@ public class CoreSessionTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		
 		Schema schema1 = core.getSchema();
-		VariantSession ssn1 = core.getSession("foo2").getBody();
+		VariantSession ssn1 = core.getSession("foo2", true).getBody();
 		State state1 = schema1.getState("state1");
 		final VariantStateRequest req = ssn1.targetForState(state1);
 		req.commit();  // Saves the session.
 
 		Thread.sleep(10);
 		
-		final VariantSession ssn2 = core.getSession("foo2").getBody();
+		final VariantSession ssn2 = core.getSession("foo2", true).getBody();
 		assertEquals(ssn1, ssn2);
 	    
 	    // new schema.
@@ -238,7 +238,7 @@ public class CoreSessionTest extends BaseTestCore {
 		Schema schema3 = core.getSchema();
 		assertNotEquals(schema2.getId(), schema3.getId());
 		
-		VariantSession ssn3 = core.getSession("foo2").getBody(); // should be a new session because api's changed
+		VariantSession ssn3 = core.getSession("foo2", true).getBody(); // should be a new session because api's changed
 		assertEquals("foo2", ssn3.getId());
 		assertNull(ssn3.getStateRequest());
 		assertEquals(0,ssn3.getTraversedStates().size());

@@ -30,7 +30,7 @@ public class TargetingStabileTest extends BaseTestCore {
 		
 		Schema schema = core.getSchema();
 		
-		CoreSessionImpl ssn = (CoreSessionImpl) core.getSession("key1").getBody();
+		CoreSessionImpl ssn = (CoreSessionImpl) core.getSession("key1", true).getBody();
 		assertNull(ssn.getStateRequest());
 		
 		// 

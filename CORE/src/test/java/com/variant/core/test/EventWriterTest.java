@@ -49,14 +49,14 @@ public class EventWriterTest extends BaseTestCore {
 		State s1 = schema.getState("state1");
 		State s2 = schema.getState("state2");
 		
-		VariantSession ssn1 = core.getSession("ssn1").getBody();
+		VariantSession ssn1 = core.getSession("ssn1", true).getBody();
 		// test5.B will be dropped as incompatible, T1 will be control because it's uninstrumented,
 		// T2, T3 will be controls because they're nonvariant, hence we will expect toresolve totest6.C.
 		setTargetingStabile(ssn1,"test1.A","test2.B","test3.C","test4.A","test5.B","test6.C");
 		VariantStateRequest request = ssn1.targetForState(s1);
 		assertNotNull(request.getStateVisitedEvent());
 
-		VariantSession ssn2 = core.getSession("ssn2").getBody();
+		VariantSession ssn2 = core.getSession("ssn2", true).getBody();
 		setTargetingStabile(ssn2, "test2.C","test3.A","test4.A","test5.B","test6.C");
 		request = ssn2.targetForState(s2);
 		assertNotNull(request.getStateVisitedEvent());
@@ -170,7 +170,7 @@ public class EventWriterTest extends BaseTestCore {
 		Schema schema = core.getSchema();
 		State s2 = schema.getState("state2");
 		
-		VariantSession ssn3 = core.getSession("ssn3").getBody();
+		VariantSession ssn3 = core.getSession("ssn3", true).getBody();
 		setTargetingStabile(ssn3, "test2.C","test3.A","test4.A","test5.B","test6.C");
 		VariantStateRequest request = ssn3.targetForState(s2);
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
@@ -292,7 +292,7 @@ public class EventWriterTest extends BaseTestCore {
 		core.addHookListener(new TestQualificationHookListenerDisqualifyTest(true, "ssn4", schema.getTest("test2")));
 		core.addHookListener(new TestQualificationHookListenerDisqualifyTest(false, "ssn4", schema.getTest("test3")));
 		
-		VariantSession ssn4 = core.getSession("ssn4").getBody();
+		VariantSession ssn4 = core.getSession("ssn4", true).getBody();
 		setTargetingStabile(ssn4, "test2.C","test3.A","test4.A","test5.B","test6.C");
 		VariantStateRequest request = ssn4.targetForState(state2);
 		VariantEvent customEvent = new CustomEvent("foo", "bar");
