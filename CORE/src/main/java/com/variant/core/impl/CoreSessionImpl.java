@@ -21,6 +21,7 @@ import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.PersistableEventImpl;
+import com.variant.core.exception.VariantExpectedRuntimeException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
@@ -148,9 +149,22 @@ public class CoreSessionImpl implements VariantSession, Serializable {
 	}
 
 	//---------------------------------------------------------------------------------------------//
-	//                                        PUBLIC EXT                                           //
+	//                                    PUBLIC UNSUPPORTED                                       //
 	//---------------------------------------------------------------------------------------------//
 
+	@Override
+	public Object setAttribute(String name, Object value) {
+		throw new VariantExpectedRuntimeException(RUN_METHOD_UNSUPPORTED);
+	}
+
+	@Override
+	public Object getAttribute(String name) {
+		throw new VariantExpectedRuntimeException(RUN_METHOD_UNSUPPORTED);
+	}
+
+	//---------------------------------------------------------------------------------------------//
+	//                                        PUBLIC EXT                                           //
+	//---------------------------------------------------------------------------------------------//
 	/**
 	 * 
 	 * @return
@@ -467,5 +481,5 @@ public class CoreSessionImpl implements VariantSession, Serializable {
 	public int hashCode() {
 		return id.hashCode();
 	}
-
+	
 }

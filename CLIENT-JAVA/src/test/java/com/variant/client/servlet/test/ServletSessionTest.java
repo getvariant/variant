@@ -1,4 +1,4 @@
-package com.variant.client.test.servlet;
+package com.variant.client.servlet.test;
 
 
 import static org.junit.Assert.*;
@@ -14,6 +14,10 @@ import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.servlet.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.TargetingTrackerHttpCookie;
 import com.variant.client.servlet.VariantServletClient;
+import com.variant.client.servlet.VariantServletSession;
+import com.variant.client.servlet.VariantServletStateRequest;
+import com.variant.client.servlet.impl.ServletSessionImpl;
+import com.variant.client.servlet.impl.ServletStateRequestImpl;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.schema.Schema;
@@ -27,7 +31,7 @@ import com.variant.core.util.VariantStringUtils;
 public class ServletSessionTest extends ServletClientBaseTest {
 
 	private static Random rand = new Random(System.currentTimeMillis());
-	VariantServletClient servletClient = newServletAdapterClient();
+	private VariantServletClient servletClient = newServletAdapterClient();
 	
 	/**
 	 * No Schema.
@@ -198,7 +202,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		
 		ssn2 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn2);
-		assertEquals(ssn1, ssn2);
+		assertEquals(((ServletSessionImpl)ssn1).getBareSession(), ((ServletSessionImpl)ssn2).getBareSession());
 
 		// Bare signatures		
 		sessionId = VariantStringUtils.random64BitString(rand);
@@ -254,7 +258,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		HttpServletRequest httpReq = mockHttpServletRequest(null, (String)null);
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		VariantSession ssn1 = servletClient.getOrCreateSession(httpReq);
+		VariantServletSession ssn1 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 		assertNotNull(ssn1.getId());
 		assertEquals(ssn1.getSchemaId(), schema.getId());
@@ -264,7 +268,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		assertEquals(0, httpResp.getCookies().length);
 		//assertEquals(1, httpResp.getCookies().length);  Cookie should be added after commit;
 		
-		VariantSession ssn2 = servletClient.getOrCreateSession(httpReq);
+		VariantServletSession ssn2 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn2);
 		
 		// No guarantee that consequtive calls to getSession() with the same args will return the same object.
@@ -275,13 +279,13 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		assertEquals(0, ssn2.getTraversedTests().size());
 
 		State state1 = schema.getState("state1");		
-		VariantStateRequest varReq = ssn2.targetForState(state1);
+		VariantServletStateRequest varReq = ssn2.targetForState(state1);
 		//System.out.println(((VariantSessionImpl)ssn2).toJson());
 		assertEquals(state1, varReq.getState());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(
-				((ClientStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
-				((ClientStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
+				((ServletStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((ServletStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
@@ -307,8 +311,8 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		// The session shouldn't have changed after commit.
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(
-				((ClientStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
-				((ClientStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
+				((ServletStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((ServletStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
@@ -320,11 +324,11 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		VariantSession ssn3 = servletClient.getSession(httpReq);
 		assertEquals(ssn3, ssn2);
 		assertEquals(ssn3.getSchemaId(), schema.getId());
-		System.out.println(((ClientStateRequestImpl)varReq).getCoreStateRequest().toJson());
-		System.out.println(((ClientStateRequestImpl)ssn3.getStateRequest()).getCoreStateRequest().toJson());
+		System.out.println(((ServletStateRequestImpl)varReq).getCoreStateRequest().toJson());
+		System.out.println(((ServletStateRequestImpl)ssn3.getStateRequest()).getCoreStateRequest().toJson());
 		assertEquals(
-				((ClientStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
-				((ClientStateRequestImpl)ssn3.getStateRequest()).getCoreStateRequest().toJson());
+				((ServletStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((ServletStateRequestImpl)ssn3.getStateRequest()).getCoreStateRequest().toJson());
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn3.getTraversedStates().toArray()));
@@ -363,11 +367,11 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		
 		State state2 = schema.getState("state2");		
 		VariantStateRequest varReq = ssn1.targetForState(state2);
-		assertEquals(ssn1, varReq.getSession());
+		assertEquals(((ServletSessionImpl)ssn1).getBareSession(), ((ServletSessionImpl)varReq.getSession()).getBareSession());
 		assertEquals(ssn1.getSchemaId(), schema.getId());
 		assertEquals(
-				((ClientStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
-				((ClientStateRequestImpl)ssn1.getStateRequest()).getCoreStateRequest().toJson());
+				((ServletStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((ServletStateRequestImpl)ssn1.getStateRequest()).getCoreStateRequest().toJson());
 		assertEquals(
 				"[(state2, 1)]", 
 				Arrays.toString(ssn1.getTraversedStates().toArray()));
@@ -384,10 +388,10 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 		varReq.commit(httpResp);
 		
-		// Create a new HTTP request with the same VRNT-SSNID cookie.  Should fetch the same session.
+		// Create a new HTTP request with the same VRNT-SSNID cookie.  Should fetch the same bare session.
 		HttpServletRequest httpReq2 = mockHttpServletRequest(sessionId, (String)null);
 		VariantSession ssn2 = servletClient.getSession(httpReq2);
-		assertEquals(ssn2, varReq.getSession());
+		assertEquals(((ServletSessionImpl)ssn2).getBareSession(), ((ServletSessionImpl)varReq.getSession()).getBareSession());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(ssn2.getStateRequest().getResolvedParameterMap(), varReq.getSession().getStateRequest().getResolvedParameterMap());
 		assertEquals(

@@ -1,4 +1,4 @@
-package com.variant.client.test.servlet;
+package com.variant.client.servlet.test;
 
 /**
  * Marker interface to use in JUnit's @Category annotation to indicate a test

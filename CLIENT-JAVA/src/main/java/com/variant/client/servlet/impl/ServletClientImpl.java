@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.variant.client.VariantClient;
 import com.variant.client.servlet.VariantServletClient;
+import com.variant.client.servlet.VariantServletSession;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.hook.HookListener;
@@ -18,8 +19,26 @@ import com.variant.core.util.VariantArrayUtils;
  */
 public class ServletClientImpl implements VariantServletClient {
 
+	private static final String WRAP_ATTR_NAME = ServletClientImpl.class.getSimpleName();
 	private VariantClient client;
 	
+	/**
+	 * Wrap the bare session in a servlet session, but only once.
+	 * We don't want to keep re-wrapping the same bare session.
+	 */
+	private VariantServletSession wrapBareSession(VariantSession bareSession) {
+		
+		if (bareSession == null) return null;
+		
+		// If this bare session has already been wrapped, don't re-wrap.
+		VariantServletSession result = (VariantServletSession) bareSession.getAttribute(WRAP_ATTR_NAME);
+		if (result == null) {
+			// Not yet been wrapped.
+			result = new ServletSessionImpl(bareSession);
+			bareSession.setAttribute(WRAP_ATTR_NAME, result);
+		}
+		return result;
+	}
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -98,18 +117,17 @@ public class ServletClientImpl implements VariantServletClient {
 	}
 
 	/**
-	 * 
 	 */
 	@Override
-	public VariantSession getOrCreateSession(HttpServletRequest request) {
-		return client.getOrCreateSession(request);
+	public VariantServletSession getOrCreateSession(HttpServletRequest request) {
+		return wrapBareSession(client.getOrCreateSession(request));
 	}
 
 	/**
 	 */
 	@Override
-	public VariantSession getSession(HttpServletRequest request) {
-		return client.getSession(request);
+	public VariantServletSession getSession(HttpServletRequest request) {
+		return wrapBareSession(client.getSession(request));
 	}
 
 

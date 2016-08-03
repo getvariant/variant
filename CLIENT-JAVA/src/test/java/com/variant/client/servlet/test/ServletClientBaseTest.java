@@ -1,4 +1,4 @@
-package com.variant.client.test.servlet;
+package com.variant.client.servlet.test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

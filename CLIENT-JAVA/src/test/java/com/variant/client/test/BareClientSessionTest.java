@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Random;
 
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientStateRequestImpl;
@@ -20,11 +21,13 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.VariantCollectionsUtils;
+import com.variant.core.util.VariantStringUtils;
 
 public class BareClientSessionTest extends BareClientBaseTest {
 
-	final VariantClient client = newBareClient();
-
+	private final VariantClient client = newBareClient();
+	private final Random random = new Random(System.currentTimeMillis());
+	
 	/**
 	 * No Schema.
 	 *  
@@ -161,51 +164,33 @@ public class BareClientSessionTest extends BareClientBaseTest {
 	}
 	
 	/**
-	 * Session ID in cookie.
+	 * set/get session attributes.
 	 * 
 	 * @throws Exception
-	 *
+	 */
 	@org.junit.Test
-	public void sessionIDInTrackerTest() throws Exception {
+	public void sessionAttributesTest() throws Exception {
 		
 		ParserResponse response = client.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertNull(response.highestMessageSeverity());
 
-		Schema schema = client.getSchema();
-		String sessionId = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
+		String sessionId = VariantStringUtils.random64BitString(random);
 
-		VariantSession ssn1 = client.getSession("foo");
+		VariantSession ssn1 = client.getOrCreateSession(sessionId);
 		assertNotNull(ssn1);
-		assertEquals(sessionId, ssn1.getId());
-		assertEquals(ssn1.getSchemaId(), schema.getId());
-		assertNull(ssn1.getStateRequest());		
-		assertEquals(0, ssn1.getTraversedStates().size());
-		assertEquals(0, ssn1.getTraversedTests().size());
-		
-		State state2 = schema.getState("state2");		
+		ssn1.setAttribute("23", 23);
+		assertEquals(23, ssn1.getAttribute("23"));
+		State state2 = client.getSchema().getState("state2");		
 		VariantStateRequest varReq = ssn1.targetForState(state2);
-		assertEquals(ssn1, varReq.getSession());
-		assertEquals(ssn1.getSchemaId(), schema.getId());
-		assertEquals(
-				((ClientStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
-				((ClientStateRequestImpl)ssn1.getStateRequest()).getCoreStateRequest().toJson());
-		assertEquals(
-				"[(state2, 1)]", 
-				Arrays.toString(ssn1.getTraversedStates().toArray()));
-		
-		Collection<Test> expectedTests = VariantCollectionsUtils.list(
-				schema.getTest("test1"), 
-				schema.getTest("test2"), 
-				schema.getTest("test3"), 
-				schema.getTest("test4"), 
-				schema.getTest("test5"), 
-				schema.getTest("test6"));
-
-		assertEqualAsSets(expectedTests, ssn1.getTraversedTests());		
-
-		varReq.commit("");		
+		assertEquals(23, varReq.getSession().getAttribute("23"));
+		ssn1.setAttribute("45", 45);
+		varReq.commit("");
+		VariantSession ssn2 = client.getSession(sessionId);
+		assertEquals(ssn1, ssn2);
+		assertEquals(23, ssn2.getAttribute("23"));
+		assertEquals(45, ssn2.getAttribute("45"));
 	}
-	*/
+
 }

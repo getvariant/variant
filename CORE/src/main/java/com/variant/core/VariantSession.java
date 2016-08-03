@@ -111,7 +111,25 @@ public interface VariantSession {
 	 * will throw the {@link VariantRuntimeUserErrorException}</p>
 	 * 
 	 * @return true if this session has expired or false otherwise.
+	 * @since 0.6
 	 */
 	public boolean isExpired();
 
+	/**
+	 * <p>Has this session expired? An expired session cannot be used: calling any method on it
+	 * will throw the {@link VariantRuntimeUserErrorException}</p>
+	 * 
+	 * @return true if this session has expired or false otherwise.
+	 * @since 0.6
+	 */
+	public Object setAttribute(String name, Object value);
+	
+	/**
+	 * <p>Has this session expired? An expired session cannot be used: calling any method on it
+	 * will throw the {@link VariantRuntimeUserErrorException}</p>
+	 * 
+	 * @return true if this session has expired or false otherwise.
+	 * @since 0.6
+	 */
+	public Object getAttribute(String name);
 }

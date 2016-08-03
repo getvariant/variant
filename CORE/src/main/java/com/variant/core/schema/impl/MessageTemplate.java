@@ -114,7 +114,8 @@ public enum MessageTemplate {
 	RUN_SCHEMA_MODIFIED                                   (Severity.ERROR, "Opereation failed because the current schema ID [%s] differs from that with which this session was created [%s]."),
 	RUN_SCHEMA_UNDEFINED                                  (Severity.ERROR, "Cannot create a session on an idle Variant instance. Deploy a schema first."),
 	RUN_SESSION_EXPIRED                                   (Severity.ERROR, "This session has expired"), 
-	
+	RUN_METHOD_UNSUPPORTED                                (Severity.ERROR, "Method unsupported in Core"),
+
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                  GENERAL MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//

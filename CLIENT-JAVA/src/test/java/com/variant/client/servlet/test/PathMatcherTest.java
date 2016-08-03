@@ -1,4 +1,4 @@
-package com.variant.client.test.servlet;
+package com.variant.client.servlet.test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

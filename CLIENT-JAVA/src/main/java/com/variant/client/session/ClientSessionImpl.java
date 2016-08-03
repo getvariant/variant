@@ -2,6 +2,7 @@ package com.variant.client.session;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
@@ -35,7 +36,8 @@ public class ClientSessionImpl implements VariantSession {
 	private CoreSessionImpl coreSession;
 	private VariantSessionIdTracker sessionIdTracker;
 	private VariantTargetingTracker targetingTracker;
-
+	private HashMap<String, Object> attributeMap = new HashMap<String, Object>();
+	
 	/**
 	 * 
 	 * @param tt
@@ -108,6 +110,16 @@ public class ClientSessionImpl implements VariantSession {
 		return isExpired;
 	}
 	
+	@Override
+	public Object setAttribute(String name, Object value) {
+		return attributeMap.put(name, value);
+	}
+
+	@Override
+	public Object getAttribute(String name) {
+		return attributeMap.get(name);
+	}
+
 	// ---------------------------------------------------------------------------------------------//
 	//                                      PUBLIC PASS-THRU                                        //
 	// ---------------------------------------------------------------------------------------------//
@@ -198,4 +210,5 @@ public class ClientSessionImpl implements VariantSession {
 		sessionIdTracker = null;
 		targetingTracker = null;
 	}
+
 }

@@ -1,4 +1,4 @@
-package com.variant.client.test.servlet;
+package com.variant.client.servlet.test;
 
 import org.junit.experimental.categories.Category;
 

@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.variant.client.VariantClient;
 import com.variant.client.servlet.impl.ServletClientImpl;
-import com.variant.core.VariantSession;
 
 /**
  * <p>Servlet-aware wrapper around {@link VariantClient} that replaces all environment contingent
@@ -26,7 +25,7 @@ public interface VariantServletClient extends VariantClient {
 	 * @since 0.6
 	 * @return
 	 */
-	public VariantSession getOrCreateSession(HttpServletRequest request);
+	public VariantServletSession getOrCreateSession(HttpServletRequest request);
 
 	/**
 	 * <p>Get user's Variant session. 
@@ -35,7 +34,7 @@ public interface VariantServletClient extends VariantClient {
 	 * @since 0.6
 	 * @return
 	 */
-	public VariantSession getSession(HttpServletRequest request);
+	public VariantServletSession getSession(HttpServletRequest request);
 
 	/**
 	 * 

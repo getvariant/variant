@@ -108,7 +108,7 @@
 			       <systemPropertyVariables>
                       <variant.version>${variant.version}</variant.version>
                 </systemPropertyVariables>
-                <excludedGroups>com.variant.client.test.servlet.Remote</excludedGroups>
+                <excludedGroups>com.variant.client.servlet.test.Remote</excludedGroups>
                </configuration>
             </plugin>
             
@@ -117,7 +117,7 @@
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-source-plugin</artifactId>
               <configuration>
-                <excludedGroups>com.variant.client.test.servlet.Remote</excludedGroups>
+                <excludedGroups>com.variant.client.servlet.test.Remote</excludedGroups>
               </configuration>
               <executions>
                 <execution>

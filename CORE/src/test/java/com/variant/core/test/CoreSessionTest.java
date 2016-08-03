@@ -173,6 +173,10 @@ public class CoreSessionTest extends BaseTestCore {
 		req2.commit();
 	}
 
+	/**
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void  crossSchemaTest() throws Exception {
 				
@@ -247,4 +251,30 @@ public class CoreSessionTest extends BaseTestCore {
 		
 	}
 
+	/**
+	 * Attributes are not supported in core session.
+	 * @throws Exception
+	 */
+	@Test
+	public void attributesTest() throws Exception {
+		
+		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		
+		final VariantSession ssn = core.getSession("foo", true).getBody();
+
+		new VariantRuntimeExceptionInterceptor() { 
+			@Override public void toRun() { 
+				ssn.setAttribute("foo", new Object());
+			}
+		}.assertThrown(MessageTemplate.RUN_METHOD_UNSUPPORTED);
+
+		new VariantRuntimeExceptionInterceptor() { 
+			@Override public void toRun() { 
+				ssn.getAttribute("foo");
+			}
+		}.assertThrown(MessageTemplate.RUN_METHOD_UNSUPPORTED);
+
+	}
 }
