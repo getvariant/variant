@@ -194,7 +194,7 @@ public class EventWriter {
 			
 			long now = System.currentTimeMillis();
 			persisterImpl.persist(events);		
-			LOG.debug("Wrote " + events.size() + " events in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
+			LOG.info("Wrote " + events.size() + " event(s) in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
 		}
 	}
 }
