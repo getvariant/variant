@@ -14,5 +14,5 @@ event.writer.max.delay.millis = 1000
 # The SQL schema required to support this Event Persister can be found in the
 # distribution db/postgres directory. The same scripts run on an H2 instance
 # in Oralce compatibility mode.
-event.persister.class.name = com.variant.core.event.EventPersisterPostgres
-event.persister.class.init = {"vendor":"postgres","url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}
+#event.persister.class.name = com.variant.core.event.EventPersisterPostgres
+#event.persister.class.init = {"vendor":"postgres","url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}

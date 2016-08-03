@@ -44,14 +44,6 @@ public class VariantFilter implements Filter {
 	
 	private VariantServletClient client;
 	
-	/**
-	 * HTTP API will override these two methods.  The rest of this filter is the same for both.
-	 * 
-	 * @return
-	 */
-	//protected VariantClient getClient() { return new VariantClient();}
-	//protected VariantClient getClient(String configName) { return new VariantClient(configName);}
-
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -105,8 +97,8 @@ public class VariantFilter implements Filter {
 		
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		VariantSession variantSsn = null; 
-		VariantStateRequest variantRequest = null;
+		VariantServletSession variantSsn = null; 
+		VariantServletStateRequest variantRequest = null;
 		
 		long start = System.currentTimeMillis();
 
@@ -130,24 +122,22 @@ public class VariantFilter implements Filter {
 			else {
 			
 				// Yes, this path is mapped in Variant.
-				variantSsn = client.getSession(httpRequest);
+				variantSsn = client.getOrCreateSession(httpRequest);
 				variantRequest = variantSsn.targetForState(state);
 				resolvedPath = variantRequest.getResolvedParameterMap().get("path");
 				isForwarding = !resolvedPath.equals(state.getParameterMap().get("path"));
 				
-				if (LOG.isInfoEnabled()) {
-
-					String msg = 
-							"Variant dispatcher for URL [" + url +
-							"] completed in " + DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS") +". ";
-					if (isForwarding) {
-						msg += "Forwarding to path [" + resolvedPath + "].";							
-					}
-					else {
-						msg += "Falling through to requested URL";
-					}
-					LOG.info(msg);
-				}					
+				String msg = 
+						"Variant dispatcher for URL [" + url +
+						"] completed in " + DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS") +". ";
+				if (isForwarding) {
+					msg += "Forwarding to path [" + resolvedPath + "].";							
+				}
+				else {
+					msg += "Falling through to requested URL";
+				}
+				LOG.info(msg);
+				
 			}
 		}
 		catch (Throwable t) {
@@ -170,7 +160,7 @@ public class VariantFilter implements Filter {
 				// Add some extra info to the state visited event(s)
 				VariantEvent sve = variantRequest.getStateVisitedEvent();
 				if (sve != null) sve.getParameterMap().put("HTTP_STATUS", httpResponse.getStatus());
-				variantRequest.commit(httpRequest, httpResponse);
+				variantRequest.commit(httpResponse);
 			}
 			catch (Throwable t) {
 				LOG.error("Unhandled exception in Variant for path [" + 
