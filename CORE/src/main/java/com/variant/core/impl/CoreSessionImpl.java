@@ -1,5 +1,9 @@
 package com.variant.core.impl;
 
+import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
+import static com.variant.core.schema.impl.MessageTemplate.RUN_METHOD_UNSUPPORTED;
+import static com.variant.core.schema.impl.MessageTemplate.RUN_SCHEMA_UNDEFINED;
+
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -9,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-
-import static com.variant.core.schema.impl.MessageTemplate.*;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;

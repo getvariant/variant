@@ -29,8 +29,8 @@ PetClinic :: a Spring Framework demonstration
     <spring:url value="/webjars/jquery-ui/1.10.3/themes/base/jquery-ui.css" var="jQueryUiCss"/>
     <link href="${jQueryUiCss}" rel="stylesheet"></link>
     
-    <!-- variant.js v0.6.0 -->
-    <script src="http://getvariant.com/js/variant-0.6.0.js"></script>
+    <!-- variant.js v0.6.1 -->
+    <script src="http://getvariant.com/js/variant-0.6.1.js"></script>
         
 </head>
 

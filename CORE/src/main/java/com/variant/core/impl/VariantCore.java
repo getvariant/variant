@@ -34,7 +34,7 @@ import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.schema.parser.Severity;
+import com.variant.core.schema.parser.ParserMessage.Severity;
 import com.variant.core.session.SessionService;
 import com.variant.core.util.VariantIoUtils;
 

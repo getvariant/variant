@@ -1,7 +1,7 @@
 package com.variant.server;
 
 import com.variant.core.VariantCorePropertyKeys;
-import com.variant.core.VariantCorePropertyKeys.Key;
+import static com.variant.core.VariantCorePropertyKeys.Key;
 
 public interface ServerPropertyKeys extends VariantCorePropertyKeys {
 

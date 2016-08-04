@@ -12,7 +12,7 @@ import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.schema.parser.Severity;
+import com.variant.core.schema.parser.ParserMessage.Severity;
 
 /**
  * Parse time exceptions

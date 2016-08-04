@@ -15,7 +15,7 @@ import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserMessage;
-import com.variant.core.schema.parser.Severity;
+import com.variant.core.schema.parser.ParserMessage.Severity;
 import com.variant.core.util.VariantStringUtils;
 
 public class SchemaParser implements Keywords {

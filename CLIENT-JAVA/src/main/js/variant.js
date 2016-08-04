@@ -1,4 +1,4 @@
-/* Variant 0.6.0 (c) Variant, Inc. All rights reserved. getvariant.com */
+/* Variant 0.6.1 © Variant, Inc. All rights reserved. getvariant.com */
 
 (function() {
 
@@ -21,7 +21,7 @@
 	// privates
 	var webStorage = !(typeof(Storage) === "undefined");
 	var booted = false;
-	
+
 	// Private Event Queue.
 	// Does nothing if session storage not supported by browser.
 	var eventQueue = {
@@ -97,17 +97,19 @@
 	/**
 	 * Event Object can be sent to server.
 	 */
-	variant.Event = function(sid, name, value, params) {
+	variant.Event = function(name, value, params) {
 
 		if (!webStorage) return;
 
-		if (arguments.length < 3) throw Error("Contructor variant.Event(sid, name, value, params) requires at least 3 arguments.");
+		if (arguments.length < 2) throw Error("Contructor variant.Event(name, value, params) requires at least 2 arguments.");
 	  
-		this.sid = sid;
 		this.name = name;
 		this.value = value;
 		this.params = params;
-
+		this.sid = (function() { 
+			var i = document.cookie.indexOf("variant-ssnid");
+			return i < 0 ? null : document.cookie.substring(i+14,i+30);
+		})();
 	}
 
 	/**

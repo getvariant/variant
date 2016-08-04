@@ -25,7 +25,7 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 	
-	public static final String COOKIE_NAME = "vrnt-ssnid";
+	public static final String COOKIE_NAME = "variant-ssnid";
 
 	/**
 	 * No-argument constructor must be provided by contract.

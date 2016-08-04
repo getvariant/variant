@@ -18,13 +18,12 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.impl.StateSelectorByRequestPath;
 import com.variant.client.servlet.util.VariantWebUtils;
-import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.schema.parser.Severity;
+import com.variant.core.schema.parser.ParserMessage.Severity;
 
 /**
  * Copyright 2015 Variant. All rights reserved.

@@ -53,7 +53,7 @@ public abstract class VariantCookie {
 	public void send(HttpServletResponse response) {
 		Cookie cookie = new Cookie(name, value);
 		cookie.setPath("/");
-		cookie.setHttpOnly(true);
+		cookie.setHttpOnly(false);  // We want varaint.js to have access.
 		cookie.setMaxAge(getMaxAge());
 		response.addCookie(cookie);
 	}

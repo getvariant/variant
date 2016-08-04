@@ -6,7 +6,6 @@ import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.servlet.VariantServletClient;
 import com.variant.client.servlet.impl.ServletClientImpl;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.util.inject.Injector;
 
 /**
  * Same thing as the superclass, but running remotely, against the real server,

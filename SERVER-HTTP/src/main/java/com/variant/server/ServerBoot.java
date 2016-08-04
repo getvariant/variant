@@ -3,11 +3,10 @@ package com.variant.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.VariantCorePropertyKeys.Key;
 import com.variant.core.VariantProperties;
 import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
-
-import static com.variant.server.ServerPropertyKeys.Key;
 
 public class ServerBoot {
 

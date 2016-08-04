@@ -10,5 +10,5 @@ event.persister.class.init = {"url":"jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELA
 # event.persister.class.name = com.variant.core.event.EventPersisterPostgres
 # event.persister.class.init = {"url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}
 
-event.writer.buffer.size = 10000
-event.writer.max.delay.millis = 100
+event.writer.buffer.size = 100000
+event.writer.max.delay.millis = 2000

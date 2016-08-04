@@ -4,7 +4,7 @@ package com.variant.client.servlet;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.StateParsedHook;
 import com.variant.core.schema.State;
-import com.variant.core.schema.parser.Severity;
+import com.variant.core.schema.parser.ParserMessage.Severity;
 
 /**
  * An implementation of {@link HookListener} listening to {@link StateParsedHook}.

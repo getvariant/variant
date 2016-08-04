@@ -46,7 +46,7 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	public static final String COOKIE_NAME = "vrnt-target";
+	public static final String COOKIE_NAME = "variant-target";
 
 	/**
 	 * Superclass needs properties but doesn't have them.

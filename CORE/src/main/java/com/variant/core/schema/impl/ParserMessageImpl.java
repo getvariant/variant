@@ -2,7 +2,6 @@ package com.variant.core.schema.impl;
 
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.schema.parser.Severity;
 
 
 /**

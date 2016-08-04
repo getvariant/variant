@@ -1,7 +1,11 @@
 package com.variant.client.servlet.test;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -9,7 +13,6 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.variant.client.impl.ClientStateRequestImpl;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.servlet.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.TargetingTrackerHttpCookie;

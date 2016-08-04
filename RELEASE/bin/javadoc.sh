@@ -23,13 +23,12 @@ javadoc -d ${javadoc_dir}  \
    -doctitle "Variant Randomized Controlled Experiment Container Java API<br/>Version 0.5" \
    -header "<a onclick=\"window.top.location.href='http://getvariant.com/docs';\" href=\"#\"><img src=\"http://getvariant.com/wp-content/uploads/2015/10/VariantLogo3-e1446247556580.png\"/></a>" \
    -bottom "$version <br/> Copyright &copy; 2015-2016 Variant" \
+   com.variant.client                 \
    com.variant.core                 \
    com.variant.core.event           \
-   com.variant.core.ext             \
    com.variant.core.hook            \
    com.variant.core.schema          \
    com.variant.core.schema.parser   \
-   com.variant.web
 
 #
 # Package

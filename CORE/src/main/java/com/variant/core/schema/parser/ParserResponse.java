@@ -3,6 +3,7 @@ package com.variant.core.schema.parser;
 import java.util.List;
 
 import com.variant.core.hook.HookListener;
+import com.variant.core.schema.parser.ParserMessage.Severity;
 
 /**
  * Return type of {@link com.variant.core.Variant#parseSchema(java.io.InputStream, boolean)}.

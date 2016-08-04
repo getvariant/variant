@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import com.variant.client.impl.ClientStateRequestImpl;
 import com.variant.client.servlet.VariantServletSession;
 import com.variant.client.servlet.VariantServletStateRequest;
-import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantInternalException;
