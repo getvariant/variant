@@ -1,42 +1,42 @@
 package com.variant.client;
 
 import java.io.InputStream;
+import java.util.Properties;
 
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
 import com.variant.core.exception.VariantSchemaModifiedException;
 import com.variant.core.hook.HookListener;
-import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.parser.ParserResponse;
 
 /**
- * <p>Variant Java Client API. Makes no assumptions about the host application other than 
- * it is Java (can compile with Java). 
+ * Variant Bare Java Client. Makes no assumptions about the host application other than 
+ * it is Java. 
  * 
  * @author Igor Urisman
- * @since 0.6
+ * @since 0.5
  */
 public interface VariantClient {
 		
 	/**
-	 * <p>This API's application properties
+	 * This client's application properties.
+	 * These are the propertied that were in effect at the time when this Variant client instance was instantiated.
 	 * 
-	 * @return An instance of the {@link CorePropertiesImpl} type.
+	 * @return An instance of the {@link VariantProperties} type.
 	 * 
 	 * @since 0.6
 	 */
 	public VariantProperties getProperties();
 
 	/**
-	 * <p>Register a {@link HookListener}.
-	 * See {@link Variant#addHookListener(HookListener)} for details.
-	 * 
+	 * <p>Register a {@link HookListener} with this client.
+	 *
 	 * @param listener An instance of a caller-provided implementation of the 
-	 *        {@link com.variant.core.hook.HookListener} interface.
+	 *        {@link HookListener} interface.
 	 *        
+	 * @see HookListener
 	 * @since 0.6
 	 */
 	public void addHookListener(HookListener<?> listener);
@@ -49,98 +49,98 @@ public interface VariantClient {
 	public void clearHookListeners();
 
 	/**
-	 * <p>Parse and, if no errors, optionally deploy a new experiment schema.
+	 * Parse and, optionally, deploy an experiment schema.
+	 * If no parse errors were encountered and the <code>deploy</code> argument is true, the schema 
+	 * will be deployed
 	 * 
-	 * @param stream The schema to be parsed and deployed, as a java.io.InputStream.
-	 * @param deploy The new test schema will be deployed if this is true and no parse errors 
-	 *        were encountered.
+	 * @param schema The experiment schema as an {@link java.io.InputStream}.
+	 * @param deploy Weather or not to deploy the schema.
 	 *        
-	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} object that
-	 *         may be further examined about the outcome of this operation.
+	 * @return An instance of the {@link ParserResponse} type, which
+	 *         may be examined for the information on the outcome of this operation.
 	 * 
 	 * @since 0.5
 	 */
-	public ParserResponse parseSchema(InputStream stream, boolean deploy);
+	public ParserResponse parseSchema(InputStream schema, boolean deploy);
 
 	/**
-	 * <p>Parse and, if no errors, deploy a new experiment schema.  Same as 
-     * <code>parseSchema(stream, true)</code>.
+	 * Parse and, if no errors, deploy an experiment schema.  
+	 * Equivalent to <code>parseSchema(stream, true)</code>.
      * 
-	 * @param stream The schema to be parsed and deployed, as a java.io.InputStream.
 	 *         
-	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} type, which
-	 *         may be further examined about the outcome of this operation.
+	 * @param schema The experiment schema as an {@link java.io.InputStream}.
+	 * @return An instance of the {@link ParserResponse} type, which
+	 *         may be examined for the information on the outcome of this operation.
      *
 	 * @since 0.5
 	 */
-	public ParserResponse parseSchema(InputStream stream);
+	public ParserResponse parseSchema(InputStream schema);
 
 	/**
-	 * <p>Get currently deployed test schema, if any.
+	 * Get currently deployed experiment schema, if any.
 	 * 
-	 * @return Current test schema as an instance of the {@link com.variant.core.schema.Schema} object.
+	 * @return Current experiment schema as an instance of the {@link Schema} object.
 	 * 
 	 * @since 0.5
 	 */
 	public Schema getSchema();
 
 	/**
-	 * <p>Get or create caller's Variant session. If the session ID exists in the underlying implementation 
+	 * Get or create caller's current Variant session. If the session ID exists in the underlying implementation 
 	 * of {@link VariantSessionIdTracker} and the session with this session ID has not expired on the server,
 	 * this session is returned. Otherwise, a new session is created. If the session has not expired but the 
 	 * schema has changed since it was created, this call will throw an unchecked 
 	 * {@link VariantSchemaModifiedException}.
-	 * </p>
 	 * 
-	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
-	 *                 to the implementations of {@link com.variant.client.VariantSessionIdTracker#get(Object...)}.
+	 * 
+	 * @param userData An array of zero or more opaque objects which will be passed without interpretation
+	 *                 to the implementations of {@link VariantSessionIdTracker#init(VariantInitParams, Object...)}
+	 *                 and {@link VariantTargetingTracker#init(VariantInitParams, Object...)}.
      *
 	 * @since 0.6
 	 * @return An object of type {@link VariantSession}. This call is guaranteed to be idempotent, i.e. a subsequent
 	 *         invocation with the same arguments will return the same object, unless the session expired between the
-	 *         invocations, in which case <code>null</code> will be returned if <code>create</code> is false, or a
-	 *         new object if <code>create</code> is true.
+	 *         invocations, in which case a new object will be returned. Never returns <code>null</code>.
 	 */
 	public VariantSession getOrCreateSession(Object... userData);
 			
 	/**
-	 * <p>Get caller's Variant session, if it already exists. If the session ID exists in the underlying 
-	 * implementation of {@link VariantSessionIdTracker} and the session with this session ID has not 
-	 * expired on the server, this session is returned. If the session has not expired but the schema
-	 * has changed since it was created, this call will throw an unchecked {@link VariantSchemaModifiedException}.
-	 * </p>
+	 * Get caller's current Variant session. If the session ID exists in the underlying implementation 
+	 * of {@link VariantSessionIdTracker} and the session with this session ID has not expired on the server,
+	 * this session is returned.  If the session has not expired but the schema has changed since it was created, 
+	 * this call will throw an unchecked {@link VariantSchemaModifiedException}.
 	 * 
-	 * @param userData An array of 0 or more opaque objects which will be passed without interpretation
-	 *                 to the implementations of {@link com.variant.client.VariantSessionIdTracker#get(Object...)}.
+	 * 
+	 * @param userData An array of zero or more opaque objects which will be passed without interpretation
+	 *                 to the implementations of {@link VariantSessionIdTracker#init(Object...)}
+	 *                 and {@link VariantTargetingTracker#init(VariantInitParams, Object...)}.
      *
-	 * @since 0.5
-	 * @return An object of type {@link VariantSession}, if session was found, or null otherwise. This call is 
-	 *         guaranteed to be idempotent, i.e. a subsequent invocation with the same arguments will return 
-	 *         the same object, or <code>null</code>.
+	 * @since 0.6
+	 * @return An object of type {@link VariantSession}. This call is guaranteed to be idempotent, i.e. a subsequent
+	 *         invocation with the same arguments will return the same object or <code>null</code>.
 	 */
 	public VariantSession getSession(Object... userData);
 	
 	/**
-	 * <p>Factory class
-	 * @author Igor Urisman
-	 *
+	 * Factory class: call <code>getInstance()</code> to obtain a new instance of {@link VariantClient}.
+	 * 
+	 * @since 0.6
 	 */
 	public static class Factory {
 		
 		/**
-		 * <p>Instantiate an instance of Variant client. Takes 0 or more of String arguments. 
-		 * If supplied, each argument is understood as a Java class path resource name. Each 
-		 * resource is expected to contain a set of application properties, as specified by 
-		 * Java's Properties.load() method. When VariantClient needs to look up a property
-		 * value, these files are scanned left to right and the first value found is used. 
-		 * If a value wasn't found in any of the supplied files, or if no files were supplied, 
+		 * Obtain a new instance of {@link VariantClient}. Takes zero or more String arguments
+		 * which are understood to be Java classpath resource names. Each resource is expected 
+		 * to contain a set of application property definitions, as specified by Java's 
+		 * {@link Properties#load(java.io.Reader)} method. When Variant client needs to look 
+		 * up a property value, these files are examined left to right and the first value found is
+		 * used.  If a value wasn't found in any of the supplied files, or if no files were supplied, 
 		 * a default is used.
 		 * 
-		 * <p>Host application should hold on to and reuse the object returned by this method.
-		 * Not thread safe: the host application should not use more than one of these at a time.
+		 * Host application should hold on to and reuse the object returned by this method.
 		 * 
-		 * @param  0 or more classpath resource names.
-		 * @return Instance of the {@link VariantClient} type
+		 * @param  resourceNames Zero or more application property files as classpath resource names.
+		 * @return Instance of the {@link VariantClient} type.
 		 * @since 0.6
 		 */
 		public static VariantClient getInstance(String...resourceNames) {

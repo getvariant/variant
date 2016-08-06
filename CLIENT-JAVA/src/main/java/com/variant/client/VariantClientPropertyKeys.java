@@ -5,7 +5,10 @@ import com.variant.client.session.TargetingTrackerDefault;
 import com.variant.core.VariantCorePropertyKeys;
 
 /**
- * Client-side Variant application properties.
+ * Variant Java client application properties.
+ * 
+ * @Author: Igor Urisman.
+ * @since 0.6
  */
 public interface VariantClientPropertyKeys extends VariantCorePropertyKeys {
 

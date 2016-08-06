@@ -7,12 +7,12 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * <p>A Variant-instantiated implementation will use external mechanisms to obtain and to store
- * customer's targeting information between Variant sessions, thus implementing experiment scoped
+ * <p>An environment dependebnt implementation will use external mechanisms to obtain and to store
+ * customer's targeting information between Variant sessions, thus providing experiment scoped
  * targeting stability. In a web application environment, this may be tracked in an HTTP cookie,
- * which would provide "weak" experiment scoped targeting stability (the cookie could be deleted
- * between sessions), or, more likely, in the client's database, which would be "strong," so long
- * as the returning customer can be recognized.
+ * which would provide "weak" targeting stability (the cookie could be deleted between sessions), 
+ * or, more likely, in the operational database, which could support "strong" stability across
+ * different devices.
  * 
  * @author Igor Urisman
  * @since 0.6
@@ -21,14 +21,15 @@ import com.variant.core.schema.Test.Experience;
 public interface VariantTargetingTracker {
 	
 	/**
-	 * <p>Called by Variant client immediately following the instantiation, within the scope of the
-	 * {@link VariantClient#getSession(Object...userData)} method.
+	 * <p>Called by Variant to initialize a newly instantiated concrete implementation. Variant client calls this method 
+	 * immediately following the instantiation within the scope of the {@link VariantClient#getSession(Object...)} method.
+	 * Use this to inject state from configuration.
 	 * 
-	 * @param initParams The init parameter map, as specified by the <code>targeting.tracker.class.init</code>
-	 *                   application property. 
-	 * 
-	 * @param userData   An array of 0 or more opaque objects which {@link VariantClient#getSession(Object...userData)}  
-	 *                   will pass here without interpretation.
+	 * @param initParams An instance of type {@link VariantInitParams}, containing parsed JSON object, 
+	 *                   specified by the <code>targeting.tracker.class.init</code> application property. 
+	 * @param userData   An array of zero or more opaque objects which {@link VariantClient#getSession(Object...)}  
+	 *                   or {@link VariantClient#getOrCreateSession(Object...)} method will pass here without 
+	 *                   interpretation.
 	 * 
 	 * @since 0.6
 	 */
@@ -37,8 +38,8 @@ public interface VariantTargetingTracker {
 	
 	/**
 	 * All currently tracked test experiences. The implementation must guarantee 
-	 * consistency of this operation, e.g. that all experiences are pairwise independent,
-	 * i.e. there are no two experiences in the returned collection that belong to the same test.
+	 * consistency of this operation, i.e. that all returned experiences are pairwise independent,
+	 * which is to say that there be no two experiences which refer to the same test.
 	 * 
 	 * @return Collection of objects of type {@link Entry}.
 	 * @since 0.6
@@ -46,21 +47,20 @@ public interface VariantTargetingTracker {
 	public Collection<Entry> get();
 		
 	/**
-	 * Set the value of all currently tracked test experiences. The implementation must guarantee 
-	 * consistency of this operation, e.g. that all experiences are pairwise independent,
-	 * i.e. there are no two experiences in the returned collection that belong to the same test.
+	 * Set the value of all currently tracked test experiences.
 	 * 
-	 * @param entries Collection of objects of type {@link Entry}.
+	 * @param entries Collection of objects of type {@link Entry}. The caller must guarantee 
+	 *                consistency of this collection, i.e. that all entries are pairwise independent,
+	 *                which is to say that there be no two entries which refer to the same test.
 	 * 
 	 * @since 0.6
 	 */
 	public void set(Collection<Entry> entries);
 
 	/**
-	 * Flush the state of this object to the underlying persistence mechanism.
+	 * Called by Variant to save the state of this object to the underlying persistence mechanism.
 	 * 
-	 * @param userData An array of 0 or more opaque objects which 
-	 *                 {@link com.variant.core.Variant#commitStateRequest(VariantStateRequest, Object...)} 
+	 * @param userData An array of zero or more opaque objects which {@link VariantStateRequest#commit(Object...)}
 	 *                 will pass here without interpretation.
 	 *                 
 	 * @since 0.6
@@ -68,40 +68,43 @@ public interface VariantTargetingTracker {
 	public void save(Object...userData);
 		
 	/**
-	 * A targeting tracker entry: a test experience plus the timestamp of when it was last touched by this
-	 * front end.
+	 * A targeting tracker entry, i.e. the test name, experience name and the timestamp of when 
+	 * this experience was last seen by a user.
 	 * 
 	 * @since 0.6
 	 */
 	public static interface Entry {
 				
 		/**
-		 * Test experience from targeting tracker.
+		 * Get test experience trakced by this entry as an instance {@link Experience} with respect to an experiment schema.
 		 * 
-		 * @param schema Variant {@link Schema} where the experience will be looked for.
+		 * @param schema Variant {@link Schema} (presumably current) where the experience will be looked for.
 		 * 
 		 * @return Test experience from the given schema whose name and test name match the content
 		 *         of this entry, or null if current schema does not have such an experience.
+		 *         
     	 * @since 0.6
 		 */
 		public Experience getAsExperience(Schema schema);
 		
 		/**
-		 * Test name.
+		 * Get the test name, tracked by this entry.
+		 * 
 		 * @return Test name.
     	 * @since 0.6
 		 */
 		public String getTestName();
 		
 		/**
-		 * Experience name.
+		 * Get the experience name tracked by this entry.
+		 * 
 		 * @return Experience name.
     	 * @since 0.6
 		 */
 		public String getExperienceName();
 		
 		/**
-		 * Timestamp when a state instrumented by this test has been last touched.
+		 * Get the timestamp when this experience was last seen by a user.
 		 * @return
     	 * @since 0.6
 		 */

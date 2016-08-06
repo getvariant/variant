@@ -45,7 +45,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	public void noSchemaTest() throws Exception {
 
 		assertNull(servletClient.getSchema());
-		final HttpServletRequest httpReq = mockHttpServletRequest("foo", (String)null);  // no vssn.
+		final HttpServletRequest httpReq = mockHttpServletRequest("foo");  // no vssn.
 
 		new VariantRuntimeExceptionInterceptor() {
 			@Override public void toRun() { servletClient.getOrCreateSession(httpReq); }
@@ -65,7 +65,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		assertFalse(response.hasMessages());
 		assertNull(response.highestMessageSeverity());
 		
-		final HttpServletRequest httpReq = mockHttpServletRequest("foo", (String)null);
+		final HttpServletRequest httpReq = mockHttpServletRequest("foo");
 		final Schema oldSchema = servletClient.getSchema();
 
 		final VariantSession ssn1 = servletClient.getOrCreateSession(httpReq);
@@ -128,7 +128,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		assertNull(response.highestMessageSeverity());
 
 		// Servlet signatures
-		final HttpServletRequest httpReq = mockHttpServletRequest(null, (String)null);
+		final HttpServletRequest httpReq = mockHttpServletRequest();
 		
 		VariantSession ssn1 = servletClient.getSession(httpReq);
 		assertNull(ssn1);
@@ -192,7 +192,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 		// Servlet signatures
 		String sessionId = VariantStringUtils.random64BitString(rand);
-		final HttpServletRequest httpReq = mockHttpServletRequest(sessionId, (String)null);
+		final HttpServletRequest httpReq = mockHttpServletRequest(sessionId);
 		
 		VariantSession ssn1 = servletClient.getSession(httpReq);
 		assertNull(ssn1);
@@ -209,7 +209,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 		// Bare signatures		
 		sessionId = VariantStringUtils.random64BitString(rand);
-		final HttpServletRequest httpReq2 = mockHttpServletRequest(sessionId, (String)null);
+		final HttpServletRequest httpReq2 = mockHttpServletRequest(sessionId);
 
 		ssn1 = servletClient.getSession((Object) httpReq2);
 		assertNull(ssn1);
@@ -258,7 +258,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 		Schema schema = servletClient.getSchema();
 		
-		HttpServletRequest httpReq = mockHttpServletRequest(null, (String)null);
+		HttpServletRequest httpReq = mockHttpServletRequest();
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
 		VariantServletSession ssn1 = servletClient.getOrCreateSession(httpReq);
@@ -353,7 +353,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 		Schema schema = servletClient.getSchema();
 		String sessionId = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
-		HttpServletRequest httpReq = mockHttpServletRequest(sessionId, (String)null);
+		HttpServletRequest httpReq = mockHttpServletRequest(sessionId);
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
 		VariantSession ssn1 = servletClient.getSession(httpReq);
@@ -392,7 +392,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		varReq.commit(httpResp);
 		
 		// Create a new HTTP request with the same VRNT-SSNID cookie.  Should fetch the same bare session.
-		HttpServletRequest httpReq2 = mockHttpServletRequest(sessionId, (String)null);
+		HttpServletRequest httpReq2 = mockHttpServletRequest(sessionId);
 		VariantSession ssn2 = servletClient.getSession(httpReq2);
 		assertEquals(((ServletSessionImpl)ssn2).getBareSession(), ((ServletSessionImpl)varReq.getSession()).getBareSession());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
@@ -401,7 +401,53 @@ public class ServletSessionTest extends ServletClientBaseTest {
 				"[(state2, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
 		assertEqualAsSets(expectedTests, ssn1.getTraversedTests());		
+	}
+	
+	/**
+	 * Content of SID cookie changes.
+	 * 
+	 * @throws Exception
+	 */
+	@org.junit.Test
+	public void cookieForgedTest() throws Exception {
 		
+		ParserResponse response = servletClient.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertNull(response.highestMessageSeverity());
+
+		Schema schema = servletClient.getSchema();
+		State state3 = schema.getState("state3");
+		assertNotNull(state3);
 		
+		// Request 1: new session.
+		HttpServletRequest httpReq = mockHttpServletRequest();
+		VariantServletSession ssn1 = servletClient.getOrCreateSession(httpReq);
+		assertNotNull(ssn1);
+		String sid1 = ssn1.getId();
+		VariantServletStateRequest req = ssn1.targetForState(state3);
+		HttpServletResponseMock resp = mockHttpServletResponse();
+		req.commit(resp);
+		
+		// Request 2: Same SID from cookie.
+		httpReq = mockHttpServletRequest(resp);
+		VariantServletSession ssn2 = servletClient.getSession(httpReq);
+		assertEquals(ssn1, ssn2);
+		assertEquals(sid1, ssn2.getId());
+		
+		// Request 3: SID cookie removed
+		httpReq = mockHttpServletRequest();
+		ssn2 = servletClient.getSession(httpReq);
+		assertNull(ssn2);
+
+		// Request 4: New SID in cookie
+		String sid2 = VariantStringUtils.random64BitString(rand);
+		assertNotEquals(sid1, sid2);
+		httpReq = mockHttpServletRequest(sid2);
+		ssn2 = servletClient.getSession(httpReq);
+		assertNull(ssn2);
+		ssn2 = servletClient.getOrCreateSession(httpReq);
+		assertNotNull(ssn2);
+		assertEquals(sid2, ssn2.getId());
 	}
 }

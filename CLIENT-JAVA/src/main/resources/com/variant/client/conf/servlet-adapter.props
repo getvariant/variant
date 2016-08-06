@@ -10,4 +10,4 @@ session.id.tracker.class.init = {}
 
 # Targeting tracker in cookie.
 targeting.tracker.class.name = com.variant.client.servlet.TargetingTrackerHttpCookie
-session.id.tracker.class.init = {}
+targeting.tracker.class.init = {}

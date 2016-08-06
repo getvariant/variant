@@ -56,19 +56,19 @@ public abstract class ServletClientBaseTest extends BareClientBaseTest {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Mock HttpServletRequest. Will contain variant related cookies from the passed response.
-	 * This immulates the preservation of cookies by the browser.
+	 * Mock HttpServletRequest. Will contain no Variant related cookies.
 	 * @return
 	 */
-	protected HttpServletRequestMock mockHttpServletRequest(HttpServletResponseMock resp) { 
-		
-		Cookie c = resp.getCookie(SessionIdTrackerHttpCookie.COOKIE_NAME);
-		String sidTrackerVal = c == null ? null : c.getValue();
-		
-		c = resp.getCookie(TargetingTrackerHttpCookie.COOKIE_NAME);
-		String targetingTrackerVal = c == null ? null : c.getValue();
-		
-		return mockHttpServletRequest(sidTrackerVal, targetingTrackerVal);
+	protected HttpServletRequestMock mockHttpServletRequest() { 
+		return mockHttpServletRequest(null, (String)null);
+	}
+
+	/**
+	 * Mock HttpServletRequest. Will only contain the SID cookie.
+	 * @return
+	 */
+	protected HttpServletRequestMock mockHttpServletRequest(String sessionId) { 
+		return mockHttpServletRequest(sessionId, (String)null);
 	}
 
 	/**
@@ -85,7 +85,23 @@ public abstract class ServletClientBaseTest extends BareClientBaseTest {
 
 		return mockHttpServletRequest(sessionId, targetingTrackerVal);
 	}
-	
+
+	/**
+	 * Mock HttpServletRequest. Will contain variant related cookies from the passed response.
+	 * This immulates the preservation of cookies by the browser.
+	 * @return
+	 */
+	protected HttpServletRequestMock mockHttpServletRequest(HttpServletResponseMock resp) { 
+		
+		Cookie c = resp.getCookie(SessionIdTrackerHttpCookie.COOKIE_NAME);
+		String sidTrackerVal = c == null ? null : c.getValue();
+		
+		c = resp.getCookie(TargetingTrackerHttpCookie.COOKIE_NAME);
+		String targetingTrackerVal = c == null ? null : c.getValue();
+		
+		return mockHttpServletRequest(sidTrackerVal, targetingTrackerVal);
+	}
+
 	/**
 	 * Mock HttpServletRequest. Will contain variant related cookies as passed in arguments
 	 * @return
