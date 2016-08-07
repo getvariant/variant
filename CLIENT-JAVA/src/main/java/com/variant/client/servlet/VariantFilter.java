@@ -26,13 +26,12 @@ import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.ParserMessage.Severity;
 
 /**
- * Copyright 2015 Variant. All rights reserved.
+ * Variant servlet filter is the preferred way of utilizing Variant servlet adapter.
+ * By using this filter, the application programmer can, in many cases, instrument experiments
+ * with no to very little coding. The filter intercepts all HTTP requests for the instrumented
+ * pages, obtains the ...
  * 
- * Single entry point to the Variant SGM Engine.
- * Can be deployed in front of any Servlet API application.
- * 
- * Can be configured via the following filter config parameters:
- * schemaResourcePath specifies the resource path 
+ * The filter is configured as fo
  * 
  * @author Igor Urisman
  *

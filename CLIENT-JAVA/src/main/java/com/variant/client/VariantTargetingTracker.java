@@ -7,7 +7,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * <p>An environment dependebnt implementation will use external mechanisms to obtain and to store
+ * <p>An environment dependent implementation will use external mechanisms to obtain and to store
  * customer's targeting information between Variant sessions, thus providing experiment scoped
  * targeting stability. In a web application environment, this may be tracked in an HTTP cookie,
  * which would provide "weak" targeting stability (the cookie could be deleted between sessions), 
@@ -41,7 +41,8 @@ public interface VariantTargetingTracker {
 	 * consistency of this operation, i.e. that all returned experiences are pairwise independent,
 	 * which is to say that there be no two experiences which refer to the same test.
 	 * 
-	 * @return Collection of objects of type {@link Entry}.
+	 * @return Collection of zero or more of objects of type {@link Entry} each corresponding to
+	 *         a test experience currently tracked by this object.
 	 * @since 0.6
 	 */
 	public Collection<Entry> get();

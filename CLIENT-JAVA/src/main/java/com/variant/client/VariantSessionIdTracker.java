@@ -45,8 +45,8 @@ public interface VariantSessionIdTracker {
 	public void init(VariantInitParams initParams, Object...userData);
 
 	/**
-	 * <p>Retrieve the current value of the session ID from the tracker. This value may have been set by {@link #init(VariantInitParams, Object...)}
-	 * or by {@link #set(String)}.
+	 * <p>Retrieve the current value of the session ID from the tracker. 
+	 * This value may have been set by {@link #init(VariantInitParams, Object...)} or by {@link #set(String)}.
 	 * 
 	 * @return Session ID, if present in the tracker or null otherwise.
 	 * @since 0.6
@@ -62,7 +62,8 @@ public interface VariantSessionIdTracker {
 	public void set(String sessionId);
 
 	/**
-	 * <p>Called by Variant to save the current value of session ID to the underlying persistence mechanism.</p>
+	 * <p>Called by Variant to save the current value of session ID to the underlying persistence mechanism. 
+	 * Variant client calls this method within the scope of the {@link VariantStateRequest#commit(Object...)} method.
 	 * 
 	 * @param userData An array of zero or more opaque objects which {@link VariantStateRequest#commit(Object...)}
 	 *                 will pass here without interpretation.
