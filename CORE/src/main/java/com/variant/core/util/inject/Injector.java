@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.variant.core.event.impl.util.VariantIoUtils;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.util.VariantIoUtils;
 
 /**
  * Implementation injection, deferred to run time.

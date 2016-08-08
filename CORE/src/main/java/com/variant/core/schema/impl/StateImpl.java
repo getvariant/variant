@@ -5,12 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.variant.core.event.impl.util.CaseInsensitiveMap;
+import com.variant.core.event.impl.util.CaseInsensitiveUnmodifiableMap;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.util.CaseInsensitiveMap;
-import com.variant.core.util.CaseInsensitiveUnmodifiableMap;
 
 /**
  * 

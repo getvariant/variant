@@ -46,12 +46,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserMessage;
-import com.variant.core.util.VariantStringUtils;
 
 /**
  * Parse the TESTS clause.

@@ -10,14 +10,18 @@ import com.variant.core.util.Tuples.Pair;
 
 /**
  * <p>Represents a Variant user session. Variant has its own notion of user session, 
- *    independent from that of the host application. Variant session provides a way to 
+ *    independent from that of the host application's. Variant session provides a way to 
  *    identify the user across multiple state requests and contains session-scoped application 
  *    state that must be preserved between state requests. Variant server acts as the session 
  *    store by maintaining a map of user session objects keyed by session ID.
  *    Variant maintains its own session, rather than relying on the host application’s, 
  *    because it is frequently desirable for Variant session to survive the destruction 
  *    of the host application’s session.
- * </p>
+ * 
+ * <p> Variant session expires when either a configurable session timeout period of inactivity,
+ *     or after a schema redeployment. Once the session representted by this object has expired,
+ *     all subsequent operations on it, aapart from {@link #getId()} will throw an exception.
+ * 
  * @author Igor Urisman
  * @since 0.5
  */
@@ -26,13 +30,13 @@ public interface VariantSession {
 	/**
 	 * <p>Get this session's ID.
 	 * 
-	 * @return Session ID as a 128 bit binary number converted to hexadecimal representation.
+	 * @return Session ID.
 	 * @since 0.5
 	 */
 	public String getId();
 	
 	/**
-	 * <p>Get this session's creation timestamp millis.
+	 * <p>Get this session's creation timestamp.
 	 * 
 	 * @return Milliseconds since the Epoch.
 	 * @since 0.6
@@ -40,8 +44,7 @@ public interface VariantSession {
 	public long creationTimestamp();
 
 	/**
-	 * <p>The ID of the schema in effect at the time this session was created. Any subsequent operations
-	 * on this session will fail if this schema is replaced with another schema. 
+	 * <p>The ID of the schema in effect at the time this session was created. 
 	 * 
 	 * @return Milliseconds since the Epoch.
 	 * @since 0.6
@@ -57,9 +60,9 @@ public interface VariantSession {
      * </ul>
 
 	 * 
-	 * @return A collection of {@link Pair}s of type <{@link State}, Integer> corresponding
-	 *         to the traversed states. Use <code>arg1()</code> to obtain the state and 
-	 *         <code>arg2()</code> to obtain the count of times this state has been traversed.
+	 * @return A collection of {@link Pair}s of ({@link State}, Integer), corresponding
+	 *         to the traversed states. Call {@link Pair#arg1()} to obtain the state and 
+	 *         {@link Pair#arg2()} to obtain the count of times this state has been traversed.
 	 */
 	public Collection<Pair<State, Integer>> getTraversedStates(); 
 

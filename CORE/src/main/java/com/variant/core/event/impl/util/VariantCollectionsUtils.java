@@ -1,4 +1,4 @@
-package com.variant.core.util;
+package com.variant.core.event.impl.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.variant.core.util.Tuples;
 import com.variant.core.util.Tuples.Pair;
 
 /**

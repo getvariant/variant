@@ -22,12 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.variant.core.event.impl.util.CaseInsensitiveMap;
+import com.variant.core.event.impl.util.VariantCollectionsUtils;
+import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.util.CaseInsensitiveMap;
-import com.variant.core.util.VariantCollectionsUtils;
-import com.variant.core.util.VariantStringUtils;
 
 /**
  * Parse the element of the tests/onViews/variants list.

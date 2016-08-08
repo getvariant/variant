@@ -23,6 +23,7 @@ import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.PersistableEventImpl;
+import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.exception.VariantExpectedRuntimeException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
@@ -33,7 +34,6 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.util.VariantCollectionsUtils;
 
 /**
  * 

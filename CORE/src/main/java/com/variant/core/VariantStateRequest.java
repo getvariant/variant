@@ -10,7 +10,7 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * Represents a state request, as instantiated by {@link com.variant.core.Variant#targetForState(VariantSession, State, Object)}.
+ * Represents a state request, as returned by {@link VariantSession#targetForState(State)}.
  * 
  * @author Igor Urisman
  * @since 0.6

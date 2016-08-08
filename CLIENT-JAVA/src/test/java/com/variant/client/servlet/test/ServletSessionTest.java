@@ -23,13 +23,13 @@ import com.variant.client.servlet.impl.ServletSessionImpl;
 import com.variant.client.servlet.impl.ServletStateRequestImpl;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.impl.util.VariantCollectionsUtils;
+import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.util.VariantCollectionsUtils;
-import com.variant.core.util.VariantStringUtils;
 
 public class ServletSessionTest extends ServletClientBaseTest {
 

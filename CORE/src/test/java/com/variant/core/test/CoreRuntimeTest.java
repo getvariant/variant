@@ -12,6 +12,8 @@ import java.util.Random;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.impl.util.VariantCollectionsUtils;
+import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.CoreSessionImpl;
@@ -23,8 +25,6 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.util.VariantCollectionsUtils;
-import com.variant.core.util.VariantStringUtils;
 
 
 /**

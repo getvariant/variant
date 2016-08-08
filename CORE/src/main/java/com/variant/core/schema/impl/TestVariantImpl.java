@@ -7,11 +7,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.variant.core.event.impl.util.CaseInsensitiveMap;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.Test.OnState;
-import com.variant.core.util.CaseInsensitiveMap;
 
 
 class TestOnViewVariantImpl implements Test.OnState.Variant{

@@ -13,9 +13,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.VariantCorePropertyKeys.Key;
 import com.variant.core.VariantProperties;
+import com.variant.core.event.impl.util.PropertiesChain;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.schema.impl.MessageTemplate;
-import com.variant.core.util.PropertiesChain;
 import com.variant.core.util.Tuples.Pair;
 
 /**

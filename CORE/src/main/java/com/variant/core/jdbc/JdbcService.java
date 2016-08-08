@@ -15,8 +15,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.util.VariantStringUtils;
 
 
 public class JdbcService {

@@ -1,9 +1,10 @@
-package com.variant.core.util;
+package com.variant.core.event.impl.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Properties;
 
+import com.variant.core.util.Tuples;
 import com.variant.core.util.Tuples.Pair;
 
 /**

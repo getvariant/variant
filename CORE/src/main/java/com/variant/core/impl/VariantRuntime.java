@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantSession;
+import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;
@@ -23,7 +24,6 @@ import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.util.VariantStringUtils;
 
 /**
  * Entry point into the runtime.

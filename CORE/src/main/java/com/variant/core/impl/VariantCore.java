@@ -19,6 +19,7 @@ import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.VariantSession;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
+import com.variant.core.event.impl.util.VariantIoUtils;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
@@ -36,7 +37,6 @@ import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.ParserMessage.Severity;
 import com.variant.core.session.SessionService;
-import com.variant.core.util.VariantIoUtils;
 
 /**
  * The Variant CORE API.

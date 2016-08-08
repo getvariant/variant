@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.StateParsedHook;
 import com.variant.core.hook.TestParsedHook;
@@ -25,7 +26,6 @@ import com.variant.core.schema.parser.ParserMessage.Severity;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.util.VariantCollectionsUtils;
 
 /**
  * TODO: Need to also test annotations.

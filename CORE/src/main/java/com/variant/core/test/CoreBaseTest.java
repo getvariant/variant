@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.variant.core.VariantSession;
+import com.variant.core.event.impl.util.PropertiesChain;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
@@ -24,7 +25,6 @@ import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.util.PropertiesChain;
 
 /**
  * Common utility methods for all JUnit tests in all projects, hence we've put it in the main scope.

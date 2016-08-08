@@ -6,11 +6,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.util.VariantCollectionsUtils;
 
 
 /**

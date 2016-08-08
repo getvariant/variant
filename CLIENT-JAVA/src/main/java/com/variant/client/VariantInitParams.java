@@ -3,7 +3,7 @@ package com.variant.client;
 import com.variant.core.VariantCoreInitParams;
 
 /**
- * Initialization parameters, as parsed from a JSON string, provided in a several *.init application properties. 
+ * Initialization parameters, as parsed from a JSON string, provided in a several {@link *.init} application properties. 
  * An instance of this type is passed to a number of Variant client instantiated objects. 
  *  
  * @see VariantSessionIdTracker#init(VariantInitParams, Object...)

@@ -1,6 +1,8 @@
 /**
- * Publicly accessible classes from Variant Core API. Although the Core API itself is not
- * accessible to the client code, some of its types can be manipulated, instantiated or
- * implemented by it: this package collects all of these types.
+ * Publicly accessible classes from Variant Core library. Although the Core library is not
+ * accessible to the client code, some of its types are returned by the client and have to
+ * be can be manipulated by the host code.
+ * 
+ * @since 0.5
  */
 package com.variant.core;

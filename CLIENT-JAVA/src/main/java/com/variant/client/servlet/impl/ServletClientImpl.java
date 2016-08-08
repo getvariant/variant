@@ -9,10 +9,10 @@ import com.variant.client.servlet.VariantServletClient;
 import com.variant.client.servlet.VariantServletSession;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
+import com.variant.core.event.impl.util.VariantArrayUtils;
 import com.variant.core.hook.HookListener;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.util.VariantArrayUtils;
 
 /**
  * The implementation of {@link VariantServletClient}.

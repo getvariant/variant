@@ -24,6 +24,7 @@ import com.variant.client.session.ClientSessionImpl;
 import com.variant.core.VariantCorePropertyKeys.Key;
 import com.variant.core.VariantProperties;
 import com.variant.core.VariantSession;
+import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
@@ -38,7 +39,6 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.SessionStore;
-import com.variant.core.util.VariantStringUtils;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 

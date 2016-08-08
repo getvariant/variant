@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.impl.VariantCore;
@@ -16,7 +17,6 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserMessage.Severity;
-import com.variant.core.util.VariantStringUtils;
 
 public class SchemaParser implements Keywords {
 	

@@ -4,15 +4,19 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.variant.core.event.impl.util.VariantReflectUtils;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.util.VariantReflectUtils;
 
 
 /**
- * Keys of all Core properties.
+ * Extensible interface that holds all Core application property keys as final statics.
+ * Client and server will extend this to include application properties specific to
+ * those environments. At run time, these keys will have values, as defined in the
+ * external application property files.
  *
  * @author Igor Urisman
- *
+ * @since 0.6
+ * @see VariantProperties
  */
 public interface VariantCorePropertyKeys {
 
@@ -23,8 +27,9 @@ public interface VariantCorePropertyKeys {
 	public final static Key EVENT_WRITER_PERCENT_FULL = new Key("event.writer.percent.full", "50");
 	
 	/**
-	 * <p>Property key. The corresponding name is derived by lower-casing
-	 * and replacing all underscores ('_') with periods ('.').
+	 * <p>Type representing an application property key.
+	 * 
+	 * @since 0.6
 	 */
 	public static class Key {
 		
@@ -33,8 +38,9 @@ public interface VariantCorePropertyKeys {
 				
 		/**
 		 * All keys defined in the passed class.
-		 * @param clazz
-		 * @return
+		 *  
+		 * @param clazz This or subclass' {@code Class}.
+		 * @return A collection of all keys defined by the passed class and all of its superclasses.
 		 */
 		public static Collection<Key> keys(Class<? extends VariantCorePropertyKeys> clazz) {
 			Collection<Key> result = new ArrayList<Key>();
@@ -49,15 +55,31 @@ public interface VariantCorePropertyKeys {
 			return result;
 		}
 
+		/**
+		 * Constructor.
+		 * @param propName Application property name.
+		 * @param defaultValue Property's default value.
+    	 * @since 0.6
+		 */
 		public Key(String propName, String defaultValue) {
 			this.propName = propName;
 			this.defaultValue = defaultValue;
 		}
 		
+		/**
+		 * Property name.
+		 * @return Property name.
+    	 * @since 0.6
+		 */
 		public String propertyName() {
 			return propName;
 		}
 		
+		/**
+		 * Property's default value.
+		 * @return Property's default value.
+    	 * @since 0.6
+		 */
 		public String defaultValue() {
 			return defaultValue;
 		}

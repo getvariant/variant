@@ -9,13 +9,13 @@ import java.util.Random;
 
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
+import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.util.VariantStringUtils;
 
 
 public class ParserOkayTest extends BaseTestCore {
