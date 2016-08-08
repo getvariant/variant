@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import com.variant.client.servlet.VariantServletSession;
 import com.variant.client.servlet.VariantServletStateRequest;
-import com.variant.client.session.ClientSessionImpl;
 import com.variant.core.VariantSession;
 import com.variant.core.VariantStateRequest;
 import com.variant.core.event.VariantEvent;
@@ -14,9 +13,9 @@ import com.variant.core.schema.Test;
 import com.variant.core.util.Tuples.Pair;
 
 /**
- * <p>{@link VariantSession} implementation used by the Servlet Adapter.
- * Replaces bare client's {@link ClientSessionImpl#targetForState(com.variant.core.schema.State)} 
- * method with one, which returns a custom implementation of {@link VariantStateRequest}. 
+ * <p>The implementation of {@link VariantServletSession}.
+ * Replaces bare client's {@link VariantSession#targetForState(com.variant.core.schema.State)} 
+ * method with one, which returns the servlet-aware implementation of {@link VariantStateRequest}. 
  * 
  * @author Igor Urisman
  * @since 0.6

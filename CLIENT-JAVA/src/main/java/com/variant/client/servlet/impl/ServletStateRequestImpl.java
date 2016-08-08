@@ -17,9 +17,9 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * <p>{@link VariantStateRequest} implementation used by the Servlet Adapter.
+ * <p>The implementation of {@link VariantServletStateRequest}.
  * Replaces bare client's {@link VariantStateRequest#commit(Object...)} with the
- * environment bound signature {@link #commit(HttpServletResponse)}. 
+ * servlet-aware signature {@link #commit(HttpServletResponse)}. 
  * 
  * @author Igor Urisman
  * @since 0.6

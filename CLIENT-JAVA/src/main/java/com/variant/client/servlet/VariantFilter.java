@@ -82,6 +82,10 @@ import com.variant.core.schema.parser.ParserMessage.Severity;
  * <p>The URL pattern in filter mapping can be something narrower than {@code /*}, of course, so long
  * as it matches all state {@code path}s listed in the schema.
  * 
+ * <p>{@link StateParsedHookListenerImpl} hook listener is registered prior to parsing of the schema,
+ * which checks that each state defines the {@code path} parameter and that its value starts with a
+ * forward slash. If that is not the case, a parser error will be emitted by the listener.
+ * 
  * <h4>Execution Semantics</h4>
  * 
  * <p>It is assumed that the base {@code path} state parameter, i.e. the one specified at the {@code State}

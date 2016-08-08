@@ -7,9 +7,10 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.parser.ParserMessage.Severity;
 
 /**
- * An implementation of {@link HookListener} listening to the {@link StateParsedHook}.
+ * A user hook listener listening to the {@link StateParsedHook}.
  * Performs semantical checks on the parsed {@link State}, applicable for the
- * Servlet environment.
+ * servlet environment and intended to be used in conjunction with
+ * {@link VariantFilter}.
  * 
  * @author Igor Urisman
  * 

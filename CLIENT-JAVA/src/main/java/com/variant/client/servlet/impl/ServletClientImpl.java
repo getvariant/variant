@@ -15,7 +15,10 @@ import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.util.VariantArrayUtils;
 
 /**
+ * The implementation of {@link VariantServletClient}.
+ * 
  * @author Igor Urisman
+ * @since 0.6
  */
 public class ServletClientImpl implements VariantServletClient {
 
