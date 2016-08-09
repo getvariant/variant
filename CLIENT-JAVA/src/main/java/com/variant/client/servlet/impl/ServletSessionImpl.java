@@ -2,10 +2,11 @@ package com.variant.client.servlet.impl;
 
 import java.util.Collection;
 
+import com.variant.client.VariantSession;
 import com.variant.client.servlet.VariantServletSession;
 import com.variant.client.servlet.VariantServletStateRequest;
-import com.variant.core.VariantSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.State;
@@ -14,8 +15,8 @@ import com.variant.core.util.Tuples.Pair;
 
 /**
  * <p>The implementation of {@link VariantServletSession}.
- * Replaces bare client's {@link VariantSession#targetForState(com.variant.core.schema.State)} 
- * method with one, which returns the servlet-aware implementation of {@link VariantStateRequest}. 
+ * Replaces bare client's {@link VariantCoreSession#targetForState(com.variant.core.schema.State)} 
+ * method with one, which returns the servlet-aware implementation of {@link VariantCoreStateRequest}. 
  * 
  * @author Igor Urisman
  * @since 0.6
@@ -36,7 +37,7 @@ public class ServletSessionImpl implements VariantServletSession {
 	}
 
 	@Override
-	public VariantStateRequest getStateRequest() {
+	public VariantCoreStateRequest getStateRequest() {
 		return servletStateRequest;
 	}
 
@@ -103,7 +104,7 @@ public class ServletSessionImpl implements VariantServletSession {
 	//                                         PUBLIC EXT                                           //
 	// ---------------------------------------------------------------------------------------------//
 
-	public VariantSession getBareSession() {
+	public VariantCoreSession getBareSession() {
 		return bareSession;
 	}
 

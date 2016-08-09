@@ -136,7 +136,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					index = 0;
 					for (VariantPersistableEvent event: events) {
 						long eventId = eventIds[index++];
-						for (Test.Experience exp: event.getActiveExperiences()) {
+						for (Test.Experience exp: event.getLiveExperiences()) {
 							stmt.setLong(1, eventId);
 							stmt.setString(2, exp.getTest().getName());
 							stmt.setString(3, exp.getName());

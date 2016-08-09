@@ -11,10 +11,12 @@ import java.util.Collection;
 import java.util.Random;
 
 import com.variant.client.VariantClient;
-import com.variant.client.impl.ClientStateRequestImpl;
-import com.variant.client.session.ClientSessionImpl;
-import com.variant.core.VariantSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.client.VariantSession;
+import com.variant.client.VariantStateRequest;
+import com.variant.client.impl.VariantSessionImpl;
+import com.variant.client.impl.VariantStateRequestImpl;
+import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.schema.Schema;
@@ -118,8 +120,8 @@ public class BareClientSessionTest extends BareClientBaseTest {
 		assertEquals(state1, varReq.getState());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(
-				((ClientStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
-				((ClientStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
+				((VariantStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((VariantStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
@@ -135,17 +137,17 @@ public class BareClientSessionTest extends BareClientBaseTest {
 
 		varReq.commit("");
 
-		assertEquals(5, ((ClientSessionImpl)ssn2).getTargetingTracker().get().size());
-		assertEquals(5, varReq.getActiveExperiences().size());
+		assertEquals(5, ((VariantSessionImpl)ssn2).getTargetingTracker().get().size());
+		assertEquals(5, varReq.getLiveExperiences().size());
 		for (Test expectedTest: expectedTests) {
-			assertNotNull(varReq.getActiveExperience(expectedTest));
+			assertNotNull(varReq.getLiveExperience(expectedTest));
 		}
 		
 		// The session shouldn't have changed after commit.
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(
-				((ClientStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
-				((ClientStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
+				((VariantStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((VariantStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
 		assertEquals(
 				"[(state1, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));
@@ -153,7 +155,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
 
 		// Commit should have saved the session.
-		VariantSession ssn3 = client.getSession("foo");
+		VariantCoreSession ssn3 = client.getSession("foo");
 		assertEquals(ssn3, ssn2);
 		assertEquals(ssn3.getSchemaId(), schema.getId());
 		assertTrue(varReq.isCommitted());
@@ -187,7 +189,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 		assertEquals(23, varReq.getSession().getAttribute("23"));
 		ssn1.setAttribute("45", 45);
 		varReq.commit("");
-		VariantSession ssn2 = client.getSession(sessionId);
+		VariantCoreSession ssn2 = client.getSession(sessionId);
 		assertEquals(ssn1, ssn2);
 		assertEquals(23, ssn2.getAttribute("23"));
 		assertEquals(45, ssn2.getAttribute("45"));

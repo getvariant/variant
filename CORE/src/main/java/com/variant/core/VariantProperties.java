@@ -13,7 +13,7 @@ import com.variant.core.VariantCorePropertyKeys.Key;
 public interface VariantProperties {
 	
 	/**
-	 * <p> Interpreted value of an application property, given by its key, parameterized by expected type.
+	 * <p> Interpreted value of an system property, given by its key, parameterized by expected type.
 	 * 
 	 * @param key Property key
 	 * @param clazz Class of the expected return object.  <code>noneofyourbusiness String.class</class> can be always used,
@@ -27,7 +27,7 @@ public interface VariantProperties {
 	public <T> T get(Key key, Class<T> clazz);
 
 	/**
-	 * <p>Raw value of an application property, given by its key.
+	 * <p>Raw value of an system property, given by its key.
 	 * 
 	 * @param key Property key
 	 * @param clazz Class of the expected return object.  <code>String.class</class> can be always used,

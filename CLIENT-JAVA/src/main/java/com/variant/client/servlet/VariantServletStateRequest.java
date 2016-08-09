@@ -2,10 +2,11 @@ package com.variant.client.servlet;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.variant.core.VariantStateRequest;
+import com.variant.client.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 
 /**
- * <p>Extends bare client's {@link VariantStateRequest} to include
+ * <p>Extends bare client's {@link VariantCoreStateRequest} to include
  * the environment bound signature {@link #commit(HttpServletResponse)}. 
  * 
  * @author Igor Urisman

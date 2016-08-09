@@ -50,6 +50,7 @@ import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantSpace;
+import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserMessage;
 
@@ -450,10 +451,10 @@ public class TestsParser implements Keywords {
 					return null;					
 				}
 				for (Object variantObject: rawVariants) {
-					TestOnViewVariantImpl variant = VariantParser.parseVariant(variantObject, tos, response);
+					StateVariantImpl variant = VariantParser.parseVariant(variantObject, tos, response);
 					if (variant != null) {
 						boolean dupe = false;
-						for (Test.OnState.Variant v: tos.getVariants()) {
+						for (StateVariant v: tos.getVariants()) {
 							if (v.getExperience().equals(variant.getExperience())) { 
 								if (v.getCovariantExperiences().isEmpty() && variant.getCovariantExperiences().isEmpty()) {
 									// Dupe local experience ref and no covariant experiences in this view.

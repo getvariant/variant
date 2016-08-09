@@ -7,8 +7,8 @@ import java.util.Random;
 
 import com.variant.client.VariantClient;
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.core.VariantSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -62,10 +62,10 @@ public class EventDataPopulator {
 						5 + new Random(thisSecond % 7 + test.getExperiences().get(2).hashCode()).nextInt(10) + new Random(test.getExperiences().get(2).hashCode()).nextInt(10)};
 			}
 			//System.out.println(countsPerSecond[0] + "," + countsPerSecond[1] + "," + countsPerSecond[2]);
-			VariantSession ssn = client.getSession(String.valueOf(ssnId));
+			VariantCoreSession ssn = client.getSession(String.valueOf(ssnId));
 			
 			// Everyone gets to the first page... Emulating new visits.
-			VariantStateRequest request = ssn.targetForState(newOwnerView);
+			VariantCoreStateRequest request = ssn.targetForState(newOwnerView);
 			Test.Experience exp = request.getActiveExperience(test);
 			
 			// If we've fulfilled quota for this experience and this second, stop untilt he end of current second;

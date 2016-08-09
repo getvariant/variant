@@ -18,8 +18,8 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.VariantSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.PersistableEventImpl;
@@ -40,7 +40,7 @@ import com.variant.core.util.Tuples.Pair;
  * @author Igor
  *
  */
-public class CoreSessionImpl implements VariantSession, Serializable {
+public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	
 	///
 	private static final long serialVersionUID = 1L;
@@ -99,7 +99,7 @@ public class CoreSessionImpl implements VariantSession, Serializable {
 	}
 	
 	@Override
-	public VariantStateRequest getStateRequest() {
+	public VariantCoreStateRequest getStateRequest() {
 		return currentRequest;
 	}
 
@@ -130,7 +130,7 @@ public class CoreSessionImpl implements VariantSession, Serializable {
 	 * 
 	 */
 	@Override
-	public VariantStateRequest targetForState(State state) {
+	public VariantCoreStateRequest targetForState(State state) {
 				
 		checkState();
 		

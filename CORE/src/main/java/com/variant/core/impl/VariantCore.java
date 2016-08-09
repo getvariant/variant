@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantCorePropertyKeys;
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.event.EventPersister;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.util.VariantIoUtils;
@@ -29,13 +29,12 @@ import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.impl.ParserResponseImpl;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.SchemaParser;
 import com.variant.core.schema.parser.ParserMessage;
-import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.ParserMessage.Severity;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.SessionService;
 
 /**
@@ -284,7 +283,7 @@ public class VariantCore implements Serializable {
 	 * 
 	 * @param id Session ID.
 	 * @since 0.6
-	 * @return An instance of {@link VariantSession}.
+	 * @return An instance of {@link VariantCoreSession}.
 	 */
 	public SessionPayloadReader getSession(String id, boolean create) {
 		return sessionService.getSession(id, create);

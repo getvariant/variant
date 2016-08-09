@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.servlet.impl.ServletClientImpl;
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantSchemaModifiedException;
 
 /**
@@ -38,7 +38,7 @@ public interface VariantServletClient extends VariantClient {
 	 * {@link VariantSchemaModifiedException}.
 	 * 
 	 * @param request Current HttpServletRequest.
-	 * @return An and instance of {@link VariantSession}, enriched for the servlet environment.
+	 * @return An and instance of {@link VariantCoreSession}, enriched for the servlet environment.
 	 * 
 	 * @since 0.6
 	 * @see SessionIdTrackerHttpCookie
@@ -56,7 +56,7 @@ public interface VariantServletClient extends VariantClient {
 	 * this call will throw an unchecked {@link VariantSchemaModifiedException}.
 	 * 
 	 * @param request Current HttpServletRequest.
-	 * @return An and instance of {@link VariantSession}, enriched for the servlet environment.
+	 * @return An and instance of {@link VariantCoreSession}, enriched for the servlet environment.
 	 * 
 	 * @since 0.6
 	 * @see SessionIdTrackerHttpCookie
@@ -76,7 +76,7 @@ public interface VariantServletClient extends VariantClient {
 		/**
 		 * Obtain a new instance of {@link VariantServletClient}. Takes zero or more String arguments
 		 * which are understood to be Java classpath resource names. Each resource is expected 
-		 * to contain a set of application property definitions, as specified by Java's 
+		 * to contain a set of system property definitions, as specified by Java's 
 		 * {@link Properties#load(java.io.Reader)} method. When Variant client needs to look 
 		 * up a property value, these files are examined left to right and the first value found is
 		 * used.  If a value wasn't found in any of the supplied files, or if no files were supplied, 
@@ -84,7 +84,7 @@ public interface VariantServletClient extends VariantClient {
 		 * 
 		 * Host application should hold on to and reuse the object returned by this method.
 		 * 
-		 * @param  resourceNames Zero or more application property files as classpath resource names.
+		 * @param  resourceNames Zero or more system property files as classpath resource names.
 		 * @return Instance of the {@link VariantServletClient} type.
 		 * @since 0.6
 		 */		

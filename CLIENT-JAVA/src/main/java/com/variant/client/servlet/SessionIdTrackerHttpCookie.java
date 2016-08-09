@@ -7,7 +7,7 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantInitParams;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.servlet.util.VariantCookie;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 
 /**
  * Concrete implementation of Variant session ID tracker based on HTTP cookie. 
@@ -61,7 +61,7 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	 * {@link VariantClient#getSession(Object...)} method. Use this to inject state from configuration.
 	 * 
 	 * @param initParams An instance of type {@link VariantInitParams}, containing parsed JSON object, 
-	 *                   specified by the <code>session.id.tracker.class.init</code> application property.
+	 *                   specified by the <code>session.id.tracker.class.init</code> system property.
 	 * @param userData   This implementation expects userData to be a one-element array whose single element
 	 *                   is the current {@link HttpServletRequest}.
 	 *
@@ -98,7 +98,7 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 
 	/**
 	 * <p>Called by Variant to save the current value of session ID to the underlying persistence mechanism. 
-	 * Variant client calls this method within the scope of the {@link VariantStateRequest#commit(Object...)} method.
+	 * Variant client calls this method within the scope of the {@link VariantCoreStateRequest#commit(Object...)} method.
 	 * 
 	 * @param userData This implementation expects userData to be a one-element array whose single element
 	 *                   is the current {@link HttpServletResponse}.

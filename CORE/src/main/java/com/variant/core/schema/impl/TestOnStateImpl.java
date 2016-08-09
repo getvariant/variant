@@ -6,6 +6,7 @@ import java.util.List;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.State;
+import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 
 /**
@@ -17,7 +18,7 @@ public class TestOnStateImpl implements Test.OnState {
 	private StateImpl state;
 	private TestImpl test;
 	private boolean isNonvariant = false;
-	private List<Variant> variants = new ArrayList<Variant>();
+	private List<StateVariant> variants = new ArrayList<StateVariant>();
 	private VariantSpace variantSpace;
 
 	/**
@@ -40,7 +41,7 @@ public class TestOnStateImpl implements Test.OnState {
 	 * 
 	 * @param variant
 	 */
-	void addVariant(Variant variant) {
+	void addVariant(StateVariant variant) {
 		variants.add(variant);
 	}
 		
@@ -75,7 +76,7 @@ public class TestOnStateImpl implements Test.OnState {
 	 * @return
 	 */
 	@Override
-	public List<Variant> getVariants() {
+	public List<StateVariant> getVariants() {
 		return variants;
 	}
 			

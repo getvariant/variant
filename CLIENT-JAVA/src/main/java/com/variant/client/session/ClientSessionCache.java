@@ -7,7 +7,9 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantSession;
+import com.variant.client.VariantSession;
+import com.variant.client.impl.VariantSessionImpl;
+import com.variant.core.VariantCoreSession;
 
 /**
  * Keep track of all sessions in the JVM in order to provide idempotency of the getSession() call.
@@ -29,11 +31,11 @@ public class ClientSessionCache {
 	 */
 	private static class Entry {
 		
-		ClientSessionImpl session;
+		VariantSessionImpl session;
 		long accessTimestamp;
 		long keepAliveMillis;
 		
-		Entry(ClientSessionImpl session, long keepAliveMillis) {
+		Entry(VariantSessionImpl session, long keepAliveMillis) {
 			this.session = session;
 			this.accessTimestamp = System.currentTimeMillis();
 			this.keepAliveMillis = keepAliveMillis;
@@ -57,8 +59,8 @@ public class ClientSessionCache {
 	 * Add a new session to the cache. Session came from the server so we know the keepAlive.
 	 * @param coreSession
 	 */
-	public void add(VariantSession session, long keepAlive) {
-		cache.put(session.getId(), new Entry((ClientSessionImpl)session, keepAlive));
+	public void add(VariantCoreSession session, long keepAlive) {
+		cache.put(session.getId(), new Entry((VariantSessionImpl)session, keepAlive));
 	}
 
 	/**
@@ -67,7 +69,7 @@ public class ClientSessionCache {
 	 * back from the server for the first time, keepAlive will be set properly.
 	 * @param coreSession
 	 */
-	public void add(ClientSessionImpl session) {
+	public void add(VariantSessionImpl session) {
 		cache.put(session.getId(), new Entry(session, DEFAULT_KEEP_ALIVE));
 	}
 

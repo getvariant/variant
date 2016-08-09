@@ -1,11 +1,7 @@
 package com.variant.client.servlet.test;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,6 +9,8 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.variant.client.VariantSession;
+import com.variant.client.VariantStateRequest;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.servlet.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.TargetingTrackerHttpCookie;
@@ -21,10 +19,10 @@ import com.variant.client.servlet.VariantServletSession;
 import com.variant.client.servlet.VariantServletStateRequest;
 import com.variant.client.servlet.impl.ServletSessionImpl;
 import com.variant.client.servlet.impl.ServletStateRequestImpl;
-import com.variant.core.VariantSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.event.impl.util.VariantStringUtils;
+import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -68,7 +66,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		final HttpServletRequest httpReq = mockHttpServletRequest("foo");
 		final Schema oldSchema = servletClient.getSchema();
 
-		final VariantSession ssn1 = servletClient.getOrCreateSession(httpReq);
+		final VariantServletSession ssn1 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 		
 		// replace the schema and all ops on ssn1 should fail.
@@ -94,8 +92,8 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 		// Get a new session, target it and replace schema again.
 		
-		VariantSession ssn2 = servletClient.getOrCreateSession(httpReq);
-		final VariantStateRequest req = ssn2.targetForState(newSchema.getState("state1"));
+		VariantServletSession ssn2 = servletClient.getOrCreateSession(httpReq);
+		final VariantServletStateRequest req = ssn2.targetForState(newSchema.getState("state1"));
 
 		response = servletClient.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
@@ -136,7 +134,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		ssn1 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 
-		VariantSession ssn2 = servletClient.getSession(httpReq);
+		VariantServletSession ssn2 = servletClient.getSession(httpReq);
 		assertNull(ssn2);
 		
 		ssn2 = servletClient.getOrCreateSession(httpReq);
@@ -150,29 +148,23 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		ssn1 = servletClient.getOrCreateSession((Object)httpReq);
 		assertNotNull(ssn1);
 
-		new IllegalArgumentExceptionInterceptor() {
+		new VariantInternalExceptionInterceptor() {
 			@Override public void toRun() { 
 				servletClient.getSession(new Object());
 			}
-		}.assertThrown("Invalid user data: HttpServletRequest expected");
-
-		new IllegalArgumentExceptionInterceptor() {
-			@Override public void toRun() { 
-				servletClient.getSession(httpReq, new Object());
+			@Override public void onThrown(VariantInternalException e) { 
+				assertTrue(e.getCause() instanceof ClassCastException);
 			}
-		}.assertThrown("Invalid user data: single element vararg expected");
+		}.assertThrown();
 
-		new IllegalArgumentExceptionInterceptor() {
+		new VariantInternalExceptionInterceptor() {
 			@Override public void toRun() { 
 				servletClient.getOrCreateSession(new Object());
 			}
-		}.assertThrown("Invalid user data: HttpServletRequest expected");
-
-		new IllegalArgumentExceptionInterceptor() {
-			@Override public void toRun() { 
-				servletClient.getOrCreateSession(httpReq, new Object());
+			@Override public void onThrown(VariantInternalException e) { 
+				assertTrue(e.getCause() instanceof ClassCastException);
 			}
-		}.assertThrown("Invalid user data: single element vararg expected");
+		}.assertThrown();
 
 	}
 	
@@ -200,7 +192,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		ssn1 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 
-		VariantSession ssn2 = servletClient.getSession(httpReq);
+		VariantServletSession ssn2 = servletClient.getSession(httpReq);
 		assertNotNull(ssn2);  // ID in tracker => session already created by previous call.
 		
 		ssn2 = servletClient.getOrCreateSession(httpReq);
@@ -217,29 +209,24 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		ssn1 = servletClient.getOrCreateSession((Object)httpReq2);
 		assertNotNull(ssn1);
 
-		new IllegalArgumentExceptionInterceptor() {
+		new VariantInternalExceptionInterceptor() {
 			@Override public void toRun() { 
 				servletClient.getSession(new Object());
 			}
-		}.assertThrown("Invalid user data: HttpServletRequest expected");
-
-		new IllegalArgumentExceptionInterceptor() {
-			@Override public void toRun() { 
-				servletClient.getSession(httpReq2, new Object());
+			@Override public void onThrown(VariantInternalException e) { 
+				assertTrue(e.getCause() instanceof ClassCastException);
 			}
-		}.assertThrown("Invalid user data: single element vararg expected");
+		}.assertThrown();
 
-		new IllegalArgumentExceptionInterceptor() {
+		new VariantInternalExceptionInterceptor() {
 			@Override public void toRun() { 
 				servletClient.getOrCreateSession(new Object());
 			}
-		}.assertThrown("Invalid user data: HttpServletRequest expected");
-
-		new IllegalArgumentExceptionInterceptor() {
-			@Override public void toRun() { 
-				servletClient.getOrCreateSession(httpReq2, new Object());
+			@Override public void onThrown(VariantInternalException e) { 
+				assertTrue(e.getCause() instanceof ClassCastException);
 			}
-		}.assertThrown("Invalid user data: single element vararg expected");
+		}.assertThrown();
+
 
 	}
 	
@@ -283,7 +270,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 		State state1 = schema.getState("state1");		
 		VariantServletStateRequest varReq = ssn2.targetForState(state1);
-		//System.out.println(((VariantSessionImpl)ssn2).toJson());
+		//System.out.println(((VariantServletSessionImpl)ssn2).toJson());
 		assertEquals(state1, varReq.getState());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(
@@ -324,7 +311,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 		// Commit should have saved the session.
 		httpReq = mockHttpServletRequest(httpResp);
-		VariantSession ssn3 = servletClient.getSession(httpReq);
+		VariantServletSession ssn3 = servletClient.getSession(httpReq);
 		assertEquals(ssn3, ssn2);
 		assertEquals(ssn3.getSchemaId(), schema.getId());
 		System.out.println(((ServletStateRequestImpl)varReq).getCoreStateRequest().toJson());
@@ -356,7 +343,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		HttpServletRequest httpReq = mockHttpServletRequest(sessionId);
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		VariantSession ssn1 = servletClient.getSession(httpReq);
+		VariantServletSession ssn1 = servletClient.getSession(httpReq);
 		assertNull(ssn1);
 
 		ssn1 = servletClient.getOrCreateSession(httpReq);
@@ -393,7 +380,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		
 		// Create a new HTTP request with the same VRNT-SSNID cookie.  Should fetch the same bare session.
 		HttpServletRequest httpReq2 = mockHttpServletRequest(sessionId);
-		VariantSession ssn2 = servletClient.getSession(httpReq2);
+		VariantServletSession ssn2 = servletClient.getSession(httpReq2);
 		assertEquals(((ServletSessionImpl)ssn2).getBareSession(), ((ServletSessionImpl)varReq.getSession()).getBareSession());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
 		assertEquals(ssn2.getStateRequest().getResolvedParameterMap(), varReq.getSession().getStateRequest().getResolvedParameterMap());

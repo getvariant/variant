@@ -4,7 +4,7 @@ import static com.variant.core.schema.impl.MessageTemplate.RUN_WEIGHT_MISSING;
 
 import java.util.Random;
 
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -19,7 +19,7 @@ class TestTargeterDefault {
 	 * @param session
 	 * @return
 	 */
-	Experience target(Test test, VariantSession session) {
+	Experience target(Test test, VariantCoreSession session) {
 
 		double weightSum = 0;
 		for (Experience e: test.getExperiences()) {

@@ -17,13 +17,13 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantClientPropertyKeys;
+import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.client.session.ClientSessionCache;
-import com.variant.client.session.ClientSessionImpl;
 import com.variant.core.VariantCorePropertyKeys.Key;
 import com.variant.core.VariantProperties;
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantInternalException;
@@ -36,7 +36,6 @@ import com.variant.core.impl.VariantCore;
 import com.variant.core.net.Payload;
 import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.SessionStore;
 
@@ -148,7 +147,7 @@ public class VariantClientImpl implements VariantClient {
 				// Session expired locally, recreate OK.  Don't bother with the server.
 				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
 				coreSession.save();
-				ClientSessionImpl clientSession = new ClientSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
+				VariantSessionImpl clientSession = new VariantSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
 				return clientSession;
 			}
@@ -181,7 +180,7 @@ public class VariantClientImpl implements VariantClient {
 				// Recreate from scratch
 				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
 				coreSession.save();
-				ClientSessionImpl clientSession = new ClientSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
+				VariantSessionImpl clientSession = new VariantSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
 				return clientSession;
 			}
@@ -194,7 +193,7 @@ public class VariantClientImpl implements VariantClient {
 		// Local and remote hits. 
 		// Replace remote in local, as it may have been changed by another client,
 		// update local timeout, and return the existing local object.
-		((ClientSessionImpl)ssnFromCache).replaceCoreSession(ssnFromStore);
+		((VariantSessionImpl)ssnFromCache).replaceCoreSession(ssnFromStore);
 		cache.add(ssnFromCache, payloadReader.getProperty(Payload.Property.SSN_TIMEOUT, Long.class));
 		return ssnFromCache;	
 	}
@@ -341,7 +340,7 @@ public class VariantClientImpl implements VariantClient {
 	 * @param session
 	 * TODO Make this async
 	 */
-	public void saveSession(VariantSession session, Object...userData) {
+	public void saveSession(VariantCoreSession session, Object...userData) {
 		if (getSchema() == null) throw new VariantRuntimeUserErrorException(RUN_SCHEMA_UNDEFINED);
 		if (!getSchema().getId().equals(session.getSchemaId())) 
 			throw new VariantSchemaModifiedException(getSchema().getId(), session.getSchemaId());

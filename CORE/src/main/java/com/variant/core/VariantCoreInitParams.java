@@ -3,7 +3,7 @@ package com.variant.core;
 import com.variant.core.exception.VariantRuntimeException;
 
 /**
- * <p>Initialization parameters, as parsed from a JSON string, provided in a {@code *.init} application property. 
+ * <p>Initialization parameters, as parsed from a JSON string, provided in a {@code *.init} system property. 
  * Passed to Variant-instantiated objects as a concrete implementation of this. 
  *  
  * @author Igor Urisman

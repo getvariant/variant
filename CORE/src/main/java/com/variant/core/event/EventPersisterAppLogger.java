@@ -35,7 +35,7 @@ public class EventPersisterAppLogger implements EventPersister {
 		}
 								
 		for (VariantPersistableEvent event: events) {
-			for (Experience e: event.getActiveExperiences()) {
+			for (Experience e: event.getLiveExperiences()) {
 				StringBuilder msg = new StringBuilder();
 				msg.append("EVENT_EXPERIENCES:{")
 				.append("event_name:'").append(event.getEventName()).append("', ")

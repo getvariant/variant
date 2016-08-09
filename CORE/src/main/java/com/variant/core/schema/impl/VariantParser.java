@@ -45,7 +45,7 @@ public class VariantParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static TestOnViewVariantImpl parseVariant(Object variantObject, TestOnStateImpl tov, ParserResponseImpl response) 
+	public static StateVariantImpl parseVariant(Object variantObject, TestOnStateImpl tov, ParserResponseImpl response) 
 	throws VariantRuntimeException {
 		
 		Map<String, Object> rawVariant = null;
@@ -220,6 +220,6 @@ public class VariantParser implements Keywords {
 				}
 			}
 		}
-		return new TestOnViewVariantImpl(tov, experience, orderedCovarTestExperiences, params);
+		return new StateVariantImpl(tov, experience, orderedCovarTestExperiences, params);
 	}
 }

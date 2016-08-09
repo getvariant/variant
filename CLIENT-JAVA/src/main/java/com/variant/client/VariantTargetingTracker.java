@@ -2,7 +2,7 @@ package com.variant.client;
 
 import java.util.Collection;
 
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
 
@@ -26,7 +26,7 @@ public interface VariantTargetingTracker {
 	 * Use this to inject state from configuration.
 	 * 
 	 * @param initParams An instance of type {@link VariantInitParams}, containing parsed JSON object, 
-	 *                   specified by the <code>targeting.tracker.class.init</code> application property. 
+	 *                   specified by the <code>targeting.tracker.class.init</code> system property. 
 	 * @param userData   An array of zero or more opaque objects which {@link VariantClient#getSession(Object...)}  
 	 *                   or {@link VariantClient#getOrCreateSession(Object...)} method will pass here without 
 	 *                   interpretation.
@@ -61,7 +61,7 @@ public interface VariantTargetingTracker {
 	/**
 	 * Called by Variant to save the state of this object to the underlying persistence mechanism.
 	 * 
-	 * @param userData An array of zero or more opaque objects which {@link VariantStateRequest#commit(Object...)}
+	 * @param userData An array of zero or more opaque objects which {@link VariantCoreStateRequest#commit(Object...)}
 	 *                 will pass here without interpretation.
 	 *                 
 	 * @since 0.6

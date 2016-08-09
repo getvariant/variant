@@ -3,7 +3,7 @@ package com.variant.core.test;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantException;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
@@ -68,7 +68,7 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	 * @throws VariantException 
 	 */
 	@Override
-	public void save(VariantSession session) {
+	public void save(VariantCoreSession session) {
 			System.out.println(((CoreSessionImpl)session).toJson());
 			map.put(session.getId(), ((CoreSessionImpl)session).toJson());
 	}

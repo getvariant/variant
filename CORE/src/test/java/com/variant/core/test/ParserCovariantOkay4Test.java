@@ -9,6 +9,7 @@ import java.util.List;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponse;
 
@@ -471,19 +472,19 @@ public class ParserCovariantOkay4Test extends BaseTestCore {
 		assertEquals(VariantCollectionsUtils.list(test1), test3.getCovariantTests());
 
 		// 
-		// test1 OnView objects
+		// test1 onState objects
 		//
 		List<Test.OnState> onStates = test1.getOnStates();
 		assertEquals(4, onStates.size());
 		
 		// state2
-		Test.OnState onView = onStates.get(0);
-		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getState("state2"), onView.getState());
-		List<Test.OnState.Variant> variants = onView.getVariants();
+		Test.OnState onState = onStates.get(0);
+		assertFalse(onState.isNonvariant());
+		assertEquals(schema.getState("state2"), onState.getState());
+		List<StateVariant> variants = onState.getVariants();
 		assertEquals(2, variants.size());
 
-		Test.OnState.Variant variant = variants.get(0);
+		StateVariant variant = variants.get(0);
 		assertEquals(variant.getExperience(), test1.getExperience("B"));
 		assertEquals("/path/to/state2/test1.B", variant.getParameterMap().get("path"));
 		assertEquals(0, variant.getCovariantExperiences().size());
@@ -494,10 +495,10 @@ public class ParserCovariantOkay4Test extends BaseTestCore {
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		// state3
-		onView = onStates.get(1);
-		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getState("state3"), onView.getState());
-		variants = onView.getVariants();
+		onState = onStates.get(1);
+		assertFalse(onState.isNonvariant());
+		assertEquals(schema.getState("state3"), onState.getState());
+		variants = onState.getVariants();
 		assertEquals(2, variants.size());
 		
 		variant = variants.get(0);
@@ -511,36 +512,36 @@ public class ParserCovariantOkay4Test extends BaseTestCore {
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		// state4
-		onView = onStates.get(2);
-		assertTrue(onView.isNonvariant());
-		assertEquals(schema.getState("state4"), onView.getState());
-		variants = onView.getVariants();
+		onState = onStates.get(2);
+		assertTrue(onState.isNonvariant());
+		assertEquals(schema.getState("state4"), onState.getState());
+		variants = onState.getVariants();
 		assertEquals(0, variants.size());
 
 		// state5
-		onView = onStates.get(3);
-		assertTrue(onView.isNonvariant());
-		assertEquals(schema.getState("state5"), onView.getState());
-		variants = onView.getVariants();
+		onState = onStates.get(3);
+		assertTrue(onState.isNonvariant());
+		assertEquals(schema.getState("state5"), onState.getState());
+		variants = onState.getVariants();
 		assertEquals(0, variants.size());
 
 		// 
-		// test2 OnView objects
+		// test2 onState objects
 		//
 		onStates = test2.getOnStates();
 		assertEquals(4, onStates.size());
 		
 		// state1
-		onView = onStates.get(0);
-		assertTrue(onView.isNonvariant());
-		assertTrue(onView.getVariants().isEmpty());
-		assertEquals(schema.getState("state1"), onView.getState());
+		onState = onStates.get(0);
+		assertTrue(onState.isNonvariant());
+		assertTrue(onState.getVariants().isEmpty());
+		assertEquals(schema.getState("state1"), onState.getState());
 
 		// state2
-		onView = onStates.get(1);
-		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getState("state2"), onView.getState());
-		variants = onView.getVariants();
+		onState = onStates.get(1);
+		assertFalse(onState.isNonvariant());
+		assertEquals(schema.getState("state2"), onState.getState());
+		variants = onState.getVariants();
 		assertEquals(6, variants.size());
 		
 		variant = variants.get(0);
@@ -578,10 +579,10 @@ public class ParserCovariantOkay4Test extends BaseTestCore {
 		assertEquals("/path/to/state2/test1.C+test2.C", variant.getParameterMap().get("path"));
 
 		// state3
-		onView = onStates.get(2);
-		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getState("state3"), onView.getState());
-		variants = onView.getVariants();
+		onState = onStates.get(2);
+		assertFalse(onState.isNonvariant());
+		assertEquals(schema.getState("state3"), onState.getState());
+		variants = onState.getVariants();
 		assertEquals(6, variants.size());
 		
 		variant = variants.get(0);
@@ -619,10 +620,10 @@ public class ParserCovariantOkay4Test extends BaseTestCore {
 		assertEquals("/path/to/state3/test1.C+test2.C", variant.getParameterMap().get("path"));
 
 		// state4
-		onView = onStates.get(3);
-		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getState("state4"), onView.getState());
-		variants = onView.getVariants();
+		onState = onStates.get(3);
+		assertFalse(onState.isNonvariant());
+		assertEquals(schema.getState("state4"), onState.getState());
+		variants = onState.getVariants();
 		assertEquals(2, variants.size());
 		
 		variant = variants.get(0);
@@ -636,16 +637,16 @@ public class ParserCovariantOkay4Test extends BaseTestCore {
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		// 
-		// test3 OnView objects
+		// test3 onState objects
 		//
 		onStates = test3.getOnStates();
 		assertEquals(5, onStates.size());
 		
 		// state1
-		onView = onStates.get(0);
-		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getState("state1"), onView.getState());
-		variants = onView.getVariants();
+		onState = onStates.get(0);
+		assertFalse(onState.isNonvariant());
+		assertEquals(schema.getState("state1"), onState.getState());
+		variants = onState.getVariants();
 		assertEquals(2, variants.size());
 
 		variant = variants.get(0);
@@ -659,10 +660,10 @@ public class ParserCovariantOkay4Test extends BaseTestCore {
 		assertEquals(0, variant.getCovariantExperiences().size());
 
 		// state2
-		onView = onStates.get(1);
-		assertFalse(onView.isNonvariant());
-		assertEquals(schema.getState("state2"), onView.getState());
-		variants = onView.getVariants();
+		onState = onStates.get(1);
+		assertFalse(onState.isNonvariant());
+		assertEquals(schema.getState("state2"), onState.getState());
+		variants = onState.getVariants();
 		assertEquals(6, variants.size());
 
 		variant = variants.get(0);
@@ -700,24 +701,24 @@ public class ParserCovariantOkay4Test extends BaseTestCore {
 		assertEquals("/path/to/state2/test1.C+test3.C", variant.getParameterMap().get("path"));
 
 		// state3
-		onView = onStates.get(2);
-		assertTrue(onView.isNonvariant());
-		assertEquals(schema.getState("state3"), onView.getState());
-		variants = onView.getVariants();
+		onState = onStates.get(2);
+		assertTrue(onState.isNonvariant());
+		assertEquals(schema.getState("state3"), onState.getState());
+		variants = onState.getVariants();
 		assertEquals(0, variants.size());
 
 		// state4
-		onView = onStates.get(3);
-		assertTrue(onView.isNonvariant());
-		assertEquals(schema.getState("state4"), onView.getState());
-		variants = onView.getVariants();
+		onState = onStates.get(3);
+		assertTrue(onState.isNonvariant());
+		assertEquals(schema.getState("state4"), onState.getState());
+		variants = onState.getVariants();
 		assertEquals(0, variants.size());
 
 		// state5
-		onView = onStates.get(4);
-		assertTrue(onView.isNonvariant());
-		assertEquals(schema.getState("state5"), onView.getState());
-		variants = onView.getVariants();
+		onState = onStates.get(4);
+		assertTrue(onState.isNonvariant());
+		assertEquals(schema.getState("state5"), onState.getState());
+		variants = onState.getVariants();
 		assertEquals(0, variants.size());
 
 	}

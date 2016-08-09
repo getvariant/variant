@@ -14,7 +14,7 @@ import com.variant.client.VariantTargetingTracker.Entry;
 import com.variant.client.servlet.util.VariantCookie;
 import com.variant.client.session.TargetingTrackerString;
 import com.variant.core.VariantProperties;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 
 /**
  * Concrete implementation of the Variant targeting tracker based on HTTP cookie. 
@@ -78,7 +78,7 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString implement
 	 * {@link VariantClient#getSession(Object...)} method. Use this to inject state from configuration.
 	 * 
 	 * @param initParams An instance of type {@link VariantInitParams}, containing parsed JSON object, 
-	 *                   specified by the <code>targeting.tracker.class.init</code> application property.
+	 *                   specified by the <code>targeting.tracker.class.init</code> system property.
 	 * @param userData   This implementation expects userData to be a one-element array whose single element
 	 *                   is the current {@link HttpServletRequest}.
 	 *
@@ -122,7 +122,7 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString implement
 
 	/**
 	 * <p>Called by Variant to save the currently tracked experiences to the underlying persistence mechanism. 
-	 * Variant client calls this method within the scope of the {@link VariantStateRequest#commit(Object...)} method.
+	 * Variant client calls this method within the scope of the {@link VariantCoreStateRequest#commit(Object...)} method.
 	 * 
 	 * @param userData This implementation expects userData to be a one-element array whose single element
 	 *                   is the current {@link HttpServletResponse}.

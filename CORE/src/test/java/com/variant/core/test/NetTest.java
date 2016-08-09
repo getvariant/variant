@@ -5,7 +5,7 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.Payload;
@@ -41,7 +41,7 @@ public class NetTest extends BaseTestCore {
 		SessionPayloadReader spr = new SessionPayloadReader(core, payload);
 		assertEquals(PARAM_VALUES[0], spr.getProperty(Payload.Property.SVR_REL));
 		assertEquals(PARAM_VALUES[1], spr.getProperty(Payload.Property.SSN_TIMEOUT));
-		VariantSession ssnFromReader = spr.getBody();
+		VariantCoreSession ssnFromReader = spr.getBody();
 		assertEquals(ssnId, ssnFromReader.getId());
 	}
 

@@ -5,7 +5,6 @@ import java.util.Properties;
 
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.VariantProperties;
-import com.variant.core.VariantSession;
 import com.variant.core.exception.VariantSchemaModifiedException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.schema.Schema;
@@ -131,7 +130,7 @@ public interface VariantClient {
 		/**
 		 * Obtain a new instance of {@link VariantClient}. Takes zero or more String arguments
 		 * which are understood to be Java classpath resource names. Each resource is expected 
-		 * to contain a set of application property definitions, as specified by Java's 
+		 * to contain a set of system property definitions, as specified by Java's 
 		 * {@link Properties#load(java.io.Reader)} method. When Variant client needs to look 
 		 * up a property value, these files are examined left to right and the first value found is
 		 * used.  If a value wasn't found in any of the supplied files, or if no files were supplied, 
@@ -139,7 +138,7 @@ public interface VariantClient {
 		 * 
 		 * Host application should hold on to and reuse the object returned by this method.
 		 * 
-		 * @param  resourceNames Zero or more application property files as classpath resource names.
+		 * @param  resourceNames Zero or more system property files as classpath resource names.
 		 * @return Instance of the {@link VariantClient} type.
 		 * @since 0.6
 		 */

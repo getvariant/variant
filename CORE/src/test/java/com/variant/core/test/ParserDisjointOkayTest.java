@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
+import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.parser.ParserResponse;
 
 
@@ -370,9 +371,9 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getState("state1"), tov.getState());
 		assertFalse(tov.isNonvariant());
-		List<com.variant.core.schema.Test.OnState.Variant> actualVariants =  tov.getVariants();
+		List<StateVariant> actualVariants =  tov.getVariants();
 		assertEquals(2, actualVariants.size());
-		com.variant.core.schema.Test.OnState.Variant variant = actualVariants.get(0);
+		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("B"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
 		assertEquals("/path/to/state1/test1.B", variant.getParameterMap().get("path"));
@@ -417,9 +418,9 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getState("state3"), tov.getState());
 		assertFalse(tov.isNonvariant());
-		List<com.variant.core.schema.Test.OnState.Variant> actualVariants =  tov.getVariants();
+		List<StateVariant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
-		com.variant.core.schema.Test.OnState.Variant variant = actualVariants.get(0);
+		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("D"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
 		assertEquals("/path/to/state3/test2.D", variant.getParameterMap().get("path"));
@@ -476,9 +477,9 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getState("state1"), tov.getState());
 		assertFalse(tov.isNonvariant());
-		List<com.variant.core.schema.Test.OnState.Variant> actualVariants =  tov.getVariants();
+		List<StateVariant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
-		com.variant.core.schema.Test.OnState.Variant variant = actualVariants.get(0);
+		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("A"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
 		assertEquals("/path/to/state1/Test1.A", variant.getParameterMap().get("path"));

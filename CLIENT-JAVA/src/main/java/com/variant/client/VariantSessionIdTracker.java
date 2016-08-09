@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 
 
 /**
@@ -35,7 +35,7 @@ public interface VariantSessionIdTracker {
 	 * Use this to inject state from configuration.
 	 * 
 	 * @param initParams An instance of type {@link VariantInitParams}, containing parsed JSON object, 
-	 *                   specified by the <code>session.id.tracker.class.init</code> application property. 
+	 *                   specified by the <code>session.id.tracker.class.init</code> system property. 
 	 * @param userData   An array of zero or more opaque objects which {@link VariantClient#getSession(Object...)}  
 	 *                   or {@link VariantClient#getOrCreateSession(Object...)} method will pass here without 
 	 *                   interpretation.
@@ -63,9 +63,9 @@ public interface VariantSessionIdTracker {
 
 	/**
 	 * <p>Called by Variant to save the current value of session ID to the underlying persistence mechanism. 
-	 * Variant client calls this method within the scope of the {@link VariantStateRequest#commit(Object...)} method.
+	 * Variant client calls this method within the scope of the {@link VariantCoreStateRequest#commit(Object...)} method.
 	 * 
-	 * @param userData An array of zero or more opaque objects which {@link VariantStateRequest#commit(Object...)}
+	 * @param userData An array of zero or more opaque objects which {@link VariantCoreStateRequest#commit(Object...)}
 	 *                 will pass here without interpretation.
 	 *                 
 	 * @since 0.6

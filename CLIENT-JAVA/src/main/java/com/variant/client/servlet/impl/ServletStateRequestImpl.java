@@ -5,10 +5,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.variant.client.impl.ClientStateRequestImpl;
+import com.variant.client.VariantStateRequest;
+import com.variant.client.impl.VariantStateRequestImpl;
 import com.variant.client.servlet.VariantServletSession;
 import com.variant.client.servlet.VariantServletStateRequest;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.CoreStateRequestImpl;
@@ -18,7 +19,7 @@ import com.variant.core.schema.Test.Experience;
 
 /**
  * <p>The implementation of {@link VariantServletStateRequest}.
- * Replaces bare client's {@link VariantStateRequest#commit(Object...)} with the
+ * Replaces bare client's {@link VariantCoreStateRequest#commit(Object...)} with the
  * servlet-aware signature {@link #commit(HttpServletResponse)}. 
  * 
  * @author Igor Urisman
@@ -42,12 +43,12 @@ public class ServletStateRequestImpl implements VariantServletStateRequest {
 	}
 	
 	@Override
-	public void commit(Object... userData) {
-		if (userData.length != 1)
-			throw new IllegalArgumentException("Invalid user data: single element vararg expected");
-		else if (!(userData[0] instanceof HttpServletResponse))
-			throw new IllegalArgumentException("Invalid user data: HttpServletResponse expected");
+	public void commit() {
+		bareRequest.commit();
+	}
 
+	@Override
+	public void commit(Object... userData) {
 		bareRequest.commit(userData);
 	}
 
@@ -76,13 +77,13 @@ public class ServletStateRequestImpl implements VariantServletStateRequest {
 	}
 
 	@Override
-	public Collection<Experience> getActiveExperiences() {
-		return bareRequest.getActiveExperiences();
+	public Collection<Experience> getLiveExperiences() {
+		return bareRequest.getLiveExperiences();
 	}
 
 	@Override
-	public Experience getActiveExperience(Test test) {
-		return bareRequest.getActiveExperience(test);
+	public Experience getLiveExperience(Test test) {
+		return bareRequest.getLiveExperience(test);
 	}
 
 	@Override
@@ -110,7 +111,7 @@ public class ServletStateRequestImpl implements VariantServletStateRequest {
 	// ---------------------------------------------------------------------------------------------//
 
 	public CoreStateRequestImpl getCoreStateRequest () {
-		return ((ClientStateRequestImpl)bareRequest).getCoreStateRequest();
+		return ((VariantStateRequestImpl)bareRequest).getCoreStateRequest();
 	}
 
 }

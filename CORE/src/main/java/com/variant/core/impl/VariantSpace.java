@@ -8,9 +8,9 @@ import java.util.List;
 
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.Test.OnState.Variant;
 import com.variant.core.schema.impl.TestOnStateImpl;
 
 /**
@@ -155,7 +155,7 @@ public class VariantSpace {
 		}
 		
 		// Pass 2. Add variants.
-		for (Test.OnState.Variant variant: tosImpl.getVariants()) {
+		for (StateVariant variant: tosImpl.getVariants()) {
 
 			// Build coordinate experience list. Must be concurrent with the basis.
 			List<Experience> coordinateExperiences = new ArrayList<Experience>(basis.size());
@@ -202,7 +202,7 @@ public class VariantSpace {
 	 * Lookup a variant for an experience vector
 	 * Caller insures that all experiences are not control.
 	 */
-	public Variant get(List<Experience> vector) {
+	public StateVariant get(List<Experience> vector) {
 		
 		// resort vector in basis order.
 		ArrayList<Experience> sortedVector = new ArrayList<Experience>(vector.size());
@@ -230,7 +230,7 @@ public class VariantSpace {
 	public static class Point {
 		
 		private Coordinates coordinates;
-		private Variant variant;
+		private StateVariant variant;
 		
 		private Point(Coordinates coordinates) {
 			this.coordinates = coordinates;
@@ -238,7 +238,7 @@ public class VariantSpace {
 		}
 		
 		/**
-		 * The local experience
+		 * The own experience
 		 * @return
 		 */
 		public Experience getExperience() {
@@ -257,7 +257,7 @@ public class VariantSpace {
 		 * 
 		 * @return
 		 */
-		public Variant getVariant() {
+		public StateVariant getVariant() {
 			return variant;
 		}
 		

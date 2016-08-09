@@ -9,8 +9,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.variant.core.VariantSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
@@ -48,7 +48,7 @@ public class CoreSessionTest extends BaseTestCore {
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		VariantSession ssn = core.getSession("bar", true).getBody();
+		VariantCoreSession ssn = core.getSession("bar", true).getBody();
 		assertNotNull(ssn);
 
 		//core.saveSession((CoreSessionImpl)ssn);
@@ -64,7 +64,7 @@ public class CoreSessionTest extends BaseTestCore {
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		final VariantSession ssnFinal = ssn;  // No closures in Java
+		final VariantCoreSession ssnFinal = ssn;  // No closures in Java
 		
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { 
@@ -75,7 +75,7 @@ public class CoreSessionTest extends BaseTestCore {
 		
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { 
-				VariantStateRequest req = ssnFinal.targetForState(core.getSchema().getState("state1"));
+				VariantCoreStateRequest req = ssnFinal.targetForState(core.getSchema().getState("state1"));
 				req.commit();
 			}
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), ssnFinal.getSchemaId());
@@ -91,7 +91,7 @@ public class CoreSessionTest extends BaseTestCore {
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		VariantSession ssn = core.getSession("key", true).getBody();
+		VariantCoreSession ssn = core.getSession("key", true).getBody();
 		assertEquals("key", ssn.getId());
 		assertNull(ssn.getStateRequest());
 		assertEquals(0, ssn.getTraversedStates().size());
@@ -105,13 +105,13 @@ public class CoreSessionTest extends BaseTestCore {
 		
 		// Test for idempotency. ssn2 is a different object from ssn,
 		// but should have all props the same, except the creation timestamp.
-		VariantSession ssn2 = core.getSession("key", true).getBody();
+		VariantCoreSession ssn2 = core.getSession("key", true).getBody();
 		assertEquals("key", ssn2.getId());
 		assertNull(ssn2.getStateRequest());
 		assertEquals(0, ssn2.getTraversedStates().size());
 		assertEquals(0, ssn2.getTraversedTests().size());
 				
-		VariantSession ssn3 = core.getSession("another-key", true).getBody();
+		VariantCoreSession ssn3 = core.getSession("another-key", true).getBody();
 		assertNotEquals (ssn, ssn3);
 		assertNull(ssn.getStateRequest());
 		assertNull(ssn3.getStateRequest());
@@ -132,28 +132,28 @@ public class CoreSessionTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		
 		Schema schema = core.getSchema();
-		VariantSession ssn = core.getSession("foo", true).getBody();
+		VariantCoreSession ssn = core.getSession("foo", true).getBody();
 		assertNull(ssn.getStateRequest());
-		VariantStateRequest req1 = ssn.targetForState(schema.getState("state1"));
+		VariantCoreStateRequest req1 = ssn.targetForState(schema.getState("state1"));
 		assertNotNull(req1);
 		assertEquals(req1, ssn.getStateRequest());
 		assertNotNull(req1.getStateVisitedEvent());
 		String json = ((CoreSessionImpl)ssn).toJson();
 		CoreSessionImpl deserializedSsn = CoreSessionImpl.fromJson(core, json);
 		assertEquals("foo", deserializedSsn.getId());
-		VariantStateRequest deserializedReq = deserializedSsn.getStateRequest();
+		VariantCoreStateRequest deserializedReq = deserializedSsn.getStateRequest();
 		assertEquals(deserializedReq.getSession(), deserializedSsn);
 		assertEquals(req1.getState(), deserializedReq.getState());
 		assertEqualAsSets(req1.getResolvedParameterMap(), deserializedReq.getResolvedParameterMap());
 		assertEquals(req1.getStatus(), deserializedReq.getStatus());
-		assertEqualAsSets(req1.getActiveExperiences(), deserializedReq.getActiveExperiences());
+		assertEqualAsSets(req1.getLiveExperiences(), deserializedReq.getLiveExperiences());
 		assertNull(deserializedReq.getStateVisitedEvent());
 		assertEqualAsSets(ssn.getTraversedStates(), deserializedSsn.getTraversedStates());
 		assertEqualAsSets(ssn.getTraversedTests(), deserializedSsn.getTraversedTests());
 		req1.commit();
 		System.out.println(((CoreSessionImpl)ssn).toJson());
 		// Nothing is instrumented on state2
-		VariantStateRequest req2 = ssn.targetForState(schema.getState("state2"));
+		VariantCoreStateRequest req2 = ssn.targetForState(schema.getState("state2"));
 		assertNotNull(req2);
 		assertNotEquals(req1, req2);
 		assertNull(req2.getStateVisitedEvent());
@@ -166,7 +166,7 @@ public class CoreSessionTest extends BaseTestCore {
 		assertEquals(req2.getState(), deserializedReq.getState());
 		assertEqualAsSets(req2.getResolvedParameterMap(), deserializedReq.getResolvedParameterMap());
 		assertEquals(req2.getStatus(), deserializedReq.getStatus());
-		assertEqualAsSets(req2.getActiveExperiences(), deserializedReq.getActiveExperiences());
+		assertEqualAsSets(req2.getLiveExperiences(), deserializedReq.getLiveExperiences());
 		assertNull(deserializedReq.getStateVisitedEvent());
 		assertEqualAsSets(ssn.getTraversedStates(), deserializedSsn.getTraversedStates());
 		assertEqualAsSets(ssn.getTraversedTests(), deserializedSsn.getTraversedTests());
@@ -185,14 +185,14 @@ public class CoreSessionTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		
 		Schema schema1 = core.getSchema();
-		VariantSession ssn1 = core.getSession("foo2", true).getBody();
+		VariantCoreSession ssn1 = core.getSession("foo2", true).getBody();
 		State state1 = schema1.getState("state1");
-		final VariantStateRequest req = ssn1.targetForState(state1);
+		final VariantCoreStateRequest req = ssn1.targetForState(state1);
 		req.commit();  // Saves the session.
 
 		Thread.sleep(10);
 		
-		final VariantSession ssn2 = core.getSession("foo2", true).getBody();
+		final VariantCoreSession ssn2 = core.getSession("foo2", true).getBody();
 		assertEquals(ssn1, ssn2);
 	    
 	    // new schema.
@@ -242,7 +242,7 @@ public class CoreSessionTest extends BaseTestCore {
 		Schema schema3 = core.getSchema();
 		assertNotEquals(schema2.getId(), schema3.getId());
 		
-		VariantSession ssn3 = core.getSession("foo2", true).getBody(); // should be a new session because api's changed
+		VariantCoreSession ssn3 = core.getSession("foo2", true).getBody(); // should be a new session because api's changed
 		assertEquals("foo2", ssn3.getId());
 		assertNull(ssn3.getStateRequest());
 		assertEquals(0,ssn3.getTraversedStates().size());
@@ -262,7 +262,7 @@ public class CoreSessionTest extends BaseTestCore {
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		
-		final VariantSession ssn = core.getSession("foo", true).getBody();
+		final VariantCoreSession ssn = core.getSession("foo", true).getBody();
 
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { 

@@ -9,10 +9,10 @@ import com.variant.core.exception.VariantInternalException;
 
 
 /**
- * Extensible interface that holds all Core application property keys as final statics.
+ * Extensible interface that holds all Core system property keys as final statics.
  * Client and server will extend this to include application properties specific to
  * those environments. At run time, these keys will have values, as defined in the
- * external application property files.
+ * external system property files.
  *
  * @author Igor Urisman
  * @since 0.6
@@ -27,7 +27,7 @@ public interface VariantCorePropertyKeys {
 	public final static Key EVENT_WRITER_PERCENT_FULL = new Key("event.writer.percent.full", "50");
 	
 	/**
-	 * <p>Type representing an application property key.
+	 * <p>Type representing an system property key.
 	 * 
 	 * @since 0.6
 	 */
@@ -57,7 +57,7 @@ public interface VariantCorePropertyKeys {
 
 		/**
 		 * Constructor.
-		 * @param propName Application property name.
+		 * @param propName System property name.
 		 * @param defaultValue Property's default value.
     	 * @since 0.6
 		 */

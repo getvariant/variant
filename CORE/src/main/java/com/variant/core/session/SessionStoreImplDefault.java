@@ -2,7 +2,7 @@ package com.variant.core.session;
 
 import java.util.Map;
 
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.SessionPayloadReader;
 
@@ -27,7 +27,7 @@ public class SessionStoreImplDefault implements SessionStore {
 	}
 
 	@Override
-	public void save(VariantSession session) {
+	public void save(VariantCoreSession session) {
 		throw new UnsupportedOperationException(MESSAGE);
 	}
 

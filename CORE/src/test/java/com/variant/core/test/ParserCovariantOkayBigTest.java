@@ -11,6 +11,7 @@ import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
+import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponse;
 
@@ -127,10 +128,10 @@ public class ParserCovariantOkayBigTest extends BaseTestCore {
 		Test.OnState onState = onStates.get(0);
 		assertFalse(onState.isNonvariant());
 		assertEquals(state2, onState.getState());
-		List<Test.OnState.Variant> variants = onState.getVariants();
+		List<StateVariant> variants = onState.getVariants();
 		assertEquals(2, variants.size());
 
-		Test.OnState.Variant variant = variants.get(0);
+		StateVariant variant = variants.get(0);
 		assertEquals(variant.getExperience(), test1.getExperience("B"));
 		assertEquals("/path/to/state2/test1.B", variant.getParameterMap().get("path"));
 		assertEquals(0, variant.getCovariantExperiences().size());

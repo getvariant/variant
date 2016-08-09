@@ -5,10 +5,11 @@ import java.io.InputStream;
 import javax.servlet.http.HttpServletRequest;
 
 import com.variant.client.VariantClient;
+import com.variant.client.VariantSession;
 import com.variant.client.servlet.VariantServletClient;
 import com.variant.client.servlet.VariantServletSession;
 import com.variant.core.VariantProperties;
-import com.variant.core.VariantSession;
+import com.variant.core.VariantCoreSession;
 import com.variant.core.event.impl.util.VariantArrayUtils;
 import com.variant.core.hook.HookListener;
 import com.variant.core.schema.Schema;
@@ -98,25 +99,15 @@ public class ServletClientImpl implements VariantServletClient {
 	/**
 	 */
 	@Override
-	public VariantSession getOrCreateSession(Object... userData) {
-		if (userData.length != 1)
-			throw new IllegalArgumentException("Invalid user data: single element vararg expected");
-		else if (!(userData[0] instanceof HttpServletRequest))
-			throw new IllegalArgumentException("Invalid user data: HttpServletRequest expected");
-
-		return getOrCreateSession((HttpServletRequest)userData[0]);
+	public VariantServletSession getOrCreateSession(Object... userData) {
+		return wrapBareSession(client.getOrCreateSession(userData));
 	}
 
 	/**
 	 */
 	@Override
-	public VariantSession getSession(Object...userData) {
-		if (userData.length != 1)
-			throw new IllegalArgumentException("Invalid user data: single element vararg expected");
-		else if (!(userData[0] instanceof HttpServletRequest))
-			throw new IllegalArgumentException("Invalid user data: HttpServletRequest expected");
-
-		return getSession((HttpServletRequest)userData[0]);
+	public VariantServletSession getSession(Object...userData) {
+		return wrapBareSession(client.getSession(userData));
 	}
 
 	/**

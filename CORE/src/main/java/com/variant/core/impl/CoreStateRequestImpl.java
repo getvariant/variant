@@ -10,8 +10,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.VariantSession;
-import com.variant.core.VariantStateRequest;
+import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.exception.VariantInternalException;
@@ -30,7 +30,7 @@ import com.variant.core.svrstub.TestExperienceServerStub;
  * @author Igor
  *
  */
-public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
+public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializable {
 
 	/**
 	 * Needs serializable because we keep it in session.
@@ -89,12 +89,12 @@ public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
 
 	/**
 	 * Commit this state request and trigger the state visited event.
-	 * We don't acutally need userData in this core implementation, but we want the method signature
+	 * We don't actually need userData in this core implementation, but we want the method signature
 	 * ready for the client.
 	 */
 	@Override
-	public void commit(Object...userData) {
-		
+	public void commit() {
+
 		session.checkState();
 		
 		if (isCommitted()) throw new IllegalStateException("Request already committed");
@@ -125,7 +125,7 @@ public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
 	}
 
 	@Override
-	public VariantSession getSession() {
+	public VariantCoreSession getSession() {
 		return session;
 	}
 
@@ -158,7 +158,7 @@ public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
 	}
 
 	@Override
-	public Collection<Experience> getActiveExperiences() {
+	public Collection<Experience> getLiveExperiences() {
 		
 		if (activeExperiences == null) {
 
@@ -177,7 +177,7 @@ public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
 	}
 
 	@Override
-	public Experience getActiveExperience(Test test) {
+	public Experience getLiveExperience(Test test) {
 		
 		boolean found = false;
 		
@@ -265,10 +265,10 @@ public class CoreStateRequestImpl implements VariantStateRequest, Serializable {
 			jsonGen.writeEndArray();
 		}
 		
-		Collection<Experience> targetedExperiences = getActiveExperiences();
-		if (targetedExperiences.size() > 0) {
+		Collection<Experience> liveExperiences = getLiveExperiences();
+		if (liveExperiences.size() > 0) {
 			jsonGen.writeArrayFieldStart(FIELD_NAME_EXPERIENCES);
-			for (Experience e: targetedExperiences) {
+			for (Experience e: liveExperiences) {
 				jsonGen.writeString(e.toString() + "." + e.isControl());
 			}
 			jsonGen.writeEndArray();
