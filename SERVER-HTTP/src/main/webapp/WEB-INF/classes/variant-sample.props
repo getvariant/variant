@@ -11,10 +11,10 @@
 # Session vacuum thread runs every this many seconds:
 #session.store.vacuum.interval.secs = 10 
 
-# Default event persister appends events to the server log. See documentation for
-# other available event persisters or how to write and configure a custom implementation:
-#event.persister.class.name = com.variant.core.event.EventPersisterAppLogger
-#event.persister.class.init = {}
+# Default event flusher appends events to the server log. See documentation for
+# other available event flushers or how to write and configure a custom implementation:
+#event.flusher.class.name = com.variant.core.event.EventFlusherAppLogger
+#event.flusher.class.init = {}
 
 # Asynchronous event writer holds at most this many events in a memory buffer:
 #event.writer.buffer.size = 20000

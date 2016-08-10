@@ -14,6 +14,9 @@ import com.variant.core.schema.Test.Experience;
  * or, more likely, in the operational database, which could support "strong" stability across
  * different devices.
  * 
+ * <p>By contract, an implementation must provide a no-argument constructor, which Variant will use
+ * to instantiate it. To inject state, call {@link #init(VariantInitParams, Object...)}.
+ * 
  * @author Igor Urisman
  * @since 0.6
  */
@@ -69,8 +72,8 @@ public interface VariantTargetingTracker {
 	public void save(Object...userData);
 		
 	/**
-	 * A targeting tracker entry, i.e. the test name, experience name and the timestamp of when 
-	 * this experience was last seen by a user.
+	 * A targeting tracker entry.
+	 * Encapsulates the test name, experience name and the timestamp of when this experience was last seen by a user.
 	 * 
 	 * @since 0.6
 	 */

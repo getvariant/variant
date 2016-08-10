@@ -9,7 +9,7 @@ import com.variant.core.VariantCoreStateRequest;
  * A Variant event. Events are generated either implicitly by the Variant RCE Container, 
  * or explicitly by the client code. Events are flushed to external storage once per state
  * request, during the {@link Variant#commitStateRequest(com.variant.core.VariantCoreStateRequest, Object...)}
- * method by an implementation of {@link com.variant.core.event.EventPersister}. Client code
+ * method by an implementation of {@link com.variant.core.event.EventFlusher}. Client code
  * may generate its own events by passing its own implementations to 
  * {@link VariantCoreStateRequest#triggerEvent(VariantEvent)}.
  * 
@@ -48,7 +48,7 @@ public interface VariantEvent {
 	 * Custom parameters.
 	 * 
 	 * @return Custom parameters the implementor wishes to be logged alongside with this
-	 *         event.  It is up to the {@link EventPersister} in effect how these parameters
+	 *         event.  It is up to the {@link EventFlusher} in effect how these parameters
 	 *         will be recorded.
 	 * @since 0.5
 	 */

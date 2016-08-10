@@ -75,7 +75,7 @@ public class CorePropertiesTest {
 		final String TMP_FILE_NAME = "/tmp/VariantPropertiesTest.props";
 		System.setProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
 		PrintWriter tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
-		tmpFile.println(VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT.propertyName() + " = {'foo':'bar'}");
+		tmpFile.println(VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName() + " = {'foo':'bar'}");
 		tmpFile.println(VariantCorePropertyKeys.EVENT_WRITER_MAX_DELAY_MILLIS.propertyName() + " = 12345678");	
 		tmpFile.close();
 		
@@ -127,7 +127,7 @@ public class CorePropertiesTest {
 		{
 			// Invalid JSON
 			final String BAD_JSON = "{\"foo\":\"FOO\"\"bar\":\"BAR\"}";
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT.propertyName(), BAD_JSON);
+			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName(), BAD_JSON);
 			boolean exceptionThrown = false;
 			try {
 				api = new VariantCore();
@@ -138,7 +138,7 @@ public class CorePropertiesTest {
 						new VariantRuntimeUserErrorException(
 								MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON, 
 								BAD_JSON, 
-								VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT.propertyName()
+								VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName()
 								).getMessage(), 
 						e.getMessage());
 			}
@@ -147,8 +147,8 @@ public class CorePropertiesTest {
 		
 		{
 			// missing password
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_NAME.propertyName(), "com.variant.core.event.EventPersisterH2"); 
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT.propertyName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
+			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_NAME.propertyName(), "com.variant.core.event.EventFlusherH2"); 
+			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
 			boolean exceptionThrown = false;
 			try {
 				api = new VariantCore();
@@ -159,8 +159,8 @@ public class CorePropertiesTest {
 						new VariantRuntimeUserErrorException(
 								MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET, 
 								"password", 
-								api.getProperties().get(VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_NAME, String.class),
-								VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT.propertyName()
+								api.getProperties().get(VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_NAME, String.class),
+								VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName()
 								).getMessage(), 
 						e.getMessage());
 			}

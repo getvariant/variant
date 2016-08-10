@@ -9,21 +9,21 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.event.EventPersister;
-import com.variant.core.event.VariantPersistableEvent;
+import com.variant.core.event.EventFlusher;
+import com.variant.core.event.VariantFlushableEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.jdbc.JdbcService.Vendor;
 import com.variant.core.schema.Test;
 
 /**
- * JDBC persisters extend this class instead of implementing the EventPersister interface. 
+ * JDBC event flushers extend this class instead of implementing the EventFlusher interface. 
  * All the JDBC work is done here, leaving the concrete subclasses with just the task of
  * creating a database connection for the particular JDBC implementation.
  * 
  * @author Igor.
  *
  */
-abstract public class EventPersisterJdbc implements EventPersister {
+abstract public class EventFlusherJdbc implements EventFlusher {
 				
 	/**
 	 * Concrete subclass tells this class how to obtain a connection to its flavor of JDBC.
@@ -44,7 +44,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 	 * Persist a collection of events.
 	 */
 	@Override
-	final public void persist(final Collection<VariantPersistableEvent> events) throws Exception {
+	final public void flush(final Collection<VariantFlushableEvent> events) throws Exception {
 				
 		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
@@ -80,7 +80,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
-					for (VariantPersistableEvent event: events) {
+					for (VariantFlushableEvent event: events) {
 						stmt.setString(1, event.getSession().getId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getEventName());
@@ -114,7 +114,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_PARAMETERS_SQL);
 					index = 0;
-					for (VariantPersistableEvent event: events) {
+					for (VariantFlushableEvent event: events) {
 						long eventId = eventIds[index++];
 						for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
 
@@ -134,7 +134,7 @@ abstract public class EventPersisterJdbc implements EventPersister {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_EXPERIENCES_SQL);
 					index = 0;
-					for (VariantPersistableEvent event: events) {
+					for (VariantFlushableEvent event: events) {
 						long eventId = eventIds[index++];
 						for (Test.Experience exp: event.getLiveExperiences()) {
 							stmt.setLong(1, eventId);

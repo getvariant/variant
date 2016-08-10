@@ -9,20 +9,20 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.VariantCoreInitParams;
 import com.variant.core.schema.Test.Experience;
 
-public class EventPersisterAppLogger implements EventPersister {
+public class EventFlusherAppLogger implements EventFlusher {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(EventPersisterAppLogger.class);
+	private static final Logger LOG = LoggerFactory.getLogger(EventFlusherAppLogger.class);
 
 	@Override
-	public void initialized(VariantCoreInitParams initParams) {
+	public void init(VariantCoreInitParams initParams) {
 		LOG.debug("Bootstrapped");
 	}
 
 	@Override
-	public void persist(Collection<VariantPersistableEvent> events)
+	public void flush(Collection<VariantFlushableEvent> events)
 			throws Exception {
 
-		for (VariantPersistableEvent event: events) {
+		for (VariantFlushableEvent event: events) {
 			StringBuilder msg = new StringBuilder();
 			msg.append("EVENT:{")
 			.append("session_id:'").append(event.getSession().getId()).append("', ")
@@ -34,7 +34,7 @@ public class EventPersisterAppLogger implements EventPersister {
 			LOG.info(msg.toString());
 		}
 								
-		for (VariantPersistableEvent event: events) {
+		for (VariantFlushableEvent event: events) {
 			for (Experience e: event.getLiveExperiences()) {
 				StringBuilder msg = new StringBuilder();
 				msg.append("EVENT_EXPERIENCES:{")
@@ -48,7 +48,7 @@ public class EventPersisterAppLogger implements EventPersister {
 			}
 		}
 		
-		for (VariantPersistableEvent event: events) {
+		for (VariantFlushableEvent event: events) {
 			for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
 
 				StringBuilder msg = new StringBuilder();

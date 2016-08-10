@@ -17,7 +17,7 @@ import com.variant.core.jdbc.JdbcAdapter;
 import com.variant.core.jdbc.JdbcService;
 
 /**
- * Read events from a JDBC event persister.
+ * Read events from a JDBC event flusher.
  * Tests only
  * 
  * @author Igor

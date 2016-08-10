@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.event.EventPersisterNull;
+import com.variant.core.event.EventFlusherNull;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.hook.HookListener;
@@ -29,13 +29,13 @@ public class TargetingTest extends BaseTestCore {
 	static final float DELTA_AS_FRACTION = .025f;
 
 	/**
-	 * Use the null event persister and null session store, 
+	 * Use the null event flusher and null session store, 
 	 * because the test will be generating lots sessions and events.
 	 */
 	static {
 		System.setProperty(
-				CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_NAME.propertyName(), 
-				EventPersisterNull.class.getName());
+				CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_NAME.propertyName(), 
+				EventFlusherNull.class.getName());
 		
 		injectorConfigAsResourceName = "/com/variant/core/conf/injector-session-store-null.json";
 	}

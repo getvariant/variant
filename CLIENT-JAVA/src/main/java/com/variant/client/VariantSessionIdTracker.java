@@ -23,6 +23,9 @@ import com.variant.core.VariantCoreStateRequest;
  * is irrelevant, enabling Variant to instrument experiments that start by an unknown 
  * user and end by an authenticated one or vice versa.
  * 
+ * <p>By contract, an implementation must provide a no-argument constructor, which Variant will use
+ * to instantiate it. To inject state, call {@link #init(VariantInitParams, Object...)}.
+ *
  * @author Igor Urisman
  * @since 0.6
  */

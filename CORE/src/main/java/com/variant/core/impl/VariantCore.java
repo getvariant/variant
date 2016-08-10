@@ -3,7 +3,7 @@ package com.variant.core.impl;
 import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
 import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
 import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_PERSISTER_NO_INTERFACE;
+import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_FLUSHER_NO_INTERFACE;
 import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
 
 import java.io.IOException;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.event.EventPersister;
+import com.variant.core.event.EventFlusher;
 import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.util.VariantIoUtils;
 import com.variant.core.exception.VariantInternalException;
@@ -130,19 +130,19 @@ public class VariantCore implements Serializable {
 		comptime = new VariantComptime();
 
 		//
-		// Instantiate event persister.
+		// Instantiate event flusher.
 		//
-		String eventPersisterClassName = properties.get(VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_NAME, String.class);
+		String eventFlusherClassName = properties.get(VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_NAME, String.class);
 		
-		EventPersister eventPersister = null;
+		EventFlusher eventFlusher = null;
 		try {
-			Object eventPersisterObject = Class.forName(eventPersisterClassName).newInstance();
-			if (eventPersisterObject instanceof EventPersister) {
-				eventPersister = (EventPersister) eventPersisterObject;
-				eventPersister.initialized(new VariantCoreInitParamsImpl(this, VariantCorePropertyKeys.EVENT_PERSISTER_CLASS_INIT));
+			Object eventFlusherObject = Class.forName(eventFlusherClassName).newInstance();
+			if (eventFlusherObject instanceof EventFlusher) {
+				eventFlusher = (EventFlusher) eventFlusherObject;
+				eventFlusher.init(new VariantCoreInitParamsImpl(this, VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT));
 			}
 			else {
-				throw new VariantRuntimeUserErrorException (BOOT_EVENT_PERSISTER_NO_INTERFACE, eventPersisterClassName, EventPersister.class.getName());
+				throw new VariantRuntimeUserErrorException (BOOT_EVENT_FLUSHER_NO_INTERFACE, eventFlusherClassName, EventFlusher.class.getName());
 			}
 		}
 		catch (VariantRuntimeException e) {
@@ -150,11 +150,11 @@ public class VariantCore implements Serializable {
 		}
 		catch (Exception e) {
 			throw new VariantInternalException(
-					"Unable to instantiate event persister class [" + eventPersisterClassName +"]", e);
+					"Unable to instantiate event flusher class [" + eventFlusherClassName +"]", e);
 		}
 				
 		// Instantiate event writer.
-		eventWriter = new EventWriter(eventPersister, properties);
+		eventWriter = new EventWriter(eventFlusher, properties);
 				
 		// Instantiate runtime.
 		runtime = new VariantRuntime(this);

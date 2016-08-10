@@ -1,10 +1,11 @@
 package com.variant.client;
 
 import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.schema.State;
 
 /**
- * Client-side state request. A specialization of the core state request.
- * Adds the environment-dependent {@link #commit(Object...)}. 
+ * Represents a Variant state request, as returned by {@link VariantSession#targetForState(State)}.
+ *
  * 
  * @author Igor Urisman
  * @since 0.6

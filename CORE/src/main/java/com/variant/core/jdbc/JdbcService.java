@@ -65,8 +65,8 @@ public class JdbcService {
 	 * 
 	 * @return
 	 */
-	private EventPersisterJdbc getEventPersister() {
-		return (EventPersisterJdbc) coreApi.getEventWriter().getEventPersister();		
+	private EventFlusherJdbc getEventFlusher() {
+		return (EventFlusherJdbc) coreApi.getEventWriter().getEventFlusher();		
 	}
 	
 	/**
@@ -128,10 +128,10 @@ public class JdbcService {
 	 */
 	public Vendor getVendor() {
 		// Figure out the JDBC vendor, if we can.
-		if (getEventPersister() instanceof com.variant.core.event.EventPersisterPostgres) {
+		if (getEventFlusher() instanceof com.variant.core.event.EventFlusherPostgres) {
 			return Vendor.POSTGRES;
 		}
-		else if (getEventPersister() instanceof com.variant.core.event.EventPersisterH2) {
+		else if (getEventFlusher() instanceof com.variant.core.event.EventFlusherH2) {
 			return Vendor.H2;
 		}
 		else return null;
@@ -145,7 +145,7 @@ public class JdbcService {
 	 * @throws SQLException
 	 */
 	public Connection getConnection() throws Exception {
-		return getEventPersister().getJdbcConnection();
+		return getEventFlusher().getJdbcConnection();
 	}
 		
 	/**

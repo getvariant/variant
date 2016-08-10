@@ -9,7 +9,6 @@ import com.variant.client.VariantSession;
 import com.variant.client.servlet.VariantServletClient;
 import com.variant.client.servlet.VariantServletSession;
 import com.variant.core.VariantProperties;
-import com.variant.core.VariantCoreSession;
 import com.variant.core.event.impl.util.VariantArrayUtils;
 import com.variant.core.hook.HookListener;
 import com.variant.core.schema.Schema;

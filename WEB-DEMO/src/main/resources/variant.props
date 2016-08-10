@@ -10,9 +10,9 @@ server.endpoint.url=http://localhost:8080/
 # no less frequently than once a second.
 event.writer.max.delay.millis = 1000
 
-# Postgres Event Persister comes with Variant and can be used out of the box.
-# The SQL schema required to support this Event Persister can be found in the
+# Postgres Event flusher comes with Variant and can be used out of the box.
+# The SQL schema required to support this Event flusher can be found in the
 # distribution db/postgres directory. The same scripts run on an H2 instance
 # in Oralce compatibility mode.
-#event.persister.class.name = com.variant.core.event.EventPersisterPostgres
-#event.persister.class.init = {"vendor":"postgres","url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}
+#event.flusher.class.name = com.variant.core.event.EventFlusherPostgres
+#event.flusher.class.init = {"vendor":"postgres","url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}

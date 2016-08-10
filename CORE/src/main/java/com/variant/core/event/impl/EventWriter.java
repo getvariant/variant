@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantProperties;
-import com.variant.core.event.EventPersister;
-import com.variant.core.event.VariantPersistableEvent;
+import com.variant.core.event.EventFlusher;
+import com.variant.core.event.VariantFlushableEvent;
 
 public class EventWriter {
 	
@@ -23,32 +23,32 @@ public class EventWriter {
 	// The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
 	// refusing inserts that will put the queue size over the limit, but not worrying about
 	// a possible overage due to concurrency.
-	private ConcurrentLinkedQueue<VariantPersistableEvent> eventQueue = null;
+	private ConcurrentLinkedQueue<VariantFlushableEvent> eventQueue = null;
 
 	// Max queue size (soft).
 	private int queueSize;
 	
-	// Number of entries in the queue that will trigger the wakeup of the persister thread.
+	// Number of entries in the queue that will trigger the wakeup of the flusher thread.
 	private int pctFullSize;
 	
 	// Number of entries in the queue that we won't attempt to get under.
 	private int pctEmptySize;
 	
-	// The persister thread will wake up at least this frequently and flush the queue.
-	private long maxPersisterDelayMillis;
+	// The flusher thread will wake up at least this frequently and flush the queue.
+	private long maxFlusherDelayMillis;
 		
-	// Asynchronous persister thread consumes events from the holding queue.
-	private PersisterThread persisterThread;
+	// Asynchronous flusher thread consumes events from the holding queue.
+	private FlusherThread flusherThread;
 	
-	// The actual event persister passed to the constructor by client code.
-	private EventPersister persisterImpl = null;
+	// The actual event flusher passed to the constructor by client code.
+	private EventFlusher flusherImpl = null;
 			
 	/**
-	 * Expose event persister to tests via package visibility.
+	 * Expose event flusher to tests via package visibility.
 	 * @return
 	 */
-	public EventPersister getEventPersister() {
-		return persisterImpl;
+	public EventFlusher getEventFlusher() {
+		return flusherImpl;
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -58,22 +58,22 @@ public class EventWriter {
 	/**
 	 * Constructor
 	 */
-	public EventWriter(EventPersister persisterImpl, VariantProperties properties) {
+	public EventWriter(EventFlusher flusherImpl, VariantProperties properties) {
 		
-		this.persisterImpl = persisterImpl;
+		this.flusherImpl = flusherImpl;
 		this.queueSize = properties.get(EVENT_WRITER_BUFFER_SIZE, Integer.class);
 		this.pctFullSize = queueSize * properties.get(EVENT_WRITER_PERCENT_FULL, Integer.class) / 100;
 		this.pctEmptySize = (int) Math.ceil(queueSize * 0.1);
-		this.maxPersisterDelayMillis = properties.get(EVENT_WRITER_MAX_DELAY_MILLIS, Integer.class);
+		this.maxFlusherDelayMillis = properties.get(EVENT_WRITER_MAX_DELAY_MILLIS, Integer.class);
 		
-		eventQueue = new ConcurrentLinkedQueue<VariantPersistableEvent>();
+		eventQueue = new ConcurrentLinkedQueue<VariantFlushableEvent>();
 		
-		persisterThread = new PersisterThread();
+		flusherThread = new FlusherThread();
 		
 		// Not a daemon: intercept interrupt and flush the buffer before exiting.
-		persisterThread.setDaemon(false);
-		persisterThread.setName(PersisterThread.class.getSimpleName());
-		persisterThread.start();
+		flusherThread.setDaemon(false);
+		flusherThread.setName(flusherThread.getClass().getSimpleName());
+		flusherThread.start();
 	}
 		
 	/**
@@ -82,8 +82,8 @@ public class EventWriter {
 	 */
 	public void shutdown() {
 		long now = System.currentTimeMillis();
-		persisterThread.interrupt();
-		persisterThread = null;
+		flusherThread.interrupt();
+		flusherThread = null;
 		if (LOG.isDebugEnabled()) {
 			LOG.debug(
 					"Event Writer shutdown in " + (DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
@@ -99,7 +99,7 @@ public class EventWriter {
 	 *                   
 	 * @return number of elements actually written.
 	 */
-	public void write(VariantPersistableEvent event) {
+	public void write(VariantFlushableEvent event) {
 				
 		// We don't worry about possible concurrent writes because the underlying
 		// queue implementation is thread safe and unbound.  It's okay to temporarily 
@@ -116,7 +116,7 @@ public class EventWriter {
 					" system property (current value [" + queueSize + "])");
 		}
 		
-		// Block momentarily to wake up the persister thread if the queue has reached the pctFull size.
+		// Block momentarily to wake up the flusher thread if the queue has reached the pctFull size.
 		synchronized (eventQueue) {
 			if (currentSize >= pctFullSize) eventQueue.notify();
 		}
@@ -124,18 +124,18 @@ public class EventWriter {
 	}
 	
 	/**
-	 * Persister thread.
+	 * Flusher thread.
 	 * Removes events from the queue and flushes them to an event persistence interface. 
 	 * 
 	 * @author Igor.
 	 *
 	 */
-	private class PersisterThread extends Thread {
+	private class FlusherThread extends Thread {
 		
 		@Override
 		public void run() {
 
-			if (LOG.isDebugEnabled()) LOG.debug("Event persister thread " + Thread.currentThread().getName() + " started.");
+			if (LOG.isDebugEnabled()) LOG.debug("Event flusher thread " + Thread.currentThread().getName() + " started.");
 			
 			boolean interruptedExceptionThrown = false;
 			
@@ -151,7 +151,7 @@ public class EventWriter {
 										
 					// Block until the queue is over pctFull again, but with timeout.
 					synchronized (eventQueue) {
-						eventQueue.wait(maxPersisterDelayMillis);
+						eventQueue.wait(maxFlusherDelayMillis);
 					}
 
 				}
@@ -170,7 +170,7 @@ public class EventWriter {
 						LOG.error("Unexpected exception in async database event writer.", t);
 					}
 					if (LOG.isDebugEnabled())
-						LOG.debug("Event persister thread " + Thread.currentThread().getName() + " interrupted and exited.");
+						LOG.debug("Event flusher thread " + Thread.currentThread().getName() + " interrupted and exited.");
 					return;
 				};
 			}
@@ -178,22 +178,22 @@ public class EventWriter {
 		}		
 		
 		/**
-		 * Flush the entire queue to an event persister.
+		 * Flush the entire queue to an event flusher.
 		 * Package visibility to let test call this.  Must be synchronized because
 		 * tests may call flush directly concurrently with the regular async path.
 		 * Should be no overhead during regular code path.
 		 */
 		private void flush() throws Exception {
 
-			LinkedList<VariantPersistableEvent> events = new LinkedList<VariantPersistableEvent>();
+			LinkedList<VariantFlushableEvent> events = new LinkedList<VariantFlushableEvent>();
 
-			VariantPersistableEvent event;
+			VariantFlushableEvent event;
 			while ((event = eventQueue.poll()) != null) events.add(event);
 
 			if (events.isEmpty()) return;
 			
 			long now = System.currentTimeMillis();
-			persisterImpl.persist(events);		
+			flusherImpl.flush(events);		
 			LOG.info("Flushed " + events.size() + " event(s) in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
 		}
 	}

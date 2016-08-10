@@ -20,7 +20,7 @@ mkdir ${out_dir} ${javadoc_dir}
 javadoc -d ${javadoc_dir}  \
    -sourcepath ${core_src_dir}:${client_src_dir} \
    -windowtitle "Variant ${version}" \
-   -doctitle "Variant Controlled Experiment Server Release ${version}" \
+   -doctitle "Variant Experiment Server Release ${version}" \
    -header "<a onclick=\"window.top.location.href='http://getvariant.com/docs';\" href=\"#\"><img src=\"http://getvariant.com/wp-content/uploads/2016/05/VariantLogoSmall.png\"/></a>" \
    -bottom "Release $version. Updated $(date +"%d %b %y").<br/> Copyright &copy; 2016 Variant" \
    com.variant.client                 \

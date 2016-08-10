@@ -18,7 +18,7 @@ public enum MessageTemplate {
 	BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN              (Severity.FATAL, "Cannot pass both -Dvariant.config.resource and -Dvariant.config.file parameters"), 
 	BOOT_CONFIG_RESOURCE_NOT_FOUND                        (Severity.FATAL, "Class path resource [%s] is not found"), 
 	BOOT_CONFIG_FILE_NOT_FOUND                            (Severity.FATAL, "OS file [%s] is not found"), 
-	BOOT_EVENT_PERSISTER_NO_INTERFACE                     (Severity.FATAL, "Event persister class [%s] must implement interface [%s]"), 
+	BOOT_EVENT_FLUSHER_NO_INTERFACE                       (Severity.FATAL, "Event flusher class [%s] must implement interface [%s]"), 
 	BOOT_SID_TRACKER_NO_INTERFACE                         (Severity.FATAL, "Session ID tracker class [%s] must implement interface [%s]"),
 	BOOT_SESSION_STORE_NO_INTERFACE                       (Severity.FATAL, "Session store class [%s] must implement interface [%s]"),
 	BOOT_SESSION_ID_TRACKER_NO_INTERFACE                  (Severity.FATAL, "Session ID tracker class [%s] must implement interface [%s]"),

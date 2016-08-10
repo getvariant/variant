@@ -44,7 +44,7 @@ public interface TestQualificationHook extends RuntimeHook {
 
 	/**
 	 * Client code calls this to inform the container whether the entry for this test should
-	 * be removed from this session's targeting persister, iff it is disqualified. The container
+	 * be removed from this session's targeting tracker, iff it is disqualified. The container
 	 * will ignore the value set with this method, if this test was not disqualified. Conversely,
 	 * if this test was disqualified, but this method was never called, the initial value is false,
 	 * which is to say that targeting tracker entries for disqualified tests are not discarded by 

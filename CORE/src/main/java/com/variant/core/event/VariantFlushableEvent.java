@@ -11,12 +11,12 @@ import com.variant.core.schema.Test.Experience;
  * Decorated Variant event. Instantiated by the Variant Core library
  * in order to enrich client-supplied {@link VariantEvent} object with
  * extra functionality supplied by Variant.  Client code may need these
- * extra methods if it wants to implement a custom {@link EventPersister}.
+ * extra methods if it wants to implement a custom {@link EventFlusher}.
  * 
  * @author Igor Urisman
  * @since 0.6
  */
-public interface VariantPersistableEvent extends VariantEvent {
+public interface VariantFlushableEvent extends VariantEvent {
 
 	
 	/**

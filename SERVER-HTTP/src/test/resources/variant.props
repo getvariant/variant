@@ -8,10 +8,10 @@ event.writer.max.delay.millis = 100
 session.store.vacuum.interval.secs = 1
 session.timeout.secs = 1
 
-# Event Persister (H2 in memory)
-event.persister.class.name = com.variant.core.event.EventPersisterH2
-event.persister.class.init = {"url":"jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;","user":"variant","password":"variant"}
+# Event Flusher (H2 in memory)
+event.flusher.class.name = com.variant.core.event.EventFlusherH2
+event.flusher.class.init = {"url":"jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;","user":"variant","password":"variant"}
 
-# Event Persister (Postgres on Disk)
-# event.persister.class.name = com.variant.core.event.EventPersisterPostgres
-# event.persister.class.init = {"url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}
+# Event Flusher (Postgres on Disk)
+# event.flusher.class.name = com.variant.core.event.EventFlusherPostgres
+# event.flusher.class.init = {"url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}

@@ -20,8 +20,8 @@ import com.variant.core.exception.VariantInternalException;
  */
 public interface VariantCorePropertyKeys {
 
-	public final static Key EVENT_PERSISTER_CLASS_NAME = new Key("event.persister.class.name", "com.variant.core.event.EventPersisterAppLogger");
-	public final static Key EVENT_PERSISTER_CLASS_INIT = new Key("event.persister.class.init", "{}");
+	public final static Key EVENT_FLUSHER_CLASS_NAME = new Key("event.flusher.class.name", "com.variant.core.event.EventFlusherAppLogger");
+	public final static Key EVENT_FLUSHER_CLASS_INIT = new Key("event.flusher.class.init", "{}");
 	public final static Key EVENT_WRITER_BUFFER_SIZE = new Key("event.writer.buffer.size", "20000");
 	public final static Key EVENT_WRITER_MAX_DELAY_MILLIS = new Key("event.writer.max.delay.millis", "30000");
 	public final static Key EVENT_WRITER_PERCENT_FULL = new Key("event.writer.percent.full", "50");

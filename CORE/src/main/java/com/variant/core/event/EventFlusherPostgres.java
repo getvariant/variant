@@ -8,18 +8,18 @@ import java.util.Properties;
 
 import com.variant.core.VariantCoreInitParams;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.jdbc.EventPersisterJdbc;
+import com.variant.core.jdbc.EventFlusherJdbc;
 import com.variant.core.jdbc.JdbcService.Vendor;
 import com.variant.open.securestring.SecureString;
 
-public class EventPersisterPostgres extends EventPersisterJdbc {
+public class EventFlusherPostgres extends EventFlusherJdbc {
 	
 	private String url = null;
 	private String user = null;
 	private SecureString password = null;
 	
 	@Override
-	public void initialized(VariantCoreInitParams initParams) throws Exception {
+	public void init(VariantCoreInitParams initParams) throws Exception {
 		url = (String) initParams.getOrThrow(
 				"url", new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName()));
 		

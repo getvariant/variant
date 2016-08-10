@@ -15,6 +15,6 @@ event.writer.buffer.size = 5000
 # 
 event.writer.max.delay.millis = 5000
 
-# Postgres Event Persister
-event.persister.class.name = com.variant.core.ext.EventPersisterPostgres
-event.persister.class.init = {"url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}
+# Postgres Event Flusher
+event.flusher.class.name = com.variant.core.ext.EventFlusherPostgres
+event.flusher.class.init = {"url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}
