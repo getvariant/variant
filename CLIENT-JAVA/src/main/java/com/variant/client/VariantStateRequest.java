@@ -1,7 +1,7 @@
 package com.variant.client;
 
 import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.schema.State;
+import com.variant.core.xdm.State;
 
 /**
  * Represents a Variant state request, as returned by {@link VariantSession#targetForState(State)}.

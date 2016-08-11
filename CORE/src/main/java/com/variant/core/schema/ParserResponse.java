@@ -1,9 +1,9 @@
-package com.variant.core.schema.parser;
+package com.variant.core.schema;
 
 import java.util.List;
 
 import com.variant.core.hook.HookListener;
-import com.variant.core.schema.parser.ParserMessage.Severity;
+import com.variant.core.schema.ParserMessage.Severity;
 
 /**
  * Return type of {@link com.variant.core.Variant#parseSchema(java.io.InputStream, boolean)}.

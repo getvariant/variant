@@ -20,10 +20,10 @@ import com.variant.client.impl.StateSelectorByRequestPath;
 import com.variant.client.servlet.util.VariantWebUtils;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.schema.State;
-import com.variant.core.schema.parser.ParserMessage;
-import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.schema.parser.ParserMessage.Severity;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.ParserMessage.Severity;
+import com.variant.core.xdm.State;
 
 /**
  * <p>The preferred way of instrumenting Variant experiments for host applications written on top of the Java Servlet API.

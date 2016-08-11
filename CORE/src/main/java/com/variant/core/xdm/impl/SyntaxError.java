@@ -1,4 +1,4 @@
-package com.variant.core.schema.impl;
+package com.variant.core.xdm.impl;
 
 import org.apache.commons.lang3.StringUtils;
 

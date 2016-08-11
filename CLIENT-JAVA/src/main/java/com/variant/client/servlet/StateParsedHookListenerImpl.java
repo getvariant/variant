@@ -3,8 +3,8 @@ package com.variant.client.servlet;
 
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.StateParsedHook;
-import com.variant.core.schema.State;
-import com.variant.core.schema.parser.ParserMessage.Severity;
+import com.variant.core.schema.ParserMessage.Severity;
+import com.variant.core.xdm.State;
 
 /**
  * A user hook listener listening to the {@link StateParsedHook}.

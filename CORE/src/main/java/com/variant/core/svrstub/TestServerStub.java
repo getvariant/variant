@@ -3,9 +3,9 @@ package com.variant.core.svrstub;
 import java.util.List;
 
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
 
 public class TestServerStub implements Test {
 

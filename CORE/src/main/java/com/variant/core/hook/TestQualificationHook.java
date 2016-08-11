@@ -1,6 +1,6 @@
 package com.variant.core.hook;
 
-import com.variant.core.schema.Test;
+import com.variant.core.xdm.Test;
 
 /**
  * <p>Run time user hook that posts its listeners whenever a user session reaches a test
@@ -17,7 +17,7 @@ public interface TestQualificationHook extends RuntimeHook {
 	/**
 	 * The test for which this user hook is posting.
 	 * .
-	 * @return An object of type {@link com.variant.core.schema.Test}.
+	 * @return An object of type {@link com.variant.core.xdm.Test}.
 	 * @since 0.5
 	 */
 	public Test getTest();

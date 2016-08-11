@@ -1,13 +1,13 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.RUN_WEIGHT_MISSING;
+import static com.variant.core.xdm.impl.MessageTemplate.RUN_WEIGHT_MISSING;
 
 import java.util.Random;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
 
 class TestTargeterDefault {
 

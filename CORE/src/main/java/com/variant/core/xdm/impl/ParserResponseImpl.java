@@ -1,13 +1,13 @@
-package com.variant.core.schema.impl;
+package com.variant.core.xdm.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.parser.ParserMessage;
-import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.schema.parser.ParserMessage.Severity;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.ParserMessage.Severity;
+import com.variant.core.xdm.Schema;
 
 public class ParserResponseImpl implements ParserResponse {
 

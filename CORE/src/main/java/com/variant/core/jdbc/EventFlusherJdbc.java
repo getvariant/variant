@@ -13,7 +13,7 @@ import com.variant.core.event.EventFlusher;
 import com.variant.core.event.VariantFlushableEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.jdbc.JdbcService.Vendor;
-import com.variant.core.schema.Test;
+import com.variant.core.xdm.Test;
 
 /**
  * JDBC event flushers extend this class instead of implementing the EventFlusher interface. 

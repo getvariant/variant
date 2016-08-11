@@ -15,11 +15,11 @@ import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.CoreStateRequestImpl;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.impl.MessageTemplate;
 
 /**
  * Client side session implementation. Augments core session with client-side

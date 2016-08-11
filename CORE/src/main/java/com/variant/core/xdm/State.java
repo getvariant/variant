@@ -1,4 +1,4 @@
-package com.variant.core.schema;
+package com.variant.core.xdm;
 
 import java.util.List;
 import java.util.Map;

@@ -6,8 +6,8 @@ import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.inject.Injector;
+import com.variant.core.xdm.impl.MessageTemplate;
 
 /**
  * Core session service.

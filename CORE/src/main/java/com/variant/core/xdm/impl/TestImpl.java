@@ -1,4 +1,4 @@
-package com.variant.core.schema.impl;
+package com.variant.core.xdm.impl;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,9 +7,9 @@ import java.util.List;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantSpace;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
 
 /**
  * 

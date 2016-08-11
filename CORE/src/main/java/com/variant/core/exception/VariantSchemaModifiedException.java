@@ -1,6 +1,6 @@
 package com.variant.core.exception;
 
-import com.variant.core.schema.impl.MessageTemplate;
+import com.variant.core.xdm.impl.MessageTemplate;
 
 public class VariantSchemaModifiedException extends VariantExpectedRuntimeException {
 

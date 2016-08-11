@@ -19,13 +19,13 @@ import com.variant.core.hook.TestParsedHook;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.parser.ParserMessage;
-import com.variant.core.schema.parser.ParserMessage.Severity;
-import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.ParserMessage.Severity;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.State;
 
 /**
  * TODO: Need to also test annotations.
@@ -259,7 +259,7 @@ public class UserHookTest extends BaseTestCore {
 	 */
 	private static class TestParsedHookListenerImpl implements HookListener<TestParsedHook> {
 
-		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
+		private ArrayList<com.variant.core.xdm.Test> testList = new ArrayList<com.variant.core.xdm.Test>();
 		
 		@Override
 		public Class<TestParsedHook> getHookClass() {
@@ -278,7 +278,7 @@ public class UserHookTest extends BaseTestCore {
 	 */
 	private static class TestQualificationHookListenerNullImpl implements HookListener<TestQualificationHook> {
 
-		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
+		private ArrayList<com.variant.core.xdm.Test> testList = new ArrayList<com.variant.core.xdm.Test>();
 		
 		@Override
 		public Class<TestQualificationHook> getHookClass() {
@@ -296,11 +296,11 @@ public class UserHookTest extends BaseTestCore {
 	 */
 	private static class TestQualificationHookListenerDisqualifyImpl implements HookListener<TestQualificationHook> {
 
-		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
-		private com.variant.core.schema.Test[] testsToDisqualify;
+		private ArrayList<com.variant.core.xdm.Test> testList = new ArrayList<com.variant.core.xdm.Test>();
+		private com.variant.core.xdm.Test[] testsToDisqualify;
 		private boolean removeFromTt;
 		
-		private TestQualificationHookListenerDisqualifyImpl(boolean removeFromTt, com.variant.core.schema.Test...testsToDisqualify) {
+		private TestQualificationHookListenerDisqualifyImpl(boolean removeFromTt, com.variant.core.xdm.Test...testsToDisqualify) {
 			this.testsToDisqualify = testsToDisqualify;
 			this.removeFromTt = removeFromTt;
 		}
@@ -313,7 +313,7 @@ public class UserHookTest extends BaseTestCore {
 		@Override
 		public void post(TestQualificationHook hook) {
 			boolean found = false;
-			for (com.variant.core.schema.Test test: testsToDisqualify) {
+			for (com.variant.core.xdm.Test test: testsToDisqualify) {
 				if (test.equals(hook.getTest())) {
 					found = true;
 					break;

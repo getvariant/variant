@@ -1,8 +1,8 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
-import static com.variant.core.schema.impl.MessageTemplate.RUN_METHOD_UNSUPPORTED;
-import static com.variant.core.schema.impl.MessageTemplate.RUN_SCHEMA_UNDEFINED;
+import static com.variant.core.xdm.impl.MessageTemplate.RUN_ACTIVE_REQUEST;
+import static com.variant.core.xdm.impl.MessageTemplate.RUN_METHOD_UNSUPPORTED;
+import static com.variant.core.xdm.impl.MessageTemplate.RUN_SCHEMA_UNDEFINED;
 
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -29,11 +29,11 @@ import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.exception.VariantSchemaModifiedException;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.impl.StateImpl;
 
 /**
  * 

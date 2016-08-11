@@ -22,12 +22,12 @@ import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.jdbc.JdbcService;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.ParserResponse;
 import com.variant.core.test.jdbc.EventExperienceFromDatabase;
 import com.variant.core.test.jdbc.EventReader;
 import com.variant.core.test.jdbc.VariantEventFromDatabase;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.State;
 
 public class EventWriterTest extends BaseTestCore {
 		
@@ -384,12 +384,12 @@ public class EventWriterTest extends BaseTestCore {
 	 */
 	private static class TestQualificationHookListenerDisqualifyTest implements HookListener<TestQualificationHook> {
 
-		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
-		private com.variant.core.schema.Test[] testsToDisqualify;
+		private ArrayList<com.variant.core.xdm.Test> testList = new ArrayList<com.variant.core.xdm.Test>();
+		private com.variant.core.xdm.Test[] testsToDisqualify;
 		private String sessionId;
 		private boolean removeFromTt;
 		
-		private TestQualificationHookListenerDisqualifyTest(boolean removeFromTt, String sessionId, com.variant.core.schema.Test...testsToDisqualify) {
+		private TestQualificationHookListenerDisqualifyTest(boolean removeFromTt, String sessionId, com.variant.core.xdm.Test...testsToDisqualify) {
 			this.testsToDisqualify = testsToDisqualify;
 			this.sessionId = sessionId;
 			this.removeFromTt = removeFromTt;
@@ -405,7 +405,7 @@ public class EventWriterTest extends BaseTestCore {
 			if (! hook.getSession().getId().equals(sessionId)) return;
 			
 			boolean found = false;
-			for (com.variant.core.schema.Test test: testsToDisqualify) {
+			for (com.variant.core.xdm.Test test: testsToDisqualify) {
 				if (test.equals(hook.getTest())) {
 					found = true;
 					break;

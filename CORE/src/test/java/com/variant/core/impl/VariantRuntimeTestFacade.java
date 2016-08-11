@@ -3,9 +3,9 @@ package com.variant.core.impl;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
 
 public class VariantRuntimeTestFacade {
 	

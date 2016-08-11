@@ -3,10 +3,10 @@ package com.variant.core;
 import java.util.Collection;
 
 import com.variant.core.event.VariantEvent;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
 import com.variant.core.util.Tuples.Pair;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
 
 /**
  * <p>Variant Core Session. 

@@ -13,9 +13,9 @@ import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
 
 
 public class ParserOkayTest extends BaseTestCore {
@@ -430,10 +430,10 @@ public class ParserOkayTest extends BaseTestCore {
 	 */
 	private static class TestDisqualifier implements HookListener<TestQualificationHook> {
 
-		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
-		private com.variant.core.schema.Test testToDisqualify;
+		private ArrayList<com.variant.core.xdm.Test> testList = new ArrayList<com.variant.core.xdm.Test>();
+		private com.variant.core.xdm.Test testToDisqualify;
 		
-		private TestDisqualifier(com.variant.core.schema.Test testToDisqualify) {
+		private TestDisqualifier(com.variant.core.xdm.Test testToDisqualify) {
 			this.testToDisqualify = testToDisqualify;
 		}
 

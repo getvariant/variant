@@ -1,14 +1,14 @@
-package com.variant.core.schema.impl;
+package com.variant.core.xdm.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_NO_STATES;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_NAME_DUPE;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_NAME_MISSING;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_NAME_NOT_STRING;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_PARAMS_EMPTY;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_PARAMS_MISSING;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_PARAMS_NOT_OBJECT;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_STATE_UNSUPPORTED_PROPERTY;
+import static com.variant.core.xdm.impl.MessageTemplate.INTERNAL;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_NO_STATES;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_NAME_DUPE;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_NAME_MISSING;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_NAME_NOT_STRING;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_PARAMS_EMPTY;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_PARAMS_MISSING;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_PARAMS_NOT_OBJECT;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_UNSUPPORTED_PROPERTY;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,9 +17,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.parser.ParserMessage;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.State;
 
 /**
  * Parse the STATES clause.

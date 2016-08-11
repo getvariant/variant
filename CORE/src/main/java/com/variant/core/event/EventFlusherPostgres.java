@@ -1,6 +1,6 @@
 package com.variant.core.event;
 
-import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET;
+import static com.variant.core.xdm.impl.MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

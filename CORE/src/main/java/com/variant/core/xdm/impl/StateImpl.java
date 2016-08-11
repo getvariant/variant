@@ -1,4 +1,4 @@
-package com.variant.core.schema.impl;
+package com.variant.core.xdm.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,9 +8,9 @@ import java.util.Map;
 import com.variant.core.event.impl.util.CaseInsensitiveMap;
 import com.variant.core.event.impl.util.CaseInsensitiveUnmodifiableMap;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
 
 /**
  * 

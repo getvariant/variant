@@ -1,7 +1,7 @@
 package com.variant.core.exception;
 
-import com.variant.core.schema.impl.MessageTemplate;
-import com.variant.core.schema.parser.ParserMessage.Severity;
+import com.variant.core.schema.ParserMessage.Severity;
+import com.variant.core.xdm.impl.MessageTemplate;
 
 public class VariantExpectedRuntimeException extends VariantRuntimeException {
 

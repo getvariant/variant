@@ -3,8 +3,8 @@ package com.variant.client;
 import java.util.Collection;
 
 import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.Test.Experience;
 
 /**
  * <p>An environment dependent implementation will use external mechanisms to obtain and to store

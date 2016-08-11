@@ -16,14 +16,14 @@ import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.impl.MessageTemplate;
-import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.svrstub.TestExperienceServerStub;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
+import com.variant.core.xdm.impl.MessageTemplate;
+import com.variant.core.xdm.impl.StateImpl;
 
 /**
  * 

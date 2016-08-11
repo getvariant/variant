@@ -13,9 +13,9 @@ import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.CoreStateRequestImpl;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
 
 /**
  * <p>The implementation of {@link VariantServletStateRequest}.

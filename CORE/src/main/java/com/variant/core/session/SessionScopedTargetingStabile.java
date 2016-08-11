@@ -7,9 +7,9 @@ import java.util.LinkedHashMap;
 
 import org.apache.commons.collections4.Predicate;
 
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
 
 /**
  * Session scoped targeting stabilizer provides session scoped targeting stability.

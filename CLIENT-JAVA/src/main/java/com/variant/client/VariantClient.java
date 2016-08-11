@@ -7,8 +7,8 @@ import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.VariantProperties;
 import com.variant.core.exception.VariantSchemaModifiedException;
 import com.variant.core.hook.HookListener;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.xdm.Schema;
 
 /**
  * Variant Bare Java Client. Makes no assumptions about the host application other than 

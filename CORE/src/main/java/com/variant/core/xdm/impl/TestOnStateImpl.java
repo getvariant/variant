@@ -1,13 +1,13 @@
-package com.variant.core.schema.impl;
+package com.variant.core.xdm.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
-import com.variant.core.schema.State;
-import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.StateVariant;
+import com.variant.core.xdm.Test;
 
 /**
  * An element of the onState array of the test definition.

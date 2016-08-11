@@ -4,9 +4,9 @@ import static com.variant.client.VariantClientPropertyKeys.SESSION_ID_TRACKER_CL
 import static com.variant.client.VariantClientPropertyKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.VariantClientPropertyKeys.TARGETING_TRACKER_CLASS_INIT;
 import static com.variant.client.VariantClientPropertyKeys.TARGETING_TRACKER_CLASS_NAME;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_SESSION_ID_TRACKER_NO_INTERFACE;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
-import static com.variant.core.schema.impl.MessageTemplate.RUN_SCHEMA_UNDEFINED;
+import static com.variant.core.xdm.impl.MessageTemplate.BOOT_SESSION_ID_TRACKER_NO_INTERFACE;
+import static com.variant.core.xdm.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
+import static com.variant.core.xdm.impl.MessageTemplate.RUN_SCHEMA_UNDEFINED;
 
 import java.io.InputStream;
 import java.util.Random;
@@ -35,9 +35,9 @@ import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.Payload;
 import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.ParserResponse;
 import com.variant.core.session.SessionStore;
+import com.variant.core.xdm.Schema;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
@@ -271,7 +271,7 @@ public class VariantClientImpl implements VariantClient {
 	 * @param deploy The new test schema will be deployed if this is true and no parse errors 
 	 *        were encountered.
 	 *        
-	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} object that
+	 * @return An instance of the {@link com.variant.core.schema.ParserResponse} object that
 	 *         may be further examined about the outcome of this operation.
 	 * 
 	 * @since 0.5
@@ -287,7 +287,7 @@ public class VariantClientImpl implements VariantClient {
      * 
 	 * @param stream The schema to be parsed and deployed, as a java.io.InputStream.
 	 *         
-	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} object, which
+	 * @return An instance of the {@link com.variant.core.schema.ParserResponse} object, which
 	 *         may be further examined about the outcome of this operation.
      *
 	 * @since 0.5
@@ -300,7 +300,7 @@ public class VariantClientImpl implements VariantClient {
 	/**
 	 * <p>Get currently deployed test schema, if any.
 	 * 
-	 * @return Current test schema as an instance of the {@link com.variant.core.schema.Schema} object.
+	 * @return Current test schema as an instance of the {@link com.variant.core.xdm.Schema} object.
 	 * 
 	 * @since 0.5
 	 */

@@ -9,7 +9,7 @@ import java.util.Map;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.VariantFlushableEvent;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.xdm.Test.Experience;
 
 /**
  * EVENTS DAO.

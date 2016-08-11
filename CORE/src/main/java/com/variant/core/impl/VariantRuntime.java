@@ -15,15 +15,15 @@ import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.Test.OnState;
-import com.variant.core.schema.impl.StateImpl;
-import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.session.SessionScopedTargetingStabile;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.StateVariant;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
+import com.variant.core.xdm.Test.OnState;
+import com.variant.core.xdm.impl.StateImpl;
+import com.variant.core.xdm.impl.TestOnStateImpl;
 
 /**
  * Entry point into the runtime.

@@ -7,9 +7,9 @@ import org.junit.Test;
 
 import com.variant.client.servlet.StateParsedHookListenerImpl;
 import com.variant.client.servlet.VariantServletClient;
-import com.variant.core.schema.parser.ParserMessage;
-import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.schema.parser.ParserMessage.Severity;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.ParserMessage.Severity;
 
 public class StateParsedHookTest extends ServletClientBaseTest {
 

@@ -2,7 +2,7 @@ package com.variant.client;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.schema.State;
+import com.variant.core.xdm.State;
 
 /**
  * <p>Represents a Variant user session. Variant has its own notion of user session, 

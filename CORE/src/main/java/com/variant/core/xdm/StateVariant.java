@@ -1,10 +1,10 @@
-package com.variant.core.schema;
+package com.variant.core.xdm;
 
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.Test.OnState;
+import com.variant.core.xdm.Test.Experience;
+import com.variant.core.xdm.Test.OnState;
 
 
 /**

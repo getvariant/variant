@@ -31,8 +31,8 @@ javadoc -d ${javadoc_dir}  \
    com.variant.core.util              \
    com.variant.core.event             \
    com.variant.core.hook              \
+   com.variant.core.xdm               \
    com.variant.core.schema            \
-   com.variant.core.schema.parser     \
 
 #
 # Package

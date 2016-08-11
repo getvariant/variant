@@ -1,22 +1,22 @@
-package com.variant.core.schema.impl;
+package com.variant.core.xdm.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_MISSING;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_NOT_STRING;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_PARAMS_NOT_OBJECT;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY;
-import static com.variant.core.schema.impl.MessageTemplate.PARSER_VARIANT_NOT_OBJECT;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_MISSING;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_NOT_STRING;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_PARAMS_NOT_OBJECT;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANT_NOT_OBJECT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +26,8 @@ import com.variant.core.event.impl.util.CaseInsensitiveMap;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
 
 /**
  * Parse the element of the tests/onViews/variants list.

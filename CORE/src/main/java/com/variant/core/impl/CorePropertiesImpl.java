@@ -1,6 +1,6 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON;
+import static com.variant.core.xdm.impl.MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,8 +15,8 @@ import com.variant.core.VariantCorePropertyKeys.Key;
 import com.variant.core.VariantProperties;
 import com.variant.core.event.impl.util.PropertiesChain;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.schema.impl.MessageTemplate;
 import com.variant.core.util.Tuples.Pair;
+import com.variant.core.xdm.impl.MessageTemplate;
 
 /**
  * Static singleton interface to system properties.

@@ -1,8 +1,8 @@
-package com.variant.core.schema.impl;
+package com.variant.core.xdm.impl;
 
 import com.variant.core.hook.StateParsedHook;
-import com.variant.core.schema.State;
-import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.xdm.State;
 
 /**
  * 

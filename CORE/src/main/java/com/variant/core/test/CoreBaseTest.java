@@ -19,12 +19,12 @@ import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.jdbc.JdbcService;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.impl.MessageTemplate;
-import com.variant.core.schema.parser.ParserMessage;
-import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
 import com.variant.core.session.SessionScopedTargetingStabile;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.Test.Experience;
+import com.variant.core.xdm.impl.MessageTemplate;
 
 /**
  * Common utility methods for all JUnit tests in all projects, hence we've put it in the main scope.

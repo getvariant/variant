@@ -11,7 +11,7 @@ import com.variant.core.impl.VariantCore;
 import com.variant.core.net.Payload;
 import com.variant.core.net.PayloadWriter;
 import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.ParserResponse;
 
 public class NetTest extends BaseTestCore {
 

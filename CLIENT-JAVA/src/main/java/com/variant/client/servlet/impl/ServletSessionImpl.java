@@ -9,13 +9,13 @@ import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
 import com.variant.core.util.Tuples.Pair;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
 
 /**
  * <p>The implementation of {@link VariantServletSession}.
- * Replaces bare client's {@link VariantCoreSession#targetForState(com.variant.core.schema.State)} 
+ * Replaces bare client's {@link VariantCoreSession#targetForState(com.variant.core.xdm.State)} 
  * method with one, which returns the servlet-aware implementation of {@link VariantCoreStateRequest}. 
  * 
  * @author Igor Urisman

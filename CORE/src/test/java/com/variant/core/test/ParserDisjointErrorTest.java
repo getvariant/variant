@@ -6,13 +6,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.impl.MessageTemplate;
-import com.variant.core.schema.impl.ParserMessageImplFacade;
-import com.variant.core.schema.impl.ParserResponseImpl;
-import com.variant.core.schema.impl.SchemaParser;
-import com.variant.core.schema.parser.ParserMessage;
-import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.schema.parser.ParserMessage.Severity;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.ParserMessage.Severity;
+import com.variant.core.xdm.impl.MessageTemplate;
+import com.variant.core.xdm.impl.ParserMessageImplFacade;
+import com.variant.core.xdm.impl.ParserResponseImpl;
+import com.variant.core.xdm.impl.SchemaParser;
 
 /**
  * Parse time exceptions

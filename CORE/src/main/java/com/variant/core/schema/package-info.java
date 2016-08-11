@@ -1,4 +1,4 @@
 /**
- * Variant Core API XDM schema.
+ * Variant Core API XDM schema parser.
  */
 package com.variant.core.schema;

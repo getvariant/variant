@@ -1,8 +1,8 @@
-package com.variant.core.schema.impl;
+package com.variant.core.xdm.impl;
 
 import com.variant.core.hook.TestParsedHook;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.xdm.Test;
 
 /**
  * 

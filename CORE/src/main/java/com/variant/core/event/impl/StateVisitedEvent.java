@@ -3,7 +3,7 @@ package com.variant.core.event.impl;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.variant.core.schema.State;
+import com.variant.core.xdm.State;
 
 
 public class StateVisitedEvent extends VariantEventSupport implements Serializable {

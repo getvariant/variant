@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.xdm.Test.Experience;
 
 /**
  * Variant event that can be flushed. Instantiated by Variant server

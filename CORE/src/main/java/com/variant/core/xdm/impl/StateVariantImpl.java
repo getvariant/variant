@@ -1,4 +1,4 @@
-package com.variant.core.schema.impl;
+package com.variant.core.xdm.impl;
 
 import java.io.StringWriter;
 import java.util.Collections;
@@ -9,10 +9,10 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.core.event.impl.util.CaseInsensitiveMap;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.Test.OnState;
+import com.variant.core.xdm.StateVariant;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
+import com.variant.core.xdm.Test.OnState;
 
 
 class StateVariantImpl implements StateVariant {

@@ -1,10 +1,10 @@
 package com.variant.core.impl;
 
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
-import static com.variant.core.schema.impl.MessageTemplate.BOOT_EVENT_FLUSHER_NO_INTERFACE;
-import static com.variant.core.schema.impl.MessageTemplate.INTERNAL;
+import static com.variant.core.xdm.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
+import static com.variant.core.xdm.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
+import static com.variant.core.xdm.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
+import static com.variant.core.xdm.impl.MessageTemplate.BOOT_EVENT_FLUSHER_NO_INTERFACE;
+import static com.variant.core.xdm.impl.MessageTemplate.INTERNAL;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,16 +26,16 @@ import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.UserHook;
 import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.impl.ParserResponseImpl;
-import com.variant.core.schema.impl.SchemaImpl;
-import com.variant.core.schema.impl.SchemaParser;
-import com.variant.core.schema.parser.ParserMessage;
-import com.variant.core.schema.parser.ParserMessage.Severity;
-import com.variant.core.schema.parser.ParserResponse;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.ParserMessage.Severity;
 import com.variant.core.session.SessionService;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
+import com.variant.core.xdm.impl.ParserResponseImpl;
+import com.variant.core.xdm.impl.SchemaImpl;
+import com.variant.core.xdm.impl.SchemaParser;
 
 /**
  * The Variant CORE API.
@@ -231,7 +231,7 @@ public class VariantCore implements Serializable {
 	 * @param deploy The new test schema will be deployed if this is true and no parse errors 
 	 *        were encountered.
 	 *        
-	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} type that
+	 * @return An instance of the {@link com.variant.core.schema.ParserResponse} type that
 	 *         may be further examined about the outcome of this operation.
 	 * 
 	 * @since 0.5
@@ -253,7 +253,7 @@ public class VariantCore implements Serializable {
      * 
 	 * @param stream The schema to be parsed and deployed, as a java.io.InputStream.
 	 *         
-	 * @return An instance of the {@link com.variant.core.schema.parser.ParserResponse} object, which
+	 * @return An instance of the {@link com.variant.core.schema.ParserResponse} object, which
 	 *         may be further examined about the outcome of this operation.
      *
 	 * @since 0.5
@@ -266,7 +266,7 @@ public class VariantCore implements Serializable {
 	/**
 	 * <p>Get currently deployed test schema, if any.
 	 * 
-	 * @return Current test schema as an instance of the {@link com.variant.core.schema.Schema} object.
+	 * @return Current test schema as an instance of the {@link com.variant.core.xdm.Schema} object.
 	 * 
 	 * @since 0.5
 	 */
