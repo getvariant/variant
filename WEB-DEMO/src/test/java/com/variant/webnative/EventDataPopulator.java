@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Random;
 
 import com.variant.client.VariantClient;
+import com.variant.client.VariantSession;
+import com.variant.client.VariantStateRequest;
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
@@ -62,11 +64,11 @@ public class EventDataPopulator {
 						5 + new Random(thisSecond % 7 + test.getExperiences().get(2).hashCode()).nextInt(10) + new Random(test.getExperiences().get(2).hashCode()).nextInt(10)};
 			}
 			//System.out.println(countsPerSecond[0] + "," + countsPerSecond[1] + "," + countsPerSecond[2]);
-			VariantCoreSession ssn = client.getSession(String.valueOf(ssnId));
+			VariantSession ssn = client.getSession(String.valueOf(ssnId));
 			
 			// Everyone gets to the first page... Emulating new visits.
-			VariantCoreStateRequest request = ssn.targetForState(newOwnerView);
-			Test.Experience exp = request.getActiveExperience(test);
+			VariantStateRequest request = ssn.targetForState(newOwnerView);
+			Test.Experience exp = request.getLiveExperience(test);
 			
 			// If we've fulfilled quota for this experience and this second, stop untilt he end of current second;
 			if (exp.getName().equals("outOfTheBox")      && --countsPerSecond[0] <= 0 ||

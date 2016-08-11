@@ -12,6 +12,22 @@ import com.variant.core.jdbc.EventFlusherJdbc;
 import com.variant.core.jdbc.JdbcService.Vendor;
 import com.variant.open.securestring.SecureString;
 
+/**
+ * <p>An implementation of {@link EventFlusher}, which writes Variant events to an
+ * instance of H2 database. Requires database schema, as created by the
+ * {@code create-schema.sql} SQL script, included in the distribution. The database
+ * server URL and login credentials must be supplied in the
+ * {@code event.flasher.class.init} system property as a JSON string of the following
+ * format:
+ * <pre>
+ * {@code
+ *  {"url":h2-server-url,"user":database-user,"password":database-password}
+ * }
+ * </pre>
+ * 
+ * @author Igor Urisman
+ * @since 0.5
+ */
 public class EventFlusherH2 extends EventFlusherJdbc {
 	
 	String url = null;
@@ -41,7 +57,7 @@ public class EventFlusherH2 extends EventFlusherJdbc {
 	}
 
 	@Override
-	public Vendor getVendor() {
+	protected Vendor getJdbcVendor() {
 		return Vendor.H2;
 	}
 	

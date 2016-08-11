@@ -64,9 +64,9 @@ rm -rf WEB-DEMO
 #
 # DB
 #
-mkdir -p ${stage_dir}/db/postgres
-cp ${workspace_root_dir}/CORE/bin/schema.sh ${stage_dir}/db/
+mkdir -p ${stage_dir}/db/postgres ${stage_dir}/db/h2
 cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql ${stage_dir}/db/postgres
+cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql ${stage_dir}/db/h2
 
 #
 # Package

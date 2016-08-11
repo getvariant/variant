@@ -3,35 +3,30 @@ package com.variant.core.event;
 import java.util.Date;
 import java.util.Map;
 
-import com.variant.core.VariantCoreStateRequest;
-
 /**
- * A Variant event. Events are generated either implicitly by the Variant RCE Container, 
- * or explicitly by the client code. Events are flushed to external storage once per state
- * request, during the {@link Variant#commitStateRequest(com.variant.core.VariantCoreStateRequest, Object...)}
- * method by an implementation of {@link com.variant.core.event.EventFlusher}. Client code
- * may generate its own events by passing its own implementations to 
- * {@link VariantCoreStateRequest#triggerEvent(VariantEvent)}.
+ * A Variant event that can be triggered. Events are generated either implicitly by 
+ * Variant server, or explicitly by the host application. Implicitly generated events
+ * are triggered at state request commit time, while custom events can be triggered
+ * at will by passing custom implementations of this interface to 
+ * {@link com.variant.client.VariantSession#triggerEvent(VariantEvent)}.
  * 
  * @author Igor Urisman.
- * @see VariantCoreStateRequest#triggerEvent(VariantEvent)
  * @since 0.5
  *
  */
 public interface VariantEvent {
 				
 	/**
-	 * Event's name, as assigned by the implementation.
-	 * 
-	 * @return Event's name.
+	 * The name of the event, such as "STATE_VISIT".
+	 * @return Event name.
 	 * @since 0.5
 	 */
 	public String getEventName();
 
 	/**
-	 * Event's value, as assigned by the implementation.
+	 * The value of the event, such as "Login Page".
 	 * 
-	 * @return Event's value.
+	 * @return Event value.
 	 * @since 0.5
 	 */
 	public String getEventValue();	
@@ -45,11 +40,11 @@ public interface VariantEvent {
 	public Date getCreateDate();
 	
 	/**
-	 * Custom parameters.
+	 * Custom parameters. An event may have any number of custom parameters which are
+	 * simple key-value pairs. These will be passed without interpretation to the externally
+	 * configured event flusher which is expected to do something meaningful with them.
 	 * 
-	 * @return Custom parameters the implementor wishes to be logged alongside with this
-	 *         event.  It is up to the {@link EventFlusher} in effect how these parameters
-	 *         will be recorded.
+	 * @return Custom parameters. Will be passed to the implementation of {@link EventFlusher}.
 	 * @since 0.5
 	 */
 	public Map<String,Object> getParameterMap();

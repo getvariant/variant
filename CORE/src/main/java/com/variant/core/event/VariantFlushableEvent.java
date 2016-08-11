@@ -4,14 +4,13 @@ import java.util.Collection;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * Decorated Variant event. Instantiated by the Variant Core library
- * in order to enrich client-supplied {@link VariantEvent} object with
- * extra functionality supplied by Variant.  Client code may need these
- * extra methods if it wants to implement a custom {@link EventFlusher}.
+ * Variant event that can be flushed. Instantiated by Variant server
+ * and passed to an externally configured implementation of {@link EventFlusher}.
+ * Extends {@link VariantEvent} with additional methods required for proper logging,
+ * such as caller's current Variant session.
  * 
  * @author Igor Urisman
  * @since 0.6
@@ -20,26 +19,19 @@ public interface VariantFlushableEvent extends VariantEvent {
 
 	
 	/**
-	 * The current variant session.
+	 * The current Variant session.
 	 * 
-	 * @return An object of type {@link VariantCoreStateRequest}.
+	 * @return An object of type {@link VariantCoreSession}.
 	 * 
 	 * @since 0.6
 	 */
 	public VariantCoreSession getSession();
 	
 	/**
-	 * <p>Test experiences that:
-	 * <ol>
-	 * <li>Were targeted for the session that triggered the event.</li>
-	 * <li>Correspond to tests, instrumented on the state corresponding to the state request
-	 *    which triggered the event.</li>
-	 * <li>Correspond to tests that satisfied qualification hooks, if any, for this session
-	 *    which triggered the event.</li>
-	 * </ol>
+	 * Current live experiences.
 	 * 
-	 * @return A collection of objects of type {@link Test.Experience}.
-	 * 
+	 * @return A collection of objects of type {@link Experience}.
+	 * @see VariantCoreStateRequest#getLiveExperiences()
 	 * @since 0.6
 	 */
 	public Collection<Experience> getLiveExperiences();

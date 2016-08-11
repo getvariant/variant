@@ -9,6 +9,14 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.VariantCoreInitParams;
 import com.variant.core.schema.Test.Experience;
 
+/**
+ * <p>An environment independent implementation of {@link EventFlusher}, which appends
+ * events to the application logger. Can't really be used in production, but is good
+ * enough for the demo application because it does not require any external support.
+ * 
+ * @author Igor Urisman
+ * @since 0.5
+ */
 public class EventFlusherAppLogger implements EventFlusher {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(EventFlusherAppLogger.class);

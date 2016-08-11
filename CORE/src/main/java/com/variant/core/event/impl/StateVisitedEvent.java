@@ -12,7 +12,7 @@ public class StateVisitedEvent extends VariantEventSupport implements Serializab
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static final String EVENT_NAME = "STATE_SERVE";
+	public static final String EVENT_NAME = "STATE_VISIT";
 	
 	private State state;
 	private Date createDate = new Date();

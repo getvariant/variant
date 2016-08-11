@@ -38,7 +38,7 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 	 * Implementations will know the vendor.
 	 * @return
 	 */
-	public abstract Vendor getVendor();
+	protected abstract Vendor getJdbcVendor();
 	
 	/**
 	 * Persist a collection of events.
@@ -49,17 +49,17 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
 			    "(id, session_id, created_on, event_name, event_value) " +
-				(getVendor() == Vendor.POSTGRES ?
+				(getJdbcVendor() == Vendor.POSTGRES ?
 						"VALUES (NEXTVAL('events_id_seq'), ?, ?, ?, ?)" :
-				getVendor() == Vendor.H2 ?
+				getJdbcVendor() == Vendor.H2 ?
 						"VALUES (events_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
 
 		final String INSERT_EVENT_EXPERIENCES_SQL = 
 				"INSERT INTO event_experiences " +
 			    "(id, event_id, test_name, experience_name, is_control) " +
-				(getVendor() == Vendor.POSTGRES ?
+				(getJdbcVendor() == Vendor.POSTGRES ?
 						"VALUES (NEXTVAL('event_experiences_id_seq'), ?, ?, ?, ?)" :
-				getVendor() == Vendor.H2 ?
+				getJdbcVendor() == Vendor.H2 ?
 						"VALUES (event_experiences_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
 
 		final String INSERT_EVENT_PARAMETERS_SQL = 

@@ -38,16 +38,16 @@ public interface EventFlusher {
 	 * initializing Variant Server. Use this to inject state from configuration.
 	 * 
 	 * @param initParams An instance of type {@link VariantCoreInitParams}, containing 
-	 *                   parsed JSON object, specified by the <code>targeting.tracker.class.init</code> system property. 
+	 *                   parsed JSON object, specified by the <code>event.flusher.class.init</code> system property. 
 	 * 
 	 * @since 0.5
 	 */
 	public void init(VariantCoreInitParams initParams) throws Exception;
 	
 	/**
-	 * <p>Persist events to some storage mechanism.
+	 * <p>Flush a bunch of events to external storage.
 	 * 
-	 * @param events A collection of decorated variant events to be persisted.
+	 * @param events A collection of decorated variant events {@link VariantFlushableEvent} to be written off.
 	 * 
 	 * @see EventFlusherH2, EventFlusherPostgres
 	 * @since 0.5
