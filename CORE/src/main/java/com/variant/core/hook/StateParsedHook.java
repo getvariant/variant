@@ -3,8 +3,8 @@ package com.variant.core.hook;
 import com.variant.core.schema.State;
 
 /**
- * <p>Parse time user hook that is reached immediately after a state is successfully parsed.
- * This hook will not be reached if errors were encountered during parsing of a state.
+ * <p>Parse time user hook that posts its listeners immediately after a state is successfully parsed.
+ * This hook will not post for a state if errors were encountered during parsing of that state.
  * 
  * @author Igor.
  * @since 0.5
@@ -13,7 +13,8 @@ import com.variant.core.schema.State;
 public interface StateParsedHook extends ParserHook {
 
 	/**
-	 * Client code may obtain the state for which this hook was reached.
+	 * The state for which this hook is posting. It is safe to assume that no errors were
+	 * encountered during parsing of this state.
 	 * 
 	 * @return An object of type {@link com.variant.core.schema.State}.
      * @since 0.5

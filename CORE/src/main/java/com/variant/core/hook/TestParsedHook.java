@@ -3,8 +3,8 @@ package com.variant.core.hook;
 import com.variant.core.schema.Test;
 
 /**
- * <p>Parse time user hook that is reached immediately after a test is successfully parsed.
- * This hook will not be reached if errors were encountered during parsing of a test..
+ * <p>Parse time user hook that posts its listeners immediately after a test is successfully parsed.
+ * This hook will not post for a test if errors were encountered during parsing of that test.
  * 
  * @author Igor.
  * @since 0.5
@@ -13,7 +13,8 @@ import com.variant.core.schema.Test;
 public interface TestParsedHook extends ParserHook {
 
 	/**
-	 * Client code may obtain the test for which this hook was reached.
+	 * The test for which this hook is posting. It is safe to assume that no errors were
+	 * encountered during parsing of this test.
 	 * 
 	 * @return An object of type {@link com.variant.core.schema.Test}.
      * @since 0.5
