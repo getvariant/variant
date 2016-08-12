@@ -6,7 +6,6 @@
 #!/bin/bash
 
 export version=0.6.1
-export full_version=${version}-RC1
 
 function usage() {
     echo "$(basename $0) email"
@@ -38,7 +37,7 @@ cp $workspace_root_dir/CORE/target/variant-core*.jar ${stage_dir}
 #
 cd ${workspace_root_dir}/SERVER-HTTP
 sbt clean package
-cp target/scala-2.11/variant-server*.war ${stage_dir}/variant-server-${full_version}.war
+cp target/scala-2.11/variant-server*.war ${stage_dir}/variant-server-${version}.war
 
 #
 # JAVA CLIENT
@@ -73,7 +72,7 @@ cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql ${stage_dir
 # Package
 #
 cd ${stage_dir}
-tar -cvf ${out_dir}/variant-all-${full_version}.tar * #./*.jar ./*.war ./*.tar
+tar -cvf ${out_dir}/variant-all-${version}.tar * #./*.jar ./*.war ./*.tar
 
 #
 # Javadoc

@@ -5,12 +5,12 @@
 
 #!/bin/bash
 
-full_version=${full_version:-unset}
+version=${version:-unset}
 workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
 core_src_dir=${workspace_root_dir}/CORE/src/main/java
 client_src_dir=${workspace_root_dir}/CLIENT-JAVA/src/main/java
 javadoc_dir=${workspace_root_dir}/RELEASE/javadoc
-out_file=${workspace_root_dir}/RELEASE/out/javadoc-${full_version}.tar
+out_file=${workspace_root_dir}/RELEASE/out/javadoc-${version}.tar
 
 rm -rf ${javadoc_dir} ${out_dir}
 mkdir ${out_dir} ${javadoc_dir}
