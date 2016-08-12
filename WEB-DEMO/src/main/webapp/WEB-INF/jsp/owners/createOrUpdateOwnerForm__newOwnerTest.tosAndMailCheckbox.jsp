@@ -15,7 +15,7 @@
 <script>
 
    variant.boot({
-      url:"http://localhost:8080",
+      url:"http://localhost:8080/api",
       success: function(data, textStatus) {console.log("POST returned status '" + textStatus + "' and body '" + data + "'");},
       error: function(jqXHR) {
          throw Error("Bad response from Variant server: " + jqXHR.status + " " + jqXHR.statusText + ": " + jqXHR.responseText);
