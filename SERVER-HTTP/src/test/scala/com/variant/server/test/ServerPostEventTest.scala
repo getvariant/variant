@@ -258,11 +258,11 @@ class ServerPostEventTest extends UnitSpec {
 		//eventFromDb.getCreatedOn.getTime should be (1454959622350L)
 		eventFromDb.getEventName should be ("NAME")
 		eventFromDb.getEventValue should be ("VALUE")
-      eventFromDb.getEventExperiences.size() should be (req.getActiveExperiences.size)
+      eventFromDb.getEventExperiences.size() should be (req.getLiveExperiences.size)
 		for (variantEvent <- eventFromDb.getEventExperiences) {
 		   variantEvent.getEventId should be (eventFromDb.getId)
 		   val test = clientCore.getSchema.getTest(variantEvent.getTestName)
-		   req.getActiveExperience(test) should equal (test.getExperience(variantEvent.getExperienceName))
+		   req.getLiveExperience(test) should equal (test.getExperience(variantEvent.getExperienceName))
 		}
    }
 

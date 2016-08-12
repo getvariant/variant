@@ -6,7 +6,7 @@ import com.variant.server.util.JettyTestServer
 import com.variant.server.util.UnitSpec
 import com.variant.server.SessionCache
 import org.apache.http.HttpStatus
-import com.variant.core.schema.Schema
+import com.variant.core.xdm.Schema
 import scala.collection.JavaConversions._
 import UnitSpec._
 import com.variant.core.hook.TestQualificationHook
@@ -215,9 +215,9 @@ class ServerSessionTest extends UnitSpec {
          val reqOutBeforeCommit = ssnOut.getStateRequest()
          reqOutBeforeCommit should not be (null)
          for (test <- clientCore.getSchema.getState(state).getInstrumentedTests) {
-            reqOutBeforeCommit.getActiveExperiences.exists { exp => exp.getTest equals test } should be (true)
+            reqOutBeforeCommit.getLiveExperiences.exists { exp => exp.getTest equals test } should be (true)
          }
-         for (exp <- reqOutBeforeCommit.getActiveExperiences) {
+         for (exp <- reqOutBeforeCommit.getLiveExperiences) {
             clientCore.getSchema.getState(state).getInstrumentedTests.exists { t => exp.getTest equals t } should be (true)
          }
 
@@ -226,9 +226,9 @@ class ServerSessionTest extends UnitSpec {
          val reqOutAfterCommit = ssnOut.getStateRequest()
          reqOutAfterCommit shouldBe reqOutBeforeCommit
          for (test <- clientCore.getSchema.getState(state).getInstrumentedTests) {
-            reqOutAfterCommit.getActiveExperiences.exists { exp => exp.getTest equals test } should be (true)
+            reqOutAfterCommit.getLiveExperiences.exists { exp => exp.getTest equals test } should be (true)
          }
-         for (exp <- reqOutAfterCommit.getActiveExperiences) {
+         for (exp <- reqOutAfterCommit.getLiveExperiences) {
             clientCore.getSchema.getState(state).getInstrumentedTests.exists { t => exp.getTest equals t } should be (true)
          }
 
@@ -250,7 +250,7 @@ class ServerSessionTest extends UnitSpec {
          
          val req = ssnIn.targetForState(clientCore.getSchema.getState(state))
          val jsonIn = req.getSession.asInstanceOf[CoreSessionImpl].toJson()
-         req.getActiveExperiences should be ('empty)
+         req.getLiveExperiences should be ('empty)
          println("IN " + jsonIn)
          val httpPutResp =  put("/session/" + id, jsonIn.getBytes, "application/json") ! "No response from server "
          httpPutResp.code should be (HttpStatus.SC_OK)
@@ -265,7 +265,7 @@ class ServerSessionTest extends UnitSpec {
          val ssnOut = payloadReader.getBody
          val reqOut = ssnOut.getStateRequest
          reqOut should not be (null)
-         reqOut.getActiveExperiences should be ('empty)
+         reqOut.getLiveExperiences should be ('empty)
          
          req.commit()
       }
