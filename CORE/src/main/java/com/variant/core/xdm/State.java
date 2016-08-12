@@ -6,7 +6,7 @@ import java.util.Map;
 import com.variant.core.exception.VariantRuntimeException;
 
 /**
- * Representation of a state schema element.
+ * Representation of State XDM element.
  * 
  * @author Igor Urisman
  * @since 0.5
@@ -30,7 +30,7 @@ public interface State {
 	public String getName();	
 	
 	/**
-	 * States's all state parameters as a map. Each parameter is a key-value pair where
+	 * All state parameters as a map. Each parameter is a key-value pair where
 	 * both key and value are strings.
 	 *
 	 * @return A map of state parameters.
@@ -39,9 +39,7 @@ public interface State {
 	public Map<String,String> getParameterMap();
 
 	/**
-	 * <p>All tests instrumented on this state. Comprises all declared instrumentations,
-	 * including off tests, as well as live tests with or without variants.
-	 * </p>
+	 * <p>All tests instrumented on this state. Comprises all declared instrumentations.
 	 *  
 	 * @return List of tests in ordinal order, i.e. order they were defined.
 	 * @since 0.5

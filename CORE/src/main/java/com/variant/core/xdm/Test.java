@@ -3,7 +3,7 @@ package com.variant.core.xdm;
 import java.util.List;
 
 /**
- * Representation of a test schema element.
+ * Representation of the Test XDM element.
  * 
  * @author Igor Urisman
  * @since 0.5
@@ -38,15 +38,15 @@ public interface Test {
 	 * This tests's experience by name. Experience names are case sensitive.
 	 * 
 	 * @param Experience name.
-	 * @return The test experience with this name, if exists; null otherwise.
+	 * @return The test experience with this name or null, if none.
 	 * @since 0.5
 	 */
 	public Experience getExperience(String name);
 	
 	/**
-	 * This test's control experience. 
+	 * This test's control experience.
 	 * 
-	 * @return The control experience.
+	 * @return The control experience.  Never null.
 	 * @since 0.5
 	 */
 	public Experience getControlExperience();
@@ -55,8 +55,9 @@ public interface Test {
 	 * <p>Is this test currently on? Tests that are not on are treated specially:
 	 * <ol>
      * <li>A user traversing this test will always see control experience.
-     * <li>If a user already has an entry for this test in his targeting tracker, it will be ignored, but not discarded. Otherwise, no entries will be added to the user’s targeting tracker.
-     * <li>No state served events will be logged on behalf of this test.
+     * <li>If a user already has an entry for this test in his targeting tracker, it will be ignored, 
+     *     but not discarded. If not, no entries will be added to the user’s targeting tracker.
+     * <li>No variant events will be logged for this test.
      * </ol>
 	 * @return true if the test is on, false if not.
 	 * @since 0.5
@@ -88,8 +89,8 @@ public interface Test {
 	public List<Test> getCovariantTests();
 		
 	/**
-	 * Is this test serial with the other test? Two tests are serial when there does not exist a state
-	 * instrumented by both this and the other test. Serial tests can be targeted independently. 
+	 * Is this test serial with another test? Two tests are serial when there does not exist a state
+	 * instrumented by both. Serial tests can be targeted independently without any extra work. 
 	 * 
 	 * @param other
 	 * @return
@@ -99,8 +100,8 @@ public interface Test {
 
 	/**
 	 * Is this test concurrent with the other test? This is equivalent to
-	 * <code>!isSerialWith(other)</code>. 
-	 * Concurrent tests can only be targeted independently if they are covariant.
+	 * {@code !isSerialWith(other)}. Concurrent tests can only be targeted 
+	 * independently if they are covariant.
 	 * 
 	 * @param other
 	 * @return
@@ -136,7 +137,7 @@ public interface Test {
 		/**
 		 * The test this experience belongs to.
 		 * 
-		 * @return And object of type {@link Test}
+		 * @return An object of type {@link Test}
 	     * @since 0.5
 		 */
 		public Test getTest();
@@ -150,9 +151,10 @@ public interface Test {
 		public boolean isControl();
 		
 		/**
-		 * This experience's random weight.  May be null.
+		 * This experience's probabilistic weight. These are used by Variant's default
+		 * test targeter if no custom targetting was provided.
 		 * 
-		 * @return
+		 * @return Probabilistic weight, if declared.
 	     * @since 0.5
 		 */
 		public Number getWeight();
@@ -168,7 +170,7 @@ public interface Test {
 	public static interface OnState {
 		
 		/**
-		 * The state this instrumentation is on.
+		 * The state this instrumentation is for.
 		 * 
 		 * @return An object of type {@link State}
 	     * @since 0.5
@@ -176,7 +178,7 @@ public interface Test {
 		public State getState();
 		
 		/**
-		 * The test this instrumentation is for.
+		 * The test this instrumentation is on.
 		 * 
 		 * @return An object of type {@link Test}
 		 * @since 0.5
@@ -193,7 +195,7 @@ public interface Test {
 		
 		/**
 		 * A list of all test variants for this instrumentation. 
-		 * @return null if this is an nonvariant instrumentation.
+		 * @return A list of objects of type {@link StateVariant} or null if this instrumentation is non-variant.
 	     * @since 0.5
 		 */
 		public List<StateVariant> getVariants();
