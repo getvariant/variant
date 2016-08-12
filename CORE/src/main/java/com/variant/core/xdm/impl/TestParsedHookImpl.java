@@ -2,6 +2,7 @@ package com.variant.core.xdm.impl;
 
 import com.variant.core.hook.TestParsedHook;
 import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.ParserMessage.Severity;
 import com.variant.core.xdm.Test;
 
 /**
@@ -28,5 +29,10 @@ class TestParsedHookImpl implements TestParsedHook {
 	public ParserResponse getParserResponse() {
 		return response;
 	}
+
+	@Override
+    public void addMessage(Severity severity, String message) {
+    	((ParserResponseImpl) response).addMessage(severity, message);
+    }
 
 }

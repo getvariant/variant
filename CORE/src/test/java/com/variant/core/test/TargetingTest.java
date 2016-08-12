@@ -25,8 +25,8 @@ import com.variant.core.xdm.impl.MessageTemplate;
 
 public class TargetingTest extends BaseTestCore {
 
-	static final int TRIALS = 750000;
-	static final float DELTA_AS_FRACTION = .025f;
+	static final int TRIALS = 500000;
+	static final float DELTA_AS_FRACTION = .05f;
 
 	/**
 	 * Use the null event flusher and null session store, 

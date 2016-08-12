@@ -20,8 +20,8 @@ import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.ParserMessage.Severity;
+import com.variant.core.schema.ParserResponse;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.xdm.Schema;
@@ -249,7 +249,7 @@ public class UserHookTest extends BaseTestCore {
 		@Override
 		public void post(StateParsedHook hook) {
 			stateList.add(hook.getState());
-			hook.getParserResponse().addMessage(Severity.INFO, MESSAGE_TEXT_STATE);
+			hook.addMessage(Severity.INFO, MESSAGE_TEXT_STATE);
 		}
 		
 	}
@@ -269,7 +269,7 @@ public class UserHookTest extends BaseTestCore {
 		@Override
 		public void post(TestParsedHook hook) {
 			testList.add(hook.getTest());
-			hook.getParserResponse().addMessage(Severity.INFO, MESSAGE_TEXT_TEST);
+			hook.addMessage(Severity.INFO, MESSAGE_TEXT_TEST);
 		}		
 	}
 

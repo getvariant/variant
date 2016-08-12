@@ -20,12 +20,6 @@ public class ParserResponseImpl implements ParserResponse {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	@Override
-	public void addMessage(Severity severity, String message) {
-		ParserMessage result = new ParserMessageImpl(severity, message);
-		messages.add(result);
-	}
-
 	/**
 	 * 
 	 * @return Highest severity if there are any messages, or null otherwise.
@@ -79,8 +73,15 @@ public class ParserResponseImpl implements ParserResponse {
 	}
 
 	/**
-	 * 
-	 * @param error
+	 * Add externally generated message.
+	 */
+    public void addMessage(Severity severity, String message) {
+		ParserMessage result = new ParserMessageImpl(severity, message);
+		messages.add(result);
+	}
+
+	/**
+	 * Add internally generated messsage
 	 */
 	public ParserMessage addMessage(MessageTemplate template, int line, int column, String...args) {
 		

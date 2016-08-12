@@ -38,7 +38,7 @@ public class StateParsedHookListenerImpl implements HookListener<StateParsedHook
 		State state = hook.getState();
 		String path = state.getParameterMap().get("path");
 		if (path != null && !path.startsWith("/")) {
-			hook.getParserResponse().addMessage(
+			hook.addMessage(
 					Severity.ERROR, 
 					"Path property [" + path + "] must start with a '/' in State [" + state.getName() + "]");
 		}

@@ -2,6 +2,7 @@ package com.variant.core.xdm.impl;
 
 import com.variant.core.hook.StateParsedHook;
 import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.ParserMessage.Severity;
 import com.variant.core.xdm.State;
 
 /**
@@ -28,5 +29,9 @@ class StateParsedHookImpl implements StateParsedHook {
 	public ParserResponse getParserResponse() {
 		return response;
 	}
-
+	
+	@Override
+    public void addMessage(Severity severity, String message) {
+    	((ParserResponseImpl) response).addMessage(severity, message);
+    }
 }

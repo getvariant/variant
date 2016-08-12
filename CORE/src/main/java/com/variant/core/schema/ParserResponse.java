@@ -2,13 +2,12 @@ package com.variant.core.schema;
 
 import java.util.List;
 
-import com.variant.core.hook.HookListener;
 import com.variant.core.schema.ParserMessage.Severity;
 
 /**
- * Return type of {@link com.variant.core.Variant#parseSchema(java.io.InputStream, boolean)}.
- * Client code can obtain information about the outcome of the parse opeeration that generated
- * this object.
+ * Represents the outcome of the XDM schema parsing operation.
+ * Returned by {@link com.variant.core.Variant#parseSchema(java.io.InputStream, boolean)}.
+ * Host code can obtain information about the outcome of the parsing operation.
  * 
  * @author Igor Urisman
  * @since 0.5
@@ -42,15 +41,5 @@ public interface ParserResponse {
 	 * @since 0.5
 	 */
 	public Severity highestMessageSeverity();
-
-	/**
-	 * Add a message to this response object. This may be useful to call from
-	 * a {@link HookListener} to augment core parsing semantics.
-	 * 
-	 * @param severity The severity of the message as an instance of {@link Severity}.
-	 * @param text The text of the error message.
-	 * @since 0.5
-	 */
-	public void addMessage(Severity severity, String text);
 	
 }
