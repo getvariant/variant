@@ -4,8 +4,9 @@
 # 1. Core jar 
 
 #!/bin/bash
-version=0.6.1
-full_version=${version}-RC1
+
+export version=0.6.1
+export full_version=${version}-RC1
 
 function usage() {
     echo "$(basename $0) email"
@@ -16,7 +17,7 @@ if [[ x != "x$1" ]]; then
     exit 1
 fi
 
-workspace_root_dir=$(pwd)/$(dirname $0)/../..
+workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
 
 release_dir=${workspace_root_dir}/RELEASE
 stage_dir=${release_dir}/stage
@@ -73,3 +74,8 @@ cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql ${stage_dir
 #
 cd ${stage_dir}
 tar -cvf ${out_dir}/variant-all-${full_version}.tar * #./*.jar ./*.war ./*.tar
+
+#
+# Javadoc
+#
+${release_dir}/bin/javadoc.sh
