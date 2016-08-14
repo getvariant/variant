@@ -4,7 +4,7 @@
 # http://getvariant.com
 
 # The URL to server API endpoint
-server.endpoint.url=http://localhost:8080/api/
+server.endpoint.url=http://localhost:8080/variant/
 
 # Override the default for demo purposes only. Events will be flushed
 # no less frequently than once a second.

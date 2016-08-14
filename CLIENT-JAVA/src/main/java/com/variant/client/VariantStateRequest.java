@@ -14,6 +14,14 @@ import com.variant.core.xdm.State;
 public interface VariantStateRequest extends VariantCoreStateRequest {
 
 	/**
+	 * The Variant session that obtained this request via {@link VariantSession#targetForState(State)}.
+	 * 
+	 * @return An object of type {@link VariantSession}.
+	 * @since 0.6
+	 */
+	public VariantSession getSession();
+
+	/**
 	 * Environment-depended signature replaces the inherited {@link #commit()}.
 	 * 
 	 * @param userData   An array of zero or more opaque objects which will be passed to {@link VariantSessionIdTracker#save(Object...)}

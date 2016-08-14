@@ -3,8 +3,8 @@ package com.variant.client.impl;
 import java.util.Collection;
 import java.util.Map;
 
+import com.variant.client.VariantSession;
 import com.variant.client.VariantStateRequest;
-import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantRuntimeException;
@@ -29,11 +29,6 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	//---------------------------------------------------------------------------------------------//
 	//                                     PUBLIC PASS-THRU                                        //
 	//---------------------------------------------------------------------------------------------//
-	@Override
-	public VariantCoreSession getSession() {
-		return session;
-	}
-
 	@Override
 	public State getState() {
 		return coreStateRequest.getState();
@@ -92,6 +87,13 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC EXT                                         //
 	//---------------------------------------------------------------------------------------------//
+	/**
+	 * Override with a narrower return type to return the client session, instead of core.
+	 */
+	@Override
+	public VariantSession getSession() {
+		return session;
+	}
 
 	public CoreStateRequestImpl getCoreStateRequest () {
 		return coreStateRequest;

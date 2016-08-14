@@ -34,6 +34,16 @@ public interface VariantProperties {
 	public <T> T get(Key key, Class<T> clazz);
 
 	/**
+	 * <p> Uninterpreted value of an system property, given by its key, as String.
+	 * 
+	 * @param key Property key	 *              
+	 * @return Original string value, as provided by either a properties file or the default.
+	 *         
+	 * @since 0.6
+	 */
+	public <T> T get(Key key);
+
+	/**
 	 * <p>Raw value of an system property, given by its key.
 	 * 
 	 * @param key Property key

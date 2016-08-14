@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantStateRequest;
@@ -35,6 +36,7 @@ public class VariantSessionImpl implements VariantSession {
 
 	private boolean isExpired = false;
 	
+	private VariantClientImpl client;
 	private CoreSessionImpl coreSession;
 	private VariantSessionIdTracker sessionIdTracker;
 	private VariantTargetingTracker targetingTracker;
@@ -83,10 +85,12 @@ public class VariantSessionImpl implements VariantSession {
 	/**
 	 * 
 	 */
-	public VariantSessionImpl(CoreSessionImpl coreSession,
+	public VariantSessionImpl(VariantClient client,
+			CoreSessionImpl coreSession,
 			VariantSessionIdTracker sessionIdTracker,
 			VariantTargetingTracker targetingTracker) {
 		
+		this.client = (VariantClientImpl) client;
 		this.coreSession = (CoreSessionImpl) coreSession;
 		this.coreSession.setTargetingStabile(toTargetingStabile(targetingTracker));
 		this.sessionIdTracker = sessionIdTracker;
@@ -173,6 +177,11 @@ public class VariantSessionImpl implements VariantSession {
 		checkState();
 		VariantCoreStateRequest coreRequest = coreSession.getStateRequest();
 		return coreRequest == null ? null : new VariantStateRequestImpl(coreRequest, this);
+	}
+
+	@Override
+	public VariantClient getClient() {
+		return client;
 	}
 
 	// ---------------------------------------------------------------------------------------------//

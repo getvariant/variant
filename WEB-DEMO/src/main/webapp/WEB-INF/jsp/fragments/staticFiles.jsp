@@ -29,9 +29,36 @@ PetClinic :: a Spring Framework demonstration
     <spring:url value="/webjars/jquery-ui/1.10.3/themes/base/jquery-ui.css" var="jQueryUiCss"/>
     <link href="${jQueryUiCss}" rel="stylesheet"></link>
     
-    <!-- variant.js v0.6.1 -->
+    <%-- Variant Demo addition start --%>
+    <%@ page import="com.variant.client.VariantStateRequest" %>
+    <%@ page import="com.variant.client.VariantSession" %>
+    <%@ page import="com.variant.client.VariantClient" %>
+    <%@ page import="com.variant.client.VariantClientPropertyKeys" %>
+    <%@ page import="com.variant.core.VariantProperties" %>
+    <%@ page import="com.variant.client.servlet.VariantFilter" %>
+    <%
+        VariantStateRequest varRequest = (VariantStateRequest)request.getAttribute(VariantFilter.VARIANT_REQUEST_ATTRIBUTE_NAME);
+    	VariantSession varSession = varRequest.getSession();
+    	VariantClient varClient = varSession.getClient();
+    	VariantProperties varProps = varClient.getProperties();
+    	String varSvrEndpointUrl = varProps.get(VariantClientPropertyKeys.SERVER_ENDPOINT_URL);
+    %>
     <script src="http://getvariant.com/js/variant-0.6.1.js"></script>
-        
+    <script>
+ 		variant.boot({
+   			url:"<%=varSvrEndpointUrl%>",
+   			success: function(data, textStatus) {
+   				console.log("POST returned status '" + textStatus + "' and body '" + data + "'");}
+		});
+   
+		$(document).ready(function() {   
+   			$(':submit').click(function() {
+      		new variant.Event("CLICK", $(this).html()).send();   
+  		 });
+	});
+    </script>
+    <%-- Variant Demo addition end --%>
+     
 </head>
 
 

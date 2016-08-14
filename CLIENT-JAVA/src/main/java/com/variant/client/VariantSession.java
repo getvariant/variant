@@ -35,4 +35,13 @@ public interface VariantSession extends VariantCoreSession {
 	 */
 	VariantStateRequest targetForState(State state);
 	
+	/**
+     * <p>The Variant client instance that created this session. 
+     *  
+	 * @return An instance of the {@link VariantClient} object, which originally created this object
+	 *         via {@link VariantClient#getSession(Object...)}.
+	 *
+	 * @since 0.6
+	 */
+	VariantClient getClient();
 }

@@ -2,6 +2,7 @@ package com.variant.client.servlet.impl;
 
 import java.util.Collection;
 
+import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.servlet.VariantServletSession;
 import com.variant.client.servlet.VariantServletStateRequest;
@@ -100,6 +101,10 @@ public class ServletSessionImpl implements VariantServletSession {
 		return bareSession.getAttribute(name);
 	}
 
+	@Override
+	public VariantClient getClient() {
+		return bareSession.getClient();
+	}
 	// ---------------------------------------------------------------------------------------------//
 	//                                         PUBLIC EXT                                           //
 	// ---------------------------------------------------------------------------------------------//

@@ -11,27 +11,6 @@
 <html lang="en">
 
 <jsp:include page="../fragments/staticFiles.jsp"/>
-<!-- ----------------- Variant remote events ------------------------- -->
-<script>
-
-   variant.boot({
-      url:"http://localhost:8080/api",
-      success: function(data, textStatus) {console.log("POST returned status '" + textStatus + "' and body '" + data + "'");},
-      error: function(jqXHR) {
-         throw Error("Bad response from Variant server: " + jqXHR.status + " " + jqXHR.statusText + ": " + jqXHR.responseText);
-      }
-   });
-   
-   $(document).ready(function() {
-   
-      $(':submit').click(function() {
-         new variant.Event($(this).html(), "CLICK").send();   
-      });
-         
-   });
-
-</script>
-<!-- --------------------------------------------------------------- -->
 
 <body>
 <div class="container">

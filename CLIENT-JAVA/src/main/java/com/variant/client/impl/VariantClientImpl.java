@@ -147,7 +147,7 @@ public class VariantClientImpl implements VariantClient {
 				// Session expired locally, recreate OK.  Don't bother with the server.
 				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
 				coreSession.save();
-				VariantSessionImpl clientSession = new VariantSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
+				VariantSessionImpl clientSession = new VariantSessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
 				return clientSession;
 			}
@@ -180,7 +180,7 @@ public class VariantClientImpl implements VariantClient {
 				// Recreate from scratch
 				CoreSessionImpl coreSession = new CoreSessionImpl(sessionId, core);
 				coreSession.save();
-				VariantSessionImpl clientSession = new VariantSessionImpl(coreSession, sidTracker, initTargetingTracker(userData));
+				VariantSessionImpl clientSession = new VariantSessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
 				return clientSession;
 			}

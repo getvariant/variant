@@ -151,6 +151,8 @@ public class CorePropertiesImpl implements VariantProperties {
 	 *              
 	 * @return Raw String value.
 	 */	
+	@Override
+	@SuppressWarnings("unchecked")
 	public String get(Key key) {
 		return getString(key).arg1();
 	}
@@ -161,6 +163,7 @@ public class CorePropertiesImpl implements VariantProperties {
 	 * @param key
 	 * @return
 	 */
+	@Override
 	public String getSource(Key key) {
 		return getString(key).arg2();
 	}

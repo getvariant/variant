@@ -49,3 +49,5 @@ libraryDependencies ++= {
 testOptions in Test += Tests.Argument("-oF")  // Do not truncate stack traces.
 scalacOptions in Test ++= Seq("-Yrangepos")   // ?
 EclipseKeys.createSrc := EclipseCreateSrc.Default + EclipseCreateSrc.Resource // Tells sbteclipse to include reource dirs in eclipse classpaths.
+
+env in Compile := Some(file(".") / "jetty-env.xml" asFile)
