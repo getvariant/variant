@@ -3,8 +3,9 @@ package com.variant.core.hook;
 import com.variant.core.xdm.State;
 
 /**
- * <p>Parse time user hook that posts its listeners immediately after a state is successfully parsed.
- * This hook will not post for a state if errors were encountered during parsing of that state.
+ * <p>Parse time hook. Posts its listeners whenever the schema parser completes parsing of a state. 
+ * Will not post for a state if parse errors were encountered. Use this hook to enforce application 
+ * semantics that is external to XDM, e.g. that a certain state parameter was supplied.
  * 
  * @author Igor.
  * @since 0.5
