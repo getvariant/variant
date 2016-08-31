@@ -10,7 +10,6 @@ import com.variant.core.VariantCoreInitParams;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.jdbc.EventFlusherJdbc;
 import com.variant.core.jdbc.JdbcService.Vendor;
-import com.variant.open.securestring.SecureString;
 
 /**
  * <p>An implementation of {@link EventFlusher}, which writes Variant events to an
@@ -32,7 +31,7 @@ public class EventFlusherPostgres extends EventFlusherJdbc {
 	
 	private String url = null;
 	private String user = null;
-	private SecureString password = null;
+	private String password = null;
 	
 	@Override
 	public void init(VariantCoreInitParams initParams) throws Exception {
@@ -42,17 +41,16 @@ public class EventFlusherPostgres extends EventFlusherJdbc {
 		user = (String) initParams.getOrThrow(
 				"user", new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", this.getClass().getName()));
 		
-		String passString = (String) initParams.getOrThrow(
+		password = (String) initParams.getOrThrow(
 				"password", new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", this.getClass().getName()));
 
-		password = new SecureString(passString.toCharArray());
 	}
 
 	@Override
 	public Connection getJdbcConnection() throws Exception {
 		Properties props = new Properties();
 		props.setProperty("user", user);
-		props.setProperty("password", new String(password.getValue()));
+		props.setProperty("password", password);
 		return DriverManager.getConnection(url, props);		
 	}
 
