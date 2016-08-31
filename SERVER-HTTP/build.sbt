@@ -1,5 +1,5 @@
 name := "Variant Server"
-val coreVersion = "0.6.1"
+val coreVersion = "0.6.2"
 version := coreVersion
 organization := "com.variant"
 

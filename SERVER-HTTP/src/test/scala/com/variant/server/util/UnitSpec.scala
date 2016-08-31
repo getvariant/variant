@@ -44,7 +44,7 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
    // We'll need the client side api too.
    Injector.setConfigNameAsResource("/com/variant/server/conf/injector.json")
    val clientCore = new VariantCore()
-   clientCore.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.1");
+   clientCore.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.2");
    
    /**
     * 

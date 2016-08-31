@@ -22,7 +22,7 @@ public class ServerBoot {
 	 */
 	public static void boot()  {
 		core = new VariantCore();
-		core.getComptime().registerComponent(VariantComptime.Component.SERVER, "0.6.1");
+		core.getComptime().registerComponent(VariantComptime.Component.SERVER, "0.6.2");
 		
 		if (LOG.isDebugEnabled()) {
 			VariantProperties props = core.getProperties();
