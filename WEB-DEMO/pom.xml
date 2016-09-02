@@ -267,13 +267,13 @@
         <dependency>
         	<groupId>com.variant</groupId>
 	  		<artifactId>variant-core</artifactId>
-	  		<version>0.6.1</version>
+	  		<version>0.6.2</version>
 	  	</dependency>
 
 		<dependency>
 			<groupId>com.variant</groupId>
 			<artifactId>variant-client</artifactId>
-			<version>0.6.1</version>
+			<version>0.6.2</version>
 		</dependency>
 		
         <dependency>
