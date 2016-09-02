@@ -1,7 +1,6 @@
 package com.variant.core.xdm;
 
 import java.util.List;
-import java.util.Map;
 
 import com.variant.core.xdm.Test.Experience;
 import com.variant.core.xdm.Test.OnState;
@@ -59,12 +58,11 @@ public interface StateVariant {
 	public List<Experience> getCovariantExperiences();
 				
 	/**
-	 * This variant's resolved state parameter map. Parameter resolution works as follows:
-	 * First, all parameters from the corresponsing state
+	 * This variant's declared state parameter.
 	 * 
-	 * @return A map of state parameters.
+	 * @return The value of a state parameter, if declared by this state variant, null otherwise.
 	 * @since 0.5
 	 */
-	public Map<String,String> getParameterMap();
+	public String getParameter(String name);
 
 }	

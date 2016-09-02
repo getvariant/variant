@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.event.impl.util.CaseInsensitiveMap;
+import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.StateVariant;
@@ -16,7 +16,7 @@ import com.variant.core.xdm.Test.Experience;
 import com.variant.core.xdm.Test.OnState;
 
 
-class StateVariantImpl implements StateVariant {
+public class StateVariantImpl implements StateVariant {
 
 	private TestOnStateImpl onStateImpl;
 	private TestExperienceImpl ownExperience;
@@ -28,12 +28,11 @@ class StateVariantImpl implements StateVariant {
 	 * @param experiences
 	 * @param path
 	 */
-	StateVariantImpl(TestOnStateImpl onViewImpl, TestExperienceImpl ownExperience, List<TestExperienceImpl> covarExperiences, Map<String,String> params) {
+	public StateVariantImpl(TestOnStateImpl onViewImpl, TestExperienceImpl ownExperience, List<TestExperienceImpl> covarExperiences, Map<String,String> params) {
 		this.onStateImpl = onViewImpl;
 		this.ownExperience = ownExperience;
 		this.covarExperiences = covarExperiences;
-		this.params = new CaseInsensitiveMap<String>(params);
-
+		this.params = params;
 	}
 
 	/**
@@ -72,8 +71,8 @@ class StateVariantImpl implements StateVariant {
 	/**
 	 */
 	@Override
-	public Map<String, String> getParameterMap() {
-		return params;
+	public String getParameter(String name) {
+		return params.get(name);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -93,6 +92,10 @@ class StateVariantImpl implements StateVariant {
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
+	public Map<String, String> getParameters() {
+		return params;
+	}
+	
 	@Override
 	public String toString() {
 		try {

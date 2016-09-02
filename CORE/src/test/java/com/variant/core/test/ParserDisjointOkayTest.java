@@ -329,8 +329,8 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 	private static void verifyState(String[] expectedState, State actualState) {
 		assertNotNull(actualState);
 		assertEquals(expectedState[0], actualState.getName());
-		assertEquals(expectedState[1], actualState.getParameterMap().get("path"));		
-		assertEquals(expectedState[1], actualState.getParameterMap().get("Path"));		
+		assertEquals(expectedState[1], actualState.getParameter("path"));		
+		assertEquals(expectedState[1], actualState.getParameter("Path"));		
 	}
 	
 	/**
@@ -376,11 +376,11 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("B"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
-		assertEquals("/path/to/state1/test1.B", variant.getParameterMap().get("path"));
+		assertEquals("/path/to/state1/test1.B", variant.getParameter("path"));
 		variant = actualVariants.get(1);
 		assertEquals(test.getExperience("C"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
-		assertEquals("/path/to/state1/test1.C", variant.getParameterMap().get("path"));
+		assertEquals("/path/to/state1/test1.C", variant.getParameter("path"));
 		
 		
 	}
@@ -423,7 +423,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("D"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
-		assertEquals("/path/to/state3/test2.D", variant.getParameterMap().get("path"));
+		assertEquals("/path/to/state3/test2.D", variant.getParameter("path"));
 
 		tov = actualonStates.get(1);
 		assertEquals(test, tov.getTest());
@@ -434,7 +434,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		variant = actualVariants.get(0);
 		assertEquals(test.getExperience("D"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
-		assertEquals("/path/to/state2/test2.D", variant.getParameterMap().get("path"));
+		assertEquals("/path/to/state2/test2.D", variant.getParameter("path"));
 		
 		tov = actualonStates.get(2);
 		assertEquals(test, tov.getTest());
@@ -482,7 +482,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("A"), variant.getExperience());
 		assertEquals(0, variant.getCovariantExperiences().size());
-		assertEquals("/path/to/state1/Test1.A", variant.getParameterMap().get("path"));
+		assertEquals("/path/to/state1/Test1.A", variant.getParameter("path"));
 		
 	}
 

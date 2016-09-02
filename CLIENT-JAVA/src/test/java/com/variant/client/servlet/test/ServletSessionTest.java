@@ -387,7 +387,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		VariantServletSession ssn2 = servletClient.getSession(httpReq2);
 		assertEquals(((ServletSessionImpl)ssn2).getBareSession(), ((ServletSessionImpl)varReq.getSession()).getBareSession());
 		assertEquals(ssn2.getSchemaId(), schema.getId());
-		assertEquals(ssn2.getStateRequest().getResolvedParameterMap(), varReq.getSession().getStateRequest().getResolvedParameterMap());
+		assertEquals(ssn2.getStateRequest().getResolvedParameterNames(), varReq.getSession().getStateRequest().getResolvedParameterNames());
 		assertEquals(
 				"[(state2, 1)]", 
 				Arrays.toString(ssn2.getTraversedStates().toArray()));

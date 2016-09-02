@@ -144,7 +144,7 @@ public class CoreSessionTest extends BaseTestCore {
 		VariantCoreStateRequest deserializedReq = deserializedSsn.getStateRequest();
 		assertEquals(deserializedReq.getSession(), deserializedSsn);
 		assertEquals(req1.getState(), deserializedReq.getState());
-		assertEqualAsSets(req1.getResolvedParameterMap(), deserializedReq.getResolvedParameterMap());
+		assertEqualAsSets(req1.getResolvedParameterNames(), deserializedReq.getResolvedParameterNames());
 		assertEquals(req1.getStatus(), deserializedReq.getStatus());
 		assertEqualAsSets(req1.getLiveExperiences(), deserializedReq.getLiveExperiences());
 		assertNull(deserializedReq.getStateVisitedEvent());
@@ -164,7 +164,7 @@ public class CoreSessionTest extends BaseTestCore {
 		deserializedReq = deserializedSsn.getStateRequest();
 		assertEquals(deserializedReq.getSession(), deserializedSsn);
 		assertEquals(req2.getState(), deserializedReq.getState());
-		assertEqualAsSets(req2.getResolvedParameterMap(), deserializedReq.getResolvedParameterMap());
+		assertEqualAsSets(req2.getResolvedParameterNames(), deserializedReq.getResolvedParameterNames());
 		assertEquals(req2.getStatus(), deserializedReq.getStatus());
 		assertEqualAsSets(req2.getLiveExperiences(), deserializedReq.getLiveExperiences());
 		assertNull(deserializedReq.getStateVisitedEvent());

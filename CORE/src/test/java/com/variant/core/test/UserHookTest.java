@@ -169,7 +169,7 @@ public class UserHookTest extends BaseTestCore {
 		assertNotNull(stabile.get("test1"));
 		assertNotNull(stabile.get("Test1"));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1")), disqualListener.testList);
-		assertEquals("/path/to/state1/Test1.A", request.getResolvedParameterMap().get("path"));
+		assertEquals("/path/to/state1/Test1.A", request.getResolvedParameter("path"));
 		request.commit();
 
 		// New session. Disqualify and drop from TT
@@ -202,7 +202,7 @@ public class UserHookTest extends BaseTestCore {
 		assertNotNull(stabile.get("test1"));
 		assertNotNull(stabile.get("test2"));
 		assertEquals(VariantCollectionsUtils.list(schema.getTest("Test1")), disqualListener.testList);
-		assertEquals("/path/to/state1/test1.B", request.getResolvedParameterMap().get("path"));
+		assertEquals("/path/to/state1/test1.B", request.getResolvedParameter("path"));
 		request.commit();
 
 		// Same session, but dispatch to state2 - it's only instrumented by the off test2. 
@@ -226,7 +226,7 @@ public class UserHookTest extends BaseTestCore {
 		assertEquals("B", stabile.get("test1").getExperienceName());
 		assertEquals("D", stabile.get("test2").getExperienceName());
 		assertTrue(disqualListener.testList.isEmpty());
-		assertEquals("/path/to/state2", request.getResolvedParameterMap().get("path"));
+		assertEquals("/path/to/state2", request.getResolvedParameter("path"));
 		request.commit();
 		assertEqualAsSets(ssn3.getTraversedStates(), new Pair<State, Integer>(state1, 1));
 

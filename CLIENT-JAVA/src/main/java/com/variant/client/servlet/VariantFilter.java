@@ -207,8 +207,8 @@ public class VariantFilter implements Filter {
 				variantSsn = client.getOrCreateSession(httpRequest);
 				variantRequest = variantSsn.targetForState(state);
 				httpRequest.setAttribute(VARIANT_REQUEST_ATTRIBUTE_NAME, variantRequest);
-				resolvedPath = variantRequest.getResolvedParameterMap().get("path");
-				isForwarding = !resolvedPath.equals(state.getParameterMap().get("path"));
+				resolvedPath = variantRequest.getResolvedParameter("path");
+				isForwarding = !resolvedPath.equals(state.getParameter("path"));
 				
 				if (LOG.isDebugEnabled()) {
 					String msg = 

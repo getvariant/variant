@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,13 +15,14 @@ import com.variant.core.exception.VariantInternalException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;
 import com.variant.core.session.SessionScopedTargetingStabile;
+import com.variant.core.util.Tuples.Pair;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
-import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 import com.variant.core.xdm.Test.OnState;
 import com.variant.core.xdm.impl.StateImpl;
+import com.variant.core.xdm.impl.StateVariantImpl;
 import com.variant.core.xdm.impl.TestOnStateImpl;
 
 /**
@@ -122,10 +122,10 @@ public class VariantRuntime {
      *    
      * 7. Resolve the state params for the resulting list of active experiences.
 	 * 
-	 * 
 	 * TODO: IP.
+	 * 
 	 */
-	private Map<String,String> targetSessionForState(CoreStateRequestImpl req) {
+	private void targetSessionForState(CoreStateRequestImpl req) {
 
 		Schema schema = coreApi.getSchema();
 		CoreSessionImpl session = (CoreSessionImpl) req.getSession();
@@ -242,10 +242,13 @@ public class VariantRuntime {
 				}
 			}
 		}
-				
-		// vector at this point contains active, non-control experiences to be resolved.
-		return resolveState(state, vector);
+
+		// If all went well, we must be resolvable!
+		Pair<Boolean, StateVariantImpl> resolution = resolveState(state, vector);
+		if (!resolution.arg1()) throw new VariantInternalException(
+				"Vector [" + VariantStringUtils.toString(vector, ",") + "] is unresolvable");
 		
+		req.setResolvedStateVariant(resolution.arg2());
 	}
 
 	/**
@@ -316,7 +319,7 @@ public class VariantRuntime {
 	}
 	
 	/**
-	 * Is a vector resolvable? I.e., does the current schema contains a variant def for every state 
+	 * Is a vector resolvable? I.e., does the current schema contain a variant def for every state 
 	 * where it is relevant. A vector is relevant to a state if at least one of its tests is 
 	 * instrumented in a variantful fashion.
 	 * @param vector
@@ -324,10 +327,10 @@ public class VariantRuntime {
 	 */
 	boolean isResolvable(Collection<Experience> vector) {
 
-		// Build the set of unique relevant states. 
-		// Many of them may be dupes, so no need to attempt to resolve all of them.
+		// Build the set of unique relevant states. Set will take care of getting rid of duplicates.
 		LinkedHashSet<State> relevantStates = new LinkedHashSet<State>();
 		for (Experience e: vector) {
+			if (e.isControl()) continue;
 			for (OnState tos: e.getTest().getOnStates()) {
 				if (!tos.getState().isNonvariantIn(e.getTest())) {
 					relevantStates.add(tos.getState());
@@ -340,10 +343,10 @@ public class VariantRuntime {
 			// Otherwise resolveState() with throw an exception.
 			Collection<Experience> instumentedVector = new ArrayList<Experience>();
 			for (Experience e: vector) {
-				if (state.isInstrumentedBy(e.getTest())) 
+				if (!e.isControl() && state.isInstrumentedBy(e.getTest())) 
 					instumentedVector.add(e);
 			}
-			if (resolveState(state, instumentedVector) == null) return false;
+			if (!resolveState(state, instumentedVector).arg1()) return false;
 		}
 		
 		return true;
@@ -444,16 +447,19 @@ public class VariantRuntime {
 	 * 3. Keep track if any of the experiences in vector were discarded in step 2.
 	 * 4. In the sorted list, the last experience corresponds to the highest order test Th.
 	 * 5. Find the Test.OnState object corresponding to Th and the given state.  If does not
-	 *    exist, return null.
+	 *    exist, this vector is unresolvable - return null.
 	 * 6. Find the Test.OnState.Variant object there.  If does not exist, return null;
 	 * 
 	 * Package scope for testing
 	 * 
 	 * @param state
 	 * @param vector
-	 * @return params map
+	 * @return Pair: arg1() indicates if this is resolvable and arg2() is the state variant, if resolvable.
+	 *         in the special case when it is resolvable trivially, i.e. all experiences are control or not
+	 *         not instrumented on this state or the instrumentation is invariant on this state, then the second
+	 *         element will be null.
 	 */
-	Map<String,String> resolveState(State state, Collection<Experience> vector) {
+	Pair<Boolean, StateVariantImpl> resolveState(State state, Collection<Experience> vector) {
 
 		
 		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
@@ -482,19 +488,24 @@ public class VariantRuntime {
 			}
 		}
 		
-		// If no variant experiences (all input experiences were control or uninstrumented or off.
-		// on the input state), return the state params.
-		if (sortedList.size() == 0) return state.getParameterMap();
+		boolean resolvable = false;
+		StateVariantImpl resolvedStateVariant = null;
 		
-		Test highOrderTest = sortedList.get(sortedList.size() - 1).getTest();
-		TestOnStateImpl tov = (TestOnStateImpl) highOrderTest.getOnView(state);
-		
-		if (tov == null) return null;
-		
-		StateVariant variant = tov.variantSpace().get(sortedList);
-		return variant == null ? null : variant.getParameterMap();	
-	
+		if (sortedList.size() == 0) {
+			// Trivial resolution.
+			resolvable = true;
+		}
+		else {
+			Test highOrderTest = sortedList.get(sortedList.size() - 1).getTest();
+			TestOnStateImpl tos = (TestOnStateImpl) highOrderTest.getOnView(state);
+			if (tos != null) {
+				resolvedStateVariant = (StateVariantImpl) tos.variantSpace().get(sortedList);
+				resolvable = resolvedStateVariant != null;
+			}
+		}
+		return new Pair<Boolean, StateVariantImpl>(resolvable, resolvedStateVariant);
 	}
+	
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -511,8 +522,7 @@ public class VariantRuntime {
 		// Resolve the path and get all tests instrumented on the state.
 		CoreStateRequestImpl result = new CoreStateRequestImpl(ssn, state);
 		
-		Map<String,String> resolvedParams = targetSessionForState(result);		
-		result.setResolvedParameters(resolvedParams);
+		targetSessionForState(result);		
 		
 		// Targeting stabile contains targeted experiences.
 		SessionScopedTargetingStabile targetingStabile = ssn.getTargetingStabile();
@@ -520,7 +530,12 @@ public class VariantRuntime {
 		if (LOG.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Session [").append(ssn.getId()).append("] resolved state [").append(state.getName()).append("] as [");
-			sb.append(VariantStringUtils.toString(resolvedParams,","));
+			boolean first = true;
+			for (String paramName: result.getResolvedParameterNames()) {
+				if (first) first = false;
+				else sb.append(",");
+				sb.append(result.getResolvedParameter(paramName));
+			}
 			sb.append("] for experience vector [").append(StringUtils.join(targetingStabile.getAll().toArray(), ",")).append("]");
 			LOG.trace(sb.toString());
 		}   

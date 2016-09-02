@@ -7,7 +7,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Random;
 
 import com.variant.core.VariantCoreSession;
@@ -21,10 +20,12 @@ import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantRuntimeTestFacade;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.session.SessionScopedTargetingStabile;
+import com.variant.core.util.Tuples.Pair;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
+import com.variant.core.xdm.impl.StateVariantImpl;
 
 
 /**
@@ -51,7 +52,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");
-		final Test test4 = schema.getTest("test4");
+		//final Test test4 = schema.getTest("test4");
 		final Test test5 = schema.getTest("test5");
 		final Test test6 = schema.getTest("test6");
 
@@ -64,7 +65,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 		//
 		// State resolutions
 		//
-		
+
 		// state1
 		
 		new VariantInternalExceptionInterceptor() { 
@@ -78,13 +79,14 @@ public class CoreRuntimeTest extends BaseTestCore {
 			}
 		}.assertThrown("Uninstrumented test [test1.B] in input vector");
 
-		Map<String,String> params = runtimeFacade.resolveState(
+		Pair<Boolean, StateVariantImpl> resolution = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test2.B", schema)   // nonvariant.
 				)
 		);
-		assertEquals("/path/to/state1", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertNull(resolution.arg2());
 
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
@@ -98,15 +100,16 @@ public class CoreRuntimeTest extends BaseTestCore {
 			}
 		}.assertThrown("Uninstrumented test [test1.A] in input vector");
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test2.B", schema),  // nonvariant
 						experience("test3.C", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state1", params.get("path"));
-		
+		assertTrue(resolution.arg1());
+		assertNull(resolution.arg2());
+
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
 				runtimeFacade.resolveState(
@@ -120,7 +123,8 @@ public class CoreRuntimeTest extends BaseTestCore {
 			}
 		}.assertThrown("Duplicate test [test2] in input vector");	
 		
-		params = runtimeFacade.resolveState(
+		
+		resolution = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test2.B", schema),  // nonvariant
@@ -128,7 +132,8 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test4.B", schema)   // variant
 				)
 		);
-		assertEquals("/path/to/state1/test4.B", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state1/test4.B", resolution.arg2().getParameter("path"));
 		
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
@@ -144,7 +149,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 			}
 		}.assertThrown("Uninstrumented test [test1.C] in input vector");
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.B", schema),  // variant
@@ -153,9 +158,10 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test3.B", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state1/test4.B+test6.C", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state1/test4.B+test6.C", resolution.arg2().getParameter("path"));
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.B", schema),  // variant
@@ -164,9 +170,9 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test3.B", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state1/test4.B+test6.B", params.get("path"));
+		assertEquals("/path/to/state1/test4.B+test6.B", resolution.arg2().getParameter("path"));
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.C", schema),  // variant
@@ -175,9 +181,10 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test3.B", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state1/test4.C+test5.C", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state1/test4.C+test5.C", resolution.arg2().getParameter("path"));
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state1, 
 				VariantCollectionsUtils.list(
 						experience("test4.C", schema),  // variant
@@ -187,44 +194,50 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test3.B", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state1/test4.C+test5.C+test6.B", params.get("path"));
+		assertTrue(resolution.arg1());		
+		assertEquals("/path/to/state1/test4.C+test5.C+test6.B", resolution.arg2().getParameter("path"));
 
 		
 		// state2
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A", schema)   // control
-						)
-				);
-		assertEquals("/path/to/state2", params.get("PATH"));
+				)
+		);
+		assertTrue(resolution.arg1());
+		assertNull(resolution.arg2());
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.A", schema),  // control
 						experience("test2.B", schema)   // variant
-						)
-				);
-		assertEquals("/path/to/state2/test2.B", params.get("PATH"));
+				)
+		);
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state2/test2.B", resolution.arg2().getParameter("path"));
+		assertEquals("/path/to/state2/test2.B", resolution.arg2().getParameter("PATH"));
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.B", schema)   // variant
 				)
 		);
-		assertEquals("/path/to/state2/test1.B", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state2/test1.B", resolution.arg2().getParameter("path"));
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema),  // nonvariant
 						experience("test2.B", schema)   // variant
 				)
 		);
-		assertEquals("/path/to/state2/test2.B", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state2/test2.B", resolution.arg2().getParameter("path"));
 
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
@@ -239,7 +252,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 			}
 		}.assertThrown("Duplicate test [test2] in input vector");
 		
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.B", schema),  // variant
@@ -247,9 +260,10 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test6.C", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state2/test1.C+test4.B", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state2/test1.C+test4.B", resolution.arg2().getParameter("path"));
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test1.B", schema),  // variant
@@ -258,18 +272,18 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test4.B", schema)   // variant, unsupported
 				)
 		);
-		assertNull(params);
+		assertFalse(resolution.arg1());
 		
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.B", schema),  // variant, unsupported
 						experience("test2.B", schema)   // variant
 				)
 		);
-		assertNull(params);
+		assertFalse(resolution.arg1());
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test2.B", schema),  // variant
@@ -277,18 +291,19 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test3.B", schema)   // variant, unsupported.
 				)
 		);
-		assertNull(params);
+		assertFalse(resolution.arg1());
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.C", schema),  // variant
 						experience("test5.C", schema)   // variant
 				)
 		);
-		assertEquals("/path/to/state2/test4.C+test5.C", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state2/test4.C+test5.C", resolution.arg2().getParameter("path"));
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.C", schema),  // variant
@@ -296,9 +311,9 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test5.C", schema)   // variant, unsupported
 				)
 		);
-		assertNull(params);
+		assertFalse(resolution.arg1());
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.C", schema),  // variant unsupported
@@ -307,9 +322,9 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test3.B", schema)   // variant
 				)
 		);
-		assertNull(params);
+		assertFalse(resolution.arg1());
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state2, 
 				VariantCollectionsUtils.list(
 						experience("test4.C", schema),  // variant unsupported
@@ -318,25 +333,27 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test5.C", schema)   // variant
 				)
 		);
-		assertNull(params);
+		assertFalse(resolution.arg1());
 
 		// state3
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test2.A", schema)   // control
 				)
 		);
-		assertEquals("/path/to/state3", params.get("path"));
-
-		params = runtimeFacade.resolveState(
+		assertTrue(resolution.arg1());
+		assertNull(resolution.arg2());
+		
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
-						experience("test2.B", schema)   // control
+						experience("test2.B", schema) 
 				)
 		);
-		assertEquals("/path/to/state3/test2.B", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state3/test2.B", resolution.arg2().getParameter("path"));
 
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
@@ -349,39 +366,43 @@ public class CoreRuntimeTest extends BaseTestCore {
 			}
 		}.assertThrown("Uninstrumented test [test4.B] in input vector");
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test3.B", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state3", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertNull(resolution.arg2());
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test2.B", schema)   // variant
 				)
 		);
-		assertEquals("/path/to/state3/test2.B", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state3/test2.B", resolution.arg2().getParameter("path"));
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test3.B", schema),  // nonvariant
 						experience("test5.C", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state3", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertNull(resolution.arg2());
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test2.B", schema),  // variant
 						experience("test3.C", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state3/test2.B", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state3/test2.B", resolution.arg2().getParameter("path"));
 
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
@@ -410,7 +431,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 			}
 		}.assertThrown("Uninstrumented test [test4.B] in input vector");
 		
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test1.C", schema),  // variant
@@ -418,16 +439,17 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test3.B", schema)   // nonvariant
 				)
 		);
-		assertNull(params);
+		assertFalse(resolution.arg1());
 		
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test2.B", schema),  // variant
 						experience("test3.C", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state3/test2.B", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state3/test2.B", resolution.arg2().getParameter("path"));
 
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
@@ -444,7 +466,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 		}.assertThrown("Uninstrumented test [test4.B] in input vector");
 		
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test2.B", schema),  // variant unsupported
@@ -453,9 +475,9 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test3.C", schema)   // nonvariant
 				)
 		);
-		assertNull(params);
+		assertFalse(resolution.arg1());
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test2.B", schema),  // variant
@@ -463,9 +485,9 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test3.B", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state3/test2.B", params.get("path"));
+		assertEquals("/path/to/state3/test2.B", resolution.arg2().getParameter("path"));
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema),  // control
@@ -474,9 +496,9 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test1.B", schema)   // variant
 				)
 		);
-		assertNull(params);
+		assertFalse(resolution.arg1());
 
-		params = runtimeFacade.resolveState(
+		resolution = runtimeFacade.resolveState(
 				state3, 
 				VariantCollectionsUtils.list(
 						experience("test6.B", schema),  // variant
@@ -484,7 +506,8 @@ public class CoreRuntimeTest extends BaseTestCore {
 						experience("test5.C", schema)   // nonvariant
 				)
 		);
-		assertEquals("/path/to/state3/test2.B+test6.B", params.get("path"));
+		assertTrue(resolution.arg1());
+		assertEquals("/path/to/state3/test2.B+test6.B", resolution.arg2().getParameter("path"));
 		
 		//
 		// Coordinates resolvability
@@ -824,7 +847,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 				VariantCollectionsUtils.list(
 						experience("test3.C", schema), 
 						experience("test2.C", schema))));
-		
+
 	}
 	
 	
@@ -1093,7 +1116,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 		assertEquals(3, stabile.getAll().size());
 		// We didn't touch test2.B entry in the TP, even though we used control for resolution.
 		assertEquals("test2.B", stabile.get("test2").getTestName() + "." + stabile.get("test2").getExperienceName());
-		String path = req.getResolvedParameterMap().get("path");
+		String path = req.getResolvedParameter("path");
 		assertMatches("/path/to/state1(/test[1,3]\\.[B,C])?(\\+test[1,3]\\.[B,C])?", path);
 		assertEquals(ssn, req.getSession());
 		assertEquals(state1, req.getState());

@@ -145,7 +145,8 @@ public class ParserOkayTest extends BaseTestCore {
 		assertTrue(req.getLiveExperiences().isEmpty());
 		assertTrue(session.getTraversedStates().isEmpty());
 		assertTrue(session.getTraversedTests().isEmpty());
-		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
+		assertEquals("/path/to/state1", req.getResolvedParameter("path"));
+		assertEquals("/path/to/state1", req.getResolvedParameter("PATH"));
 		assertFalse(test1.isOn());
 		assertFalse(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
@@ -279,7 +280,9 @@ public class ParserOkayTest extends BaseTestCore {
 		assertEquals(0, session.getTraversedStates().size());
 		assertEquals(0, session.getTraversedTests().size());
 		assertTrue(req.getLiveExperiences().isEmpty());
-		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
+		assertEquals("/path/to/state1", req.getResolvedParameter("path"));
+		assertEquals("/path/to/state1", req.getResolvedParameter("pAtH"));
+
 		assertFalse(test1.isOn());
 		assertTrue(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
@@ -414,7 +417,8 @@ public class ParserOkayTest extends BaseTestCore {
 		assertTrue(session.getTraversedStates().isEmpty());
 		assertTrue(session.getTraversedTests().isEmpty());
 		assertTrue(req.getLiveExperiences().isEmpty());
-		assertEquals("/path/to/state1", req.getResolvedParameterMap().get("path"));
+		assertEquals("/path/to/state1", req.getResolvedParameter("path"));
+		assertEquals("/path/to/state1", req.getResolvedParameter("PaTh"));
 		assertTrue(test1.isOn());
 		assertTrue(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));

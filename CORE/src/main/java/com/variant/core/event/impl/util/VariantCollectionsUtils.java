@@ -2,14 +2,12 @@ package com.variant.core.event.impl.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.variant.core.util.Tuples;
 import com.variant.core.util.Tuples.Pair;
 
 /**
@@ -84,17 +82,16 @@ public class VariantCollectionsUtils {
 	}
 	
 	/**
-	 * Merge maps left to right.
+	 * Merge maps left to right into the leftmost map.
 	 * @param maps
 	 * @return a new map containing all keys from all maps and each key's value comes from the last
 	 *         map where it is defined if scanned left to right.
 	 */
-	public static Map<?,?> mapMerge(Map<?,?>...maps) {
-		Map<Object,Object> result = new HashMap<Object,Object>();
-		for (int i = 0; i < maps.length; i++) {
-			result.putAll(maps[i]);
+	@SafeVarargs
+	public static void mapMerge(Map<String,String>...maps) {
+		for (int i = 1; i < maps.length; i++) {
+			maps[0].putAll(maps[i]);
 		}
-		return result;
 	}
 	
 	/**

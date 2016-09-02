@@ -5,9 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.event.impl.util.CaseInsensitiveMap;
-import com.variant.core.event.impl.util.CaseInsensitiveUnmodifiableMap;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
+import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
@@ -49,8 +48,8 @@ public class StateImpl implements State {
 	}
 	
 	@Override
-	public Map<String, String> getParameterMap() {
-		return new CaseInsensitiveUnmodifiableMap<String>(parameters);
+	public String getParameter(String name) {
+		return parameters.get(name);
 	}
 
 	@Override
@@ -88,6 +87,12 @@ public class StateImpl implements State {
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
 
+	/**
+	 * Entire state param map
+	 */
+	public Map<String, String> getParameterMap() {
+		return parameters;
+	}
 	/**
 	 * States are held in a HashSet, keyed by view name.
 	 */

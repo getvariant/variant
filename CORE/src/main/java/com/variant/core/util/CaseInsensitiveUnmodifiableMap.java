@@ -1,4 +1,4 @@
-package com.variant.core.event.impl.util;
+package com.variant.core.util;
 
 import java.util.Map;
 

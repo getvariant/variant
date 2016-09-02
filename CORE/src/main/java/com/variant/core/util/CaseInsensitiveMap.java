@@ -1,4 +1,4 @@
-package com.variant.core.event.impl.util;
+package com.variant.core.util;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,9 +23,21 @@ public class CaseInsensitiveMap<V> extends HashMap<String, V> {
 	 */
 	@Override
 	public V put(String key, V value) {
-		return super.put (key.toUpperCase(), value);
+		return super.put(key.toUpperCase(), value);
 	}
 	
+	/**
+	 * In 8, implementation of HashMap.putAll() changed to go directly into the
+	 * table, around the put() method. We need to override that in order to explicitly
+	 * invoke the put() method to cause the upper-casing.
+	 */
+	@Override
+	public void putAll(Map<? extends String, ? extends V> map) {
+		for (Map.Entry<? extends String, ? extends V> e: map.entrySet()) {
+			super.put(e.getKey().toUpperCase(), e.getValue());
+		}
+	}
+
 	@Override
 	public V get(Object key) {
 		return super.get(((String)key).toUpperCase());

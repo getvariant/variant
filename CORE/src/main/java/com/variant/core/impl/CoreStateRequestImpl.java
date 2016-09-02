@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.collections4.set.UnmodifiableSet;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -14,16 +17,20 @@ import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
+import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.svrstub.TestExperienceServerStub;
+import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
+import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 import com.variant.core.xdm.impl.MessageTemplate;
 import com.variant.core.xdm.impl.StateImpl;
+import com.variant.core.xdm.impl.StateVariantImpl;
 
 /**
  * 
@@ -38,8 +45,9 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	private static final long serialVersionUID = 1L;
 	
 	private CoreSessionImpl session;	
-	private State state;
+	private StateImpl state;
 	private Status status = Status.OK;
+	private StateVariant resolvedStateVariant;
 	private Map<String,String> resolvedParameterMap;
 	private StateVisitedEvent event = null;
 	private boolean committed = false;
@@ -135,18 +143,20 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	}
 
 	@Override
-	public Map<String,String> getResolvedParameterMap() {
-		return resolvedParameterMap;
+	public StateVariant getResolvedStateVariant() {
+		return resolvedStateVariant;
 	}
-
-
-	/* move to session
-	@Override
-	public VariantTargetingTracker getTargetingTracker() {
-		return targetingTracker;
-	}
-	*/
 	
+	@Override
+	public  String getResolvedParameter(String name) {
+		return resolvedParameterMap.get(name);
+	}
+
+	@Override
+	public  Set<String> getResolvedParameterNames() {
+		return UnmodifiableSet.unmodifiableSet(resolvedParameterMap.keySet());
+	}
+
 	@Override
 	public void setStatus(Status status) {
 		this.status = status;
@@ -205,8 +215,15 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	/**
 	 * @param path
 	 */
-	public void setResolvedParameters(Map<String,String> parameterMap) {
-		this.resolvedParameterMap = parameterMap;
+	public void setResolvedStateVariant(StateVariantImpl variant) {
+		this.resolvedStateVariant = variant;
+		if (variant == null) {
+			resolvedParameterMap = state.getParameterMap();
+		}
+		else {
+			resolvedParameterMap = new CaseInsensitiveMap<String>();
+			VariantCollectionsUtils.mapMerge(resolvedParameterMap, state.getParameterMap(), variant.getParameters());
+		}
 	}
 		
 	/**

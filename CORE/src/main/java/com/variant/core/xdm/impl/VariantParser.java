@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.event.impl.util.CaseInsensitiveMap;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 
@@ -198,16 +198,10 @@ public class VariantParser implements Keywords {
 				response.addMessage(PARSER_VARIANTS_UNSUPPORTED_PROPERTY, entry.getKey(), tov.getTest().getName(), tov.getState().getName());
 			}
 		}
-		
-		// If params were not supplied, simply inherit state's params.
-		// Otherwise override them.
-		if (params == null) {
-			params = tov.getState().getParameterMap();
-		}
-		else {
-			params = new CaseInsensitiveMap<String>(params);  // The map from json parser is not case insensitive.
-			params = (Map<String,String>) VariantCollectionsUtils.mapMerge(tov.getState().getParameterMap(), params);
-		}
+
+		// The map from json parser is not case insensitive.
+		CaseInsensitiveMap<String> ciParams = new CaseInsensitiveMap<String>();
+		if (params != null) ciParams.putAll(params);  
 		
 		// Resort covarTestExperiences in ordinal order
 		List<TestExperienceImpl> orderedCovarTestExperiences = new ArrayList<TestExperienceImpl>(covarTestExperiences.size());
@@ -220,6 +214,7 @@ public class VariantParser implements Keywords {
 				}
 			}
 		}
-		return new StateVariantImpl(tov, experience, orderedCovarTestExperiences, params);
+		
+		return new StateVariantImpl(tov, experience, orderedCovarTestExperiences, ciParams);
 	}
 }

@@ -1,11 +1,12 @@
 package com.variant.core.impl;
 
 import java.util.Collection;
-import java.util.Map;
 
+import com.variant.core.util.Tuples;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
+import com.variant.core.xdm.impl.StateVariantImpl;
 
 public class VariantRuntimeTestFacade {
 	
@@ -20,7 +21,7 @@ public class VariantRuntimeTestFacade {
 	 * @param vector
 	 * @return
 	 */
-	public Map<String,String> resolveState(State state, Collection<Experience> vector) {
+	public Tuples.Pair<Boolean,StateVariantImpl> resolveState(State state, Collection<Experience> vector) {
 		return runtime.resolveState(state, vector);
 	}
 	

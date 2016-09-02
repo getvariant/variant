@@ -36,7 +36,7 @@ public class StateParsedHookListenerImpl implements HookListener<StateParsedHook
 	@Override
 	public void post(StateParsedHook hook) {
 		State state = hook.getState();
-		String path = state.getParameterMap().get("path");
+		String path = state.getParameter("path");
 		if (path != null && !path.startsWith("/")) {
 			hook.addMessage(
 					Severity.ERROR, 

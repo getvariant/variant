@@ -1,7 +1,7 @@
 package com.variant.client.impl;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.Set;
 
 import com.variant.client.VariantSession;
 import com.variant.client.VariantStateRequest;
@@ -10,6 +10,7 @@ import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.CoreStateRequestImpl;
 import com.variant.core.xdm.State;
+import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 
@@ -35,8 +36,18 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	}
 
 	@Override
-	public Map<String, String> getResolvedParameterMap() {
-		return coreStateRequest.getResolvedParameterMap();
+	public StateVariant getResolvedStateVariant() {
+		return coreStateRequest.getResolvedStateVariant();
+	}
+
+	@Override
+	public String getResolvedParameter(String name) {
+		return coreStateRequest.getResolvedParameter(name);
+	}
+
+	@Override
+	public Set<String> getResolvedParameterNames() {
+		return coreStateRequest.getResolvedParameterNames();
 	}
 
 	@Override
@@ -98,4 +109,5 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	public CoreStateRequestImpl getCoreStateRequest () {
 		return coreStateRequest;
 	}
+
 }

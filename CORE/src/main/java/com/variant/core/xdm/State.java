@@ -1,7 +1,6 @@
 package com.variant.core.xdm;
 
 import java.util.List;
-import java.util.Map;
 
 import com.variant.core.exception.VariantRuntimeException;
 
@@ -30,13 +29,12 @@ public interface State {
 	public String getName();	
 	
 	/**
-	 * All state parameters as a map. Each parameter is a key-value pair where
-	 * both key and value are strings.
-	 *
-	 * @return A map of state parameters.
-	 * @since 0.5
+	 * Value of a state parameter.
+	 * 
+	 * @return The value of a state parameter, if declared by this state, null otherwise.
+	 * @since 0.6
 	 */
-	public Map<String,String> getParameterMap();
+	public String getParameter(String name);
 
 	/**
 	 * <p>All tests instrumented on this state. Comprises all declared instrumentations.

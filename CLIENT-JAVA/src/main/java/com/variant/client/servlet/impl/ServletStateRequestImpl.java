@@ -2,6 +2,7 @@ package com.variant.client.servlet.impl;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,6 +15,7 @@ import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.CoreStateRequestImpl;
 import com.variant.core.xdm.State;
+import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 
@@ -72,8 +74,18 @@ public class ServletStateRequestImpl implements VariantServletStateRequest {
 	}
 
 	@Override
-	public Map<String, String> getResolvedParameterMap() {
-		return bareRequest.getResolvedParameterMap();
+	public StateVariant getResolvedStateVariant() {
+		return bareRequest.getResolvedStateVariant();
+	}
+
+	@Override
+	public String getResolvedParameter(String name) {
+		return bareRequest.getResolvedParameter(name);
+	}
+
+	@Override
+	public Set<String> getResolvedParameterNames() {
+		return bareRequest.getResolvedParameterNames();
 	}
 
 	@Override

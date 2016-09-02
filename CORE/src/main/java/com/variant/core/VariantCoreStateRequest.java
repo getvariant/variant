@@ -1,7 +1,7 @@
 package com.variant.core;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.Set;
 
 import com.variant.core.event.VariantEvent;
 import com.variant.core.xdm.State;
@@ -24,7 +24,7 @@ public interface VariantCoreStateRequest {
 	 * @return An object of type {@link VariantCoreSession}.
 	 * @since 0.6
 	 */
-	public VariantCoreSession getSession();
+	VariantCoreSession getSession();
 	
 	/**
 	 * The {@link State} of this request, which was passed to {@link VariantCoreSession#targetForState(State)}.
@@ -32,17 +32,42 @@ public interface VariantCoreStateRequest {
 	 * @return An object of type {@link State}
 	 * @since 0.6
 	 */
-	public State getState();
+	State getState();
 	
 	/**
-	 * The parameter map of the state variant to which this state request resolved.
+	 * The state variant to which this state request resolved at run time. At run time, a state request can
+	 * either have trivial resolution, or resolve to a {@link StateVariant}. Trivial resolution means that all live
+	 * experiences are control experiences, and the user session will be targeted for the base state. If at least one
+	 * live experience is a variant, the targeting operation will resolve to some state variant definition in the schema.
 	 * 
-	 * @return Resolved parameter map.
+	 * @return The state variant to which this request resolved, or null if all live experiences are control.
+	 * 
 	 * @since 0.6
 	 * @see StateVariant
 	 */
-	public Map<String,String> getResolvedParameterMap();
+	StateVariant getResolvedStateVariant();
 		
+	/**
+	 * The resolved state parameter. In case of trivial resolution, resolved state parameters are the ones declared at the
+	 * state level. In the case of non-trivial resolution, the parameters declared at the {@link StateVariant} level override
+	 * likely-named state parameterts declared at the state level.  
+	 * 
+	 * @param name Case insensitive parameter name.
+	 * @return Resolved parameter value or null if no parameter with this name defined.
+	 * @since 0.6
+	 */
+	String getResolvedParameter(String name);
+
+	/**
+	 * The names of all resolved state parameters. In case of trivial resolution, resolved state parameters are the ones declared at the
+	 * state level. In the case of non-trivial resolution, the parameters declared at the {@link StateVariant} level override
+	 * likely-named state parameterts declared at the state level.  
+	 * 
+	 * @return An unmodifiable collection of all resolved state parameters.
+	 * @since 0.6
+	 */	
+	Set<String> getResolvedParameterNames();
+
 	/**
 	 * <p>This session's all live experiences on this state.
 	 * An experience is live iff this session has been targeted for it and its containing test
@@ -52,7 +77,7 @@ public interface VariantCoreStateRequest {
 	 * @return Collection of {@link Test.Experience}s.
 	 * @since 0.6
 	 */
-	public Collection<Experience> getLiveExperiences();
+	Collection<Experience> getLiveExperiences();
 
 	/**
 	 * The live experience in a given test, if any. See {@link #getLiveExperiences()} for
@@ -63,7 +88,7 @@ public interface VariantCoreStateRequest {
 	 * 
 	 * @since 0.6
 	 */
-	public Experience getLiveExperience(Test test);
+	Experience getLiveExperience(Test test);
 		
 	/** Pending state visited event. 
 	 *  This is useful if the caller wants to add parameters to this event before it is flushed to external storage.
@@ -71,14 +96,14 @@ public interface VariantCoreStateRequest {
 	 * @return Object of type {@link VariantEvent}.
 	 * @since 0.6
 	 */
-	public VariantEvent getStateVisitedEvent();
+	VariantEvent getStateVisitedEvent();
 	
 	/**
 	 * Set the status of this request.
 	 * 
 	 * @param status {@link Status}
 	 */
-	public void setStatus(Status status);
+	void setStatus(Status status);
 	
 	/**
 	 * Commit this state request.
@@ -86,7 +111,7 @@ public interface VariantCoreStateRequest {
      *
 	 * @since 0.6
 	 */
-	public void commit();
+	void commit();
 
 	/**
 	 * Is this request object represent a request that has been committed?
@@ -94,17 +119,17 @@ public interface VariantCoreStateRequest {
      *@return true if this request has ben committed, or false otherwise.
 	 * @since 0.6
 	 */
-	public boolean isCommitted();
+	boolean isCommitted();
 
 	/**
 	 * Current status of this request.
 	 */
-	public Status getStatus();
+	Status getStatus();
 
 	/**
 	 * Status of a {@link com.variant.core.VariantCoreStateRequest}.
 	 */
-	public static enum Status {
+	static enum Status {
 		OK, FAIL
 	}
 }
