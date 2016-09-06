@@ -1,42 +1,6 @@
 package com.variant.core.xdm.impl;
 
-import static com.variant.core.xdm.impl.MessageTemplate.INTERNAL;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_CONTROL_EXPERIENCE_DUPE;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_TESTREF_NOT_STRING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_TESTREF_UNDEFINED;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_TESTS_NOT_LIST;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_TEST_DISJOINT;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_DUPE;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_MISSING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCES_LIST_EMPTY;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCES_NOT_LIST;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCE_NAME_DUPE;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCE_NAME_NOT_STRING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCE_NOT_OBJECT;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_ISCONTROL_NOT_BOOLEAN;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_ISNONVARIANT_NOT_BOOLEAN;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_IS_CONTROL_MISSING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_NO_TESTS;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_ONSTATES_LIST_EMPTY;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_ONSTATES_NOT_LIST;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_ONSTATES_NOT_OBJECT;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATEREF_DUPE;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATEREF_MISSING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATEREF_NOT_STRING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATEREF_UNDEFINED;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_TEST_ISON_NOT_BOOLEAN;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_TEST_NAME_DUPE;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_TEST_NAME_MISSING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_TEST_NAME_NOT_STRING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_TEST_UNSUPPORTED_PROPERTY;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANTS_ISNONVARIANT_XOR;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANTS_LIST_EMPTY;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANTS_NOT_LIST;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANT_DUPE;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANT_MISSING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_WEIGHT_NOT_NUMBER;
+import static com.variant.core.xdm.impl.MessageTemplate.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,10 +78,15 @@ public class TestsParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(PARSER_TEST_NAME_NOT_STRING);
+					response.addMessage(PARSER_TEST_NAME_INVALID);
+					return null;
 				}
 				else {
 					name = (String) nameObject;
+					if (!SemanticChecks.isName(name)) {
+						response.addMessage(PARSER_TEST_NAME_INVALID);
+						return null;
+					}
 				}
 				break;
 			}
@@ -326,21 +295,25 @@ public class TestsParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(PARSER_EXPERIENCE_NAME_NOT_STRING, testName);
+					response.addMessage(PARSER_EXPERIENCE_NAME_INVALID, testName);
 					return null;
 				}
 				else {
 					name = (String) nameObject;
+					if (!SemanticChecks.isName(name)) {
+						response.addMessage(PARSER_EXPERIENCE_NAME_INVALID, testName);
+						return null;
+					}
 				}
 				break;
 			}
 		}
 		
 		if (name == null) {
-			response.addMessage(PARSER_TEST_NAME_MISSING);
+			response.addMessage(PARSER_EXPERIENCE_NAME_MISSING, testName);
 			return null;
 		}
-		
+
 		// Pass 2: Finish parsing if we have the name.
 		boolean isControl = false;  // default;
 		Number weight = null;

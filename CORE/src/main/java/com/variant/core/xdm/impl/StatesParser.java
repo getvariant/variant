@@ -1,14 +1,6 @@
 package com.variant.core.xdm.impl;
 
-import static com.variant.core.xdm.impl.MessageTemplate.INTERNAL;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_NO_STATES;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_NAME_DUPE;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_NAME_MISSING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_NAME_NOT_STRING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_PARAMS_EMPTY;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_PARAMS_MISSING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_PARAMS_NOT_OBJECT;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_STATE_UNSUPPORTED_PROPERTY;
+import static com.variant.core.xdm.impl.MessageTemplate.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -79,10 +71,13 @@ public class StatesParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(PARSER_STATE_NAME_NOT_STRING);
+					response.addMessage(PARSER_STATE_NAME_INVALID);
 				}
 				else {
 					name = (String) nameObject;
+					if (!SemanticChecks.isName(name)) {
+						response.addMessage(PARSER_STATE_NAME_INVALID);
+					}
 				}
 				break;
 			}
@@ -112,14 +107,7 @@ public class StatesParser implements Keywords {
 			}
 		}
 		
-		
-		if (params == null) {
-			response.addMessage(PARSER_STATE_PARAMS_MISSING, name);
-			params = new HashMap<String,String>();
-		}
-		else if (params.size() == 0) {
-			response.addMessage(PARSER_STATE_PARAMS_EMPTY, name);
-		}
+		if (params == null) params = new HashMap<String,String>();
 
 		return new StateImpl(schema, name, params);
 	}

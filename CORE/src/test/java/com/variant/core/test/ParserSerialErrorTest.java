@@ -19,7 +19,7 @@ import com.variant.core.xdm.impl.SchemaParser;
  * @author Igor
  *
  */
-public class ParserDisjointErrorTest extends BaseTestCore {
+public class ParserSerialErrorTest extends BaseTestCore {
 	
 	private VariantCore core = rebootApi();
 	
@@ -341,7 +341,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATE_NAME_NOT_STRING).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATE_NAME_INVALID).getText(), error.getText());
 	}
 	
 	/**
@@ -466,69 +466,6 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATE_NAME_DUPE, "state1").getText(), error.getText());
-	}
-
-	/**
-	 * VIEW_PATH_MISSING
-	 * @throws Exception
-	 */
-	@Test
-	public void viewPathMissing_Test() throws Exception {
-		
-		String config = 
-				"{                                                             \n" +
-			    "   'states':[                                                 \n" +
-			    "     {  'name':'state1',                                      \n" +
-	    	    "        'parameters': {                                       \n" +
-			    "           'path':'/path/to/state1'                           \n" +
-			    "        }                                                     \n" +
-			    "     },                                                       \n" +
-	    	    "     {  'parameters': {                                       \n" +
-			    "           'path':'/path/to/state2'                           \n" +
-			    "        },                                                    \n" +
-			    "        'name':'state2'                                       \n" +
-			    "     },                                                       \n" +
-			    "     {  'name':'state3'                                       \n" + 
-			    "     }                                                        \n" +
-			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
-			    "     {                                                        \n" +
-			    "        'name':'Test1',                                       \n" +
-			    "        'experiences':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'B',                                     \n" +
-			    "              'weight':50,                                    \n" +
-			    "              'isControl':true                                \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    //----------------------------------------------------------------//	
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		ParserResponseImpl response = SchemaParser.parse(core, config);
-
-		assertTrue(response.hasMessages());
-		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATE_PARAMS_MISSING, "state3").getText(), error.getText());
 	}
 
 	/**
@@ -782,7 +719,7 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_TEST_NAME_NOT_STRING).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_TEST_NAME_INVALID).getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 	
@@ -1163,18 +1100,33 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 			    "           {                                                  \n" +
 			    "              'name':234,                                     \n" +
 			    "              'weight':50                                     \n" +
-			    "           }                                                  \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'' ,                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'$abc' ,                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'a&bc' ,                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'_%-bc' ,                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'7abc' ,                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           }                                                 \n" +
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'B',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'           \n" +
-			    "                    }                                         \n" +
-			    "                 }                                            \n" +
+			    "                 {'experienceRef':'B'}                        \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
@@ -1187,10 +1139,12 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
-		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCE_NAME_NOT_STRING, "test1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		assertEquals(6, response.getMessages().size());
+		for (int i = 0; i < 6; i++) {
+			ParserMessage error = response.getMessages().get(i);
+			assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCE_NAME_INVALID, "test1").getText(), error.getText());
+			assertEquals(Severity.ERROR, error.getSeverity());
+		}
 	}
 
 	/**
@@ -2853,6 +2807,233 @@ public class ParserDisjointErrorTest extends BaseTestCore {
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
+	}
+
+	/**
+	 * PARSER_STATE_NAME_INVALID
+	 * @throws Exception
+	 */
+	@Test
+	public void stateNameInvalid() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "   'states':[                                                 \n" +
+			    "     {'name':''},                                             \n" +
+			    "     {'name':'%abc'},                                         \n" +
+			    "     {'name':'a%bc'},                                         \n" +
+			    "     {'name':'_%bc'},                                         \n" +
+			    "     {'name':'7abc'},                                         \n" +
+			    "     {'name':'_aBc9'},                                        \n" +
+			    "     {'name':'aBc9'},                                         \n" +
+			    "     {'name':'a7_Bc9'},                                       \n" +
+			    "     {'name':'_0Bc9'},                                        \n" +
+			    "     {'name':'state1'}                                        \n" +
+			    "  ],                                                          \n" +
+				"  'tests':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'name':'TEST',                                        \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                          \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1',                            \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'       \n" +
+			    "                    }                                         \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		ParserResponseImpl response = SchemaParser.parse(core, config);
+
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(5, response.getMessages().size());
+		for (int i = 0; i < 5; i++) {
+			ParserMessage error = response.getMessages().get(i);
+			assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATE_NAME_INVALID).getText(), error.getText());
+			assertEquals(Severity.ERROR, error.getSeverity());
+		}
+	}
+
+	/**
+	 * PARSER_TEST_NAME_INVALID
+	 * @throws Exception
+	 */
+	@Test
+	public void testNameInvalid() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "   'states':[                                                 \n" +
+			    "     {'name':'state1'}                                        \n" +
+			    "  ],                                                          \n" +
+				"  'tests':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'name':'',                                            \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                          \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1',                            \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'       \n" +
+			    "                    }                                         \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     },                                                       \n" +
+			    "     {                                                        \n" +
+			    "        'name':'%abc',                                        \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                          \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1',                            \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'       \n" +
+			    "                    }                                         \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     },                                                       \n" +
+			    "     {                                                        \n" +
+			    "        'name':'a%bc',                                        \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                          \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1',                            \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'       \n" +
+			    "                    }                                         \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     },                                                       \n" +
+			    "     {                                                        \n" +
+			    "        'name':'_%bc',                                        \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                          \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1',                            \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'       \n" +
+			    "                    }                                         \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     },                                                       \n" +
+			    "     {                                                        \n" +
+			    "        'name':'7abc',                                        \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                          \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1',                            \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'       \n" +
+			    "                    }                                         \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		ParserResponseImpl response = SchemaParser.parse(core, config);
+
+		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertEquals(5, response.getMessages().size());
+		for (int i = 0; i < 5; i++) {
+			ParserMessage error = response.getMessages().get(i);
+			assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_TEST_NAME_INVALID).getText(), error.getText());
+			assertEquals(Severity.ERROR, error.getSeverity());
+		}
 	}
 
 }
