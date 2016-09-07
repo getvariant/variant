@@ -13,7 +13,7 @@
     	
     </properties>
 
-    <artifactId>variant-client</artifactId>
+    <artifactId>variant-java-client</artifactId>
     <name>Variant Java Client</name>
     <packaging>jar</packaging>
     <groupId>com.variant</groupId>
@@ -60,21 +60,7 @@
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 		</dependency>
-	
-      <dependency>
-         <groupId>org.mockito</groupId>
-         <artifactId>mockito-all</artifactId>
-         <version>2.0.2-beta</version>
-      </dependency>
-    	
-    	<!-- Servlet -->
-		<dependency>
-        	<groupId>org.apache.tomcat</groupId>
-        	<artifactId>tomcat-servlet-api</artifactId>
-         	<version>${tomcat.version}</version>
-          	<scope>provided</scope>
-      </dependency>
-        
+	    	        
       <!-- Apache HTTP Client --> 
        <dependency>
           <groupId>org.apache.httpcomponents</groupId>
@@ -92,10 +78,10 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
+                   <source>1.7</source>
                    <target>1.7</target>
-                </configuration>
+                </configuration>            
             </plugin>
-        
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-surefire-plugin</artifactId>
@@ -108,7 +94,6 @@
 			       <systemPropertyVariables>
                       <variant.version>${variant.version}</variant.version>
                 </systemPropertyVariables>
-                <excludedGroups>com.variant.client.servlet.test.Remote</excludedGroups>
                </configuration>
             </plugin>
             
