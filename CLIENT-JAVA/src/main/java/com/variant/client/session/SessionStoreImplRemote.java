@@ -35,7 +35,7 @@ public class SessionStoreImplRemote implements SessionStore {
 		if (sessionId == null || sessionId.length() == 0) {
 			throw new IllegalArgumentException("No session ID");
 		}
-						
+
 		HttpClient httpClient = new HttpClient();
 		HttpResponse resp = httpClient.get(apiEndpointUrl + "session/" + sessionId);
 

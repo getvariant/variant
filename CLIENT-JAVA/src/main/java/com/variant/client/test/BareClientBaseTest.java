@@ -4,7 +4,7 @@ import org.junit.Before;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantTargetingTracker;
-import com.variant.client.impl.VariantClientTestFacade;
+import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantCore;
@@ -52,8 +52,8 @@ public abstract class BareClientBaseTest extends CoreBaseTest {
 	 */
 	protected VariantClient newBareClient() {
 		Injector.setConfigNameAsResource("/variant/injector-bare-client-test.json");
-		VariantClient result =  VariantClient.Factory.getInstance("/variant/bare-client-test.props");
-		core = VariantClientTestFacade.getCoreApi(result);
+		VariantClientImpl result =  (VariantClientImpl) VariantClient.Factory.getInstance("/variant/bare-client-test.props");
+		core = result.getCoreApi();
 		return result;
 	}
 

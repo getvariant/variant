@@ -6,6 +6,8 @@ Variant 0.6.2 README
 2. Bugs Fixed
   43 Remove dependency on SecureString
   38 VariantStateRequest provides resolved state variant
+  46 State parameters are optional
+  40 Test/State/Experience names are SQL identifiers
 
 Copyright 2015-2016 Variant Inc.
 

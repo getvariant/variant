@@ -1,0 +1,18 @@
+#
+# Base properties for some JUnit Tests.
+#
+
+# We expect server to run here
+# server.endpoint.url=http://localhost:8080/
+
+event.writer.buffer.size = 10000
+event.writer.max.delay.millis = 100
+      
+# Session ID tracker in HTTP cookie.
+session.id.tracker.class.name = com.variant.client.session.SessionIdTrackerSimple
+session.id.tracker.class.init = {}
+
+# Targeting tracker in cookie.
+targeting.tracker.class.name = com.variant.client.session.TargetingTrackerSimple
+session.id.tracker.class.init = {}
+      
