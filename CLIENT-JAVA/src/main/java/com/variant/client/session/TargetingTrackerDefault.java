@@ -22,9 +22,6 @@ public class TargetingTrackerDefault implements VariantTargetingTracker {
 	@Override
 	public void init(VariantInitParams initParams, Object...userData) {}		
 
-	/**
-	 * User data is expected as an <code>HttpServletResponse</code> object.
-	 */
 	@Override
 	public void save(Object...userData) {
 		throw new UnsupportedOperationException(MESSAGE);

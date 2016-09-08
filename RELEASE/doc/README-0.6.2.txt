@@ -8,6 +8,7 @@ Variant 0.6.2 README
   38 VariantStateRequest provides resolved state variant
   46 State parameters are optional
   40 Test/State/Experience names are SQL identifiers
+  41 Isolate servlet adapter into own library.
 
 Copyright 2015-2016 Variant Inc.
 

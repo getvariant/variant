@@ -97,23 +97,6 @@
                </configuration>
             </plugin>
             
-<!-- Only include the adapter sources and package them by hand
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-source-plugin</artifactId>
-              <configuration>
-                <excludedGroups>com.variant.client.servlet.test.Remote</excludedGroups>
-              </configuration>
-              <executions>
-                <execution>
-                  <id>attach-sources</id>
-                  <goals>
-                    <goal>jar</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>
--->
 <!-- Do we need client tests packaged?
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
