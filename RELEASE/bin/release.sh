@@ -5,7 +5,7 @@
 
 #!/bin/bash
 
-export version=0.6.1
+export version=0.6.2
 
 function usage() {
     echo "$(basename $0) email"
@@ -48,6 +48,10 @@ mvn clean package -DskipTests
 cp target/variant-client*.jar ${stage_dir}
 (cd src/main/java; jar -cvf ${stage_dir}/variant-client-adapter-source-${version}.jar com/variant/client/adapter/*)
 
+TODO: 
+1. assemble the new servlet adapter into separate lib.
+2. cp variant.js into out, renamed to contian release to be copied to getvariant.com, but don't include in tar distro.
+           
 #
 # WEB DEMO
 #

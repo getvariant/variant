@@ -77,7 +77,7 @@
 			       <systemPropertyVariables>
                       <variant.version>${variant.version}</variant.version>
                 </systemPropertyVariables>
-                <excludedGroups>com.variant.client.servlet.test.Remote</excludedGroups>
+<!--                <excludedGroups>com.variant.client.servlet.test.Remote</excludedGroups> -->
                </configuration>
             </plugin>
             
