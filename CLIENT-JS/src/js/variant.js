@@ -1,5 +1,3 @@
-/* Variant 0.6.2 © Variant, Inc. All rights reserved. getvariant.com */
-
 (function() {
 
 	// Can't do w/o jQuery

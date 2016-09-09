@@ -10,10 +10,10 @@ workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
 core_src_dir=${workspace_root_dir}/CORE/src/main/java
 client_src_dir=${workspace_root_dir}/CLIENT-JAVA/src/main/java
 javadoc_dir=${workspace_root_dir}/RELEASE/javadoc
-out_file=${workspace_root_dir}/RELEASE/out/javadoc-${version}.tar
+target_file=${workspace_root_dir}/RELEASE/target/javadoc-${version}.tar
 
-rm -rf ${javadoc_dir} ${out_dir}
-mkdir ${out_dir} ${javadoc_dir}
+rm -rf ${javadoc_dir} ${target_dir}
+mkdir ${target_dir} ${javadoc_dir}
 
 javadoc -d ${javadoc_dir}  \
    -sourcepath ${core_src_dir}:${client_src_dir} \
@@ -36,4 +36,4 @@ javadoc -d ${javadoc_dir}  \
 # Package
 #
 cd ${javadoc_dir}
-tar -cvf ${out_file} *
+tar -cvf ${target_file} *

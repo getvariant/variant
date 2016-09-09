@@ -265,7 +265,7 @@
 		<!-- Variant and its dependencies -->        
 		<dependency>
 			<groupId>com.variant</groupId>
-			<artifactId>variant-java-client</artifactId>
+			<artifactId>variant-java-client-servlet-adapter</artifactId>
 			<version>0.6.2</version>
 		</dependency>
 		    
