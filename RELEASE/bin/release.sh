@@ -65,13 +65,7 @@ cp ${workspace_root_dir}/CLIENT-JS/target/variant*.js ${target_dir}
 #
 cd ${workspace_root_dir}/WEB-DEMO
 mvn clean package -DskipTests
-cp -R ${workspace_root_dir}/WEB-DEMO ${stage_dir}
-cd ${stage_dir}/WEB-DEMO
-rm -rf .classpath .project .settings target
-tar -cvf ${stage_dir}/variant-spring-petclinic.tar ./*
-cd ${stage_dir}
-rm -rf WEB-DEMO
-
+cp target/petclinic.war ${stage_dir}/variant-servlet-demo-petclinic.war
 
 #
 # DB

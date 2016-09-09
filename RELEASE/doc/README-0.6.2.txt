@@ -1,9 +1,9 @@
 Variant 0.6.2 README
 
-1. New In 0.6.2
+1. New in 0.6.2
 
 
-2. Bugs Fixed
+2. Bugs Fixed in 0.6.2
   43 Remove dependency on SecureString
   38 VariantStateRequest provides resolved state variant
   46 State parameters are optional
