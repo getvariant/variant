@@ -81,13 +81,6 @@
            <artifactId>jackson-annotations</artifactId>
            <version>${jackson.version}</version>
         </dependency>
-
-    	<!-- Postgres 9.1 JDBC driver -->
-	    <dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.1-901-1.jdbc4</version>
-		</dependency>
     	
     	<!-- JUnit -->    
         <dependency>
@@ -96,10 +89,19 @@
 			<version>4.12</version>
 		</dependency>
 	
+      <!-- Postgres 9.1 JDBC driver -->
+       <dependency>
+         <groupId>postgresql</groupId>
+         <artifactId>postgresql</artifactId>
+         <version>9.1-901-1.jdbc4</version>
+         <scope>test</scope>
+      </dependency>
+
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.191</version>
+         <scope>test</scope>
 		</dependency>
 
 		<!-- Hazelcast distributed cache 		
