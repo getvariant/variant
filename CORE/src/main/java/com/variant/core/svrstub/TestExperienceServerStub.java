@@ -1,6 +1,7 @@
 package com.variant.core.svrstub;
 
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 
 /**
@@ -38,6 +39,11 @@ public class TestExperienceServerStub implements Test.Experience  {
 	@Override
 	public boolean isControl() {
 		return isControl;
+	}
+
+	@Override
+	public boolean isDefinedOn(State state) {
+		throw new VariantInternalException("Method not supported");
 	}
 	
 	

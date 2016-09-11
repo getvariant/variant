@@ -1,22 +1,6 @@
 package com.variant.core.xdm.impl;
 
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_MISSING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_NOT_STRING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_PARAMS_NOT_OBJECT;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANT_NOT_OBJECT;
+import static com.variant.core.xdm.impl.MessageTemplate.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +42,12 @@ public class VariantParser implements Keywords {
 			return null;
 		}
 		
-		// Pass 1. Find local experienceRef
+		// Pass 1. Find proper experienceRef and isDefined
+		// Note that we loop over all entries instead of just getting what we want because
+		// the syntax is case insensitive and don't know what to get().
 		String experienceRef = null;
+		boolean isDefined = true;
+		
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_EXPERIENCE_REF)) {
@@ -69,6 +57,14 @@ public class VariantParser implements Keywords {
 				catch (Exception e) {
 					response.addMessage(PARSER_EXPERIENCEREF_NOT_STRING, tov.getTest().getName(), tov.getState().getName());
 					return null;
+				}
+			}
+			else if (entry.getKey().equalsIgnoreCase(KEYWORD_IS_DEFINED)) {
+				try {
+					isDefined = (Boolean) entry.getValue();
+				}
+				catch (Exception e) {
+					response.addMessage(PARSER_ISDEFINED_NOT_BOOLEAN, tov.getTest().getName(), tov.getState().getName());
 				}
 			}
 		}
@@ -85,8 +81,8 @@ public class VariantParser implements Keywords {
 			return null;			
 		}
 
-		// Variant cannot refer to a control experience
-		if (experience.isControl) {
+		// Variant cannot refer to a control experience, unless undefined.
+		if (experience.isControl() && isDefined) {
 			response.addMessage(PARSER_EXPERIENCEREF_ISCONTROL, experienceRef, tov.getTest().getName(), tov.getState().getName());
 			return null;						
 		}
@@ -97,6 +93,12 @@ public class VariantParser implements Keywords {
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_COVARIANT_EXPERIENCE_REFS)) {
+				
+				if (!isDefined) {
+					response.addMessage(PARSER_COVARIANT_EXPERIENCEREFS_NOT_ALLOWED, tov.getTest().getName(), tov.getState().getName(), experienceRef);
+					return null;					
+				}
+				
 				List<?> covarExperienceRefList; 
 				try {
 					covarExperienceRefList = (List<?>) entry.getValue();
@@ -184,9 +186,16 @@ public class VariantParser implements Keywords {
 		Map<String,String> params = null;
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
-			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_EXPERIENCE_REF, KEYWORD_COVARIANT_EXPERIENCE_REFS)) continue;
+			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_EXPERIENCE_REF, KEYWORD_IS_DEFINED, KEYWORD_COVARIANT_EXPERIENCE_REFS)) 
+				continue;
 		
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_PARAMETERS)) {
+				
+				if (!isDefined) {
+					response.addMessage(PARSER_EXPERIENCEREF_PARAMS_NOT_ALLOWED, tov.getTest().getName(), tov.getState().getName(), experienceRef);
+					return null;					
+				}
+
 				try {
 					params = (Map<String,String>) entry.getValue();
 				}
@@ -197,6 +206,12 @@ public class VariantParser implements Keywords {
 			else {
 				response.addMessage(PARSER_VARIANTS_UNSUPPORTED_PROPERTY, entry.getKey(), tov.getTest().getName(), tov.getState().getName());
 			}
+		}
+
+		// Don't create a state variant if undefined.
+		if (!isDefined) {
+			experience.addUninstrumentedState(tov.getState());
+			return null;
 		}
 
 		// The map from json parser is not case insensitive.

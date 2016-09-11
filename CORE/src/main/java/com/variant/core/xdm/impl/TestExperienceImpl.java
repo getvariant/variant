@@ -1,5 +1,9 @@
 package com.variant.core.xdm.impl;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 
 // Remove public modifier is the result of exposing the server side
@@ -9,8 +13,9 @@ public class TestExperienceImpl implements Test.Experience  {
 	private String name;
 	private Test test;
 	private Number weight;
-	boolean isControl;
-		
+	private boolean isControl;
+	private Set<State> uninstrumentedStates = new HashSet<State>();
+	
 	/**
 	 * Instantiation.
 	 * @param name
@@ -33,26 +38,38 @@ public class TestExperienceImpl implements Test.Experience  {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public Test getTest() {
 		return test;
 	}
 
+	@Override
 	public boolean isControl() {
 		return isControl;
 	}
 
+	@Override
 	public Number getWeight() {
 		return weight;
 	}
-
+	
+	@Override
+	public boolean isDefinedOn(State state) {
+		return !uninstrumentedStates.contains(state);
+	}
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
 
+	public void addUninstrumentedState(State state) {
+		uninstrumentedStates.add(state);
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof TestExperienceImpl)) return false;

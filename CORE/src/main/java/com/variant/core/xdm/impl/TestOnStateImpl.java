@@ -30,7 +30,6 @@ public class TestOnStateImpl implements Test.OnState {
 	}
 	
 	/**
-	 * 
 	 * @param isNonvariant
 	 */
 	void setNonvariant(boolean isNonvariant) {
@@ -38,7 +37,6 @@ public class TestOnStateImpl implements Test.OnState {
 	}
 	
 	/**
-	 * 
 	 * @param variant
 	 */
 	void addVariant(StateVariant variant) {

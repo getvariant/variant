@@ -82,7 +82,9 @@ public enum MessageTemplate {
 	PARSER_VARIANT_MISSING                                (Severity.ERROR, "Variant element 'tests/onStates/variants' missing for experience [%s] (Test [%s], StateRef [%s])"), 
 	PARSER_COVARIANT_VARIANT_MISSING                      (Severity.ERROR, "'tests/onStates/variants' list element missing for proper experience [%s] and covariant experience(s) [%s] (Test [%s], StateRef [%s])"), 	
 	PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT           (Severity.ERROR, "Variant element 'tests/onStates/variants' for covariant experience [%s.%s] cannot refer to a non-covariant test (Test [%s], StateRef [%s])"), 	
-	PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST              (Severity.ERROR, "'tests/onStates/covariantExperienceRefs' property must be a list (Test [%s], StateRef [%s], ExperienceRef [%s])"), 
+	PARSER_COVARIANT_EXPERIENCEREFS_NOT_ALLOWED           (Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs' property not allowed in an undefined variant (Test [%s], StateRef [%s], ExperienceRef [%s])"), 
+	PARSER_EXPERIENCEREF_PARAMS_NOT_ALLOWED               (Severity.ERROR, "'tests/onStates/variants/parameters' property not allowed in an undefined variant (Test [%s], StateRef [%s], ExperienceRef [%s])"),
+	PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST              (Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs' property must be a list (Test [%s], StateRef [%s], ExperienceRef [%s])"), 
 	PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT            (Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs' list element must be an object (Test [%s], StateRef [%s], ExperienceRefs [%s])"), 
 	PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT   (Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs' list element cannot reference multiple tests, which are not covariant with each other (Test [%s], StateRef [%s], ExperienceRef [%s] CovariantExperienceRefs [%s])"), 
 	PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING       (Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs/testRef' property must be a string (Test [%s], StateRef [%s], ExperienceRef [%s])"), 
@@ -91,10 +93,11 @@ public enum MessageTemplate {
 	PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT       (Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs/testRef' cannot reference test [%s] which is nonvariant on this state (Test [%s], StateRef [%s], ExperienceRef [%s])"), 
 	PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED  (Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs/experienceRef' references an undefined experience [%s.%s] (Test [%s], StateRef [%s], ExperienceRef [%s])"), 
 	PARSER_COVARIANT_EXPERIENCE_DUPE                      (Severity.ERROR, "Duplicate list element 'tests/onStates/variants/covariantExperienceRefs' references experience [%s.%s] (Test [%s], StateRef [%s], Experience [%s])"), 
+	PARSER_ISDEFINED_NOT_BOOLEAN                          (Severity.ERROR, "'tests/onStates/variants/isDefined' property must be a boolean (Test [%s], StateRef [%s])"), 
 	PARSER_EXPERIENCEREF_MISSING                          (Severity.ERROR, "'tests/onStates/variants/experienceRef' property is missing (Test [%s], StateRef [%s])"), 
 	PARSER_EXPERIENCEREF_NOT_STRING                       (Severity.ERROR, "'tests/onStates/variants/experienceRef' property must be a string (Test [%s], StateRef [%s])"), 
 	PARSER_EXPERIENCEREF_UNDEFINED                        (Severity.ERROR, "'tests/onStates/variants/experienceRef' property [%s] references an undefined expereince (Test [%s], StateRef [%s])"), 
-	PARSER_EXPERIENCEREF_ISCONTROL                        (Severity.ERROR, "'tests/onStates/variants/experienceRef' property [%s] cannot reference a control expereince (Test [%s], StateRef [%s])"), 
+	PARSER_EXPERIENCEREF_ISCONTROL                        (Severity.ERROR, "'tests/onStates/variants/experienceRef' property [%s] cannot reference a control expereince, unless undefined (Test [%s], StateRef [%s])"), 
 	PARSER_EXPERIENCEREF_PARAMS_NOT_OBJECT                (Severity.ERROR, "'tests/onStates/variants/parameters' property must be an object (Test [%s], StateRef [%s], ExperienceRef [%s])"),
 
 	// General parser errors

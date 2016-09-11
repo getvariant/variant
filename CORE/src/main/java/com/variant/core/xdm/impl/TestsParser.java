@@ -138,7 +138,7 @@ public class TestsParser implements Keywords {
 		// One must be control.
 		boolean controlExperienceFound = false;
 		for (TestExperienceImpl e: experiences) {
-			if (e.isControl) {
+			if (e.isControl()) {
 				if (controlExperienceFound) {
 					response.addMessage(PARSER_CONTROL_EXPERIENCE_DUPE, e.getName(), name);
 					break;
@@ -154,7 +154,7 @@ public class TestsParser implements Keywords {
 		result.setExperiences(experiences);
 		
 		
-		// Pass 3: Parse covariantTestRefs, isOn and idleDaysToLive
+		// Pass 3: Parse covariantTestRefs, isOn.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_COVARIANT_TEST_REFS)) {
@@ -355,12 +355,12 @@ public class TestsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	private static TestOnStateImpl parseTestOnView(Object testOnViewObject, TestImpl test, ParserResponseImpl response) throws VariantRuntimeException {
+	private static TestOnStateImpl parseTestOnView(Object testOnStateObject, TestImpl test, ParserResponseImpl response) throws VariantRuntimeException {
 		
-		Map<String, Object> rawTestOnView = null;
+		Map<String, Object> rawTestOnState = null;
 		
 		try {
-			rawTestOnView = (Map<String, Object>) testOnViewObject;
+			rawTestOnState = (Map<String, Object>) testOnStateObject;
 		}
 		catch (Exception e) {
 			response.addMessage(PARSER_ONSTATES_NOT_OBJECT, test.getName());
@@ -369,7 +369,7 @@ public class TestsParser implements Keywords {
 		
 		// Pass 1. Figure out the experienceRef
 		String stateRef = null;
-		for (Map.Entry<String, Object> entry: rawTestOnView.entrySet()) {
+		for (Map.Entry<String, Object> entry: rawTestOnState.entrySet()) {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_STATE_REF)) {
 				try {
 					stateRef = (String) entry.getValue();
@@ -398,7 +398,7 @@ public class TestsParser implements Keywords {
 		// Pass 2. Parse the rest of elems.
 		List<Object> rawVariants = null;
 		
-		for (Map.Entry<String, Object> entry: rawTestOnView.entrySet()) {
+		for (Map.Entry<String, Object> entry: rawTestOnState.entrySet()) {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_STATE_REF)) continue;
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_IS_NONVARIANT)) {
@@ -474,9 +474,10 @@ public class TestsParser implements Keywords {
 		}
 		
 		// Confirm Must have a variant for each vector in the variant space
-		// defined by the local and covariant experiences.
+		// defined by the local and covariant experiences. Note that we don't
+		// expect a state variant for those undefined variants.
 		for (VariantSpace.Point point: tos.variantSpace().getAll()) {
-			if (point.getVariant() == null) {
+			if (point.getVariant() == null && point.getExperience().isDefinedOn(refState)) {
 				if (point.getCovariantExperiences().size() == 0) {
 					response.addMessage(PARSER_VARIANT_MISSING, point.getExperience().getName(), test.getName(), stateRef);
 				}

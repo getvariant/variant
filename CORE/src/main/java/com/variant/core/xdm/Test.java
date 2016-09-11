@@ -158,6 +158,19 @@ public interface Test {
 	     * @since 0.5
 		 */
 		public Number getWeight();
+		
+		/**
+		 * Is this experience defined on a given state?
+		 * If a state variant is declared as undefined, it exclude that state from instrumentation
+		 * by the corresponding proper experience. This comes in handy
+		 * when a variant experience adds (or subtracts) states as compared with the control experience.
+		 * See documentation for more on <i>mixed instrumentation</i>.
+		 * 
+		 * @return true if this variant was declared as defined, or false otherwise.
+		 * @since 0.6
+		 *
+		*/
+		public boolean isDefinedOn(State state);
 	}
 
 	/**

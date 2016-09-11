@@ -47,7 +47,7 @@ public interface StateVariant {
 	 * @since 0.5
 	 */
 	public Experience getExperience();
-
+	
 	/**
 	 * The list of this variant's covariantly concurrent experiences, i.e. the ones defined in the 
 	 * covariant tests clause of the test within whose definition this variant is defined.

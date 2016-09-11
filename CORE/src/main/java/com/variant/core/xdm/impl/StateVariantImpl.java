@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.StateVariant;
