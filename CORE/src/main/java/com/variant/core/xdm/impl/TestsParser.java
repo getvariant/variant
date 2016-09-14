@@ -17,6 +17,7 @@ import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
 
 /**
  * Parse the TESTS clause.
@@ -473,11 +474,14 @@ public class TestsParser implements Keywords {
 			return null;
 		}
 		
-		// Confirm Must have a variant for each vector in the variant space
-		// defined by the local and covariant experiences. Note that we don't
-		// expect a state variant for those undefined variants.
+		// Confirm Must have a variant for each vector in the variant space,
+		// defined by the proper and covariant experiences, unless one of them
+		// undefined, no matter which one. 
 		for (VariantSpace.Point point: tos.variantSpace().getAll()) {
-			if (point.getVariant() == null && point.getExperience().isDefinedOn(refState)) {
+			
+			if (point.getVariant() == null && point.isDefinedOn(tos.getState())) {
+				
+				// We don't have a point and none of the coordinate experiences were declared as undefined.
 				if (point.getCovariantExperiences().size() == 0) {
 					response.addMessage(PARSER_VARIANT_MISSING, point.getExperience().getName(), test.getName(), stateRef);
 				}
@@ -488,6 +492,25 @@ public class TestsParser implements Keywords {
 							VariantStringUtils.toString(point.getCovariantExperiences(),  ","), 
 							test.getName(), stateRef);
 				}
+			}
+			else if (point.getVariant() != null && !point.isDefinedOn(tos.getState())) {
+				// We have a point and one of the coordinate experiences were declared as undefined.
+				// Find out which one.
+				if (!point.getExperience().isDefinedOn(tos.getState())) {
+					response.addMessage(
+							PARSER_COVARIANT_VARIANT_PROPER_UNDEFINED, 
+							point.getExperience().getName(),
+							VariantStringUtils.toString(point.getCovariantExperiences(),  ","), 
+							test.getName(), stateRef);
+				}
+				for (Experience e: point.getCovariantExperiences()) {
+					if (e.isDefinedOn(tos.getState())) continue;
+					response.addMessage(
+							PARSER_COVARIANT_VARIANT_COVARIANT_UNDEFINED, 
+							point.getExperience().getName(),
+							VariantStringUtils.toString(point.getCovariantExperiences(),  ","), 
+							e.toString(), test.getName(), stateRef);
+				}				
 			}
 		}
 		

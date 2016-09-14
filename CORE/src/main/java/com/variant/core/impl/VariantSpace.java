@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.xdm.State;
 import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
@@ -254,12 +255,22 @@ public class VariantSpace {
 		}
 
 		/**
-		 * 
+		 * Variant defined in this point, if any.
 		 * @return
 		 */
 		public StateVariant getVariant() {
 			return variant;
 		}
 		
+		/**
+		 * A point is defined on a state if none of its coordinate experiences are declared as undefined.
+		 * @return
+		 */
+		public boolean isDefinedOn(State state) {
+			for (Experience e: coordinates.coordinates) {
+				if (!e.isDefinedOn(state)) return false;
+			}
+			return true;
+		}
 	}	
 }

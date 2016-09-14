@@ -290,15 +290,6 @@ public class VariantCore implements Serializable {
 	}
 	
 	/**
-	 * Save user session in session store.
-	 * @param session
-	 * TODO Make this async
-	 *
-	public void saveSession(VariantCoreSession session) {
-		sessionService.saveSession(session);
-	}
-	*/
-	/**
 	 * <p>Register a {@link com.variant.core.hook.HookListener}. The caller must provide 
 	 * an implementation of the {@link com.variant.core.hook.HookListener} interface 
 	 * which listens to a pre-defined {@link com.variant.core.hook.UserHook} type. Whenever 
@@ -357,38 +348,14 @@ public class VariantCore implements Serializable {
 	 * @param deploy
 	 * @return
 	 */
-	public ParserResponse parseSchema(String string, boolean deploy) {
+	public ParserResponse parseSchema(String schemaString, boolean deploy) {
 
 		long now = System.currentTimeMillis();
-		
-		// (Re)discover and process all annotations.
-		// AnnotationProcessor.process();
 
 		ParserResponseImpl response;
-
-		// Lose comments, i.e. from // to eol.
-		StringBuilder schemaAsStringNoComments = new StringBuilder();
-		String lines[] = string.split("\n");
-		for (String line: lines) {
-			
-			int commentIndex = line.indexOf("//");
-			
-			if (commentIndex == 0) {
-				// full line - skip.
-				continue;
-			}
-			else if (commentIndex >= 0) {
-				// partial line: remove from // to eol.
-				schemaAsStringNoComments.append(line.substring(0, commentIndex));
-			}
-			else {
-				schemaAsStringNoComments.append(line);
-			}
-			schemaAsStringNoComments.append("\n");
-		}
 		
 		try {
-			response = SchemaParser.parse(this, schemaAsStringNoComments.toString());
+			response = SchemaParser.parse(this, schemaString);
 		}
 		catch (Throwable t) {
 			response = new ParserResponseImpl();

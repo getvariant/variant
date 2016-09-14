@@ -45,6 +45,40 @@ public class SchemaParser implements Keywords {
 		response.addMessage(MessageTemplate.PARSER_JSON_PARSE, line, column, message.toString(), rawInput);
 
 	}
+
+	/**
+	 * Pre-parser pass:
+	 * 1. Remove comments.
+	 * 2. (TODO) variable expansion?
+	 * 
+	 * @param schema
+	 * @return
+	 */
+	private static String preParse(String schema) {
+		
+		// Lose comments from // to eol.
+		
+		StringBuilder result = new StringBuilder();
+		String lines[] = schema.split("\n");
+		for (String line: lines) {
+			
+			int commentIndex = line.indexOf("//");
+			
+			if (commentIndex == 0) {
+				// full line - skip.
+				continue;
+			}
+			else if (commentIndex >= 0) {
+				// partial line: remove from // to eol.
+				result.append(line.substring(0, commentIndex));
+			}
+			else {
+				result.append(line);
+			}
+			result.append("\n");
+		}
+		return result.toString();
+	}
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -52,12 +86,12 @@ public class SchemaParser implements Keywords {
 		
 	/**
 	 * Parse schema from string.
-	 * @param configAsJsonString
+	 * @param schemaAsJsonString
 	 * @return
 	 * @throws VariantRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	public static ParserResponseImpl parse(VariantCore coreApi, String configAsJsonString) throws VariantRuntimeException {
+	public static ParserResponseImpl parse(VariantCore coreApi, String schemaAsJsonString) throws VariantRuntimeException {
 		
 		ParserResponseImpl response = new ParserResponseImpl();
 		
@@ -68,10 +102,10 @@ public class SchemaParser implements Keywords {
 		
 		try {
 			//cbb = jacksonDataMapper.readValue(configAsJsonString, ConfigBinderBean.class);
-			cbb = jacksonDataMapper.readValue(configAsJsonString, Map.class);
+			cbb = jacksonDataMapper.readValue(preParse(schemaAsJsonString), Map.class);
 		}
 		catch(JsonParseException parseException) {
-			toParserError(parseException, configAsJsonString, response);
+			toParserError(parseException, schemaAsJsonString, response);
 		} 
 		catch (Exception e) {
 			ParserMessage err = response.addMessage(MessageTemplate.INTERNAL, e.getMessage());
