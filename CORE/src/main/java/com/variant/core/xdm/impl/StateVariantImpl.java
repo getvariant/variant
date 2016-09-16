@@ -77,9 +77,15 @@ public class StateVariantImpl implements StateVariant {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Experience> getCovariantExperiences() {
+		if (covarExperiences == null) return null;
 		return (List<Experience>) (List<?>) Collections.unmodifiableList(covarExperiences);
 	}
 
+	@Override
+	public boolean isProper() {
+		return covarExperiences == null;
+	}
+	
 	/**
 	 * 
 	 */

@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 
-import org.apache.commons.collections4.Predicate;
-
+import com.variant.core.util.Predicate;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
@@ -76,7 +75,7 @@ public class SessionScopedTargetingStabile {
 	public Collection<Entry> getAll(Predicate<Entry> filter) {
 		ArrayList<Entry> result = new ArrayList<Entry>();
 		for (Entry entry: entryMap.values()) {
-			if (filter.evaluate(entry)) result.add(entry);
+			if (filter.test(entry)) result.add(entry);
 		}
 		return Collections.unmodifiableList(result);
 	}
@@ -88,7 +87,7 @@ public class SessionScopedTargetingStabile {
 	public Collection<Entry> getAll() {
 		return getAll(
 			new Predicate<Entry>() {
-				@Override public boolean evaluate(Entry object) { return true;}
+				@Override public boolean test(Entry object) { return true;}
 			}
 		);
 	}

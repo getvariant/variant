@@ -35,8 +35,6 @@ public enum MessageTemplate {
 	PARSER_STATE_NAME_MISSING                             (Severity.ERROR, "State name is missing"), 
 	PARSER_STATE_NAME_INVALID                             (Severity.ERROR, "State name must be a string, containing letters, digits and _, and cannot start with a digit"), 
 	PARSER_STATE_NAME_DUPE                                (Severity.ERROR, "Duplicate state name [%s]"), 
-	//PARSER_STATE_PARAMS_MISSING                           (Severity.ERROR, "'states/parameters' property is missing (State [%s])"), 
-	//PARSER_STATE_PARAMS_EMPTY                             (Severity.ERROR, "'states/parameters' property must contain at least one element (State [%s])"), 
 	PARSER_STATE_PARAMS_NOT_OBJECT                        (Severity.ERROR, "'states/parameters' property must be an object (State [%s])"), 
 	PARSER_STATE_UNSUPPORTED_PROPERTY                     (Severity.WARN,  "Unsupported property 'state/%s' (State [%s])"), 
 	
@@ -70,6 +68,7 @@ public enum MessageTemplate {
 	PARSER_STATEREF_MISSING                               (Severity.ERROR, "'tests/onStates/stateRef' property is missing (Test [%s])"), 
 	PARSER_STATEREF_DUPE                                  (Severity.ERROR, "Duplicate property 'tests/onStates/stateRef' [%s] (Test [%s])"), 
 	PARSER_STATEREF_UNDEFINED                             (Severity.ERROR, "'tests/onStates/stateRef' property [%s] references an undefined state (Test [%s])"), 
+	PARSER_ALL_PROPER_EXPERIENCES_UNDEFINED               (Severity.ERROR, "At least one proper state variant must be defined (Test [%s], StateRef [%s])"), 
 	PARSER_ISNONVARIANT_NOT_BOOLEAN                       (Severity.ERROR, "'tests/onStates/isNonvariant' property must be a boolean (Test [%s], StateRef [%s])"), 
 	PARSER_VARIANTS_NOT_LIST                              (Severity.ERROR, "'tests/onStates/variants' property must be a list (Test [%s], StateRef [%s])"), 
 	PARSER_VARIANTS_LIST_EMPTY                            (Severity.ERROR, "'tests/onStates/variants' list must contain at least one element (Test [%s], StateRef [%s])"), 

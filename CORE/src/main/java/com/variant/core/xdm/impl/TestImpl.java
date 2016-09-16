@@ -155,6 +155,7 @@ public class TestImpl implements Test {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Test> getCovariantTests() {
+		if (covariantTests == null) return null;
 		return (List<Test>) (List<?>) Collections.unmodifiableList(covariantTests);
 	}
 	
@@ -191,7 +192,9 @@ public class TestImpl implements Test {
 
 	@Override
 	public boolean isCovariantWith(Test other) {
-		return covariantTests.contains(other) || ((TestImpl)other).covariantTests.contains(this);		
+		TestImpl otherImpl = (TestImpl) other;
+		return covariantTests != null && covariantTests.contains(other) || 
+			   otherImpl.covariantTests != null && otherImpl.covariantTests.contains(this);		
 	}
 
 	//---------------------------------------------------------------------------------------------//

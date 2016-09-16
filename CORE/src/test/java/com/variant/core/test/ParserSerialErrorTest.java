@@ -879,7 +879,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 	}
 
 	/**
-	 * EXPERIENCES_NOT_LIST + PARSER_IS_CONTROL_MISSING + EXPERIENCEREF_UNDEFINED
+	 * EXPERIENCES_NOT_LIST
 	 * @throws Exception
 	 */
 	@Test
@@ -925,15 +925,9 @@ public class ParserSerialErrorTest extends BaseTestCore {
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
-		assertEquals(3, response.getMessages().size());
+		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCES_NOT_LIST, "test1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_IS_CONTROL_MISSING, "test1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(2);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "A", "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -986,15 +980,9 @@ public class ParserSerialErrorTest extends BaseTestCore {
 
 		assertTrue(response.hasMessages());
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
-		assertEquals(3, response.getMessages().size());
+		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCES_LIST_EMPTY, "test1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_IS_CONTROL_MISSING, "test1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(2);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "A", "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 

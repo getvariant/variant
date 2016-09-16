@@ -3,8 +3,11 @@ package com.variant.core.xdm.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.list.UnmodifiableList;
+
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
+import com.variant.core.util.Predicate;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
@@ -75,9 +78,9 @@ public class TestOnStateImpl implements Test.OnState {
 	 */
 	@Override
 	public List<StateVariant> getVariants() {
-		return variants;
+		return variants == null ? null : new UnmodifiableList<StateVariant>(variants);
 	}
-			
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC EXTENSION                                         //
 	//---------------------------------------------------------------------------------------------//

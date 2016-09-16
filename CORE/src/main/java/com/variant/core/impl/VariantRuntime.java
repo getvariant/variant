@@ -475,10 +475,13 @@ public class VariantRuntime {
 						
 						if (!state.isInstrumentedBy(e.getTest()))
 							throw new VariantInternalException("Uninstrumented test [" + e + "] in input vector");
-						
+
+						if (!e.isDefinedOn(state))
+							throw new VariantInternalException("Undefined experience [" + e + "] in input vector");
+
 						found = true;
 
-						// Non-variant instrumentation are resolved for, as control, skip them and control experiences.
+						// Non-variant instrumentation are resolved as control: skip them and control experiences.
 						if (!state.isNonvariantIn(e.getTest()) && !e.isControl()) { 
 							sortedList.add(e);
 							// Continue down the vector, to ensure that there's no other experience for this test.

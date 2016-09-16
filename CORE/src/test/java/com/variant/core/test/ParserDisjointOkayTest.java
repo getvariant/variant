@@ -800,11 +800,13 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertEquals(2, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("B"), variant.getExperience());
-		assertEquals(0, variant.getCovariantExperiences().size());
+		assertNull(variant.getCovariantExperiences());
+		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/test1.B", variant.getParameter("path"));
 		variant = actualVariants.get(1);
 		assertEquals(test.getExperience("C"), variant.getExperience());
-		assertEquals(0, variant.getCovariantExperiences().size());
+		assertNull(variant.getCovariantExperiences());
+		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/test1.C", variant.getParameter("path"));
 		
 		
@@ -847,7 +849,8 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertEquals(1, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("D"), variant.getExperience());
-		assertEquals(0, variant.getCovariantExperiences().size());
+		assertNull(variant.getCovariantExperiences());
+		assertTrue(variant.isProper());
 		assertEquals("/path/to/state3/test2.D", variant.getParameter("path"));
 
 		tov = actualonStates.get(1);
@@ -858,7 +861,8 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertEquals(1, actualVariants.size());
 		variant = actualVariants.get(0);
 		assertEquals(test.getExperience("D"), variant.getExperience());
-		assertEquals(0, variant.getCovariantExperiences().size());
+		assertNull(variant.getCovariantExperiences());
+		assertTrue(variant.isProper());
 		assertEquals("/path/to/state2/test2.D", variant.getParameter("path"));
 		
 		tov = actualonStates.get(2);
@@ -906,7 +910,8 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertEquals(1, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("A"), variant.getExperience());
-		assertEquals(0, variant.getCovariantExperiences().size());
+		assertNull(variant.getCovariantExperiences());
+		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/Test1.A", variant.getParameter("path"));
 		
 	}

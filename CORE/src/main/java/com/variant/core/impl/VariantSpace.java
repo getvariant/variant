@@ -119,7 +119,8 @@ public class VariantSpace {
 		// Build basis sorted in ordinal order.
 		basis = new LinkedHashSet<Test>();
 		basis.add(tosImpl.getTest());
-		basis.addAll(tosImpl.getTest().getCovariantTests());
+		List<Test> covariantTests = tosImpl.getTest().getCovariantTests();
+		if (covariantTests != null) basis.addAll(covariantTests);
 
 		// Pass 1. Build empty space, i.e. all Points with nulls for Variant values, for now.
 		for (Test t: basis) {
@@ -170,13 +171,14 @@ public class VariantSpace {
 				// Skip first test in basis because it refers to the local test and we already have that.
 				if (basisTest.equals(variant.getTest())) continue;
 				
-				for (Experience covarExp: variant.getCovariantExperiences()) {
-					if (covarExp.getTest().equals(basisTest)) {
-						coordinateExperiences.add(covarExp);
-						break;
+				if (!variant.isProper()) {
+					for (Experience covarExp: variant.getCovariantExperiences()) {
+						if (covarExp.getTest().equals(basisTest)) {
+							coordinateExperiences.add(covarExp);
+							break;
+						}
 					}
-				}
-				
+				}				
 			}
 			Coordinates coordinates = new Coordinates(coordinateExperiences);
 			Point p = table.get(coordinates);

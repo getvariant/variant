@@ -38,7 +38,7 @@ public interface StateVariant {
 	 * @since 0.5
 	 */
 	public Test getTest();
-	
+		
 	/**
 	 * This variant's own test experience, i.e. for the test within whose definition this variant
 	 * is defined.
@@ -52,11 +52,25 @@ public interface StateVariant {
 	 * The list of this variant's covariantly concurrent experiences, i.e. the ones defined in the 
 	 * covariant tests clause of the test within whose definition this variant is defined.
 	 * 
-	 * @return A list of objects of type {@link Test.Experience}.
+	 * @return A list of objects of type {@link Test.Experience} or null if this test does not have
+	 *         the <code>covariantRestRefs</code> clause;
+	 *         
 	 * @since 0.5
 	 */
 	public List<Experience> getCovariantExperiences();
 				
+	/**
+	 * Is this a proper variant? In a non-coaviantly concurrent test, all variants are proper. If this test
+	 * is covariantly-concurrent, i.e. has the <code>covariantTestRefs</code> clause, proper variants are those which
+	 * do not have the <code>covariantExperienceRefs</code> clause. Same as <code>getCovariantExperiences() == null</code>.
+	 * 
+	 * @return true if this state variant does not have a <code>covariantTestRefs</code>, i.e. refers to
+	 *         the containing test only.
+	 *         
+	 * @since 0.6
+	 */
+	public boolean isProper();
+
 	/**
 	 * This variant's declared state parameter.
 	 * 

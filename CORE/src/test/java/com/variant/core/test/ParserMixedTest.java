@@ -1,9 +1,7 @@
 package com.variant.core.test;
 
 import static com.variant.core.xdm.impl.MessageTemplate.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Random;
 
@@ -16,6 +14,7 @@ import com.variant.core.schema.ParserMessage.Severity;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
 import com.variant.core.xdm.impl.ParserMessageImplFacade;
 
 /**
@@ -475,12 +474,11 @@ public class ParserMixedTest extends BaseTestCore {
 
 	/**
 	 * Run time.
-	 */
+	 *
 	@org.junit.Test
 	public void runtimeTest() throws Exception {
 		
 		final String SCHEMA = 
-
 				"{                                                                                 \n" +
 			    	    //==========================================================================//
 			    	    "   'states':[                                                             \n" +
@@ -559,18 +557,6 @@ public class ParserMixedTest extends BaseTestCore {
 						"                    'parameters':{                                       \n" + 
 			    	    "                       'path':'/path/to/state1/test2.B'                  \n" +
 			    	    "                    }                                                    \n" +
-			    	    "                 },                                                      \n" +
-			    	    "                 {                                                       \n" +
-			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
-			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
-			    	    "                          'experienceRef': 'B'                           \n" +
-			    	    "                       }                                                 \n" +
-			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state1/test1.B-test2.B'          \n" +
-			    	    "                    }                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -580,21 +566,7 @@ public class ParserMixedTest extends BaseTestCore {
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
 			    	    "                    'isDefined':false                                    \n" +
-			    	    "                 },                                                      \n" +
-			    	    "                 {                                                       \n" +
-			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
-			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
-			    	    "                          'experienceRef': 'B'                           \n" +
-			    	    "                       }                                                 \n" +
-			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test1.B-test2.B'          \n" +
-			    	    "                    }                                                    \n" +
-			    	    "                 }                                                       \n" +
-				        "                 // Don't need hybrid def for T1.B                       \n" +
-				        "                 // becose proper B is off => the entire slice is too    \n" +
+			    	    "                 }                                                      \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ]                                                                \n" +
@@ -608,11 +580,32 @@ public class ParserMixedTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 
 		Schema schema = core.getSchema();
-		State state1 = schema.getState("state1");
+		
+		Test t1 = schema.getTest("test1");
+		assertNotNull(t1);
+		Test t2 = schema.getTest("test2");
+		assertNotNull(t2);
+
+		// Target for S1 with nothing in tracker. 
+		State s1 = schema.getState("state1");
 		String sessionId = VariantStringUtils.random64BitString(rand);
 		VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
-		VariantCoreStateRequest req = ssn.targetForState(state1);
-	}
+		VariantCoreStateRequest req = ssn.targetForState(s1);
+		assertEquals(2, req.getLiveExperiences().size());
+		assertEquals(t1.getExperience("A"), req.getLiveExperience(t1));
+		assertEquals(t2.getExperience("B"), req.getLiveExperience(t2));
+		System.out.println(req.getResolvedStateVariant());
 
+		// Target for S2 with nothing in tracker. 
+		State s2 = schema.getState("state2");
+		sessionId = VariantStringUtils.random64BitString(rand);
+		ssn = core.getSession(sessionId, true).getBody();
+		req = ssn.targetForState(s2);
+		System.out.println(req.getLiveExperiences().size());
+		assertEquals(t1.getExperience("A"), req.getLiveExperience(t1));
+		assertEquals(t2.getExperience("B"), req.getLiveExperience(t2));
+
+	}
+*/
 }
 

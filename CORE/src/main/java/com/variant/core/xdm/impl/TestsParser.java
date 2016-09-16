@@ -15,6 +15,7 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.ParserMessage;
+import com.variant.core.util.Predicate;
 import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
@@ -65,7 +66,6 @@ public class TestsParser implements Keywords {
 	private static Test parseTest(Map<String, ?> test, ParserResponseImpl response, CorePropertiesImpl properties) 
 			throws VariantRuntimeException {
 		
-		List<TestImpl> covarTests = new ArrayList<TestImpl>();
 		List<TestExperienceImpl> experiences = new ArrayList<TestExperienceImpl>();
 		List<TestOnStateImpl> onViews = new ArrayList<TestOnStateImpl>();
 
@@ -111,11 +111,13 @@ public class TestsParser implements Keywords {
 				Object experiencesObject = entry.getValue();
 				if (! (experiencesObject instanceof List)) {
 					response.addMessage(PARSER_EXPERIENCES_NOT_LIST, name);
+					return null;
 				}
 				else {
 					List<?> rawExperiences = (List<?>) experiencesObject;
 					if (rawExperiences.size() == 0) {
 						response.addMessage(PARSER_EXPERIENCES_LIST_EMPTY, name);
+						return null; 
 					}
 					else {
 						for (Object rawExperience: rawExperiences) {
@@ -156,6 +158,7 @@ public class TestsParser implements Keywords {
 		
 		
 		// Pass 3: Parse covariantTestRefs, isOn.
+		List<TestImpl> covarTests = null;
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_COVARIANT_TEST_REFS)) {
@@ -164,6 +167,7 @@ public class TestsParser implements Keywords {
 					response.addMessage(PARSER_COVARIANT_TESTS_NOT_LIST, name);
 				}
 				else {
+					covarTests = new ArrayList<TestImpl>();
 					List<?> rawCovarTestRefs = (List<?>) covarTestRefsObject;
 					for (Object covarTestRefObject: rawCovarTestRefs) {
 						if (!(covarTestRefObject instanceof String)) {
@@ -212,9 +216,12 @@ public class TestsParser implements Keywords {
 		}
 		
 		// Resort covariant tests in ordinal order before adding to the result.
-		List<TestImpl> covarTestsReordered = new ArrayList<TestImpl>(covarTests.size());
-		for (Test t: response.getSchema().getTests()) {
-			if (covarTests.contains(t)) covarTestsReordered.add((TestImpl)t);
+		List<TestImpl> covarTestsReordered = null;
+		if (covarTests != null) {
+			covarTestsReordered = new ArrayList<TestImpl>(covarTests.size());
+			for (Test t: response.getSchema().getTests()) {
+				if (covarTests.contains(t)) covarTestsReordered.add((TestImpl)t);
+			}
 		}
 		result.setCovariantTests(covarTestsReordered);
 		
@@ -262,9 +269,11 @@ public class TestsParser implements Keywords {
 		result.setOnViews(onViews);
 		
 		// A covariant test cannot be disjoint.
-		for (Test covarTest: covarTests) {
-			if (result.isSerialWith(covarTest)) {
-				response.addMessage(PARSER_COVARIANT_TEST_DISJOINT, covarTest.getName(), name);
+		if (covarTests != null) {
+			for (Test covarTest: covarTests) {
+				if (result.isSerialWith(covarTest)) {
+					response.addMessage(PARSER_COVARIANT_TEST_DISJOINT, covarTest.getName(), name);
+				}
 			}
 		}
 		
@@ -430,8 +439,8 @@ public class TestsParser implements Keywords {
 						boolean dupe = false;
 						for (StateVariant v: tos.getVariants()) {
 							if (v.getExperience().equals(variant.getExperience())) { 
-								if (v.getCovariantExperiences().isEmpty() && variant.getCovariantExperiences().isEmpty()) {
-									// Dupe local experience ref and no covariant experiences in this view.
+								if (v.isProper() && variant.isProper()) {
+									// Dupe proper experience ref and no covariant experiences in this view.
 									response.addMessage(
 											PARSER_VARIANT_DUPE, 
 											v.getExperience().getName(), 
@@ -439,7 +448,7 @@ public class TestsParser implements Keywords {
 									dupe = true;
 									break;
 								}
-								else if (v.getCovariantExperiences().equals(variant.getCovariantExperiences())){
+								else if (!v.isProper() && !variant.isProper() && v.getCovariantExperiences().equals(variant.getCovariantExperiences())){
 									// Dupe local and covariant list.  Note that for this predicate relies on proper ordering. 
 									response.addMessage(
 											PARSER_COVARIANT_VARIANT_DUPE,  
@@ -471,6 +480,21 @@ public class TestsParser implements Keywords {
 		}
 		else if (rawVariants == null || rawVariants.size() == 0) {
 			response.addMessage(PARSER_VARIANTS_ISNONVARIANT_XOR, test.getName(), stateRef);
+			return null;
+		}
+		
+		// At least one proper variant required to be defined.
+		boolean allProperVariantsUndefined = true;
+		for (Experience properExperience: test.getExperiences()) {
+			if (properExperience.isDefinedOn(tos.getState())) { 
+				allProperVariantsUndefined = false;
+				break;
+			}
+		}		
+		if (allProperVariantsUndefined) {
+			response.addMessage(
+					PARSER_ALL_PROPER_EXPERIENCES_UNDEFINED, 
+					test.getName(), stateRef);
 			return null;
 		}
 		

@@ -83,7 +83,7 @@ public interface Test {
 	/**
 	 * Get a list of tests covariant with this test, i.e. listed in this tests's covariant clause.
 	 * 
-	 * @return A list of tests in the order they were defined.
+	 * @return A list of tests in the order they were defined or null if this test does not reference any covariant tests.
 	 * @since 0.5
 	 */
 	public List<Test> getCovariantTests();
@@ -212,5 +212,6 @@ public interface Test {
 	     * @since 0.5
 		 */
 		public List<StateVariant> getVariants();
+		
 	}
 }
