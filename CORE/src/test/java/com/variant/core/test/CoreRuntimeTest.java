@@ -710,7 +710,8 @@ public class CoreRuntimeTest extends BaseTestCore {
 		new VariantInternalExceptionInterceptor() { 
 			@Override public void toRun() {
 				runtimeFacade.isTargetable(
-						test5, 
+						test5,
+						state1,
 						VariantCollectionsUtils.list(
 								experience("test5.A", schema),
 								experience("test2.A", schema)));
@@ -722,6 +723,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 			@Override public void toRun() {
 				runtimeFacade.isTargetable(
 					test6, 
+					state1,
 					VariantCollectionsUtils.list(
 							experience("test1.C", schema), 
 							experience("test3.C", schema),
@@ -731,33 +733,39 @@ public class CoreRuntimeTest extends BaseTestCore {
 
 		assertFalse(runtimeFacade.isTargetable(
 				test1, 
+				state1,
 				VariantCollectionsUtils.list(experience("test2.B", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test1,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test5.B", schema),
 						experience("test4.C", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test1,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test6.B", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test1,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test4.C", schema),
 						experience("test6.B", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test1,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema),
 						experience("test5.B", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test1,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test4.C", schema),
 						experience("test5.C", schema),
@@ -765,24 +773,28 @@ public class CoreRuntimeTest extends BaseTestCore {
 
 		assertTrue(runtimeFacade.isTargetable(
 				test2,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema), 
 						experience("test5.C", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test2,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema), 
 						experience("test3.C", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test2,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test5.C", schema), 
 						experience("test4.C", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test2,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema), 
 						experience("test4.C", schema), 
@@ -790,6 +802,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 
 		assertFalse(runtimeFacade.isTargetable(
 				test2,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema), 
 						experience("test4.C", schema), 
@@ -800,12 +813,14 @@ public class CoreRuntimeTest extends BaseTestCore {
 		// a variantful instrumentation.
 		assertTrue(runtimeFacade.isTargetable(
 				test3,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema), 
 						experience("test2.C", schema))));
 
 		assertFalse(runtimeFacade.isTargetable(
 				test5,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema), 
 						experience("test4.C", schema), 
@@ -813,6 +828,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 
 		assertFalse(runtimeFacade.isTargetable(
 				test5,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test6.C", schema), 
 						experience("test4.C", schema), 
@@ -820,17 +836,20 @@ public class CoreRuntimeTest extends BaseTestCore {
 
 		assertTrue(runtimeFacade.isTargetable(
 				test5,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test2.C", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test6,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test4.C", schema), 
 						experience("test1.C", schema))));
 
 		assertTrue(runtimeFacade.isTargetable(
 				test6,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test5.C", schema), 
 						experience("test2.C", schema))));
@@ -838,12 +857,14 @@ public class CoreRuntimeTest extends BaseTestCore {
 		// See comment about test3 and test6 above
 		assertTrue(runtimeFacade.isTargetable(
 				test6,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test3.C", schema))));
 
 		// Ditto
 		assertTrue(runtimeFacade.isTargetable(
 				test6,
+				state1,
 				VariantCollectionsUtils.list(
 						experience("test3.C", schema), 
 						experience("test2.C", schema))));

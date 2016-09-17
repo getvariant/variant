@@ -1,5 +1,6 @@
 package com.variant.core.hook;
 
+import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 
@@ -28,6 +29,14 @@ public interface TestTargetingHook extends RuntimeHook {
 	 * @since 0.5
 	 */
 	public Test getTest();
+	
+	/**
+	 * The state on which this user hook is posting.
+	 * 
+	 * @return An object of type {@link State}.
+	 * @since 0.6
+	 */
+	public State getState();
 	
 	/**
 	 * Host code calls this to inform Variant what experience should the session,

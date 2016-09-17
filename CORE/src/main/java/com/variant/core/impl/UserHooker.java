@@ -40,13 +40,15 @@ public class UserHooker {
 	 * Post all listeners listening on a particular hook.
 	 * @param listenerClass
 	 * @param hook
+	 * @return the hook passed in as argument.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void post(UserHook hook) {
+	public UserHook post(UserHook hook) {
 		for (HookListener listener: listeners) {
 			if (listener.getHookClass().isInstance(hook))
 				listener.post(hook);
 		}
+		return hook;
 	}
 }
 

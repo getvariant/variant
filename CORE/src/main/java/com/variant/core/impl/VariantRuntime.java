@@ -33,7 +33,6 @@ import com.variant.core.xdm.impl.TestOnStateImpl;
  */
 public class VariantRuntime {
 
-	// Logger
 	private static final Logger LOG = LoggerFactory.getLogger(VariantRuntime.class);
 
 	/**
@@ -43,9 +42,10 @@ public class VariantRuntime {
 
 		private VariantCoreSession session;
 		private Test test;
+		private State state;
 		private Experience targetedExperience = null;
 		
-		private TestTargetingHookImpl(VariantCoreSession session, Test test) {
+		private TestTargetingHookImpl(VariantCoreSession session, Test test, State state) {
 			this.session = session;
 			this.test = test;
 		}
@@ -66,10 +66,15 @@ public class VariantRuntime {
 		}
 
 		@Override
+		public State getState() {
+			return state;
+		}
+		
+		@Override
 		public void setTargetedExperience(Experience experience) {
 			targetedExperience = experience;
 		}
-		
+
 	}		
 
 	private VariantCore coreApi;
@@ -162,19 +167,40 @@ public class VariantRuntime {
 		
 		for (Test test: activeTestList) {
 			if (session.getTraversedTests().contains(test)) {
+				
 				// Already traversed, hence must be already targeted.
 				Experience exp = targetingStabile.getAsExperience(test.getName(), schema);
 				if (exp == null)
 					throw new VariantInternalException(
 							"Active traversed test [" + test.getName() + "] not in targeting stabile");
+
+				// It's a user error to hit an undefined state in an active experience.
+				if (!exp.isDefinedOn(state))  {
+					throw new UnsupportedOperationException("Create an error for this");
+				}
+
 				alreadyTargeted.add(exp);
 			}
 			else  {
 				// Not yet traversed. Add to the pre-targeted experience list, if in TT. If not in TT,
 				// it's a free test that will be targeted after the pre-targets.
 				Experience exp = targetingStabile.getAsExperience(test.getName(), schema);
-				if (exp == null) free.add(test); 
-				else preTargeted.add(exp);
+				
+				if (exp == null) {
+					free.add(test); 
+				}
+				else {
+					// We have a pre-targeted experience for a test that we have just hit.
+					// If this is an undefined state, we need to discard the pre-targeted experience
+					// and treat this as free.
+					if (exp.isDefinedOn(state)) {
+						preTargeted.add(exp);						
+					}
+					else {
+						targetingStabile.remove(test.getName());
+						free.add(test);
+					}
+				}
 				
 				session.addTraversedTest(test);
 			}
@@ -212,14 +238,14 @@ public class VariantRuntime {
 		// Target free tests.  They are already on the ATL.
 		for (Test ft: free) {
 
-			if (isTargetable(ft, vector)) {
+			if (isTargetable(ft, state, vector)) {
 				// Target this test. First post targeting hooks.
-				TestTargetingHookImpl hook = new TestTargetingHookImpl(session, ft);
+				TestTargetingHookImpl hook = new TestTargetingHookImpl(session, ft, state);
 				coreApi.getUserHooker().post(hook);
 				Experience targetedExperience = hook.targetedExperience;
 				// If no listeners or no action by client code, do the random default.
 				if (targetedExperience == null) {
-					targetedExperience = new TestTargeterDefault().target(ft, session);
+					targetedExperience = new TestTargeterDefault().target(session, ft, state);
 				}
 										
 				vector.add(targetedExperience);
@@ -332,7 +358,7 @@ public class VariantRuntime {
 		for (Experience e: vector) {
 			if (e.isControl()) continue;
 			for (OnState tos: e.getTest().getOnStates()) {
-				if (!tos.getState().isNonvariantIn(e.getTest())) {
+				if (!tos.getState().isNonvariantIn(e.getTest()) && e.isDefinedOn(tos.getState())) {
 					relevantStates.add(tos.getState());
 				}
 			}
@@ -408,7 +434,7 @@ public class VariantRuntime {
 	 * @param test set of tests.  We require set to guarantee no duplicates.
 	 * @return
 	 */
-	boolean isTargetable(Test test, Collection<Experience> alreadyTargetedExperiences) {
+	boolean isTargetable(Test test, State state, Collection<Experience> alreadyTargetedExperiences) {
 
 		// alreadyTargetedExperiences should not contain an experience for the input test.
 		for (Experience e: alreadyTargetedExperiences) {
@@ -420,15 +446,19 @@ public class VariantRuntime {
 			throw new VariantInternalException(
 					"Input vector [" + StringUtils.join(alreadyTargetedExperiences, ",") + "] is already unresolvable");
 		
-		// Find some non-control experience
-		ArrayList<Experience> vector = new ArrayList<Experience>();		
+		// Find some non-control, defined experience. Untargetable if none.
+		ArrayList<Experience> vector = new ArrayList<Experience>();
+		Experience  definedVariantExperience = null;
 		for (Experience e: test.getExperiences()) {
-			if (!e.isControl()) {
-				vector.add(e);
+			if (!e.isControl() && e.isDefinedOn(state)) {
+				definedVariantExperience = e;
 				break;
 			}
 		}
 		
+		if (definedVariantExperience == null) return false;
+		
+		vector.add(definedVariantExperience);		
 		return minUnresolvableSubvector(alreadyTargetedExperiences, vector).isEmpty();
 	}
 

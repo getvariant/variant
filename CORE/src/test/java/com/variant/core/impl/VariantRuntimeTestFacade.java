@@ -50,8 +50,8 @@ public class VariantRuntimeTestFacade {
 	 * @param alreadyTargetedExperiences
 	 * @return
 	 */
-	public boolean isTargetable(Test test, Collection<Experience> alreadyTargetedExperiences) {
-		return runtime.isTargetable(test, alreadyTargetedExperiences);
+	public boolean isTargetable(Test test, State state, Collection<Experience> alreadyTargetedExperiences) {
+		return runtime.isTargetable(test, state, alreadyTargetedExperiences);
 	}
 
 }

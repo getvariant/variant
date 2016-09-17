@@ -14,6 +14,7 @@ import com.variant.core.schema.ParserMessage.Severity;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
+import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.impl.ParserMessageImplFacade;
 
@@ -474,7 +475,7 @@ public class ParserMixedTest extends BaseTestCore {
 
 	/**
 	 * Run time.
-	 *
+	 */
 	@org.junit.Test
 	public void runtimeTest() throws Exception {
 		
@@ -602,10 +603,10 @@ public class ParserMixedTest extends BaseTestCore {
 		ssn = core.getSession(sessionId, true).getBody();
 		req = ssn.targetForState(s2);
 		System.out.println(req.getLiveExperiences().size());
-		assertEquals(t1.getExperience("A"), req.getLiveExperience(t1));
-		assertEquals(t2.getExperience("B"), req.getLiveExperience(t2));
+		assertEquals(t1.getExperience("B"), req.getLiveExperience(t1));
+		assertEquals(t2.getExperience("A"), req.getLiveExperience(t2));
 
 	}
-*/
+
 }
 
