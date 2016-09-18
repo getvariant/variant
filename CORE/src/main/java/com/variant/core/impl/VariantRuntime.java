@@ -1,5 +1,7 @@
 package com.variant.core.impl;
 
+import static com.variant.core.xdm.impl.MessageTemplate.RUN_SCHEMA_UNDEFINED;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;
 import com.variant.core.session.SessionScopedTargetingStabile;
@@ -21,6 +24,7 @@ import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 import com.variant.core.xdm.Test.OnState;
+import com.variant.core.xdm.impl.MessageTemplate;
 import com.variant.core.xdm.impl.StateImpl;
 import com.variant.core.xdm.impl.StateVariantImpl;
 import com.variant.core.xdm.impl.TestOnStateImpl;
@@ -176,7 +180,7 @@ public class VariantRuntime {
 
 				// It's a user error to hit an undefined state in an active experience.
 				if (!exp.isDefinedOn(state))  {
-					throw new UnsupportedOperationException("Create an error for this");
+					throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_STATE_UNDEFINED_IN_EXPERIENCE, exp.toString(), state.getName());
 				}
 
 				alreadyTargeted.add(exp);
@@ -365,11 +369,11 @@ public class VariantRuntime {
 		}
 
 		for (State state: relevantStates) {
-			// Only try the experiences of tests that are insturmented on state.
+			// Only try the experiences of tests that are insturmented and defined on state.
 			// Otherwise resolveState() with throw an exception.
 			Collection<Experience> instumentedVector = new ArrayList<Experience>();
 			for (Experience e: vector) {
-				if (!e.isControl() && state.isInstrumentedBy(e.getTest())) 
+				if (!e.isControl() && state.isInstrumentedBy(e.getTest()) && e.isDefinedOn(state)) 
 					instumentedVector.add(e);
 			}
 			if (!resolveState(state, instumentedVector).arg1()) return false;

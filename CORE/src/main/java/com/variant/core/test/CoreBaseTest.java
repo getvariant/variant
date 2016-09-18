@@ -145,7 +145,7 @@ abstract public class CoreBaseTest {
 				break;
 			}
 		}
-		assertTrue(result);
+		assertTrue("[" + actual + "] did not equal any of the supplied varargs", result);
 	}
 	
 	/**
@@ -318,15 +318,6 @@ abstract public class CoreBaseTest {
 		@Override
 		final public Class<IllegalArgumentException> getExceptionClass() {
 			return IllegalArgumentException.class;
-		}
-		
-		/**
-		 * Call this if you want assertion always thrown.
-		 */
-		final public void assertThrown(String format, Object...args) throws Exception {
-			IllegalArgumentException result = super.run();
-			assertNotNull("Expected exception not thrown", result);
-			assertEquals(String.format(format, args), result.getMessage());
-		}
+		}		
 	}
 }
