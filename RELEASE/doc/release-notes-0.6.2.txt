@@ -11,6 +11,7 @@ Variant 0.6.2 README
   41 Isolate servlet adapter into own library.
   47 variant.js is isolated into its own project CLIENT_JS
   25 Remove h2 and postgres drivers from distro 
+  16 Support for mixed instrumentation
 
 Copyright 2015-2016 Variant Inc.
 
