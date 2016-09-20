@@ -121,6 +121,8 @@ public enum MessageTemplate {
 	RUN_SESSION_EXPIRED                                   (Severity.ERROR, "This session has expired"), 
 	RUN_METHOD_UNSUPPORTED                                (Severity.ERROR, "Method unsupported in Core"),
 	RUN_STATE_UNDEFINED_IN_EXPERIENCE                     (Severity.ERROR, "Currently active experience [%s] is undefined on state [%s]"),
+	RUN_HOOK_TARGETING_BAD_EXPERIENCE                     (Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s]"),
+	RUN_HOOK_TARGETING_UNDEFINED_EXPERIENCE               (Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s], which is undefined on state [%s]"),
  
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                  GENERAL MESSAGES                                                      //

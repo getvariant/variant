@@ -52,6 +52,7 @@ public class VariantRuntime {
 		private TestTargetingHookImpl(VariantCoreSession session, Test test, State state) {
 			this.session = session;
 			this.test = test;
+			this.state = state;
 		}
 		
 		@Override
@@ -75,8 +76,25 @@ public class VariantRuntime {
 		}
 		
 		@Override
-		public void setTargetedExperience(Experience experience) {
-			targetedExperience = experience;
+		public void setTargetedExperience(Experience e) {
+			for (Experience te: test.getExperiences()) {
+				if (e.equals(te)) {
+					if (!e.isDefinedOn(state)) {
+						StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
+						throw new VariantRuntimeUserErrorException(
+								MessageTemplate.RUN_HOOK_TARGETING_BAD_EXPERIENCE, 
+								caller.getClassName(), test.getName(), e, test.getName());
+					}
+					targetedExperience = e;
+					return;
+				}
+			}
+			// If we're here, the experience is not from the test we're listening for.
+			// Figure out the caller class and throw an exception.
+			StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
+			throw new VariantRuntimeUserErrorException(
+					MessageTemplate.RUN_HOOK_TARGETING_BAD_EXPERIENCE, 
+					caller.getClassName(), test.getName(), e);
 		}
 
 	}		

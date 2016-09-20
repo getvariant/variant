@@ -69,7 +69,7 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	 */
 	@Override
 	public void save(VariantCoreSession session) {
-			System.out.println(((CoreSessionImpl)session).toJson());
+			//System.out.println(((CoreSessionImpl)session).toJson());
 			map.put(session.getId(), ((CoreSessionImpl)session).toJson());
 	}
 	

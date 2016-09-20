@@ -1,5 +1,6 @@
 package com.variant.core.hook;
 
+import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
@@ -46,6 +47,8 @@ public interface TestTargetingHook extends RuntimeHook {
 	 * weights in the tests's definition.
 	 * .
 	 * @param experience Targeted experience.
+	 * @throws VariantRuntimeUserErrorException if experience is not that of the test returned by 
+	 *         {@link #getTest()}.
 	 * @since 0.5
 	 */
 	public void setTargetedExperience(Experience experience);

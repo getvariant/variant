@@ -60,6 +60,7 @@ public class TestExperienceImpl implements Test.Experience  {
 	
 	@Override
 	public boolean isDefinedOn(State state) {
+		if (state == null) throw new NullPointerException("Null state");
 		return !uninstrumentedStates.contains(state);
 	}
 	//---------------------------------------------------------------------------------------------//

@@ -167,6 +167,7 @@ public interface Test {
 		 * See documentation for more on <i>mixed instrumentation</i>.
 		 * 
 		 * @return true if this variant was declared as defined, or false otherwise.
+		 * @throws NullPointerException if argument is <code>null</code>
 		 * @since 0.6
 		 *
 		*/

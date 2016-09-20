@@ -9,11 +9,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.impl.util.VariantStringUtils;
+import com.variant.core.hook.HookListener;
+import com.variant.core.hook.TestTargetingHook;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.ParserResponse;
+import com.variant.core.test.CoreBaseTest.VariantRuntimeExceptionInterceptor;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
 import com.variant.core.xdm.impl.MessageTemplate;
 
 /**
@@ -353,9 +357,10 @@ public class MixedInstrumentationRuntimeTest extends BaseTestCore {
 		final Schema schema = core.getSchema();
 		final State s1 = schema.getState("state1");
 		final State s2 = schema.getState("state2");		
+		final State s3 = schema.getState("state3");		
 		final Test t1 = schema.getTest("test1");
 		final Test t2 = schema.getTest("test2");
-
+/*
 		// Target for S1 with nothing in tracker.
 		CounterMap<Test.Experience> counters = new CounterMap<Test.Experience>();		
 		for (int i = 0; i < ITERATIONS; i++) {
@@ -478,8 +483,8 @@ public class MixedInstrumentationRuntimeTest extends BaseTestCore {
 			assertMatches("A", req.getLiveExperience(t1).getName());
 			assertMatches("B", req.getLiveExperience(t2).getName());
 		}
-
-		// Target for S1 and then for S1 again, which is OK.
+*/
+		// Target for S1 and then for S1 again, which is OK always.
 		String sessionId = VariantStringUtils.random64BitString(rand);
 		VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
 		VariantCoreStateRequest req = ssn.targetForState(s1);
@@ -488,6 +493,28 @@ public class MixedInstrumentationRuntimeTest extends BaseTestCore {
 		assertEquals(2, req.getLiveExperiences().size());
 		assertMatches("A|C", req.getLiveExperience(t1).getName());
 		assertMatches("B|D", req.getLiveExperience(t2).getName());
+
+		// Target for S1 and then for S3
+		sessionId = VariantStringUtils.random64BitString(rand);
+		ssn = core.getSession(sessionId, true).getBody();
+		setTargetingStabile(ssn, "test1.A", "test2.B");
+		req = ssn.targetForState(s1);
+		req.commit();
+		req = ssn.targetForState(s3);
+		assertEquals(2, req.getLiveExperiences().size());
+		assertMatches("A", req.getLiveExperience(t1).getName());
+		assertMatches("B", req.getLiveExperience(t2).getName());
+
+		// Target for S3 and then for S2
+		sessionId = VariantStringUtils.random64BitString(rand);
+		ssn = core.getSession(sessionId, true).getBody();
+		setTargetingStabile(ssn, "test1.B", "test2.C");
+		req = ssn.targetForState(s3);
+		req.commit();
+		req = ssn.targetForState(s2);
+		assertEquals(2, req.getLiveExperiences().size());
+		assertMatches("B", req.getLiveExperience(t1).getName());
+		assertMatches("C", req.getLiveExperience(t2).getName());
 
 		// target for S1 and then for S2, which is not allowed because
 		// it'll break T1.
@@ -502,6 +529,78 @@ public class MixedInstrumentationRuntimeTest extends BaseTestCore {
 				req = ssn.targetForState(s2);
 			}
 		}.assertThrown(MessageTemplate.RUN_STATE_UNDEFINED_IN_EXPERIENCE, "test1.A", "state2");
+		
+		// target for S3 and then for S2, which is not allowed because
+		// it'll break T1.
+		new VariantRuntimeExceptionInterceptor() { 
+			@Override public void toRun() { 
+				String sessionId = VariantStringUtils.random64BitString(rand);
+				VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
+				// Set experience in TT to make the exception message deterministic.
+				setTargetingStabile(ssn, "test1.C");
+				VariantCoreStateRequest req = ssn.targetForState(s3);
+				req.commit();
+				req = ssn.targetForState(s2);
+			}
+		}.assertThrown(MessageTemplate.RUN_STATE_UNDEFINED_IN_EXPERIENCE, "test1.C", "state2");
+
+		// Targeting hook listener returns a good experience.
+		core.addHookListener(new TargetingHookListener(t1, t1.getExperience("B")));
+		sessionId = VariantStringUtils.random64BitString(rand);
+		ssn = core.getSession(sessionId, true).getBody();
+		req = ssn.targetForState(s2);
+		assertEquals(2, req.getLiveExperiences().size());
+		assertMatches("B", req.getLiveExperience(t1).getName());
+		assertMatches("A|B|C|D", req.getLiveExperience(t2).getName());
+
+		// Targeting hook listener returns experience from the wrong test.
+		final TargetingHookListener badListener1 = new TargetingHookListener(t1, t2.getExperience("C"));
+		core.addHookListener(badListener1);
+		new VariantRuntimeExceptionInterceptor() { 
+			@Override public void toRun() {		
+				String sessionId = VariantStringUtils.random64BitString(rand);
+				VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
+				ssn.targetForState(s2);
+			}
+		}.assertThrown(MessageTemplate.RUN_HOOK_TARGETING_BAD_EXPERIENCE, badListener1.getClass().getName(), t1.getName(), t2.getExperience("C").toString());
+
+		// Targeting hook listener returns experience uninstrumented on the state.
+		core.clearHookListeners();
+		final TargetingHookListener badListener2 = new TargetingHookListener(t1, t1.getExperience("C"));
+		core.addHookListener(badListener2);
+		new VariantRuntimeExceptionInterceptor() { 
+			@Override public void toRun() {		
+				String sessionId = VariantStringUtils.random64BitString(rand);
+				VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
+				ssn.targetForState(s2);
+			}
+		}.assertThrown(MessageTemplate.RUN_HOOK_TARGETING_BAD_EXPERIENCE, badListener2.getClass().getName(), t1.getName(), t1.getExperience("C").toString());
+
+	}
+	
+	/**
+	 * 
+	 */
+	private static class TargetingHookListener implements HookListener<TestTargetingHook> {
+
+		private Test forTest;
+		private Experience targetExp;
+		
+		private TargetingHookListener(Test forTest, Experience targetExp) {
+			this.forTest = forTest;
+			this.targetExp = targetExp;
+		}
+		
+		@Override
+		public Class<TestTargetingHook> getHookClass() {
+			return TestTargetingHook.class;
+		}
+
+		@Override
+		public void post(TestTargetingHook hook) {
+			if (hook.getTest().equals(forTest)) hook.setTargetedExperience(targetExp);
+		}
+		
 	}
  }
 

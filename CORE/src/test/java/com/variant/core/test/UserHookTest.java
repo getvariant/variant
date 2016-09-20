@@ -7,25 +7,30 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-
-import org.junit.Test;
+import java.util.Random;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
+import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.StateParsedHook;
 import com.variant.core.hook.TestParsedHook;
 import com.variant.core.hook.TestQualificationHook;
+import com.variant.core.hook.TestTargetingHook;
 import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserMessage.Severity;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.session.SessionScopedTargetingStabile;
+import com.variant.core.test.CoreBaseTest.VariantRuntimeExceptionInterceptor;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.Test.Experience;
+import com.variant.core.xdm.impl.MessageTemplate;
 
 /**
  * TODO: Need to also test annotations.
@@ -37,11 +42,16 @@ public class UserHookTest extends BaseTestCore {
 	private static final String MESSAGE_TEXT_STATE = "Info-Message-State";
 	private static final String MESSAGE_TEXT_TEST = "Info-Message-Test";
 	
-	private VariantCore core = rebootApi();
-
-	@Test
+	private Random rand = new Random();
+	
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	@org.junit.Test
 	public void stateParsedTest() throws Exception {
-				
+			
+		VariantCore core = rebootApi();
 		StateParsedHookListenerImpl listener = new StateParsedHookListenerImpl();
 		core.addHookListener(listener);
 		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
@@ -54,9 +64,14 @@ public class UserHookTest extends BaseTestCore {
 		}
 	}
 
-	@Test
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	@org.junit.Test
 	public void testParsedTest() throws Exception {
-				
+		
+		VariantCore core = rebootApi();
 		TestParsedHookListenerImpl listener = new TestParsedHookListenerImpl();
 		core.clearHookListeners();
 		core.addHookListener(listener);
@@ -84,9 +99,14 @@ public class UserHookTest extends BaseTestCore {
 
 	}
 
-	@Test
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	@org.junit.Test
 	public void testQualificationTest() throws Exception {
 		
+		VariantCore core = rebootApi();
 		TestQualificationHookListenerNullImpl nullListener = new TestQualificationHookListenerNullImpl();
 		core.clearHookListeners();
 		core.addHookListener(nullListener);
@@ -98,7 +118,8 @@ public class UserHookTest extends BaseTestCore {
 		Schema schema = core.getSchema();
 		State state1 = schema.getState("state1");
 		State state2 = schema.getState("state2");
-		VariantCoreSession ssn = core.getSession("foo", true).getBody();
+		String sessionId = VariantStringUtils.random64BitString(rand);
+		VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
 
 		VariantCoreStateRequest request = ssn.targetForState(state1);
 		assertEquals(1, ssn.getTraversedStates().size());
@@ -156,7 +177,8 @@ public class UserHookTest extends BaseTestCore {
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = core.getSchema();
 		state1 = schema.getState("state1");
-		VariantCoreSession ssn2 = core.getSession("foo2", true).getBody();
+		sessionId = VariantStringUtils.random64BitString(rand);
+		VariantCoreSession ssn2 = core.getSession(sessionId, true).getBody();
 		setTargetingStabile(ssn2, "test2.D", "Test1.A");
 		request = ssn2.targetForState(state1);
 		assertEquals(1, ssn2.getTraversedStates().size());
@@ -183,7 +205,8 @@ public class UserHookTest extends BaseTestCore {
 		assertTrue(disqualListener.testList.isEmpty());
 		schema = core.getSchema();
 		state1 = schema.getState("state1");
-		CoreSessionImpl ssn3 = (CoreSessionImpl) core.getSession("foo3", true).getBody();
+		sessionId = VariantStringUtils.random64BitString(rand);
+		CoreSessionImpl ssn3 = (CoreSessionImpl) core.getSession(sessionId, true).getBody();
 		assertTrue(ssn3.getTraversedStates().isEmpty());
 		assertTrue(ssn3.getTraversedTests().isEmpty());
 		setTargetingStabile(ssn3, "test1.B","test2.D","Test1.A");
@@ -192,7 +215,7 @@ public class UserHookTest extends BaseTestCore {
 		assertEqualAsSets(ssn3.getTraversedTests(), schema.getTest("test1"));
 		assertEqualAsSets(ssn3.getDisqualifiedTests(), schema.getTest("Test1"));
 
-		VariantCoreSession ssn3uncommitted = core.getSession("foo3", true).getBody();
+		VariantCoreSession ssn3uncommitted = core.getSession(sessionId, true).getBody();
 		assertTrue(ssn3uncommitted.getTraversedStates().isEmpty());
 		assertTrue(ssn3uncommitted.getTraversedTests().isEmpty());
 
@@ -231,9 +254,70 @@ public class UserHookTest extends BaseTestCore {
 		assertEqualAsSets(ssn3.getTraversedStates(), new Pair<State, Integer>(state1, 1));
 
 		assertEqualAsSets(ssn3.getTraversedTests(), schema.getTest("test1"));
-
 	}
 	
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	@org.junit.Test
+	public void testTargetingTest() throws Exception {
+		
+		final VariantCore core = rebootApi();
+		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+
+		Schema schema = core.getSchema();
+		final Test t1 = schema.getTest("test1");
+		final Test t2 = schema.getTest("test2");
+		final Test t3 = schema.getTest("Test1");
+		final State s1 = schema.getState("state1");
+		final State s2 = schema.getState("state2");
+		final State s3 = schema.getState("state3");
+
+		core.clearHookListeners();
+		
+		// Listen to targeting posts from the off test "test2". Should never be posted.
+		TargetingHookListener test2Listener = new TargetingHookListener(t2, t2.getControlExperience());
+		core.addHookListener(test2Listener);
+				
+		String sessionId = VariantStringUtils.random64BitString(rand);
+		VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
+		ssn.targetForState(s1).commit();
+		assertEquals("Off tests should not be targeted", 0, test2Listener.count);
+		ssn.targetForState(s2).commit();
+		assertEquals("Off tests should not be targeted", 0, test2Listener.count);
+		ssn.targetForState(s3).commit();
+		assertEquals("Off tests should not be targeted", 0, test2Listener.count);
+		
+		// Listen to targeting posts from the on test "test1". Should be posted.
+		TargetingHookListener test1Listener = new TargetingHookListener(t1, t1.getControlExperience());
+		core.addHookListener(test1Listener);
+
+		sessionId = VariantStringUtils.random64BitString(rand);
+		ssn = core.getSession(sessionId, true).getBody();
+		ssn.targetForState(s1).commit();
+		assertEquals(1, test1Listener.count);
+		ssn.targetForState(s2).commit();
+		assertEquals(1, test1Listener.count);
+		ssn.targetForState(s3).commit();
+		assertEquals(1, test1Listener.count);
+
+		// Return the wrong experience. Should throw runtime user exception.
+		final TargetingHookListener test1BadListener = new TargetingHookListener(t1, t3.getControlExperience());
+		core.addHookListener(test1BadListener);
+		new VariantRuntimeExceptionInterceptor() { 
+			@Override public void toRun() {		
+				String sessionId = VariantStringUtils.random64BitString(rand);
+				VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
+				ssn.targetForState(s2).commit();  // Not instrumented on s2
+				assertEquals("Off tests should not be targeted", 0, test1BadListener.count);
+				ssn.targetForState(s1);
+			}
+		}.assertThrown(MessageTemplate.RUN_HOOK_TARGETING_BAD_EXPERIENCE, test1BadListener.getClass().getName(), t1.getName(), t3.getControlExperience().toString());
+
+	}
 	/**
 	 * 
 	 */
@@ -300,7 +384,7 @@ public class UserHookTest extends BaseTestCore {
 		private com.variant.core.xdm.Test[] testsToDisqualify;
 		private boolean removeFromTt;
 		
-		private TestQualificationHookListenerDisqualifyImpl(boolean removeFromTt, com.variant.core.xdm.Test...testsToDisqualify) {
+		private TestQualificationHookListenerDisqualifyImpl(boolean removeFromTt, Test...testsToDisqualify) {
 			this.testsToDisqualify = testsToDisqualify;
 			this.removeFromTt = removeFromTt;
 		}
@@ -312,6 +396,8 @@ public class UserHookTest extends BaseTestCore {
 
 		@Override
 		public void post(TestQualificationHook hook) {
+			assertNotNull(hook.getSession());
+			assertNotNull(hook.getTest());
 			boolean found = false;
 			for (com.variant.core.xdm.Test test: testsToDisqualify) {
 				if (test.equals(hook.getTest())) {
@@ -327,5 +413,42 @@ public class UserHookTest extends BaseTestCore {
 			}
 		}		
 	}
+
+	/**
+	 * 
+	 */
+	private static class TargetingHookListener implements HookListener<TestTargetingHook> {
+
+		private int count = 0;
+		private Test forTest;
+		private Experience targetExperience;
+		
+		/**
+		 * Target for experience exp if posted for test test.
+		 * @param test
+		 * @param exp 
+		 */
+		TargetingHookListener(Test forTest, Experience targetExperience) {
+			this.forTest = forTest;
+			this.targetExperience = targetExperience;
+		}
+		
+		@Override
+		public Class<TestTargetingHook> getHookClass() {
+			return TestTargetingHook.class;
+		}
+
+		@Override
+		public void post(TestTargetingHook hook) {
+			assertNotNull(hook.getSession());
+			assertNotNull(hook.getTest());
+			assertNotNull(hook.getState());
+			if (hook.getTest().equals(forTest)) {
+				count++;
+				hook.setTargetedExperience(targetExperience);
+			}
+		}
+		
+	};
 
 }
