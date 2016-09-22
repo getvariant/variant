@@ -222,7 +222,7 @@ public class VariantClientImpl implements VariantClient {
 		}
 
 		LOG.info(String.format(
-				"%s relese %s © 2015-16 getvariant.com. Bootstrapped in %s.", 
+				"%s release %s © 2015-16 getvariant.com. Bootstrapped in %s.", 
 				core.getComptime().getComponent(),
 				core.getComptime().getComponentVersion(),
 				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));

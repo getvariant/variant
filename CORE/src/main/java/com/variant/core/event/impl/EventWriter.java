@@ -72,7 +72,7 @@ public class EventWriter {
 		
 		// Not a daemon: intercept interrupt and flush the buffer before exiting.
 		flusherThread.setDaemon(false);
-		flusherThread.setName(getClass().getSimpleName());
+		flusherThread.setName("Variant Event Writer");
 		flusherThread.start();
 	}
 		
@@ -135,7 +135,7 @@ public class EventWriter {
 		@Override
 		public void run() {
 
-			if (LOG.isDebugEnabled()) LOG.debug("Event flusher thread " + Thread.currentThread().getName() + " started.");
+			if (LOG.isDebugEnabled()) LOG.debug("Event writer thread " + Thread.currentThread().getName() + " started.");
 			
 			boolean interruptedExceptionThrown = false;
 			

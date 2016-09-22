@@ -1,7 +1,5 @@
 package com.variant.core.impl;
 
-import static com.variant.core.xdm.impl.MessageTemplate.RUN_SCHEMA_UNDEFINED;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -77,6 +75,12 @@ public class VariantRuntime {
 		
 		@Override
 		public void setTargetedExperience(Experience e) {
+			
+			if (e == null) {
+				targetedExperience = null;
+				return;
+			}
+			
 			for (Experience te: test.getExperiences()) {
 				if (e.equals(te)) {
 					if (!e.isDefinedOn(state)) {

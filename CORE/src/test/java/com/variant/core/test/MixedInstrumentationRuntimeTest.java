@@ -360,7 +360,7 @@ public class MixedInstrumentationRuntimeTest extends BaseTestCore {
 		final State s3 = schema.getState("state3");		
 		final Test t1 = schema.getTest("test1");
 		final Test t2 = schema.getTest("test2");
-/*
+
 		// Target for S1 with nothing in tracker.
 		CounterMap<Test.Experience> counters = new CounterMap<Test.Experience>();		
 		for (int i = 0; i < ITERATIONS; i++) {
@@ -483,7 +483,7 @@ public class MixedInstrumentationRuntimeTest extends BaseTestCore {
 			assertMatches("A", req.getLiveExperience(t1).getName());
 			assertMatches("B", req.getLiveExperience(t2).getName());
 		}
-*/
+
 		// Target for S1 and then for S1 again, which is OK always.
 		String sessionId = VariantStringUtils.random64BitString(rand);
 		VariantCoreSession ssn = core.getSession(sessionId, true).getBody();

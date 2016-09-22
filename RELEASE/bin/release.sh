@@ -52,20 +52,12 @@ cp target/variant-java-client*.jar ${stage_dir}
 cd ${workspace_root_dir}/CLIENT-JAVA-SERVLET
 mvn clean package -DskipTests
 cp target/variant-java-client-servlet-adapter*.jar ${stage_dir}
-#(cd src/main/java; jar -cvf ${stage_dir}/variant-client-adapter-source-${version}.jar com/variant/client/adapter/*)
 
 #
 # JAVASCRIPT CLIENT
 #
 ${workspace_root_dir}/CLIENT-JS/bin/package.sh
 cp ${workspace_root_dir}/CLIENT-JS/target/variant*.js ${target_dir}
-
-#
-# WEB DEMO
-#
-cd ${workspace_root_dir}/WEB-DEMO
-mvn clean package -DskipTests
-cp target/petclinic.war ${stage_dir}/variant-servlet-demo-petclinic.war
 
 #
 # DB
@@ -75,10 +67,20 @@ cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql ${stage_dir
 cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql ${stage_dir}/db/h2
 
 #
-# Package
+# PACKAGE
 #
 cd ${stage_dir}
-tar -cvf ${target_dir}/variant-all-${version}.tar * #./*.jar ./*.war ./*.tar
+tar -cvf ${target_dir}/variant-${version}-all.tar * #./*.jar ./*.war ./*.tar
+
+#
+# SERVLET DEMO
+# Separate file because WP doesn't take files > 50M
+# Tar up the demo WAR because WP doesn't take WAR files. 
+#
+cd ${workspace_root_dir}/CLIENT-JAVA-SERVLET-DEMO
+mvn clean package -DskipTests
+cd target
+tar -cvf ${target_dir}/variant-${version}-java-servlet-demo.tar petclinic.war
 
 #
 # Javadoc
