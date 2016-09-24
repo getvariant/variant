@@ -209,7 +209,7 @@ public class VariantClientImpl implements VariantClient {
 		long now = System.currentTimeMillis();
 		
 		core = new VariantCore(resourceNames);
-		core.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.2");		
+		core.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.3");		
 		properties = core.getProperties();
 		cache = new ClientSessionCache();
 
