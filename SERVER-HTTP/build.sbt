@@ -25,10 +25,12 @@ libraryDependencies ++= {
     "net.liftweb"       %% "lift-webkit"        % liftVersion        % "compile",
     "net.liftweb"       %% "lift-testkit"       % liftVersion        % "test",
 
-    "org.eclipse.jetty" % "jetty-webapp"        % "8.1.17.v20150415"  % "container,test",
-//    "org.eclipse.jetty" % "jetty-servlets"      % "8.1.17.v20150415",                     // CrossOriginFilter
-    "org.eclipse.jetty" % "jetty-plus"          % "8.1.17.v20150415"  % "container,test", // For Jetty Config
-    "org.eclipse.jetty.orbit" % "javax.servlet" % "3.0.0.v201112011016" % "container,test" artifacts Artifact("javax.servlet", "jar", "jar"),
+    "org.eclipse.jetty" % "jetty-webapp"        % "9.2.7.v20150116"  % "container,test",
+//    "org.eclipse.jetty" % "jetty-servlets"      % "9.2.7.v20150116",                     // CrossOriginFilter
+    "org.eclipse.jetty" % "jetty-plus"          % "9.2.7.v20150116"  % "container,test", // For Jetty Config
+//    "org.eclipse.jetty.orbit" % "javax.servlet" % "9.2.7.v20150116" % "container,test" artifacts Artifact("javax.servlet", "jar", "jar"),
+
+//libraryDependencies += "org.eclipse.jetty" % "jetty-webapp" % "9.2.7.v20150116"
 
     "ch.qos.logback"    % "logback-classic"     % "1.1.3",
     "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0",

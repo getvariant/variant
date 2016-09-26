@@ -3,7 +3,6 @@ package com.variant.server.util
 import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 import org.eclipse.jetty.server.Server
-import org.eclipse.jetty.server.nio.SelectChannelConnector
 import org.eclipse.jetty.webapp.WebAppContext
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -19,9 +18,11 @@ import scala.util.Random
 import com.variant.core.impl.VariantComptime
 import com.variant.server.ServerBoot
 import com.variant.core.util.inject.Injector
+import org.eclipse.jetty.server.ServerConnector
 
 /**
- * 
+ * Used by unit tests to run against an embedded Jetty server.
+ * Jetty server looks at the unpacked version of the web app in the source tree.
  */
 object UnitSpec {   
    
@@ -44,7 +45,7 @@ abstract class UnitSpec extends FlatSpec with JettyStartupAndShutdown  with Test
    // We'll need the client side api too.
    Injector.setConfigNameAsResource("/com/variant/server/conf/injector.json")
    val clientCore = new VariantCore()
-   clientCore.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.2");
+   clientCore.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.3");
    
    /**
     * 
@@ -113,8 +114,9 @@ object JettyTestServer {
 
    private val server: Server = {
       val svr = new Server
-      val connector = new SelectChannelConnector
-      connector.setMaxIdleTime(30000);
+      val connector = new ServerConnector(svr)
+      connector.setIdleTimeout(30000);
+      connector.setPort(8080);
       val context = new WebAppContext
       context.setServer(svr)
       context.setContextPath("/")
@@ -123,13 +125,13 @@ object JettyTestServer {
       svr.setHandler(context)
       svr
    }
-   lazy val port = server.getConnectors.head.getLocalPort
-   lazy val url = "http://localhost:" + port
+   
+   lazy val url = "http://localhost:8080"
    
    def baseUrl = url
    
    /**
-    * Only start if not yet started.
+    * Start Jetty server.
     */
     def start() { 
       val now = System.currentTimeMillis()
@@ -138,8 +140,7 @@ object JettyTestServer {
    }
    
    /**
-    * Only stop if upcount is down to 1,
-    * i.e. only one starter is still out there.
+    * Stop Jetty server
     */
    def stop() {
       val now = System.currentTimeMillis()

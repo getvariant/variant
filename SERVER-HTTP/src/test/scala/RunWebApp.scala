@@ -1,3 +1,5 @@
+/***
+   * NO LONGER WORKS AFTER UPGRADE TO JETTY 9
 import org.eclipse.jetty.server.handler.ContextHandler
 import org.eclipse.jetty.server.nio.SelectChannelConnector
 import org.eclipse.jetty.server.{Handler, Server}
@@ -32,3 +34,5 @@ object RunWebApp extends App {
     }
   }
 }
+
+***/
