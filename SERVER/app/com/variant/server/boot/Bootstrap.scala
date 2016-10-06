@@ -17,6 +17,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils
  */
 trait Bootstrap {
    def core(): VariantCore
+   def config(): Configuration
 }
 
 /**
@@ -35,6 +36,7 @@ class BootstrapImpl @Inject() (
    private lazy val coreLib = CoreBoot.initCore
    
    override def core() = coreLib
+   override def config() = config
    
    /**
     *  Boot code goes here.
@@ -47,7 +49,7 @@ class BootstrapImpl @Inject() (
 				comptime.getComponent(),
 				comptime.getComponentVersion(),
 				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"),
-				"/foobar"));
+				config.getString("variant.server.context").get));
    }
 
    /**

@@ -5,7 +5,7 @@ import play.api.mvc.Action
 import play.api.mvc.Controller
 
 //@Singleton -- Is this for non-shared state controllers?
-class Session @Inject() extends Controller {
+class Session @Inject() extends Controller  {
  
   // def index = TODO
  
