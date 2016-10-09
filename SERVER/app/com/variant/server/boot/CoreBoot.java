@@ -6,7 +6,6 @@ import com.variant.core.VariantProperties;
 import com.variant.core.VariantCorePropertyKeys.Key;
 import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
-import com.variant.server.ServerPropertyKeys;
 
 /**
  * Utility translators from Java.
@@ -14,7 +13,7 @@ import com.variant.server.ServerPropertyKeys;
  * 
  * @author Igor.
  *
- */
+ *
 public class CoreBoot {
 
 	final static Logger.ALogger logger = Logger.of(CoreBoot.class);
@@ -36,3 +35,4 @@ public class CoreBoot {
 		return core;
 	}
 }
+*/

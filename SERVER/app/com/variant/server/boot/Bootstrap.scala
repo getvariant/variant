@@ -8,8 +8,6 @@ import play.api.Configuration
 import play.api.Logger
 import com.variant.core.impl.VariantCore
 import com.variant.core.impl.VariantComptime
-import com.variant.core.VariantCorePropertyKeys.Key
-import com.variant.server.ServerPropertyKeys
 import org.apache.commons.lang3.time.DurationFormatUtils
 
 /**
@@ -26,18 +24,22 @@ trait Bootstrap {
 @Singleton
 class BootstrapImpl @Inject() (
       clock: Clock,
-      config: Configuration, 
+      configuration: Configuration, 
       appLifecycle: ApplicationLifecycle
       ) extends Bootstrap {
 
    private val logger = Logger(this.getClass)
    private val start = clock.instant
    private val now = System.currentTimeMillis;
-   private lazy val coreLib = CoreBoot.initCore
+   private lazy val variantCore = {
+      val core = new VariantCore();
+		core.getComptime().registerComponent(VariantComptime.Component.SERVER, "0.6.3")
+		core
+	}
    
-   override def core() = coreLib
-   override def config() = config
-   
+   override def core() = variantCore
+   override def config() = configuration
+      
    /**
     *  Boot code goes here.
     */
@@ -49,7 +51,7 @@ class BootstrapImpl @Inject() (
 				comptime.getComponent(),
 				comptime.getComponentVersion(),
 				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"),
-				config.getString("variant.server.context").get));
+				config.getString("play.http.context").get));
    }
 
    /**

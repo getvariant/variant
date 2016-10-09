@@ -5,6 +5,8 @@ import play.api.Environment
 import play.api.Play
 import com.variant.server.boot.Bootstrap
 import com.variant.server.boot.BootstrapImpl
+import com.variant.server.session.SessionStore
+import com.variant.server.session.SessionStoreImpl
 
 /**
  * This class is a Guice module that tells Guice how to bind several
@@ -25,6 +27,10 @@ class Module (environment: Environment, config: Configuration) extends AbstractM
 
     // Variant server boot and shutdown
     bind(classOf[Bootstrap]).to(classOf[BootstrapImpl]).asEagerSingleton
+
+    // Session Store
+    bind(classOf[SessionStore]).to(classOf[SessionStoreImpl]).asEagerSingleton
+
   }
 
 }

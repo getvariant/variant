@@ -13,4 +13,5 @@
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 # Variant Controllers
-GET     /session/:id             com.variant.server.controller.Session.read(id: String)
+GET     /session/:id             com.variant.server.controller.Session.get(id: String)
+PUT     /session/:id             com.variant.server.controller.Session.put(id: String)

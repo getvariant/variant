@@ -1,3 +1,4 @@
+/*
 package com.variant.server;
 
 import org.slf4j.Logger;
@@ -19,7 +20,7 @@ public class ServerBoot {
 	/**
 	 * No argument because tests will boot up lift and therefore call this the same way as main.
 	 * Test overrides have to be done via variant.props
-	 */
+	 *
 	public static void boot()  {
 		core = new VariantCore();
 		core.getComptime().registerComponent(VariantComptime.Component.SERVER, "0.6.3");
@@ -39,8 +40,9 @@ public class ServerBoot {
 	/**
 	 * 
 	 * @return
-	 */
+	 *
 	public static VariantCore getCore() {
 		return core;
 	}
 }
+*/
