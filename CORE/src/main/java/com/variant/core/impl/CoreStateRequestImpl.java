@@ -370,7 +370,7 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 				}
 			}
 			catch (Exception e) {
-				throw new VariantInternalException("Unable to deserialzie request: bad params spec", e);
+				throw new VariantInternalException("Unable to deserialzie request: bad experiences spec", e);
 			}
 			result.activeExperiences = experiencesList;
 		}

@@ -16,9 +16,10 @@ public class RemoteEvent implements VariantEvent {
 	private Date createDate = new Date();
 	private Map<String,Object> params = new HashMap<String,Object>();
 	
-	public RemoteEvent(String name, String value) {
+	public RemoteEvent(String name, String value, Date createDate) {
 		this.name = name;
 		this.value = value;
+		this.createDate = createDate;
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -48,10 +49,6 @@ public class RemoteEvent implements VariantEvent {
 	//---------------------------------------------------------------------------------------------//
 	//                                       PUBLIC EXT                                            //
 	//---------------------------------------------------------------------------------------------//
-
-	public void setCreateDate(Date date) {
-		createDate = date;
-	}
 	
 	public void setParameter(String key, String value) {
 		params.put(key, value);

@@ -6,6 +6,7 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import com.variant.server.session.SessionStore
 import play.api.Logger
+import com.variant.server.UserError
 
 //@Singleton -- Is this for non-shared state controllers?
 class Session @Inject() (store: SessionStore) extends Controller  {
@@ -19,13 +20,13 @@ class Session @Inject() (store: SessionStore) extends Controller  {
     * test with:
 curl -v -H "Content-Type: text/plain; charset=utf-8" \
      -X PUT \
-     -d '{"sid": "SID","ts": 123,"schid": "SCHID", \
-          "req": {"state": "state1","status": "OK","comm": true, \
-                  "params": [{"key": "KEY1", "val": "VAL1"},{"key": "KEY2", "val": "VAL2"}], \
-                  "exps": ["EXP1","EXP2","EXP3"]} \ 
-        "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}], \
+     -d '{"sid": "SID","ts": 1234567,"schid": "SCHID", 
+          "req": {"state": "state1","status": "OK","comm": true, 
+                  "params": [{"key": "KEY1", "val": "VAL1"},{"key": "KEY2", "val": "VAL2"}], 
+                  "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
+        "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
         "tests": [{"test": "test1","qual": true},{"test": "test1","qual": true}]}' \
-     http://localhost:9000/variant/session/A67 
+     http://localhost:9000/variant/session/SID 
     */
    def put(id: String) = Action { req =>
       // To be a text, Content-Type header has to be text and supply a charset.
@@ -34,14 +35,14 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
             store.put(id, body)
             Ok
          }
-         case None => BadRequest("Body expected but was null");
+         case None => UserError.errors(UserError.EmptyBody).toResult()
       }
    }
  
    /**
     * GET a session by ID.
     * test with:
-curl -v -X GET http://localhost:9000/variant/session/A67 
+curl -v -X GET http://localhost:9000/variant/session/SID
     */
    def get(id: String) = Action {
       val result = store.asString(id)
