@@ -10,6 +10,7 @@ import play.api.test.Helpers._
 class SessionSpec extends PlaySpec with OneAppPerSuite {
 
    val context = app.configuration.getString("play.http.context").get
+   println("*" * 20 + context)
    val body = "Does note matter becasuse we don't parse eagarly and expect a text content type"
    
    "SessionController" should {
@@ -20,7 +21,7 @@ class SessionSpec extends PlaySpec with OneAppPerSuite {
          status(resp) mustBe NOT_FOUND
          contentAsString(resp) mustBe empty
     }
-   
+/*   
       "PUT non-existent session should return 200" in {
        
          val req = FakeRequest(PUT, context + "/session/foo").withTextBody(body + 1)
@@ -61,12 +62,12 @@ class SessionSpec extends PlaySpec with OneAppPerSuite {
     }
 
    "The old session should still be there" in {
-                
+
          val respGet = route(app, FakeRequest(GET, context + "/session/foo")).get
          status(respGet) mustBe OK
          contentAsString(respGet) mustBe (body + 2)
     }
-
+*/
   }
 
 /*

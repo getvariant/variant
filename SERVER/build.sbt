@@ -21,4 +21,6 @@ libraryDependencies ++= Seq(
     "com.variant"               % "variant-core"        % coreVersion
 )
 
+//javaOptions in Test += "-Dconfig.file=/conf/application.test.conf"
+
 //fork in run := true
