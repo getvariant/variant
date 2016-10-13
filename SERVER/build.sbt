@@ -19,7 +19,6 @@ libraryDependencies ++= Seq(
   
     // Variant
     "com.variant"               % "variant-core"        % coreVersion
-  
 )
 
 //fork in run := true

@@ -52,7 +52,7 @@ curl -v -X GET http://localhost:9000/variant/session/SID
       }
       else {
          logger.trace(s"No session found for ID [$id]")         
-         BadRequest(s"Session ID [$id] does not exist")
+         NotFound
       }
    }
  
