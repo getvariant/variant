@@ -1,7 +1,7 @@
 import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
-
+/*
 /**
  * Add your spec here.
  * You can mock out a whole application including requests, plugins etc.
@@ -16,7 +16,7 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest {
     }
 
   }
-/*
+
   "HomeController" should {
 
     "render the index page" in {
@@ -37,5 +37,6 @@ class ApplicationSpec extends PlaySpec with OneAppPerTest {
       contentAsString(route(app, FakeRequest(GET, "/count")).get) mustBe "2"
     }
   }
-*/
 }
+
+*/

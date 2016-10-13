@@ -3,14 +3,24 @@ package com.variant.server.test
 import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
+import play.api.inject.guice.GuiceApplicationBuilder
 
 /**
  * Session Controller
  */
 class SessionSpec extends PlaySpec with OneAppPerSuite {
 
+   // Override app if you need a Application with other than
+  // default parameters.
+   implicit override lazy val app = new GuiceApplicationBuilder()
+      .configure(
+            Map(
+                  "play.http.context" -> "/variant-test",
+                  "variant.session.timeout.secs" -> 1,
+                  "variant.session.store.vacuum.interval.secs" -> 1 ))
+       .build()
+
    val context = app.configuration.getString("play.http.context").get
-   println("*" * 20 + context)
    val body = "Does note matter becasuse we don't parse eagarly and expect a text content type"
    
    "SessionController" should {
@@ -21,7 +31,7 @@ class SessionSpec extends PlaySpec with OneAppPerSuite {
          status(resp) mustBe NOT_FOUND
          contentAsString(resp) mustBe empty
     }
-/*   
+   
       "PUT non-existent session should return 200" in {
        
          val req = FakeRequest(PUT, context + "/session/foo").withTextBody(body + 1)
@@ -63,11 +73,20 @@ class SessionSpec extends PlaySpec with OneAppPerSuite {
 
    "The old session should still be there" in {
 
-         val respGet = route(app, FakeRequest(GET, context + "/session/foo")).get
-         status(respGet) mustBe OK
-         contentAsString(respGet) mustBe (body + 2)
+         val resp = route(app, FakeRequest(GET, context + "/session/foo")).get
+         status(resp) mustBe OK
+         contentAsString(resp) mustBe (body + 2)
     }
-*/
+
+   "Both sessions should expire after 2 seconds" in {
+      app.configuration.getInt("variant.session.timeout.secs").get mustEqual 1
+      app.configuration.getInt("variant.session.store.vacuum.interval.secs").get mustEqual 1
+      
+      Thread.sleep(2000);
+      
+      ("foo" :: "bar" :: Nil)
+         .foreach(sid => status(route(app, FakeRequest(GET, context + s"/session/$sid")).get) mustBe NOT_FOUND)  
+   }
   }
 
 /*

@@ -21,6 +21,7 @@ libraryDependencies ++= Seq(
     "com.variant"               % "variant-core"        % coreVersion
 )
 
-//javaOptions in Test += "-Dconfig.file=/conf/application.test.conf"
+// This doesn't work under eclipse => had to switch to building applicaiton programmatically with GuiceApplicationBuilder
+//javaOptions in Test += "-Dconfig.resource=application.test.conf"
 
 //fork in run := true
