@@ -35,7 +35,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
             store.put(id, body)
             Ok
          }
-         case None => UserError.errors(UserError.EmptyBody).toResult()
+         case None => UserError.errors(UserError.EmptyBody).asResult()
       }
    }
  

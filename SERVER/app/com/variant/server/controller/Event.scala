@@ -13,6 +13,8 @@ import java.util.Date
 import play.api.mvc.Result
 import play.api.mvc.AnyContent
 import com.variant.server.UserError
+import play.api.libs.json.JsValue
+import play.api.http.HeaderNames
 
 //@Singleton -- Is this for non-shared state controllers?
 class Event @Inject() (store: SessionStore) extends Controller  {
@@ -28,48 +30,66 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
      http://localhost:9000/variant/event
     */
    def post() = Action { req =>
-      // To be a text, Content-Type header has to be text and supply a charset.
-      req.body.asText match {
-         case Some(body) => {
-            val json = Json.parse(body)
-            
-            // Parse the input and construct the remote event.
-            val sid = (json \ "sid").asOpt[String]
-            val name = (json \ "name").asOpt[String]
-            val value = (json \ "val").asOpt[String]
-            val createDate = (json \ "crdate").asOpt[Long]
-            val params = (json \ "params").asOpt[Map[String,String]]
-   
-            // 400 if no required fields 
-            if (sid.isEmpty)  {
-               UserError.errors(UserError.MissingProperty).toResult("sid")
+
+      def parse(json: JsValue) = {
+         
+         val sid = (json \ "sid").asOpt[String]
+         val name = (json \ "name").asOpt[String]
+         val value = (json \ "val").asOpt[String]
+         val createDate = (json \ "crdate").asOpt[Long]
+         val params = (json \ "params").asOpt[Map[String,String]]
+
+         // 400 if no required fields 
+         if (sid.isEmpty)  {
+            UserError.errors(UserError.MissingProperty).asResult("sid")
+         }
+         else if (name.isEmpty)  {
+            UserError.errors(UserError.MissingProperty).asResult("name")
+         }
+         else {    
+            val ssn = store.asSession(sid.get)
+            if (ssn.isEmpty) {
+               UserError.errors(UserError.SessionExpired).asResult()
             }
-            else if (name.isEmpty)  {
-               UserError.errors(UserError.MissingProperty).toResult("name")
-            }
-            else if (value.isEmpty) {
-               UserError.errors(UserError.MissingProperty).toResult("value")
-            }
-            else {    
-               val ssn = store.asSession(sid.get)
-               if (ssn.isEmpty) {
-                  UserError.errors(UserError.SessionExpired).toResult()
+            else {
+               if (ssn.get.getStateRequest == null) {
+                  UserError.errors(UserError.UnknownState).asResult()   
                }
                else {
-                  if (ssn.get.getStateRequest == null) {
-                     UserError.errors(UserError.UnknownState).toResult()   
-                  }
-                  else {
-                     val remoteEvent = new RemoteEvent(name.get, value.get, new Date(createDate.getOrElse(System.currentTimeMillis())));   
-                     for ((k,v)<-params.getOrElse(Map.empty)) remoteEvent.setParameter(k, v.asInstanceOf[String])
-                     ssn.get.triggerEvent(remoteEvent)               
-                     Ok
-                  }
+                  val remoteEvent = new RemoteEvent(name.get, value.get, new Date(createDate.getOrElse(System.currentTimeMillis())));   
+                  for ((k,v)<-params.getOrElse(Map.empty)) remoteEvent.setParameter(k, v.asInstanceOf[String])
+                  ssn.get.triggerEvent(remoteEvent)               
+                  Ok
                }
             }
          }
-         case None => BadRequest("Body expected but was null");
       }
-   }
- 
+      
+      val bodySize = req.headers.get(HeaderNames.CONTENT_LENGTH)
+
+      // TODO: this will only work for text requests that do not require parsing and their "consumption"
+      // does not require json parsing. Write a custom parser that will examine the size before parsing
+      // and will not attempt parse if body is empty regardless of the content type header.
+      // Probably a composable action that will be in front of all our actions.
+      req.contentType match {
+         case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
+            try {
+               parse(Json.parse(req.body.asText.get))
+            }
+            catch {
+               case t: Throwable => UserError.errors(UserError.JsonParseError).asResult(t.getMessage)
+            }
+         case Some(ct) if ct.equalsIgnoreCase("application/json") => 
+            try {
+               parse(req.body.asJson.get)
+            }
+            catch {
+               case t: Throwable => UserError.errors(UserError.JsonParseError).asResult(t.getMessage)
+            }
+
+         case None => UserError.errors(UserError.BadContentType).asResult()
+      }
+
+   }   
 }
+

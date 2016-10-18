@@ -23,4 +23,5 @@ class VariantSpec extends PlaySpec with OneAppPerSuite {
        .build()
    
    protected val context = app.configuration.getString("play.http.context").get
+   
 }
