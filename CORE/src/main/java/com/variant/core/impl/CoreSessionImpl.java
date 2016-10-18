@@ -405,7 +405,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 				}
 			}
 			catch (Exception e) {
-				throw new VariantInternalException("Unable to deserialzie session: bad statil spec", e);
+				throw new VariantInternalException("Unable to deserialzie session: bad stabil spec", e);
 			}
 		}
 		result.setTargetingStabile(targetingStabile);

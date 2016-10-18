@@ -1,19 +1,35 @@
 package com.variant.server.test
 
-import org.scalatestplus.play._
-import play.api.test._
-import play.api.test.Helpers._
-import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json._
+import scala.math.BigDecimal.int2bigDecimal
+import scala.math.BigDecimal.long2bigDecimal
 import com.variant.server.test.util.ParamString
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsBoolean
+import play.api.libs.json.JsNumber
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
+import play.api.test.FakeRequest
+import play.api.test.Helpers.GET
+import play.api.test.Helpers.NOT_FOUND
+import play.api.test.Helpers.OK
+import play.api.test.Helpers.PUT
+import play.api.test.Helpers.contentAsString
+import play.api.test.Helpers.defaultAwaitTimeout
+import play.api.test.Helpers.route
+import play.api.test.Helpers.status
+import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
+import play.api.test.Helpers.writeableOf_AnyContentAsText
+import com.variant.server.session.SessionStore
+import scala.util.Random
+import com.variant.core.impl.CoreSessionImpl
 
 /*
  * Reusable session JSON objects. 
  */
-object SessionSpec extends VariantSpec {
+object SessionSpec {
 
 
-   val body = JsObject(Seq(
+   val foo = JsObject(Seq(
       "sid" -> JsString("SID"),
       "ts" -> JsNumber(System.currentTimeMillis()),
       "schid" -> JsString("SCHID"),
@@ -68,15 +84,15 @@ object SessionSpec extends VariantSpec {
    ))
 
 
-   val foo = ParamString("""
+   val body = ParamString("""
       {"sid": "${sid:SID}",
        "ts": %s,
        "schid": "SCHID", 
-       "request": {"state": "state1","status": "OK","comm": true, 
-                  "params": [{"key": "KEY1", "val": "VAL1"},{"key": "KEY2", "val": "VAL2"}], 
+       "request": {"state": "state1","status": "OK","committed": true, 
+                  "params": [{"name": "Param One", "value": "Param One Value"},{"name": "Param Two", "value": "Param Two Value"}], 
                   "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
         "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
-        "tests": [{"test": "test1","qual": true},{"test": "test1","qual": true}]}
+        "tests": [{"test": "test1","qualified": true},{"test": "test1","qualified": true}]}
    """.format(System.currentTimeMillis()))
 
 }
@@ -85,16 +101,25 @@ object SessionSpec extends VariantSpec {
  * Session Controller Tests
  */
 class SessionSpec extends VariantSpec {
-
-      println(SessionSpec.foo.expand())
+   
+   import com.variant.server.test.SessionSpec._
 
    val endpoint = context + "/session"
-   val body = "Does note matter becasuse we don't parse eagarly and expect a text content type"
-   
+
    "SessionController" should {
 
       // All tests try text and json bodies.
       for (contType <- List("text", "json")) {
+
+         "return 404 on GET no SID with " + contType + " body" in {
+          
+            val resp = contType match {
+               case "text" => route(app, FakeRequest(GET, endpoint + "/").withHeaders("Content-Type" -> "text/plain")).get
+               case "json" => route(app, FakeRequest(GET, endpoint + "/").withHeaders("Content-Type" -> "application/json")).get
+            }
+            status(resp) mustBe NOT_FOUND
+            contentAsString(resp) mustBe empty
+         }
 
          "return 404 on GET non-existent session with " + contType + " body" in {
           
@@ -108,8 +133,7 @@ class SessionSpec extends VariantSpec {
       
          "return 200 on PUT non-existent session with " + contType + " body" in {
 
-
-            val req = FakeRequest(PUT, endpoint + "/foo").withTextBody(body + 1)
+            val req = FakeRequest(PUT, endpoint + "/foo").withTextBody(body.expand("sid" -> "foo1"))
             val resp = route(app, req).get
             println(contentAsString(resp))
             status(resp) mustBe OK
@@ -120,38 +144,38 @@ class SessionSpec extends VariantSpec {
           
             val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
             status(resp) mustBe OK
-            contentAsString(resp) mustBe (body + 1)
+            contentAsString(resp) mustBe body.expand("sid" -> "foo1")
          }
 
          "replace existing session on PUT and return 200 with " + contType + " body" in {
           
-            val reqPut = FakeRequest(PUT, endpoint + "/foo").withTextBody(body + 2)
+            val reqPut = FakeRequest(PUT, endpoint + "/foo").withTextBody(body.expand("sid" -> "foo2"))
             val respPut = route(app, reqPut).get
             status(respPut) mustBe OK
             contentAsString(respPut) mustBe empty
             
             val respGet = route(app, FakeRequest(GET, endpoint + "/foo")).get
             status(respGet) mustBe OK
-            contentAsString(respGet) mustBe (body + 2)
+            contentAsString(respGet) mustBe body.expand("sid" -> "foo2")
          }
    
          "create session on PUT and return 200 with " + contType + " body" in {
           
-            val reqPut = FakeRequest(PUT, endpoint + "/bar").withTextBody(body + 3)
+            val reqPut = FakeRequest(PUT, endpoint + "/bar").withTextBody(body.expand("sid" -> "bar1"))
             val respPut = route(app, reqPut).get
             status(respPut) mustBe OK
             contentAsString(respPut) mustBe empty
             
             val respGet = route(app, FakeRequest(GET, endpoint + "/bar")).get
             status(respGet) mustBe OK
-            contentAsString(respGet) mustBe (body + 3)
+            contentAsString(respGet) mustBe body.expand("sid" -> "bar1")
          }
    
         "not lose existing session with different key and " + contType + " body" in {
    
             val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
             status(resp) mustBe OK
-            contentAsString(resp) mustBe (body + 2)
+            contentAsString(resp) mustBe body.expand("sid" -> "foo2")
          }
    
         "expire existing sessions after timeout with " + contType + " body" in {
@@ -165,5 +189,21 @@ class SessionSpec extends VariantSpec {
          }
 
       }
+      
+      "deserialize payload into session object" in {
+       
+         val sid = Random.nextInt(100000).toString
+         val reqPut = FakeRequest(PUT, endpoint + "/" + sid).withTextBody(body.expand("sid" -> sid))
+         val respPut = route(app, reqPut).get
+         status(respPut) mustBe OK
+         contentAsString(respPut) mustBe empty
+         
+         store.asString(sid).get mustBe body.expand("sid" -> sid)
+         
+         val session = store.asSession(sid).get
+         println(session.asInstanceOf[CoreSessionImpl].toJson())
+         
+      }
+      
    }
 }

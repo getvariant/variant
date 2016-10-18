@@ -5,6 +5,8 @@ import play.api.test._
 import play.api.test.Helpers._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.Application
+import javax.inject.Inject
+import com.variant.server.session.SessionStore
 
 /**
  * Common to all tests.
@@ -23,5 +25,6 @@ class VariantSpec extends PlaySpec with OneAppPerSuite {
        .build()
    
    protected val context = app.configuration.getString("play.http.context").get
+   protected val store = app.injector.instanceOf[SessionStore]
    
 }
