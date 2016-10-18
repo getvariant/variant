@@ -7,7 +7,7 @@ package com.variant.server.test.util
  */
 class ParamString (private val prototype: String) {
      
-   def expand(vars: (String, String)*): String = {
+   def expand(vars: (String, Any)*): String = {
       var index = 0;
       var inBraces = false
       var result = new StringBuilder
@@ -41,7 +41,7 @@ class ParamString (private val prototype: String) {
                      }
                      else {
                         // Value was passed
-                        actual.head._2
+                        actual.head._2.toString
                      }
                   }
                   result.append(value)

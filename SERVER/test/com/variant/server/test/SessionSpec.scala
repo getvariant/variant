@@ -86,7 +86,7 @@ object SessionSpec {
 
    val body = ParamString("""
       {"sid": "${sid:SID}",
-       "ts": %s,
+       "ts": ${ts:%d},
        "schid": "SCHID", 
        "request": {"state": "state1","status": "OK","committed": true, 
                   "params": [{"name": "Param One", "value": "Param One Value"},{"name": "Param Two", "value": "Param Two Value"}], 
@@ -193,16 +193,18 @@ class SessionSpec extends VariantSpec {
       "deserialize payload into session object" in {
        
          val sid = Random.nextInt(100000).toString
-         val reqPut = FakeRequest(PUT, endpoint + "/" + sid).withTextBody(body.expand("sid" -> sid))
+         val ts = System.currentTimeMillis()
+         val reqPut = FakeRequest(PUT, endpoint + "/" + sid).withTextBody(body.expand("sid" -> sid, "ts" -> ts))
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
          
-         store.asString(sid).get mustBe body.expand("sid" -> sid)
+         store.asString(sid.toString).get mustBe body.expand("sid" -> sid, "ts" -> ts)
          
-         val session = store.asSession(sid).get
-         println(session.asInstanceOf[CoreSessionImpl].toJson())
-         
+         val session = store.asSession(sid.toString).get
+         //println(session.asInstanceOf[CoreSessionImpl].toJson())
+         session.creationTimestamp() mustBe ts
+         session.getId mustBe sid
       }
       
    }
