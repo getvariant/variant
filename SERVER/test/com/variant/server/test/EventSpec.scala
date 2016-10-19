@@ -51,65 +51,41 @@ class EventSpec extends VariantSpec {
          contentAsString(resp) mustBe empty
       }
 
-      // All tests try text and json bodies.
-      for (contType <- List("text", "json")) {
 
-         "return  400 and error on POST with no body and " + contType + " body" in {
-   
-            val resp = contType match {
-               case "text" => route(app, FakeRequest(POST, endpoint).withHeaders("Content-Type" -> "text/plain")).get
-               case "json" => route(app, FakeRequest(POST, endpoint).withHeaders("Content-Type" -> "application/json")).get
-            }
-            status(resp) mustBe BAD_REQUEST
-            
-            println("This should really return the no body error")
-            contentAsString(resp) must include ("No content")        
-        }
-         
-         "return  400 and error on POST with invalid JSON and " + contType + " body" in {
-   
-            val resp = contType match {
-               case "text" => route(app, FakeRequest(POST, endpoint).withBody("bad json").withHeaders("Content-Type" -> "text/plain")).get
-               case "json" => route(app, FakeRequest(POST, endpoint).withBody("bad json").withHeaders("Content-Type" -> "application/json")).get
-            }
-            status(resp) mustBe BAD_REQUEST
-            
-            println("This should really return the no body error")
-            contentAsString(resp) must include ("Unrecognized token")        
-        }
+      "return  400 and error on POST with no body" in {
+         val resp = route(app, FakeRequest(POST, endpoint).withHeaders("Content-Type" -> "text/plain")).get
+         status(resp) mustBe BAD_REQUEST
+         contentAsString(resp) must startWith ("JSON parsing error")        
+         contentAsString(resp) must include ("No content")        
+     }
+      
+      "return  400 and error on POST with invalid JSON" in {
+         val resp = route(app, FakeRequest(POST, endpoint).withBody("bad json").withHeaders("Content-Type" -> "text/plain")).get
+         status(resp) mustBe BAD_REQUEST
+         contentAsString(resp) must startWith ("JSON parsing error")        
+         contentAsString(resp) must include ("Unrecognized token")        
+     }
 
-         "return  400 and error on POST with no sid and " + contType + " body" in {
-   
-            val body = EventSpec.body.transform((__ \ "sid").json.prune).get
-            val resp = contType match {
-               case "text" => route(app, FakeRequest(POST, endpoint).withTextBody(body.toString())).get
-               case "json" => route(app, FakeRequest(POST, endpoint).withJsonBody(body)).get
-            }
-            status(resp) mustBe BAD_REQUEST
-            contentAsString(resp) mustBe UserError.errors(UserError.MissingProperty).asMessage("sid")
-         }
+      "return  400 and error on POST with no sid" in {
+         val body = EventSpec.body.transform((__ \ "sid").json.prune).get
+         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(body.toString())).get
+         status(resp) mustBe BAD_REQUEST
+         contentAsString(resp) mustBe UserError.errors(UserError.MissingProperty).asMessage("sid")
+      }
 
-         "return  400 and error on POST with no name and " + contType + " body" in {
-   
-            val body = EventSpec.body.transform((__ \ "name").json.prune).get
-            val resp = contType match {
-               case "text" => route(app, FakeRequest(POST, endpoint).withTextBody(body.toString())).get
-               case "json" => route(app, FakeRequest(POST, endpoint).withJsonBody(body)).get
-            }
-            status(resp) mustBe BAD_REQUEST
-            contentAsString(resp) mustBe UserError.errors(UserError.MissingProperty).asMessage("name")
-         }
-         
-         "return  403 and error on POST with non-existent session and " + contType + " body" in {
-   
-            val resp = contType match {
-               case "text" => route(app, FakeRequest(POST, endpoint).withTextBody(EventSpec.body.toString())).get
-               case "json" => route(app, FakeRequest(POST, endpoint).withJsonBody(EventSpec.body)).get
-            }
-            status(resp) mustBe FORBIDDEN
-            contentAsString(resp) mustBe UserError.errors(UserError.SessionExpired).asMessage("name")
-         }
+      "return  400 and error on POST with no name" in {
 
+         val body = EventSpec.body.transform((__ \ "name").json.prune).get
+         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(body.toString())).get
+         status(resp) mustBe BAD_REQUEST
+         contentAsString(resp) mustBe UserError.errors(UserError.MissingProperty).asMessage("name")
+      }
+      
+      "return  403 and error on POST with non-existent session" in {
+
+         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(EventSpec.body.toString())).get
+         status(resp) mustBe FORBIDDEN
+         contentAsString(resp) mustBe UserError.errors(UserError.SessionExpired).asMessage("name")
       }
       
    }

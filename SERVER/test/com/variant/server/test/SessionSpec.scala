@@ -96,87 +96,72 @@ class SessionSpec extends VariantSpec {
 
    "SessionController" should {
 
-      // All tests try text and json bodies.
-      for (contType <- List("text", "json")) {
+      "return 404 on GET no SID" in {
+       
+         val resp = route(app, FakeRequest(GET, endpoint + "/").withHeaders("Content-Type" -> "text/plain")).get
+         status(resp) mustBe NOT_FOUND
+         contentAsString(resp) mustBe empty
+      }
 
-         "return 404 on GET no SID with " + contType + " body" in {
-          
-            val resp = contType match {
-               case "text" => route(app, FakeRequest(GET, endpoint + "/").withHeaders("Content-Type" -> "text/plain")).get
-               case "json" => route(app, FakeRequest(GET, endpoint + "/").withHeaders("Content-Type" -> "application/json")).get
-            }
-            status(resp) mustBe NOT_FOUND
-            contentAsString(resp) mustBe empty
-         }
+      "return 404 on GET non-existent session" in {          
+         val resp = route(app, FakeRequest(GET, endpoint + "/foo").withHeaders("Content-Type" -> "text/plain")).get
+         status(resp) mustBe NOT_FOUND
+         contentAsString(resp) mustBe empty
+      }
+   
+      "return 200 on PUT non-existent session" in {
+         val textBody = body.expand("sid" -> "foo1")
+         val resp = route(app, FakeRequest(PUT, endpoint + "/foo").withTextBody(textBody)).get
+         status(resp) mustBe OK
+         contentAsString(resp) mustBe empty
+      }
 
-         "return 404 on GET non-existent session with " + contType + " body" in {          
-            val resp = contType match {
-               case "text" => route(app, FakeRequest(GET, endpoint + "/foo").withHeaders("Content-Type" -> "text/plain")).get
-               case "json" => route(app, FakeRequest(GET, endpoint + "/foo").withHeaders("Content-Type" -> "application/json")).get
-            }
-            status(resp) mustBe NOT_FOUND
-            contentAsString(resp) mustBe empty
-         }
+      "return existing session on GET and return 200" in {
+       
+         val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
+         status(resp) mustBe OK
+         contentAsString(resp) mustBe body.expand("sid" -> "foo1")
+      }
+
+      "replace existing session on PUT and return 200" in {
+       
+         val reqPut = FakeRequest(PUT, endpoint + "/foo").withTextBody(body.expand("sid" -> "foo2"))
+         val respPut = route(app, reqPut).get
+         status(respPut) mustBe OK
+         contentAsString(respPut) mustBe empty
+         
+         val respGet = route(app, FakeRequest(GET, endpoint + "/foo")).get
+         status(respGet) mustBe OK
+         contentAsString(respGet) mustBe body.expand("sid" -> "foo2")
+      }
+
+      "create session on PUT and return 200" in {
+       
+         val reqPut = FakeRequest(PUT, endpoint + "/bar").withTextBody(body.expand("sid" -> "bar1"))
+         val respPut = route(app, reqPut).get
+         status(respPut) mustBe OK
+         contentAsString(respPut) mustBe empty
+         
+         val respGet = route(app, FakeRequest(GET, endpoint + "/bar")).get
+         status(respGet) mustBe OK
+         contentAsString(respGet) mustBe body.expand("sid" -> "bar1")
+      }
+
+     "not lose existing session with different key" in {
+
+         val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
+         status(resp) mustBe OK
+         contentAsString(resp) mustBe body.expand("sid" -> "foo2")
+      }
+
+     "expire existing sessions after timeout" in {
+         app.configuration.getInt("variant.session.timeout.secs").get mustEqual 1
+         app.configuration.getInt("variant.session.store.vacuum.interval.secs").get mustEqual 1
       
-         "return 200 on PUT non-existent session with " + contType + " body" in {
-            val textBody = body.expand("sid" -> "foo1")
-            println("********* " + Json.parse(textBody).toString())
-            val resp = contType match {
-               case "text" => route(app, FakeRequest(PUT, endpoint + "/foo").withTextBody(textBody)).get
-               case "json" => route(app, FakeRequest(PUT, endpoint + "/foo").withJsonBody(Json.parse(textBody))).get
-            }
-            status(resp) mustBe OK
-            contentAsString(resp) mustBe empty
-         }
-   
-         "return existing session on GET and return 200 with " + contType + " body" in {
-          
-            val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
-            status(resp) mustBe OK
-            contentAsString(resp) mustBe body.expand("sid" -> "foo1")
-         }
-
-         "replace existing session on PUT and return 200 with " + contType + " body" in {
-          
-            val reqPut = FakeRequest(PUT, endpoint + "/foo").withTextBody(body.expand("sid" -> "foo2"))
-            val respPut = route(app, reqPut).get
-            status(respPut) mustBe OK
-            contentAsString(respPut) mustBe empty
-            
-            val respGet = route(app, FakeRequest(GET, endpoint + "/foo")).get
-            status(respGet) mustBe OK
-            contentAsString(respGet) mustBe body.expand("sid" -> "foo2")
-         }
-   
-         "create session on PUT and return 200 with " + contType + " body" in {
-          
-            val reqPut = FakeRequest(PUT, endpoint + "/bar").withTextBody(body.expand("sid" -> "bar1"))
-            val respPut = route(app, reqPut).get
-            status(respPut) mustBe OK
-            contentAsString(respPut) mustBe empty
-            
-            val respGet = route(app, FakeRequest(GET, endpoint + "/bar")).get
-            status(respGet) mustBe OK
-            contentAsString(respGet) mustBe body.expand("sid" -> "bar1")
-         }
-   
-        "not lose existing session with different key and " + contType + " body" in {
-   
-            val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
-            status(resp) mustBe OK
-            contentAsString(resp) mustBe body.expand("sid" -> "foo2")
-         }
-   
-        "expire existing sessions after timeout with " + contType + " body" in {
-            app.configuration.getInt("variant.session.timeout.secs").get mustEqual 1
-            app.configuration.getInt("variant.session.store.vacuum.interval.secs").get mustEqual 1
-         
-            Thread.sleep(2000);
-         
-            ("foo" :: "bar" :: Nil)
-               .foreach(sid => status(route(app, FakeRequest(GET, endpoint + "/" + sid)).get) mustBe NOT_FOUND)  
-         }
-
+         Thread.sleep(2000);
+      
+         ("foo" :: "bar" :: Nil)
+            .foreach(sid => status(route(app, FakeRequest(GET, endpoint + "/" + sid)).get) mustBe NOT_FOUND)  
       }
       
       "deserialize payload into session object" in {
@@ -188,13 +173,17 @@ class SessionSpec extends VariantSpec {
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
          
-         store.asString(sid.toString).get mustBe body.expand("sid" -> sid, "ts" -> ts)
+         store.asString(sid).get mustBe body.expand("sid" -> sid, "ts" -> ts)
          
          val session = store.asSession(sid.toString).get
          //println(session.asInstanceOf[CoreSessionImpl].toJson())
          session.creationTimestamp() mustBe ts
          session.getId mustBe sid
-      }
       
+         Thread.sleep(2000);
+         store.asSession(sid) mustBe empty
+         
+      }
+
    }
 }
