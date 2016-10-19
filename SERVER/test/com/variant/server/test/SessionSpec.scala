@@ -3,32 +3,20 @@ package com.variant.server.test
 import scala.math.BigDecimal.int2bigDecimal
 import scala.math.BigDecimal.long2bigDecimal
 import com.variant.server.test.util.ParamString
-import play.api.libs.json.JsArray
-import play.api.libs.json.JsBoolean
-import play.api.libs.json.JsNumber
-import play.api.libs.json.JsObject
-import play.api.libs.json.JsString
+import play.api.test.Helpers._
+import play.api.libs.json._
 import play.api.test.FakeRequest
-import play.api.test.Helpers.GET
-import play.api.test.Helpers.NOT_FOUND
-import play.api.test.Helpers.OK
-import play.api.test.Helpers.PUT
-import play.api.test.Helpers.contentAsString
-import play.api.test.Helpers.defaultAwaitTimeout
-import play.api.test.Helpers.route
-import play.api.test.Helpers.status
-import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
-import play.api.test.Helpers.writeableOf_AnyContentAsText
 import com.variant.server.session.SessionStore
 import scala.util.Random
 import com.variant.core.impl.CoreSessionImpl
+import play.api.libs.json.Json
 
 /*
  * Reusable session JSON objects. 
  */
 object SessionSpec {
 
-
+/*
    val foo = JsObject(Seq(
       "sid" -> JsString("SID"),
       "ts" -> JsNumber(System.currentTimeMillis()),
@@ -82,7 +70,7 @@ object SessionSpec {
          ))
       ))
    ))
-
+*/
 
    val body = ParamString("""
       {"sid": "${sid:SID}",
@@ -121,8 +109,7 @@ class SessionSpec extends VariantSpec {
             contentAsString(resp) mustBe empty
          }
 
-         "return 404 on GET non-existent session with " + contType + " body" in {
-          
+         "return 404 on GET non-existent session with " + contType + " body" in {          
             val resp = contType match {
                case "text" => route(app, FakeRequest(GET, endpoint + "/foo").withHeaders("Content-Type" -> "text/plain")).get
                case "json" => route(app, FakeRequest(GET, endpoint + "/foo").withHeaders("Content-Type" -> "application/json")).get
@@ -132,10 +119,12 @@ class SessionSpec extends VariantSpec {
          }
       
          "return 200 on PUT non-existent session with " + contType + " body" in {
-
-            val req = FakeRequest(PUT, endpoint + "/foo").withTextBody(body.expand("sid" -> "foo1"))
-            val resp = route(app, req).get
-            println(contentAsString(resp))
+            val textBody = body.expand("sid" -> "foo1")
+            println("********* " + Json.parse(textBody).toString())
+            val resp = contType match {
+               case "text" => route(app, FakeRequest(PUT, endpoint + "/foo").withTextBody(textBody)).get
+               case "json" => route(app, FakeRequest(PUT, endpoint + "/foo").withJsonBody(Json.parse(textBody))).get
+            }
             status(resp) mustBe OK
             contentAsString(resp) mustBe empty
          }

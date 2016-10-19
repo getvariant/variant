@@ -65,10 +65,10 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          }
       }
       
-      val bodySize = req.headers.get(HeaderNames.CONTENT_LENGTH)
+//      val bodySize = req.headers.get(HeaderNames.CONTENT_LENGTH)
 
-      // TODO: this will only work for text requests that do not require parsing and their "consumption"
-      // does not require json parsing. Write a custom parser that will examine the size before parsing
+      // TODO: this will only work for text requests which are consumed by default Action without
+      // JSON parsing. Write a custom parser that will examine the size before parsing
       // and will not attempt parse if body is empty regardless of the content type header.
       // Probably a composable action that will be in front of all our actions.
       req.contentType match {
