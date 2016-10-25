@@ -8,8 +8,8 @@ import java.util.Properties;
 
 import com.variant.core.VariantCoreInitParams;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.jdbc.EventFlusherJdbc;
-import com.variant.core.jdbc.JdbcService.Vendor;
+import com.variant.server.jdbc.EventFlusherJdbc;
+import com.variant.server.jdbc.JdbcService.Vendor;
 
 /**
  * <p>An implementation of {@link EventFlusher}, which writes Variant events to an

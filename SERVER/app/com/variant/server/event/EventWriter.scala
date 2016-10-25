@@ -138,7 +138,7 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
    				} while (bufferQueue.size() >= pctEmptySize);
    									
    				// Block until the queue is over pctFull again, but with timeout.
-   				synchronized {
+   				bufferQueue.synchronized {
    					bufferQueue.wait(maxFlusherDelayMillis);
    				}
    			}

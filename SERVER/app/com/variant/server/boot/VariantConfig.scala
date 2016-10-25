@@ -45,11 +45,11 @@ object VariantConfigKey {
 class VariantConfig @Inject() (playConfig: Configuration) {
   
    private def get(key: VariantConfigKey) = {
-      playConfig.getString(key.name).getOrElse(key.default)
+      playConfig.getString(key.name).getOrElse(key.default.toString())
    }
    
    def getString(key: VariantConfigKey) = get(key).asInstanceOf[String]
-   def getInt(key: VariantConfigKey) = get(key).asInstanceOf[Integer]
-   def getLong(key: VariantConfigKey) = get(key).asInstanceOf[Long]
+   def getInt(key: VariantConfigKey) = get(key).toInt
+   def getLong(key: VariantConfigKey) = get(key).toLong
    
 }

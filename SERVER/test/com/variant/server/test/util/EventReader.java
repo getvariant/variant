@@ -12,8 +12,8 @@ import java.util.Map;
 
 import org.apache.commons.collections4.Predicate;
 
-import com.variant.core.jdbc.JdbcService;
 import com.variant.server.jdbc.JdbcAdapter;
+import com.variant.server.jdbc.JdbcService;
 
 
 /**
