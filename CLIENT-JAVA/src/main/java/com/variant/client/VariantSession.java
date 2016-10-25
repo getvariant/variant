@@ -1,6 +1,7 @@
 package com.variant.client;
 
 import com.variant.core.VariantCoreSession;
+import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.xdm.State;
 
@@ -44,4 +45,12 @@ public interface VariantSession extends VariantCoreSession {
 	 * @since 0.6
 	 */
 	VariantClient getClient();
+	
+	/**
+	 * Trigger a custom event.
+	 * 
+	 * @param An implementation of {@link VariantEvent} which represents the custom event to be triggered.
+	 * @since 0.7
+	 */
+	public void triggerEvent(VariantEvent event);
 }

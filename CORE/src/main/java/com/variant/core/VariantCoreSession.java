@@ -83,14 +83,14 @@ public interface VariantCoreSession {
 	 */
 	public Collection<Test> getDisqualifiedTests();
 		
-	/**
+	/* ON SERVER NOW
 	 * Trigger a custom event.
 	 * 
 	 * @param An implementation of {@link VariantEvent} which represents the custom event to be triggered.
 	 * @since 0.5
-	 */
+	 *
 	public void triggerEvent(VariantEvent event);
-
+    */
 	/**
 	 * <p>Get most recent state request, which may be still in progress or already committed.
 	 * 

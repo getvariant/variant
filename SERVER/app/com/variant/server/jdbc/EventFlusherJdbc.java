@@ -1,4 +1,4 @@
-package com.variant.core.jdbc;
+package com.variant.server.jdbc;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,11 +9,12 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.event.EventFlusher;
-import com.variant.core.event.VariantFlushableEvent;
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.jdbc.JdbcService.Vendor;
 import com.variant.core.xdm.Test;
+import com.variant.server.event.EventFlusher;
+import com.variant.server.event.VariantFlushableEvent;
+import com.variant.server.jdbc.JdbcService.Vendor;
+
 
 /**
  * JDBC event flushers extend this class instead of implementing the EventFlusher interface. 
@@ -152,19 +153,4 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 		);
 		
 	}
-	
-	/**
-	 *  DEAD?
-	 * @author Igor
-	 *
-	 *
-	private static class EventWrapper {
-		private VariantEvent event;
-		private long id;
-		private EventWrapper(VariantEvent event, long id) {
-			this.event = event;
-			this.id = id;
-		}
-	}
-	*/
 }

@@ -1,30 +1,5 @@
-package com.variant.core.test;
+package com.variant.server.test.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import com.variant.core.VariantCoreSession;
-import com.variant.core.event.impl.util.PropertiesChain;
-import com.variant.core.exception.VariantInternalException;
-import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.impl.CoreSessionImpl;
-import com.variant.core.impl.VariantCore;
-import com.variant.core.jdbc.JdbcService;
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserResponse;
-import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.impl.MessageTemplate;
 
 /**
  * Common utility methods for all JUnit tests in all projects, hence we've put it in the main scope.
@@ -35,7 +10,7 @@ abstract public class CoreBaseTest {
 	/**
 	 * @throws Exception 
 	 * 
-	 */
+	 *
 	protected void recreateSchema(VariantCore core) throws Exception {
 		
 		JdbcService jdbc = new JdbcService(core);
@@ -50,7 +25,7 @@ abstract public class CoreBaseTest {
 				break;
 			}
 		}
-		catch (ClassCastException e) {/*OK*/}		
+		catch (ClassCastException e) {}		
 		catch (Exception e) { throw e; }		
 
 	}
@@ -59,7 +34,7 @@ abstract public class CoreBaseTest {
 	 * @param ssn The session which will receive this stabile.
 	 * @param experiences are expected as "test.exp" 
 	 * @return
-	 */
+	 *
     protected void setTargetingStabile(VariantCoreSession ssn, String...experiences) {
 		SessionScopedTargetingStabile stabile = new SessionScopedTargetingStabile();
 		for (String e: experiences) {
@@ -77,7 +52,7 @@ abstract public class CoreBaseTest {
 	/**
 	 * Print all messages to std out.
 	 * @param response
-	 */
+	 *
 	protected void printMessages(ParserResponse response) {
 		if (response.hasMessages()) 
 			for (ParserMessage msg: response.getMessages()) System.out.println(msg);
@@ -87,7 +62,7 @@ abstract public class CoreBaseTest {
 	 * 
 	 * @param name
 	 * @return
-	 */
+	 *
 	protected InputStream openResourceAsInputStream(String name) {
 		InputStream result = PropertiesChain.class.getResourceAsStream(name);
 		if (result == null) {
@@ -100,7 +75,7 @@ abstract public class CoreBaseTest {
 	 * Pull experience from schema
 	 * @param name
 	 * @return
-	 */
+	 *
 	protected Experience experience(String name, Schema schema) {
 		String[] tokens = name.split("\\.");
 		return schema.getTest(tokens[0]).getExperience(tokens[1]);
@@ -115,7 +90,7 @@ abstract public class CoreBaseTest {
 	 * @param pattern
 	 * @param string
 	 * @return
-	 */
+	 *
 	protected static void assertMatches(String regex, String string) {
 		assertTrue(
 				"Regular expression '" + regex + "' does not match string '" + string + "'", 
@@ -125,7 +100,7 @@ abstract public class CoreBaseTest {
 	/**
 	 * 
 	 * @return
-	 */
+	 *
 	protected static void assertNotMatches(String regex, String string) {
 		assertTrue(
 				"Regular expression '" + regex + "' matches string '" + string + "'",
@@ -136,7 +111,7 @@ abstract public class CoreBaseTest {
 	 * Succeeds if first argument equals to one of the following arguments.
 	 * @param actual
 	 * @param expected
-	 */
+	 *
 	protected static void assertEqualsMulti(Object actual, Object...expected) {
 		boolean result = false;
 		for (Object e: expected) {
@@ -154,7 +129,7 @@ abstract public class CoreBaseTest {
 	 * Custom comparator.
 	 *  
 	 * @param 
-	 */	
+	 *
 	protected static <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected, Comparator<T> comp) {
 		
 		for (T a: actual) {
@@ -184,7 +159,7 @@ abstract public class CoreBaseTest {
 	 * Same as above with the trivial comparator
 	 *  
 	 * @param 
-	 */	
+	 *
 	protected static <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected) {
 
 		Comparator<T> comp = new Comparator<T>() {
@@ -198,7 +173,7 @@ abstract public class CoreBaseTest {
 	 * Same as above for varargs
 	 * @param actual
 	 * @param expected
-	 */
+	 *
 	protected <T> void assertEqualAsSets(Collection<T> actual, @SuppressWarnings("unchecked") T...expected) {
 		assertEqualAsSets(actual, Arrays.asList(expected));
 	}
@@ -207,7 +182,7 @@ abstract public class CoreBaseTest {
 	 * Same as above for maps
 	 * @param actual
 	 * @param expected
-	 */
+	 *
 	protected <K,V> void assertEqualAsSets(Map<K,V> actual, Map<K,V> expected) {
 		assertEqualAsSets(actual.entrySet(), expected.entrySet());
 	}
@@ -216,7 +191,7 @@ abstract public class CoreBaseTest {
 	 * Same as above with custom comparator over entries.
 	 * @param actual
 	 * @param expected
-	 */
+	 *
 	protected <K,V> void assertEqualAsSets(Map<K,V> actual, Map<K,V> expected, Comparator<Map.Entry<K, V>> comp) {
 		assertEqualAsSets(actual.entrySet(), expected.entrySet(), comp);
 	}
@@ -225,7 +200,7 @@ abstract public class CoreBaseTest {
 	 * Generic Exception Interceptor
 	 *
 	 * @param <E>
-	 */
+	 *
 	protected static abstract class ExceptionInterceptor<E> {
 
 		abstract public void toRun();
@@ -237,7 +212,7 @@ abstract public class CoreBaseTest {
 		/**
 		 * Call this if you want to analyse both thrown and unthrown cases.
 		 * @return
-		 */
+		 *
 		final protected E run() throws Exception {
 			E result = null;
 			try {
@@ -256,7 +231,7 @@ abstract public class CoreBaseTest {
 		
 		/**
 		 * Call this if you want assertion always thrown.
-		 */
+		 *
 		final public void assertThrown() throws Exception {
 			assertTrue("Assertion of type [" + getExceptionClass().getName() + "] was not thrown when expected", run() != null);
 		}
@@ -266,7 +241,7 @@ abstract public class CoreBaseTest {
 	/**
 	 * Concrete exception intercepter for VariantRuntimeException
 	 *
-	 */
+	 *
 	protected static abstract class VariantRuntimeExceptionInterceptor 
 		extends ExceptionInterceptor<VariantRuntimeException> {
 		
@@ -277,7 +252,7 @@ abstract public class CoreBaseTest {
 		
 		/**
 		 * Call this if you want assertion always thrown.
-		 */
+		 *
 		final public void assertThrown(MessageTemplate template, Object...args) throws Exception {
 			VariantRuntimeException result = super.run();
 			assertNotNull("Expected exception not thrown", result);
@@ -289,7 +264,7 @@ abstract public class CoreBaseTest {
 	/**
 	 * Concrete exception intercepter for VariantInternalException
 	 *
-	 */
+	 *
 	protected static abstract class VariantInternalExceptionInterceptor 
 		extends ExceptionInterceptor<VariantInternalException> {
 		
@@ -300,7 +275,7 @@ abstract public class CoreBaseTest {
 		
 		/**
 		 * Call this if you want assertion always thrown.
-		 */
+		 *
 		final public void assertThrown(String format, Object...args) throws Exception {
 			VariantInternalException result = super.run();
 			assertNotNull("Expected exception not thrown", result);
@@ -311,7 +286,7 @@ abstract public class CoreBaseTest {
 	/**
 	 * Concrete exception intercepter for IllegalArgumentException
 	 *
-	 */
+	 *
 	protected static abstract class IllegalArgumentExceptionInterceptor 
 		extends ExceptionInterceptor<IllegalArgumentException> {
 		
@@ -320,4 +295,5 @@ abstract public class CoreBaseTest {
 			return IllegalArgumentException.class;
 		}		
 	}
+*/
 }

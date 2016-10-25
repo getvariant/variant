@@ -89,21 +89,6 @@
 			<version>4.12</version>
 		</dependency>
 	
-      <!-- Postgres 9.1 JDBC driver -->
-       <dependency>
-         <groupId>postgresql</groupId>
-         <artifactId>postgresql</artifactId>
-         <version>9.1-901-1.jdbc4</version>
-         <scope>test</scope>
-      </dependency>
-
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.191</version>
-         <scope>test</scope>
-		</dependency>
-
 		<!-- Hazelcast distributed cache 		
         <dependency>
             <groupId>com.hazelcast</groupId>
@@ -118,13 +103,13 @@
         </dependency>
       -->
       
-		<!-- Annovention annotation discovery lib -->
+		<!-- Annovention annotation discovery lib 
 		<dependency>
 			<groupId>tv.cntt</groupId>
 			<artifactId>annovention</artifactId>
 			<version>1.7</version>
 		</dependency>
-	
+	   -->
 	</dependencies>
 	
     <build>

@@ -1,7 +1,6 @@
 package com.variant.server.session;
 
 import java.util.concurrent.ConcurrentHashMap
-import com.variant.core.impl.CoreSessionImpl
 import com.variant.core.impl.VariantCore
 import com.variant.server.boot.Bootstrap
 import javax.inject.Inject
@@ -11,7 +10,9 @@ import java.util.Set
 import java.util.Map
 import com.variant.core.VariantProperties
 import play.api.Configuration
-import com.variant.core.VariantCoreSession
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.variant.core.exception.VariantRuntimeException
+import com.variant.core.exception.VariantInternalException
 
 /**
  * Sessions are stored serialized as unparsed JSON strings and only deserialized when are needed
@@ -23,7 +24,7 @@ import com.variant.core.VariantCoreSession
 trait SessionStore {
 	def put(sid: String, json: String) : SessionStoreEntry
 	def asString(sid: String) : Option[String]
-	def asSession(sid: String) : Option[VariantCoreSession]
+	def asSession(sid: String) : Option[ServerSession]
 	//def getAll() : Set[Map.Entry[String, SessionStoreEntry]]
 }
 
@@ -37,7 +38,7 @@ class SessionStoreImpl @Inject() (boot: Bootstrap) extends SessionStore {
 
    /**
 	 */
-	override def put(sid: String, json: String) = cacheMap.put(sid, new SessionStoreEntry(boot.core(), json))
+	override def put(sid: String, json: String) = cacheMap.put(sid, new SessionStoreEntry(json, boot))
 	
 	/**
 	 */
@@ -52,6 +53,9 @@ class SessionStoreImpl @Inject() (boot: Bootstrap) extends SessionStore {
 	    )
 	}
 
+	/**
+	 * 
+	 */
    override def asSession(sid: String) = {		
 		val result = cacheMap.get(sid);
 		Option(
@@ -68,9 +72,9 @@ class SessionStoreImpl @Inject() (boot: Bootstrap) extends SessionStore {
 /**
  * @author Igor
  */
-class SessionStoreEntry (val core: VariantCore, val json: String) {
+class SessionStoreEntry (val json: String, boot: Bootstrap) {
 
-   private var session:CoreSessionImpl = null;
+   private var session: ServerSession = null;
 	var lastAccessTimestamp = System.currentTimeMillis();
 		
 	/**
@@ -79,7 +83,7 @@ class SessionStoreEntry (val core: VariantCore, val json: String) {
 	 */
 	def asSession = {
 		if (session == null && json != null) {
-			session = CoreSessionImpl.fromJson(core, json);
+			session = new ServerSession(json, boot);
 		}
 		session;
 	}

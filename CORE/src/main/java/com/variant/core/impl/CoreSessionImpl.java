@@ -20,9 +20,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.event.VariantEvent;
-import com.variant.core.event.impl.EventWriter;
-import com.variant.core.event.impl.PersistableEventImpl;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.exception.VariantExpectedRuntimeException;
 import com.variant.core.exception.VariantInternalException;
@@ -45,7 +42,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	///
 	private static final long serialVersionUID = 1L;
 
-	private String id;
+	private SessionId sid;
 	private long timestamp = System.currentTimeMillis();
 	private CoreStateRequestImpl currentRequest = null;
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
@@ -60,10 +57,10 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * 
+	 * New session
 	 * @param id
 	 */
-	public CoreSessionImpl(String id, VariantCore core) {
+	public CoreSessionImpl(SessionId id, VariantCore core) {
 		
 		this.core = core;
 
@@ -74,15 +71,47 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		// No schema ID on server yet. 
 		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER) 
 			this.schemaId = core.getSchema().getId();
-		this.id = id;
-		
+		this.sid = id;
 	}
+	
+	/**
+	 * Deserialized session from raw JSON.
+	 * @param json
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public CoreSessionImpl (String json, VariantCore core) {
+		this(SessionId.NULL, core);
+		try {
+			ObjectMapper mapper = new ObjectMapper();		
+			Map<String,?> mappedJson = mapper.readValue(json, Map.class);
+			fromJson(mappedJson);
+		}
+		catch (VariantRuntimeException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new VariantInternalException("Unable to deserialzie session: [" + json + "]", e);
+		}
+
+	}
+
+	/**
+	 * Deserialized session from mapped JSON.
+	 * @param json
+	 * @return
+	 */
+	public CoreSessionImpl (Map<String,?> mappedJson, VariantCore core) {
+		this(SessionId.NULL, core);
+		fromJson(mappedJson);
+	}
+
 	/**
 	 * 
 	 */
 	@Override
 	public String getId() {
-		return id;
+		return sid.id;
 	}
 
 	/**
@@ -116,14 +145,6 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	@Override
 	public Collection<Test> getDisqualifiedTests() {
 		return CollectionUtils.unmodifiableCollection(disqualTests);
-	}
-
-	@Override
-	public void triggerEvent(VariantEvent event) {
-
-		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
-		EventWriter ew = ((VariantCore) core).getEventWriter();
-		ew.write(new PersistableEventImpl(event, this));
 	}
 
 	/**
@@ -274,7 +295,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 			StringWriter result = new StringWriter(2048);
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 			jsonGen.writeStartObject();
-			jsonGen.writeStringField(FIELD_NAME_ID, id);
+			jsonGen.writeStringField(FIELD_NAME_ID, sid.id);
 			jsonGen.writeNumberField(FIELD_NAME_TIMESTAMP, timestamp);
 			jsonGen.writeStringField(FIELD_NAME_SCHEMA_ID, schemaId);
 			
@@ -325,28 +346,6 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 			throw new VariantInternalException("Unable to serialize session", e);
 		}
 	}
-
-	/**
-	 * Deserialize from JSON
-	 * @param json
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static CoreSessionImpl fromJson(VariantCore core, String rawJson) {
-		
-		try {
-			ObjectMapper mapper = new ObjectMapper();		
-			Map<String,?> fields = mapper.readValue(rawJson, Map.class);
-			return fromJson(core, fields);
-		}
-		catch (VariantRuntimeException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			throw new VariantInternalException("Unable to deserialzie session: [" + rawJson + "]", e);
-		}
-
-	}
 	
 	/**
 	 * Deserialize from parsed JSON
@@ -354,14 +353,15 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static CoreSessionImpl fromJson(VariantCore core, Map<String,?> parsedJson) {
+	private void fromJson(Map<String,?> parsedJson) {
 		
 		Object idObj = parsedJson.get(FIELD_NAME_ID);
 		if (idObj == null) 
 			throw new VariantInternalException("No id");
 		if (!(idObj instanceof String)) 
 			throw new VariantInternalException("id not string");
-
+		sid = new SessionId((String)idObj);
+		
 		Object schidObj = parsedJson.get(FIELD_NAME_SCHEMA_ID);
 		if (schidObj == null ) 
 			throw new VariantInternalException("No schema id");
@@ -372,22 +372,20 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER && !core.getSchema().getId().equals(schidObj)) {
 			throw new VariantSchemaModifiedException(core.getSchema().getId(), (String)schidObj);
 		}
-					
-		CoreSessionImpl result = new CoreSessionImpl((String)idObj, core);
-				
+									
 		Object tsObj = parsedJson.get(FIELD_NAME_TIMESTAMP);
 		if (tsObj == null) 
 			throw new VariantInternalException("No timestamp");
 		if (!(tsObj instanceof Number)) 
 			throw new VariantInternalException("Timestamp is not number");
 
-		result.timestamp = ((Number)tsObj).longValue();
+		timestamp = ((Number)tsObj).longValue();
 		
 		Object currentRequestObj = parsedJson.get(FIELD_NAME_CURRENT_REQUEST);
 		if (currentRequestObj != null) {
 			if (!(currentRequestObj instanceof Map<?,?>)) 
 			throw new VariantInternalException("currentRequest not map");
-			result.currentRequest = CoreStateRequestImpl.fromJson(core, result, (Map<String,?>)currentRequestObj);
+			currentRequest = CoreStateRequestImpl.fromJson(core, this, (Map<String,?>)currentRequestObj);
 		}
 		
 		SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
@@ -408,7 +406,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 				throw new VariantInternalException("Unable to deserialzie session: bad stabil spec", e);
 			}
 		}
-		result.setTargetingStabile(targetingStabile);
+		setTargetingStabile(targetingStabile);
 
 		// If server, don't deserialize traversed tests and states because we don't have the schema.
 		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER) {
@@ -428,7 +426,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 				catch (Exception e) {
 					throw new VariantInternalException("Unable to deserialzie session: bad states spec", e);
 				}
-				result.traversedStates = statesMap;
+				traversedStates = statesMap;
 			}
 		
 			Object testsObj = parsedJson.get(FIELD_NAME_TRAVERSED_TESTS);
@@ -443,7 +441,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 				catch (Exception e) {
 					throw new VariantInternalException("Unable to deserialzie session: bad tests spec", e);
 				}
-				result.traversedTests = tests;
+				traversedTests = tests;
 			}
 			
 			testsObj = parsedJson.get(FIELD_NAME_DISQUAL_TESTS);
@@ -461,18 +459,16 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 				catch (Exception e) {
 					throw new VariantInternalException("Unable to deserialzie session: bad disqual tests spec", e);
 				}
-				result.disqualTests = tests;
+				disqualTests = tests;
 			}
-		}
-		
-		return result;
+		}		
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		try {
 			CoreSessionImpl other = (CoreSessionImpl) o;
-			return id.equals(other.id);
+			return sid.equals(other.sid);
 		}
 		catch(ClassCastException e) {
 			return false;
@@ -481,7 +477,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 
 	@Override
 	public int hashCode() {
-		return id.hashCode();
+		return sid.hashCode();
 	}
 	
 }

@@ -1,4 +1,4 @@
-package com.variant.core.event;
+package com.variant.server.event;
 
 import java.util.Collection;
 

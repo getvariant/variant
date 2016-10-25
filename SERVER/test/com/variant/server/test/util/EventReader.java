@@ -1,4 +1,4 @@
-package com.variant.core.test.jdbc;
+package com.variant.server.test.util;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -12,12 +12,12 @@ import java.util.Map;
 
 import org.apache.commons.collections4.Predicate;
 
-import com.variant.core.impl.VariantCore;
-import com.variant.core.jdbc.JdbcAdapter;
 import com.variant.core.jdbc.JdbcService;
+import com.variant.server.jdbc.JdbcAdapter;
+
 
 /**
- * Read events from a JDBC event flusher.
+ * Read events written by a JDBC event flusher.
  * Tests only
  * 
  * @author Igor
@@ -31,8 +31,8 @@ public class EventReader {
 	 * 
 	 * @param variant
 	 */
-	public EventReader(VariantCore variant) {
-		jdbcService = new JdbcService(variant);
+	public EventReader(JdbcService jdbcService) {
+		this.jdbcService = jdbcService;
 	}
 	
 	/**
@@ -151,3 +151,4 @@ public class EventReader {
 		return readEvents(noFilter);
 	}
 }
+

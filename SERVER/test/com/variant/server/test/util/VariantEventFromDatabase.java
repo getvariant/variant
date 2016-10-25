@@ -1,4 +1,4 @@
-package com.variant.core.test.jdbc;
+package com.variant.server.test.util;
 
 import java.util.Collection;
 import java.util.Date;

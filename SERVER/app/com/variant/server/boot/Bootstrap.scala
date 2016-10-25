@@ -1,14 +1,20 @@
 package com.variant.server.boot
 
 import java.time.Clock
-import javax.inject._
-import play.api.inject.ApplicationLifecycle
+
 import scala.concurrent.Future
+
+import org.apache.commons.lang3.time.DurationFormatUtils
+
+import com.variant.core.impl.VariantComptime
+import com.variant.core.impl.VariantCore
+import com.variant.server.event.EventWriter
+
+import javax.inject.Inject
+import javax.inject.Singleton
 import play.api.Configuration
 import play.api.Logger
-import com.variant.core.impl.VariantCore
-import com.variant.core.impl.VariantComptime
-import org.apache.commons.lang3.time.DurationFormatUtils
+import play.api.inject.ApplicationLifecycle
 
 /**
  * Need a trait to make DI to work.
@@ -16,6 +22,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils
 trait Bootstrap {
    def core(): VariantCore
    def config(): Configuration
+   val eventWriter: EventWriter
 }
 
 /**
@@ -31,15 +38,20 @@ class BootstrapImpl @Inject() (
    private val logger = Logger(this.getClass)
    private val start = clock.instant
    private val now = System.currentTimeMillis;
-   private lazy val variantCore = {
+   private val variantConfig = new VariantConfig(configuration)
+   
+   private lazy val coreImpl = {
       val core = new VariantCore();
 		core.getComptime().registerComponent(VariantComptime.Component.SERVER, "0.6.3")
 		core
 	}
+
+   override val eventWriter = new EventWriter(coreImpl, variantConfig)
    
-   override def core() = variantCore
+   override def core() = coreImpl
    override def config() = configuration
-      
+//   override val eventWriter() = eventWriterImpl
+   
    /**
     *  Boot code goes here.
     */

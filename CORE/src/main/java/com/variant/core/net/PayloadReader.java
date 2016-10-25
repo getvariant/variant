@@ -39,7 +39,7 @@ abstract public class PayloadReader<T> extends Payload {
 		}
 	}
 
-	protected abstract T deserealizeBody(VariantCore core, Map<String,?> jsonParseTree);
+	protected abstract T deserealizeBody(VariantCore core, Map<String,?> mappedJson);
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //

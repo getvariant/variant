@@ -13,12 +13,12 @@ import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestTargetingHook;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.ParserResponse;
-import com.variant.core.test.CoreBaseTest.VariantRuntimeExceptionInterceptor;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 import com.variant.core.xdm.impl.MessageTemplate;
+import com.variant.server.test.util.CoreBaseTest.VariantRuntimeExceptionInterceptor;
 
 /**
  * Test mixed instrumentation, i.e. when an experience is not defined

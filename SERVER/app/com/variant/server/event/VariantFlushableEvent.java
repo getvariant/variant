@@ -1,9 +1,10 @@
-package com.variant.core.event;
+package com.variant.server.event;
 
 import java.util.Collection;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.event.VariantEvent;
 import com.variant.core.xdm.Test.Experience;
 
 /**

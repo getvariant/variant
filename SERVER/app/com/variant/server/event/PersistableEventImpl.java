@@ -1,4 +1,4 @@
-package com.variant.core.event.impl;
+package com.variant.server.event;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -8,7 +8,6 @@ import java.util.Map;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.event.VariantFlushableEvent;
 import com.variant.core.xdm.Test.Experience;
 
 /**

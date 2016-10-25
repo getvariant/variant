@@ -85,6 +85,9 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		
 		coreStateRequest.commit();
 		
+		// Trigger state visited event
+		session.triggerEvent(event);
+
 		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 		session.getTargetingTracker().save(userData);
 		session.getSessionIdTracker().save(userData);

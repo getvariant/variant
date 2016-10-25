@@ -21,13 +21,13 @@ import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.jdbc.JdbcService;
 import com.variant.core.schema.ParserResponse;
-import com.variant.core.test.jdbc.EventExperienceFromDatabase;
 import com.variant.core.test.jdbc.EventReader;
-import com.variant.core.test.jdbc.VariantEventFromDatabase;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
+import com.variant.server.jdbc.JdbcService;
+import com.variant.server.test.util.EventExperienceFromDatabase;
+import com.variant.server.test.util.VariantEventFromDatabase;
 
 public class EventWriterTest extends BaseTestCore {
 		

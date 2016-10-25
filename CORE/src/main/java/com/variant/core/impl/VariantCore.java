@@ -3,7 +3,6 @@ package com.variant.core.impl;
 import static com.variant.core.xdm.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
 import static com.variant.core.xdm.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
 import static com.variant.core.xdm.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
-import static com.variant.core.xdm.impl.MessageTemplate.BOOT_EVENT_FLUSHER_NO_INTERFACE;
 import static com.variant.core.xdm.impl.MessageTemplate.INTERNAL;
 
 import java.io.IOException;
@@ -15,10 +14,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.event.EventFlusher;
-import com.variant.core.event.impl.EventWriter;
 import com.variant.core.event.impl.util.VariantIoUtils;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeException;
@@ -27,8 +23,8 @@ import com.variant.core.hook.HookListener;
 import com.variant.core.hook.UserHook;
 import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.ParserMessage.Severity;
+import com.variant.core.schema.ParserResponse;
 import com.variant.core.session.SessionService;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.Test;
@@ -48,7 +44,6 @@ public class VariantCore implements Serializable {
 	private static final Logger LOG = LoggerFactory.getLogger(VariantCore.class);
 	
 	private Schema schema = null;
-	private EventWriter eventWriter = null;
 	private UserHooker hooker = new UserHooker();
 	private CorePropertiesImpl properties;
 	private VariantRuntime runtime;
@@ -128,33 +123,6 @@ public class VariantCore implements Serializable {
 		// Init comptime service. 
 		//
 		comptime = new VariantComptime();
-
-		//
-		// Instantiate event flusher.
-		//
-		String eventFlusherClassName = properties.get(VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_NAME, String.class);
-		
-		EventFlusher eventFlusher = null;
-		try {
-			Object eventFlusherObject = Class.forName(eventFlusherClassName).newInstance();
-			if (eventFlusherObject instanceof EventFlusher) {
-				eventFlusher = (EventFlusher) eventFlusherObject;
-				eventFlusher.init(new VariantCoreInitParamsImpl(this, VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT));
-			}
-			else {
-				throw new VariantRuntimeUserErrorException (BOOT_EVENT_FLUSHER_NO_INTERFACE, eventFlusherClassName, EventFlusher.class.getName());
-			}
-		}
-		catch (VariantRuntimeException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			throw new VariantInternalException(
-					"Unable to instantiate event flusher class [" + eventFlusherClassName +"]", e);
-		}
-				
-		// Instantiate event writer.
-		eventWriter = new EventWriter(eventFlusher, properties);
 				
 		// Instantiate runtime.
 		runtime = new VariantRuntime(this);
@@ -397,14 +365,6 @@ public class VariantCore implements Serializable {
 		
 		return response;
 	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public EventWriter getEventWriter() {
-		return eventWriter;
-	}
 	
 	/**
 	 * 
@@ -414,14 +374,6 @@ public class VariantCore implements Serializable {
 		return hooker;
 	}
 	
-	/**
-	 * Shutdown event writer when garbage collected
-	 * to prevent async thread leak.
-	 */
-	@Override
-	public void finalize() {
-		eventWriter.shutdown();
-	}
 	
 	/**
 	 * 

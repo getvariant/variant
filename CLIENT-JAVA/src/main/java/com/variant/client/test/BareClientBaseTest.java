@@ -8,9 +8,9 @@ import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.test.CoreBaseTest;
 import com.variant.core.util.inject.Injector;
 import com.variant.core.xdm.Schema;
+import com.variant.server.test.util.CoreBaseTest;
 
 /**
  * Base class for all Core JUnit tests.

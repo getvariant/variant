@@ -1,4 +1,4 @@
-package com.variant.core.event;
+package com.variant.server.event;
 
 import static com.variant.core.xdm.impl.MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET;
 

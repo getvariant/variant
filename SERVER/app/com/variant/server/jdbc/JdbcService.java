@@ -1,4 +1,4 @@
-package com.variant.core.jdbc;
+package com.variant.server.jdbc;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.impl.VariantCore;
+import com.variant.server.event.EventWriter;
 
 
 public class JdbcService {
@@ -60,15 +61,7 @@ public class JdbcService {
 
 		return result;
 	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	private EventFlusherJdbc getEventFlusher() {
-		return (EventFlusherJdbc) coreApi.getEventWriter().getEventFlusher();		
-	}
-	
+		
 	/**
 	 * Exception parser.
 	 * @param e
@@ -101,7 +94,7 @@ public class JdbcService {
 
 	}
 
-	private VariantCore coreApi = null;
+	private EventWriter eventWriter;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -117,9 +110,9 @@ public class JdbcService {
 		H2
 	}
 
-	public JdbcService(VariantCore coreApi) {
-		if (coreApi == null) throw new IllegalArgumentException("Core API cannot be null");
-		this.coreApi = coreApi;
+	public JdbcService(EventWriter eventWriter) {
+		if (eventWriter == null) throw new IllegalArgumentException("EventWriter cannot be null");
+		this.eventWriter = eventWriter;
 	}
 
 	/**
@@ -128,24 +121,20 @@ public class JdbcService {
 	 */
 	public Vendor getVendor() {
 		// Figure out the JDBC vendor, if we can.
-		if (getEventFlusher() instanceof com.variant.core.event.EventFlusherPostgres) {
+		if (eventWriter.flusher() instanceof com.variant.server.event.EventFlusherPostgres) {
 			return Vendor.POSTGRES;
 		}
-		else if (getEventFlusher() instanceof com.variant.core.event.EventFlusherH2) {
+		else if (eventWriter.flusher() instanceof com.variant.server.event.EventFlusherH2) {
 			return Vendor.H2;
 		}
 		else return null;
 	}
 	
 	/**
-	 * This is how we get to the underlying jdbc connection via the EvetWriter facade.
-	 * 
-	 * @return
-	 * @throws ClassNotFoundException
-	 * @throws SQLException
+	 * Obtain the underlying JDBC connection via EventWriter.
 	 */
 	public Connection getConnection() throws Exception {
-		return getEventFlusher().getJdbcConnection();
+		return ((EventFlusherJdbc)eventWriter.flusher()).getJdbcConnection();
 	}
 		
 	/**
@@ -202,10 +191,8 @@ public class JdbcService {
 	 * @throws Exception
 	 */
 	public void recreateSchema() throws Exception {
-		
 		dropSchema();
 		createSchema();
-		
 	}
 
 	/**
@@ -219,4 +206,5 @@ public class JdbcService {
 		if (value == null) statement.setNull(index, Types.INTEGER);
 		else statement.setInt(index, value);
 	}
+
 }

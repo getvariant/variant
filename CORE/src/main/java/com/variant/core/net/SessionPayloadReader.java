@@ -21,8 +21,8 @@ public class SessionPayloadReader extends PayloadReader<VariantCoreSession> {
 	 * Deserealizer.
 	 */
 	@Override
-	protected VariantCoreSession deserealizeBody(VariantCore core, Map<String, ?> jsonParseTree) {
-		return CoreSessionImpl.fromJson(core, jsonParseTree);
+	protected VariantCoreSession deserealizeBody(VariantCore core, Map<String, ?> mappedJson) {
+		return new CoreSessionImpl(mappedJson, core);
 	}
 
 }

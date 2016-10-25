@@ -116,7 +116,7 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 				event.getParameterMap().put(e.getKey(), e.getValue());				
 			}
 			// Trigger state visited event
-			session.triggerEvent(event);
+			// session.triggerEvent(event); -- on the client and server now.
 			event = null;
 		}
 		

@@ -4,6 +4,7 @@ import org.junit.Before;
 
 import com.variant.core.impl.VariantCore;
 import com.variant.core.util.inject.Injector;
+import com.variant.server.test.util.CoreBaseTest;
 
 /**
  * Base class for all Core JUnit tests.
