@@ -18,7 +18,7 @@ object ServerSession {
    }
 }
 */
-class ServerSession (rawJson: String, boot: Bootstrap) extends CoreSessionImpl(rawJson, boot.core()) {
+class ServerSession (rawJson: String, boot: Bootstrap) extends CoreSessionImpl(rawJson, boot.core) {
   
    /**
     */

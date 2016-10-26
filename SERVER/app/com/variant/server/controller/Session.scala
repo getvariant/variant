@@ -29,6 +29,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
      http://localhost:9000/variant/session/SID 
     */
    def put(id: String) = Action { req =>
+
       // To be a text, Content-Type header has to be text and supply a charset.
       req.body.asText match {
          case Some(body) => {

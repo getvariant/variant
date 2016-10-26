@@ -12,6 +12,16 @@ trait VariantConfigKey {
 object VariantConfigKey {
 
    // Actual Keys
+   lazy val SessionTimeoutSecs = new VariantConfigKey {
+      val name = "variant.session.timeout.secs"
+      val default = 900
+   }
+
+   lazy val SessionStoreVacuumIntervalSecs = new VariantConfigKey {
+      val name = "variant.session.store.vacuum.interval.secs"
+      val default = 10
+   }
+
    lazy val EventFlusherClassName = new VariantConfigKey {
       val name = "variant.event.flusher.class.name"
       val default = classOf[EventFlusherAppLogger].getName

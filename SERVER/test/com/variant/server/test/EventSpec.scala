@@ -125,7 +125,8 @@ class EventSpec extends VariantSpec {
          val ssnResp = route(app, FakeRequest(PUT, context + "/session/" + sid).withTextBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
-//         store.asSession(sid).get
+         val ssn = store.asSession(sid)
+         println("**** " + ssn.get.getStateRequest)
          // POST event
          val eventBody = EventSpec.body.expand("sid" -> sid)
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get

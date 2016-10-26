@@ -7,6 +7,7 @@ import com.variant.server.boot.Bootstrap
 import com.variant.server.boot.BootstrapImpl
 import com.variant.server.session.SessionStore
 import com.variant.server.session.SessionStoreImpl
+import play.api.routing.Router
 
 /**
  * This class is a Guice module that tells Guice how to bind several
@@ -20,16 +21,16 @@ import com.variant.server.session.SessionStoreImpl
  */
 class Module (environment: Environment, config: Configuration) extends AbstractModule {
 
-  override def configure() = {
+   override def configure() = {
 
-    // Use the system clock as the default implementation of Clock
-    bind(classOf[Clock]).toInstance(Clock.systemDefaultZone)
+      // Use the system clock as the default implementation of Clock
+      bind(classOf[Clock]).toInstance(Clock.systemDefaultZone)
 
-    // Variant server boot and shutdown
-    bind(classOf[Bootstrap]).to(classOf[BootstrapImpl]).asEagerSingleton
+      // Variant server boot and shutdown
+      bind(classOf[Bootstrap]).to(classOf[BootstrapImpl]).asEagerSingleton
 
-    // Session Store
-    bind(classOf[SessionStore]).to(classOf[SessionStoreImpl]).asEagerSingleton
+      // Session Store
+      bind(classOf[SessionStore]).to(classOf[SessionStoreImpl]).asEagerSingleton
 
   }
 

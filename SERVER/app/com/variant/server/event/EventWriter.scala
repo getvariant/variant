@@ -68,11 +68,16 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
 		}
 	}
 
+	logger.debug("Event writer started.");
+
 	/**
 	 * Shutdown this event writer.
 	 * Cannot be used after this.
 	 */
-	def shutdown() {flusherThread.interrupt()}
+	def shutdown() {
+	   flusherThread.interrupt()
+      logger.debug("Event writer shutdown.");
+	}
 	
 	/**
 	 * Write collection of events to the queue.  This method never blocks:
@@ -122,9 +127,7 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
       private val logger = Logger(this.getClass)
    
    	override def run() {
-   
-   		logger.debug("Event writer thread " + Thread.currentThread().getName() + " started.");
-   		
+      		
    		var interruptedExceptionThrown = false;
    		var timeToGo = false;
    		while (!timeToGo) {
@@ -156,9 +159,7 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
    				}
    				timeToGo = true
    			}
-   			logger.debug("Event writer thread " + Thread.currentThread().getName() + " interrupted and exited.");
-   		}
-   		
+   		}   		
    	}		
    	
    	/**

@@ -19,12 +19,12 @@ class VariantSpec extends PlaySpec with OneAppPerSuite {
    implicit override lazy val app: Application = new GuiceApplicationBuilder()
       .configure(
             Map(
-                  "play.http.context" -> "/variant-test",
-                  "variant.session.timeout.secs" -> 1,
-                  "variant.session.store.vacuum.interval.secs" -> 1 ))
+                  "play.http.context" -> "/variant-test"
+                  ,"variant.session.timeout.secs" -> 1
+                  ,"variant.session.store.vacuum.interval.secs" -> 1 
+            ))
        .build()
-   
+
    protected val context = app.configuration.getString("play.http.context").get
    protected val store = app.injector.instanceOf[SessionStore]
-   
 }

@@ -9,16 +9,14 @@ import play.api.test.Helpers._
  * You can mock out a whole application including requests, plugins etc.
  * For more information, consult the wiki.
  */
-class ServerSpec extends VariantSpec {
+class ServerSpec extends PlaySpec with OneAppPerSuite /*VariantSpec*/ {
 
   "Routes" should {
 
     "send 404 on a bad request" in  {
-       val resp = route(app, FakeRequest(GET, "/bad")).get
+       val resp = route(app, FakeRequest(GET, "/session/foo")).get
        status(resp) mustBe NOT_FOUND
        contentAsString(resp) mustBe empty
     }
-
   }
-
 }

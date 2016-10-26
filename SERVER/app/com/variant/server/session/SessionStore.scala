@@ -1,18 +1,16 @@
 package com.variant.server.session;
 
+import java.util.Map
+import java.util.Set
 import java.util.concurrent.ConcurrentHashMap
-import com.variant.core.impl.VariantCore
+
 import com.variant.server.boot.Bootstrap
+import com.variant.server.boot.VariantConfig
+import com.variant.server.boot.VariantConfigKey._
+
 import javax.inject.Inject
 import javax.inject.Singleton
 import play.api.Logger
-import java.util.Set
-import java.util.Map
-import com.variant.core.VariantProperties
-import play.api.Configuration
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.variant.core.exception.VariantRuntimeException
-import com.variant.core.exception.VariantInternalException
 
 /**
  * Sessions are stored serialized as unparsed JSON strings and only deserialized when are needed
@@ -61,6 +59,7 @@ class SessionStoreImpl @Inject() (boot: Bootstrap) extends SessionStore {
 		Option(
 		   if (result != null) {
 		      result.lastAccessTimestamp = System.currentTimeMillis()
+		      println("*** " + sid)
 		      result.asSession
 		   }
 		   else null  
@@ -92,18 +91,18 @@ class SessionStoreEntry (val json: String, boot: Bootstrap) {
 /**
  * Background thread deletes cache entries older than the keep-alive interval.
  */
-class VacuumThread(config: Configuration, storeMap: Map[String, SessionStoreEntry]) extends Thread {
+class VacuumThread(config: VariantConfig, storeMap: Map[String, SessionStoreEntry]) extends Thread {
 
    private val logger = Logger(this.getClass)	
-   private val sessionTimeoutMillis = config.getInt("variant.session.timeout.secs").get * 1000;
-   private val vacuumingFrequencyMillis = config.getInt("variant.session.store.vacuum.interval.secs").get * 1000;
+   private val sessionTimeoutMillis = config.getInt(SessionTimeoutSecs) * 1000L
+   private val vacuumingFrequencyMillis = config.getInt(SessionStoreVacuumIntervalSecs) * 1000L
 	setName("VariantSessionVacuum");
    setDaemon(true);
 
 
 	override def run() {
 
-      logger.info(s"Vacuuming thread $getName started")		
+      logger.info(s"Vacuum thread $getName started")		
 		var interrupted = false
 		
 		while (true) {			
@@ -121,11 +120,11 @@ class VacuumThread(config: Configuration, storeMap: Map[String, SessionStoreEntr
 					}
 				}
 				
-				if (count > 0) logger.debug(s"Vacuumed $count session(s)");
-				else           logger.trace(s"Vacuumed $count session(s)");
+				if (logger.isDebugEnabled && count > 0) logger.debug(s"Vacuumed $count session(s)");
+				if (logger.isTraceEnabled) logger.trace(s"Vacuumed $count session(s)");
 
-				Thread.sleep(vacuumingFrequencyMillis);
-
+				Thread.sleep(vacuumingFrequencyMillis)
+				logger.trace("Vacuum thread woke up after %s millis".format(System.currentTimeMillis() - now))
 			}
 			catch {
 			   case _: InterruptedException => interrupted = true;
@@ -133,7 +132,7 @@ class VacuumThread(config: Configuration, storeMap: Map[String, SessionStoreEntr
 			}
 			
 			if (interrupted || isInterrupted()) {
-				logger.info("Vacuuming thread " + Thread.currentThread().getName() + " interrupted and exited.");
+				logger.info("Vacuum thread " + Thread.currentThread().getName() + " interrupted and exited.");
 				storeMap.clear()
 				return;
 			}
