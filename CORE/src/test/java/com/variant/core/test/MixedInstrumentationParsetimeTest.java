@@ -1,23 +1,22 @@
 package com.variant.core.test;
 
-import static com.variant.core.xdm.impl.MessageTemplate.*;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_COVARIANT_UNDEFINED;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_MISSING;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_PROPER_UNDEFINED;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_PARAMS_NOT_ALLOWED;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_ISDEFINED_NOT_BOOLEAN;
+import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
 
-import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserMessage.Severity;
 import com.variant.core.schema.ParserResponse;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
 import com.variant.core.xdm.impl.ParserMessageImplFacade;
 
 /**

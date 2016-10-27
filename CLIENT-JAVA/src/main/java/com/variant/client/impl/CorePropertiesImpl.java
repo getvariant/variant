@@ -1,4 +1,4 @@
-package com.variant.core.impl;
+package com.variant.client.impl;
 
 import static com.variant.core.xdm.impl.MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON;
 
@@ -15,6 +15,7 @@ import com.variant.core.VariantCorePropertyKeys.Key;
 import com.variant.core.VariantProperties;
 import com.variant.core.event.impl.util.PropertiesChain;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.xdm.impl.MessageTemplate;
 

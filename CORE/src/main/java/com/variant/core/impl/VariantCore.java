@@ -45,7 +45,6 @@ public class VariantCore implements Serializable {
 	
 	private Schema schema = null;
 	private UserHooker hooker = new UserHooker();
-	private CorePropertiesImpl properties;
 	private VariantRuntime runtime;
 	private VariantComptime comptime;
 	private SessionService sessionService;
@@ -59,7 +58,7 @@ public class VariantCore implements Serializable {
 	 * Process command line args.
 	 * 
 	 * @param resourceName
-	 */
+	 *
 	private void setupSystemProperties(String...resourceNames) {
 
 		properties = new CorePropertiesImpl(this);
@@ -164,7 +163,7 @@ public class VariantCore implements Serializable {
 			
 		long now = System.currentTimeMillis();
 		try {
-			setupSystemProperties(resourceNames);
+			//setupSystemProperties(resourceNames);
 			instantiate();
 		}
 		catch (final VariantRuntimeException e) {
@@ -187,11 +186,11 @@ public class VariantCore implements Serializable {
 	 * @return An instance of the {@link CorePropertiesImpl} type.
 	 * 
 	 * @since 0.6
-	 */
+	 * NO MORE PROPERTIES IN CORE.
 	public CorePropertiesImpl getProperties() {
 		return properties;
 	}
-
+    */
 	/**
 	 * <p>Parse and, if no errors, optionally deploy a new experiment schema.
 	 * 

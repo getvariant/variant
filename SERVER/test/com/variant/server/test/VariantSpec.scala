@@ -27,4 +27,22 @@ class VariantSpec extends PlaySpec with OneAppPerSuite {
 
    protected val context = app.configuration.getString("play.http.context").get
    protected val store = app.injector.instanceOf[SessionStore]
+   
+  /**
+	 * Each case runs in its own JVM. Each test runs in its
+	 * own instance of the test case. We want the jdbc schema
+	 * created only once per jvm, but the api be instance scoped.
+	 * 
+	 * @throws Exception
+	 * ON SERVER NOW
+	@Before
+	public void _beforeTest() throws Exception {
+		synchronized (sqlSchemaCreated) { // once per JVM
+			if (!sqlSchemaCreated) {
+				VariantCore core = rebootApi();
+				recreateSchema(core);
+				sqlSchemaCreated = true;
+			}
+		}
+	}
 }

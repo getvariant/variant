@@ -97,7 +97,7 @@ public class CoreSessionTest extends BaseTestCore {
 		assertEquals(0, ssn.getTraversedStates().size());
 		assertEquals(0, ssn.getTraversedTests().size());
 		String json = ((CoreSessionImpl)ssn).toJson();
-		CoreSessionImpl deserializedSsn = CoreSessionImpl.fromJson(core, json);
+		CoreSessionImpl deserializedSsn = new CoreSessionImpl(json, core);
 		assertEquals("key", deserializedSsn.getId());
 		assertNull(deserializedSsn.getStateRequest());
 		assertEquals(0, deserializedSsn.getTraversedStates().size());
@@ -116,7 +116,7 @@ public class CoreSessionTest extends BaseTestCore {
 		assertNull(ssn.getStateRequest());
 		assertNull(ssn3.getStateRequest());
 		json = ((CoreSessionImpl)ssn3).toJson();
-		deserializedSsn = CoreSessionImpl.fromJson(core, json);
+		deserializedSsn = new CoreSessionImpl(json, core);
 		assertEquals("another-key", deserializedSsn.getId());
 		assertNull(deserializedSsn.getStateRequest());
 		assertEquals(0, deserializedSsn.getTraversedStates().size());
@@ -139,7 +139,7 @@ public class CoreSessionTest extends BaseTestCore {
 		assertEquals(req1, ssn.getStateRequest());
 		assertNotNull(req1.getStateVisitedEvent());
 		String json = ((CoreSessionImpl)ssn).toJson();
-		CoreSessionImpl deserializedSsn = CoreSessionImpl.fromJson(core, json);
+		CoreSessionImpl deserializedSsn = new CoreSessionImpl(json, core);
 		assertEquals("foo", deserializedSsn.getId());
 		VariantCoreStateRequest deserializedReq = deserializedSsn.getStateRequest();
 		assertEquals(deserializedReq.getSession(), deserializedSsn);
@@ -159,7 +159,7 @@ public class CoreSessionTest extends BaseTestCore {
 		assertNull(req2.getStateVisitedEvent());
 		assertEquals(req2, ssn.getStateRequest());
 		json = ((CoreSessionImpl)ssn).toJson();
-		deserializedSsn = CoreSessionImpl.fromJson(core, json);
+		deserializedSsn = new CoreSessionImpl(json, core);
 		assertEquals("foo", deserializedSsn.getId());
 		deserializedReq = deserializedSsn.getStateRequest();
 		assertEquals(deserializedReq.getSession(), deserializedSsn);
@@ -185,15 +185,17 @@ public class CoreSessionTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		
 		Schema schema1 = core.getSchema();
-		VariantCoreSession ssn1 = core.getSession("foo2", true).getBody();
+		final VariantCoreSession ssn = core.getSession("foo2", true).getBody();
 		State state1 = schema1.getState("state1");
-		final VariantCoreStateRequest req = ssn1.targetForState(state1);
+		final VariantCoreStateRequest req = ssn.targetForState(state1);
 		req.commit();  // Saves the session.
 
-		Thread.sleep(10);
+		Thread.sleep(5);
 		
-		final VariantCoreSession ssn2 = core.getSession("foo2", true).getBody();
-		assertEquals(ssn1, ssn2);
+		// Core Session store does not guarantee idempotency any more.  
+		// Only client side session wrappter is idempotent.
+		//final VariantCoreSession ssn2 = core.getSession("foo2", true).getBody();
+		//assertEquals("getSession() is not idempotent", ssn1, ssn2);
 	    
 	    // new schema.
 		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
@@ -220,7 +222,7 @@ public class CoreSessionTest extends BaseTestCore {
 		// ditto, target a session created by older schema to a state in a newer schema;
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { 
-				ssn2.targetForState(schema2.getState("state1"));
+				ssn.targetForState(schema2.getState("state1"));
 			}
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
 
@@ -242,12 +244,12 @@ public class CoreSessionTest extends BaseTestCore {
 		Schema schema3 = core.getSchema();
 		assertNotEquals(schema2.getId(), schema3.getId());
 		
-		VariantCoreSession ssn3 = core.getSession("foo2", true).getBody(); // should be a new session because api's changed
-		assertEquals("foo2", ssn3.getId());
-		assertNull(ssn3.getStateRequest());
-		assertEquals(0,ssn3.getTraversedStates().size());
-		assertEquals(0, ssn3.getTraversedTests().size());
-	    assertTrue(ssn2.creationTimestamp() < ssn3.creationTimestamp());
+		VariantCoreSession ssn2 = core.getSession("foo2", true).getBody(); // should be a new session because api's changed
+		assertEquals("foo2", ssn2.getId());
+		assertNull(ssn2.getStateRequest());
+		assertEquals(0,ssn2.getTraversedStates().size());
+		assertEquals(0, ssn2.getTraversedTests().size());
+	    assertTrue(ssn.creationTimestamp() < ssn2.creationTimestamp());
 		
 	}
 

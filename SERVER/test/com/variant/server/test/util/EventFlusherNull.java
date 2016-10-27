@@ -1,4 +1,4 @@
-package com.variant.core.event;
+package com.variant.server.test.util;
 
 import java.util.Collection;
 
@@ -13,10 +13,10 @@ import com.variant.server.event.VariantFlushableEvent;
  * Null implementation: all events are discarded.  Useful for testing.
  * 
  * 
- * @author Igor Urisman
+ * @author Igor
  *
  */
-public class EventFlusherNull implements EventFlusher {
+class EventFlusherNull implements EventFlusher {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(EventFlusherNull.class);
 	
@@ -27,6 +27,5 @@ public class EventFlusherNull implements EventFlusher {
 	public void flush(Collection<VariantFlushableEvent> events) throws Exception {
 			LOG.debug(String.format("Discarded %s events.", events.size()));
 	}
-
 
 }

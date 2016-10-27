@@ -1,17 +1,14 @@
  package com.variant.core.test;
 
-import org.junit.Before;
-
 import com.variant.core.impl.VariantCore;
 import com.variant.core.util.inject.Injector;
-import com.variant.server.test.util.CoreBaseTest;
 
 /**
  * Base class for all Core JUnit tests.
  */
-public class BaseTestCore extends CoreBaseTest {
+public class BaseTestCore extends VariantBaseTest {
 		
-	private static Boolean sqlSchemaCreated = false;
+	//private static Boolean sqlSchemaCreated = false;
 		
 	// Default, but can be overridden by subclass, if needed.
 	protected static String injectorConfigAsResourceName = "/com/variant/core/conf/injector-session-store-local.json";
@@ -22,7 +19,7 @@ public class BaseTestCore extends CoreBaseTest {
 	 * created only once per jvm, but the api be instance scoped.
 	 * 
 	 * @throws Exception
-	 */
+	 * ON SERVER NOW
 	@Before
 	public void _beforeTest() throws Exception {
 		synchronized (sqlSchemaCreated) { // once per JVM
@@ -33,7 +30,7 @@ public class BaseTestCore extends CoreBaseTest {
 			}
 		}
 	}
-	
+*/	
 	/**
 	 * 
 	 */

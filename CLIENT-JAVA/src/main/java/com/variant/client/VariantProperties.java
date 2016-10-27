@@ -1,4 +1,4 @@
-package com.variant.core;
+package com.variant.client;
 /*  MOVED TO CLIENT
 import com.variant.core.VariantCorePropertyKeys.Key;
 import com.variant.core.impl.VariantCoreInitParamsImpl;
@@ -13,7 +13,7 @@ import com.variant.core.impl.VariantCoreInitParamsImpl;
  * @author Igor Urisman
  * @since 0.6
  * @see VariantCorePropertyKeys
- *
+ */
 public interface VariantProperties {
 	
 	/**
@@ -30,7 +30,7 @@ public interface VariantProperties {
 	 *         is returned as provided by {@link Key#defaultValue()}.
 	 *         
 	 * @since 0.6
-	 *
+	 */
 	public <T> T get(Key key, Class<T> clazz);
 
 	/**
@@ -40,7 +40,7 @@ public interface VariantProperties {
 	 * @return Original string value, as provided by either a properties file or the default.
 	 *         
 	 * @since 0.6
-	 *
+	 */
 	public <T> T get(Key key);
 
 	/**
@@ -52,8 +52,7 @@ public interface VariantProperties {
 	 *         is returned as provided by {@link Key#defaultValue()}.
 	 *         
 	 * @since 0.6
-	 *
+	 */
 	public String getSource(Key key);
 
 }
-*/

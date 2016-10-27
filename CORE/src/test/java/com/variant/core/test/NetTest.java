@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.impl.CoreSessionImpl;
+import com.variant.core.impl.SessionId;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.Payload;
 import com.variant.core.net.PayloadWriter;
@@ -30,7 +31,7 @@ public class NetTest extends BaseTestCore {
 
 		final String[] PARAM_VALUES = {"foo", "bar"};
 		final String ssnId = "1234567";
-		PayloadWriter pw = new PayloadWriter(new CoreSessionImpl(ssnId, core).toJson());
+		PayloadWriter pw = new PayloadWriter(new CoreSessionImpl(new SessionId(ssnId), core).toJson());
 		pw.setProperty(Payload.Property.SVR_REL, PARAM_VALUES[0]);
 		pw.setProperty(Payload.Property.SSN_TIMEOUT, PARAM_VALUES[1]);
 		

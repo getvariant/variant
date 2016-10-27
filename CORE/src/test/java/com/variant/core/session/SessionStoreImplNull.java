@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.impl.CoreSessionImpl;
+import com.variant.core.impl.SessionId;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.PayloadWriter;
 import com.variant.core.net.SessionPayloadReader;
@@ -34,7 +35,7 @@ public class SessionStoreImplNull implements SessionStore {
 	@Override
 	public SessionPayloadReader get(String sessionId, boolean create) {
 		
-		String payload = new PayloadWriter(new CoreSessionImpl(sessionId, core).toJson()).getAsJson();
+		String payload = new PayloadWriter(new CoreSessionImpl(new SessionId(sessionId), core).toJson()).getAsJson();
 		return new SessionPayloadReader(core, payload);
 	}
 

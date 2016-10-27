@@ -17,7 +17,7 @@ import com.variant.core.exception.VariantInternalException;
  * @author Igor Urisman
  * @since 0.6
  * @see VariantProperties
- */
+ *  ON THE CLIENT NOW. SERVER HAS DIFFERENT MECHANISM, BASED ON PLAY'S CONFIGURATION
 public interface VariantCorePropertyKeys {
 
 	public final static Key EVENT_FLUSHER_CLASS_NAME = new Key("event.flusher.class.name", "com.variant.core.event.EventFlusherAppLogger");
@@ -30,7 +30,7 @@ public interface VariantCorePropertyKeys {
 	 * <p>Type representing an system property key.
 	 * 
 	 * @since 0.6
-	 */
+	 *
 	public static class Key {
 		
 		private String defaultValue = null;
@@ -41,7 +41,7 @@ public interface VariantCorePropertyKeys {
 		 *  
 		 * @param clazz This or subclass' {@code Class}.
 		 * @return A collection of all keys defined by the passed class and all of its superclasses.
-		 */
+		 *
 		public static Collection<Key> keys(Class<? extends VariantCorePropertyKeys> clazz) {
 			Collection<Key> result = new ArrayList<Key>();
 			for (Field field: VariantReflectUtils.getStaticFields(clazz, Key.class)) {
@@ -60,7 +60,7 @@ public interface VariantCorePropertyKeys {
 		 * @param propName System property name.
 		 * @param defaultValue Property's default value.
     	 * @since 0.6
-		 */
+		 *
 		public Key(String propName, String defaultValue) {
 			this.propName = propName;
 			this.defaultValue = defaultValue;
@@ -70,7 +70,7 @@ public interface VariantCorePropertyKeys {
 		 * Property name.
 		 * @return Property name.
     	 * @since 0.6
-		 */
+		 *
 		public String propertyName() {
 			return propName;
 		}
@@ -79,10 +79,11 @@ public interface VariantCorePropertyKeys {
 		 * Property's default value.
 		 * @return Property's default value.
     	 * @since 0.6
-		 */
+		 *
 		public String defaultValue() {
 			return defaultValue;
 		}
 	}
 
 }
+*/

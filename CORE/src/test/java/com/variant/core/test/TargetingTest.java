@@ -7,15 +7,12 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.event.EventFlusherNull;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestTargetingHook;
-import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.xdm.Schema;
@@ -33,10 +30,7 @@ public class TargetingTest extends BaseTestCore {
 	 * because the test will be generating lots sessions and events.
 	 */
 	static {
-		System.setProperty(
-				CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_NAME.propertyName(), 
-				EventFlusherNull.class.getName());
-		
+		// Do nothing to save sessions to speed things up. We won't need them.
 		injectorConfigAsResourceName = "/com/variant/core/conf/injector-session-store-null.json";
 	}
 

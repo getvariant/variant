@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.variant.core.exception.VariantInternalException;
-import com.variant.core.impl.CorePropertiesImpl;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
@@ -21,7 +20,6 @@ public class TestImpl implements Test {
 	// As defined:
 	private Schema schema;
 	private String name;
-	private CorePropertiesImpl properties;
 	private boolean isOn = true;
 	private List<TestImpl> covariantTests;
 	private List<TestExperienceImpl> experiences;
@@ -35,10 +33,9 @@ public class TestImpl implements Test {
 	 * 
 	 * @param name
 	 */
-	TestImpl(Schema schema, String name, CorePropertiesImpl properties) {
+	TestImpl(Schema schema, String name) {
 		this.schema = schema;
 		this.name = name;
-		this.properties = properties;
 	}
 	
 	/**

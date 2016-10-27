@@ -277,7 +277,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 	private static final String FIELD_NAME_ID = "sid";
 	private static final String FIELD_NAME_TIMESTAMP = "ts";
 	private static final String FIELD_NAME_SCHEMA_ID = "schid";
-	private static final String FIELD_NAME_CURRENT_REQUEST = "req";
+	private static final String FIELD_NAME_CURRENT_REQUEST = "request";
 	private static final String FIELD_NAME_TRAVERSED_STATES = "states";
 	private static final String FIELD_NAME_TRAVERSED_TESTS = "tests";
 	private static final String FIELD_NAME_DISQUAL_TESTS = "dis_tests";

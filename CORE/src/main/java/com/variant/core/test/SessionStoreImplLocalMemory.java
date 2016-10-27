@@ -6,6 +6,7 @@ import java.util.Map;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantException;
 import com.variant.core.impl.CoreSessionImpl;
+import com.variant.core.impl.SessionId;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.Payload;
 import com.variant.core.net.PayloadWriter;
@@ -49,7 +50,7 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	public SessionPayloadReader get(String sessionId, boolean create) {
 		String jsonBody = map.get(sessionId);
 		if (jsonBody == null && create) {
-			jsonBody = new CoreSessionImpl(sessionId, core).toJson();
+			jsonBody = new CoreSessionImpl(new SessionId(sessionId), core).toJson();
 			map.put(sessionId, jsonBody);
 		}  
 		

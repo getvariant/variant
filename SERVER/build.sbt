@@ -26,5 +26,6 @@ libraryDependencies ++= Seq(
 
 // This doesn't work under eclipse => had to switch to building applicaiton programmatically with GuiceApplicationBuilder
 //javaOptions in Test += "-Dconfig.resource=application.test.conf"
+//javaOptions in Test +="-Dlogger.resource=test-logback.xml"
 
 //fork in run := true

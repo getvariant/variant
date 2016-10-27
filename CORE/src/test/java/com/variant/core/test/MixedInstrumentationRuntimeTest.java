@@ -1,6 +1,8 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 import java.util.Random;
@@ -18,7 +20,6 @@ import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 import com.variant.core.xdm.impl.MessageTemplate;
-import com.variant.server.test.util.CoreBaseTest.VariantRuntimeExceptionInterceptor;
 
 /**
  * Test mixed instrumentation, i.e. when an experience is not defined

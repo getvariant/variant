@@ -194,10 +194,11 @@ class SessionSpec extends VariantSpec {
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
-         /*
          store.asString(sid).get mustBe SessionSpec.body.expand("sid" -> sid, "ts" -> ts)
-         
+         println(store.asString(sid).get)
          val session = store.asSession(sid.toString).get
+         println("*"*40)
+     /*    
          //println(session.asInstanceOf[CoreSessionImpl].toJson())
          session.creationTimestamp() mustBe ts
          session.getId mustBe sid

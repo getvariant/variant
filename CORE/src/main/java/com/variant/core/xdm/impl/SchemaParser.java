@@ -160,7 +160,7 @@ public class SchemaParser implements Keywords {
 		else {
 			
 			// Parse all tests
-			TestsParser.parseTests(tests, response, coreApi.getProperties());
+			TestsParser.parseTests(tests, response);
 			
 			// Post user hook listeners.
 			UserHooker hooker = coreApi.getUserHooker();

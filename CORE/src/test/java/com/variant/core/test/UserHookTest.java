@@ -30,7 +30,6 @@ import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 import com.variant.core.xdm.impl.MessageTemplate;
-import com.variant.server.test.util.CoreBaseTest.VariantRuntimeExceptionInterceptor;
 
 /**
  * TODO: Need to also test annotations.
