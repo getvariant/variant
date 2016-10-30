@@ -1,7 +1,8 @@
 package com.variant.server.event;
 
-import static com.variant.core.VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT;
+
 import static com.variant.core.xdm.impl.MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET;
+import static com.variant.server.boot.VariantConfigKey.EventFlusherClassInit;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,7 +13,7 @@ import com.variant.server.jdbc.EventFlusherJdbc;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
 /**
- * <p>An implementation of {@link EventFlusher}, which writes Variant events to an
+ * <p>An implementation of {@link EventFlusher}, which writes Variant events to an 
  * instance of H2 database. Requires database schema, as created by the
  * {@code create-schema.sql} SQL script, included in the distribution. The database
  * server URL and login credentials must be supplied in the
@@ -37,15 +38,15 @@ public class EventFlusherH2 extends EventFlusherJdbc {
 	public void init(VariantCoreInitParams initParams) throws Exception {
 		url = (String) initParams.getOrThrow(
 				"url", 
-				new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", this.getClass().getName(), EVENT_FLUSHER_CLASS_INIT.propertyName()));
+				new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", getClass().getName(), EventFlusherClassInit.name));
 		
 		user = (String) initParams.getOrThrow(
 				"user", 
-				new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", this.getClass().getName(), EVENT_FLUSHER_CLASS_INIT.propertyName()));
+				new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", getClass().getName(), EventFlusherClassInit.name));
 		
 		password = (String) initParams.getOrThrow(
 				"password", 
-				new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", this.getClass().getName(), EVENT_FLUSHER_CLASS_INIT.propertyName()));
+				new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", getClass().getName(), EventFlusherClassInit.name));
 	}
 
 	@Override

@@ -177,10 +177,12 @@ class SessionSpec extends VariantSpec {
       }
 
      "expire existing sessions after timeout" in {
-         app.configuration.getInt("variant.session.timeout.secs").get mustEqual 1
-         app.configuration.getInt("variant.session.store.vacuum.interval.secs").get mustEqual 1
+        val sessionTimeoutSecs = app.configuration.getInt("variant.session.timeout.secs").get
+        val storeVacuumIntervalSecs = app.configuration.getInt("variant.session.store.vacuum.interval.secs").get
+        sessionTimeoutSecs  mustEqual 1
+        storeVacuumIntervalSecs  mustEqual 1
       
-         Thread.sleep(2000);
+         Thread.sleep((sessionTimeoutSecs * 1000 * 2).asInstanceOf[Long]);
       
          ("foo" :: "bar" :: Nil)
             .foreach(sid => status(route(app, FakeRequest(GET, endpoint + "/" + sid)).get) mustBe NOT_FOUND)  
@@ -195,17 +197,13 @@ class SessionSpec extends VariantSpec {
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
          store.asString(sid).get mustBe SessionSpec.body.expand("sid" -> sid, "ts" -> ts)
-         println(store.asString(sid).get)
          val session = store.asSession(sid.toString).get
-         println("*"*40)
-     /*    
-         //println(session.asInstanceOf[CoreSessionImpl].toJson())
          session.creationTimestamp() mustBe ts
          session.getId mustBe sid
       
          Thread.sleep(2000);
          store.asSession(sid) mustBe empty
-         */
+
       }
 
    }

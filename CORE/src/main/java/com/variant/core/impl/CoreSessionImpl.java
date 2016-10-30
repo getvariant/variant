@@ -301,7 +301,7 @@ public class CoreSessionImpl implements VariantCoreSession, Serializable {
 			
 			if (currentRequest != null) {
 				jsonGen.writeFieldName(FIELD_NAME_CURRENT_REQUEST);
-				jsonGen.writeRawValue(currentRequest.toJson());
+				jsonGen.writeRawValue(currentRequest.toJson(core));
 			}
 			
 			if (traversedStates.size() > 0) {

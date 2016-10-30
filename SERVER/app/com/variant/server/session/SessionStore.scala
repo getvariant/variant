@@ -59,13 +59,11 @@ class SessionStoreImpl @Inject() (boot: Bootstrap) extends SessionStore {
 		Option(
 		   if (result != null) {
 		      result.lastAccessTimestamp = System.currentTimeMillis()
-		      println("*** " + sid)
 		      result.asSession
 		   }
 		   else null  
 	    )
 	}
-
 }
 
 /**

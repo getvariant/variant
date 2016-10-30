@@ -21,7 +21,10 @@ class VariantSpec extends PlaySpec with OneAppPerSuite {
             Map(
                   "play.http.context" -> "/variant-test"
                   ,"variant.session.timeout.secs" -> 1
-                  ,"variant.session.store.vacuum.interval.secs" -> 1 
+                  ,"variant.session.store.vacuum.interval.secs" -> 1
+                  ,"variant.event.writer.flush.max.delay.millis" -> 1000
+                  ,"variant.event.flusher.class.name" -> "com.variant.server.event.EventFlusherH2"
+                  ,"variant.event.flusher.class.init" ->"""{"url":"jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;","user":"variant","password":"variant"}"""
             ))
        .build()
 
@@ -34,7 +37,7 @@ class VariantSpec extends PlaySpec with OneAppPerSuite {
 	 * created only once per jvm, but the api be instance scoped.
 	 * 
 	 * @throws Exception
-	 * ON SERVER NOW
+	 * Needed by the JUnit EventWriter test which is currently off.
 	@Before
 	public void _beforeTest() throws Exception {
 		synchronized (sqlSchemaCreated) { // once per JVM
@@ -45,4 +48,5 @@ class VariantSpec extends PlaySpec with OneAppPerSuite {
 			}
 		}
 	}
+	*/
 }

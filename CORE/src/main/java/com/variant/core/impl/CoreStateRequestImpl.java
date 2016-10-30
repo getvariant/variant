@@ -253,10 +253,10 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 
 	private static final String FIELD_NAME_STATE = "state";
 	private static final String FIELD_NAME_STATUS = "status";
-	private static final String FILED_NAME_COMMITTED = "comm";
+	private static final String FILED_NAME_COMMITTED = "committed";
 	private static final String FIELD_NAME_PARAMS = "params";
-	private static final String FIELD_NAME_KEY = "key";
-	private static final String FIELD_NAME_VALUE = "val";
+	private static final String FIELD_NAME_KEY = "name";
+	private static final String FIELD_NAME_VALUE = "value";
 	private static final String FIELD_NAME_EXPERIENCES = "exps";
 	
 	/**
@@ -264,11 +264,19 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	 * @return
 	 * @throws Exception
 	 */
-	public String toJson() throws Exception {
+	public String toJson(VariantCore core) throws Exception {
 		StringWriter result = new StringWriter(2048);
 		JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 		jsonGen.writeStartObject();
-		jsonGen.writeStringField(FIELD_NAME_STATE, state.getName());
+
+		// If we're on the server, we don't have the schema => we don't have the state but should
+		// have state name. See comment in fromJson(). We typically don't serialize on server, but
+		// tests may.
+		if (((VariantCore)core).getComptime().getComponent() == VariantComptime.Component.SERVER)
+			jsonGen.writeStringField(FIELD_NAME_STATE, stateName);
+		else 
+			jsonGen.writeStringField(FIELD_NAME_STATE, state.getName());
+
 		jsonGen.writeStringField(FIELD_NAME_STATUS, status.toString());
 		jsonGen.writeBooleanField(FILED_NAME_COMMITTED, committed);
 		if (resolvedParameterMap.size() > 0) {
@@ -302,7 +310,7 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	 * @param fields
 	 * @return
 	 */
-	public static CoreStateRequestImpl fromJson(VariantCore coreApi, CoreSessionImpl session, Map<String,?> fields) {
+	public static CoreStateRequestImpl fromJson(VariantCore core, CoreSessionImpl session, Map<String,?> fields) {
 		
 		Object stateName = fields.get(FIELD_NAME_STATE);
 		if (stateName == null) 
@@ -313,9 +321,9 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 		// If we're on the server, we don't have the schema => we can't instantiate a State object,
 		// but we need the state name to log events.
 		
-		CoreStateRequestImpl result =  ((VariantCore)coreApi).getComptime().getComponent() == VariantComptime.Component.SERVER ?
+		CoreStateRequestImpl result =  ((VariantCore)core).getComptime().getComponent() == VariantComptime.Component.SERVER ?
 				new CoreStateRequestImpl(session, (String)stateName) :
-				new CoreStateRequestImpl(session, (StateImpl) coreApi.getSchema().getState((String)stateName));
+				new CoreStateRequestImpl(session, (StateImpl) core.getSchema().getState((String)stateName));
 		
 		Object statusStr = fields.get(FIELD_NAME_STATUS);
 		if (statusStr == null) 
@@ -360,11 +368,11 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 					String expQualifiedName = (String) obj;
 					// qualified name = testName.expName.bool - need to parse.
 					String[] tokens = expQualifiedName.split("\\.");
-					if (((VariantCore)coreApi).getComptime().getComponent() == VariantComptime.Component.SERVER) {
+					if (((VariantCore)core).getComptime().getComponent() == VariantComptime.Component.SERVER) {
 						experiencesList.add(new TestExperienceServerStub(tokens[0], tokens[1], new Boolean(tokens[2])));
 					}
 					else {
-						Schema schema = coreApi.getSchema();
+						Schema schema = core.getSchema();
 						experiencesList.add(schema.getTest(tokens[0]).getExperience(tokens[1]));
 					}
 				}

@@ -2,17 +2,19 @@ package com.variant.server.event;
 
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
+
 import org.apache.commons.lang3.time.DurationFormatUtils
-import play.api.Configuration
-import play.api.Logger
+
+import com.variant.core.exception.VariantInternalException
+import com.variant.core.exception.VariantRuntimeException
+import com.variant.core.exception.VariantRuntimeUserErrorException
+import com.variant.core.impl.VariantCore
+import com.variant.core.impl.VariantCoreInitParamsImpl
+import com.variant.core.xdm.impl.MessageTemplate
 import com.variant.server.boot.VariantConfig
 import com.variant.server.boot.VariantConfigKey._
-import com.variant.core.exception.VariantRuntimeUserErrorException
-import com.variant.core.xdm.impl.MessageTemplate
-import com.variant.core.impl.VariantCoreInitParamsImpl
-import com.variant.core.impl.VariantCore
-import com.variant.core.exception.VariantRuntimeException
-import com.variant.core.exception.VariantInternalException
+
+import play.api.Logger
 
 class EventWriter (core: VariantCore, config: VariantConfig) {
 	
@@ -25,9 +27,9 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
 	// Asynchronous flusher thread consumes events from the holding queue.
    private val flusherThread = new FlusherThread();
 	// Not a daemon. Intercept interrupt and flush the buffer before exiting.
-	flusherThread.setDaemon(false);
-	flusherThread.setName("Variant Event Writer");
-	flusherThread.start();
+	flusherThread.setDaemon(false)
+	flusherThread.setName("Variant Event Writer")
+	flusherThread.start()
 
 	// The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
 	// refusing inserts that will put the queue size over the limit, but not worrying about
@@ -64,7 +66,10 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
 		}
 		catch {
 		   case e : VariantRuntimeException => throw e
-		   case e : Throwable => throw new VariantInternalException("Unable to instantiate event flusher class [" + className +"]", e);
+		   case e : Throwable => {
+		      logger.error("Unable to instantiate event flusher class [" + className +"]", e)
+		      throw new VariantInternalException("Unable to instantiate event flusher class [" + className +"]", e);
+		   }
 		}
 	}
 

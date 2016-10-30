@@ -6,6 +6,8 @@ import org.apache.commons.lang3.time.DurationFormatUtils
 import com.variant.core.impl.VariantComptime
 import com.variant.core.impl.VariantCore
 import com.variant.server.event.EventWriter
+import com.variant.server.boot.VariantConfigKey._
+
 import javax.inject._
 import javax.inject.Singleton
 import play.api.Configuration
@@ -34,6 +36,7 @@ class BootstrapImpl @Inject() (
       ) extends Bootstrap {
 
    private val logger = Logger(this.getClass)
+   
    private val start = clock.instant
    private val now = System.currentTimeMillis;
    
@@ -42,6 +45,7 @@ class BootstrapImpl @Inject() (
 		core.getComptime().registerComponent(VariantComptime.Component.SERVER, "0.6.3")
 		core
 	}
+   
 	private lazy val configImpl = new VariantConfig(configuration)
    private lazy val eventWriterImpl = new EventWriter(coreImpl, config)
    

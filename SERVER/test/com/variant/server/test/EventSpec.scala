@@ -126,12 +126,11 @@ class EventSpec extends VariantSpec {
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
          val ssn = store.asSession(sid)
-         println("**** " + ssn.get.getStateRequest)
          // POST event
          val eventBody = EventSpec.body.expand("sid" -> sid)
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
-         status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
+         status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
       
