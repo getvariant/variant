@@ -1,20 +1,20 @@
 package com.variant.server.test
 
-import scala.math.BigDecimal.int2bigDecimal
-import scala.math.BigDecimal.long2bigDecimal
-import com.variant.server.test.util.ParamString
-import play.api.test.Helpers._
-import play.api.libs.json._
-import play.api.test.FakeRequest
-import com.variant.server.session.SessionStore
 import scala.util.Random
-import com.variant.core.impl.CoreSessionImpl
-import play.api.libs.json.Json
-import org.scalatestplus.play.OneAppPerSuite
-import org.scalatestplus.play.PlaySpec
-import javax.inject._
-import play.api.routing.Router
-import com.variant.server.boot.VariantConfig
+
+import com.variant.server.test.util.ParamString
+
+import play.api.test.FakeRequest
+import play.api.test.Helpers.GET
+import play.api.test.Helpers.NOT_FOUND
+import play.api.test.Helpers.OK
+import play.api.test.Helpers.PUT
+import play.api.test.Helpers.contentAsString
+import play.api.test.Helpers.defaultAwaitTimeout
+import play.api.test.Helpers.route
+import play.api.test.Helpers.status
+import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
+import play.api.test.Helpers.writeableOf_AnyContentAsText
 
 /*
  * Reusable session JSON objects. 

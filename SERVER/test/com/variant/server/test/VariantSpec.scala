@@ -7,13 +7,25 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.Application
 import javax.inject.Inject
 import com.variant.server.session.SessionStore
+import org.scalatest.BeforeAndAfterAll
+import com.variant.server.boot.Bootstrap
+import com.variant.core.impl.VariantCore
+import com.variant.server.jdbc.JdbcService
+import com.variant.server.event.EventWriter
+import com.variant.server.event.EventWriter
 
 /**
  * Common to all tests.
  * Builds a custom application.
  */
-class VariantSpec extends PlaySpec with OneAppPerSuite {
+object VariantSpec {
+   private var sqlSchemaCreated = false
+}
 
+class VariantSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
+
+   import VariantSpec._
+   
    // Override app if you need a Application with other than
    // default parameters.
    implicit override lazy val app: Application = new GuiceApplicationBuilder()
@@ -30,23 +42,44 @@ class VariantSpec extends PlaySpec with OneAppPerSuite {
 
    protected val context = app.configuration.getString("play.http.context").get
    protected val store = app.injector.instanceOf[SessionStore]
+   protected val eventWriter = app.injector.instanceOf[Bootstrap].eventWriter()
    
-  /**
+    /**
 	 * Each case runs in its own JVM. Each test runs in its
 	 * own instance of the test case. We want the jdbc schema
 	 * created only once per jvm, but the api be instance scoped.
 	 * 
 	 * @throws Exception
 	 * Needed by the JUnit EventWriter test which is currently off.
-	@Before
-	public void _beforeTest() throws Exception {
-		synchronized (sqlSchemaCreated) { // once per JVM
+    */
+   override def beforeAll() {
+		synchronized { // once per JVM
 			if (!sqlSchemaCreated) {
-				VariantCore core = rebootApi();
-				recreateSchema(core);
+				recreateSchema(eventWriter);
 				sqlSchemaCreated = true;
 			}
 		}
 	}
-	*/
+   
+   /**
+	 * @throws Exception 
+	 * 
+	 */
+	private def recreateSchema(ew: EventWriter) {
+		
+		val jdbc = new JdbcService(ew);
+		
+		try {			
+			jdbc.getVendor() match {
+   			case JdbcService.Vendor.POSTGRES => jdbc.recreateSchema()
+	   		case JdbcService.Vendor.H2 => jdbc.createSchema()  // Fresh in-memory DB.
+		   }
+		}
+		catch {
+		   case _: ClassCastException => 
+		   case e: Throwable => throw e		
+		}
+
+	}
+
 }
