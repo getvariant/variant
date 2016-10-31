@@ -3,6 +3,7 @@ package com.variant.server.test
 import scala.util.Random
 
 import com.variant.server.test.util.ParamString
+import com.variant.server.boot.VariantConfigKey._
 
 import play.api.test.FakeRequest
 import play.api.test.Helpers.GET
@@ -85,7 +86,7 @@ object SessionSpec {
                   "params": [{"name": "Param One", "value": "Param One Value"},{"name": "Param Two", "value": "Param Two Value"}], 
                   "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
         "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
-        "tests": [{"test": "test1","qualified": true},{"test": "test1","qualified": true}]}
+        "tests": [{"test": "test1","qualified": true},{"test": "test2","qualified": true}]}
    """.format(System.currentTimeMillis()))
 
    val b = ParamString("""
@@ -177,15 +178,15 @@ class SessionSpec extends VariantSpec {
       }
 
      "expire existing sessions after timeout" in {
-        val sessionTimeoutSecs = app.configuration.getInt("variant.session.timeout.secs").get
-        val storeVacuumIntervalSecs = app.configuration.getInt("variant.session.store.vacuum.interval.secs").get
-        sessionTimeoutSecs  mustEqual 1
-        storeVacuumIntervalSecs  mustEqual 1
+        val timeout = boot.config().getInt(SessionTimeoutSecs)
+        val vacuumInterval = boot.config().getInt(SessionStoreVacuumIntervalSecs)
+        timeout  mustEqual 1
+        vacuumInterval  mustEqual 1
       
-         Thread.sleep((sessionTimeoutSecs * 1000 * 2).asInstanceOf[Long]);
+        Thread.sleep((timeout * 1000 * 2).asInstanceOf[Long]);
       
-         ("foo" :: "bar" :: Nil)
-            .foreach(sid => status(route(app, FakeRequest(GET, endpoint + "/" + sid)).get) mustBe NOT_FOUND)  
+        ("foo" :: "bar" :: Nil)
+           .foreach(sid => status(route(app, FakeRequest(GET, endpoint + "/" + sid)).get) mustBe NOT_FOUND)  
       }
       
       "deserialize payload into session object" in {

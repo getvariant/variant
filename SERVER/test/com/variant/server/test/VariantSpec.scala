@@ -42,8 +42,8 @@ class VariantSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
 
    protected val context = app.configuration.getString("play.http.context").get
    protected val store = app.injector.instanceOf[SessionStore]
-   protected val eventWriter = app.injector.instanceOf[Bootstrap].eventWriter()
-   
+   protected val boot = app.injector.instanceOf[Bootstrap]
+ 
     /**
 	 * Each case runs in its own JVM. Each test runs in its
 	 * own instance of the test case. We want the jdbc schema
@@ -55,7 +55,7 @@ class VariantSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
    override def beforeAll() {
 		synchronized { // once per JVM
 			if (!sqlSchemaCreated) {
-				recreateSchema(eventWriter);
+				recreateSchema(boot.eventWriter);
 				sqlSchemaCreated = true;
 			}
 		}

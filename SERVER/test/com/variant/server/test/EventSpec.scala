@@ -1,6 +1,7 @@
 package com.variant.server.test
 
 import com.variant.core.impl.CoreSessionImpl
+
 import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
@@ -9,7 +10,11 @@ import play.api.libs.json._
 import com.variant.server.UserError
 import com.variant.server.test.util.ParamString
 import scala.util.Random
+import scala.collection.JavaConversions._
 import scala.concurrent.duration._
+
+import com.variant.server.test.util.EventReader
+import com.variant.server.boot.VariantConfigKey._
 
 /*
  * Reusable event JSON objects. 
@@ -36,9 +41,9 @@ object EventSpec {
 */
    val body = ParamString("""
       {"sid":"${sid:SID}",
-       "name":"NAME",
-       "value":"VALUE",
-       "ts":%d,
+       "name":"${name:NAME}",
+       "value":"${value:VALUE}",
+       "ts":${ts:%d},
        "params":[{"name":"Name One","value":"Value One"},{"name":"Name Two","value":"Value Two"}]
       }
    """.format(System.currentTimeMillis()))
@@ -127,11 +132,44 @@ class EventSpec extends VariantSpec {
          contentAsString(ssnResp) mustBe empty
          val ssn = store.asSession(sid)
          // POST event
-         val eventBody = EventSpec.body.expand("sid" -> sid)
+         val ts = System.currentTimeMillis()
+         val eventName = Random.nextString(5)
+         val eventValue = Random.nextString(5)
+         val eventBody = EventSpec.body.expand("sid" -> sid, "ts" -> ts, "name" -> eventName, "value" -> eventValue)
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
+         // Read events back from the db, but must wait for the asych flusher.
+         val flushMaxDelay = boot.config().getInt(EventWriterFlushMaxDelayMillis)
+         flushMaxDelay  mustEqual 1000
+         Thread.sleep(flushMaxDelay * 2)
+         val eventsFromDatabase = EventReader(boot.eventWriter()).read()
+         eventsFromDatabase.size mustBe 1
+         val event = eventsFromDatabase.head
+         event.getCreatedOn.getTime mustBe ts
+         event.getName mustBe eventName
+         event.getValue mustBe eventValue
+         event.getSessionId mustBe sid
+         event.getEventExperiences.size() mustBe 3
+         event.getEventExperiences.foreach(ee => {
+            ee.getTestName match {
+               case "test1" => {
+                  ee.getExperienceName mustBe "A"
+                  ee.isControl() mustBe true
+               }
+               case "test2" => {
+                  ee.getExperienceName mustBe "B"
+                  ee.isControl() mustBe false
+               }
+               case "test3" => {
+                  ee.getExperienceName mustBe "C"
+                  ee.isControl() mustBe false
+               }
+               case t => throw new RuntimeException("Unexpected test %s".format(t))
+            }
+         })
+         
       }
       
    }

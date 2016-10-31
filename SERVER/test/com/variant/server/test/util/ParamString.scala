@@ -1,5 +1,7 @@
 package com.variant.server.test.util
 
+import scala.collection.mutable.HashSet
+
 /**
  * Parameterized String
  * 
@@ -7,12 +9,13 @@ package com.variant.server.test.util
  */
 class ParamString (private val prototype: String) {
      
-   def expand(vars: (String, Any)*): String = {
+   def expand(bindings: (String, Any)*): String = {
       var index = 0;
       var inBraces = false
       var result = new StringBuilder
       var variable = new StringBuilder
-      var iter = prototype.iterator
+      val boundVariables = HashSet[String]()
+      val iter = prototype.iterator
       while (iter.hasNext) {
          index += 1
          var c = iter.next 
@@ -31,20 +34,22 @@ class ParamString (private val prototype: String) {
                   // end of variable expansion.
                   inBraces = false
                   var tokens = variable.toString().split(':')
-                  val value = {
-                     var actual = vars.filter(_._1 == tokens(0))
-                     if (actual.length == 0) {
+                  val varName = tokens(0)
+                  val varValue = {
+                     var symbol = bindings.filter(_._1 == varName)
+                     if (symbol.length == 0) {
                         // Value was not passed - use default
                         if (tokens.length == 1) throw new RuntimeException(
-                              "No expansion and no default for variable %s at index %d".format(tokens(0), index-2)) 
+                              "Unbound variable %s at index %d".format(tokens(0), index-2)) 
                         tokens(1)
                      }
                      else {
                         // Value was passed
-                        actual.head._2.toString
+                        symbol.head._2.toString
                      }
                   }
-                  result.append(value)
+                  result.append(varValue)
+                  boundVariables += varName
                   variable.clear()
                }
                else {
@@ -58,6 +63,13 @@ class ParamString (private val prototype: String) {
             }
          }
       }
+      // Ensure that all input bindings were actually used. We essentially want to catch thecase when the call
+      // to expand() contains a binding (name->value) where name is mistyped and does not match any variables
+      // in the body.
+      bindings.foreach((b: (String,Any)) => {
+         if (!boundVariables.contains(b._1)) 
+            throw new RuntimeException("Unusable input binding for variable %s".format(b._1))
+      })
       result.toString()
    }
 }
@@ -68,12 +80,11 @@ class ParamString (private val prototype: String) {
 object ParamString {
    
    /**
-    * 
     */
    def apply(prototype:String) = new ParamString(prototype)
    
    /**
-    * 
+    * Tesging...
     */
    def main(args: Array[String]): Unit = {
       val ps = new ParamString(

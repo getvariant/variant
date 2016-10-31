@@ -23,8 +23,8 @@ public class VariantEventFromDatabase {
 	VariantEventFromDatabase() {}
 	
 	public Long getId() { return id; }
-	public String getEventName() { return name; }
-	public String getEventValue() { return value; }
+	public String getName() { return name; }
+	public String getValue() { return value; }
 	public String getSessionId() { return sessionId; }
 	public Date getCreatedOn() { return createdOn; }
 	public Map<String,String> getParameterMap() { return params; }
