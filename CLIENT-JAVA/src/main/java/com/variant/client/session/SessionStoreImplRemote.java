@@ -1,7 +1,5 @@
 package com.variant.client.session;
 
-import static com.variant.client.VariantClientPropertyKeys.SERVER_ENDPOINT_URL;
-
 import java.util.Map;
 
 import org.apache.http.HttpStatus;

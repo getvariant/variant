@@ -1,8 +1,8 @@
 package com.variant.client.impl;
 
+import com.variant.client.SystemProperties.Property;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantInitParams;
-import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.impl.VariantCoreInitParamsImpl;
 
 public class VariantInitParamsImpl extends VariantCoreInitParamsImpl implements VariantInitParams {
@@ -15,8 +15,8 @@ public class VariantInitParamsImpl extends VariantCoreInitParamsImpl implements 
 	 * @param client
 	 * @param key
 	 */
-	public VariantInitParamsImpl(VariantClientImpl client, VariantCorePropertyKeys.Key key) {
-		super(client.getCoreApi(), key);
+	public VariantInitParamsImpl(VariantClientImpl client, Property prop) throws Exception {
+		super(client.getCoreApi(), client.getProperties().get(prop).toString());
 		this.client = client;
 	}
 

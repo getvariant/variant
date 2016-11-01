@@ -1,12 +1,9 @@
 package com.variant.client.impl;
 
-import static com.variant.client.VariantClientPropertyKeys.SESSION_ID_TRACKER_CLASS_INIT;
-import static com.variant.client.VariantClientPropertyKeys.SESSION_ID_TRACKER_CLASS_NAME;
-import static com.variant.client.VariantClientPropertyKeys.TARGETING_TRACKER_CLASS_INIT;
-import static com.variant.client.VariantClientPropertyKeys.TARGETING_TRACKER_CLASS_NAME;
 import static com.variant.core.xdm.impl.MessageTemplate.BOOT_SESSION_ID_TRACKER_NO_INTERFACE;
 import static com.variant.core.xdm.impl.MessageTemplate.BOOT_TARGETING_TRACKER_NO_INTERFACE;
 import static com.variant.core.xdm.impl.MessageTemplate.RUN_SCHEMA_UNDEFINED;
+import static com.variant.client.SystemProperties.Property.*;
 
 import java.io.InputStream;
 import java.util.Random;
@@ -15,14 +12,13 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.client.SystemProperties;
+import com.variant.client.SystemProperties.Property;
 import com.variant.client.VariantClient;
-import com.variant.client.VariantClientPropertyKeys;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.client.session.ClientSessionCache;
-import com.variant.core.VariantCorePropertyKeys.Key;
-import com.variant.core.VariantProperties;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantBootstrapException;
@@ -52,7 +48,7 @@ public class VariantClientImpl implements VariantClient {
 	private static final Random RAND = new Random(System.currentTimeMillis());
 
 	private VariantCore core = null;
-	private VariantProperties properties = null;
+	private SystemProperties properties = null;
 	private SessionStore sessionStore = null;
 	private ClientSessionCache cache = null;
 	
@@ -210,13 +206,13 @@ public class VariantClientImpl implements VariantClient {
 		
 		core = new VariantCore(resourceNames);
 		core.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.6.3");		
-		properties = core.getProperties();
+		properties = new SystemPropertiesImpl();
 		cache = new ClientSessionCache();
 
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("+-- Bootstrapping Variant Client with following application properties: --");
-			for (Key key: Key.keys(VariantClientPropertyKeys.class)) {
-				LOG.debug("| " + key.propertyName() + " = " + properties.get(key, String.class) + " : " + properties.getSource(key));
+			for (Property prop: Property.values()) {
+				LOG.debug("| " + prop.name() + " = " + properties.get(prop));
 			}
 			LOG.debug("+------------- Fingers crossed, this is not PRODUCTION -------------");
 		}
@@ -236,7 +232,7 @@ public class VariantClientImpl implements VariantClient {
 	 * @since 0.6
 	 */
 	@Override
-	public VariantProperties getProperties() {
+	public SystemProperties getProperties() {
 		return properties;
 	}
 

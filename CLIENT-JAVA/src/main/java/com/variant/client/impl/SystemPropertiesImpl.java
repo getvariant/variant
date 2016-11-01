@@ -11,11 +11,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.VariantCorePropertyKeys.Key;
-import com.variant.core.VariantProperties;
+import com.variant.client.SystemProperties;
 import com.variant.core.event.impl.util.PropertiesChain;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.impl.VariantCore;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.xdm.impl.MessageTemplate;
 
@@ -27,20 +25,18 @@ import com.variant.core.xdm.impl.MessageTemplate;
  * @author Igor
  *
  */
-public class CorePropertiesImpl implements VariantProperties {
+public class SystemPropertiesImpl implements SystemProperties {
 	
 	public static final String COMMANDLINE_RESOURCE_NAME = "variant.props.resource";
 	public static final String COMMANDLINE_FILE_NAME = "varaint.props.file";
 	public static final String COMMANDLINE_PROP_PREFIX = "varaint.";
 
 	private PropertiesChain propsChain = new PropertiesChain();
-	private VariantCore coreApi;
 
 	/**
 	 * 
 	 */
-	protected CorePropertiesImpl(VariantCore coreApi) {
-		this.coreApi = coreApi;
+	protected SystemPropertiesImpl() {
 		// if we're called by a subclass, coreApi will already have a properties chain.
 		propsChain = new PropertiesChain();
 	}
@@ -65,7 +61,7 @@ public class CorePropertiesImpl implements VariantProperties {
 	 * @param key
 	 * @return
 	 */
-	private Integer getInteger(Key key) {
+	private Integer getInteger(Property key) {
 		return Integer.parseInt(getString(key).arg1());
 	}
 
@@ -84,23 +80,23 @@ public class CorePropertiesImpl implements VariantProperties {
 	 * @param name
 	 * @return
 	 */
-	Pair<String, String> getString(Key key) {
+	Pair<String, String> getString(Property key) {
 		
 		Pair<String,String> result = null;
 		
 		// Try override via JVM prop
-		String value = System.getProperty(COMMANDLINE_PROP_PREFIX + key.propertyName());
+		String value = System.getProperty(COMMANDLINE_PROP_PREFIX + key.name);
 		
 		if (value == null) {
 			// No JVM override
-			result = propsChain.getProperty(key.propertyName());
+			result = propsChain.getProperty(key.name());
 		}
 		else {
 			// JVM override takes precedence.
 			result = new Pair<String, String>(value, "JVM Property");
 		}
 		
-		return result == null ? new Pair<String, String>(key.defaultValue(), "Default") : result;
+		return result == null ? new Pair<String, String>(key.defaultValue, "Default") : result;
 	}
 
 	/**
@@ -113,7 +109,7 @@ public class CorePropertiesImpl implements VariantProperties {
 	 * @throws JsonParseException 
 	 */
 	@SuppressWarnings("unchecked")
-	Map<String, String> getMap(Key key) {
+	Map<String, String> getMap(Property key) {
 		String raw = getString(key).arg1();
 		try {
 			ObjectMapper jacksonDataMapper = new ObjectMapper();
@@ -121,7 +117,7 @@ public class CorePropertiesImpl implements VariantProperties {
 			return jacksonDataMapper.readValue(raw, Map.class);
 		}
 		catch (Exception e) {
-			throw new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_INVALID_JSON, raw, key.propertyName());
+			throw new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_INVALID_JSON, raw, key.name);
 		}
 	}
 
@@ -134,7 +130,7 @@ public class CorePropertiesImpl implements VariantProperties {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T> T get(Key key, Class<T> clazz) {
+	public <T> T get(Property key, Class<T> clazz) {
 		if (clazz == String.class)
 			return (T) getString(key).arg1();
 		else if (clazz == Integer.class)
@@ -154,7 +150,7 @@ public class CorePropertiesImpl implements VariantProperties {
 	 */	
 	@Override
 	@SuppressWarnings("unchecked")
-	public String get(Key key) {
+	public String get(Property key) {
 		return getString(key).arg1();
 	}
 
@@ -165,7 +161,7 @@ public class CorePropertiesImpl implements VariantProperties {
 	 * @return
 	 */
 	@Override
-	public String getSource(Key key) {
+	public String getSource(Property key) {
 		return getString(key).arg2();
 	}
 

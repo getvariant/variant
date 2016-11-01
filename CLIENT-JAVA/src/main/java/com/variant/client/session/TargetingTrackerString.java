@@ -32,7 +32,7 @@ public abstract class TargetingTrackerString implements VariantTargetingTracker 
 	 * 
 	 * @return
 	 */
-	abstract protected VariantProperties getProperties();
+	abstract protected SystemProperties getProperties();
 	
 	/**
 	 * Parse the content from an input string.

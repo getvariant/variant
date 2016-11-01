@@ -11,7 +11,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import com.variant.client.impl.CorePropertiesImpl;
+import com.variant.client.impl.SystemPropertiesImpl;
 import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.event.impl.util.VariantIoUtils;
 import com.variant.core.exception.VariantRuntimeException;
@@ -42,7 +42,7 @@ public class PropertiesTest {
 
 		// Run time override from classpath
 		final String RESOURCE_NAME = "/VariantPropertiesTest.props";
-		System.setProperty(CorePropertiesImpl.COMMANDLINE_RESOURCE_NAME, RESOURCE_NAME);
+		System.setProperty(SystemPropertiesImpl.COMMANDLINE_RESOURCE_NAME, RESOURCE_NAME);
 		api = new VariantCore();
 		Properties expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openResourceAsStream(RESOURCE_NAME));
@@ -53,11 +53,11 @@ public class PropertiesTest {
 					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvariant.props.resource=/VariantPropertiesTest.props"), 
 					actualProps.getString(prop));
 		}
-		System.clearProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME);
-		System.clearProperty(CorePropertiesImpl.COMMANDLINE_RESOURCE_NAME);
+		System.clearProperty(SystemPropertiesImpl.COMMANDLINE_FILE_NAME);
+		System.clearProperty(SystemPropertiesImpl.COMMANDLINE_RESOURCE_NAME);
 
 		// Comp time override + run time override from classpath
-		System.setProperty(CorePropertiesImpl.COMMANDLINE_RESOURCE_NAME, "/VariantPropertiesTest.props");
+		System.setProperty(SystemPropertiesImpl.COMMANDLINE_RESOURCE_NAME, "/VariantPropertiesTest.props");
 		api = new VariantCore("/com/variant/core/conf/test.props");
 		expectedProps = new Properties();
 		expectedProps.load(VariantIoUtils.openResourceAsStream("/VariantPropertiesTest.props"));
@@ -68,12 +68,12 @@ public class PropertiesTest {
 					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvariant.props.resource=/VariantPropertiesTest.props"), 
 					actualProps.getString(prop));
 		}
-		System.clearProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME);
-		System.clearProperty(CorePropertiesImpl.COMMANDLINE_RESOURCE_NAME);
+		System.clearProperty(SystemPropertiesImpl.COMMANDLINE_FILE_NAME);
+		System.clearProperty(SystemPropertiesImpl.COMMANDLINE_RESOURCE_NAME);
 
 		// Run time override from file system.
 		final String TMP_FILE_NAME = "/tmp/VariantPropertiesTest.props";
-		System.setProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
+		System.setProperty(SystemPropertiesImpl.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
 		PrintWriter tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
 		tmpFile.println(VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName() + " = {'foo':'bar'}");
 		tmpFile.println(VariantCorePropertyKeys.EVENT_WRITER_MAX_DELAY_MILLIS.propertyName() + " = 12345678");	
@@ -89,11 +89,11 @@ public class PropertiesTest {
 					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvaraint.props.file=/tmp/VariantPropertiesTest.props"), 
 					actualProps.getString(prop));
 		}
-		System.clearProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME);
-		System.clearProperty(CorePropertiesImpl.COMMANDLINE_RESOURCE_NAME);
+		System.clearProperty(SystemPropertiesImpl.COMMANDLINE_FILE_NAME);
+		System.clearProperty(SystemPropertiesImpl.COMMANDLINE_RESOURCE_NAME);
 
 		// Comp time override from class path + run time override from file system.
-		System.setProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
+		System.setProperty(SystemPropertiesImpl.COMMANDLINE_FILE_NAME, TMP_FILE_NAME);
 		tmpFile = new PrintWriter(new File(TMP_FILE_NAME));
 		tmpFile.println(VariantCorePropertyKeys.EVENT_WRITER_MAX_DELAY_MILLIS.propertyName() + " = 12345678");	
 		tmpFile.close();
@@ -108,26 +108,26 @@ public class PropertiesTest {
 					new Pair<String,String>(expectedProps.getProperty(prop), "-Dvaraint.props.file=/tmp/VariantPropertiesTest.props"), 
 					actualProps.getString(prop));
 		}
-		System.clearProperty(CorePropertiesImpl.COMMANDLINE_FILE_NAME);
-		System.clearProperty(CorePropertiesImpl.COMMANDLINE_RESOURCE_NAME);
+		System.clearProperty(SystemPropertiesImpl.COMMANDLINE_FILE_NAME);
+		System.clearProperty(SystemPropertiesImpl.COMMANDLINE_RESOURCE_NAME);
 		
 		// System props override. 
 		int randomInt = new Random().nextInt();
 		api = new VariantCore();
 		assertNotEquals(randomInt, api.getProperties().get(VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE,  Integer.class).intValue());
-		System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE.propertyName(), String.valueOf(randomInt));
+		System.setProperty(SystemPropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE.propertyName(), String.valueOf(randomInt));
 		assertEquals(randomInt, api.getProperties().get(VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
 
 		api = new VariantCore();
 		assertEquals(randomInt, api.getProperties().get(VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
-		System.clearProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE.propertyName());
+		System.clearProperty(SystemPropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE.propertyName());
 		assertNotEquals(randomInt, api.getProperties().get(VariantCorePropertyKeys.EVENT_WRITER_BUFFER_SIZE, Integer.class).intValue());
 		
 		// JSON parsing errors
 		{
 			// Invalid JSON
 			final String BAD_JSON = "{\"foo\":\"FOO\"\"bar\":\"BAR\"}";
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName(), BAD_JSON);
+			System.setProperty(SystemPropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName(), BAD_JSON);
 			boolean exceptionThrown = false;
 			try {
 				api = new VariantCore();
@@ -147,8 +147,8 @@ public class PropertiesTest {
 		
 		{
 			// missing password
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_NAME.propertyName(), "com.variant.core.event.EventFlusherH2"); 
-			System.setProperty(CorePropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
+			System.setProperty(SystemPropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_NAME.propertyName(), "com.variant.core.event.EventFlusherH2"); 
+			System.setProperty(SystemPropertiesImpl.COMMANDLINE_PROP_PREFIX + VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName(), "{\"url\":\"URL\",\"user\":\"USER\"}"); 
 			boolean exceptionThrown = false;
 			try {
 				api = new VariantCore();

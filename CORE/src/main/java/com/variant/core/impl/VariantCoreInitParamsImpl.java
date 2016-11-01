@@ -9,7 +9,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.VariantCoreInitParams;
-import com.variant.core.exception.VariantRuntimeException;
 
 public class VariantCoreInitParamsImpl extends HashMap<String, Object> implements VariantCoreInitParams {
 		
@@ -35,16 +34,21 @@ public class VariantCoreInitParamsImpl extends HashMap<String, Object> implement
 	}
 	
 	@Override
-	public Object getOr(String param, Object defaultValue) {
-		Object result = super.get(param);
-		return result == null ? defaultValue : result;
+	public Object get(String key) {
+		return super.get(key);
 	}
 
 	@Override
-	public Object getOrThrow(String key, VariantRuntimeException e) {
-		Object result = super.get(key);
+	public Object getOr(String key, RuntimeException e) {
+		Object result = get(key);
 		if (result == null) throw e;
 		else return result;
+	}
+
+	@Override
+	public Object getOr(String param, Object defaultValue) {
+		Object result = get(param);
+		return result == null ? defaultValue : result;
 	}
 
 	//---------------------------------------------------------------------------------------------//

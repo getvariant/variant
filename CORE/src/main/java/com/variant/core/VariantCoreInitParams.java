@@ -1,6 +1,5 @@
 package com.variant.core;
 
-import com.variant.core.exception.VariantRuntimeException;
 
 /**
  * <p>Initialization parameters, as parsed from a JSON string, provided in a {@code *.init} system property. 
@@ -14,22 +13,30 @@ public interface VariantCoreInitParams {
 	/**
 	 * The value of an init parameter.
 	 * @param param Parameter name.
-	 * @param defaultValue Default value.
-	 * @return The value of the parameter, or default value if undefined.
+	 * @return The value of the parameter, or null if undefined.
      *
 	 * @since 0.6
 	 */
-	public Object getOr(String param, Object defaultValue);
+	public Object get(String param);
+
+	/**
+	 * The value of an init parameter, or throw exception if undefined.
+	 * @param param Parameter name
+	 * @param exceptionIfNull The exception to be thrown if param is undefined.
+	 * @return Value of the parameter or throws the provided exception if undefined.
+     *
+	 * @since 0.6
+	 */
+	public Object getOr(String param, RuntimeException exceptionIfNull);
 
 	/**
 	 * The value of an init parameter.
-	 * @param param Parameter name
-	 * @param exceptionIfNull The exception to be thrown if param is undefined.
-	 * 
-	 * @return Its value of the parameter or throws the provided exception, if undefined.
+	 * @param param Parameter name.
+	 * @param valueIfNull Default value.
+	 * @return The value of the parameter, or the provided default if undefined.
      *
 	 * @since 0.6
 	 */
-	public Object getOrThrow(String param, VariantRuntimeException exceptionIfNull);
+	public Object getOr(String param, Object valueIfNull);
 
 }

@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.core.VariantProperties;
 import com.variant.core.exception.VariantSchemaModifiedException;
 import com.variant.core.hook.HookListener;
 import com.variant.core.schema.ParserResponse;
@@ -23,11 +22,11 @@ public interface VariantClient {
 	 * This client's application properties.
 	 * These are the propertied that were in effect at the time when this Variant client instance was instantiated.
 	 * 
-	 * @return An instance of the {@link VariantProperties} type.
+	 * @return An instance of the {@link SystemProperties} type.
 	 * 
 	 * @since 0.6
 	 */
-	public VariantProperties getProperties();
+	public SystemProperties getProperties();
 
 	/**
 	 * <p>Register a {@link HookListener} with this client.
