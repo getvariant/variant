@@ -2,6 +2,6 @@
    {
       'type':'com.variant.core.session.SessionStore',
       'impl':'com.variant.core.test.SessionStoreImplLocalMemory',
-      'init':{'svr_rel':'0.6.3', 'ssn_timeout_sec':10}
+      'init':{'svr_rel':'0.7.0', 'ssn_timeout_sec':10}
    }
 ]

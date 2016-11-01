@@ -42,7 +42,7 @@ class BootstrapImpl @Inject() (
    
    private lazy val coreImpl = {
       val core = new VariantCore();
-		core.getComptime().registerComponent(VariantComptime.Component.SERVER, "0.6.3")
+		core.getComptime().registerComponent(VariantComptime.Component.SERVER, "0.7.0")
 		core
 	}
    

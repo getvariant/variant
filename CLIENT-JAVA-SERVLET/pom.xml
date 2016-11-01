@@ -17,7 +17,7 @@
     <name>Variant Java Client Servlet Adapter</name>
     <packaging>jar</packaging>
     <groupId>com.variant</groupId>
-    <version>0.6.3</version>
+    <version>0.7.0</version>
     
     <dependencies>
         
@@ -25,14 +25,14 @@
         <dependency>
 			<groupId>com.variant</groupId>
 			<artifactId>variant-core</artifactId>
-			<version>0.6.3</version>
+			<version>0.7.0</version>
 		</dependency>
         
       <!-- Variant Bare Java Client -->        
       <dependency>
          <groupId>com.variant</groupId>
          <artifactId>variant-java-client</artifactId>
-         <version>0.6.3</version>
+         <version>0.7.0</version>
       </dependency>
 
       <!-- Mockito -->	

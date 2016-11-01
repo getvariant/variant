@@ -1,7 +1,0 @@
-Variant 0.6.3 README
-
-1. New Features
-
-
-2. Bugs Fixes
-

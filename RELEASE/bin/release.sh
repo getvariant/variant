@@ -5,7 +5,7 @@
 
 #!/bin/bash
 
-export version=0.6.3
+export version=0.7.0
 
 function usage() {
     echo "$(basename $0) email"

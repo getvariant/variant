@@ -2,13 +2,16 @@
 // Variant Server build config
 //
 
-val coreVersion = "0.6.3"
+val coreVersion = "0.7.0"
 name := s"Variant Server $coreVersion"
 
 version := coreVersion
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 scalaVersion := "2.11.7"
+
+// Add local Maven repo for com.variant artifacts built with Maven.
+resolvers += Resolver.mavenLocal
 
 libraryDependencies ++= Seq(
   jdbc,

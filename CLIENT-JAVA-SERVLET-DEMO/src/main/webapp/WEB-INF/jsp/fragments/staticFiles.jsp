@@ -30,7 +30,7 @@ PetClinic :: a Spring Framework demonstration
     <link href="${jQueryUiCss}" rel="stylesheet"></link>
     
     <%-- Variant Demo addition start --%>
-    <script src="http://getvariant.com/js/variant-0.6.3.js"></script>
+    <script src="http://getvariant.com/js/variant-0.7.0.js"></script>
 
     <%@ page import="com.variant.client.VariantStateRequest" %>
     <%@ page import="com.variant.client.VariantSession" %>

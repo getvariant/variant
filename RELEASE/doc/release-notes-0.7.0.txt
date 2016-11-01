@@ -1,0 +1,9 @@
+Variant 0.7.0 README
+
+1. New Features
+   Server is Scala/Play! self-contained with embedded Netty.
+   Move event writer to server.
+   Move schema parser to server.
+
+2. Bugs Fixes
+

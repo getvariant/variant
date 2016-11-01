@@ -36,13 +36,13 @@ public class EventFlusherPostgres extends EventFlusherJdbc {
 	
 	@Override
 	public void init(VariantCoreInitParams initParams) throws Exception {
-		url = (String) initParams.getOrThrow(
+		url = (String) initParams.getOr(
 				"url", new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", EventFlusherClassInit.name));
 		
-		user = (String) initParams.getOrThrow(
+		user = (String) initParams.getOr(
 				"user", new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", EventFlusherClassInit.name));
 		
-		password = (String) initParams.getOrThrow(
+		password = (String) initParams.getOr(
 				"password", new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", EventFlusherClassInit.name));
 
 	}
