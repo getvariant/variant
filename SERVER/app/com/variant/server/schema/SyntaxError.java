@@ -1,6 +1,8 @@
-package com.variant.core.xdm.impl;
+package com.variant.server.schema;
 
 import org.apache.commons.lang3.StringUtils;
+
+import com.variant.core.exception.Error;
 
 /**
  * JSON syntax error.
@@ -18,7 +20,7 @@ public class SyntaxError extends ParserMessageImpl {
 	 * @param column
 	 * @param args
 	 */
-	public SyntaxError(MessageTemplate template, int line, int column, String...args) {
+	public SyntaxError(Error template, int line, int column, String...args) {
 		super(template, line, column, args);
 		rawInput = args[1];
 	}

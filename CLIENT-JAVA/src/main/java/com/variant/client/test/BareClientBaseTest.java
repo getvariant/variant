@@ -6,7 +6,7 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.session.TargetingTrackerEntryImpl;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.util.inject.Injector;
 import com.variant.core.xdm.Schema;
@@ -71,7 +71,7 @@ public abstract class BareClientBaseTest extends CoreBaseTest {
 	protected Object[] userDataForSimpleIn(Schema schema, String sessionId, String...experiences) {
 		
 		if (experiences.length > 0 && schema == null) 
-			throw new VariantInternalException("Schema cannot be null if experiences are given");
+			throw new RuntimeInternalException("Schema cannot be null if experiences are given");
 		
 		Object[] result = new Object[experiences.length + 1];
 		result[0] = sessionId;

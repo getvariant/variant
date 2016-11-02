@@ -1,6 +1,6 @@
-package com.variant.core.xdm.impl;
+package com.variant.server.schema;
 
-import static com.variant.core.xdm.impl.MessageTemplate.*;
+import static com.variant.core.exception.Error.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,9 +9,13 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.schema.ParserMessage;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
+import com.variant.core.xdm.impl.Keywords;
+import com.variant.core.xdm.impl.SchemaImpl;
+import com.variant.core.xdm.impl.SemanticChecks;
+import com.variant.core.xdm.impl.StateImpl;
+import com.variant.server.ParserMessage;
 
 /**
  * Parse the STATES clause.

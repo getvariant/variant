@@ -11,13 +11,13 @@ import org.junit.Test;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.impl.CoreSessionImpl;
+import com.variant.core.exception.Error;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.ParserResponse;
-import com.variant.core.schema.ParserMessage.Severity;
+import com.variant.core.session.CoreSession;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
-import com.variant.core.xdm.impl.MessageTemplate;
+import com.variant.server.ParserResponse;
+import com.variant.server.ParserMessage.Severity;
 
 public class CoreSessionTest extends BaseTestCore {
 
@@ -33,14 +33,14 @@ public class CoreSessionTest extends BaseTestCore {
 		assertNull(core.getSchema());
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { core.getSession("foo", true); }
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);
+		}.assertThrown(Error.RUN_SCHEMA_UNDEFINED);
 
 		// Unsuccessful parse will not create a schema, so we still should not be able to get a session.
 		ParserResponse response = core.parseSchema("UNPARSABLE JUNK");
 		assertEquals(Severity.FATAL, response.highestMessageSeverity());
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { core.getSession("foo", true); }
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);
+		}.assertThrown(Error.RUN_SCHEMA_UNDEFINED);
 
 		
 		// Create schema. We should be able to get and save.
@@ -70,7 +70,7 @@ public class CoreSessionTest extends BaseTestCore {
 			@Override public void toRun() { 
 				core.getSession("bar", true); 
 			}
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), ssnFinal.getSchemaId());
+		}.assertThrown(Error.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), ssnFinal.getSchemaId());
 
 		
 		new VariantRuntimeExceptionInterceptor() { 
@@ -78,7 +78,7 @@ public class CoreSessionTest extends BaseTestCore {
 				VariantCoreStateRequest req = ssnFinal.targetForState(core.getSchema().getState("state1"));
 				req.commit();
 			}
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), ssnFinal.getSchemaId());
+		}.assertThrown(Error.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), ssnFinal.getSchemaId());
 	}
 	
 	/**
@@ -96,8 +96,8 @@ public class CoreSessionTest extends BaseTestCore {
 		assertNull(ssn.getStateRequest());
 		assertEquals(0, ssn.getTraversedStates().size());
 		assertEquals(0, ssn.getTraversedTests().size());
-		String json = ((CoreSessionImpl)ssn).toJson();
-		CoreSessionImpl deserializedSsn = new CoreSessionImpl(json, core);
+		String json = ((CoreSession)ssn).toJson();
+		CoreSession deserializedSsn = new CoreSession(json, core);
 		assertEquals("key", deserializedSsn.getId());
 		assertNull(deserializedSsn.getStateRequest());
 		assertEquals(0, deserializedSsn.getTraversedStates().size());
@@ -115,8 +115,8 @@ public class CoreSessionTest extends BaseTestCore {
 		assertNotEquals (ssn, ssn3);
 		assertNull(ssn.getStateRequest());
 		assertNull(ssn3.getStateRequest());
-		json = ((CoreSessionImpl)ssn3).toJson();
-		deserializedSsn = new CoreSessionImpl(json, core);
+		json = ((CoreSession)ssn3).toJson();
+		deserializedSsn = new CoreSession(json, core);
 		assertEquals("another-key", deserializedSsn.getId());
 		assertNull(deserializedSsn.getStateRequest());
 		assertEquals(0, deserializedSsn.getTraversedStates().size());
@@ -138,8 +138,8 @@ public class CoreSessionTest extends BaseTestCore {
 		assertNotNull(req1);
 		assertEquals(req1, ssn.getStateRequest());
 		assertNotNull(req1.getStateVisitedEvent());
-		String json = ((CoreSessionImpl)ssn).toJson();
-		CoreSessionImpl deserializedSsn = new CoreSessionImpl(json, core);
+		String json = ((CoreSession)ssn).toJson();
+		CoreSession deserializedSsn = new CoreSession(json, core);
 		assertEquals("foo", deserializedSsn.getId());
 		VariantCoreStateRequest deserializedReq = deserializedSsn.getStateRequest();
 		assertEquals(deserializedReq.getSession(), deserializedSsn);
@@ -151,15 +151,15 @@ public class CoreSessionTest extends BaseTestCore {
 		assertEqualAsSets(ssn.getTraversedStates(), deserializedSsn.getTraversedStates());
 		assertEqualAsSets(ssn.getTraversedTests(), deserializedSsn.getTraversedTests());
 		req1.commit();
-		System.out.println(((CoreSessionImpl)ssn).toJson());
+		System.out.println(((CoreSession)ssn).toJson());
 		// Nothing is instrumented on state2
 		VariantCoreStateRequest req2 = ssn.targetForState(schema.getState("state2"));
 		assertNotNull(req2);
 		assertNotEquals(req1, req2);
 		assertNull(req2.getStateVisitedEvent());
 		assertEquals(req2, ssn.getStateRequest());
-		json = ((CoreSessionImpl)ssn).toJson();
-		deserializedSsn = new CoreSessionImpl(json, core);
+		json = ((CoreSession)ssn).toJson();
+		deserializedSsn = new CoreSession(json, core);
 		assertEquals("foo", deserializedSsn.getId());
 		deserializedReq = deserializedSsn.getStateRequest();
 		assertEquals(deserializedReq.getSession(), deserializedSsn);
@@ -210,28 +210,28 @@ public class CoreSessionTest extends BaseTestCore {
 			@Override public void toRun() { 
 				core.getSession("foo2", false); 
 			}
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
+		}.assertThrown(Error.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
 		
 	    // ditto, even with recreate
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { 
 				core.getSession("foo2", true); 
 			}
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
+		}.assertThrown(Error.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
 
 		// ditto, target a session created by older schema to a state in a newer schema;
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { 
 				ssn.targetForState(schema2.getState("state1"));
 			}
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
+		}.assertThrown(Error.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
 
 		// ditto, can't commit
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { 
 				req.commit();  // Saves the session.
 			}
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
+		}.assertThrown(Error.RUN_SCHEMA_MODIFIED, schema2.getId(), schema1.getId());
 	    
 		// new API
 		core = rebootApi();
@@ -270,13 +270,13 @@ public class CoreSessionTest extends BaseTestCore {
 			@Override public void toRun() { 
 				ssn.setAttribute("foo", new Object());
 			}
-		}.assertThrown(MessageTemplate.RUN_METHOD_UNSUPPORTED);
+		}.assertThrown(Error.RUN_METHOD_UNSUPPORTED);
 
 		new VariantRuntimeExceptionInterceptor() { 
 			@Override public void toRun() { 
 				ssn.getAttribute("foo");
 			}
-		}.assertThrown(MessageTemplate.RUN_METHOD_UNSUPPORTED);
+		}.assertThrown(Error.RUN_METHOD_UNSUPPORTED);
 
 	}
 }

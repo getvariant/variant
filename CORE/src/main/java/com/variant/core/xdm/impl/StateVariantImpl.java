@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
@@ -115,7 +115,7 @@ public class StateVariantImpl implements StateVariant {
 			return result.toString();
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to serialize object [" + this.getClass().getSimpleName() + "]", e);
+			throw new RuntimeInternalException("Unable to serialize object [" + this.getClass().getSimpleName() + "]", e);
 		}
 
 	}

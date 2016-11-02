@@ -1,4 +1,4 @@
-package com.variant.core.impl;
+package com.variant.server.runtime;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +15,10 @@ import com.variant.core.exception.VariantInternalException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;
+import com.variant.core.impl.CoreSessionImpl;
+import com.variant.core.impl.CoreStateRequestImpl;
+import com.variant.core.impl.TestTargeterDefault;
+import com.variant.core.impl.VariantCore;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.xdm.Schema;

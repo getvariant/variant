@@ -11,8 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.event.impl.util.VariantIoUtils;
-import com.variant.core.exception.VariantInternalException;
-import com.variant.core.impl.VariantCore;
+import com.variant.core.exception.RuntimeInternalException;
 
 /**
  * Implementation injection, deferred to run time.
@@ -52,7 +51,7 @@ public class Injector {
 		 * 
 		 * @return
 		 */
-		Injectable newInstance(VariantCore core) {
+		Injectable newInstance() {
 
 			// Create new instance
 			Injectable result;
@@ -60,10 +59,10 @@ public class Injector {
 				result = impl.newInstance();
 			}
 			catch (Exception e) {
-				throw new VariantInternalException("Unable to instantiate implementation class [" + impl.getName() + "]", e);
+				throw new RuntimeInternalException("Unable to instantiate implementation class [" + impl.getName() + "]", e);
 			}
 						
-			result.init(core, init);
+			result.init(init);
 			
 			return result;
 		}
@@ -86,7 +85,7 @@ public class Injector {
 			parseTree = jacksonDataMapper.readValue(configStream, List.class);
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to parse injector config [" + configNames + "]", e);
+			throw new RuntimeInternalException("Unable to parse injector config [" + configNames + "]", e);
 		}
 		
 		HashMap<Class<? extends Injectable>, Entry> result = new HashMap<Class<? extends Injectable>, Entry>();
@@ -101,12 +100,12 @@ public class Injector {
 				typeClass = Class.forName(typeString);
 			}
 			catch (Exception e) {
-				throw new VariantInternalException("Unable to instantiate type class [" + typeString + "]", e);
+				throw new RuntimeInternalException("Unable to instantiate type class [" + typeString + "]", e);
 			}
 			
 			// Type class must implement Injectable.
 			if (!Injectable.class.isAssignableFrom(typeClass)) {
-				throw new VariantInternalException("Type [" + typeString + "] must extend [" + Injectable.class.getName() + "]");
+				throw new RuntimeInternalException("Type [" + typeString + "] must extend [" + Injectable.class.getName() + "]");
 			}
 			
 			// Instantiate the impl class and check that it is assignable to type class.
@@ -116,11 +115,11 @@ public class Injector {
 				implClass = Class.forName(implString);
 			}
 			catch (Exception e) {
-				throw new VariantInternalException("Unable to instantiate implementation class [" + implString + "]", e);
+				throw new RuntimeInternalException("Unable to instantiate implementation class [" + implString + "]", e);
 			}
 
 			if (!typeClass.isAssignableFrom(implClass)) 
-				throw new VariantInternalException("Class [" + implString + "] must be of type [" + typeClass.getName() + "]");
+				throw new RuntimeInternalException("Class [" + implString + "] must be of type [" + typeClass.getName() + "]");
 
 			// Store in implMap, keyed by type
 			Entry mapEntry = new Entry((Class<Injectable>) implClass, (Map<String, Object>)entry.get("init"));
@@ -159,9 +158,9 @@ public class Injector {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static<T extends Injectable> T inject(Class<T> clazz, VariantCore core) {
+	public static<T extends Injectable> T inject(Class<T> clazz) {
 		if (entryMap == null) lazyInit();
-		T result = (T) entryMap.get(clazz).newInstance(core);
+		T result = (T) entryMap.get(clazz).newInstance();
 		LOG.info(String.format("Injected an instance of [%s] for type [%s]", result.getClass().getName(), clazz.getName()));
 		return result;
 	}

@@ -1,12 +1,12 @@
 package com.variant.core.test;
 
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_COVARIANT_UNDEFINED;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_MISSING;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_PROPER_UNDEFINED;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_EXPERIENCEREF_PARAMS_NOT_ALLOWED;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_ISDEFINED_NOT_BOOLEAN;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_VARIANT_MISSING;
+import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_COVARIANT_UNDEFINED;
+import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_MISSING;
+import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_PROPER_UNDEFINED;
+import static com.variant.core.exception.Error.PARSER_EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.exception.Error.PARSER_EXPERIENCEREF_PARAMS_NOT_ALLOWED;
+import static com.variant.core.exception.Error.PARSER_ISDEFINED_NOT_BOOLEAN;
+import static com.variant.core.exception.Error.PARSER_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -14,10 +14,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.Random;
 
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserMessage.Severity;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.xdm.impl.ParserMessageImplFacade;
+import com.variant.server.ParserMessage;
+import com.variant.server.ParserResponse;
+import com.variant.server.ParserMessage.Severity;
 
 /**
  * Test mixed instrumentation, i.e. when an experience is not defined

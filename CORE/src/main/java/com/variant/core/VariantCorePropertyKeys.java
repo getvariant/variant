@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.variant.core.event.impl.util.VariantReflectUtils;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.RuntimeInternalException;
 
 
 /**

@@ -1,4 +1,4 @@
-package com.variant.core.impl;
+package com.variant.core.util;
 
 
 /**

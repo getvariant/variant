@@ -1,6 +1,7 @@
 package com.variant.core.hook;
 
-import com.variant.core.VariantCoreSession;
+import com.variant.core.session.CoreSession;
+
 
 /**
  * <p>Super-interface for all user hook types that post their listeners 
@@ -18,6 +19,6 @@ public interface RuntimeHook extends UserHook {
 	 * @return An object of type {@link com.variant.core.VariantCoreSession}.
      * @since 0.5
 	 */
-	public VariantCoreSession getSession() ;
+	public CoreSession getSession() ;
 	
 }

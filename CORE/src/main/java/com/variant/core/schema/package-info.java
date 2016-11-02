@@ -1,5 +1,5 @@
 /**
- * <p>Classes related to parsing of Variant XDM schema.
+ * <p>MOVED TO SERVER.
  *
  * @since 0.5
  */

@@ -14,12 +14,12 @@ import org.junit.Test;
 import com.variant.client.impl.SystemPropertiesImpl;
 import com.variant.core.VariantCorePropertyKeys;
 import com.variant.core.event.impl.util.VariantIoUtils;
+import com.variant.core.exception.Error;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantPropertiesTestFacade;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.xdm.impl.MessageTemplate;
 
 public class PropertiesTest {
 
@@ -136,7 +136,7 @@ public class PropertiesTest {
 				exceptionThrown = true;
 				assertEquals(
 						new VariantRuntimeUserErrorException(
-								MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON, 
+								Error.RUN_PROPERTY_INIT_INVALID_JSON, 
 								BAD_JSON, 
 								VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName()
 								).getMessage(), 
@@ -157,7 +157,7 @@ public class PropertiesTest {
 				exceptionThrown = true;
 				assertEquals(
 						new VariantRuntimeUserErrorException(
-								MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET, 
+								Error.RUN_PROPERTY_INIT_PROPERTY_NOT_SET, 
 								"password", 
 								api.getProperties().get(VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_NAME, String.class),
 								VariantCorePropertyKeys.EVENT_FLUSHER_CLASS_INIT.propertyName()

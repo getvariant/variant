@@ -10,7 +10,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.RuntimeInternalException;
 
 public class HttpClient {
 
@@ -46,7 +46,7 @@ public class HttpClient {
 			return new HttpResponse(get, resp);
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to perform HTTP GET: " + e.getMessage(), e);
+			throw new RuntimeInternalException("Unable to perform HTTP GET: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					
@@ -75,7 +75,7 @@ public class HttpClient {
 		    return new HttpResponse(put, resp);
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to perform HTTP POST: " + e.getMessage(), e);
+			throw new RuntimeInternalException("Unable to perform HTTP POST: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					

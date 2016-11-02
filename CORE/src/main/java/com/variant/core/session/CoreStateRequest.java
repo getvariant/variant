@@ -1,4 +1,4 @@
-package com.variant.core.impl;
+package com.variant.core.session;
 
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -11,24 +11,21 @@ import java.util.Set;
 
 import org.apache.commons.collections4.set.UnmodifiableSet;
 
+import static com.variant.core.exception.RuntimeError.*;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
-import com.variant.core.exception.VariantInternalException;
-import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.svrstub.TestExperienceServerStub;
+import com.variant.core.exception.Error;
+import com.variant.core.exception.RuntimeErrorException;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.impl.MessageTemplate;
 import com.variant.core.xdm.impl.StateImpl;
 import com.variant.core.xdm.impl.StateVariantImpl;
 
@@ -37,27 +34,29 @@ import com.variant.core.xdm.impl.StateVariantImpl;
  * @author Igor
  *
  */
-public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializable {
+public class CoreStateRequest implements Serializable {
 
 	/**
 	 * Needs serializable because we keep it in session.
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private CoreSessionImpl session;	
+	private CoreSession session;	
 	private StateImpl state;
 	private Status status = Status.OK;
 	private StateVariant resolvedStateVariant;
 	private Map<String,String> resolvedParameterMap;
 	private StateVisitedEvent event = null;
-	private boolean committed = false;
 	
 	// For transitional server side use only.
-	private String stateName = null;
+	// private String stateName = null;
 	
 	// This doesn't change over the life of a request, so we'll only compute this once.
 	private Collection<Experience> activeExperiences; 
-			
+	
+	// Client subclass will manipulate this. We just need it for serialization.
+	protected boolean isCommitted = false;
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PACKAGE                                            //
 	//---------------------------------------------------------------------------------------------//
@@ -65,25 +64,25 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	 * Regular constructor
 	 * @param session
 	 */
-	CoreStateRequestImpl(CoreSessionImpl session, StateImpl state) {
+	CoreStateRequest(CoreSession session, StateImpl state) {
 		this.session = session;
 		this.state = state;
 		session.setStateRequest(this);
 	}
 
-	/**
+/**
 	 * Transitional server side constructor that has state name instead
 	 * of the fully instantiated State object, which we cannot instantiate
 	 * without a schema, which we don't yet have on server.
 	 * 
 	 * @param session
-	 */
+	 *
 	CoreStateRequestImpl(CoreSessionImpl session, String stateName) {
 		this.session = session;
 		this.stateName = stateName;
 		session.setStateRequest(this);
 	}
-	
+*/	
 	/**
 	 *  Crate state visited event when appropriate.
 	 */
@@ -99,11 +98,10 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	 * Commit this state request and trigger the state visited event.
 	 * We don't actually need userData in this core implementation, but we want the method signature
 	 * ready for the client.
-	 */
-	@Override
+	 * ON CLIENT NOW.
 	public void commit() {
 
-		session.checkState();
+		session.checkState(); Used to check for enclosing session's non-expiration.
 		
 		if (isCommitted()) throw new IllegalStateException("Request already committed");
 		
@@ -126,48 +124,39 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	}
 
 	/**
-	 */
-	@Override
+	 *
 	public boolean isCommitted() {
 		return committed;
 	}
-
-	@Override
-	public VariantCoreSession getSession() {
+*/
+	public CoreSession getSession() {
 		return session;
 	}
 
-	@Override
 	public State getState() {
 		return state;
 	}
 
-	@Override
 	public StateVariant getResolvedStateVariant() {
 		return resolvedStateVariant;
 	}
 	
-	@Override
 	public  String getResolvedParameter(String name) {
 		return resolvedParameterMap.get(name);
 	}
 
-	@Override
 	public  Set<String> getResolvedParameterNames() {
 		return UnmodifiableSet.unmodifiableSet(resolvedParameterMap.keySet());
 	}
 
-	@Override
 	public void setStatus(Status status) {
 		this.status = status;
 	}
 	
-	@Override
 	public VariantEvent getStateVisitedEvent() {		
 		return event;
 	}
 
-	@Override
 	public Collection<Experience> getLiveExperiences() {
 		
 		if (activeExperiences == null) {
@@ -178,7 +167,7 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 			for (Test test: state.getInstrumentedTests()) {
 				if (!test.isOn() || session.getDisqualifiedTests().contains(test)) continue;
 				SessionScopedTargetingStabile.Entry entry = stabile.get(test.getName());
-				if (entry == null) throw new VariantInternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
+				if (entry == null) throw new RuntimeInternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
 				result.add(test.getExperience(entry.getExperienceName()));
 			}
 			activeExperiences = result;
@@ -186,7 +175,6 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 		return activeExperiences;
 	}
 
-	@Override
 	public Experience getLiveExperience(Test test) {
 		
 		boolean found = false;
@@ -199,11 +187,11 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 			if (!t.isOn() || session.getDisqualifiedTests().contains(test)) return null;
 			
 			SessionScopedTargetingStabile.Entry entry = session.getTargetingStabile().get(test.getName());
-			if (entry == null) throw new VariantInternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
+			if (entry == null) throw new RuntimeInternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
 			return test.getExperience(entry.getExperienceName());
 		}
 		
-		if (!found) throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, state.getName(), test.getName());
+		if (!found) throw new RuntimeErrorException(STATE_NOT_INSTRUMENTED_FOR_TEST, state.getName(), test.getName());
 
 		return null;
 	}
@@ -238,7 +226,7 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	 * don't yet have the schema and cannot properly instantiate state by state
 	 * name.  Which is fine because we'llonly need the name to log events.
 	 * @return
-	 */
+	 *
 	public String getStateName() {
 		
 		if (session.getCoreApi().getComptime().getComponent() == VariantComptime.Component.SERVER)
@@ -246,7 +234,7 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 		
 		return stateName;
 	}
-	
+	*/
 	//---------------------------------------------------------------------------------------------//
 	//                                       SERIALIZATION                                         //
 	//---------------------------------------------------------------------------------------------//
@@ -264,21 +252,13 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	 * @return
 	 * @throws Exception
 	 */
-	public String toJson(VariantCore core) throws Exception {
+	public String toJson(Schema schema) throws Exception {
 		StringWriter result = new StringWriter(2048);
 		JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 		jsonGen.writeStartObject();
-
-		// If we're on the server, we don't have the schema => we don't have the state but should
-		// have state name. See comment in fromJson(). We typically don't serialize on server, but
-		// tests may.
-		if (((VariantCore)core).getComptime().getComponent() == VariantComptime.Component.SERVER)
-			jsonGen.writeStringField(FIELD_NAME_STATE, stateName);
-		else 
-			jsonGen.writeStringField(FIELD_NAME_STATE, state.getName());
-
+		jsonGen.writeStringField(FIELD_NAME_STATE, state.getName());
 		jsonGen.writeStringField(FIELD_NAME_STATUS, status.toString());
-		jsonGen.writeBooleanField(FILED_NAME_COMMITTED, committed);
+		jsonGen.writeBooleanField(FILED_NAME_COMMITTED, isCommitted);
 		if (resolvedParameterMap.size() > 0) {
 			jsonGen.writeArrayFieldStart(FIELD_NAME_PARAMS);
 			for (Map.Entry<String,String> e: resolvedParameterMap.entrySet()) {
@@ -310,36 +290,34 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 	 * @param fields
 	 * @return
 	 */
-	public static CoreStateRequestImpl fromJson(VariantCore core, CoreSessionImpl session, Map<String,?> fields) {
+	public static CoreStateRequest fromJson(Schema schema, CoreSession session, Map<String,?> fields) {
 		
 		Object stateName = fields.get(FIELD_NAME_STATE);
 		if (stateName == null) 
-			throw new VariantInternalException("Unable to deserialzie request: no state");
+			throw new RuntimeInternalException("Unable to deserialzie request: no state");
 		if (!(stateName instanceof String)) 
-			throw new VariantInternalException("Unable to deserialzie request: state not string");
+			throw new RuntimeInternalException("Unable to deserialzie request: state not string");
 		
 		// If we're on the server, we don't have the schema => we can't instantiate a State object,
 		// but we need the state name to log events.
 		
-		CoreStateRequestImpl result =  ((VariantCore)core).getComptime().getComponent() == VariantComptime.Component.SERVER ?
-				new CoreStateRequestImpl(session, (String)stateName) :
-				new CoreStateRequestImpl(session, (StateImpl) core.getSchema().getState((String)stateName));
+		CoreStateRequest result = new CoreStateRequest(session, (StateImpl) schema.getState((String)stateName));
 		
 		Object statusStr = fields.get(FIELD_NAME_STATUS);
 		if (statusStr == null) 
-			throw new VariantInternalException("Unable to deserialzie request: no status");
+			throw new RuntimeInternalException("Unable to deserialzie request: no status");
 		if (!(statusStr instanceof String)) 
-			throw new VariantInternalException("Unable to deserialzie request: status not string");
+			throw new RuntimeInternalException("Unable to deserialzie request: status not string");
 
 		result.status = Status.valueOf((String)statusStr);
 
 		Object committed = fields.get(FILED_NAME_COMMITTED);
 		if (committed == null) 
-			throw new VariantInternalException("Unable to deserialzie request: no committed");
+			throw new RuntimeInternalException("Unable to deserialzie request: no committed");
 		if (!(committed instanceof Boolean)) 
-			throw new VariantInternalException("Unable to deserialzie request: committed not boolean");
+			throw new RuntimeInternalException("Unable to deserialzie request: committed not boolean");
 
-		result.committed = (Boolean) committed;
+		result.isCommitted = (Boolean) committed;
 
 		Object paramListObj = fields.get(FIELD_NAME_PARAMS);
 		if (paramListObj != null) {
@@ -354,7 +332,7 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 				}
 			}
 			catch (Exception e) {
-				throw new VariantInternalException("Unable to deserialzie request: bad params spec", e);
+				throw new RuntimeInternalException("Unable to deserialzie request: bad params spec", e);
 			}
 			result.resolvedParameterMap = paramMap;
 		}
@@ -368,17 +346,11 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 					String expQualifiedName = (String) obj;
 					// qualified name = testName.expName.bool - need to parse.
 					String[] tokens = expQualifiedName.split("\\.");
-					if (((VariantCore)core).getComptime().getComponent() == VariantComptime.Component.SERVER) {
-						experiencesList.add(new TestExperienceServerStub(tokens[0], tokens[1], new Boolean(tokens[2])));
-					}
-					else {
-						Schema schema = core.getSchema();
-						experiencesList.add(schema.getTest(tokens[0]).getExperience(tokens[1]));
-					}
+					experiencesList.add(schema.getTest(tokens[0]).getExperience(tokens[1]));
 				}
 			}
 			catch (Exception e) {
-				throw new VariantInternalException("Unable to deserialzie request: bad experiences spec", e);
+				throw new RuntimeInternalException("Unable to deserialzie request: bad experiences spec", e);
 			}
 			result.activeExperiences = experiencesList;
 		}
@@ -386,4 +358,11 @@ public class CoreStateRequestImpl implements VariantCoreStateRequest, Serializab
 		return result;
 	}
 	
+	/**
+	 * Status of a {@link com.variant.core.VariantCoreStateRequest}.
+	 */
+	static enum Status {
+		OK, FAIL
+	}
+
 }

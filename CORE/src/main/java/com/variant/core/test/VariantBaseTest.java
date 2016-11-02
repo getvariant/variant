@@ -1,5 +1,9 @@
 package com.variant.core.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
@@ -7,19 +11,14 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.*;
-
-import com.variant.core.VariantCoreSession;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.RuntimeError;
+import com.variant.core.exception.RuntimeErrorException;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.impl.CoreSessionImpl;
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserResponse;
+import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.impl.MessageTemplate;
 
 
 /**
@@ -33,29 +32,29 @@ abstract public class VariantBaseTest {
 	 * @param experiences are expected as "test.exp" 
 	 * @return
 	 */
-    protected void setTargetingStabile(VariantCoreSession ssn, String...experiences) {
+    protected void setTargetingStabile(CoreSession ssn, Schema schema, String...experiences) {
 		SessionScopedTargetingStabile stabile = new SessionScopedTargetingStabile();
 		for (String e: experiences) {
-			Experience exp = experience(e, ((CoreSessionImpl)ssn).getCoreApi().getSchema());
+			Experience exp = experience(e, schema);
 			stabile.add(exp);
 			//((CoreSessionImpl)ssn).addTraversedTest(exp.getTest());
 		}
-		((CoreSessionImpl)ssn).setTargetingStabile(stabile);
+		((CoreSession)ssn).setTargetingStabile(stabile);
 	}
 
 	//---------------------------------------------------------------------------------------------//
 	//                                         HELPERS                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	/**
+	/** CLEANUP moved to server.
 	 * Print all messages to std out.
 	 * @param response
-	 */
+	 *
 	protected void printMessages(ParserResponse response) {
 		if (response.hasMessages()) 
 			for (ParserMessage msg: response.getMessages()) System.out.println(msg);
 	}
-	
+	*/
 	/**
 	 * 
 	 * @param name
@@ -240,21 +239,21 @@ abstract public class VariantBaseTest {
 	 * Concrete exception intercepter for VariantRuntimeException
 	 *
 	 */
-	protected static abstract class VariantRuntimeExceptionInterceptor 
-		extends ExceptionInterceptor<VariantRuntimeException> {
+	protected static abstract class RuntimeErrorExceptionInterceptor 
+		extends ExceptionInterceptor<RuntimeErrorException> {
 		
 		@Override
-		final public Class<VariantRuntimeException> getExceptionClass() {
-			return VariantRuntimeException.class;
+		final public Class<RuntimeErrorException> getExceptionClass() {
+			return RuntimeErrorException.class;
 		}
 		
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
-		final public void assertThrown(MessageTemplate template, Object...args) throws Exception {
+		final public void assertThrown(RuntimeError template, Object...args) throws Exception {
 			VariantRuntimeException result = super.run();
 			assertNotNull("Expected exception not thrown", result);
-			assertEquals(new VariantRuntimeUserErrorException(template, args).getMessage(), result.getMessage());
+			assertEquals(new RuntimeErrorException(template, args).getMessage(), result.getMessage());
 		}
 		
 	}
@@ -264,18 +263,18 @@ abstract public class VariantBaseTest {
 	 *
 	 */
 	protected static abstract class VariantInternalExceptionInterceptor 
-		extends ExceptionInterceptor<VariantInternalException> {
+		extends ExceptionInterceptor<RuntimeInternalException> {
 		
 		@Override
-		final public Class<VariantInternalException> getExceptionClass() {
-			return VariantInternalException.class;
+		final public Class<RuntimeInternalException> getExceptionClass() {
+			return RuntimeInternalException.class;
 		}
 		
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
 		final public void assertThrown(String format, Object...args) throws Exception {
-			VariantInternalException result = super.run();
+			RuntimeInternalException result = super.run();
 			assertNotNull("Expected exception not thrown", result);
 			assertEquals(String.format(format, args), result.getMessage());
 		}

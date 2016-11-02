@@ -8,11 +8,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.ParserResponse;
+import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.xdm.Schema;
+import com.variant.server.ParserResponse;
 
 public class TargetingStabileTest extends BaseTestCore {
 	
@@ -30,7 +30,7 @@ public class TargetingStabileTest extends BaseTestCore {
 		
 		Schema schema = core.getSchema();
 		
-		CoreSessionImpl ssn = (CoreSessionImpl) core.getSession("key1", true).getBody();
+		CoreSession ssn = (CoreSession) core.getSession("key1", true).getBody();
 		assertNull(ssn.getStateRequest());
 		
 		// 

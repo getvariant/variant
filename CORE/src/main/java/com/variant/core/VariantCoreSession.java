@@ -2,18 +2,17 @@ package com.variant.core;
 
 import java.util.Collection;
 
-import com.variant.core.event.VariantEvent;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 
 /**
- * <p>Variant Core Session. 
- * 
+ * <p>Variant Core Session. CLEANUP
+ *  
  * @author Igor Urisman
  * @since 0.5
- */
+ *
 public interface VariantCoreSession {
 
 	/**
@@ -21,7 +20,7 @@ public interface VariantCoreSession {
 	 * 
 	 * @return Session ID.
 	 * @since 0.5
-	 */
+	 *
 	public String getId();
 	
 	/**
@@ -29,16 +28,16 @@ public interface VariantCoreSession {
 	 * 
 	 * @return Milliseconds since the Epoch.
 	 * @since 0.6
-	 */	
+	 *
 	public long creationTimestamp();
 
 	/**
-	 * <p>The ID of the {@link Schema} in effect at the time this session was created. 
+	 * <p>The experiment schema in effect at the time this session was created. 
 	 * 
-	 * @return Schema ID.
-	 * @since 0.6
-	 */	
-	public String getSchemaId();
+	 * @return An object of type {@link Schema}.
+	 * @since 0.7
+	 *
+	public Schema getSchema();
 	
 	/**
 	 * <p> The collection of states traversed by this session so far and their counts. For each state S,
@@ -52,18 +51,8 @@ public interface VariantCoreSession {
 	 * @return A collection of {@link Pair}s of ({@link State}, Integer), corresponding
 	 *         to the traversed states. Call {@link Pair#arg1()} to obtain the state and 
 	 *         {@link Pair#arg2()} to obtain the count of times this state has been traversed.
-	 */
-	public Collection<Pair<State, Integer>> getTraversedStates(); 
-
-	/**
-     * <p>Target session for a state. 
-     *  
-	 * @return An instance of the {@link com.variant.core.VariantCoreStateRequest} object, which
-	 *         may be further examined for more information about the outcome of this operation.  
 	 *
-	 * @since 0.5
-	 */
-	public VariantCoreStateRequest targetForState(State state);
+	public Collection<Pair<State, Integer>> getTraversedStates(); 
 
 	/**
 	 * <p> The collection of tests traversed by this session so far. A test T is traversed by
@@ -71,7 +60,7 @@ public interface VariantCoreSession {
 	 * b) T is not OFF, and c) this session qualified for T.
 	 * 
 	 * @return A collection of object of type {@link Test}.
-	 */
+	 *
 	public Collection<Test> getTraversedTests(); 
 	
 	/**
@@ -80,7 +69,7 @@ public interface VariantCoreSession {
 	 * that disqualified it may no longer hold.
 	 * 
 	 * @return A collection of {@link Test}s which this session is disqualified for. 
-	 */
+	 *
 	public Collection<Test> getDisqualifiedTests();
 		
 	/* ON SERVER NOW
@@ -98,33 +87,7 @@ public interface VariantCoreSession {
 	 *         session.
 	 *  
 	 * @since 0.5
-	 */
+	 *
 	public VariantCoreStateRequest getStateRequest();
-	
-	/**
-	 * <p>Indicates whether this session has expired. A session expires either after it has
-	 * been inactive for the period of time configured by the {@code session.timeout.secs}
-	 * system property, or after the schema which was in effect during its creation, has 
-	 * bee undeployed.
-	 * 
-	 * @return true if this session has expired or false otherwise.
-	 * @since 0.6
-	 */
-	public boolean isExpired();
-
-	/**
-	 * <p>Set a session-scoped attribute.
-	 * 
-	 * @return The object which was previously associated with this attribute, or null if none.
-	 * @since 0.6
-	 */
-	public Object setAttribute(String name, Object value);
-	
-	/**
-	 * <p>Retrieve a session-scoped attribute.
-	 * 
-	 * @return The object associated with this attribute.
-	 * @since 0.6
-	 */
-	public Object getAttribute(String name);
 }
+*/

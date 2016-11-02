@@ -10,12 +10,12 @@ import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 
 /**
- * Variant Core state request.
+ * Variant Core state request. CLEANUP
  * 
  * @author Igor Urisman
  * @since 0.6
  *
- */
+ *
 public interface VariantCoreStateRequest {
 
 	/**
@@ -23,7 +23,7 @@ public interface VariantCoreStateRequest {
 	 * 
 	 * @return An object of type {@link VariantCoreSession}.
 	 * @since 0.6
-	 */
+	 *
 	VariantCoreSession getSession();
 	
 	/**
@@ -31,7 +31,7 @@ public interface VariantCoreStateRequest {
 	 * 
 	 * @return An object of type {@link State}
 	 * @since 0.6
-	 */
+	 *
 	State getState();
 	
 	/**
@@ -44,7 +44,7 @@ public interface VariantCoreStateRequest {
 	 * 
 	 * @since 0.6
 	 * @see StateVariant
-	 */
+	 *
 	StateVariant getResolvedStateVariant();
 		
 	/**
@@ -55,7 +55,7 @@ public interface VariantCoreStateRequest {
 	 * @param name Case insensitive parameter name.
 	 * @return Resolved parameter value or null if no parameter with this name defined.
 	 * @since 0.6
-	 */
+	 *
 	String getResolvedParameter(String name);
 
 	/**
@@ -65,7 +65,7 @@ public interface VariantCoreStateRequest {
 	 * 
 	 * @return An unmodifiable collection of all resolved state parameters.
 	 * @since 0.6
-	 */	
+	 *	
 	Set<String> getResolvedParameterNames();
 
 	/**
@@ -76,7 +76,7 @@ public interface VariantCoreStateRequest {
 	 * 
 	 * @return Collection of {@link Test.Experience}s.
 	 * @since 0.6
-	 */
+	 *
 	Collection<Experience> getLiveExperiences();
 
 	/**
@@ -87,7 +87,7 @@ public interface VariantCoreStateRequest {
 	 * @return An object of type {@link Experience}. 
 	 * 
 	 * @since 0.6
-	 */
+	 *
 	Experience getLiveExperience(Test test);
 		
 	/** Pending state visited event. 
@@ -95,14 +95,14 @@ public interface VariantCoreStateRequest {
 	 *  
 	 * @return Object of type {@link VariantEvent}.
 	 * @since 0.6
-	 */
+	 *
 	VariantEvent getStateVisitedEvent();
 	
 	/**
 	 * Set the status of this request.
 	 * 
 	 * @param status {@link Status}
-	 */
+	 *
 	void setStatus(Status status);
 	
 	/**
@@ -110,7 +110,7 @@ public interface VariantCoreStateRequest {
      * The pending state visited {@link VariantEvent} is triggered.
      *
 	 * @since 0.6
-	 */
+	 *
 	void commit();
 
 	/**
@@ -118,18 +118,19 @@ public interface VariantCoreStateRequest {
      * 
      *@return true if this request has ben committed, or false otherwise.
 	 * @since 0.6
-	 */
+	 *
 	boolean isCommitted();
 
 	/**
 	 * Current status of this request.
-	 */
+	 *
 	Status getStatus();
 
 	/**
 	 * Status of a {@link com.variant.core.VariantCoreStateRequest}.
-	 */
+	 *
 	static enum Status {
 		OK, FAIL
 	}
 }
+*/

@@ -1,6 +1,5 @@
 package com.variant.core.hook;
 
-import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;

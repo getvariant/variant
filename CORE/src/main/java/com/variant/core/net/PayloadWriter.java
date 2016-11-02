@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.RuntimeInternalException;
 
 public class PayloadWriter extends Payload {
 
@@ -36,7 +36,7 @@ public class PayloadWriter extends Payload {
 			return result.toString();
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to serialize session", e);
+			throw new RuntimeInternalException("Unable to serialize session", e);
 		}
 	}
 

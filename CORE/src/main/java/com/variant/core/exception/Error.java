@@ -1,21 +1,19 @@
-package com.variant.core.xdm.impl;
-
-import com.variant.core.schema.ParserMessage.Severity;
-
-
+package com.variant.core.exception;
 
 /**
  * The immutable, uncontextualized part of a system message.
  * 
  * @author Igor
  */
-public enum MessageTemplate {
+public class Error {
 	
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                BOOTSTRAP MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//
  
-	BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN              (Severity.FATAL, "Cannot pass both -Dvariant.config.resource and -Dvariant.config.file parameters"), 
+	public static final Error BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN = 
+			new Error(Severity.FATAL, "Cannot pass both -Dvariant.config.resource and -Dvariant.config.file parameters");
+	/*
 	BOOT_CONFIG_RESOURCE_NOT_FOUND                        (Severity.FATAL, "Class path resource [%s] is not found"), 
 	BOOT_CONFIG_FILE_NOT_FOUND                            (Severity.FATAL, "OS file [%s] is not found"), 
 	BOOT_EVENT_FLUSHER_NO_INTERFACE                       (Severity.FATAL, "Event flusher class [%s] must implement interface [%s]"), 
@@ -112,8 +110,6 @@ public enum MessageTemplate {
 	RUN_PROPERTY_BAD_CLASS                                (Severity.ERROR, "Don't know how to convert to class [%s]"),
 	RUN_PROPERTY_INIT_INVALID_JSON                        (Severity.ERROR, "Invalid JSON [%s] in system property [%s]"),
 	RUN_PROPERTY_INIT_PROPERTY_NOT_SET                    (Severity.ERROR, "Init property [%s] is required by class [%s] but is missing in system property [%s]"),
-	RUN_STATE_NOT_INSTRUMENTED_FOR_TEST                   (Severity.ERROR, "State [%s] is not instrumented for test [%s]"), 
-	RUN_WEIGHT_MISSING                                    (Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found"),
 	RUN_ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first"),
 	RUN_SCHEMA_OBSOLETE                                   (Severity.ERROR, "Operation failed becuase this schema (ID [%s]) has been undeployed"),
 	RUN_SCHEMA_MODIFIED                                   (Severity.ERROR, "Opereation failed because the current schema ID [%s] differs from that with which this session was created [%s]"),
@@ -132,29 +128,83 @@ public enum MessageTemplate {
 	INTERNAL                                              (Severity.FATAL, "Unexpectged error [%s]. See log for details.");
 
 	//------------------------------------------------------------------------------------------------------------------------//
+*/
+	protected final Severity severity;
+	protected final String format;
 
-	private Severity severity;
-	private String format;
-
-	private MessageTemplate(Severity severity, String format) {
+	protected Error(Severity severity, String format) {
 		this.severity = severity;
 		this.format = format;
 	}
 
 	/**
-	 *
-	 * @return
-	 */
-	public String getFormat() {
-		return format;
-	}
-		
-	/**
+	 * Severity of a {@link ParserMessage}.
 	 * 
-	 * @return
+	 * @since 0.5
 	 */
-	public Severity getSeverity() {
-		return severity;
+	public enum Severity {
+
+		/**
+		 * Information only message.
+		 * @since 0.5
+		 */
+		INFO,
+		/**
+		 * Warning. Current operation will proceed.
+		 * @since 0.5
+		 */
+		WARN,
+		/**
+		 * Error. If received at parse time, parser will proceed, but Variant will not deploy the schema.
+		 * If received at run time, current operation will fail. 
+		 * @since 0.5
+		 */
+		ERROR,
+		/**
+		 * Fatal Error. Current operation will fail.
+		 * @since 0.5
+		 */
+		FATAL;
+
+		/**
+		 * Is other severity greater than this?
+		 * @param other The other severity.
+		 * @return True if other severity is greater than this.
+		 * @since 0.5
+		 */
+		public boolean greaterThan(Severity other) {
+			return ordinal() > other.ordinal();
+		}
+
+		/**
+		 * Is other severity greater or equal than this?
+		 * @param other The other severity.
+		 * @return True if other severity is greater or equal to this.
+		 * @since 0.5
+		 */
+		public boolean greaterOrEqualThan(Severity other) {
+			return ordinal() >= other.ordinal();
+		}
+
+		/**
+		 * Is other severity less than this?
+		 * @param other The other severity.
+		 * @return True if other severity is less than this.
+		 * @since 0.5
+		 */
+		public boolean lessThan(Severity other) {
+			return ordinal() < other.ordinal();
+		}
+
+		/**
+		 * Is other severity less than this?
+		 * @param other The other severity.
+		 * @return True if other severity is less or equal to this.
+		 * @since 0.5
+		 */
+		public boolean lessOrEqualThan(Severity other) {
+			return ordinal() <= other.ordinal();
+		}
 	}
 
 }

@@ -53,4 +53,32 @@ public interface VariantSession extends VariantCoreSession {
 	 * @since 0.7
 	 */
 	public void triggerEvent(VariantEvent event);
+		
+	/**
+	 * <p>Indicates whether this session has expired. A session expires either after it has
+	 * been inactive for the period of time configured by the {@code session.timeout.secs}
+	 * system property, or after the schema which was in effect during its creation, has 
+	 * been undeployed.
+	 * 
+	 * @return true if this session has expired or false otherwise.
+	 * @since 0.6
+	 */
+	public boolean isExpired();
+
+	/**
+	 * <p>Set a session-scoped attribute.
+	 * 
+	 * @return The object which was previously associated with this attribute, or null if none.
+	 * @since 0.6
+	 */
+	public Object setAttribute(String name, Object value);
+	
+	/**
+	 * <p>Retrieve a session-scoped attribute.
+	 * 
+	 * @return The object associated with this attribute.
+	 * @since 0.6
+	 */
+	public Object getAttribute(String name);
+
 }

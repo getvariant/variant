@@ -2,27 +2,26 @@ package com.variant.core.net;
 
 import java.util.Map;
 
-import com.variant.core.VariantCoreSession;
-import com.variant.core.impl.CoreSessionImpl;
-import com.variant.core.impl.VariantCore;
+import com.variant.core.session.CoreSession;
+import com.variant.core.xdm.Schema;
 
-public class SessionPayloadReader extends PayloadReader<VariantCoreSession> {
+public class SessionPayloadReader extends PayloadReader<CoreSession> {
 
 	/**
 	 * 
 	 * @param core
 	 * @param payload
 	 */
-	public SessionPayloadReader(VariantCore core, String payload) {
-		super(core, payload);
+	public SessionPayloadReader(Schema schema, String payload) {
+		super(schema, payload);
 	}
 
 	/**
 	 * Deserealizer.
 	 */
 	@Override
-	protected VariantCoreSession deserealizeBody(VariantCore core, Map<String, ?> mappedJson) {
-		return new CoreSessionImpl(mappedJson, core);
+	protected CoreSession deserealizeBody(Schema schema, Map<String, ?> mappedJson) {
+		return new CoreSession(mappedJson, schema);
 	}
 
 }

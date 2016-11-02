@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.exception.VariantRuntimeUserErrorException;
+import static com.variant.core.exception.RuntimeError.*;
+
+import com.variant.core.exception.RuntimeErrorException;
 import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
@@ -80,7 +82,7 @@ public class StateImpl implements State {
 		for (Test.OnState tov: test.getOnStates()) {
 			if (tov.getState().equals(this)) return tov.isNonvariant();
 		}
-		throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_STATE_NOT_INSTRUMENTED_FOR_TEST, name, test.getName());
+		throw new RuntimeErrorException(STATE_NOT_INSTRUMENTED_FOR_TEST, name, test.getName());
 	}
 
 	//---------------------------------------------------------------------------------------------//

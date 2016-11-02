@@ -1,13 +1,13 @@
-package com.variant.core.session;
+package com.variant.client.session;
 
+import com.variant.core.exception.Error;
 import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.SessionPayloadReader;
+import com.variant.core.session.CoreSession;
 import com.variant.core.util.inject.Injector;
-import com.variant.core.xdm.impl.MessageTemplate;
 
 /**
  * Core session service.
@@ -46,7 +46,7 @@ public class SessionService {
 	public SessionPayloadReader getSession(String id, boolean create) throws VariantRuntimeException {
 		
 		if (core.getSchema() == null) 
-			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
+			throw new VariantRuntimeUserErrorException(Error.RUN_SCHEMA_UNDEFINED);
 		
 		return sessionStore.get(id, create);
 	}
@@ -56,12 +56,12 @@ public class SessionService {
 	 * @param session
 	 * TODO Make this async
 	 */
-	public void saveSession(CoreSessionImpl session) {
+	public void saveSession(CoreSession session) {
 		
-		if (core.getSchema() == null) throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_UNDEFINED);
+		if (core.getSchema() == null) throw new VariantRuntimeUserErrorException(Error.RUN_SCHEMA_UNDEFINED);
 		
 		if (!core.getSchema().getId().equals(session.getSchemaId())) 
-			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), session.getSchemaId());
+			throw new VariantRuntimeUserErrorException(Error.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), session.getSchemaId());
 		
 		sessionStore.save(session);
 	}

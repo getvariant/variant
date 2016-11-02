@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Random;
 
 import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.exception.VariantInternalException;
-import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
@@ -16,7 +14,7 @@ import com.variant.core.xdm.Test;
 /**
  * @author Igor
  */
-public class SchemaImpl implements Schema {
+public abstract class SchemaImpl implements Schema {
 
 	private final String ID = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
 	
@@ -33,17 +31,7 @@ public class SchemaImpl implements Schema {
 	 * Package instantiation.
 	 */
 	SchemaImpl() {}
-	
-	/**
-	 * Public ops are only allowed on a currently deployed schema.
-	 */
-	private void checkInternalState() {
-		if (state == InternalState.UNDEPLOYED)
-			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_SCHEMA_OBSOLETE, ID);
-		else if (state == InternalState.FAILED)
-			throw new VariantInternalException("Called on a FAILED schema");
-	}
-	
+		
 	/**
 	 * Add state to the set.
 	 * @param state
@@ -61,7 +49,19 @@ public class SchemaImpl implements Schema {
 	boolean addTest(Test test) {
 		return tests.add(test);
 	}
-		
+	
+	/**
+	 * extensions will provide implementaitons.
+	 */  
+	abstract protected void isUsable();
+/* CLEANUP this should move to client
+		if (state == InternalState.UNDEPLOYED)
+			throw new VariantRuntimeUserErrorException(Error.RUN_SCHEMA_OBSOLETE, ID);
+		else if (state == InternalState.FAILED)
+			throw new RuntimeInternalException("Called on a FAILED schema");
+	}
+*/
+	
     //---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC INTERFACE                                         //
 	//---------------------------------------------------------------------------------------------//	
@@ -78,7 +78,7 @@ public class SchemaImpl implements Schema {
 	 */
 	@Override
 	public List<State> getStates() {
-		checkInternalState();
+		isUsable();
 		ArrayList<State> result = new ArrayList<State>(states.size());
 		result.addAll(states);
 		return Collections.unmodifiableList(result);
@@ -89,7 +89,7 @@ public class SchemaImpl implements Schema {
 	 */
 	@Override
 	public State getState(String name) {
-		checkInternalState();
+		isUsable();
 		for (State state: states) {
 			if (state.getName().equals(name)) return state;
 		}
@@ -101,7 +101,7 @@ public class SchemaImpl implements Schema {
 	 */
 	@Override
 	public List<Test> getTests() {
-		checkInternalState();
+		isUsable();
 		ArrayList<Test> result = new ArrayList<Test>(tests.size());
 		for (Test test: tests) {
 			result.add(test);
@@ -114,7 +114,7 @@ public class SchemaImpl implements Schema {
 	 */
 	@Override
 	public Test getTest(String name) {
-		checkInternalState();
+		isUsable();
 		for (Test test: tests) {
 			if (test.getName().equals(name)) return test;
 		}

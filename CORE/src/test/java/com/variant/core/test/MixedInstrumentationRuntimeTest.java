@@ -11,15 +11,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.hook.HookListener;
-import com.variant.core.hook.TestTargetingHook;
+import com.variant.core.exception.Error;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.impl.MessageTemplate;
+import com.variant.server.ParserResponse;
+import com.variant.server.hook.HookListener;
+import com.variant.server.hook.TestTargetingHook;
 
 /**
  * Test mixed instrumentation, i.e. when an experience is not defined
@@ -529,7 +529,7 @@ public class MixedInstrumentationRuntimeTest extends BaseTestCore {
 				req.commit();
 				req = ssn.targetForState(s2);
 			}
-		}.assertThrown(MessageTemplate.RUN_STATE_UNDEFINED_IN_EXPERIENCE, "test1.A", "state2");
+		}.assertThrown(Error.RUN_STATE_UNDEFINED_IN_EXPERIENCE, "test1.A", "state2");
 		
 		// target for S3 and then for S2, which is not allowed because
 		// it'll break T1.
@@ -543,7 +543,7 @@ public class MixedInstrumentationRuntimeTest extends BaseTestCore {
 				req.commit();
 				req = ssn.targetForState(s2);
 			}
-		}.assertThrown(MessageTemplate.RUN_STATE_UNDEFINED_IN_EXPERIENCE, "test1.C", "state2");
+		}.assertThrown(Error.RUN_STATE_UNDEFINED_IN_EXPERIENCE, "test1.C", "state2");
 
 		// Targeting hook listener returns a good experience.
 		core.addHookListener(new TargetingHookListener(t1, t1.getExperience("B")));
@@ -563,7 +563,7 @@ public class MixedInstrumentationRuntimeTest extends BaseTestCore {
 				VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
 				ssn.targetForState(s2);
 			}
-		}.assertThrown(MessageTemplate.RUN_HOOK_TARGETING_BAD_EXPERIENCE, badListener1.getClass().getName(), t1.getName(), t2.getExperience("C").toString());
+		}.assertThrown(Error.RUN_HOOK_TARGETING_BAD_EXPERIENCE, badListener1.getClass().getName(), t1.getName(), t2.getExperience("C").toString());
 
 		// Targeting hook listener returns experience uninstrumented on the state.
 		core.clearHookListeners();
@@ -575,7 +575,7 @@ public class MixedInstrumentationRuntimeTest extends BaseTestCore {
 				VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
 				ssn.targetForState(s2);
 			}
-		}.assertThrown(MessageTemplate.RUN_HOOK_TARGETING_BAD_EXPERIENCE, badListener2.getClass().getName(), t1.getName(), t1.getExperience("C").toString());
+		}.assertThrown(Error.RUN_HOOK_TARGETING_BAD_EXPERIENCE, badListener2.getClass().getName(), t1.getName(), t1.getExperience("C").toString());
 
 	}
 	

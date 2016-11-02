@@ -1,21 +1,21 @@
 package com.variant.core.test;
 
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_DUPE;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_DUPE;
-import static com.variant.core.xdm.impl.MessageTemplate.PARSER_COVARIANT_VARIANT_MISSING;
+import static com.variant.core.exception.Error.PARSER_COVARIANT_EXPERIENCE_DUPE;
+import static com.variant.core.exception.Error.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.exception.Error.PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT;
+import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_DUPE;
+import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserResponse;
-import com.variant.core.schema.ParserMessage.Severity;
 import com.variant.core.xdm.impl.ParserMessageImplFacade;
-import com.variant.core.xdm.impl.SchemaParser;
+import com.variant.server.ParserMessage;
+import com.variant.server.ParserResponse;
+import com.variant.server.ParserMessage.Severity;
+import com.variant.server.schema.SchemaParser;
 
 /**
  * Parse time exceptions

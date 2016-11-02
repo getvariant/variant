@@ -8,10 +8,9 @@ import com.variant.client.http.HttpClient;
 import com.variant.client.http.HttpResponse;
 import com.variant.client.http.VariantHttpClientException;
 import com.variant.core.VariantCoreSession;
-import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.session.SessionStore;
+import com.variant.core.session.CoreSession;
 
 public class SessionStoreImplRemote implements SessionStore {
 
@@ -42,7 +41,7 @@ public class SessionStoreImplRemote implements SessionStore {
 		}
 		else if (resp.getStatus() == HttpStatus.SC_NO_CONTENT) {
 			if (create) {
-				CoreSessionImpl newSession = new CoreSessionImpl(sessionId, coreApi);
+				CoreSession newSession = new CoreSession(sessionId, coreApi);
 				save(newSession);
 				return new SessionPayloadReader(coreApi, newSession.toJson());
 			}
@@ -67,7 +66,7 @@ public class SessionStoreImplRemote implements SessionStore {
 		
 		// Remote
 		HttpClient httpClient = new HttpClient();
-		HttpResponse resp = httpClient.put(apiEndpointUrl + "session/" + session.getId(), ((CoreSessionImpl)session).toJson());
+		HttpResponse resp = httpClient.put(apiEndpointUrl + "session/" + session.getId(), ((CoreSession)session).toJson());
 		
 		if (resp.getStatus() != HttpStatus.SC_OK) {
 			throw new VariantHttpClientException(resp);

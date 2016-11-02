@@ -2,7 +2,7 @@ package com.variant.client.impl;
 
 import java.util.regex.Pattern;
 
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 
@@ -63,8 +63,8 @@ public class StateSelectorByRequestPath  {
 	 */
 	public static boolean match(String pattern, String string) {
 
-		if (!pattern.startsWith("/")) throw new VariantInternalException("Pattern must start with [/] but was [" + pattern + "]");
-		if (!string.startsWith("/")) throw new VariantInternalException("String must start with [/] but was [" + string + "]");
+		if (!pattern.startsWith("/")) throw new RuntimeInternalException("Pattern must start with [/] but was [" + pattern + "]");
+		if (!string.startsWith("/")) throw new RuntimeInternalException("String must start with [/] but was [" + string + "]");
 		
 		// Expand '//', otherwise they may get eaten by the splitter algorithm.
 		// Keep looking for '//' until none. This is needed to account for '///'

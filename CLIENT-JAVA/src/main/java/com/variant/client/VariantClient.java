@@ -5,9 +5,9 @@ import java.util.Properties;
 
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.exception.VariantSchemaModifiedException;
-import com.variant.core.hook.HookListener;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.xdm.Schema;
+import com.variant.server.ParserResponse;
+import com.variant.server.hook.HookListener;
 
 /**
  * Variant Bare Java Client. Makes no assumptions about the host application other than 

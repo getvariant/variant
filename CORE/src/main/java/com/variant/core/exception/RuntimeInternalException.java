@@ -1,6 +1,6 @@
 package com.variant.core.exception;
 
-public class VariantInternalException extends VariantRuntimeException {
+public class RuntimeInternalException extends VariantRuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -8,7 +8,7 @@ public class VariantInternalException extends VariantRuntimeException {
 	 * 
 	 * @param msg
 	 */
-	public VariantInternalException(String msg) {
+	public RuntimeInternalException(String msg) {
 		super(msg);
 	}
 	
@@ -17,7 +17,7 @@ public class VariantInternalException extends VariantRuntimeException {
 	 * @param msg
 	 * @param t
 	 */
-	public VariantInternalException(Throwable t) {
+	public RuntimeInternalException(Throwable t) {
 		super(t);
 	}
 
@@ -26,7 +26,7 @@ public class VariantInternalException extends VariantRuntimeException {
 	 * @param msg
 	 * @param t
 	 */
-	public VariantInternalException(String msg, Throwable t) {
+	public RuntimeInternalException(String msg, Throwable t) {
 		super(msg, t);
 	}
 

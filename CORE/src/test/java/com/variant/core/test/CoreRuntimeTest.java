@@ -13,12 +13,9 @@ import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.hook.HookListener;
-import com.variant.core.hook.TestQualificationHook;
-import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantRuntimeTestFacade;
-import com.variant.core.schema.ParserResponse;
+import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.xdm.Schema;
@@ -26,6 +23,9 @@ import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 import com.variant.core.xdm.impl.StateVariantImpl;
+import com.variant.server.ParserResponse;
+import com.variant.server.hook.HookListener;
+import com.variant.server.hook.TestQualificationHook;
 
 
 /**
@@ -1130,7 +1130,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 		VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
 		setTargetingStabile(ssn, "test2.B");
 		VariantCoreStateRequest req = ssn.targetForState(state1);
-		SessionScopedTargetingStabile stabile = ((CoreSessionImpl)ssn).getTargetingStabile();
+		SessionScopedTargetingStabile stabile = ((CoreSession)ssn).getTargetingStabile();
 
 		// test2 is off, but stabile has a variant experience for it, which will be substituted for the purposes of lookup with control.
 		// test3 is covariant with test1, so it is targeted unconstrained.
@@ -1168,7 +1168,7 @@ public class CoreRuntimeTest extends BaseTestCore {
 		for (String stateName: new String[] {"state1", "state2", "state3", "state4", "state5"}) {
 	    	         
 			VariantCoreStateRequest req = ssnIn.targetForState(core.getSchema().getState(stateName));
-			CoreSessionImpl ssn = (CoreSessionImpl) req.getSession();
+			CoreSession ssn = (CoreSession) req.getSession();
 			assertEquals(ssn, ssnIn);
 			assertTrue(ssn.getTraversedStates().isEmpty());
 			assertTrue(ssn.getTraversedTests().isEmpty());

@@ -9,16 +9,16 @@ import org.junit.Test;
 
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.exception.Error;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.hook.HookListener;
-import com.variant.core.hook.TestTargetingHook;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.impl.MessageTemplate;
+import com.variant.server.ParserResponse;
+import com.variant.server.hook.HookListener;
+import com.variant.server.hook.TestTargetingHook;
 
 public class TargetingTest extends BaseTestCore {
 
@@ -331,7 +331,7 @@ public class TargetingTest extends BaseTestCore {
 		new ExceptionInterceptor<VariantRuntimeException>() {
 			@Override public void toRun() { ssn.targetForState(state); }
 			@Override public void onThrown(VariantRuntimeException e) { 
-				assertEquals(e.getMessage(), new VariantRuntimeUserErrorException(MessageTemplate.RUN_WEIGHT_MISSING, "test1", "B").getMessage()); 
+				assertEquals(e.getMessage(), new VariantRuntimeUserErrorException(Error.RUN_WEIGHT_MISSING, "test1", "B").getMessage()); 
 			}
 			@Override public Class<VariantRuntimeException> getExceptionClass() { return VariantRuntimeException.class; }
 		}.assertThrown();

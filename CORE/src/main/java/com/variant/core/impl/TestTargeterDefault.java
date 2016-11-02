@@ -1,12 +1,11 @@
 package com.variant.core.impl;
 
-import static com.variant.core.xdm.impl.MessageTemplate.RUN_WEIGHT_MISSING;
-
 import java.util.Random;
 
-import com.variant.core.VariantCoreSession;
-import com.variant.core.exception.VariantInternalException;
-import com.variant.core.exception.VariantRuntimeUserErrorException;
+import static com.variant.core.exception.RuntimeError.*;
+import com.variant.core.exception.RuntimeErrorException;
+import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.session.CoreSession;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
@@ -25,7 +24,7 @@ class TestTargeterDefault {
 	 * 
 	 * @return
 	 */
-	Experience target(VariantCoreSession session, Test test, State state) {
+	Experience target(CoreSession session, Test test, State state) {
 
 		double weightSum = 0;
 		for (Experience e: test.getExperiences()) {
@@ -33,13 +32,13 @@ class TestTargeterDefault {
 			if (e.getWeight() == null ) {
 				// It's not a syntax error not to supply the weight, but if we're
 				// here it means that no targeter hook fired, and that's a runtime error.
-				throw new VariantRuntimeUserErrorException(RUN_WEIGHT_MISSING, e.getTest().getName(), e.getName());
+				throw new RuntimeErrorException(EXPERIENCE_WEIGHT_MISSING, e.getTest().getName(), e.getName());
 			}
 			weightSum += e.getWeight().doubleValue();
 		}
 
 		if (weightSum == 0) {
-			throw new VariantInternalException(
+			throw new RuntimeInternalException(
 					String.format("No defined states in test [%s] on state [%s]", test.getName(), state.getName()));
 		}
 		

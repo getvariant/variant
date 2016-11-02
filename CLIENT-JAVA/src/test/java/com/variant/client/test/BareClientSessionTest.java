@@ -19,11 +19,11 @@ import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.schema.ParserResponse;
+import com.variant.core.exception.Error;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
-import com.variant.core.xdm.impl.MessageTemplate;
+import com.variant.server.ParserResponse;
 
 public class BareClientSessionTest extends BareClientBaseTest {
 
@@ -45,7 +45,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 				Object[] userData = userDataForSimpleIn(client.getSchema(), "foo");
 				client.getOrCreateSession(userData); 
 			}
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);	
+		}.assertThrown(Error.RUN_SCHEMA_UNDEFINED);	
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 			@Override public void toRun() { 
 				ssn1.targetForState(client.getSchema().getState("state1"));
 			}
-		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, client.getSchema().getId(), oldSchemaId);
+		}.assertThrown(Error.RUN_SCHEMA_MODIFIED, client.getSchema().getId(), oldSchemaId);
 	}
 
 	/**

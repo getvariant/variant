@@ -1,4 +1,4 @@
-package com.variant.core.xdm.impl;
+package com.variant.server.schema;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,13 +10,18 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.event.impl.util.VariantStringUtils;
+import com.variant.core.exception.Error;
+import com.variant.core.exception.Error.Severity;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserMessage.Severity;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
+import com.variant.core.xdm.impl.Keywords;
+import com.variant.core.xdm.impl.StateParsedHookImpl;
+import com.variant.core.xdm.impl.StatesParser;
+import com.variant.core.xdm.impl.TestParsedHookImpl;
+import com.variant.core.xdm.impl.TestsParser;
 
 public class SchemaParser implements Keywords {
 	
@@ -42,7 +47,7 @@ public class SchemaParser implements Keywords {
 		String[] tokens = tail.split(",");
 		int line = Integer.parseInt(tokens[0]);
 		int column = Integer.parseInt(tokens[1]);
-		response.addMessage(MessageTemplate.PARSER_JSON_PARSE, line, column, message.toString(), rawInput);
+		response.addMessage(Error.PARSER_JSON_PARSE, line, column, message.toString(), rawInput);
 
 	}
 
@@ -108,7 +113,7 @@ public class SchemaParser implements Keywords {
 			toParserError(parseException, schemaAsJsonString, response);
 		} 
 		catch (Exception e) {
-			ParserMessage err = response.addMessage(MessageTemplate.INTERNAL, e.getMessage());
+			ParserMessage err = response.addMessage(Error.INTERNAL, e.getMessage());
 			LOG.error(err.getText(), e);
 		}
 		
@@ -124,14 +129,14 @@ public class SchemaParser implements Keywords {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {
-				response.addMessage(MessageTemplate.PARSER_UNSUPPORTED_CLAUSE, entry.getKey());
+				response.addMessage(Error.PARSER_UNSUPPORTED_CLAUSE, entry.getKey());
 			}
 		}
 		
 		// Pass2. Look at all clauses.  Expected ones are already uppercased.
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());
 		if (states == null) {
-			response.addMessage(MessageTemplate.PARSER_NO_STATES_CLAUSE);
+			response.addMessage(Error.PARSER_NO_STATES_CLAUSE);
 		}
 		else {
 			
@@ -145,7 +150,7 @@ public class SchemaParser implements Keywords {
 					hooker.post(new StateParsedHookImpl(state, response));
 				}
 				catch (VariantRuntimeException e) {
-					response.addMessage(MessageTemplate.HOOK_LISTENER_EXCEPTION, StateParsedHookImpl.class.getName(), e.getMessage());
+					response.addMessage(Error.HOOK_LISTENER_EXCEPTION, StateParsedHookImpl.class.getName(), e.getMessage());
 				}
 			}
 		}
@@ -155,7 +160,7 @@ public class SchemaParser implements Keywords {
 
 		Object tests = cleanMap.get(KEYWORD_TESTS.toUpperCase());
 		if (tests == null) {
-			response.addMessage(MessageTemplate.PARSER_NO_TESTS_CLAUSE);
+			response.addMessage(Error.PARSER_NO_TESTS_CLAUSE);
 		}
 		else {
 			
@@ -169,7 +174,7 @@ public class SchemaParser implements Keywords {
 					hooker.post(new TestParsedHookImpl(test, response));
 				}
 				catch (VariantRuntimeException e) {
-					response.addMessage(MessageTemplate.HOOK_LISTENER_EXCEPTION, TestParsedHookImpl.class.getName(), e.getMessage());
+					response.addMessage(Error.HOOK_LISTENER_EXCEPTION, TestParsedHookImpl.class.getName(), e.getMessage());
 				}
 			}
 		}

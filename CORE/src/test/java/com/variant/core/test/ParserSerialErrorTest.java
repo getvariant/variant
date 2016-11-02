@@ -5,14 +5,14 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import com.variant.core.exception.Error;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserResponse;
-import com.variant.core.schema.ParserMessage.Severity;
-import com.variant.core.xdm.impl.MessageTemplate;
 import com.variant.core.xdm.impl.ParserMessageImplFacade;
-import com.variant.core.xdm.impl.ParserResponseImpl;
-import com.variant.core.xdm.impl.SchemaParser;
+import com.variant.server.ParserMessage;
+import com.variant.server.ParserResponse;
+import com.variant.server.ParserMessage.Severity;
+import com.variant.server.schema.ParserResponseImpl;
+import com.variant.server.schema.SchemaParser;
 
 /**
  * Parse time exceptions
@@ -76,7 +76,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_JSON_PARSE, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries").getText(), error.getText());		
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_JSON_PARSE, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries").getText(), error.getText());		
 		assertEquals(9, error.getLine().intValue());
 		assertEquals(4, error.getColumn().intValue());
 	}
@@ -98,11 +98,11 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_NO_STATES_CLAUSE).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_NO_STATES_CLAUSE).getText(), error.getText());
 		assertEquals(Severity.INFO, error.getSeverity());
 
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_NO_TESTS_CLAUSE).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_NO_TESTS_CLAUSE).getText(), error.getText());
 		assertEquals(Severity.INFO, error.getSeverity());
 
 	}
@@ -153,11 +153,11 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_NO_STATES_CLAUSE).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_NO_STATES_CLAUSE).getText(), error.getText());
 		assertEquals(Severity.INFO, error.getSeverity());
 
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATEREF_UNDEFINED, "state1", "Test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_STATEREF_UNDEFINED, "state1", "Test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -209,11 +209,11 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_NO_STATES).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_NO_STATES).getText(), error.getText());
 		assertEquals(Severity.INFO, error.getSeverity());
 
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATEREF_UNDEFINED, "state1", "Test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_STATEREF_UNDEFINED, "state1", "Test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -275,7 +275,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATE_NAME_MISSING).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_STATE_NAME_MISSING).getText(), error.getText());
 	}
 
 	/**
@@ -341,7 +341,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATE_NAME_INVALID).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_STATE_NAME_INVALID).getText(), error.getText());
 	}
 	
 	/**
@@ -403,7 +403,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_TEST_ISON_NOT_BOOLEAN, "Test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_TEST_ISON_NOT_BOOLEAN, "Test1").getText(), error.getText());
 	}
 
 	/**
@@ -465,7 +465,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATE_NAME_DUPE, "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_STATE_NAME_DUPE, "state1").getText(), error.getText());
 	}
 
 	/**
@@ -496,7 +496,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_NO_TESTS_CLAUSE).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_NO_TESTS_CLAUSE).getText(), error.getText());
 	}
 
 	/**
@@ -529,7 +529,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_NO_TESTS).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_NO_TESTS).getText(), error.getText());
 	}
 
 	/**
@@ -593,9 +593,9 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.WARN, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_UNSUPPORTED_CLAUSE, "invalid clause").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_UNSUPPORTED_CLAUSE, "invalid clause").getText(), error.getText());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATE_UNSUPPORTED_PROPERTY, "invalid property", "state2").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_STATE_UNSUPPORTED_PROPERTY, "invalid property", "state2").getText(), error.getText());
 	}
 
 	/**
@@ -657,7 +657,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_TEST_NAME_MISSING).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_TEST_NAME_MISSING).getText(), error.getText());
 	}
 
 	/**
@@ -719,7 +719,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_TEST_NAME_INVALID).getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_TEST_NAME_INVALID).getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 	
@@ -810,7 +810,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_TEST_NAME_DUPE, "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_TEST_NAME_DUPE, "test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -874,7 +874,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.WARN, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_TEST_UNSUPPORTED_PROPERTY, "unsupported", "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_TEST_UNSUPPORTED_PROPERTY, "unsupported", "test1").getText(), error.getText());
 		assertEquals(Severity.WARN, error.getSeverity());
 	}
 
@@ -927,7 +927,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCES_NOT_LIST, "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_EXPERIENCES_NOT_LIST, "test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -982,7 +982,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCES_LIST_EMPTY, "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_EXPERIENCES_LIST_EMPTY, "test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1047,7 +1047,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCE_NOT_OBJECT, "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_EXPERIENCE_NOT_OBJECT, "test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1130,7 +1130,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(6, response.getMessages().size());
 		for (int i = 0; i < 6; i++) {
 			ParserMessage error = response.getMessages().get(i);
-			assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCE_NAME_INVALID, "test1").getText(), error.getText());
+			assertEquals(new ParserMessageImplFacade(Error.PARSER_EXPERIENCE_NAME_INVALID, "test1").getText(), error.getText());
 			assertEquals(Severity.ERROR, error.getSeverity());
 		}
 	}
@@ -1195,7 +1195,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_ISCONTROL_NOT_BOOLEAN, "test1", "A").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_ISCONTROL_NOT_BOOLEAN, "test1", "A").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1258,7 +1258,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_WEIGHT_NOT_NUMBER, "test1", "A").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_WEIGHT_NOT_NUMBER, "test1", "A").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1322,7 +1322,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.WARN, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY, "unsupported", "test1", "A").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY, "unsupported", "test1", "A").getText(), error.getText());
 		assertEquals(Severity.WARN, error.getSeverity());
 	}
 
@@ -1385,7 +1385,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_ONSTATES_NOT_LIST, "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_ONSTATES_NOT_LIST, "test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1436,7 +1436,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_ONSTATES_LIST_EMPTY, "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_ONSTATES_LIST_EMPTY, "test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 	
@@ -1487,7 +1487,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_ONSTATES_NOT_OBJECT, "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_ONSTATES_NOT_OBJECT, "test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1550,7 +1550,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATEREF_NOT_STRING, "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_STATEREF_NOT_STRING, "test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1612,7 +1612,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATEREF_MISSING, "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_STATEREF_MISSING, "test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1686,7 +1686,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATEREF_DUPE, "state1", "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_STATEREF_DUPE, "state1", "test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1750,7 +1750,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATEREF_UNDEFINED, "State1", "test1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_STATEREF_UNDEFINED, "State1", "test1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1814,7 +1814,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_ISNONVARIANT_NOT_BOOLEAN, "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_ISNONVARIANT_NOT_BOOLEAN, "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1878,7 +1878,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANTS_NOT_LIST, "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANTS_NOT_LIST, "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -1936,7 +1936,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANTS_LIST_EMPTY, "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANTS_LIST_EMPTY, "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2000,7 +2000,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANTS_UNSUPPORTED_PROPERTY, "unsupported", "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANTS_UNSUPPORTED_PROPERTY, "unsupported", "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2064,7 +2064,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE, "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE, "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2119,7 +2119,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANTS_ISNONVARIANT_XOR, "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANTS_ISNONVARIANT_XOR, "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2175,13 +2175,13 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(3, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANT_NOT_OBJECT, "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANT_NOT_OBJECT, "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANT_NOT_OBJECT, "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANT_NOT_OBJECT, "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(2);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANT_MISSING, "A", "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANT_MISSING, "A", "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2244,10 +2244,10 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCEREF_MISSING, "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_EXPERIENCEREF_MISSING, "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANT_MISSING, "A", "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANT_MISSING, "A", "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 	
@@ -2316,7 +2316,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCEREF_NOT_STRING, "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_EXPERIENCEREF_NOT_STRING, "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2379,10 +2379,10 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCEREF_UNDEFINED, "foo", "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_EXPERIENCEREF_UNDEFINED, "foo", "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANT_MISSING, "A", "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANT_MISSING, "A", "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2451,7 +2451,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCEREF_ISCONTROL, "B", "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_EXPERIENCEREF_ISCONTROL, "B", "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2512,7 +2512,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCEREF_PARAMS_NOT_OBJECT, "test1", "state1", "A").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_EXPERIENCEREF_PARAMS_NOT_OBJECT, "test1", "state1", "A").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2579,10 +2579,10 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_EXPERIENCE_NAME_DUPE, "B", "TEST").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_EXPERIENCE_NAME_DUPE, "B", "TEST").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANT_MISSING, "B", "TEST", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2650,7 +2650,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_CONTROL_EXPERIENCE_DUPE, "C", "TEST").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_CONTROL_EXPERIENCE_DUPE, "C", "TEST").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2723,10 +2723,10 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANT_DUPE, "A", "TEST", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANT_DUPE, "A", "TEST", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANT_MISSING, "B", "TEST", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2793,7 +2793,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(Severity.ERROR, response.highestMessageSeverity());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_VARIANT_MISSING, "B", "TEST", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImplFacade(Error.PARSER_VARIANT_MISSING, "B", "TEST", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 
@@ -2856,7 +2856,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(5, response.getMessages().size());
 		for (int i = 0; i < 5; i++) {
 			ParserMessage error = response.getMessages().get(i);
-			assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_STATE_NAME_INVALID).getText(), error.getText());
+			assertEquals(new ParserMessageImplFacade(Error.PARSER_STATE_NAME_INVALID).getText(), error.getText());
 			assertEquals(Severity.ERROR, error.getSeverity());
 		}
 	}
@@ -3019,7 +3019,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		assertEquals(5, response.getMessages().size());
 		for (int i = 0; i < 5; i++) {
 			ParserMessage error = response.getMessages().get(i);
-			assertEquals(new ParserMessageImplFacade(MessageTemplate.PARSER_TEST_NAME_INVALID).getText(), error.getText());
+			assertEquals(new ParserMessageImplFacade(Error.PARSER_TEST_NAME_INVALID).getText(), error.getText());
 			assertEquals(Severity.ERROR, error.getSeverity());
 		}
 	}

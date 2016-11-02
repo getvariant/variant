@@ -7,7 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
@@ -114,7 +114,7 @@ public class VariantSpace {
 	public VariantSpace(TestOnStateImpl tosImpl)  {
 		
 		if (tosImpl.isNonvariant()) 
-			throw new VariantInternalException("Cannot crate VariantSpace for a nonvariant instrumentation");
+			throw new RuntimeInternalException("Cannot crate VariantSpace for a nonvariant instrumentation");
 		
 		// Build basis sorted in ordinal order.
 		basis = new LinkedHashSet<Test>();
@@ -183,12 +183,12 @@ public class VariantSpace {
 			Coordinates coordinates = new Coordinates(coordinateExperiences);
 			Point p = table.get(coordinates);
 			if (p == null) {
-				throw new VariantInternalException(
+				throw new RuntimeInternalException(
 						"No point for coordinates [" + VariantStringUtils.toString(coordinateExperiences, ", ") + 
 						"] in test [" + variant.getTest().getName() + "] and view [" + variant.getOnState().getState().getName() + "]");
 			}
 			if (p.variant != null)
-				throw new VariantInternalException("Variant already added");
+				throw new RuntimeInternalException("Variant already added");
 			p.variant = variant;
 		}
 	}

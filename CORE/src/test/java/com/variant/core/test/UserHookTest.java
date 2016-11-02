@@ -13,23 +13,23 @@ import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.hook.HookListener;
-import com.variant.core.hook.StateParsedHook;
-import com.variant.core.hook.TestParsedHook;
-import com.variant.core.hook.TestQualificationHook;
-import com.variant.core.hook.TestTargetingHook;
-import com.variant.core.impl.CoreSessionImpl;
+import com.variant.core.exception.Error;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserMessage.Severity;
-import com.variant.core.schema.ParserResponse;
+import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.impl.MessageTemplate;
+import com.variant.server.ParserMessage;
+import com.variant.server.ParserResponse;
+import com.variant.server.ParserMessage.Severity;
+import com.variant.server.hook.HookListener;
+import com.variant.server.hook.StateParsedHook;
+import com.variant.server.hook.TestParsedHook;
+import com.variant.server.hook.TestQualificationHook;
+import com.variant.server.hook.TestTargetingHook;
 
 /**
  * TODO: Need to also test annotations.
@@ -126,7 +126,7 @@ public class UserHookTest extends BaseTestCore {
 		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());
 		assertEqualAsSets(ssn.getTraversedTests(), schema.getTest("test1"), schema.getTest("Test1"));
 		assertEquals(0, ssn.getDisqualifiedTests().size());
-		SessionScopedTargetingStabile stabile = ((CoreSessionImpl)ssn).getTargetingStabile();
+		SessionScopedTargetingStabile stabile = ((CoreSession)ssn).getTargetingStabile();
 		assertEquals(2, stabile.getAll().size());
 		assertNotNull(stabile.get("test1"));
 		assertNull(stabile.get("test2"));
@@ -141,7 +141,7 @@ public class UserHookTest extends BaseTestCore {
 		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());
 		assertEqualAsSets(ssn.getTraversedTests(), schema.getTest("test1"), schema.getTest("Test1"));
 		assertEquals(0, ssn.getDisqualifiedTests().size());
-		stabile = ((CoreSessionImpl)ssn).getTargetingStabile();
+		stabile = ((CoreSession)ssn).getTargetingStabile();
 		assertEquals(2, stabile.getAll().size());
 		assertNotNull(stabile.get("test1"));
 		assertNull(stabile.get("test2"));
@@ -205,7 +205,7 @@ public class UserHookTest extends BaseTestCore {
 		schema = core.getSchema();
 		state1 = schema.getState("state1");
 		sessionId = VariantStringUtils.random64BitString(rand);
-		CoreSessionImpl ssn3 = (CoreSessionImpl) core.getSession(sessionId, true).getBody();
+		CoreSession ssn3 = (CoreSession) core.getSession(sessionId, true).getBody();
 		assertTrue(ssn3.getTraversedStates().isEmpty());
 		assertTrue(ssn3.getTraversedTests().isEmpty());
 		setTargetingStabile(ssn3, "test1.B","test2.D","Test1.A");
@@ -314,7 +314,7 @@ public class UserHookTest extends BaseTestCore {
 				assertEquals("Off tests should not be targeted", 0, test1BadListener.count);
 				ssn.targetForState(s1);
 			}
-		}.assertThrown(MessageTemplate.RUN_HOOK_TARGETING_BAD_EXPERIENCE, test1BadListener.getClass().getName(), t1.getName(), t3.getControlExperience().toString());
+		}.assertThrown(Error.RUN_HOOK_TARGETING_BAD_EXPERIENCE, test1BadListener.getClass().getName(), t1.getName(), t3.getControlExperience().toString());
 
 	}
 	/**

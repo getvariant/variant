@@ -1,9 +1,9 @@
 package com.variant.core.impl;
-
-import static com.variant.core.xdm.impl.MessageTemplate.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
-import static com.variant.core.xdm.impl.MessageTemplate.BOOT_CONFIG_FILE_NOT_FOUND;
-import static com.variant.core.xdm.impl.MessageTemplate.BOOT_CONFIG_RESOURCE_NOT_FOUND;
-import static com.variant.core.xdm.impl.MessageTemplate.INTERNAL;
+/*
+import static com.variant.core.exception.Error.BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
+import static com.variant.core.exception.Error.BOOT_CONFIG_FILE_NOT_FOUND;
+import static com.variant.core.exception.Error.BOOT_CONFIG_RESOURCE_NOT_FOUND;
+import static com.variant.core.exception.Error.INTERNAL;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,31 +14,32 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.client.session.SessionService;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.event.impl.util.VariantIoUtils;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.hook.HookListener;
-import com.variant.core.hook.UserHook;
 import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserMessage.Severity;
-import com.variant.core.schema.ParserResponse;
-import com.variant.core.session.SessionService;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.impl.ParserResponseImpl;
 import com.variant.core.xdm.impl.SchemaImpl;
-import com.variant.core.xdm.impl.SchemaParser;
+import com.variant.server.ParserMessage;
+import com.variant.server.ParserResponse;
+import com.variant.server.ParserMessage.Severity;
+import com.variant.server.hook.HookListener;
+import com.variant.server.hook.UserHook;
+import com.variant.server.runtime.VariantRuntime;
+import com.variant.server.schema.ParserResponseImpl;
+import com.variant.server.schema.SchemaParser;
 
-/**
+/** CLEANIUP core should be stateless.
  * The Variant CORE API.
  * 
  * @author Igor
  * @since 0.5
- */
+ *
 public class VariantCore implements Serializable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantCore.class);
@@ -113,18 +114,19 @@ public class VariantCore implements Serializable {
 	}
 
 	/**
-	 * 
+	 * TODO: lose this and make core stateless.
 	 * @throws Exception
-	 */
+	 *
 	private void instantiate() throws Exception {
 				
 		//
 		// Init comptime service. 
-		//
-		comptime = new VariantComptime();
+		// 0.7.0: still need this?
+		//comptime = new VariantComptime(); 
 				
 		// Instantiate runtime.
-		runtime = new VariantRuntime(this);
+		// 0.7.0: moved to server.
+		// runtime = new VariantRuntime(this);
 
 		// Instantiate session service
 		sessionService = new SessionService(this);
@@ -133,7 +135,7 @@ public class VariantCore implements Serializable {
 	/**
 	 * Expose session service to tests.
 	 * @return
-	 */
+	 *
 	SessionService getSessionService() {
 		return sessionService;
 	}
@@ -158,7 +160,7 @@ public class VariantCore implements Serializable {
 	 * @return An implementation of the {@link Variant} interface.
      *
 	 * @since 0.6
-	 */
+	 *
 	public VariantCore(String...resourceNames)  {
 			
 		long now = System.currentTimeMillis();
@@ -172,7 +174,7 @@ public class VariantCore implements Serializable {
 		catch (Exception e) {
 			String message = "Unable to instantiate Variant Core";
 			LOG.error(message + ": " + e.getMessage());
-			throw new VariantInternalException(message, e);
+			throw new RuntimeInternalException(message, e);
 		}
 		LOG.info(
 				String.format("Variant Core %s bootstrapped in %s.",
@@ -190,7 +192,7 @@ public class VariantCore implements Serializable {
 	public CorePropertiesImpl getProperties() {
 		return properties;
 	}
-    */
+    
 	/**
 	 * <p>Parse and, if no errors, optionally deploy a new experiment schema.
 	 * 
@@ -198,18 +200,18 @@ public class VariantCore implements Serializable {
 	 * @param deploy The new test schema will be deployed if this is true and no parse errors 
 	 *        were encountered.
 	 *        
-	 * @return An instance of the {@link com.variant.core.schema.ParserResponse} type that
+	 * @return An instance of the {@link com.variant.server.ParserResponse} type that
 	 *         may be further examined about the outcome of this operation.
 	 * 
 	 * @since 0.5
-	 */
+	 *
 	public ParserResponse parseSchema(InputStream stream, boolean deploy) {
 		
 		String input = null;
 		try {
 			input = IOUtils.toString(stream);
 		} catch (IOException e) {
-			throw new VariantInternalException("Unable to read input from stream", e);
+			throw new RuntimeInternalException("Unable to read input from stream", e);
 		}
 		return parseSchema(input, deploy);
 	}
@@ -220,11 +222,11 @@ public class VariantCore implements Serializable {
      * 
 	 * @param stream The schema to be parsed and deployed, as a java.io.InputStream.
 	 *         
-	 * @return An instance of the {@link com.variant.core.schema.ParserResponse} object, which
+	 * @return An instance of the {@link com.variant.server.ParserResponse} object, which
 	 *         may be further examined about the outcome of this operation.
      *
 	 * @since 0.5
-	 */
+	 *
 	public ParserResponse parseSchema(InputStream stream) {
 
 		return parseSchema(stream, true);
@@ -236,7 +238,7 @@ public class VariantCore implements Serializable {
 	 * @return Current test schema as an instance of the {@link com.variant.core.xdm.Schema} object.
 	 * 
 	 * @since 0.5
-	 */
+	 *
 	public Schema getSchema() {
 		return schema;	
 	}
@@ -251,27 +253,27 @@ public class VariantCore implements Serializable {
 	 * @param id Session ID.
 	 * @since 0.6
 	 * @return An instance of {@link VariantCoreSession}.
-	 */
+	 *
 	public SessionPayloadReader getSession(String id, boolean create) {
 		return sessionService.getSession(id, create);
 	}
 	
 	/**
-	 * <p>Register a {@link com.variant.core.hook.HookListener}. The caller must provide 
-	 * an implementation of the {@link com.variant.core.hook.HookListener} interface 
-	 * which listens to a pre-defined {@link com.variant.core.hook.UserHook} type. Whenever 
-	 * Variant reaches a hook given by the {@link com.variant.core.hook.UserHook} type
+	 * <p>Register a {@link com.variant.server.hook.HookListener}. The caller must provide 
+	 * an implementation of the {@link com.variant.server.hook.HookListener} interface 
+	 * which listens to a pre-defined {@link com.variant.server.hook.UserHook} type. Whenever 
+	 * Variant reaches a hook given by the {@link com.variant.server.hook.UserHook} type
 	 * parameter, the hook listener is notified. 
 	 * 
-	 * <p>Any number of listeners may listen for the same {@link com.variant.core.hook.UserHook} 
+	 * <p>Any number of listeners may listen for the same {@link com.variant.server.hook.UserHook} 
 	 * type. If more than one listener is registered for a particular 
-	 * {@link com.variant.core.hook.UserHook} type, the order of notification is undefined.
+	 * {@link com.variant.server.hook.UserHook} type, the order of notification is undefined.
 	 * 
 	 * @param listener An instance of a caller-provided implementation of the 
-	 *        {@link com.variant.core.hook.HookListener} interface.
+	 *        {@link com.variant.server.hook.HookListener} interface.
 	 *        
 	 * @since 0.5
-	 */
+	 *
 	public void addHookListener(HookListener<? extends UserHook> listener) {
 		if (listener == null) throw new IllegalArgumentException("Argument cannot be null");
 		hooker.addListener(listener);		
@@ -281,7 +283,7 @@ public class VariantCore implements Serializable {
 	 * <p>Remove all previously registered (with {@link #addHookListener(HookListener)} listeners.
 	 * 
 	 * @since 0.5
-	 */
+	 *
 	public void clearHookListeners() {
 		hooker.clear();		
 	}
@@ -289,21 +291,21 @@ public class VariantCore implements Serializable {
 	/**
 	 * Expose runtime to tests via package visible getter.
 	 * @return
-	 */
+	 *
 	public VariantRuntime getRuntime() {
 		return runtime;
 	}
-
+*/
 	/** 
 	 * @return
-	 *
+	 * MOVED TO SVR
 	public SessionService getSessionService() {
 		return sessionService;
 	}
 	*/
 	/**
 	 * 
-	 */
+	 * MOVED TO SVR
 	public ParserResponse parseSchema(String schema) {
 		
 		return parseSchema(schema, true);
@@ -314,7 +316,7 @@ public class VariantCore implements Serializable {
 	 * @param string
 	 * @param deploy
 	 * @return
-	 */
+	 * MOVED TO SVR
 	public ParserResponse parseSchema(String schemaString, boolean deploy) {
 
 		long now = System.currentTimeMillis();
@@ -364,11 +366,11 @@ public class VariantCore implements Serializable {
 		
 		return response;
 	}
-	
+
 	/**
 	 * 
 	 * @return
-	 */
+	 *
 	public UserHooker getUserHooker() {
 		return hooker;
 	}
@@ -377,13 +379,14 @@ public class VariantCore implements Serializable {
 	/**
 	 * 
 	 * @return
-	 */
+	 *
 	public VariantComptime getComptime() {
 		return comptime;
 	}
 	
 	/**
-	 */
+	 *
 	private static final long serialVersionUID = 1L;
 
 }
+*/

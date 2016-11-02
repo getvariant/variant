@@ -1,6 +1,6 @@
 package com.variant.client.impl;
 
-import static com.variant.core.xdm.impl.MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON;
+import static com.variant.core.exception.Error.RUN_PROPERTY_INIT_INVALID_JSON;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +13,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.client.SystemProperties;
 import com.variant.core.event.impl.util.PropertiesChain;
+import com.variant.core.exception.Error;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.xdm.impl.MessageTemplate;
 
 /**
  * Static singleton interface to system properties.
@@ -138,7 +138,7 @@ public class SystemPropertiesImpl implements SystemProperties {
 		else if (clazz == Map.class)
 			return (T) getMap(key);
 		else 
-			throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_PROPERTY_BAD_CLASS, clazz.getName());
+			throw new VariantRuntimeUserErrorException(Error.RUN_PROPERTY_BAD_CLASS, clazz.getName());
 	}
 	
 	/**

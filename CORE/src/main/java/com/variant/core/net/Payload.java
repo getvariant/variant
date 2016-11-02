@@ -2,7 +2,7 @@ package com.variant.core.net;
 
 import java.util.HashMap;
 
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.RuntimeInternalException;
 
 abstract public class Payload {
 
@@ -56,7 +56,7 @@ abstract public class Payload {
 		else if (clazz == Long.class)
 			return (T) new Long(getProperty(prop));
 		else 
-			throw new VariantInternalException("Unable to convert property value to instance of [" + clazz.getName() + "]");
+			throw new RuntimeInternalException("Unable to convert property value to instance of [" + clazz.getName() + "]");
 	}
 
 }

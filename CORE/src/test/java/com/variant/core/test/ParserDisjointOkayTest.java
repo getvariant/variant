@@ -13,14 +13,14 @@ import java.util.Random;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.hook.HookListener;
-import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.StateVariant;
+import com.variant.server.ParserResponse;
+import com.variant.server.hook.HookListener;
+import com.variant.server.hook.TestQualificationHook;
 
 
 public class ParserDisjointOkayTest extends BaseTestCore {

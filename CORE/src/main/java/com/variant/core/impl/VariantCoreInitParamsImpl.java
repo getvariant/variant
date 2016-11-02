@@ -15,7 +15,7 @@ public class VariantCoreInitParamsImpl extends HashMap<String, Object> implement
 	/**
 	 */
 	private static final long serialVersionUID = 1L;
-	private VariantCore core; 
+	// private VariantCore core; 
 	
 	/**
 	 * Package construction
@@ -26,8 +26,7 @@ public class VariantCoreInitParamsImpl extends HashMap<String, Object> implement
 	 * @throws JsonParseException 
 	 */
 	@SuppressWarnings("unchecked")
-	public VariantCoreInitParamsImpl(VariantCore core, String json) throws Exception {
-		this.core = core;
+	public VariantCoreInitParamsImpl(String json) throws Exception {
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
 		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 		super.putAll(jacksonDataMapper.readValue(json, Map.class));
@@ -55,12 +54,13 @@ public class VariantCoreInitParamsImpl extends HashMap<String, Object> implement
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
 
-	/**
+	/** CLEANUP
 	 * The core API that created this object.
-	 */
+	 *
 	public VariantCore getCore() {
 		return core;
 	}
+	*/
 }
 
 

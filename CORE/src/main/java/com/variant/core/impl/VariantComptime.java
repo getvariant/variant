@@ -1,5 +1,5 @@
 package com.variant.core.impl;
-
+/* CLEANUP
 import java.io.InputStream;
 import java.util.Properties;
 
@@ -24,7 +24,7 @@ public class VariantComptime {
 	/**
 	 * Package instantiation
 	 * @throws Exception
-	 */
+	 *
 	VariantComptime() throws Exception {	        
 
 		// If we're called by a JUnit test, the version is passed in the system variable by the surefire Maven plugin.
@@ -59,4 +59,5 @@ public class VariantComptime {
 	public Component getComponent() { return component; }
 	public String getComponentVersion() { return componentVersion; }
 }
+*/
 

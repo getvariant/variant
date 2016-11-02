@@ -3,15 +3,15 @@ package com.variant.core.test;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.variant.client.session.SessionStore;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantException;
-import com.variant.core.impl.CoreSessionImpl;
 import com.variant.core.impl.SessionId;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.Payload;
 import com.variant.core.net.PayloadWriter;
 import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.session.SessionStore;
+import com.variant.core.session.CoreSession;
 
 /**
  * Session store implementation in local memory that uses JSON marshalling for better
@@ -50,7 +50,7 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	public SessionPayloadReader get(String sessionId, boolean create) {
 		String jsonBody = map.get(sessionId);
 		if (jsonBody == null && create) {
-			jsonBody = new CoreSessionImpl(new SessionId(sessionId), core).toJson();
+			jsonBody = new CoreSession(new SessionId(sessionId), core).toJson();
 			map.put(sessionId, jsonBody);
 		}  
 		
@@ -71,7 +71,7 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	@Override
 	public void save(VariantCoreSession session) {
 			//System.out.println(((CoreSessionImpl)session).toJson());
-			map.put(session.getId(), ((CoreSessionImpl)session).toJson());
+			map.put(session.getId(), ((CoreSession)session).toJson());
 	}
 	
 	@Override

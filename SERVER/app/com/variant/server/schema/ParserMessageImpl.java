@@ -1,7 +1,8 @@
-package com.variant.core.xdm.impl;
+package com.variant.server.schema;
 
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserResponse;
+import com.variant.core.xdm.impl.MessageTemplate;
+import com.variant.server.ParserMessage;
+import com.variant.server.ParserResponse;
 
 
 /**

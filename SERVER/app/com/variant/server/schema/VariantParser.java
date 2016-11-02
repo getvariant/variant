@@ -1,6 +1,6 @@
-package com.variant.core.xdm.impl;
+package com.variant.server.schema;
 
-import static com.variant.core.xdm.impl.MessageTemplate.*;
+import static com.variant.core.exception.Error.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,12 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
+import com.variant.core.xdm.impl.Keywords;
+import com.variant.core.xdm.impl.StateImpl;
+import com.variant.core.xdm.impl.StateVariantImpl;
+import com.variant.core.xdm.impl.TestExperienceImpl;
+import com.variant.core.xdm.impl.TestImpl;
+import com.variant.core.xdm.impl.TestOnStateImpl;
 
 /**
  * Parse the element of the tests/onViews/variants list.

@@ -8,7 +8,7 @@ import com.variant.client.VariantStateRequest;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.CoreStateRequestImpl;
+import com.variant.core.session.CoreStateRequest;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.StateVariant;
 import com.variant.core.xdm.Test;
@@ -17,13 +17,13 @@ import com.variant.core.xdm.Test.Experience;
 public class VariantStateRequestImpl implements VariantStateRequest {
 
 	private VariantSessionImpl session;
-	private CoreStateRequestImpl coreStateRequest;
+	private CoreStateRequest coreStateRequest;
 	
 	public VariantStateRequestImpl(
 			VariantCoreStateRequest coreStateRequest, 
 			VariantSessionImpl clientSession) 
 	{	
-		this.coreStateRequest = (CoreStateRequestImpl) coreStateRequest;
+		this.coreStateRequest = (CoreStateRequest) coreStateRequest;
 		this.session = (VariantSessionImpl) clientSession;
 	}
 
@@ -109,7 +109,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		return session;
 	}
 
-	public CoreStateRequestImpl getCoreStateRequest () {
+	public CoreStateRequest getCoreStateRequest () {
 		return coreStateRequest;
 	}
 

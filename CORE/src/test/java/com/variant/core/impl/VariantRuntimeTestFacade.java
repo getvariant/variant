@@ -7,6 +7,7 @@ import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
 import com.variant.core.xdm.Test.Experience;
 import com.variant.core.xdm.impl.StateVariantImpl;
+import com.variant.server.runtime.VariantRuntime;
 
 public class VariantRuntimeTestFacade {
 	

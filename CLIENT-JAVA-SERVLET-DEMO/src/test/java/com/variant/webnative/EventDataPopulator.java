@@ -11,11 +11,11 @@ import com.variant.client.VariantStateRequest;
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.xdm.Schema;
 import com.variant.core.xdm.State;
 import com.variant.core.xdm.Test;
+import com.variant.server.ParserMessage;
+import com.variant.server.ParserResponse;
 import com.variant.server.jdbc.JdbcService;
 
 public class EventDataPopulator {

@@ -1,4 +1,4 @@
-package com.variant.core.hook;
+package com.variant.server.hook;
 
 import com.variant.core.xdm.State;
 

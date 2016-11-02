@@ -1,11 +1,11 @@
 package com.variant.core.xdm.impl;
 
-import com.variant.core.xdm.impl.MessageTemplate;
-import com.variant.core.xdm.impl.ParserMessageImpl;
+import com.variant.core.exception.Error;
+import com.variant.server.schema.ParserMessageImpl;
 
 public class ParserMessageImplFacade extends ParserMessageImpl {
 
-	public ParserMessageImplFacade(MessageTemplate template, String...args) {
+	public ParserMessageImplFacade(Error template, String...args) {
 		super(template, args);
 	}
 

@@ -1,4 +1,4 @@
-package com.variant.core.schema;
+package com.variant.server;
 
 import java.util.List;
 

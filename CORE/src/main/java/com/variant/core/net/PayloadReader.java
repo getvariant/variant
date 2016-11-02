@@ -3,14 +3,14 @@ package com.variant.core.net;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.exception.VariantInternalException;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.impl.VariantCore;
+import com.variant.core.xdm.Schema;
 
 abstract public class PayloadReader<T> extends Payload {
 
 	private T body;
-	private VariantCore core;
+	private Schema schema;
 	
 	/**
 	 * 
@@ -28,18 +28,18 @@ abstract public class PayloadReader<T> extends Payload {
 				propMap.put(e.getKey(), (String)e.getValue());
 			}
 
-			this.body = deserealizeBody(core, (Map<String,?>)fields.get(FIELD_NAME_BODY));
+			this.body = deserealizeBody(schema, (Map<String,?>)fields.get(FIELD_NAME_BODY));
 
 		}
 		catch (VariantRuntimeException e) {
 			throw e;
 		}
 		catch (Exception e) {
-			throw new VariantInternalException("Unable to deserealize payload: [" + payload + "]", e);
+			throw new RuntimeInternalException("Unable to deserealize payload: [" + payload + "]", e);
 		}
 	}
 
-	protected abstract T deserealizeBody(VariantCore core, Map<String,?> mappedJson);
+	protected abstract T deserealizeBody(Schema schema, Map<String,?> mappedJson);
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -49,8 +49,8 @@ abstract public class PayloadReader<T> extends Payload {
 	 * 
 	 * @param core
 	 */
-	public PayloadReader(VariantCore core, String payload) {
-		this.core = core;
+	public PayloadReader(Schema schema, String payload) {
+		this.schema = schema;
 		parse(payload);
 	}
 	
