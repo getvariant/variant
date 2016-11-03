@@ -1,8 +1,8 @@
-package com.variant.server;
+package com.variant.core.schema;
 
 import java.util.List;
 
-import com.variant.core.schema.ParserMessage.Severity;
+import com.variant.core.exception.Error.Severity;
 
 /**
  * Represents the outcome of the XDM schema parsing operation.
@@ -34,12 +34,5 @@ public interface ParserResponse {
 	 * @since 0.5
 	 */
 	public boolean hasMessages();
-
-	/**
-	 * Highest message severity.
-	 * @return Highest {@link Severity} if there are messages, or null otherwise.
-	 * @since 0.5
-	 */
-	public Severity highestMessageSeverity();
 	
 }

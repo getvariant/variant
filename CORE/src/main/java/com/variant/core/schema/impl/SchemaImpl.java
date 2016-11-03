@@ -1,4 +1,4 @@
-package com.variant.core.xdm.impl;
+package com.variant.core.schema.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Random;
 
 import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 
 /**
  * @author Igor
@@ -25,31 +25,13 @@ public abstract class SchemaImpl implements Schema {
 	private LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
 	
 	// Life cycle.
-	private InternalState state = InternalState.NEW;
+	// private InternalState state = InternalState.NEW;
 	
 	/**
 	 * Package instantiation.
 	 */
-	SchemaImpl() {}
-		
-	/**
-	 * Add state to the set.
-	 * @param state
-	 * @return true if element didn't exist, false if did.
-	 */
-	boolean addState(State state) {
-		return states.add(state);
-	}
-
-	/**
-	 * Add test to the set.
-	 * @param test
-	 * @return true if element didn't exist, false if did.
-	 */
-	boolean addTest(Test test) {
-		return tests.add(test);
-	}
-	
+	public SchemaImpl() {}
+			
 	/**
 	 * extensions will provide implementaitons.
 	 */  
@@ -125,14 +107,32 @@ public abstract class SchemaImpl implements Schema {
 	//                                       PUBLIC EXT                                            //
 	//---------------------------------------------------------------------------------------------//
 
-	public enum InternalState {NEW, FAILED, DEPLOYED, UNDEPLOYED}
+	/**
+	 * Add state to this schema.
+	 * @param state
+	 * @return true if element didn't exist, false if did.
+	 */
+	public boolean addState(State state) {
+		return states.add(state);
+	}
 
 	/**
+	 * Add test to this schema
+	 * @param test
+	 * @return true if element didn't exist, false if did.
+	 */
+	public boolean addTest(Test test) {
+		return tests.add(test);
+	}
+
+	//public enum InternalState {NEW, FAILED, DEPLOYED, UNDEPLOYED}
+
+	/* CLEANUP
 	 * Set internal state
 	 * @param state
-	 */
+	 *
 	public void setInternalState(InternalState state) {
 		this.state = state;
 	}
-
+    */
 }

@@ -1,5 +1,5 @@
 package com.variant.core.impl;
-
+/* CLEANUP runtime moved to server.
 import java.util.Collection;
 
 import com.variant.core.util.Tuples;
@@ -21,7 +21,7 @@ public class VariantRuntimeTestFacade {
 	 * @param view
 	 * @param vector
 	 * @return
-	 */
+	 *
 	public Tuples.Pair<Boolean,StateVariantImpl> resolveState(State state, Collection<Experience> vector) {
 		return runtime.resolveState(state, vector);
 	}
@@ -30,7 +30,7 @@ public class VariantRuntimeTestFacade {
 	 * 
 	 * @param V
 	 * @return
-	 */
+	 *
 	public boolean isResolvable(Collection<Experience> v) {
 		return runtime.isResolvable(v);
 	}
@@ -40,7 +40,7 @@ public class VariantRuntimeTestFacade {
 	 * @param V
 	 * @param W
 	 * @return
-	 */
+	 *
 	public Collection<Experience> minUnresolvableSubvector(Collection<Experience> v, Collection<Experience> w) {
 		return runtime.minUnresolvableSubvector(v, w);
 	}
@@ -50,9 +50,10 @@ public class VariantRuntimeTestFacade {
 	 * @param test
 	 * @param alreadyTargetedExperiences
 	 * @return
-	 */
+	 *
 	public boolean isTargetable(Test test, State state, Collection<Experience> alreadyTargetedExperiences) {
 		return runtime.isTargetable(test, state, alreadyTargetedExperiences);
 	}
 
 }
+*/

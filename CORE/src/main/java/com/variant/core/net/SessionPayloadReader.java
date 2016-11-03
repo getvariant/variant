@@ -2,8 +2,8 @@ package com.variant.core.net;
 
 import java.util.Map;
 
+import com.variant.core.schema.Schema;
 import com.variant.core.session.CoreSession;
-import com.variant.core.xdm.Schema;
 
 public class SessionPayloadReader extends PayloadReader<CoreSession> {
 

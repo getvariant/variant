@@ -1,8 +1,7 @@
-package com.variant.server.hook;
+package com.variant.core.schema;
 
+import com.variant.core.exception.Error.Severity;
 import com.variant.core.hook.UserHook;
-import com.variant.server.ParserResponse;
-import com.variant.server.ParserMessage.Severity;
 
 /**
  * <p>Super-interface for all user hook types that post their listeners at schema parse time.
@@ -14,10 +13,10 @@ import com.variant.server.ParserMessage.Severity;
 public interface ParserHook extends UserHook {
 
 	/**
-	 * Host code may obtain the {@link com.variant.server.ParserResponse} object
+	 * Host code may obtain the {@link com.variant.core.schema.ParserResponse} object
 	 * under construction by the currently in-progress invocation of parser. 
 	 * 
-	 * @return An object of type {@link com.variant.server.ParserResponse}.
+	 * @return An object of type {@link com.variant.core.schema.ParserResponse}.
      * @since 0.5
 	 */
 	ParserResponse getParserResponse();

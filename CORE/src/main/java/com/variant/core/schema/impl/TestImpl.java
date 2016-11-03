@@ -1,4 +1,4 @@
-package com.variant.core.xdm.impl;
+package com.variant.core.schema.impl;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -6,9 +6,9 @@ import java.util.List;
 
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.impl.VariantSpace;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 
 /**
  * 
@@ -33,51 +33,11 @@ public class TestImpl implements Test {
 	 * 
 	 * @param name
 	 */
-	TestImpl(Schema schema, String name) {
+	public TestImpl(Schema schema, String name) {
 		this.schema = schema;
 		this.name = name;
 	}
-	
-	/**
-	 * 
-	 * @param experiences
-	 */
-	void setExperiences(List<TestExperienceImpl> experiences) {
-		this.experiences = experiences;
-	}
-	
-	/**
-	 * 
-	 * @param onViews
-	 */
-	void setOnViews(List<TestOnStateImpl> onViews) {
-		this.onViews = onViews;
-	}
-	
-	/**
-	 * 
-	 * @param isOn
-	 */
-	void setIsOn(boolean isOn) {
-		this.isOn = isOn;
-	}
 		
-	/**
-	 * Caller must ensure that the covarTests are sorted in ordinal order.
-	 * @param tests
-	 */
-	void setCovariantTests(List<TestImpl> covarTests) {
-		this.covariantTests = covarTests;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	VariantSpace getVariantSpace() {
-		return variantSpace;
-	}
-	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -195,8 +155,48 @@ public class TestImpl implements Test {
 	}
 
 	//---------------------------------------------------------------------------------------------//
-	//                                    PUBLIC EXTENSION                                         //
+	//                                       PUBLIC EXT                                            //
 	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 * 
+	 * @param experiences
+	 */
+	public void setExperiences(List<TestExperienceImpl> experiences) {
+		this.experiences = experiences;
+	}
+	
+	/**
+	 * 
+	 * @param onViews
+	 */
+	public void setOnViews(List<TestOnStateImpl> onViews) {
+		this.onViews = onViews;
+	}
+	
+	/**
+	 * 
+	 * @param isOn
+	 */
+	public void setIsOn(boolean isOn) {
+		this.isOn = isOn;
+	}
+		
+	/**
+	 * Caller must ensure that the covarTests are sorted in ordinal order.
+	 * @param tests
+	 */
+	public void setCovariantTests(List<TestImpl> covarTests) {
+		this.covariantTests = covarTests;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public VariantSpace getVariantSpace() {
+		return variantSpace;
+	}
 
 	/**
 	 * Tests are equal if they have the same name.

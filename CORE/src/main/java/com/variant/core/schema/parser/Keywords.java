@@ -1,9 +1,7 @@
-package com.variant.core.xdm.impl;
+package com.variant.core.schema.parser;
 
 /**
- * 
  * @author Igor
- *
  */
 interface Keywords {
 

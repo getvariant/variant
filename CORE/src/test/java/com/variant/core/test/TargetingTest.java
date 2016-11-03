@@ -13,9 +13,9 @@ import com.variant.core.exception.Error;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test.Experience;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test.Experience;
 import com.variant.server.ParserResponse;
 import com.variant.server.hook.HookListener;
 import com.variant.server.hook.TestTargetingHook;
@@ -103,7 +103,7 @@ public class TargetingTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		Schema schema = core.getSchema();		
 		State state = schema.getState("state1");
-		com.variant.core.xdm.Test test = schema.getTest("test1");
+		com.variant.core.schema.Test test = schema.getTest("test1");
 
 		//
 		// No targeting listener - distribution according to weights.
@@ -373,7 +373,7 @@ public class TargetingTest extends BaseTestCore {
 		@Override
 		public void post(TestTargetingHook hook) {
 			postCount++;
-			com.variant.core.xdm.Test test = hook.getTest();
+			com.variant.core.schema.Test test = hook.getTest();
 			Experience experience = rand.nextBoolean() ? test.getExperience("A") : test.getExperience("B");
 			hook.setTargetedExperience(experience);
 		}
@@ -395,7 +395,7 @@ public class TargetingTest extends BaseTestCore {
 		@Override
 		public void post(TestTargetingHook hook) {
 			postCount++;
-			com.variant.core.xdm.Test test = hook.getTest();
+			com.variant.core.schema.Test test = hook.getTest();
 			if (test.getName().equals("test1") && hook.getTargetedExperience() == null) {
 				Experience experience = rand.nextBoolean() ? test.getExperience("A") : test.getExperience("C");
 				hook.setTargetedExperience(experience);
@@ -419,7 +419,7 @@ public class TargetingTest extends BaseTestCore {
 		@Override
 		public void post(TestTargetingHook hook) {
 			postCount++;
-			com.variant.core.xdm.Test test = hook.getTest();
+			com.variant.core.schema.Test test = hook.getTest();
 			if (test.getName().equals("test1") && hook.getTargetedExperience() == null) {
 				Experience experience = rand.nextBoolean() ? (rand.nextBoolean() ? test.getExperience("A") : test.getExperience("B")) : null;
 				hook.setTargetedExperience(experience);

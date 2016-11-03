@@ -5,7 +5,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.xdm.Schema;
+import com.variant.core.schema.Schema;
 
 abstract public class PayloadReader<T> extends Payload {
 

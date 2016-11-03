@@ -1,4 +1,4 @@
-package com.variant.server.schema;
+package com.variant.core.schema.parser;
 
 import org.apache.commons.lang3.StringUtils;
 

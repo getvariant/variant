@@ -1,10 +1,10 @@
-package com.variant.core.xdm.impl;
+package com.variant.core.schema.impl;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 
 // Remove public modifier is the result of exposing the server side
 // constructor.
@@ -20,20 +20,12 @@ public class TestExperienceImpl implements Test.Experience  {
 	 * Instantiation.
 	 * @param name
 	 */
-	TestExperienceImpl(String name, Number weight, boolean isControl) {
+	public TestExperienceImpl(String name, Number weight, boolean isControl) {
 		this.name = name;
 		this.weight = weight;
 		this.isControl = isControl;
 	}
-	
-	/**
-	 * Test is unknown at the time of instantiation.
-	 * @param test
-	 */
-	void setTest(Test test) {
-		this.test = test;
-	}
-	
+		
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -66,6 +58,10 @@ public class TestExperienceImpl implements Test.Experience  {
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
+
+	public void setTest(Test test) {
+		this.test = test;
+	}
 
 	public void addUninstrumentedState(State state) {
 		uninstrumentedStates.add(state);

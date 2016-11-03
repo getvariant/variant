@@ -1,4 +1,4 @@
-package com.variant.core.xdm.impl;
+package com.variant.core.schema.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,10 +7,9 @@ import org.apache.commons.collections4.list.UnmodifiableList;
 
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
-import com.variant.core.util.Predicate;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.StateVariant;
-import com.variant.core.xdm.Test;
+import com.variant.core.schema.State;
+import com.variant.core.schema.StateVariant;
+import com.variant.core.schema.Test;
 
 /**
  * An element of the onState array of the test definition.
@@ -25,27 +24,12 @@ public class TestOnStateImpl implements Test.OnState {
 	private VariantSpace variantSpace;
 
 	/**
-	 * @param view
 	 */
-	TestOnStateImpl(StateImpl state, TestImpl test) {
+	public TestOnStateImpl(StateImpl state, TestImpl test) {
 		this.state = state;
 		this.test = test;
 	}
-	
-	/**
-	 * @param isNonvariant
-	 */
-	void setNonvariant(boolean isNonvariant) {
-		this.isNonvariant = isNonvariant;
-	}
-	
-	/**
-	 * @param variant
-	 */
-	void addVariant(StateVariant variant) {
-		variants.add(variant);
-	}
-		
+			
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -82,9 +66,23 @@ public class TestOnStateImpl implements Test.OnState {
 	}
 	
 	//---------------------------------------------------------------------------------------------//
-	//                                    PUBLIC EXTENSION                                         //
+	//                                       PUBLIC EXT                                            //
 	//---------------------------------------------------------------------------------------------//
 	
+	/**
+	 * @param isNonvariant
+	 */
+	public void setNonvariant(boolean isNonvariant) {
+		this.isNonvariant = isNonvariant;
+	}
+	
+	/**
+	 * @param variant
+	 */
+	public void addVariant(StateVariant variant) {
+		variants.add(variant);
+	}
+
 	/**
 	 * Get (and, if not yet, build) his object's variant space. 
 	 * Note that we have the test and its covariant set at the time of construction, 

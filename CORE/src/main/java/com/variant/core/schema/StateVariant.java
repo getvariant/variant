@@ -1,9 +1,9 @@
-package com.variant.core.xdm;
+package com.variant.core.schema;
 
 import java.util.List;
 
-import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.Test.OnState;
+import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Test.OnState;
 
 
 /**

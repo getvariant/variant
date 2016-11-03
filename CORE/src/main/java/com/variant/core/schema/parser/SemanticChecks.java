@@ -1,4 +1,4 @@
-package com.variant.core.xdm.impl;
+package com.variant.core.schema.parser;
 
 /**
  * 

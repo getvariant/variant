@@ -1,4 +1,4 @@
-package com.variant.core.xdm.impl;
+package com.variant.core.schema.impl;
 
 import java.io.StringWriter;
 import java.util.Collections;
@@ -8,11 +8,11 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.StateVariant;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.Test.OnState;
+import com.variant.core.schema.State;
+import com.variant.core.schema.StateVariant;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Test.OnState;
 
 
 public class StateVariantImpl implements StateVariant {
@@ -115,7 +115,7 @@ public class StateVariantImpl implements StateVariant {
 			return result.toString();
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unable to serialize object [" + this.getClass().getSimpleName() + "]", e);
+			throw new RuntimeInternalException("Unable to serialize object [" + getClass().getSimpleName() + "]", e);
 		}
 
 	}

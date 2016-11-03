@@ -1,21 +1,21 @@
-package com.variant.server.schema;
+package com.variant.core.schema.parser;
 
-import static com.variant.core.exception.Error.*;
+import static com.variant.core.schema.parser.ParserError.NO_STATES;
+import static com.variant.core.schema.parser.ParserError.STATE_NAME_DUPE;
+import static com.variant.core.schema.parser.ParserError.STATE_NAME_INVALID;
+import static com.variant.core.schema.parser.ParserError.STATE_NAME_MISSING;
+import static com.variant.core.schema.parser.ParserError.STATE_PARAMS_NOT_OBJECT;
+import static com.variant.core.schema.parser.ParserError.STATE_UNSUPPORTED_PROPERTY;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.impl.Keywords;
-import com.variant.core.xdm.impl.SchemaImpl;
-import com.variant.core.xdm.impl.SemanticChecks;
-import com.variant.core.xdm.impl.StateImpl;
-import com.variant.server.ParserMessage;
+import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.impl.SchemaImpl;
+import com.variant.core.schema.impl.StateImpl;
 
 /**
  * Parse the STATES clause.
@@ -23,8 +23,6 @@ import com.variant.server.ParserMessage;
  *
  */
 public class StatesParser implements Keywords {
-
-	private static final Logger LOG = LoggerFactory.getLogger(StatesParser.class);
 			
 	/**
 	 * Parse the STATES clause.
@@ -39,19 +37,18 @@ public class StatesParser implements Keywords {
 			List<Map<String, ?>> rawStates = (List<Map<String, ?>>) statesObject;
 			
 			if (rawStates.size() == 0) {
-				response.addMessage(PARSER_NO_STATES);
+				response.addMessage(NO_STATES);
 			}
 			
 			for (Map<String, ?> rawState: rawStates) {
 				State state = parseState(schema, rawState, response);
 				if (state != null && !((SchemaImpl) response.getSchema()).addState(state)) {
-					response.addMessage(PARSER_STATE_NAME_DUPE, state.getName());
+					response.addMessage(STATE_NAME_DUPE, state.getName());
 				}
 			}
 		}
 		catch (Exception e) {
-			ParserMessage err = response.addMessage(INTERNAL, e.getMessage());
-			LOG.error(err.getText(), e);
+			throw new RuntimeInternalException(e);
 		}
 		
 	}
@@ -75,12 +72,12 @@ public class StatesParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(PARSER_STATE_NAME_INVALID);
+					response.addMessage(STATE_NAME_INVALID);
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage(PARSER_STATE_NAME_INVALID);
+						response.addMessage(STATE_NAME_INVALID);
 					}
 				}
 				break;
@@ -89,7 +86,7 @@ public class StatesParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addMessage(PARSER_STATE_NAME_MISSING);
+				response.addMessage(STATE_NAME_MISSING);
 			}
 			return null;
 		}
@@ -102,12 +99,12 @@ public class StatesParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_PARAMETERS)) {
 				Object paramsObject = entry.getValue();
 				if (! (paramsObject instanceof Map)) {
-					response.addMessage(PARSER_STATE_PARAMS_NOT_OBJECT, name);
+					response.addMessage(STATE_PARAMS_NOT_OBJECT, name);
 				}
 				params = (Map<String, String>) paramsObject;
 			}
 			else {
-				response.addMessage(PARSER_STATE_UNSUPPORTED_PROPERTY, entry.getKey(), name);
+				response.addMessage(STATE_UNSUPPORTED_PROPERTY, entry.getKey(), name);
 			}
 		}
 		

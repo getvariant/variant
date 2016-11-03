@@ -1,4 +1,4 @@
-package com.variant.core.xdm;
+package com.variant.core.schema;
 
 import java.util.List;
 

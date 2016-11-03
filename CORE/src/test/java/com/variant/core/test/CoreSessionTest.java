@@ -13,9 +13,9 @@ import com.variant.core.VariantCoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.exception.Error;
 import com.variant.core.impl.VariantCore;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
 import com.variant.core.session.CoreSession;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.State;
 import com.variant.server.ParserResponse;
 import com.variant.server.ParserMessage.Severity;
 

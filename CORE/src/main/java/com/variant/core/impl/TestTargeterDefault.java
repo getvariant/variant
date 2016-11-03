@@ -3,12 +3,13 @@ package com.variant.core.impl;
 import java.util.Random;
 
 import static com.variant.core.exception.RuntimeError.*;
+
 import com.variant.core.exception.RuntimeErrorException;
 import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.Test.Experience;
 
 class TestTargeterDefault {
 

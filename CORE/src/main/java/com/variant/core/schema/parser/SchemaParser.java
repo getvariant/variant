@@ -1,4 +1,4 @@
-package com.variant.server.schema;
+package com.variant.core.schema.parser;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -6,22 +6,20 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.variant.core.schema.parser.ParserError.*;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.exception.Error;
 import com.variant.core.exception.Error.Severity;
+import com.variant.core.exception.Error;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.UserHooker;
-import com.variant.core.impl.VariantCore;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.impl.Keywords;
-import com.variant.core.xdm.impl.StateParsedHookImpl;
-import com.variant.core.xdm.impl.StatesParser;
-import com.variant.core.xdm.impl.TestParsedHookImpl;
-import com.variant.core.xdm.impl.TestsParser;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 
 public class SchemaParser implements Keywords {
 	
@@ -47,19 +45,29 @@ public class SchemaParser implements Keywords {
 		String[] tokens = tail.split(",");
 		int line = Integer.parseInt(tokens[0]);
 		int column = Integer.parseInt(tokens[1]);
-		response.addMessage(Error.PARSER_JSON_PARSE, line, column, message.toString(), rawInput);
+		response.addMessage(JSON_PARSE, line, column, message.toString(), rawInput);
 
 	}
 
+	private UserHooker hooker;
+	
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+	
+	public SchemaParser(UserHooker hooker) {
+		this.hooker = hooker;
+	}
+	
 	/**
-	 * Pre-parser pass:
+	 * Schema pre-parser.
 	 * 1. Remove comments.
 	 * 2. (TODO) variable expansion?
 	 * 
 	 * @param schema
 	 * @return
 	 */
-	private static String preParse(String schema) {
+	public String preParse(String schema) {
 		
 		// Lose comments from // to eol.
 		
@@ -84,59 +92,56 @@ public class SchemaParser implements Keywords {
 		}
 		return result.toString();
 	}
-	
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
-		
+			
 	/**
-	 * Parse schema from string.
+	 * Parse schema from string. Must be pre-parsed valid JSON.
 	 * @param schemaAsJsonString
 	 * @return
 	 * @throws VariantRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	public static ParserResponseImpl parse(VariantCore coreApi, String schemaAsJsonString) throws VariantRuntimeException {
+	public ParserResponseImpl parse(String schemaAsJsonString) throws VariantRuntimeException {
 		
+		// 1. Syntactical phase.
 		ParserResponseImpl response = new ParserResponseImpl();
 		
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
 		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 		
-		Map<String, ?> cbb = null;
+		Map<String, ?> mappedJson = null;
 		
 		try {
 			//cbb = jacksonDataMapper.readValue(configAsJsonString, ConfigBinderBean.class);
-			cbb = jacksonDataMapper.readValue(preParse(schemaAsJsonString), Map.class);
+			mappedJson = jacksonDataMapper.readValue(preParse(schemaAsJsonString), Map.class);
 		}
 		catch(JsonParseException parseException) {
 			toParserError(parseException, schemaAsJsonString, response);
 		} 
 		catch (Exception e) {
-			ParserMessage err = response.addMessage(Error.INTERNAL, e.getMessage());
-			LOG.error(err.getText(), e);
+			throw new RuntimeInternalException(e);
 		}
 		
-		Severity highSeverity = response.highestMessageSeverity();
-		if (highSeverity != null && highSeverity.greaterOrEqualThan(Severity.FATAL)) return response;
+		// Don't attempt to parse if JSON failed.
+		if (response.hasMessages()) return response;
 		
+		// 2. Semantical phase.
 		// Clean map will contain only entries with expected clauses with keys uppercased 
 		Map<String, Object> cleanMap = new LinkedHashMap<String, Object>();
 		
 		// Pass 1. Uppercase all the expected clauses to support case insensitive key words.
-		for (Map.Entry<String, ?> entry: cbb.entrySet()) {
+		for (Map.Entry<String, ?> entry: mappedJson.entrySet()) {
 			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_STATES, KEYWORD_TESTS)) {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {
-				response.addMessage(Error.PARSER_UNSUPPORTED_CLAUSE, entry.getKey());
+				response.addMessage(UNSUPPORTED_CLAUSE, entry.getKey());
 			}
 		}
 		
 		// Pass2. Look at all clauses.  Expected ones are already uppercased.
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());
 		if (states == null) {
-			response.addMessage(Error.PARSER_NO_STATES_CLAUSE);
+			response.addMessage(NO_STATES_CLAUSE);
 		}
 		else {
 			
@@ -144,7 +149,6 @@ public class SchemaParser implements Keywords {
 			StatesParser.parseStates(response.getSchema(), states, response);
 			
 			// Post user hook listeners.
-			UserHooker hooker = coreApi.getUserHooker();
 			for (State state: response.getSchema().getStates()) {
 				try {
 					hooker.post(new StateParsedHookImpl(state, response));
@@ -155,12 +159,11 @@ public class SchemaParser implements Keywords {
 			}
 		}
 
-		highSeverity = response.highestMessageSeverity();
-		if (highSeverity != null && highSeverity.greaterOrEqualThan(Severity.FATAL)) return response;
+		if (!response.getMessages(Severity.FATAL).isEmpty()) return response;
 
 		Object tests = cleanMap.get(KEYWORD_TESTS.toUpperCase());
 		if (tests == null) {
-			response.addMessage(Error.PARSER_NO_TESTS_CLAUSE);
+			response.addMessage(NO_TESTS_CLAUSE);
 		}
 		else {
 			
@@ -168,7 +171,6 @@ public class SchemaParser implements Keywords {
 			TestsParser.parseTests(tests, response);
 			
 			// Post user hook listeners.
-			UserHooker hooker = coreApi.getUserHooker();
 			for (Test test: response.getSchema().getTests()) {
 				try {
 					hooker.post(new TestParsedHookImpl(test, response));

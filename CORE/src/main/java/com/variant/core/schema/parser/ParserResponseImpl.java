@@ -1,16 +1,16 @@
-package com.variant.server.schema;
+package com.variant.core.schema.parser;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.impl.MessageTemplate;
-import com.variant.core.xdm.impl.SchemaImpl;
-import com.variant.core.xdm.impl.SyntaxError;
-import com.variant.server.ParserMessage;
-import com.variant.server.ParserResponse;
-import com.variant.server.ParserMessage.Severity;
+import static com.variant.core.schema.parser.ParserError.*;
+import com.variant.core.exception.Error;
+import com.variant.core.exception.Error.Severity;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.impl.SchemaImpl;
 
 public class ParserResponseImpl implements ParserResponse {
 
@@ -24,9 +24,9 @@ public class ParserResponseImpl implements ParserResponse {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * 
+	 * CLEANUP 
 	 * @return Highest severity if there are any messages, or null otherwise.
-	 */
+	 *
 	@Override
 	public Severity highestMessageSeverity() {
 		
@@ -37,7 +37,7 @@ public class ParserResponseImpl implements ParserResponse {
 		}
 		return result;
 	}
-	
+	*/
 	/**
 	 * @return
 	 */
@@ -86,15 +86,15 @@ public class ParserResponseImpl implements ParserResponse {
 	/**
 	 * Add internally generated messsage
 	 */
-	public ParserMessage addMessage(MessageTemplate template, int line, int column, String...args) {
+	public ParserMessage addMessage(Error error, int line, int column, String...args) {
 		
 		ParserMessage result;
 		
-		if (template.equals(MessageTemplate.PARSER_JSON_PARSE)) {
-			result = new SyntaxError(template, line, column, args);
+		if (error.equals(JSON_PARSE)) {
+			result = new SyntaxError(error, line, column, args);
 		}
 		else {
-			result = new ParserMessageImpl(template, line, column, args);
+			result = new ParserMessageImpl(error, line, column, args);
 		}
 		messages.add(result);
 		return result;
@@ -104,8 +104,8 @@ public class ParserResponseImpl implements ParserResponse {
 	 * 
 	 * @param error
 	 */
-	public ParserMessage addMessage(MessageTemplate template, String...args) {
-		ParserMessage result = new ParserMessageImpl(template, args);
+	public ParserMessage addMessage(Error error, String...args) {
+		ParserMessage result = new ParserMessageImpl(error, args);
 		messages.add(result);
 		return result;
 	}

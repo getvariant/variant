@@ -1,8 +1,8 @@
 package com.variant.core.hook;
 
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.Test.Experience;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 
 /**
  * <p>Run time hook. Posts its listeners whenever a user session is about to be targeted 
@@ -25,7 +25,7 @@ public interface TestTargetingHook extends RuntimeHook {
 	/**
 	 * The Test for which this user hook is posting.
 	 * .
-	 * @return An object of type {@link com.variant.core.xdm.Test}.
+	 * @return An object of type {@link com.variant.core.schema.Test}.
 	 * @since 0.5
 	 */
 	public Test getTest();

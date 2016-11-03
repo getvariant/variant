@@ -1,8 +1,8 @@
 package com.variant.core.svrstub;
 
 import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 
 /**
  * Server side stub.

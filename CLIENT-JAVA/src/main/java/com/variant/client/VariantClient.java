@@ -5,7 +5,7 @@ import java.util.Properties;
 
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.exception.VariantSchemaModifiedException;
-import com.variant.core.xdm.Schema;
+import com.variant.core.schema.Schema;
 import com.variant.server.ParserResponse;
 import com.variant.server.hook.HookListener;
 

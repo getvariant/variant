@@ -1,4 +1,4 @@
-package com.variant.core.xdm.impl;
+package com.variant.core.schema.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,10 +8,10 @@ import java.util.Map;
 import static com.variant.core.exception.RuntimeError.*;
 
 import com.variant.core.exception.RuntimeErrorException;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 import com.variant.core.util.CaseInsensitiveMap;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
 
 /**
  * 
@@ -29,7 +29,7 @@ public class StateImpl implements State {
 	 * @param name
 	 * @param path
 	 */
-	StateImpl(Schema schema, String name, Map<String, String> parameters) {
+	public StateImpl(Schema schema, String name, Map<String, String> parameters) {
 		this.schema = schema;
 		this.name = name;
 		this.parameters = new CaseInsensitiveMap<String>(parameters);

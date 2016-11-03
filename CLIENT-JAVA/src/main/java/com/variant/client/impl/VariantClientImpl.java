@@ -30,8 +30,8 @@ import com.variant.core.impl.VariantComptime;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.Payload;
 import com.variant.core.net.SessionPayloadReader;
+import com.variant.core.schema.Schema;
 import com.variant.core.session.CoreSession;
-import com.variant.core.xdm.Schema;
 import com.variant.server.ParserResponse;
 import com.variant.server.hook.HookListener;
 
@@ -296,7 +296,7 @@ public class VariantClientImpl implements VariantClient {
 	/**
 	 * <p>Get currently deployed test schema, if any.
 	 * 
-	 * @return Current test schema as an instance of the {@link com.variant.core.xdm.Schema} object.
+	 * @return Current test schema as an instance of the {@link com.variant.core.schema.Schema} object.
 	 * 
 	 * @since 0.5
 	 */

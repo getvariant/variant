@@ -8,11 +8,11 @@ import java.util.List;
 
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.StateVariant;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.impl.TestOnStateImpl;
+import com.variant.core.schema.State;
+import com.variant.core.schema.StateVariant;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.impl.TestOnStateImpl;
 
 /**
  * Variant Space is a cartesian space with the basis given by a list of tests,

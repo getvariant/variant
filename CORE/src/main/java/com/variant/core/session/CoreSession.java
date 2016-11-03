@@ -18,10 +18,10 @@ import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.SessionId;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
 
 /**
  * 

@@ -15,10 +15,10 @@ import com.variant.core.exception.RuntimeError;
 import com.variant.core.exception.RuntimeErrorException;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.Test.Experience;
 
 
 /**

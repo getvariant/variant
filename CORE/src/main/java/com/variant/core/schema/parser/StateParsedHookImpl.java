@@ -1,10 +1,9 @@
-package com.variant.server.hook.impl;
+package com.variant.core.schema.parser;
 
-import com.variant.core.xdm.State;
-import com.variant.server.ParserResponse;
-import com.variant.server.ParserMessage.Severity;
-import com.variant.server.hook.StateParsedHook;
-import com.variant.server.schema.ParserResponseImpl;
+import com.variant.core.exception.Error.Severity;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.State;
+import com.variant.core.schema.StateParsedHook;
 
 /**
  * 

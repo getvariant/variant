@@ -1,46 +1,4 @@
-package com.variant.server.schema;
-
-import static com.variant.core.exception.Error.INTERNAL;
-import static com.variant.core.exception.Error.PARSER_ALL_PROPER_EXPERIENCES_UNDEFINED;
-import static com.variant.core.exception.Error.PARSER_CONTROL_EXPERIENCE_DUPE;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_TESTREF_NOT_STRING;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_TESTREF_UNDEFINED;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_TESTS_NOT_LIST;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_TEST_DISJOINT;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_COVARIANT_UNDEFINED;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_DUPE;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_MISSING;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_PROPER_UNDEFINED;
-import static com.variant.core.exception.Error.PARSER_EXPERIENCES_LIST_EMPTY;
-import static com.variant.core.exception.Error.PARSER_EXPERIENCES_NOT_LIST;
-import static com.variant.core.exception.Error.PARSER_EXPERIENCE_NAME_DUPE;
-import static com.variant.core.exception.Error.PARSER_EXPERIENCE_NAME_INVALID;
-import static com.variant.core.exception.Error.PARSER_EXPERIENCE_NAME_MISSING;
-import static com.variant.core.exception.Error.PARSER_EXPERIENCE_NOT_OBJECT;
-import static com.variant.core.exception.Error.PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY;
-import static com.variant.core.exception.Error.PARSER_ISCONTROL_NOT_BOOLEAN;
-import static com.variant.core.exception.Error.PARSER_ISNONVARIANT_NOT_BOOLEAN;
-import static com.variant.core.exception.Error.PARSER_IS_CONTROL_MISSING;
-import static com.variant.core.exception.Error.PARSER_NO_TESTS;
-import static com.variant.core.exception.Error.PARSER_ONSTATES_LIST_EMPTY;
-import static com.variant.core.exception.Error.PARSER_ONSTATES_NOT_LIST;
-import static com.variant.core.exception.Error.PARSER_ONSTATES_NOT_OBJECT;
-import static com.variant.core.exception.Error.PARSER_STATEREF_DUPE;
-import static com.variant.core.exception.Error.PARSER_STATEREF_MISSING;
-import static com.variant.core.exception.Error.PARSER_STATEREF_NOT_STRING;
-import static com.variant.core.exception.Error.PARSER_STATEREF_UNDEFINED;
-import static com.variant.core.exception.Error.PARSER_TEST_ISON_NOT_BOOLEAN;
-import static com.variant.core.exception.Error.PARSER_TEST_NAME_DUPE;
-import static com.variant.core.exception.Error.PARSER_TEST_NAME_INVALID;
-import static com.variant.core.exception.Error.PARSER_TEST_NAME_MISSING;
-import static com.variant.core.exception.Error.PARSER_TEST_UNSUPPORTED_PROPERTY;
-import static com.variant.core.exception.Error.PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE;
-import static com.variant.core.exception.Error.PARSER_VARIANTS_ISNONVARIANT_XOR;
-import static com.variant.core.exception.Error.PARSER_VARIANTS_LIST_EMPTY;
-import static com.variant.core.exception.Error.PARSER_VARIANTS_NOT_LIST;
-import static com.variant.core.exception.Error.PARSER_VARIANT_DUPE;
-import static com.variant.core.exception.Error.PARSER_VARIANT_MISSING;
-import static com.variant.core.exception.Error.PARSER_WEIGHT_NOT_NUMBER;
+package com.variant.core.schema.parser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,21 +8,21 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.variant.core.schema.parser.ParserError.*;
 import com.variant.core.event.impl.util.VariantStringUtils;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
-import com.variant.core.xdm.StateVariant;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.impl.Keywords;
-import com.variant.core.xdm.impl.SchemaImpl;
-import com.variant.core.xdm.impl.SemanticChecks;
-import com.variant.core.xdm.impl.StateImpl;
-import com.variant.core.xdm.impl.StateVariantImpl;
-import com.variant.core.xdm.impl.TestExperienceImpl;
-import com.variant.core.xdm.impl.TestImpl;
-import com.variant.core.xdm.impl.TestOnStateImpl;
-import com.variant.server.ParserMessage;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.StateVariant;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.impl.SchemaImpl;
+import com.variant.core.schema.impl.StateImpl;
+import com.variant.core.schema.impl.StateVariantImpl;
+import com.variant.core.schema.impl.TestExperienceImpl;
+import com.variant.core.schema.impl.TestImpl;
+import com.variant.core.schema.impl.TestOnStateImpl;
 
 /**
  * Parse the TESTS clause.
@@ -87,18 +45,17 @@ public class TestsParser implements Keywords {
 			rawTests = (List<Map<String, ?>>) testsObject;
 		}
 		catch (Exception e) {
-			ParserMessage err = response.addMessage(INTERNAL, e.getMessage());
-			LOG.error(err.getText(), e);
+			throw new RuntimeInternalException(e);
 		}
 		
 		if (rawTests.size() == 0) {
-			response.addMessage(PARSER_NO_TESTS);
+			response.addMessage(NO_TESTS);
 		}
 		
 		for (Map<String, ?> rawTest: rawTests) {
 			Test test = parseTest(rawTest, response);
 			if (test != null && !((SchemaImpl) response.getSchema()).addTest(test)) {
-				response.addMessage(PARSER_TEST_NAME_DUPE, test.getName());
+				response.addMessage(TEST_NAME_DUPE, test.getName());
 			}
 		}
 	}
@@ -125,13 +82,13 @@ public class TestsParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(PARSER_TEST_NAME_INVALID);
+					response.addMessage(TEST_NAME_INVALID);
 					return null;
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage(PARSER_TEST_NAME_INVALID);
+						response.addMessage(TEST_NAME_INVALID);
 						return null;
 					}
 				}
@@ -141,7 +98,7 @@ public class TestsParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addMessage(PARSER_TEST_NAME_MISSING);
+				response.addMessage(TEST_NAME_MISSING);
 			}
 			return null;
 		}
@@ -156,13 +113,13 @@ public class TestsParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_EXPERIENCES)) {
 				Object experiencesObject = entry.getValue();
 				if (! (experiencesObject instanceof List)) {
-					response.addMessage(PARSER_EXPERIENCES_NOT_LIST, name);
+					response.addMessage(EXPERIENCES_NOT_LIST, name);
 					return null;
 				}
 				else {
 					List<?> rawExperiences = (List<?>) experiencesObject;
 					if (rawExperiences.size() == 0) {
-						response.addMessage(PARSER_EXPERIENCES_LIST_EMPTY, name);
+						response.addMessage(EXPERIENCES_LIST_EMPTY, name);
 						return null; 
 					}
 					else {
@@ -172,7 +129,7 @@ public class TestsParser implements Keywords {
 								experience.setTest(result);
 								for (TestExperienceImpl e: experiences) {
 									if (e.equals(experience)) {
-										response.addMessage(PARSER_EXPERIENCE_NAME_DUPE, e.getName(), name);
+										response.addMessage(EXPERIENCE_NAME_DUPE, e.getName(), name);
 										break;
 									}
 								}
@@ -189,7 +146,7 @@ public class TestsParser implements Keywords {
 		for (TestExperienceImpl e: experiences) {
 			if (e.isControl()) {
 				if (controlExperienceFound) {
-					response.addMessage(PARSER_CONTROL_EXPERIENCE_DUPE, e.getName(), name);
+					response.addMessage(CONTROL_EXPERIENCE_DUPE, e.getName(), name);
 					break;
 				}
 				else {
@@ -198,7 +155,7 @@ public class TestsParser implements Keywords {
 			}
 		}
 		if (!controlExperienceFound) 
-			response.addMessage(PARSER_IS_CONTROL_MISSING, name);
+			response.addMessage(CONTROL_EXPERIENCE_MISSING, name);
 		
 		result.setExperiences(experiences);
 		
@@ -210,14 +167,14 @@ public class TestsParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_COVARIANT_TEST_REFS)) {
 				Object covarTestRefsObject = entry.getValue();
 				if (!(covarTestRefsObject instanceof List)) {
-					response.addMessage(PARSER_COVARIANT_TESTS_NOT_LIST, name);
+					response.addMessage(COVARIANT_TESTS_NOT_LIST, name);
 				}
 				else {
 					covarTests = new ArrayList<TestImpl>();
 					List<?> rawCovarTestRefs = (List<?>) covarTestRefsObject;
 					for (Object covarTestRefObject: rawCovarTestRefs) {
 						if (!(covarTestRefObject instanceof String)) {
-							response.addMessage(PARSER_COVARIANT_TESTREF_NOT_STRING, name);
+							response.addMessage(COVARIANT_TESTREF_NOT_STRING, name);
 						}
 						else {
 							String covarTestRef = (String) covarTestRefObject;
@@ -225,7 +182,7 @@ public class TestsParser implements Keywords {
 							// have been initialized by now.  Single pass parser!
 							TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);
 							if (covarTest == null) {
-								response.addMessage(PARSER_COVARIANT_TESTREF_UNDEFINED, covarTestRef, name);
+								response.addMessage(COVARIANT_TESTREF_UNDEFINED, covarTestRef, name);
 							}
 							else {
 								covarTests.add(covarTest);
@@ -240,7 +197,7 @@ public class TestsParser implements Keywords {
 					result.setIsOn(isOn);
 				}
 				catch (Exception e)  {
-					response.addMessage(PARSER_TEST_ISON_NOT_BOOLEAN, name);					
+					response.addMessage(TEST_ISON_NOT_BOOLEAN, name);					
 				}
 			}
 			/* idleDaysToLive is out for now (0.6.1)
@@ -279,12 +236,12 @@ public class TestsParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_STATES)) {
 				Object onViewsObject = entry.getValue();
 				if (! (onViewsObject instanceof List)) {
-					response.addMessage(PARSER_ONSTATES_NOT_LIST, name);
+					response.addMessage(ONSTATES_NOT_LIST, name);
 				}
 				else {
 					List<?> rawOnViews = (List<?>) onViewsObject;
 					if (rawOnViews.size() == 0) {
-						response.addMessage(PARSER_ONSTATES_LIST_EMPTY, name);						
+						response.addMessage(ONSTATES_LIST_EMPTY, name);						
 					}
 					else {
 						for (Object testOnViewObject: rawOnViews) {
@@ -293,7 +250,7 @@ public class TestsParser implements Keywords {
 								boolean dupe = false;
 								for (Test.OnState newTov: onViews) {
 									if (tov.getState().equals(newTov.getState())) {
-										response.addMessage(PARSER_STATEREF_DUPE, newTov.getState().getName(), name);
+										response.addMessage(STATEREF_DUPE, newTov.getState().getName(), name);
 										dupe = true;
 										break;
 									}
@@ -306,7 +263,7 @@ public class TestsParser implements Keywords {
 				}
 			}
 			else {
-				response.addMessage(PARSER_TEST_UNSUPPORTED_PROPERTY, entry.getKey(), name);
+				response.addMessage(TEST_UNSUPPORTED_PROPERTY, entry.getKey(), name);
 			}
 		}
 
@@ -318,7 +275,7 @@ public class TestsParser implements Keywords {
 		if (covarTests != null) {
 			for (Test covarTest: covarTests) {
 				if (result.isSerialWith(covarTest)) {
-					response.addMessage(PARSER_COVARIANT_TEST_DISJOINT, covarTest.getName(), name);
+					response.addMessage(COVARIANT_TEST_DISJOINT, covarTest.getName(), name);
 				}
 			}
 		}
@@ -340,7 +297,7 @@ public class TestsParser implements Keywords {
 			experience = (Map<String, ?>) experienceObject;
 		}
 		catch (Exception e) {
-			response.addMessage(PARSER_EXPERIENCE_NOT_OBJECT, testName);
+			response.addMessage(EXPERIENCE_NOT_OBJECT, testName);
 			return null;
 		}
 
@@ -351,13 +308,13 @@ public class TestsParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(PARSER_EXPERIENCE_NAME_INVALID, testName);
+					response.addMessage(EXPERIENCE_NAME_INVALID, testName);
 					return null;
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage(PARSER_EXPERIENCE_NAME_INVALID, testName);
+						response.addMessage(EXPERIENCE_NAME_INVALID, testName);
 						return null;
 					}
 				}
@@ -366,7 +323,7 @@ public class TestsParser implements Keywords {
 		}
 		
 		if (name == null) {
-			response.addMessage(PARSER_EXPERIENCE_NAME_MISSING, testName);
+			response.addMessage(EXPERIENCE_NAME_MISSING, testName);
 			return null;
 		}
 
@@ -383,7 +340,7 @@ public class TestsParser implements Keywords {
 					isControl = (Boolean) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(PARSER_ISCONTROL_NOT_BOOLEAN, testName, name);
+					response.addMessage(ISCONTROL_NOT_BOOLEAN, testName, name);
 				}
 			}
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_WEIGHT)) {
@@ -391,12 +348,12 @@ public class TestsParser implements Keywords {
 					weight = (Number) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(PARSER_WEIGHT_NOT_NUMBER, testName, name);
+					response.addMessage(WEIGHT_NOT_NUMBER, testName, name);
 					weight = Float.NaN;
 				}
 			}
 			else {
-				response.addMessage(PARSER_EXPERIENCE_UNSUPPORTED_PROPERTY, entry.getKey(), testName, name);
+				response.addMessage(EXPERIENCE_UNSUPPORTED_PROPERTY, entry.getKey(), testName, name);
 			}
 		}
 		
@@ -419,7 +376,7 @@ public class TestsParser implements Keywords {
 			rawTestOnState = (Map<String, Object>) testOnStateObject;
 		}
 		catch (Exception e) {
-			response.addMessage(PARSER_ONSTATES_NOT_OBJECT, test.getName());
+			response.addMessage(ONSTATES_NOT_OBJECT, test.getName());
 			return null;
 		}
 		
@@ -431,21 +388,21 @@ public class TestsParser implements Keywords {
 					stateRef = (String) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(PARSER_STATEREF_NOT_STRING, test.getName());
+					response.addMessage(STATEREF_NOT_STRING, test.getName());
 					return null;
 				}
 			}
 		}
 		
 		if (stateRef == null) {
-			response.addMessage(PARSER_STATEREF_MISSING, test.getName());
+			response.addMessage(STATEREF_MISSING, test.getName());
 			return null;
 		}
 		
 		// The state must exist.
 		StateImpl refState = (StateImpl) response.getSchema().getState(stateRef);
 		if (refState == null) {
-			response.addMessage(PARSER_STATEREF_UNDEFINED, stateRef, test.getName());
+			response.addMessage(STATEREF_UNDEFINED, stateRef, test.getName());
 			return null;
 		}
 		
@@ -463,7 +420,7 @@ public class TestsParser implements Keywords {
 					isNonvariant = (Boolean) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(PARSER_ISNONVARIANT_NOT_BOOLEAN, test.getName(), stateRef);
+					response.addMessage(ISNONVARIANT_NOT_BOOLEAN, test.getName(), stateRef);
 				}
 				tos.setNonvariant(isNonvariant);
 			}
@@ -472,11 +429,11 @@ public class TestsParser implements Keywords {
 					rawVariants = (List<Object>) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(PARSER_VARIANTS_NOT_LIST, test.getName(), stateRef);
+					response.addMessage(VARIANTS_NOT_LIST, test.getName(), stateRef);
 					return null;
 				}
 				if (rawVariants.isEmpty()) {
-					response.addMessage(PARSER_VARIANTS_LIST_EMPTY, test.getName(), stateRef);
+					response.addMessage(VARIANTS_LIST_EMPTY, test.getName(), stateRef);
 					return null;					
 				}
 				for (Object variantObject: rawVariants) {
@@ -488,7 +445,7 @@ public class TestsParser implements Keywords {
 								if (v.isProper() && variant.isProper()) {
 									// Dupe proper experience ref and no covariant experiences in this view.
 									response.addMessage(
-											PARSER_VARIANT_DUPE, 
+											VARIANT_DUPE, 
 											v.getExperience().getName(), 
 											test.getName(), stateRef);
 									dupe = true;
@@ -497,7 +454,7 @@ public class TestsParser implements Keywords {
 								else if (!v.isProper() && !variant.isProper() && v.getCovariantExperiences().equals(variant.getCovariantExperiences())){
 									// Dupe local and covariant list.  Note that for this predicate relies on proper ordering. 
 									response.addMessage(
-											PARSER_COVARIANT_VARIANT_DUPE,  
+											COVARIANT_VARIANT_DUPE,  
 											StringUtils.join(v.getCovariantExperiences(), ", "), 
 											test.getName(), stateRef, v.getExperience().getName());
 									dupe = true;
@@ -520,12 +477,12 @@ public class TestsParser implements Keywords {
 				return tos;
 			}
 			else {
-				response.addMessage(PARSER_VARIANTS_ISNONVARIANT_INCOMPATIBLE, test.getName(), stateRef);
+				response.addMessage(VARIANTS_ISNONVARIANT_INCOMPATIBLE, test.getName(), stateRef);
 				return null;
 			}
 		}
 		else if (rawVariants == null || rawVariants.size() == 0) {
-			response.addMessage(PARSER_VARIANTS_ISNONVARIANT_XOR, test.getName(), stateRef);
+			response.addMessage(VARIANTS_ISNONVARIANT_XOR, test.getName(), stateRef);
 			return null;
 		}
 		
@@ -539,7 +496,7 @@ public class TestsParser implements Keywords {
 		}		
 		if (allProperVariantsUndefined) {
 			response.addMessage(
-					PARSER_ALL_PROPER_EXPERIENCES_UNDEFINED, 
+					ALL_PROPER_EXPERIENCES_UNDEFINED, 
 					test.getName(), stateRef);
 			return null;
 		}
@@ -553,11 +510,11 @@ public class TestsParser implements Keywords {
 				
 				// We don't have a point and none of the coordinate experiences were declared as undefined.
 				if (point.getCovariantExperiences().size() == 0) {
-					response.addMessage(PARSER_VARIANT_MISSING, point.getExperience().getName(), test.getName(), stateRef);
+					response.addMessage(VARIANT_MISSING, point.getExperience().getName(), test.getName(), stateRef);
 				}
 				else {
 					response.addMessage(
-							PARSER_COVARIANT_VARIANT_MISSING, 
+							COVARIANT_VARIANT_MISSING, 
 							point.getExperience().getName(),
 							VariantStringUtils.toString(point.getCovariantExperiences(),  ","), 
 							test.getName(), stateRef);
@@ -568,7 +525,7 @@ public class TestsParser implements Keywords {
 				// Find out which one.
 				if (!point.getExperience().isDefinedOn(tos.getState())) {
 					response.addMessage(
-							PARSER_COVARIANT_VARIANT_PROPER_UNDEFINED, 
+							COVARIANT_VARIANT_PROPER_UNDEFINED, 
 							point.getExperience().getName(),
 							VariantStringUtils.toString(point.getCovariantExperiences(),  ","), 
 							test.getName(), stateRef);
@@ -576,7 +533,7 @@ public class TestsParser implements Keywords {
 				for (Experience e: point.getCovariantExperiences()) {
 					if (e.isDefinedOn(tos.getState())) continue;
 					response.addMessage(
-							PARSER_COVARIANT_VARIANT_COVARIANT_UNDEFINED, 
+							COVARIANT_VARIANT_COVARIANT_UNDEFINED, 
 							point.getExperience().getName(),
 							VariantStringUtils.toString(point.getCovariantExperiences(),  ","), 
 							e.toString(), test.getName(), stateRef);

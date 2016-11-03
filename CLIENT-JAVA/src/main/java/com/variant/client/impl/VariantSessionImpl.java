@@ -15,12 +15,12 @@ import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.Error;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.CoreStateRequest;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
 import com.variant.core.xdm.impl.StateImpl;
 
 /**

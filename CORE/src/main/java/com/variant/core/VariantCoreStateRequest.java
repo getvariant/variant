@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.variant.core.event.VariantEvent;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.StateVariant;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.Test.Experience;
+import com.variant.core.schema.State;
+import com.variant.core.schema.StateVariant;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 
 /**
  * Variant Core state request. CLEANUP

@@ -1,6 +1,5 @@
-package com.variant.server.hook;
+package com.variant.core.schema;
 
-import com.variant.core.xdm.Test;
 
 /**
  * <p>Parse time hook. Posts its listeners whenever the schema parser completes parsing of a test. 

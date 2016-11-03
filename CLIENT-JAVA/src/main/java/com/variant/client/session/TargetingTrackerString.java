@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 import com.variant.client.VariantClientPropertyKeys;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.core.VariantProperties;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.Test.Experience;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 
 /**
  * Targeting tracker trait that knows how to marshal a collection of experience entries
