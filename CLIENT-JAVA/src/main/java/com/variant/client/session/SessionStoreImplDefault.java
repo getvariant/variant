@@ -5,6 +5,7 @@ import java.util.Map;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.SessionPayloadReader;
+import com.variant.core.session.SessionStore;
 
 /**
  * Default session store implementation.  All methods throw {@link UnsupportedOperationException}.

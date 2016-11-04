@@ -1,4 +1,5 @@
-package com.variant.core.schema.parser;
+package com.variant.server.schema;
+
 
 public class ParsingService {
 	

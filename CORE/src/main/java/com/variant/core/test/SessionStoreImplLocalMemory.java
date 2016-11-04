@@ -3,15 +3,13 @@ package com.variant.core.test;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.variant.client.session.SessionStore;
-import com.variant.core.VariantCoreSession;
 import com.variant.core.exception.VariantException;
 import com.variant.core.impl.SessionId;
-import com.variant.core.impl.VariantCore;
 import com.variant.core.net.Payload;
 import com.variant.core.net.PayloadWriter;
 import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.session.CoreSession;
+import com.variant.core.session.SessionStore;
 
 /**
  * Session store implementation in local memory that uses JSON marshalling for better
@@ -26,26 +24,24 @@ import com.variant.core.session.CoreSession;
  * 
  * @author Igor
  *
- */
+ *
 public class SessionStoreImplLocalMemory implements SessionStore {
 
 	private HashMap<String, String> map = new HashMap<String, String>();
-	private VariantCore core = null;
 	private int sessionTimeoutSeconds;
 	private String serverRelease;
 	
 	public SessionStoreImplLocalMemory() { }
 	
 	@Override
-	public void init(VariantCore core, Map<String, Object> initObject) {
-		this.core =  core;
+	public void init(Map<String, Object> initObject) {
 		serverRelease = (String)initObject.get("svr_rel");
 		sessionTimeoutSeconds = (Integer)initObject.get("ssn_timeout_sec");
 	}
 
 	/**
 	 * 
-	 */
+	 *
 	@Override
 	public SessionPayloadReader get(String sessionId, boolean create) {
 		String jsonBody = map.get(sessionId);
@@ -67,7 +63,7 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	 * @param session Session to save
 	 * @param  userData The sid, which is assumed to be managed by the caller.
 	 * @throws VariantException 
-	 */
+	 *
 	@Override
 	public void save(VariantCoreSession session) {
 			//System.out.println(((CoreSessionImpl)session).toJson());
@@ -80,3 +76,4 @@ public class SessionStoreImplLocalMemory implements SessionStore {
 	}
 
 }
+*/

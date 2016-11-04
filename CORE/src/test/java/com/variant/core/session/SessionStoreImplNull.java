@@ -2,10 +2,7 @@ package com.variant.core.session;
 
 import java.util.Map;
 
-import com.variant.client.session.SessionStore;
-import com.variant.core.VariantCoreSession;
 import com.variant.core.impl.SessionId;
-import com.variant.core.impl.VariantCore;
 import com.variant.core.net.PayloadWriter;
 import com.variant.core.net.SessionPayloadReader;
 
@@ -17,16 +14,13 @@ import com.variant.core.net.SessionPayloadReader;
  * 
  * @author Igor
  *
- */
+ *
 public class SessionStoreImplNull implements SessionStore {
-
-	private VariantCore core = null;
 	
 	public SessionStoreImplNull() { }
 	
 	@Override
-	public void init(VariantCore core, Map<String, Object> initObject) {
-		this.core = core;
+	public void init(Map<String, Object> initObject) {
 	}
 	
 	@Override
@@ -36,13 +30,14 @@ public class SessionStoreImplNull implements SessionStore {
 	public SessionPayloadReader get(String sessionId, boolean create) {
 		
 		String payload = new PayloadWriter(new CoreSession(new SessionId(sessionId), core).toJson()).getAsJson();
-		return new SessionPayloadReader(core, payload);
+		return new SessionPayloadReader(payload);
 	}
 
 	@Override
-	public void save(VariantCoreSession session) {
+	public void save(CoreSession session) {
 		// No-op.		
 	}
 
 
 }
+*/

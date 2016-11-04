@@ -1,7 +1,6 @@
-package com.variant.client.session;
+package com.variant.core.session;
 
 import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.session.CoreSession;
 import com.variant.core.util.inject.Injectable;
 
 

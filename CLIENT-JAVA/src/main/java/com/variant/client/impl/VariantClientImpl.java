@@ -19,7 +19,6 @@ import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.client.session.ClientSessionCache;
-import com.variant.client.session.SessionStore;
 import com.variant.core.VariantCoreSession;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantBootstrapException;
@@ -32,6 +31,7 @@ import com.variant.core.net.Payload;
 import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.schema.Schema;
 import com.variant.core.session.CoreSession;
+import com.variant.core.session.SessionStore;
 import com.variant.server.ParserResponse;
 import com.variant.server.hook.HookListener;
 

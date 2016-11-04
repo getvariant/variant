@@ -8,7 +8,6 @@ import com.variant.server.session.SessionStore
 import play.api.Logger
 import play.api.libs.json._
 import com.variant.server.UserError
-import com.variant.server.RemoteEvent
 import java.util.Date
 import play.api.mvc.Result
 import play.api.mvc.AnyContent
@@ -16,6 +15,7 @@ import com.variant.server.UserError
 import play.api.libs.json.JsValue
 import play.api.http.HeaderNames
 import scala.collection.mutable.Map
+import com.variant.server.event.RemoteEvent
 
 //@Singleton -- Is this for non-shared state controllers?
 class Event @Inject() (store: SessionStore) extends Controller  {
