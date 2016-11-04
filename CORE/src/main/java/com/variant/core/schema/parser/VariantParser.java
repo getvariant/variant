@@ -1,23 +1,21 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.exception.Error.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.variant.core.schema.parser.ParserError.*;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.impl.StateImpl;
+import com.variant.core.schema.impl.StateVariantImpl;
+import com.variant.core.schema.impl.TestExperienceImpl;
+import com.variant.core.schema.impl.TestImpl;
+import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.util.CaseInsensitiveMap;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.impl.Keywords;
-import com.variant.core.xdm.impl.StateImpl;
-import com.variant.core.xdm.impl.StateVariantImpl;
-import com.variant.core.xdm.impl.TestExperienceImpl;
-import com.variant.core.xdm.impl.TestImpl;
-import com.variant.core.xdm.impl.TestOnStateImpl;
 
 /**
  * Parse the element of the tests/onViews/variants list.
@@ -47,7 +45,7 @@ public class VariantParser implements Keywords {
 			rawVariant = (Map<String, Object>) variantObject;
 		}
 		catch (Exception e) {
-			response.addMessage(PARSER_VARIANT_NOT_OBJECT, test.getName(), state.getName());
+			response.addMessage(VARIANT_NOT_OBJECT, test.getName(), state.getName());
 			return null;
 		}
 		
@@ -64,7 +62,7 @@ public class VariantParser implements Keywords {
 					experienceRef = (String) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(PARSER_EXPERIENCEREF_NOT_STRING, test.getName(), state.getName());
+					response.addMessage(EXPERIENCEREF_NOT_STRING, test.getName(), state.getName());
 					return null;
 				}
 			}
@@ -73,26 +71,26 @@ public class VariantParser implements Keywords {
 					isDefined = (Boolean) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(PARSER_ISDEFINED_NOT_BOOLEAN, test.getName(), state.getName());
+					response.addMessage(ISDEFINED_NOT_BOOLEAN, test.getName(), state.getName());
 				}
 			}
 		}
 		
 		if (experienceRef == null) {
-			response.addMessage(PARSER_EXPERIENCEREF_MISSING, test.getName(), state.getName());
+			response.addMessage(EXPERIENCEREF_MISSING, test.getName(), state.getName());
 			return null;
 		}
 		
 		// The experience must exist
 		TestExperienceImpl experience = (TestExperienceImpl) test.getExperience(experienceRef);
 		if (experience == null) {
-			response.addMessage(PARSER_EXPERIENCEREF_UNDEFINED, experienceRef, test.getName(), state.getName());
+			response.addMessage(EXPERIENCEREF_UNDEFINED, experienceRef, test.getName(), state.getName());
 			return null;			
 		}
 
 		// Variant cannot refer to a control experience, unless undefined.
 		if (experience.isControl() && isDefined) {
-			response.addMessage(PARSER_EXPERIENCEREF_ISCONTROL, experienceRef, test.getName(), state.getName());
+			response.addMessage(EXPERIENCEREF_ISCONTROL, experienceRef, test.getName(), state.getName());
 			return null;						
 		}
 		
@@ -104,7 +102,7 @@ public class VariantParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_COVARIANT_EXPERIENCE_REFS)) {
 				
 				if (!isDefined) {
-					response.addMessage(PARSER_COVARIANT_EXPERIENCEREFS_NOT_ALLOWED, test.getName(), state.getName(), experienceRef);
+					response.addMessage(COVARIANT_EXPERIENCEREFS_NOT_ALLOWED, test.getName(), state.getName(), experienceRef);
 					return null;					
 				}
 								
@@ -113,7 +111,7 @@ public class VariantParser implements Keywords {
 					covarExperienceRefList = (List<?>) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(PARSER_COVARIANT_EXPERIENCEREFS_NOT_LIST, test.getName(), state.getName(), experienceRef);
+					response.addMessage(COVARIANT_EXPERIENCEREFS_NOT_LIST, test.getName(), state.getName(), experienceRef);
 					return null;
 				}
 				
@@ -125,7 +123,7 @@ public class VariantParser implements Keywords {
 						covarExperienceRefMap = (Map<String,?>) covarExperienceRefObj;
 					}
 					catch (Exception e) {
-						response.addMessage(PARSER_COVARIANT_EXPERIENCE_REF_NOT_OBJECT, test.getName(), state.getName(), experienceRef);
+						response.addMessage(COVARIANT_EXPERIENCE_REF_NOT_OBJECT, test.getName(), state.getName(), experienceRef);
 						return null;
 					}
 					String covarTestRef = null, covarExperienceRef = null;
@@ -133,13 +131,13 @@ public class VariantParser implements Keywords {
 						covarTestRef = (String) covarExperienceRefMap.get(KEYWORD_TEST_REF);
 					}
 					catch (Exception e) {
-						response.addMessage(PARSER_COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING, test.getName(), state.getName(), experienceRef);
+						response.addMessage(COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING, test.getName(), state.getName(), experienceRef);
 					}
 					try {
 						covarExperienceRef = (String) covarExperienceRefMap.get(KEYWORD_EXPERIENCE_REF);
 					}
 					catch (Exception e) {
-						response.addMessage(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING, test.getName(), state.getName(), experienceRef);
+						response.addMessage(COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING, test.getName(), state.getName(), experienceRef);
 					}
 					
 					if (covarTestRef == null || covarExperienceRef == null) return null;
@@ -147,31 +145,31 @@ public class VariantParser implements Keywords {
 					// Covar test must have already been defined.
 					TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);					
 					if (covarTest == null) {
-						response.addMessage(PARSER_COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED, covarTestRef, test.getName(), state.getName(), experienceRef);
+						response.addMessage(COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED, covarTestRef, test.getName(), state.getName(), experienceRef);
 						return null;
 					}
 					
 					// Current view cannot be nonvariant in the covar test.
 					if (state.isNonvariantIn(covarTest)) {
-						response.addMessage(PARSER_COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT, covarTestRef, test.getName(), state.getName(), experienceRef);
+						response.addMessage(COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT, covarTestRef, test.getName(), state.getName(), experienceRef);
 						return null;						
 					}
 					
 					// Covar experience must have already been defined.
 					TestExperienceImpl covarExperience = (TestExperienceImpl) covarTest.getExperience(covarExperienceRef);
 					if (covarExperience == null) {
-						response.addMessage(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, covarTestRef, covarExperienceRef, test.getName(), state.getName(), experienceRef);
+						response.addMessage(COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, covarTestRef, covarExperienceRef, test.getName(), state.getName(), experienceRef);
 						return null;
 					}
 
 					// This test must declare the other test as covariant.
 					if (test.getCovariantTests() == null || !test.getCovariantTests().contains(covarTest)) {
-						response.addMessage(PARSER_COVARIANT_VARIANT_TEST_NOT_COVARIANT, covarTestRef, covarExperienceRef, test.getName(), state.getName());
+						response.addMessage(COVARIANT_VARIANT_TEST_NOT_COVARIANT, covarTestRef, covarExperienceRef, test.getName(), state.getName());
 						return null;
 					}
 
 					if (covarTestExperiences.contains(covarExperience)) {
-						response.addMessage(PARSER_COVARIANT_EXPERIENCE_DUPE, covarTestRef, covarExperienceRef, test.getName(), state.getName(), experienceRef);
+						response.addMessage(COVARIANT_EXPERIENCE_DUPE, covarTestRef, covarExperienceRef, test.getName(), state.getName(), experienceRef);
 						return null;
 					}
 
@@ -179,7 +177,7 @@ public class VariantParser implements Keywords {
 					for (TestExperienceImpl e: covarTestExperiences) {
 						if (!e.getTest().isCovariantWith(covarExperience.getTest())) {
 							response.addMessage(
-									PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, 
+									COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, 
 									test.getName(), 
 									tov.getState().getName(), 
 									experienceRef,
@@ -204,7 +202,7 @@ public class VariantParser implements Keywords {
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_PARAMETERS)) {
 				
 				if (!isDefined) {
-					response.addMessage(PARSER_EXPERIENCEREF_PARAMS_NOT_ALLOWED, test.getName(), tov.getState().getName(), experienceRef);
+					response.addMessage(EXPERIENCEREF_PARAMS_NOT_ALLOWED, test.getName(), tov.getState().getName(), experienceRef);
 					return null;					
 				}
 
@@ -212,11 +210,11 @@ public class VariantParser implements Keywords {
 					params = (Map<String,String>) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(PARSER_EXPERIENCEREF_PARAMS_NOT_OBJECT, test.getName(), tov.getState().getName(), experienceRef);
+					response.addMessage(EXPERIENCEREF_PARAMS_NOT_OBJECT, test.getName(), tov.getState().getName(), experienceRef);
 				}
 			}
 			else {
-				response.addMessage(PARSER_VARIANTS_UNSUPPORTED_PROPERTY, entry.getKey(), test.getName(), state.getName());
+				response.addMessage(VARIANTS_UNSUPPORTED_PROPERTY, entry.getKey(), test.getName(), state.getName());
 			}
 		}
 

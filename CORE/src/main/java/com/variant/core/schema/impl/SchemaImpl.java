@@ -14,7 +14,7 @@ import com.variant.core.schema.Test;
 /**
  * @author Igor
  */
-public abstract class SchemaImpl implements Schema {
+public class SchemaImpl implements Schema {
 
 	private final String ID = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
 	
@@ -31,11 +31,7 @@ public abstract class SchemaImpl implements Schema {
 	 * Package instantiation.
 	 */
 	public SchemaImpl() {}
-			
-	/**
-	 * extensions will provide implementaitons.
-	 */  
-	abstract protected void isUsable();
+				
 /* CLEANUP this should move to client
 		if (state == InternalState.UNDEPLOYED)
 			throw new VariantRuntimeUserErrorException(Error.RUN_SCHEMA_OBSOLETE, ID);
@@ -60,7 +56,7 @@ public abstract class SchemaImpl implements Schema {
 	 */
 	@Override
 	public List<State> getStates() {
-		isUsable();
+		//isUsable();
 		ArrayList<State> result = new ArrayList<State>(states.size());
 		result.addAll(states);
 		return Collections.unmodifiableList(result);
@@ -71,7 +67,7 @@ public abstract class SchemaImpl implements Schema {
 	 */
 	@Override
 	public State getState(String name) {
-		isUsable();
+		//isUsable();
 		for (State state: states) {
 			if (state.getName().equals(name)) return state;
 		}
@@ -83,7 +79,7 @@ public abstract class SchemaImpl implements Schema {
 	 */
 	@Override
 	public List<Test> getTests() {
-		isUsable();
+		//isUsable();
 		ArrayList<Test> result = new ArrayList<Test>(tests.size());
 		for (Test test: tests) {
 			result.add(test);
@@ -96,7 +92,7 @@ public abstract class SchemaImpl implements Schema {
 	 */
 	@Override
 	public Test getTest(String name) {
-		isUsable();
+		//isUsable();
 		for (Test test: tests) {
 			if (test.getName().equals(name)) return test;
 		}
