@@ -12,7 +12,7 @@ import java.util.Map;
 import com.variant.core.exception.VariantInternalException;
 import com.variant.core.xdm.Test;
 import com.variant.server.event.EventFlusher;
-import com.variant.server.event.VariantFlushableEvent;
+import com.variant.server.event.FlushableEvent;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
 
@@ -45,7 +45,7 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 	 * Persist a collection of events.
 	 */
 	@Override
-	final public void flush(final Collection<VariantFlushableEvent> events) throws Exception {
+	final public void flush(final Collection<FlushableEvent> events) throws Exception {
 				
 		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
@@ -81,7 +81,7 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 					
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
-					for (VariantFlushableEvent event: events) {
+					for (FlushableEvent event: events) {
 						stmt.setString(1, event.getSession().getId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getEventName());
@@ -115,7 +115,7 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_PARAMETERS_SQL);
 					index = 0;
-					for (VariantFlushableEvent event: events) {
+					for (FlushableEvent event: events) {
 						long eventId = eventIds[index++];
 						for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
 
@@ -135,7 +135,7 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 					//
 					stmt = conn.prepareStatement(INSERT_EVENT_EXPERIENCES_SQL);
 					index = 0;
-					for (VariantFlushableEvent event: events) {
+					for (FlushableEvent event: events) {
 						long eventId = eventIds[index++];
 						for (Test.Experience exp: event.getLiveExperiences()) {
 							stmt.setLong(1, eventId);

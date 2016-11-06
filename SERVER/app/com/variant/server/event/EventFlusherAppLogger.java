@@ -27,10 +27,10 @@ public class EventFlusherAppLogger implements EventFlusher {
 	}
 
 	@Override
-	public void flush(Collection<VariantFlushableEvent> events)
+	public void flush(Collection<FlushableEvent> events)
 			throws Exception {
 
-		for (VariantFlushableEvent event: events) {
+		for (FlushableEvent event: events) {
 			StringBuilder msg = new StringBuilder();
 			msg.append("EVENT:{")
 			.append("session_id:'").append(event.getSession().getId()).append("', ")
@@ -42,7 +42,7 @@ public class EventFlusherAppLogger implements EventFlusher {
 			LOG.info(msg.toString());
 		}
 								
-		for (VariantFlushableEvent event: events) {
+		for (FlushableEvent event: events) {
 			for (Experience e: event.getLiveExperiences()) {
 				StringBuilder msg = new StringBuilder();
 				msg.append("EVENT_EXPERIENCES:{")
@@ -56,7 +56,7 @@ public class EventFlusherAppLogger implements EventFlusher {
 			}
 		}
 		
-		for (VariantFlushableEvent event: events) {
+		for (FlushableEvent event: events) {
 			for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
 
 				StringBuilder msg = new StringBuilder();

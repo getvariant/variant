@@ -50,17 +50,6 @@ public class VariantCoreInitParamsImpl extends HashMap<String, Object> implement
 		return result == null ? defaultValue : result;
 	}
 
-	//---------------------------------------------------------------------------------------------//
-	//                                        PUBLIC EXT                                           //
-	//---------------------------------------------------------------------------------------------//
-
-	/** CLEANUP
-	 * The core API that created this object.
-	 *
-	public VariantCore getCore() {
-		return core;
-	}
-	*/
 }
 
 

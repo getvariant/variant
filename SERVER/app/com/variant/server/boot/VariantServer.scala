@@ -3,64 +3,64 @@ package com.variant.server.boot
 import java.time.Clock
 import scala.concurrent.Future
 import org.apache.commons.lang3.time.DurationFormatUtils
-import com.variant.core.impl.VariantComptime
-import com.variant.core.impl.VariantCore
 import com.variant.server.event.EventWriter
-import com.variant.server.boot.VariantConfigKey._
-
 import javax.inject._
 import javax.inject.Singleton
 import play.api.Configuration
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 import play.api.routing.Router
+import com.variant.core.schema.Schema
+import com.variant.server.schema.ServerSchema
+import com.variant.core.VariantProperties
+import play.api.Application
 
 /**
  * Need a trait to make DI to work.
  */
-trait Bootstrap {
-   def core: VariantCore
-   def config(): VariantConfig
+trait VariantServer {
+   def schema(): ServerSchema
+   def properties(): VariantProperties
    def eventWriter(): EventWriter
+}
+
+/**
+ * 
+ */
+object VariantServer {
+   var instanceImpl: VariantServer = null
+   def instance: VariantServer = instanceImpl
 }
 
 /**
  * Instantiated once by 
  */
 @Singleton
-class BootstrapImpl @Inject() (
+class VariantServerImpl @Inject() (
       clock: Clock,
       configuration: Configuration, 
-      appLifecycle: ApplicationLifecycle
-      //router: Provider[Router]
-      ) extends Bootstrap {
+      appLifecycle: ApplicationLifecycle,
+      router: Provider[Router]
+      ) extends VariantServer {
 
    private val logger = Logger(this.getClass)
    
    private val start = clock.instant
    private val now = System.currentTimeMillis;
+      
+	private lazy val propertiesImpl = new ServerPropertiesImpl(configuration)
+   private lazy val eventWriterImpl = new EventWriter(propertiesImpl)
    
-   private lazy val coreImpl = {
-      val core = new VariantCore();
-		core.getComptime().registerComponent(VariantComptime.Component.SERVER, "0.7.0")
-		core
-	}
-   
-	private lazy val configImpl = new VariantConfig(configuration)
-   private lazy val eventWriterImpl = new EventWriter(coreImpl, config)
-   
-   override def core() = coreImpl
    override def eventWriter() = eventWriterImpl
-   override def config() = configImpl
+   override def properties() = propertiesImpl
+   override def schema() = null // need to get schema.
    
    /**
-    *  Boot code goes here.
+    * One time application bootup.
     */
    def boot() {
 
-	   // TODO: I keep running into a problem that routes aren't recoginzed under eclipse and I don't understand it.
-	   // Fail fast if there are no routes. 
-/*
+      // Display routers on startup
       if (logger.isDebugEnabled) {
          val routeDocs = router.get.documentation
          if (routeDocs.isEmpty) 
@@ -70,19 +70,20 @@ class BootstrapImpl @Inject() (
                println("%-10s %-50s %s".format(r._1, r._2, r._3))
             }
       }
-*/
-      // This code is called when the application starts.
-      val comptime = core.getComptime
+
       logger.info(String.format(
-				"%s Release %s © 2015-16 getvariant.com. Bootstrapped in %s. Listening on %s", 
-				comptime.getComponent(),
-				comptime.getComponentVersion(),
+"""Variant Experiment Server release %s © 2015-16 getvariant.com.
+      Bootstrapped in %s. 
+      Listening on %s""",
+            "fix version",
 				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"),
-				configuration.getString("play.http.context").get));
+				configuration.getString("play.http.context").get))
+      
+		VariantServer.instanceImpl = this
    }
 
    /**
-    *  Shutdown code
+    * One time application shutdown.
     */
    def shutdown() {
       eventWriter.shutdown()
@@ -96,6 +97,5 @@ class BootstrapImpl @Inject() (
        Future.successful(())
    }
 
-   boot();
-   
+   boot()
 }

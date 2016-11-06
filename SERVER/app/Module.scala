@@ -3,8 +3,8 @@ import java.time.Clock
 import play.api.Configuration
 import play.api.Environment
 import play.api.Play
-import com.variant.server.boot.Bootstrap
-import com.variant.server.boot.BootstrapImpl
+import com.variant.server.boot.VariantServer
+import com.variant.server.boot.VariantServerImpl
 import com.variant.server.session.SessionStore
 import com.variant.server.session.SessionStoreImpl
 import play.api.routing.Router
@@ -27,7 +27,7 @@ class Module (environment: Environment, config: Configuration) extends AbstractM
       bind(classOf[Clock]).toInstance(Clock.systemDefaultZone)
 
       // Variant server boot and shutdown
-      bind(classOf[Bootstrap]).to(classOf[BootstrapImpl]).asEagerSingleton
+      bind(classOf[VariantServer]).to(classOf[VariantServerImpl]).asEagerSingleton
 
       // Session Store
       bind(classOf[SessionStore]).to(classOf[SessionStoreImpl]).asEagerSingleton

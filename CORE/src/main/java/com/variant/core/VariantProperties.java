@@ -1,59 +1,61 @@
 package com.variant.core;
-/*  MOVED TO CLIENT
-import com.variant.core.VariantCorePropertyKeys.Key;
-import com.variant.core.impl.VariantCoreInitParamsImpl;
+
 
 
 /**
  * <p>Variant system properties. 
  * Each property is a key-value pair with keys of type {@link Key} and value which is bound at deployment
- * time from classpath property files or JVM command line. Host code may obtain the raw value as a String or
- * converted to some datatype.
+ * time from classpath property files or JVM command line. Client and server have their own implementations.
  *
  * @author Igor Urisman
  * @since 0.6
- * @see VariantCorePropertyKeys
- *
+ */
 public interface VariantProperties {
 	
 	/**
-	 * <p> Interpreted value of an system property, given by its key, parameterized by expected type.
+	 * <p> System property as a String, given by its key.
 	 * 
-	 * @param key Property key
-	 * @param clazz Class of the expected return object. {@code String.class} can be always used,
-	 *              in which case the raw value of the property is returned. If {@code Integer.class} or {@code Long.class}
-	 *              is used, the raw string value will be converted to Integer or Long respectively. If 
-	 *              {@link VariantCoreInitParams}.class is used, the raw string will be parsed as JSON and converted
-	 *              to {@link VariantCoreInitParamsImpl}.
-	 *              
-	 * @return Interpreted value of the key as an instance of the given class. If no value was externally bound, the default
-	 *         is returned as provided by {@link Key#defaultValue()}.
+	 * @param key Property key              
+	 * @return The raw value, as externally bound, or the default, converted to String.
 	 *         
 	 * @since 0.6
-	 *
-	public <T> T get(Key key, Class<T> clazz);
+	 */
+	public String getString(Key key);
 
 	/**
-	 * <p> Uninterpreted value of an system property, given by its key, as String.
-	 * 
-	 * @param key Property key	 *              
-	 * @return Original string value, as provided by either a properties file or the default.
-	 *         
-	 * @since 0.6
-	 *
-	public <T> T get(Key key);
-
-	/**
-	 * <p>Raw value of an system property, given by its key.
+	 * <p> System property as a long, given by its key.
 	 * 
 	 * @param key Property key
-	 *              
-	 * @return Raw value of the key. If no value was externally bound, the default
-	 *         is returned as provided by {@link Key#defaultValue()}.
+	 * @return The raw value, as externally bound, or the default, converted to long.
 	 *         
 	 * @since 0.6
-	 *
-	public String getSource(Key key);
+	 */
+	public long getLong(Key key);
 
+	/**
+	 * <p>Type representing a system property key. 
+	 * Client and server have their own implementations.
+	 * 
+	 * @author Igor Urisman
+	 * @since 0.6
+	 */
+	
+	public static interface Key {
+
+		/**
+		 * <p>The name of the implementation dependent external system property bound to this key.
+		 * 
+    	 * @return Property Name
+		 * @since 0.7
+		 */
+		String getExternalName();
+
+		/**
+		 * <p>The default value for this key.
+		 * 
+    	 * @return The default value.
+		 * @since 0.7
+		 */
+		Object getDefault();
+	}
 }
-*/

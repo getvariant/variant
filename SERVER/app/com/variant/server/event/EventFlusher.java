@@ -47,11 +47,11 @@ public interface EventFlusher {
 	/**
 	 * <p>Flush a bunch of events to external storage.
 	 * 
-	 * @param events A collection of decorated variant events {@link VariantFlushableEvent} to be written off.
+	 * @param events A collection of decorated variant events {@link FlushableEvent} to be written off.
 	 * 
 	 * @see EventFlusherH2, EventFlusherPostgres
 	 * @since 0.5
 	 */
-	public void flush(Collection<VariantFlushableEvent> events) throws Exception;
+	public void flush(Collection<FlushableEvent> events) throws Exception;
 
 }

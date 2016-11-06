@@ -2,7 +2,7 @@ package com.variant.server.event;
 
 
 import static com.variant.core.xdm.impl.MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET;
-import static com.variant.server.boot.VariantConfigKey.EventFlusherClassInit;
+import static com.variant.server.ServerPropertiesKey.EventFlusherClassInit;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

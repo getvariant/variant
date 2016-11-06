@@ -11,18 +11,6 @@ public class Error {
 	//                                                BOOTSTRAP MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//
  
-	public static final Error BOOT_CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN = 
-			new Error(Severity.FATAL, "Cannot pass both -Dvariant.config.resource and -Dvariant.config.file parameters");
-
-	// BOOT_CONFIG_RESOURCE_NOT_FOUND                        (Severity.FATAL, "Class path resource [%s] is not found"), 
-	// BOOT_CONFIG_FILE_NOT_FOUND                            (Severity.FATAL, "OS file [%s] is not found"), 
-	// BOOT_EVENT_FLUSHER_NO_INTERFACE                       (Severity.FATAL, "Event flusher class [%s] must implement interface [%s]"), 
-	// BOOT_SID_TRACKER_NO_INTERFACE                         (Severity.FATAL, "Session ID tracker class [%s] must implement interface [%s]"),
-	// BOOT_SESSION_STORE_NO_INTERFACE                       (Severity.FATAL, "Session store class [%s] must implement interface [%s]"),
-	// BOOT_SESSION_ID_TRACKER_NO_INTERFACE                  (Severity.FATAL, "Session ID tracker class [%s] must implement interface [%s]"),
-	// BOOT_TARGETING_TRACKER_NO_INTERFACE                   (Severity.FATAL, "Targeting tracker class [%s] must implement interface [%s]"),
-	// BOOT_PARSER_LISTENER_NO_INTERFACE                     (Severity.FATAL, "Class [%s], annotated as [%s] must implement interface [%s]"),
-	
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                  PARSER MESSAGES                                                       //
 	//------------------------------------------------------------------------------------------------------------------------//
@@ -31,20 +19,7 @@ public class Error {
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                 RUN TIME MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//
-	
-	// RUN_PROPERTY_BAD_CLASS                                (Severity.ERROR, "Don't know how to convert to class [%s]"),
-	// RUN_PROPERTY_INIT_INVALID_JSON                        (Severity.ERROR, "Invalid JSON [%s] in system property [%s]"),
-	// RUN_PROPERTY_INIT_PROPERTY_NOT_SET                    (Severity.ERROR, "Init property [%s] is required by class [%s] but is missing in system property [%s]"),
-	// RUN_ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first"),
-	// RUN_SCHEMA_OBSOLETE                                   (Severity.ERROR, "Operation failed becuase this schema (ID [%s]) has been undeployed"),
-	// RUN_SCHEMA_MODIFIED                                   (Severity.ERROR, "Opereation failed because the current schema ID [%s] differs from that with which this session was created [%s]"),
-	// RUN_SCHEMA_UNDEFINED                                  (Severity.ERROR, "Cannot create a session on an idle Variant instance. Deploy a schema first"),
-	// RUN_SESSION_EXPIRED                                   (Severity.ERROR, "This session has expired"), 
-	// RUN_METHOD_UNSUPPORTED                                (Severity.ERROR, "Method unsupported in Core"),
-	// RUN_STATE_UNDEFINED_IN_EXPERIENCE                     (Severity.ERROR, "Currently active experience [%s] is undefined on state [%s]"),
-	// RUN_HOOK_TARGETING_BAD_EXPERIENCE                     (Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s]"),
-	// RUN_HOOK_TARGETING_UNDEFINED_EXPERIENCE               (Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s], which is undefined on state [%s]"),
- 
+	 
 	//------------------------------------------------------------------------------------------------------------------------//
 	//                                                  GENERAL MESSAGES                                                      //
 	//------------------------------------------------------------------------------------------------------------------------//

@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantCoreInitParams;
 import com.variant.server.event.EventFlusher;
-import com.variant.server.event.VariantFlushableEvent;
+import com.variant.server.event.FlushableEvent;
 
 /**
  * Null implementation: all events are discarded.  Useful for testing.
@@ -24,7 +24,7 @@ class EventFlusherNull implements EventFlusher {
 	public void init(VariantCoreInitParams initParams) {}
 	
 	@Override
-	public void flush(Collection<VariantFlushableEvent> events) throws Exception {
+	public void flush(Collection<FlushableEvent> events) throws Exception {
 			LOG.debug(String.format("Discarded %s events.", events.size()));
 	}
 

@@ -2,27 +2,25 @@ package com.variant.server.event;
 
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
-
 import org.apache.commons.lang3.time.DurationFormatUtils
-
-import com.variant.core.exception.VariantInternalException
-import com.variant.core.exception.VariantRuntimeException
-import com.variant.core.exception.VariantRuntimeUserErrorException
-import com.variant.core.impl.VariantCore
 import com.variant.core.impl.VariantCoreInitParamsImpl
-import com.variant.core.xdm.impl.MessageTemplate
-import com.variant.server.boot.VariantConfig
-import com.variant.server.boot.VariantConfigKey._
-
+import com.variant.server.ServerError._
+import com.variant.server.ServerPropertiesKey._
 import play.api.Logger
+import com.variant.core.exception.RuntimeError._
+import com.variant.core.exception.RuntimeErrorException
+import com.variant.core.exception.VariantRuntimeException
+import com.variant.core.test.VariantBaseTest.VariantInternalExceptionInterceptor
+import com.variant.core.exception.RuntimeInternalException
+import com.variant.core.VariantProperties
 
-class EventWriter (core: VariantCore, config: VariantConfig) {
+class EventWriter (props: VariantProperties) {
 	
    private val logger = Logger(this.getClass)
-   private val bufferSize = config.getInt(EventWriterBufferSize)
-   private val pctFullSize = bufferSize * config.getInt(EventWriterPercentFull) / 100
+   private val bufferSize = props.getLong(EVENT_WRITER_BUFFER_SIZE)
+   private val pctFullSize = bufferSize * props.getLong(EVENT_WRITER_PERCENT_FULL) / 100
 	private val pctEmptySize = Math.ceil(bufferSize * 0.1).intValue()
-	private val maxFlusherDelayMillis = config.getLong(EventWriterFlushMaxDelayMillis)
+	private val maxFlusherDelayMillis = props.getLong(EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS)
 
 	// Asynchronous flusher thread consumes events from the holding queue.
    private val flusherThread = new FlusherThread();
@@ -34,7 +32,7 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
 	// The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
 	// refusing inserts that will put the queue size over the limit, but not worrying about
 	// a possible overage due to concurrency.
-	private val bufferQueue = new ConcurrentLinkedQueue[VariantFlushableEvent]()
+	private val bufferQueue = new ConcurrentLinkedQueue[FlushableEvent]()
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -44,23 +42,23 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
 	 *  Instantiate externally defined event flusher.
 	 */
 	val flusher = {
-		val className = config.getString(EventFlusherClassName)
+		val className = props.getString(EVENT_FLUSHER_CLASS_NAME)
 		try {
 			val result = {
 			   val clazz = Class.forName(className).newInstance();		
    			if (!clazz.isInstanceOf[EventFlusher]) {
-   				throw new VariantRuntimeUserErrorException (MessageTemplate.BOOT_EVENT_FLUSHER_NO_INTERFACE, className, classOf[EventFlusher].getName);
+   				throw new RuntimeErrorException(EVENT_FLUSHER_NO_INTERFACE, className, classOf[EventFlusher].getName);
 	   		}
 		  	   clazz.asInstanceOf[EventFlusher]
 			}
 			
-			val json = config.getString(EventFlusherClassInit)
+			val json = props.getString(EVENT_FLUSHER_CLASS_INIT)
 			try {
-            result.init(new VariantCoreInitParamsImpl(core, json));
+            result.init(new VariantCoreInitParamsImpl(json));
 			}
 			catch {
 			   case _: Throwable =>
-               throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_PROPERTY_INIT_INVALID_JSON, json, EventFlusherClassInit.name);
+               throw new RuntimeErrorException(PROPERTY_INIT_INVALID_JSON, json, EVENT_FLUSHER_CLASS_INIT.getExternalName());
 			}
 			result	
 		}
@@ -68,7 +66,7 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
 		   case e : VariantRuntimeException => throw e
 		   case e : Throwable => {
 		      logger.error("Unable to instantiate event flusher class [" + className +"]", e)
-		      throw new VariantInternalException("Unable to instantiate event flusher class [" + className +"]", e);
+		      throw new RuntimeInternalException("Unable to instantiate event flusher class [" + className +"]", e);
 		   }
 		}
 	}
@@ -93,7 +91,7 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
 	 *                   
 	 * @return number of elements actually written.
 	 */
-	def write(event: VariantFlushableEvent) {
+	def write(event: FlushableEvent) {
 				
 		// We don't worry about possible concurrent writes because the underlying
 		// queue implementation is thread safe and unbound.  It's okay to temporarily 
@@ -107,10 +105,10 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
 		}
 		else {
 		   val msg = "Dropped %d event(s) due to buffer overflow. Consider increasing %d system property (current value %d)"
-			logger.trace(msg.format(1, EventWriterBufferSize.name, bufferSize))
+			logger.trace(msg.format(1, EVENT_WRITER_BUFFER_SIZE.getExternalName(), bufferSize))
 			dropCount += 1
 			if (dropCount % 1000 == 0)
-			   logger.info(msg.format(1000, EventWriterBufferSize.name, bufferSize))
+			   logger.info(msg.format(1000, EVENT_WRITER_BUFFER_SIZE.getExternalName(), bufferSize))
 		}
 		
 		// Block momentarily to wake up the flusher thread if the queue has reached the pctFull size.
@@ -175,7 +173,7 @@ class EventWriter (core: VariantCore, config: VariantConfig) {
    	 */
    	private def flush() {
    
-   		var events = new LinkedList[VariantFlushableEvent]();
+   		var events = new LinkedList[FlushableEvent]();
    		while(!bufferQueue.isEmpty()) events.add(bufferQueue.poll());
 
    		if (!events.isEmpty()) {

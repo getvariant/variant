@@ -3,14 +3,13 @@ package com.variant.server.session;
 import java.util.Map
 import java.util.Set
 import java.util.concurrent.ConcurrentHashMap
-
-import com.variant.server.boot.Bootstrap
-import com.variant.server.boot.VariantConfig
-import com.variant.server.boot.VariantConfigKey._
-
+import com.variant.server.ServerPropertiesKey._
+import com.variant.server.boot.VariantServer
 import javax.inject.Inject
 import javax.inject.Singleton
 import play.api.Logger
+import com.variant.server.boot.VariantServer
+import com.variant.core.VariantProperties
 
 /**
  * Sessions are stored serialized as unparsed JSON strings and only deserialized when are needed
@@ -27,16 +26,16 @@ trait SessionStore {
 }
 
 @Singleton
-class SessionStoreImpl @Inject() (boot: Bootstrap) extends SessionStore {
+class SessionStoreImpl @Inject() (server: VariantServer) extends SessionStore {
 
    private val logger = Logger(this.getClass)	
 	private val cacheMap = new ConcurrentHashMap[String, SessionStoreEntry]();
 
-   new VacuumThread(boot.config, cacheMap).start();
+   new VacuumThread(server.properties, cacheMap).start();
 
    /**
 	 */
-	override def put(sid: String, json: String) = cacheMap.put(sid, new SessionStoreEntry(json, boot))
+	override def put(sid: String, json: String) = cacheMap.put(sid, new SessionStoreEntry(json))
 	
 	/**
 	 */
@@ -69,7 +68,7 @@ class SessionStoreImpl @Inject() (boot: Bootstrap) extends SessionStore {
 /**
  * @author Igor
  */
-class SessionStoreEntry (val json: String, boot: Bootstrap) {
+class SessionStoreEntry (val json: String) {
 
    private var session: ServerSession = null;
 	var lastAccessTimestamp = System.currentTimeMillis();
@@ -80,7 +79,7 @@ class SessionStoreEntry (val json: String, boot: Bootstrap) {
 	 */
 	def asSession = {
 		if (session == null && json != null) {
-			session = new ServerSession(json, boot);
+			session = new ServerSession(json);
 		}
 		session;
 	}
@@ -89,11 +88,11 @@ class SessionStoreEntry (val json: String, boot: Bootstrap) {
 /**
  * Background thread deletes cache entries older than the keep-alive interval.
  */
-class VacuumThread(config: VariantConfig, storeMap: Map[String, SessionStoreEntry]) extends Thread {
+class VacuumThread(props: VariantProperties, storeMap: Map[String, SessionStoreEntry]) extends Thread {
 
    private val logger = Logger(this.getClass)	
-   private val sessionTimeoutMillis = config.getInt(SessionTimeoutSecs) * 1000L
-   private val vacuumingFrequencyMillis = config.getInt(SessionStoreVacuumIntervalSecs) * 1000L
+   private val sessionTimeoutMillis = props.getLong(SESSION_TIMEOUT_SECS) * 1000L
+   private val vacuumingFrequencyMillis = props.getLong(SESSION_STORE_VACUUM_INTERVAL_SECS) * 1000L
 	setName("VariantSessionVacuum");
    setDaemon(true);
 

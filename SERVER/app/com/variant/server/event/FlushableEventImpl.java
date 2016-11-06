@@ -6,30 +6,30 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 
-import com.variant.core.VariantCoreSession;
 import com.variant.core.event.VariantEvent;
-import com.variant.core.xdm.Test.Experience;
+import com.variant.core.schema.Test.Experience;
+import com.variant.core.session.CoreSession;
 
 /**
- * EVENTS DAO.
+ * Flushable event implementation suitable for the server.
  * 
  * @author Igor.
  *
  */
-public class PersistableEventImpl implements VariantFlushableEvent, Serializable {
+public class FlushableEventImpl implements FlushableEvent, Serializable {
 			
 	/**
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private VariantCoreSession session;
+	private CoreSession session;
 	private VariantEvent userEvent;
 	
 	/**
 	 * Constructor
 	 * @return
 	 */
-	public PersistableEventImpl(VariantEvent event, VariantCoreSession session) {
+	public FlushableEventImpl(VariantEvent event, CoreSession session) {
 		this.userEvent = event;		
 		this.session = session;
 	}
@@ -60,7 +60,7 @@ public class PersistableEventImpl implements VariantFlushableEvent, Serializable
 	}
 	
 	@Override
-	public VariantCoreSession getSession() {
+	public CoreSession getSession() {
 		return session;
 	}
 

@@ -1,11 +1,11 @@
 package com.variant.server.session
 
-import com.variant.core.impl.CoreSessionImpl
-import com.variant.core.impl.VariantCore
+import com.variant.core.session.CoreSession
 import com.variant.core.event.VariantEvent
-import com.variant.server.boot.Bootstrap
 import javax.inject.Inject
-import com.variant.server.event.PersistableEventImpl
+import com.variant.core.schema.Schema
+import com.variant.server.event.FlushableEventImpl
+import com.variant.server.boot.VariantServer
 
 /**
  * Server session knows how to trigger an event.
@@ -18,12 +18,18 @@ object ServerSession {
    }
 }
 */
-class ServerSession (rawJson: String, boot: Bootstrap) extends CoreSessionImpl(rawJson, boot.core) {
-  
+class ServerSession (rawJson: String) extends {
+   
+      // TODO Find a way to inject server.
+      val server: VariantServer = null
+   
+   } with CoreSession(rawJson, server.schema) {
+   
+   
    /**
     */
 	def triggerEvent(event: VariantEvent) {
 		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
-		boot.eventWriter.write(new PersistableEventImpl(event, this));
+		server.eventWriter.write(new FlushableEventImpl(event, this));
 	}
 }

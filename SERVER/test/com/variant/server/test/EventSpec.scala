@@ -3,18 +3,22 @@ package com.variant.server.test
 import com.variant.core.impl.CoreSessionImpl
 
 import org.scalatestplus.play._
+
 import play.api.test._
 import play.api.test.Helpers._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json._
+
 import com.variant.server.UserError
 import com.variant.server.test.util.ParamString
+
 import scala.util.Random
 import scala.collection.JavaConversions._
 import scala.concurrent.duration._
 
 import com.variant.server.test.util.EventReader
-import com.variant.server.boot.VariantConfigKey._
+import com.variant.server.ServerPropertiesKey.*;
+import com.variant.server.boot.VariantConfigKey.ServerConfigKey
 
 /*
  * Reusable event JSON objects. 

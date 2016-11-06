@@ -3,7 +3,8 @@ package com.variant.server.test
 import scala.util.Random
 
 import com.variant.server.test.util.ParamString
-import com.variant.server.boot.VariantConfigKey._
+import com.variant.server.ServerPropertiesKey.*;
+import com.variant.server.boot.VariantConfigKey.ServerConfigKey
 
 import play.api.test.FakeRequest
 import play.api.test.Helpers.GET

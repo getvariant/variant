@@ -61,18 +61,18 @@ public class CoreSession implements Serializable {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public CoreSession (String json, Schema schema) {
+	public CoreSession (String rawJson, Schema schema) {
 		this(SessionId.NULL, schema);
 		try {
 			ObjectMapper mapper = new ObjectMapper();		
-			Map<String,?> mappedJson = mapper.readValue(json, Map.class);
+			Map<String,?> mappedJson = mapper.readValue(rawJson, Map.class);
 			fromJson(mappedJson, schema);
 		}
 		catch (VariantRuntimeException e) {
 			throw e;
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unable to deserialzie session: [" + json + "]", e);
+			throw new RuntimeInternalException("Unable to deserialzie session: [" + rawJson + "]", e);
 		}
 
 	}
