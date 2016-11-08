@@ -1,14 +1,14 @@
 package com.variant.server.event;
 
 
-import static com.variant.core.xdm.impl.MessageTemplate.RUN_PROPERTY_INIT_PROPERTY_NOT_SET;
-import static com.variant.server.ServerPropertiesKey.EventFlusherClassInit;
+import static com.variant.core.exception.RuntimeError.*;
+import static com.variant.server.ServerPropertiesKey.EVENT_FLUSHER_CLASS_INIT;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 import com.variant.core.VariantCoreInitParams;
-import com.variant.core.exception.VariantRuntimeUserErrorException;
+import com.variant.core.exception.RuntimeErrorException;
 import com.variant.server.jdbc.EventFlusherJdbc;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
@@ -38,15 +38,15 @@ public class EventFlusherH2 extends EventFlusherJdbc {
 	public void init(VariantCoreInitParams initParams) throws Exception {
 		url = (String) initParams.getOr(
 				"url", 
-				new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "url", getClass().getName(), EventFlusherClassInit.name));
+				new RuntimeErrorException(PROPERTY_INIT_PROPERTY_NOT_SET, "url", getClass().getName(), EVENT_FLUSHER_CLASS_INIT.getExternalName()));
 		
 		user = (String) initParams.getOr(
 				"user", 
-				new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "user", getClass().getName(), EventFlusherClassInit.name));
+				new RuntimeErrorException(PROPERTY_INIT_PROPERTY_NOT_SET, "user", getClass().getName(), EVENT_FLUSHER_CLASS_INIT.getExternalName()));
 		
 		password = (String) initParams.getOr(
 				"password", 
-				new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_PROPERTY_NOT_SET, "password", getClass().getName(), EventFlusherClassInit.name));
+				new RuntimeErrorException(PROPERTY_INIT_PROPERTY_NOT_SET, "password", getClass().getName(), EVENT_FLUSHER_CLASS_INIT.getExternalName()));
 	}
 
 	@Override

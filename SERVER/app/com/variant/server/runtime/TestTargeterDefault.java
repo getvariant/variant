@@ -1,4 +1,4 @@
-package com.variant.core.impl;
+package com.variant.server.runtime;
 
 import java.util.Random;
 

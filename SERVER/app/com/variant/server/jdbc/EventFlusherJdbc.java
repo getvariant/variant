@@ -9,8 +9,8 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.exception.VariantInternalException;
-import com.variant.core.xdm.Test;
+import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.schema.Test;
 import com.variant.server.event.EventFlusher;
 import com.variant.server.event.FlushableEvent;
 import com.variant.server.jdbc.JdbcService.Vendor;
@@ -101,12 +101,12 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 					while(gennedKeys.next()) {
 
 						if (index == events.size()) 
-							throw new VariantInternalException("Received more genereated keys than inserted event records.");
+							throw new RuntimeInternalException("Received more genereated keys than inserted event records.");
 						
 						eventIds[index++] = gennedKeys.getLong(1);
 					}
 					if (index < events.size()) 
-						throw new VariantInternalException("Received fewer genereated keys than inserted event records.");
+						throw new RuntimeInternalException("Received fewer genereated keys than inserted event records.");
 
 					stmt.close();
 

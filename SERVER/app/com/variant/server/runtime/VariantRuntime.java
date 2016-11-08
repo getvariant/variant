@@ -9,27 +9,25 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantCoreSession;
+import static com.variant.server.ServerError.*;
+import com.variant.core.session.CoreSession;
+import com.variant.core.session.CoreStateRequest;
 import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.exception.VariantInternalException;
-import com.variant.core.exception.VariantRuntimeUserErrorException;
+import com.variant.core.exception.RuntimeErrorException;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;
-import com.variant.core.impl.CoreSessionImpl;
-import com.variant.core.impl.CoreStateRequestImpl;
-import com.variant.core.impl.TestTargeterDefault;
-import com.variant.core.impl.VariantCore;
+import com.variant.core.impl.UserHooker;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.Test.Experience;
-import com.variant.core.xdm.Test.OnState;
-import com.variant.core.xdm.impl.MessageTemplate;
-import com.variant.core.xdm.impl.StateImpl;
-import com.variant.core.xdm.impl.StateVariantImpl;
-import com.variant.core.xdm.impl.TestOnStateImpl;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Test.OnState;
+import com.variant.core.schema.impl.StateImpl;
+import com.variant.core.schema.impl.StateVariantImpl;
+import com.variant.core.schema.impl.TestOnStateImpl;
 
 /**
  * Entry point into the runtime.
@@ -46,19 +44,19 @@ public class VariantRuntime {
 	 */
 	private static class TestTargetingHookImpl implements TestTargetingHook {
 
-		private VariantCoreSession session;
+		private CoreSession session;
 		private Test test;
 		private State state;
 		private Experience targetedExperience = null;
 		
-		private TestTargetingHookImpl(VariantCoreSession session, Test test, State state) {
+		private TestTargetingHookImpl(CoreSession session, Test test, State state) {
 			this.session = session;
 			this.test = test;
 			this.state = state;
 		}
 		
 		@Override
-		public VariantCoreSession getSession() {
+		public CoreSession getSession() {
 			return session;
 		}
 
@@ -89,8 +87,8 @@ public class VariantRuntime {
 				if (e.equals(te)) {
 					if (!e.isDefinedOn(state)) {
 						StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-						throw new VariantRuntimeUserErrorException(
-								MessageTemplate.RUN_HOOK_TARGETING_BAD_EXPERIENCE, 
+						throw new RuntimeErrorException(
+								HOOK_TARGETING_BAD_EXPERIENCE, 
 								caller.getClassName(), test.getName(), e, test.getName());
 					}
 					targetedExperience = e;
@@ -100,21 +98,22 @@ public class VariantRuntime {
 			// If we're here, the experience is not from the test we're listening for.
 			// Figure out the caller class and throw an exception.
 			StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-			throw new VariantRuntimeUserErrorException(
-					MessageTemplate.RUN_HOOK_TARGETING_BAD_EXPERIENCE, 
+			throw new RuntimeErrorException(
+					HOOK_TARGETING_BAD_EXPERIENCE, 
 					caller.getClassName(), test.getName(), e);
 		}
 
 	}		
 
-	private VariantCore coreApi;
-
+	private Schema schema;
+	private UserHooker hooker;
+	
 	/**
-	 * Static singleton.
-	 * Need package visibility for test facade.
+	 * Package visibility for test facade.
 	 */
-	VariantRuntime(VariantCore coreApi) {
-		this.coreApi = coreApi;
+	VariantRuntime(Schema schema, UserHooker hooker) {
+		this.schema = schema;
+		this.hooker = hooker;
 	}
 	
 	/**
@@ -160,17 +159,16 @@ public class VariantRuntime {
 	 * TODO: IP.
 	 * 
 	 */
-	private void targetSessionForState(CoreStateRequestImpl req) {
+	private void targetSessionForState(CoreStateRequest req) {
 
-		Schema schema = coreApi.getSchema();
-		CoreSessionImpl session = (CoreSessionImpl) req.getSession();
+		CoreSession session = req.getSession();
 		SessionScopedTargetingStabile targetingStabile = session.getTargetingStabile();
 		State state = req.getState();
 		
 		// State must be in current schema.
 		State schemaState = schema.getState(state.getName());
 		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
-			throw new VariantInternalException("State [" + state.getName() + "] is not in schema");
+			throw new RuntimeInternalException("State [" + state.getName() + "] is not in schema");
 		
 		// 1. Build the active test list.
 		ArrayList<Test> activeTestList = new ArrayList<Test>();
@@ -201,12 +199,12 @@ public class VariantRuntime {
 				// Already traversed, hence must be already targeted.
 				Experience exp = targetingStabile.getAsExperience(test.getName(), schema);
 				if (exp == null)
-					throw new VariantInternalException(
+					throw new RuntimeInternalException(
 							"Active traversed test [" + test.getName() + "] not in targeting stabile");
 
 				// It's a user error to hit an undefined state in an active experience.
 				if (!exp.isDefinedOn(state))  {
-					throw new VariantRuntimeUserErrorException(MessageTemplate.RUN_STATE_UNDEFINED_IN_EXPERIENCE, exp.toString(), state.getName());
+					throw new RuntimeErrorException(STATE_UNDEFINED_IN_EXPERIENCE, exp.toString(), state.getName());
 				}
 
 				alreadyTargeted.add(exp);
@@ -271,7 +269,7 @@ public class VariantRuntime {
 			if (isTargetable(ft, state, vector)) {
 				// Target this test. First post targeting hooks.
 				TestTargetingHookImpl hook = new TestTargetingHookImpl(session, ft, state);
-				coreApi.getUserHooker().post(hook);
+				hooker.post(hook);
 				Experience targetedExperience = hook.targetedExperience;
 				// If no listeners or no action by client code, do the random default.
 				if (targetedExperience == null) {
@@ -301,7 +299,7 @@ public class VariantRuntime {
 
 		// If all went well, we must be resolvable!
 		Pair<Boolean, StateVariantImpl> resolution = resolveState(state, vector);
-		if (!resolution.arg1()) throw new VariantInternalException(
+		if (!resolution.arg1()) throw new RuntimeInternalException(
 				"Vector [" + VariantStringUtils.toString(vector, ",") + "] is unresolvable");
 		
 		req.setResolvedStateVariant(resolution.arg2());
@@ -314,19 +312,19 @@ public class VariantRuntime {
 	 * @param session
 	 * @param test
 	 */
-	private boolean qualifyTest(Test test, CoreSessionImpl session) {
+	private boolean qualifyTest(Test test, CoreSession session) {
 
 		/**
 		 * 
 		 */
 		class TestQualificationHookImpl implements TestQualificationHook {
 			
-			private VariantCoreSession ssn;
+			private CoreSession ssn;
 			private Test test;
 			private boolean qualified = true;
 			private boolean removeFromTT = false;
 			
-			private TestQualificationHookImpl(VariantCoreSession ssn, Test test) {
+			private TestQualificationHookImpl(CoreSession ssn, Test test) {
 				this.ssn = ssn;
 				this.test = test;
 			}
@@ -347,7 +345,7 @@ public class VariantRuntime {
 			}
 			
 			@Override
-			public VariantCoreSession getSession() {
+			public CoreSession getSession() {
 				return ssn;
 			}
 
@@ -364,7 +362,7 @@ public class VariantRuntime {
 		};
 
 		TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
-		coreApi.getUserHooker().post(hook);
+		hooker.post(hook);
 
 		if (!hook.qualified) {
 			session.addDisqualifiedTest(test);
@@ -422,14 +420,14 @@ public class VariantRuntime {
 					
 		// V must be resolvable.
 		if (!isResolvable(v))
-			throw new VariantInternalException(
+			throw new RuntimeInternalException(
 					String.format("Input vector [%s] must be resolvable, but is not", VariantStringUtils.toString(v, ",")));
 
 		// W must not contain experiences that contradict those in V
 		for (Experience ew: w) {
 			for (Experience ev: v) {
 				if (ew.getTest().equals(ev.getTest()))
-					throw new VariantInternalException(
+					throw new RuntimeInternalException(
 							String.format("Experience [%s] in second argument contradicts experience [%s] in first argument", ew, ev));
 			}
 		}
@@ -469,11 +467,11 @@ public class VariantRuntime {
 		// alreadyTargetedExperiences should not contain an experience for the input test.
 		for (Experience e: alreadyTargetedExperiences) {
 			if (test.equals(e.getTest())) 
-				throw new VariantInternalException("Input test [" + test + "] is already targeted");
+				throw new RuntimeInternalException("Input test [" + test + "] is already targeted");
 		}
 
 		if (!isResolvable(alreadyTargetedExperiences))
-			throw new VariantInternalException(
+			throw new RuntimeInternalException(
 					"Input vector [" + StringUtils.join(alreadyTargetedExperiences, ",") + "] is already unresolvable");
 		
 		// Find some non-control, defined experience. Untargetable if none.
@@ -524,20 +522,20 @@ public class VariantRuntime {
 		
 		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
 			
-		for (Test t: coreApi.getSchema().getTests()) {
+		for (Test t: schema.getTests()) {
 			boolean found = false;
 			for (Experience e: vector) {
 				if (e.getTest().equals(t)) {
 					if (found) {
-						throw new VariantInternalException("Duplicate test [" + t + "] in input vector");
+						throw new RuntimeInternalException("Duplicate test [" + t + "] in input vector");
 					}
 					else {
 						
 						if (!state.isInstrumentedBy(e.getTest()))
-							throw new VariantInternalException("Uninstrumented test [" + e + "] in input vector");
+							throw new RuntimeInternalException("Uninstrumented test [" + e + "] in input vector");
 
 						if (!e.isDefinedOn(state))
-							throw new VariantInternalException("Undefined experience [" + e + "] in input vector");
+							throw new RuntimeInternalException("Undefined experience [" + e + "] in input vector");
 
 						found = true;
 
@@ -580,10 +578,10 @@ public class VariantRuntime {
 	 * @param view
 	 * @return
 	 */
-	public CoreStateRequestImpl targetSessionForState(CoreSessionImpl ssn, StateImpl state) {
+	public CoreStateRequest targetSessionForState(CoreSession ssn, StateImpl state) {
 
 		// Resolve the path and get all tests instrumented on the state.
-		CoreStateRequestImpl result = new CoreStateRequestImpl(ssn, state);
+		CoreStateRequest result = new CoreStateRequest(ssn, state);
 		
 		targetSessionForState(result);		
 		

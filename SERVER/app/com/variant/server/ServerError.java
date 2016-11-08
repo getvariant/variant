@@ -21,6 +21,13 @@ public class ServerError extends RuntimeError {
 	//TARGETING_TRACKER_NO_INTERFACE                   (Severity.FATAL, "Targeting tracker class [%s] must implement interface [%s]");
 	//PARSER_LISTENER_NO_INTERFACE                     (Severity.FATAL, "Class [%s], annotated as [%s] must implement interface [%s]");
 
+	public final static ServerError STATE_UNDEFINED_IN_EXPERIENCE =
+			new ServerError(Severity.ERROR, "Currently active experience [%s] is undefined on state [%s]");
+
+	public final static ServerError HOOK_TARGETING_BAD_EXPERIENCE = 
+			new ServerError(Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s]");
+	// HOOK_TARGETING_UNDEFINED_EXPERIENCE               (Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s], which is undefined on state [%s]");
+
    /**
     * 
     */

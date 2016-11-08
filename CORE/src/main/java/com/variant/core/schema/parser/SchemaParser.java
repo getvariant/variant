@@ -1,29 +1,28 @@
 package com.variant.core.schema.parser;
 
+import static com.variant.core.schema.parser.ParserError.JSON_PARSE;
+import static com.variant.core.schema.parser.ParserError.NO_STATES_CLAUSE;
+import static com.variant.core.schema.parser.ParserError.NO_TESTS_CLAUSE;
+import static com.variant.core.schema.parser.ParserError.UNSUPPORTED_CLAUSE;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static com.variant.core.schema.parser.ParserError.*;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.Error.Severity;
-import com.variant.core.exception.Error;
+import com.variant.core.exception.RuntimeError;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.UserHooker;
-import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
 public class SchemaParser implements Keywords {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(SchemaParser.class);
+	//private static final Logger LOG = LoggerFactory.getLogger(SchemaParser.class);
 	
 	/**
 	 * Convert JsonParseException to ParserError.
@@ -154,7 +153,7 @@ public class SchemaParser implements Keywords {
 					hooker.post(new StateParsedHookImpl(state, response));
 				}
 				catch (VariantRuntimeException e) {
-					response.addMessage(Error.HOOK_LISTENER_EXCEPTION, StateParsedHookImpl.class.getName(), e.getMessage());
+					response.addMessage(RuntimeError.HOOK_LISTENER_EXCEPTION, StateParsedHookImpl.class.getName(), e.getMessage());
 				}
 			}
 		}
@@ -176,7 +175,7 @@ public class SchemaParser implements Keywords {
 					hooker.post(new TestParsedHookImpl(test, response));
 				}
 				catch (VariantRuntimeException e) {
-					response.addMessage(Error.HOOK_LISTENER_EXCEPTION, TestParsedHookImpl.class.getName(), e.getMessage());
+					response.addMessage(RuntimeError.HOOK_LISTENER_EXCEPTION, TestParsedHookImpl.class.getName(), e.getMessage());
 				}
 			}
 		}

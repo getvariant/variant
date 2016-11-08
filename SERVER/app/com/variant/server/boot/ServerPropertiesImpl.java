@@ -19,18 +19,18 @@ class ServerPropertiesImpl implements VariantProperties {
 	}
 	
     private Object get(VariantProperties.Key key) {
-    	Option<String> result = playConfig.getString(key.name, scala.Option.apply(null));
-    	return (result.isEmpty() || result.get().isEmpty()) ? key.getDefaultValue : result.get();
+    	Option<String> result = playConfig.getString(key.getExternalName(), scala.Option.apply(null));
+    	return (result.isEmpty() || result.get().isEmpty()) ? key.getDefault() : result.get();
     }
 
     @Override
     public String getString(VariantProperties.Key key) {
-    	return get(key);
+    	return get(key).toString();
     }
     
     @Override
     public long getLong(VariantProperties.Key key) {
-    	return Long.parseLong(get(key));
+    	return Long.parseLong(getString(key));
     }
 
 }

@@ -4,15 +4,26 @@ import com.variant.core.schema.Schema
 import scala.collection.JavaConverters._
 
 /**
+ * 
+ */
+object ServerSchema {
+   def apply(coreSchema: Schema) = new ServerSchema(coreSchema)
+}
+
+/**
  * Server side schema adds some server specific semantics.
  */
 class ServerSchema (coreSchema: Schema) extends Schema {
   
-   private def isValid = {
-      true
-   }
+   import State._
    
-	override def getId = {
+   private var state: State = New
+   
+   private def isValid = {
+      state == Deployed
+   }
+
+   override def getId = {
 	   isValid
 	   coreSchema.getId
 	}
@@ -37,4 +48,15 @@ class ServerSchema (coreSchema: Schema) extends Schema {
 	   coreSchema.getTest(name)	   
 	}
 
+	def setState(state: State) {
+	   this.state = state
+	}
+}
+
+/**
+ * Schema lifecycle states.
+ */
+object State extends Enumeration {
+   type State = Value
+   val New, Failed, Deployed, Undeployed = Value
 }

@@ -1,5 +1,7 @@
 package com.variant.core.session;
 
+import static com.variant.core.exception.RuntimeError.STATE_NOT_INSTRUMENTED_FOR_TEST;
+
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -11,14 +13,11 @@ import java.util.Set;
 
 import org.apache.commons.collections4.set.UnmodifiableSet;
 
-import static com.variant.core.exception.RuntimeError.*;
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.event.impl.StateVisitedEvent;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
-import com.variant.core.exception.Error;
 import com.variant.core.exception.RuntimeErrorException;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.schema.Schema;
@@ -65,7 +64,7 @@ public class CoreStateRequest implements Serializable {
 	 * Regular constructor
 	 * @param session
 	 */
-	CoreStateRequest(CoreSession session, StateImpl state) {
+	public CoreStateRequest(CoreSession session, StateImpl state) {
 		this.session = session;
 		this.state = state;
 		session.setStateRequest(this);
@@ -87,7 +86,7 @@ public class CoreStateRequest implements Serializable {
 	/**
 	 *  Crate state visited event when appropriate.
 	 */
-	void createStateVisitedEvent() {
+	public void createStateVisitedEvent() {
 		event = new StateVisitedEvent(state);
 	}
 	

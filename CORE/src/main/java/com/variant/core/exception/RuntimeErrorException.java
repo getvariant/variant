@@ -5,7 +5,7 @@ import com.variant.core.exception.Error.Severity;
 public class RuntimeErrorException extends VariantRuntimeException {
 
 	private static final long serialVersionUID = 1L;
-	private RuntimeError template;
+	private RuntimeError error;
 	private Object[] args;
 	
 	/**
@@ -13,9 +13,9 @@ public class RuntimeErrorException extends VariantRuntimeException {
 	 * @param template
 	 * @param args
 	 */
-	public RuntimeErrorException(RuntimeError template, Object...args) {
+	public RuntimeErrorException(RuntimeError error, Object...args) {
 		super();
-		this.template = template;
+		this.error = error;
 		this.args = args;
 	}
 
@@ -25,9 +25,9 @@ public class RuntimeErrorException extends VariantRuntimeException {
 	 * @param t
 	 * @param args
 	 */
-	public RuntimeErrorException(RuntimeError template, Throwable t, Object...args) {
+	public RuntimeErrorException(RuntimeError error, Throwable t, Object...args) {
 		super(t);
-		this.template = template;
+		this.error = error;
 		this.args = args;
 	}
 
@@ -36,7 +36,7 @@ public class RuntimeErrorException extends VariantRuntimeException {
 	 * @return
 	 */
 	public Severity getSeverity() {
-		return template.severity;
+		return error.severity;
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public class RuntimeErrorException extends VariantRuntimeException {
 	 */
 	@Override
 	public String getMessage() {
-		return String.format(template.format, (Object[]) args);
+		return String.format(error.format, (Object[]) args);
 	}
 
 }

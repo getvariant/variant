@@ -46,6 +46,11 @@ public class ParserResponseImpl implements ParserResponse {
 		return Collections.unmodifiableList(messages);
 	}
 
+	@Override 
+	public boolean hasMessages() {
+		return ! messages.isEmpty();
+	}
+
 	/**
 	 * @return
 	 */
@@ -59,10 +64,10 @@ public class ParserResponseImpl implements ParserResponse {
 	}
 
 	@Override 
-	public boolean hasMessages() {
-		return ! messages.isEmpty();
+	public boolean hasMessages(Severity severity) {
+		return ! getMessages(severity).isEmpty();
 	}
-	
+
 	//---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC EXTENDED                                          //
 	//---------------------------------------------------------------------------------------------//

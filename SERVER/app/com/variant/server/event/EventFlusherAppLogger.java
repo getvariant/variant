@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.VariantCoreInitParams;
-import com.variant.core.xdm.Test.Experience;
+import com.variant.core.schema.Test.Experience;
 
 /**
  * <p>An environment independent implementation of {@link EventFlusher}, which appends
