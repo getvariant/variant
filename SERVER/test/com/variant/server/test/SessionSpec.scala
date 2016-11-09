@@ -3,8 +3,7 @@ package com.variant.server.test
 import scala.util.Random
 
 import com.variant.server.test.util.ParamString
-import com.variant.server.ServerPropertiesKey.*;
-import com.variant.server.boot.VariantConfigKey.ServerConfigKey
+import com.variant.server.ServerPropertiesKey._
 
 import play.api.test.FakeRequest
 import play.api.test.Helpers.GET
@@ -179,8 +178,8 @@ class SessionSpec extends VariantSpec {
       }
 
      "expire existing sessions after timeout" in {
-        val timeout = boot.config().getInt(SessionTimeoutSecs)
-        val vacuumInterval = boot.config().getInt(SessionStoreVacuumIntervalSecs)
+        val timeout = server.properties().getLong(SESSION_TIMEOUT_SECS)
+        val vacuumInterval = server.properties().getLong(SESSION_STORE_VACUUM_INTERVAL_SECS)
         timeout  mustEqual 1
         vacuumInterval  mustEqual 1
       

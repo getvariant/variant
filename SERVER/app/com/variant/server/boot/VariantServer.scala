@@ -39,8 +39,8 @@ object VariantServer {
 class VariantServerImpl @Inject() (
       clock: Clock,
       configuration: Configuration, 
-      appLifecycle: ApplicationLifecycle,
-      router: Provider[Router]
+      appLifecycle: ApplicationLifecycle
+      //router: Provider[Router] DE craps out
       ) extends VariantServer {
 
    private val logger = Logger(this.getClass)
@@ -60,7 +60,7 @@ class VariantServerImpl @Inject() (
     */
    def boot() {
 
-      // Display routers on startup
+      /* Display routers on startup
       if (logger.isDebugEnabled) {
          val routeDocs = router.get.documentation
          if (routeDocs.isEmpty) 
@@ -69,13 +69,14 @@ class VariantServerImpl @Inject() (
             routeDocs.map { r =>
                println("%-10s %-50s %s".format(r._1, r._2, r._3))
             }
-      }
+      } */
 
       logger.info(String.format(
-"""Variant Experiment Server release %s © 2015-16 getvariant.com.
+"""%s release %s © 2015-16 getvariant.com.
       Bootstrapped in %s. 
       Listening on %s""",
-            "fix version",
+            SbtService.name,
+            SbtService.version,
 				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"),
 				configuration.getString("play.http.context").get))
       

@@ -8,11 +8,10 @@ import play.api.Application
 import javax.inject.Inject
 import com.variant.server.session.SessionStore
 import org.scalatest.BeforeAndAfterAll
-import com.variant.server.boot.Bootstrap
-import com.variant.core.impl.VariantCore
 import com.variant.server.jdbc.JdbcService
 import com.variant.server.event.EventWriter
 import com.variant.server.event.EventWriter
+import com.variant.server.boot.VariantServer
 
 /**
  * Common to all tests.
@@ -42,7 +41,7 @@ class VariantSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
 
    protected val context = app.configuration.getString("play.http.context").get
    protected val store = app.injector.instanceOf[SessionStore]
-   protected val boot = app.injector.instanceOf[Bootstrap]
+   protected val server = app.injector.instanceOf[VariantServer]
  
     /**
 	 * Each case runs in its own JVM. Each test runs in its
@@ -55,7 +54,7 @@ class VariantSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
    override def beforeAll() {
 		synchronized { // once per JVM
 			if (!sqlSchemaCreated) {
-				recreateSchema(boot.eventWriter);
+				recreateSchema(server.eventWriter);
 				sqlSchemaCreated = true;
 			}
 		}

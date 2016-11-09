@@ -3,8 +3,7 @@
 //
 
 val coreVersion = "0.7.0"
-name := s"Variant Server $coreVersion"
-
+name := "Variant Experiment Server"
 version := coreVersion
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
@@ -26,6 +25,18 @@ libraryDependencies ++= Seq(
   // H2 In mem DB in test 
   "com.h2database" % "h2"   % "1.4.191"         % Test
 )
+
+// Capture SBT build info in a source file available at compile time.
+sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { (d, v, n) =>
+  val file = d / "SbtService.scala"
+  IO.write(file, """package com.variant.server.boot
+    |object SbtService {
+    |  val version = "%s"
+    |  val name = "%s"
+    |}
+    |""".stripMargin.format(v, n))
+  Seq(file)
+}
 
 // This doesn't work under eclipse => had to switch to building applicaiton programmatically with GuiceApplicationBuilder
 //javaOptions in Test += "-Dconfig.resource=application.test.conf"

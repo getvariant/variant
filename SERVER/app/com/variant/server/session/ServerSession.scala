@@ -18,18 +18,12 @@ object ServerSession {
    }
 }
 */
-class ServerSession (rawJson: String) extends {
-   
-      // TODO Find a way to inject server.
-      val server: VariantServer = null
-   
-   } with CoreSession(rawJson, server.schema) {
-   
+class ServerSession (rawJson: String) extends CoreSession(rawJson, VariantServer.instance.schema) {
    
    /**
     */
 	def triggerEvent(event: VariantEvent) {
 		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
-		server.eventWriter.write(new FlushableEventImpl(event, this));
+		VariantServer.instance.eventWriter.write(new FlushableEventImpl(event, this));
 	}
 }

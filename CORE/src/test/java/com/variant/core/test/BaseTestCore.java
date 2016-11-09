@@ -1,6 +1,5 @@
  package com.variant.core.test;
 
-import com.variant.core.impl.VariantCore;
 import com.variant.core.util.inject.Injector;
 
 /**
@@ -33,10 +32,10 @@ public class BaseTestCore extends VariantBaseTest {
 */	
 	/**
 	 * 
-	 */
+	 *
 	protected VariantCore rebootApi() {
 		Injector.setConfigNameAsResource(injectorConfigAsResourceName);
 		return new VariantCore("/com/variant/core/conf/test.props");
 	}
-
+*/
 }

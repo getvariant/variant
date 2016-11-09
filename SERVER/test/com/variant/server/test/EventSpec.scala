@@ -1,6 +1,6 @@
 package com.variant.server.test
 
-import com.variant.core.impl.CoreSessionImpl
+import com.variant.core.session.CoreSession
 
 import org.scalatestplus.play._
 
@@ -11,14 +11,14 @@ import play.api.libs.json._
 
 import com.variant.server.UserError
 import com.variant.server.test.util.ParamString
+import com.variant.server.ServerPropertiesKey._
 
 import scala.util.Random
 import scala.collection.JavaConversions._
 import scala.concurrent.duration._
 
 import com.variant.server.test.util.EventReader
-import com.variant.server.ServerPropertiesKey.*;
-import com.variant.server.boot.VariantConfigKey.ServerConfigKey
+import com.variant.server.ServerPropertiesKey._
 
 /*
  * Reusable event JSON objects. 
@@ -145,10 +145,10 @@ class EventSpec extends VariantSpec {
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
          // Read events back from the db, but must wait for the asych flusher.
-         val flushMaxDelay = boot.config().getInt(EventWriterFlushMaxDelayMillis)
+         val flushMaxDelay = server.properties().getLong(EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS)
          flushMaxDelay  mustEqual 1000
          Thread.sleep(flushMaxDelay * 2)
-         val eventsFromDatabase = EventReader(boot.eventWriter()).read()
+         val eventsFromDatabase = EventReader(server.eventWriter()).read()
          eventsFromDatabase.size mustBe 1
          val event = eventsFromDatabase.head
          event.getCreatedOn.getTime mustBe ts

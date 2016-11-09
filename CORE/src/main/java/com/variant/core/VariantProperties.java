@@ -1,7 +1,5 @@
 package com.variant.core;
 
-
-
 /**
  * <p>Variant system properties. 
  * Each property is a key-value pair with keys of type {@link Key} and value which is bound at deployment
