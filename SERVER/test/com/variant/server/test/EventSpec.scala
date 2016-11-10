@@ -79,7 +79,7 @@ class EventSpec extends VariantSpec {
          status(resp) mustBe NOT_FOUND
          contentAsString(resp) mustBe empty
       }
-      
+
       "return 404 on PUT" in {
          val resp = route(app, FakeRequest(PUT, endpoint)).get
          status(resp) mustBe NOT_FOUND
@@ -172,9 +172,7 @@ class EventSpec extends VariantSpec {
                }
                case t => throw new RuntimeException("Unexpected test %s".format(t))
             }
-         })
-         
+         })  
       }
-      
    }
 }

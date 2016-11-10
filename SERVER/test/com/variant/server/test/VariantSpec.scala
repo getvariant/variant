@@ -25,12 +25,17 @@ class VariantSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
 
    import VariantSpec._
    
+   // Set system property, if needed
+   //sys.props += (("variant.schema.dir", "/schemas"))
+
    // Override app if you need a Application with other than
-   // default parameters.
+   // default parameters. 
+   // TODO: find a way to externalize it, 
    implicit override lazy val app: Application = new GuiceApplicationBuilder()
       .configure(
             Map(
                   "play.http.context" -> "/variant-test"
+                  ,"variant.schemas.dir" -> "test-schemas"
                   ,"variant.session.timeout.secs" -> 1
                   ,"variant.session.store.vacuum.interval.secs" -> 1
                   ,"variant.event.writer.flush.max.delay.millis" -> 1000

@@ -14,6 +14,8 @@ import com.variant.core.schema.Schema
 import com.variant.server.schema.ServerSchema
 import com.variant.core.VariantProperties
 import play.api.Application
+import com.variant.core.impl.UserHooker
+import com.variant.server.schema.SchemaService
 
 /**
  * Need a trait to make DI to work.
@@ -48,12 +50,13 @@ class VariantServerImpl @Inject() (
    private val start = clock.instant
    private val now = System.currentTimeMillis;
       
-	private lazy val propertiesImpl = new ServerPropertiesImpl(configuration)
-   private lazy val eventWriterImpl = new EventWriter(propertiesImpl)
+	private[this] lazy val propertiesImpl = new ServerPropertiesImpl(configuration)
+   private[this] lazy val eventWriterImpl = new EventWriter(propertiesImpl)
+   private[this] var schemaImpl: Schema = null
    
-   override def eventWriter() = eventWriterImpl
-   override def properties() = propertiesImpl
-   override def schema() = null // need to get schema.
+   override def eventWriter = eventWriterImpl
+   override def properties = propertiesImpl
+   override def schema = null // need to get schema.
    
    /**
     * One time application bootup.
@@ -71,15 +74,16 @@ class VariantServerImpl @Inject() (
             }
       } */
 
-      logger.info(String.format(
-"""%s release %s © 2015-16 getvariant.com.
-      Bootstrapped in %s. 
-      Listening on %s""",
+      logger.info(
+            String.format("%s release %s getvariant.com. Bootstrapped in %s. Listening on %s.",
             SbtService.name,
             SbtService.version,
 				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"),
 				configuration.getString("play.http.context").get))
-      
+
+      val hooker = new UserHooker()
+	   val schemaService = SchemaService(hooker, properties)
+	   	   
 		VariantServer.instanceImpl = this
    }
 

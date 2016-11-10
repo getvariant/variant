@@ -4,6 +4,9 @@ import play.api.Configuration;
 import scala.Option;
 
 import com.variant.core.VariantProperties;
+import com.variant.core.exception.RuntimeErrorException;
+import static com.variant.core.exception.RuntimeError.CONFIG_PROPERTY_NOT_SET;
+import com.variant.server.ServerPropertiesKey;
 
 /**
  * Server side implementation of Variant properties.
@@ -25,7 +28,10 @@ class ServerPropertiesImpl implements VariantProperties {
 
     @Override
     public String getString(VariantProperties.Key key) {
-    	return get(key).toString();
+    	Object result = get(key);
+        if (result == null)
+        	throw new RuntimeErrorException(CONFIG_PROPERTY_NOT_SET, ServerPropertiesKey.SCHEMAS_DIR.getExternalName());
+        return result.toString();
     }
     
     @Override

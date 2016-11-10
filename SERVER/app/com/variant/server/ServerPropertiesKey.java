@@ -5,6 +5,9 @@ import com.variant.server.event.EventFlusherAppLogger;
 
 public class ServerPropertiesKey implements VariantProperties.Key {
 	
+	public static final ServerPropertiesKey SCHEMAS_DIR =
+			new ServerPropertiesKey("variant.schemas.dir");
+	
 	public static final ServerPropertiesKey SESSION_TIMEOUT_SECS =
 			new ServerPropertiesKey("variant.session.timeout.secs", 900);
 	
@@ -29,12 +32,23 @@ public class ServerPropertiesKey implements VariantProperties.Key {
 	private final String name;
 	private final Object defaultValue;
 	
+	/**
+	 * Key with default
+	 */
    	private ServerPropertiesKey(String name, Object defaultValue) {
    		this.name = name;
    		this.defaultValue = defaultValue;
    	}
 
-	@Override
+   	/**
+   	 * Key without default
+   	 */
+   	private ServerPropertiesKey(String name) {
+   		this.name = name;
+   		this.defaultValue = null;
+   	}
+
+   	@Override
 	public String getExternalName() {
 		return name;
 	}

@@ -19,7 +19,7 @@ public class UserHooker {
 	/**
 	 * Package instantiation only.
 	 */
-	UserHooker() {}
+	public UserHooker() {}
 	
 	/**
 	 * 

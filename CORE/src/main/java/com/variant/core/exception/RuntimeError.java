@@ -1,10 +1,14 @@
 package com.variant.core.exception;
 
+
 /**
  * Expected user error that can be detected at run time.
  * @author Igor
  */
 public class RuntimeError extends Error {
+
+	public final static RuntimeError CONFIG_PROPERTY_NOT_SET = 
+			new RuntimeError(Severity.FATAL, "Configuration property [%s] must be set but is not");
 
 	public static final RuntimeError EXPERIENCE_WEIGHT_MISSING = 
 			new RuntimeError(Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found");
@@ -19,6 +23,7 @@ public class RuntimeError extends Error {
 	
 	public static final RuntimeError PROPERTY_INIT_PROPERTY_NOT_SET =
 			new RuntimeError(Severity.ERROR, "Init property [%s] is required by class [%s] but is missing in system property [%s]");
+	
 	// ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first");
 	// SCHEMA_OBSOLETE                                   (Severity.ERROR, "Operation failed becuase this schema (ID [%s]) has been undeployed");
 	// SCHEMA_MODIFIED                                   (Severity.ERROR, "Opereation failed because the current schema ID [%s] differs from that with which this session was created [%s]");

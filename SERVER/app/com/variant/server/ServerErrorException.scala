@@ -1,5 +1,8 @@
 package com.variant.server
 
+import com.variant.core.exception.RuntimeErrorException
+import com.variant.core.exception.RuntimeError
+
 object ServerErrorException {
    
 }
@@ -7,6 +10,6 @@ object ServerErrorException {
 /**
  * 
  */
-class ServerErrorException (error: ServerError, args: String*) {
+class ServerErrorException (error: RuntimeError, args: AnyRef*) extends RuntimeErrorException(error, args) {
   
 }

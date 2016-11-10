@@ -1,58 +1,87 @@
 package com.variant.server.schema;
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConversions.asScalaBuffer
 import org.apache.commons.lang3.time.DurationFormatUtils
 import com.variant.core.exception.Error.Severity
-import com.variant.core.schema.ParserMessage
-import com.variant.core.schema.ParserResponse
-import com.variant.core.schema.Test
-import com.variant.core.schema.Test.Experience
-import com.variant.core.schema.impl.SchemaImpl
-import com.variant.core.schema.parser.SchemaParser
-import com.variant.core.impl.UserHooker
 import com.variant.core.exception.RuntimeInternalException
-import play.api.Logger
+import com.variant.core.impl.UserHooker
+import com.variant.core.schema.ParserResponse
+import com.variant.core.schema.parser.SchemaParser
 import com.variant.core.schema.parser.ParserResponseImpl
+import play.api.Logger
+import com.variant.core.VariantProperties
+import com.variant.server.ServerPropertiesKey
+import java.io.File
+import com.variant.server.ServerErrorException
+import com.variant.server.ServerError._
+import scala.io.Source
 
 /**
  * 
  */
 object SchemaService {
-   def apply(hooker: UserHooker) = new SchemaService(hooker)
+   def apply(hooker: UserHooker, properties: VariantProperties) = 
+      new SchemaService(hooker, properties)
 }
 
 /**
  * 
  */
-class SchemaService (hooker: UserHooker) {
-	      
-   private val logger = Logger(this.getClass)
-   val schemaParser = new SchemaParser(hooker)	
+class SchemaService (hooker: UserHooker, properties: VariantProperties) {
+	         
+   private[this] val logger = Logger(this.getClass)
+   private[this] val parser = new SchemaParser(hooker)
+   
    var deployedSchema: Option[ServerSchema] = None
+   
+   boot()
+   
+   /**
+    * Boot up schema service.
+    */
+   def boot() {
+      
+      var dirName = sys.props.get(ServerPropertiesKey.SCHEMAS_DIR.getExternalName)
+      // This will throw an exception if config property is unset.
+      if (dirName.isEmpty) dirName = Option(properties.getString(ServerPropertiesKey.SCHEMAS_DIR))
+      
+      val dir = new File(dirName.get)
+      if (!dir.exists) 
+         throw new ServerErrorException(SCHEMAS_DIR_MISSING, dirName)
+      if (!dir.isDirectory) 
+         throw new ServerErrorException(SCHEMAS_DIR_NOT_DIR, dirName)            
 
+      val schemas = dir.listFiles()
+      
+      if (schemas.length == 0) {
+         logger.info("No schemas detected")
+      }
+      else if (schemas.length > 1)  
+         throw new ServerErrorException(MULTIPLE_SCHEMAS_NOT_SUPPORTED)
+      else {
+         val schemaParser = new SchemaParser(hooker)
+         val fileContent = Source.fromFile(schemas(0)).mkString
+         val json = parser.preParse(fileContent)
+         val response = parser.parse(json)
+         println("********************** " + response.getMessages)
+      }
+   }
+   
    /**
     * Currently deployed schema.
     */
-   def schema() = deployedSchema
+   def schema = deployedSchema
    
-  /**
-	 * Parse and deploy if no errors.
-	 */
-	def parse(schema: String): ParserResponse = {
-		parse(schema, true)
-	}
-
    /**
 	 * Parse and optionally deploy if no errors.
 	 */
-	def parse(rawJson: String, deploy: Boolean): ParserResponse = {
+	private def parse(rawJson: String, deploy: Boolean): ParserResponse = {
 
 		val now = System.currentTimeMillis();
-		
 		lazy val response: ParserResponse = null
 		
 		try {
-			val response = schemaParser.parse(rawJson)
+			val response = parser.parse(rawJson)
 		}
 		catch {
 		   case t: Throwable => throw new RuntimeInternalException(t)

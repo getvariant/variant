@@ -14,7 +14,8 @@ public interface VariantProperties {
 	 * <p> System property as a String, given by its key.
 	 * 
 	 * @param key Property key              
-	 * @return The raw value, as externally bound, or the default, converted to String.
+	 * @return The raw value, as externally bound, or the default, converted to String, if defined,
+	 *         or null if neither.
 	 *         
 	 * @since 0.6
 	 */
@@ -24,7 +25,8 @@ public interface VariantProperties {
 	 * <p> System property as a long, given by its key.
 	 * 
 	 * @param key Property key
-	 * @return The raw value, as externally bound, or the default, converted to long.
+	 * @return The raw value, as externally bound, or the default, converted to long, if defined,
+	 *         or null if neither.
 	 *         
 	 * @since 0.6
 	 */
