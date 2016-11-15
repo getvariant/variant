@@ -17,6 +17,7 @@ import com.variant.core.exception.RuntimeError;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.UserHooker;
+import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
@@ -99,7 +100,7 @@ public class SchemaParser implements Keywords {
 	 * @throws VariantRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	public ParserResponseImpl parse(String schemaAsJsonString) throws VariantRuntimeException {
+	public ParserResponse parse(String schemaAsJsonString) throws VariantRuntimeException {
 		
 		// 1. Syntactical phase.
 		ParserResponseImpl response = new ParserResponseImpl();

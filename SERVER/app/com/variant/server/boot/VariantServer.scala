@@ -21,9 +21,9 @@ import com.variant.server.schema.SchemaService
  * Need a trait to make DI to work.
  */
 trait VariantServer {
-   def schema(): ServerSchema
-   def properties(): VariantProperties
-   def eventWriter(): EventWriter
+   def schema: Option[ServerSchema]
+   def properties: VariantProperties
+   def eventWriter: EventWriter
 }
 
 /**
@@ -52,11 +52,11 @@ class VariantServerImpl @Inject() (
       
 	private[this] lazy val propertiesImpl = new ServerPropertiesImpl(configuration)
    private[this] lazy val eventWriterImpl = new EventWriter(propertiesImpl)
-   private[this] var schemaImpl: Schema = null
+   private[this] var schemaService: SchemaService = null
    
    override def eventWriter = eventWriterImpl
    override def properties = propertiesImpl
-   override def schema = null // need to get schema.
+   override def schema = schemaService.schema
    
    /**
     * One time application bootup.
@@ -82,8 +82,7 @@ class VariantServerImpl @Inject() (
 				configuration.getString("play.http.context").get))
 
       val hooker = new UserHooker()
-	   val schemaService = SchemaService(hooker, properties)
-	   	   
+	   schemaService = SchemaService(hooker, properties)
 		VariantServer.instanceImpl = this
    }
 

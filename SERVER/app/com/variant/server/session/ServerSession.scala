@@ -18,7 +18,7 @@ object ServerSession {
    }
 }
 */
-class ServerSession (rawJson: String) extends CoreSession(rawJson, VariantServer.instance.schema) {
+class ServerSession (rawJson: String) extends CoreSession(rawJson, VariantServer.instance.schema.get) {
    
    /**
     */
