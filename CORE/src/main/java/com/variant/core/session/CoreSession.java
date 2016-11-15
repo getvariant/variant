@@ -21,7 +21,7 @@ import com.variant.core.impl.SessionId;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.util.Tuples.Pair;
+import static com.variant.core.util.Tuples.*;
 
 /**
  * 
@@ -239,7 +239,8 @@ public class CoreSession implements Serializable {
 	private static final String FIELD_NAME_CURRENT_REQUEST = "request";
 	private static final String FIELD_NAME_TRAVERSED_STATES = "states";
 	private static final String FIELD_NAME_TRAVERSED_TESTS = "tests";
-	private static final String FIELD_NAME_DISQUAL_TESTS = "dis_tests";
+	private static final String FIELD_NAME_TEST = "test";
+	private static final String FIELD_NAME_DISQUAL_TESTS = "disqualTests";
 	private static final String FIELD_NAME_STATE = "state";
 	private static final String FIELD_NAME_COUNT = "count";
 	private static final String FIELD_NAME_TARGETING_STABIL = "stabil";
@@ -277,7 +278,7 @@ public class CoreSession implements Serializable {
 			if (traversedTests.size() > 0) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_TRAVERSED_TESTS);
 				for (Test t: traversedTests) {
-					jsonGen.writeString(t.getName());
+					jsonGen.writeEndObject();
 				}
 				jsonGen.writeEndArray();
 			}
@@ -395,8 +396,8 @@ CLEANUP */
 			LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
 			try {
 				List<String> testList = (List<String>) testsObj; 
-				for (String testName: testList) {
-					tests.add(schema.getTest(testName));
+				for (String test: testList) {
+					tests.add(schema.getTest(test));
 				}
 			}
 			catch (Exception e) {
@@ -407,9 +408,7 @@ CLEANUP */
 		
 		testsObj = parsedJson.get(FIELD_NAME_DISQUAL_TESTS);
 		if (testsObj != null) {
-			
 			LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
-		
 			try {
 				List<String> testList = (List<String>) testsObj; 
 				for (String testName: testList) {
@@ -422,7 +421,6 @@ CLEANUP */
 			}
 			disqualTests = tests;
 		}
-/*		}		CLEANUP */
 	}
 
 	@Override

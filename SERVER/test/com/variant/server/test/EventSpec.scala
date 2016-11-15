@@ -145,10 +145,10 @@ class EventSpec extends VariantSpec {
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
          // Read events back from the db, but must wait for the asych flusher.
-         val flushMaxDelay = server.properties().getLong(EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS)
+         val flushMaxDelay = server.properties.getLong(EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS)
          flushMaxDelay  mustEqual 1000
          Thread.sleep(flushMaxDelay * 2)
-         val eventsFromDatabase = EventReader(server.eventWriter()).read()
+         val eventsFromDatabase = EventReader(server.eventWriter).read()
          eventsFromDatabase.size mustBe 1
          val event = eventsFromDatabase.head
          event.getCreatedOn.getTime mustBe ts

@@ -86,7 +86,7 @@ object SessionSpec {
                   "params": [{"name": "Param One", "value": "Param One Value"},{"name": "Param Two", "value": "Param Two Value"}], 
                   "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
         "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
-        "tests": [{"test": "test1","qualified": true},{"test": "test2","qualified": true}]}
+        "tests": ["test1","test2"]}
    """.format(System.currentTimeMillis()))
 
    val b = ParamString("""
@@ -103,6 +103,7 @@ object SessionSpec {
          },
          "states":[{"state":"state2","count":1}],
          "tests":["test1","test2","test3","test4","test5","test6"],
+         "disqualTests":["test1","test2","test3","test4","test5","test6"],
          "stabil":["test2.C.1476926526964","test3.A.1476926526964","test4.A.1476926526965","test5.B.1476926526965","test6.C.1476926526965","test1.A.1476926526966"]
       }""")
 
@@ -178,8 +179,8 @@ class SessionSpec extends VariantSpec {
       }
 
      "expire existing sessions after timeout" in {
-        val timeout = server.properties().getLong(SESSION_TIMEOUT_SECS)
-        val vacuumInterval = server.properties().getLong(SESSION_STORE_VACUUM_INTERVAL_SECS)
+        val timeout = server.properties.getLong(SESSION_TIMEOUT_SECS)
+        val vacuumInterval = server.properties.getLong(SESSION_STORE_VACUUM_INTERVAL_SECS)
         timeout  mustEqual 1
         vacuumInterval  mustEqual 1
       
