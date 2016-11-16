@@ -10,22 +10,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.TestQualificationHook;
-import com.variant.core.impl.VariantCore;
+import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserResponse;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.StateVariant;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.StateVariant;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.parser.ParserResponseImpl;
+import com.variant.core.schema.parser.SchemaParser;
+import com.variant.core.session.CoreSession;
 
 
 public class ParserDisjointOkayTest extends BaseTestCore {
 	
-	private VariantCore core = rebootApi();
 	private static final Random rand = new Random();
 
 	/**
@@ -125,19 +125,12 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = core.parseSchema(SCHEMA);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand), true).getBody();
-		State state1 = core.getSchema().getState("state1");
-		Test test1 = core.getSchema().getTest("test1");
-		Test test2 = core.getSchema().getTest("test2");
-		core.clearHookListeners();
-		VariantCoreStateRequest req = session.targetForState(state1);
-		assertTrue(req.getLiveExperiences().isEmpty());
-		assertTrue(session.getTraversedStates().isEmpty());
-		assertTrue(session.getTraversedTests().isEmpty());
-		assertEquals(0, req.getResolvedParameterNames().size());
+		Schema schema = response.getSchema();
+		Test test1 = schema.getTest("test1");
+		Test test2 = schema.getTest("test2");
 		assertFalse(test1.isOn());
 		assertFalse(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
@@ -258,22 +251,12 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = core.parseSchema(SCHEMA);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand), true).getBody();
-		State state1 = core.getSchema().getState("state1");
-		Test test1 = core.getSchema().getTest("test1");
-		Test test2 = core.getSchema().getTest("test2");
-		core.clearHookListeners();
-		core.addHookListener(new TestDisqualifier(test2));
-		VariantCoreStateRequest req = session.targetForState(state1);
-		assertEquals(0, session.getTraversedStates().size());
-		assertEquals(0, session.getTraversedTests().size());
-		assertTrue(req.getLiveExperiences().isEmpty());
-		assertEquals("/path/to/state1", req.getResolvedParameter("path"));
-		assertEquals("/path/to/state1", req.getResolvedParameter("pAtH"));
-
+		Schema schema = response.getSchema();
+		Test test1 = schema.getTest("test1");
+		Test test2 = schema.getTest("test2");
 		assertFalse(test1.isOn());
 		assertTrue(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
@@ -394,22 +377,12 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = core.parseSchema(SCHEMA);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-		VariantCoreSession session = core.getSession(VariantStringUtils.random64BitString(rand), true).getBody();
-		State state1 = core.getSchema().getState("state1");
-		Test test1 = core.getSchema().getTest("test1");
-		Test test2 = core.getSchema().getTest("test2");
-		core.clearHookListeners();
-		core.addHookListener(new TestDisqualifier(test1));
-		core.addHookListener(new TestDisqualifier(test2));
-		VariantCoreStateRequest req = session.targetForState(state1);
-		assertTrue(session.getTraversedStates().isEmpty());
-		assertTrue(session.getTraversedTests().isEmpty());
-		assertTrue(req.getLiveExperiences().isEmpty());
-		assertEquals("/path/to/state1", req.getResolvedParameter("path"));
-		assertEquals("/path/to/state1", req.getResolvedParameter("PaTh"));
+		Schema schema = response.getSchema();
+		Test test1 = schema.getTest("test1");
+		Test test2 = schema.getTest("test2");
 		assertTrue(test1.isOn());
 		assertTrue(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
@@ -419,34 +392,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertFalse(test1.isCovariantWith(test2));
 		assertFalse(test2.isCovariantWith(test1));
 	}
-	
-	/**
-	 * 
-	 */
-	private static class TestDisqualifier implements HookListener<TestQualificationHook> {
-
-		private ArrayList<com.variant.core.xdm.Test> testList = new ArrayList<com.variant.core.xdm.Test>();
-		private com.variant.core.xdm.Test testToDisqualify;
 		
-		private TestDisqualifier(com.variant.core.xdm.Test testToDisqualify) {
-			this.testToDisqualify = testToDisqualify;
-		}
-
-		@Override
-		public Class<TestQualificationHook> getHookClass() {
-			return TestQualificationHook.class;
-		}
-
-		@Override
-		public void post(TestQualificationHook hook) {
-			if (hook.getTest().equals(testToDisqualify)) {
-				testList.add(hook.getTest());
-				hook.setQualified(false);
-			}
-		}		
-	}
-
-	
 	// Happy path schema is used by other tests too.
 	public static final String SCHEMA = 
 
@@ -637,9 +583,10 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 	@org.junit.Test
 	public void happyPathTest() throws Exception {
 		
-		ParserResponse response = core.parseSchema(SCHEMA);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
+		final Schema schema = response.getSchema();
 
 		//
 		// Views.
@@ -659,8 +606,6 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 				{"State1",  "/path/to/State1"}
 						
 		};
-
-		final Schema schema = core.getSchema();
 		
 		// Verify views returned as a list.
 		List<State> actualStates = schema.getStates();
@@ -691,7 +636,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		
 		// Instrumented tests.
 		State view = schema.getState("state1");
-		ArrayList<com.variant.core.xdm.Test> expectedInstrumentedTests = new ArrayList<com.variant.core.xdm.Test>() {{
+		ArrayList<Test> expectedInstrumentedTests = new ArrayList<Test>() {{
 			add(schema.getTest("test1"));
 			add(schema.getTest("Test1"));
 		}};
@@ -704,35 +649,35 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		catch (NullPointerException npe ) { /* expected */ }
 
 		view = schema.getState("state2");
-		expectedInstrumentedTests = new ArrayList<com.variant.core.xdm.Test>() {{
+		expectedInstrumentedTests = new ArrayList<Test>() {{
 			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertFalse(view.isNonvariantIn(schema.getTest("test2")));
 		
 		view = schema.getState("state3");
-		expectedInstrumentedTests = new ArrayList<com.variant.core.xdm.Test>() {{
+		expectedInstrumentedTests = new ArrayList<Test>() {{
 			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertFalse(view.isNonvariantIn(schema.getTest("test2")));
 
 		view = schema.getState("state4");
-		expectedInstrumentedTests = new ArrayList<com.variant.core.xdm.Test>() {{
+		expectedInstrumentedTests = new ArrayList<Test>() {{
 			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertTrue(view.isNonvariantIn(schema.getTest("test2")));
 		
 		view = schema.getState("state5");
-		expectedInstrumentedTests = new ArrayList<com.variant.core.xdm.Test>();
+		expectedInstrumentedTests = new ArrayList<Test>();
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 
 		//
 		// Tests.
 		//
 
-		List<com.variant.core.xdm.Test> actualTests = schema.getTests();
+		List<Test> actualTests = schema.getTests();
 		
 		assertEquals(3, actualTests.size());
 		verifyTest1(actualTests.get(0), schema);
@@ -762,16 +707,16 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest1(com.variant.core.xdm.Test test, Schema config) {
+	private static void verifyTest1(Test test, Schema config) {
 		
 		assertNotNull(test);
 		assertEquals("test1", test.getName());
 		assertTrue(test.isOn());
 		
 		// Experiences
-		List<com.variant.core.xdm.Test.Experience> actualExperiences = test.getExperiences();
+		List<Test.Experience> actualExperiences = test.getExperiences();
 		assertEquals(3, actualExperiences.size());
-		com.variant.core.xdm.Test.Experience exp = actualExperiences.get(0);
+		Test.Experience exp = actualExperiences.get(0);
 		assertEquals("A", exp.getName());
 		assertEquals(10, exp.getWeight().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
@@ -789,10 +734,10 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertEquals(test, exp.getTest());
 		
 		// onStates
-		List<com.variant.core.xdm.Test.OnState> actualonStates = test.getOnStates();
+		List<Test.OnState> actualonStates = test.getOnStates();
 		assertEquals(1, actualonStates.size());
 
-		com.variant.core.xdm.Test.OnState tov = actualonStates.get(0);
+		Test.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getState("state1"), tov.getState());
 		assertFalse(tov.isNonvariant());
@@ -816,16 +761,16 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest2(com.variant.core.xdm.Test test, Schema config) {
+	private static void verifyTest2(Test test, Schema config) {
 
 		assertNotNull(test);
 		assertEquals("test2", test.getName());
 		assertFalse(test.isOn());
 		
 		// Experiences
-		List<com.variant.core.xdm.Test.Experience> actualExperiences = test.getExperiences();
+		List<Test.Experience> actualExperiences = test.getExperiences();
 		assertEquals(2, actualExperiences.size());
-		com.variant.core.xdm.Test.Experience exp = actualExperiences.get(0);
+		Test.Experience exp = actualExperiences.get(0);
 		assertEquals("C", exp.getName());
 		assertEquals(0.5, exp.getWeight().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
@@ -838,10 +783,10 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertEquals(test, exp.getTest());
 		
 		// onStates
-		List<com.variant.core.xdm.Test.OnState> actualonStates = test.getOnStates();
+		List<Test.OnState> actualonStates = test.getOnStates();
 		assertEquals(3, actualonStates.size());
 
-		com.variant.core.xdm.Test.OnState tov = actualonStates.get(0);
+		Test.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getState("state3"), tov.getState());
 		assertFalse(tov.isNonvariant());
@@ -877,16 +822,16 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest3(com.variant.core.xdm.Test test, Schema config) {
+	private static void verifyTest3(Test test, Schema config) {
 		
 		assertNotNull(test);
 		assertEquals("Test1", test.getName());
 		assertTrue(test.isOn());
 		
 		// Experiences
-		List<com.variant.core.xdm.Test.Experience> actualExperiences = test.getExperiences();
+		List<Test.Experience> actualExperiences = test.getExperiences();
 		assertEquals(2, actualExperiences.size());
-		com.variant.core.xdm.Test.Experience exp = actualExperiences.get(0);
+		Test.Experience exp = actualExperiences.get(0);
 		assertEquals("A", exp.getName());
 		assertEquals(10, exp.getWeight().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
@@ -899,10 +844,10 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertEquals(test, exp.getTest());
 		
 		// onStates
-		List<com.variant.core.xdm.Test.OnState> actualonStates = test.getOnStates();
+		List<Test.OnState> actualonStates = test.getOnStates();
 		assertEquals(1, actualonStates.size());
 
-		com.variant.core.xdm.Test.OnState tov = actualonStates.get(0);
+		Test.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getState("state1"), tov.getState());
 		assertFalse(tov.isNonvariant());

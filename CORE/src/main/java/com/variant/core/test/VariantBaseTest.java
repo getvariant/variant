@@ -15,6 +15,8 @@ import com.variant.core.exception.RuntimeError;
 import com.variant.core.exception.RuntimeErrorException;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
@@ -46,15 +48,15 @@ abstract public class VariantBaseTest {
 	//                                         HELPERS                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	/** CLEANUP moved to server.
+	/**
 	 * Print all messages to std out.
 	 * @param response
-	 *
+	 */
 	protected void printMessages(ParserResponse response) {
 		if (response.hasMessages()) 
 			for (ParserMessage msg: response.getMessages()) System.out.println(msg);
 	}
-	*/
+	
 	/**
 	 * 
 	 * @param name

@@ -10,7 +10,7 @@ public class BaseTestCore extends VariantBaseTest {
 	//private static Boolean sqlSchemaCreated = false;
 		
 	// Default, but can be overridden by subclass, if needed.
-	protected static String injectorConfigAsResourceName = "/com/variant/core/conf/injector-session-store-local.json";
+	// protected static String injectorConfigAsResourceName = "/com/variant/core/conf/injector-session-store-local.json";
 
 	/**
 	 * Each case runs in its own JVM. Each test runs in its
