@@ -1,21 +1,18 @@
 package com.variant.core.test;
 
-import static com.variant.core.exception.Error.PARSER_COVARIANT_EXPERIENCE_DUPE;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_DUPE;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_MISSING;
+import static com.variant.core.schema.parser.ParserError.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.variant.core.impl.VariantCore;
-import com.variant.core.xdm.impl.ParserMessageImplFacade;
-import com.variant.server.ParserMessage;
-import com.variant.server.ParserResponse;
-import com.variant.server.ParserMessage.Severity;
-import com.variant.server.schema.SchemaParser;
+import com.variant.core.exception.Error.Severity;
+import com.variant.core.impl.UserHooker;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.parser.ParserMessageImpl;
+import com.variant.core.schema.parser.SchemaParser;
 
 /**
  * Parse time exceptions
@@ -24,8 +21,6 @@ import com.variant.server.schema.SchemaParser;
  */
 public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	
-	private VariantCore core = rebootApi();
-
 	/**
 	 * PARSER_COVARIANT_VARIANT_DUPE
 	 * 
@@ -374,13 +369,18 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(core, schema);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponse response = parser.parse(schema);
 
 		assertTrue(response.hasMessages());
-		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertTrue(response.hasMessages(Severity.ERROR));
+		assertTrue(response.hasMessages(Severity.WARN));
+		assertTrue(response.hasMessages(Severity.INFO));
+
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_DUPE, "test1.C", "test3", "state2", "C").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_DUPE, "test1.C", "test3", "state2", "C").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -899,16 +899,21 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		ParserResponse response = SchemaParser.parse(core, schema);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponse response = parser.parse(schema);
 
 		assertTrue(response.hasMessages());
-		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertTrue(response.hasMessages(Severity.ERROR));
+		assertTrue(response.hasMessages(Severity.WARN));
+		assertTrue(response.hasMessages(Severity.INFO));
+
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "state2", "C").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "state2", "C").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "C", "test1.B,test2.B", "test3", "state2").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_MISSING, "C", "test1.B,test2.B", "test3", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1163,18 +1168,24 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	     	    "  ]                                                                      \n" +
 	    	    "}                                                                         ";
 
-		ParserResponse response = SchemaParser.parse(core, schema);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponse response = parser.parse(schema);
+
 		assertTrue(response.hasMessages());
-		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertTrue(response.hasMessages(Severity.ERROR));
+		assertTrue(response.hasMessages(Severity.WARN));
+		assertTrue(response.hasMessages(Severity.INFO));
+
 		assertEquals(4, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, "test3", "state2", "B", "test1.B,test2.B").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, "test3", "state2", "B", "test1.B,test2.B").getText(), error.getText());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test2", "C", "test3", "state2", "B").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test2", "C", "test3", "state2", "B").getText(), error.getText());
 		error = response.getMessages().get(2);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C", "test3", "state2", "B").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C", "test3", "state2", "B").getText(), error.getText());
 		error = response.getMessages().get(3);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C", "test3", "state2", "B").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C", "test3", "state2", "B").getText(), error.getText());
 
 	}
 
