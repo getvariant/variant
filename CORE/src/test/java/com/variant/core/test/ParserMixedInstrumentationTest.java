@@ -1,11 +1,15 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.ParserError.*;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_COVARIANT_UNDEFINED;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_MISSING;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_PROPER_UNDEFINED;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_PARAMS_NOT_ALLOWED;
+import static com.variant.core.schema.parser.ParserError.ISDEFINED_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.ParserError.VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-
-import java.util.Random;
 
 import com.variant.core.exception.Error.Severity;
 import com.variant.core.impl.UserHooker;
@@ -24,8 +28,6 @@ import com.variant.core.schema.parser.SchemaParser;
  */
 public class ParserMixedInstrumentationTest extends BaseTestCore {
 	
-	private Random rand = new Random();
-
 	/**
 	 * Parse time errors.
 	 */
