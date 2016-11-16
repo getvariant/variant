@@ -1,23 +1,19 @@
 package com.variant.core.test;
 
-import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_COVARIANT_UNDEFINED;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_MISSING;
-import static com.variant.core.exception.Error.PARSER_COVARIANT_VARIANT_PROPER_UNDEFINED;
-import static com.variant.core.exception.Error.PARSER_EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.exception.Error.PARSER_EXPERIENCEREF_PARAMS_NOT_ALLOWED;
-import static com.variant.core.exception.Error.PARSER_ISDEFINED_NOT_BOOLEAN;
-import static com.variant.core.exception.Error.PARSER_VARIANT_MISSING;
+import static com.variant.core.schema.parser.ParserError.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Random;
 
-import com.variant.core.impl.VariantCore;
-import com.variant.core.xdm.impl.ParserMessageImplFacade;
-import com.variant.server.ParserMessage;
-import com.variant.server.ParserResponse;
-import com.variant.server.ParserMessage.Severity;
+import com.variant.core.exception.Error.Severity;
+import com.variant.core.impl.UserHooker;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.schema.parser.ParserMessageImpl;
+import com.variant.core.schema.parser.SchemaParser;
+
 
 /**
  * Test mixed instrumentation, i.e. when an experience is not defined
@@ -26,10 +22,9 @@ import com.variant.server.ParserMessage.Severity;
  * @author Igor 
  *
  */
-public class MixedInstrumentationParsetimeTest extends BaseTestCore {
+public class ParserMixedInstrumentationTest extends BaseTestCore {
 	
 	private Random rand = new Random();
-	private VariantCore core = rebootApi();
 
 	/**
 	 * Parse time errors.
@@ -194,28 +189,33 @@ public class MixedInstrumentationParsetimeTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = core.parseSchema(SCHEMA);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponse response = parser.parse(SCHEMA);
 
 		assertTrue(response.hasMessages());
-		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertTrue(response.hasMessages(Severity.ERROR));
+		assertTrue(response.hasMessages(Severity.WARN));
+		assertTrue(response.hasMessages(Severity.INFO));
+
 		assertEquals(6, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(PARSER_EXPERIENCEREF_PARAMS_NOT_ALLOWED, "test1", "state1", "B").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(EXPERIENCEREF_PARAMS_NOT_ALLOWED, "test1", "state1", "B").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(PARSER_VARIANT_MISSING, "B", "test1", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(VARIANT_MISSING, "B", "test1", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(2);
-		assertEquals(new ParserMessageImplFacade(PARSER_VARIANT_MISSING, "B", "test2", "state2").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(VARIANT_MISSING, "B", "test2", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(3);
-		assertEquals(new ParserMessageImplFacade(PARSER_ISDEFINED_NOT_BOOLEAN, "test3", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(ISDEFINED_NOT_BOOLEAN, "test3", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(4);
-		assertEquals(new ParserMessageImplFacade(PARSER_ISDEFINED_NOT_BOOLEAN, "test4", "state2").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(ISDEFINED_NOT_BOOLEAN, "test4", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(5);
-		assertEquals(new ParserMessageImplFacade(PARSER_EXPERIENCEREF_ISCONTROL, "A", "test4", "state2").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(EXPERIENCEREF_ISCONTROL, "A", "test4", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -321,13 +321,18 @@ public class MixedInstrumentationParsetimeTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = core.parseSchema(SCHEMA);
-		
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponse response = parser.parse(SCHEMA);
+
 		assertTrue(response.hasMessages());
-		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertTrue(response.hasMessages(Severity.ERROR));
+		assertTrue(response.hasMessages(Severity.WARN));
+		assertTrue(response.hasMessages(Severity.INFO));
+
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(PARSER_VARIANT_MISSING, "B", "test2", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(VARIANT_MISSING, "B", "test2", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -462,15 +467,21 @@ public class MixedInstrumentationParsetimeTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = core.parseSchema(SCHEMA);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponse response = parser.parse(SCHEMA);
+
 		assertTrue(response.hasMessages());
-		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertTrue(response.hasMessages(Severity.ERROR));
+		assertTrue(response.hasMessages(Severity.WARN));
+		assertTrue(response.hasMessages(Severity.INFO));
+
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_COVARIANT_UNDEFINED, "B", "test1.B", "test1.B", "test2", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_COVARIANT_UNDEFINED, "B", "test1.B", "test1.B", "test2", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_PROPER_UNDEFINED, "B", "test1.B", "test2", "state2").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_PROPER_UNDEFINED, "B", "test1.B", "test2", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 	
@@ -604,15 +615,21 @@ public class MixedInstrumentationParsetimeTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = core.parseSchema(SCHEMA);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponse response = parser.parse(SCHEMA);
+
 		assertTrue(response.hasMessages());
-		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertTrue(response.hasMessages(Severity.ERROR));
+		assertTrue(response.hasMessages(Severity.WARN));
+		assertTrue(response.hasMessages(Severity.INFO));
+
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_COVARIANT_UNDEFINED, "B", "test1.B", "test1.B", "test2", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_COVARIANT_UNDEFINED, "B", "test1.B", "test1.B", "test2", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_PROPER_UNDEFINED, "B", "test1.B", "test2", "state2").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_PROPER_UNDEFINED, "B", "test1.B", "test2", "state2").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 	
@@ -792,12 +809,18 @@ public class MixedInstrumentationParsetimeTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		ParserResponse response = core.parseSchema(SCHEMA);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponse response = parser.parse(SCHEMA);
+
 		assertTrue(response.hasMessages());
-		assertEquals(Severity.ERROR, response.highestMessageSeverity());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertTrue(response.hasMessages(Severity.ERROR));
+		assertTrue(response.hasMessages(Severity.WARN));
+		assertTrue(response.hasMessages(Severity.INFO));
+
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImplFacade(PARSER_COVARIANT_VARIANT_MISSING, "B", "test1.C", "test2", "state1").getText(), error.getText());
+		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_MISSING, "B", "test1.C", "test2", "state1").getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 
 	}
@@ -1101,8 +1124,8 @@ public class MixedInstrumentationParsetimeTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 
-		ParserResponse response = core.parseSchema(SCHEMA);
-		if (response.hasMessages()) printMessages(response);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponse response = parser.parse(SCHEMA);
 		assertFalse(response.hasMessages());
 	}
 }
