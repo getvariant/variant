@@ -34,10 +34,10 @@ abstract public class VariantBaseTest {
 	 * @param experiences are expected as "test.exp" 
 	 * @return
 	 */
-    protected void setTargetingStabile(CoreSession ssn, Schema schema, String...experiences) {
+    protected void setTargetingStabile(CoreSession ssn, String...experiences) {
 		SessionScopedTargetingStabile stabile = new SessionScopedTargetingStabile();
 		for (String e: experiences) {
-			Experience exp = experience(e, schema);
+			Experience exp = experience(e, ssn.getSchema());
 			stabile.add(exp);
 			//((CoreSessionImpl)ssn).addTraversedTest(exp.getTest());
 		}

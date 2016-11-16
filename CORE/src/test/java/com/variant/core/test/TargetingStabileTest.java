@@ -8,29 +8,29 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.variant.core.impl.VariantCore;
+import com.variant.core.impl.SessionId;
+import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.parser.ParserResponseImpl;
+import com.variant.core.schema.parser.SchemaParser;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.server.ParserResponse;
 
 public class TargetingStabileTest extends BaseTestCore {
-	
-	private VariantCore core = rebootApi();
-	
+		
 	/**
 	 * 
 	 */
 	@Test
 	public void targetingTrackerStringTest() throws Exception {
 				
-		ParserResponse response = core.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponseImpl response = (ParserResponseImpl) parser.parse(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
+		Schema schema = response.getSchema();
 		
-		Schema schema = core.getSchema();
-		
-		CoreSession ssn = (CoreSession) core.getSession("key1", true).getBody();
+		CoreSession ssn = new CoreSession(new SessionId("SID"), schema);
 		assertNull(ssn.getStateRequest());
 		
 		// 

@@ -8,26 +8,18 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.hook.HookListener;
-import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.impl.UserHooker;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.core.session.CoreSession;
 
 
 public class ParserDisjointOkayTest extends BaseTestCore {
 	
-	private static final Random rand = new Random();
-
 	/**
 	 * All tests are off, no state params
 	 */
@@ -128,6 +120,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		SchemaParser parser = new SchemaParser(new UserHooker());
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
 		Schema schema = response.getSchema();
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
@@ -254,6 +247,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		SchemaParser parser = new SchemaParser(new UserHooker());
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
 		Schema schema = response.getSchema();
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
@@ -380,6 +374,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		SchemaParser parser = new SchemaParser(new UserHooker());
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
 		Schema schema = response.getSchema();
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
@@ -586,6 +581,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		SchemaParser parser = new SchemaParser(new UserHooker());
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
 		final Schema schema = response.getSchema();
 
 		//
