@@ -9,12 +9,14 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
-import com.variant.core.impl.VariantCore;
+import com.variant.core.exception.Error.Severity;
+import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
-import com.variant.server.ParserResponse;
+import com.variant.core.schema.parser.ParserResponseImpl;
+import com.variant.core.schema.parser.SchemaParser;
 
 
 /**
@@ -22,19 +24,26 @@ import com.variant.server.ParserResponse;
  */
 public class ParserCovariantOkayBigTest extends BaseTestCore {
 
-	private VariantCore core = rebootApi();
-
 	/**
 	 * 
 	 */
 	@org.junit.Test
 	public void test() throws Exception {
 		
-		ParserResponse response = core.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponseImpl response = (ParserResponseImpl) parser.parse(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertFalse(response.hasMessages(Severity.ERROR));
+		assertFalse(response.hasMessages(Severity.WARN));
+		assertFalse(response.hasMessages(Severity.INFO));
+		
+		Schema schema = response.getSchema();
+
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 
-		Schema schema = core.getSchema();
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");

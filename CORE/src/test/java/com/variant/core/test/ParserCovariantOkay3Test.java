@@ -1,34 +1,37 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
-import com.variant.core.impl.VariantCore;
+import com.variant.core.exception.Error.Severity;
+import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
-import com.variant.server.ParserResponse;
+import com.variant.core.schema.parser.ParserResponseImpl;
+import com.variant.core.schema.parser.SchemaParser;
 
 
 /**
  * All Tests:
- * Tests States
+ * Tests Views
  *       1 2 3 4 5
  * test1   + + - -
  * test2 - + + +  
  * test3 + + - - -
  * blank: not instrumented, -: nonvariant, +: has variants.
  * 
- * T1, T2(T1), T3
+ * T1, T2(T1), T3(T2)
  * 
  * @author Igor
  */
-public class ParserCovariantOkay1Test extends BaseTestCore {
+public class ParserCovariantOkay3Test extends BaseTestCore {
 	
-	private VariantCore core = rebootApi();
-
 	/**
 	 * 
 	 */
@@ -41,29 +44,29 @@ public class ParserCovariantOkay1Test extends BaseTestCore {
 	    	    //==========================================================================//
 	    	   
 	    	    "   'states':[                                                            \n" +
-	    	    "     {  'name':'state1',                                                 \n" +
+	    	    "     {  'name':'state1',                                                  \n" +
 	    	    "        'parameters': {                                                  \n" +
-	    	    "           'path':'/path/to/state1'                                      \n" +
+	    	    "           'path':'/path/to/state1'                                       \n" +
 	    	    "        }                                                                \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'NAME':'state2',                                                 \n" +
+	    	    "     {  'NAME':'state2',                                                  \n" +
 	    	    "        'parameters': {                                                  \n" +
-	    	    "           'path':'/path/to/state2'                                      \n" +
+	    	    "           'path':'/path/to/state2'                                       \n" +
 	    	    "        }                                                                \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'nAmE':'state3',                                                 \n" +
+	    	    "     {  'nAmE':'state3',                                                  \n" +
 	    	    "        'parameters': {                                                  \n" +
-	    	    "           'path':'/path/to/state3'                                      \n" +
+	    	    "           'path':'/path/to/state3'                                       \n" +
 	    	    "        }                                                                \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'name':'state4',                                                 \n" +
+	    	    "     {  'name':'state4',                                                  \n" +
 	    	    "        'parameters': {                                                  \n" +
-	    	    "           'path':'/path/to/state4'                                      \n" +
+	    	    "           'path':'/path/to/state4'                                       \n" +
 	    	    "        }                                                                \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'name':'state5',                                                 \n" +
+	    	    "     {  'name':'state5',                                                  \n" +
 	    	    "        'parameters': {                                                  \n" +
-	    	    "           'path':'/path/to/state5'                                      \n" +
+	    	    "           'path':'/path/to/state5'                                       \n" +
 	    	    "        }                                                                \n" +
 	    	    "     }                                                                   \n" +
 	            "  ],                                                                     \n" +
@@ -88,48 +91,48 @@ public class ParserCovariantOkay1Test extends BaseTestCore {
 	    	    "              'weight':30                                                \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ],                                                               \n" +
-	    	    "        'onStates':[                                                     \n" +
+	    	    "        'onStates':[                                                      \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state2',                                       \n" +
+	    	    "              'stateRef':'state2',                                         \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B'                     \n" +
+	    	    "                       'path':'/path/to/state2/test1.B'                      \n" +
 	    	    "                    }                                                       \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C'                     \n" +
+	    	    "                       'path':'/path/to/state2/test1.C'                      \n" +
 	    	    "                    }                                                       \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state3',                                        \n" +
+	    	    "              'stateRef':'state3',                                         \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test1.B'                     \n" +
+	    	    "                       'path':'/path/to/state3/test1.B'                      \n" +
 	    	    "                    }                                                       \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test1.C'                     \n" +
-	    	    "                    }                                                       \n" +
+	    	    "                       'path':'/path/to/state3/test1.C'                      \n" +
 	    	    "                 }                                                       \n" +
+	    	    "                    }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state4',                                        \n" +
-	    	    "              'isNonvariant':true                                        \n" +
+	    	    "              'stateRef':'state4',                                         \n" +
+	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state5',                                        \n" +
-	    	    "              'isNonvariant':true                                        \n" +
+	    	    "              'stateRef':'state5',                                         \n" +
+	    	    "              'isNonvariant':true                                         \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     },                                                                  \n" +
@@ -309,12 +312,13 @@ public class ParserCovariantOkay1Test extends BaseTestCore {
 	    	    "                    }                                                       \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
-	    	    "           }                                                            \n" +
+	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     },                                                                  \n" +
 	    	    //--------------------------------------------------------------------------//	
 	    	    "     {                                                                   \n" +
 	    	    "        'name':'test3',                                                  \n" +
+	    	    "        'covariantTestRefs': ['test2'],                                  \n" +
 	    	    "        'experiences':[                                                  \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'name':'A',                                                \n" +
@@ -358,9 +362,57 @@ public class ParserCovariantOkay1Test extends BaseTestCore {
 	    	    "                    }                                                       \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'experienceRef': 'B'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test2.B+test3.B'              \n" +
+	    	    "                    }                                                       \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'B',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'experienceRef': 'C'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test2.C+test3.B'              \n" +
+	    	    "                    }                                                       \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'parameters': {                                      \n" +
 	    	    "                       'path':'/path/to/state2/test3.C'                      \n" +
+	    	    "                    }                                                       \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'C',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'experienceRef': 'B'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test2.B+test3.C'              \n" +
+	    	    "                    }                                                       \n" +
+	    	    "                 },                                                      \n" +
+	    	    "                 {                                                       \n" +
+	    	    "                    'experienceRef':'C',                                 \n" +
+	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                       {                                                 \n" +
+	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'experienceRef': 'C'                           \n" +
+	    	    "                       }                                                 \n" +
+	    	    "                     ],                                                  \n" +
+	    	    "                    'parameters': {                                      \n" +
+	    	    "                       'path':'/path/to/state2/test2.C+test3.C'              \n" +
 	    	    "                    }                                                       \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
@@ -383,18 +435,23 @@ public class ParserCovariantOkay1Test extends BaseTestCore {
 	     	    "  ]                                                                      \n" +
 	    	    "}                                                                         ";
 
-		ParserResponse response = core.parseSchema(SCHEMA);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-
-		Schema schema = core.getSchema();
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertFalse(response.hasMessages(Severity.ERROR));
+		assertFalse(response.hasMessages(Severity.WARN));
+		assertFalse(response.hasMessages(Severity.INFO));
+		
+		Schema schema = response.getSchema();
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");
 
 		// 
-		// Test Concurrency.
-		// 
+		// Test concurrence.
+		//
 		assertFalse(test1.isSerialWith(test2));
 		assertFalse(test1.isSerialWith(test3));
 		assertFalse(test2.isSerialWith(test1));
@@ -412,13 +469,13 @@ public class ParserCovariantOkay1Test extends BaseTestCore {
 		assertTrue(test1.isCovariantWith(test2));
 		assertFalse(test1.isCovariantWith(test3));
 		assertTrue(test2.isCovariantWith(test1));
-		assertFalse(test2.isCovariantWith(test3));
+		assertTrue(test2.isCovariantWith(test3));
 		assertFalse(test3.isCovariantWith(test1));
-		assertFalse(test3.isCovariantWith(test2));
+		assertTrue(test3.isCovariantWith(test2));
 
 		assertNull(test1.getCovariantTests());
 		assertEquals(VariantCollectionsUtils.list(test1), test2.getCovariantTests());
-		assertNull(test3.getCovariantTests());
+		assertEquals(VariantCollectionsUtils.list(test2), test3.getCovariantTests());
 
 		// 
 		// test1 onState objects
@@ -436,7 +493,6 @@ public class ParserCovariantOkay1Test extends BaseTestCore {
 		StateVariant variant = variants.get(0);
 		assertEquals(variant.getExperience(), test1.getExperience("B"));
 		assertEquals("/path/to/state2/test1.B", variant.getParameter("path"));
-		assertEquals("/path/to/state2/test1.B", variant.getParameter("PaTh"));
 		assertNull(variant.getCovariantExperiences());
 		assertTrue(variant.isProper());
 		
@@ -626,7 +682,7 @@ public class ParserCovariantOkay1Test extends BaseTestCore {
 		assertFalse(onState.isNonvariant());
 		assertEquals(schema.getState("state2"), onState.getState());
 		variants = onState.getVariants();
-		assertEquals(2, variants.size());
+		assertEquals(6, variants.size());
 
 		variant = variants.get(0);
 		assertEquals(variant.getExperience(), test3.getExperience("B"));
@@ -635,10 +691,34 @@ public class ParserCovariantOkay1Test extends BaseTestCore {
 		assertTrue(variant.isProper());
 		
 		variant = variants.get(1);
+		assertEquals(variant.getExperience(), test3.getExperience("B"));
+		assertEquals(1, variant.getCovariantExperiences().size());
+		assertEquals(test2.getExperience("B"), variant.getCovariantExperiences().get(0));
+		assertEquals("/path/to/state2/test2.B+test3.B", variant.getParameter("path"));
+
+		variant = variants.get(2);
+		assertEquals(variant.getExperience(), test3.getExperience("B"));
+		assertEquals(1, variant.getCovariantExperiences().size());
+		assertEquals(test2.getExperience("C"), variant.getCovariantExperiences().get(0));
+		assertEquals("/path/to/state2/test2.C+test3.B", variant.getParameter("path"));
+
+		variant = variants.get(3);
 		assertEquals(variant.getExperience(), test3.getExperience("C"));
 		assertEquals("/path/to/state2/test3.C", variant.getParameter("path"));
 		assertNull(variant.getCovariantExperiences());
 		assertTrue(variant.isProper());
+
+		variant = variants.get(4);
+		assertEquals(variant.getExperience(), test3.getExperience("C"));
+		assertEquals(1, variant.getCovariantExperiences().size());
+		assertEquals(test2.getExperience("B"), variant.getCovariantExperiences().get(0));
+		assertEquals("/path/to/state2/test2.B+test3.C", variant.getParameter("path"));
+
+		variant = variants.get(5);
+		assertEquals(variant.getExperience(), test3.getExperience("C"));
+		assertEquals(1, variant.getCovariantExperiences().size());
+		assertEquals(test2.getExperience("C"), variant.getCovariantExperiences().get(0));
+		assertEquals("/path/to/state2/test2.C+test3.C", variant.getParameter("path"));
 
 		// state3
 		onState = onStates.get(2);

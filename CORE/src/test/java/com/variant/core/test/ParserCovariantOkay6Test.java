@@ -8,11 +8,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
-import com.variant.core.impl.VariantCore;
+import com.variant.core.exception.Error.Severity;
+import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
-import com.variant.server.ParserResponse;
+import com.variant.core.schema.parser.ParserResponseImpl;
+import com.variant.core.schema.parser.SchemaParser;
 
 
 /**
@@ -30,8 +32,6 @@ import com.variant.server.ParserResponse;
  */
 public class ParserCovariantOkay6Test extends BaseTestCore {
 	
-	private VariantCore core = rebootApi();
-
 	/**
 	 * 
 	 */
@@ -613,11 +613,17 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	     	    "  ]                                                                      \n" +
 	    	    "}                                                                         ";
 
-		ParserResponse response = core.parseSchema(SCHEMA);
+		SchemaParser parser = new SchemaParser(new UserHooker());
+		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertFalse(response.hasMessages(Severity.ERROR));
+		assertFalse(response.hasMessages(Severity.WARN));
+		assertFalse(response.hasMessages(Severity.INFO));
+		
+		Schema schema = response.getSchema();
 
-		Schema schema = core.getSchema();
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");

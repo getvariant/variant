@@ -5,8 +5,12 @@ import static com.variant.core.schema.parser.ParserError.NO_STATES_CLAUSE;
 import static com.variant.core.schema.parser.ParserError.NO_TESTS_CLAUSE;
 import static com.variant.core.schema.parser.ParserError.UNSUPPORTED_CLAUSE;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -51,14 +55,6 @@ public class SchemaParser implements Keywords {
 
 	private UserHooker hooker;
 	
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
-	
-	public SchemaParser(UserHooker hooker) {
-		this.hooker = hooker;
-	}
-	
 	/**
 	 * Schema pre-parser.
 	 * 1. Remove comments.
@@ -92,10 +88,32 @@ public class SchemaParser implements Keywords {
 		}
 		return result.toString();
 	}
-			
+
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+	
+	public SchemaParser(UserHooker hooker) {
+		this.hooker = hooker;
+	}
+	
 	/**
-	 * Parse schema from string. Must be pre-parsed valid JSON.
-	 * @param schemaAsJsonString
+	 * Parse schema from input stream. 
+	 * @param annotatedJsonStream
+	 * @return
+	 */
+	public ParserResponse parse(InputStream annotatedJsonStream) {
+		try {
+			String input = IOUtils.toString(annotatedJsonStream);
+			return parse(input);
+		} catch (IOException e) {
+			throw new RuntimeInternalException("Unable to read input from stream", e);
+		}
+	}
+
+	/**
+	 * Parse schema from string.
+	 * @param annotatedJsonString
 	 * @return
 	 * @throws VariantRuntimeException
 	 */
