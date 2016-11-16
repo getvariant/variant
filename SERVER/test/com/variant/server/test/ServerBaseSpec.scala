@@ -17,13 +17,13 @@ import com.variant.server.boot.VariantServer
  * Common to all tests.
  * Builds a custom application.
  */
-object VariantSpec {
+object ServerBaseSpec {
    private var sqlSchemaCreated = false
 }
 
-class VariantSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
+class ServerBaseSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
 
-   import VariantSpec._
+   import ServerBaseSpec._
    
    // Set system property, if needed
    //sys.props += (("variant.schema.dir", "/schemas"))

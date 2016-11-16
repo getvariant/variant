@@ -23,7 +23,7 @@ import com.variant.server.ServerPropertiesKey._
 /*
  * Reusable event JSON objects. 
  */
-object EventSpec {
+object EventTest {
 
    /*
    val foo = JsObject(Seq(
@@ -68,7 +68,9 @@ object EventSpec {
 /**
  * Event Controller
  */
-class EventSpec extends VariantSpec {
+class EventTest extends ServerBaseSpec {
+   
+   import EventTest._
    
    val endpoint = context + "/event"
 
@@ -102,25 +104,25 @@ class EventSpec extends VariantSpec {
      }
 
       "return  400 and error on POST with no sid" in {
-         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(EventSpec.bodyNoSid)).get
+         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(bodyNoSid)).get
          status(resp) mustBe BAD_REQUEST
          contentAsString(resp) mustBe UserError.errors(UserError.MissingProperty).asMessage("sid")
       }
 
       "return  400 and error on POST with no name" in {
-         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(EventSpec.bodyNoName)).get
+         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(bodyNoName)).get
          status(resp) mustBe BAD_REQUEST
          contentAsString(resp) mustBe UserError.errors(UserError.MissingProperty).asMessage("name")
       }
       
       "return  403 and error on POST with non-existent session" in {
-         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(EventSpec.body.expand())).get
+         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(body.expand())).get
          status(resp) mustBe FORBIDDEN
          contentAsString(resp) mustBe UserError.errors(UserError.SessionExpired).asMessage("name")
       }
      
       "return 400 and error on POST with missing param name" in {
-         val eventBody = EventSpec.bodyNoParamName.expand()
+         val eventBody = bodyNoParamName.expand()
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
          status(resp)mustBe BAD_REQUEST
          contentAsString(resp) mustBe UserError.errors(UserError.MissingParamName).asMessage()
@@ -130,7 +132,7 @@ class EventSpec extends VariantSpec {
          //status(resp) mustBe (OK)
          val sid = Random.nextInt(100000).toString
          // PUT session.
-         val ssnBody = SessionSpec.body.expand("sid" -> sid)
+         val ssnBody = SessionTest.body.expand("sid" -> sid)
          val ssnResp = route(app, FakeRequest(PUT, context + "/session/" + sid).withTextBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
@@ -139,7 +141,7 @@ class EventSpec extends VariantSpec {
          val ts = System.currentTimeMillis()
          val eventName = Random.nextString(5)
          val eventValue = Random.nextString(5)
-         val eventBody = EventSpec.body.expand("sid" -> sid, "ts" -> ts, "name" -> eventName, "value" -> eventValue)
+         val eventBody = body.expand("sid" -> sid, "ts" -> ts, "name" -> eventName, "value" -> eventValue)
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          status(resp) mustBe OK

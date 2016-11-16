@@ -13,6 +13,7 @@ import com.variant.core.net.PayloadWriter;
 import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.session.CoreSession;
 import com.variant.server.ParserResponse;
+import com.variant.server.test.ParserDisjointOkayTest;
 
 public class NetTest extends BaseTestCore {
 

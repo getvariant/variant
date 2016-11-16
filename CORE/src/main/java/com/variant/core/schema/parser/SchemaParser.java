@@ -67,12 +67,12 @@ public class SchemaParser implements Keywords {
 	 * @param schema
 	 * @return
 	 */
-	public String preParse(String schema) {
+	private String preParse(String annotatedJsonString) {
 		
 		// Lose comments from // to eol.
 		
 		StringBuilder result = new StringBuilder();
-		String lines[] = schema.split("\n");
+		String lines[] = annotatedJsonString.split("\n");
 		for (String line: lines) {
 			
 			int commentIndex = line.indexOf("//");
@@ -100,9 +100,12 @@ public class SchemaParser implements Keywords {
 	 * @throws VariantRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	public ParserResponse parse(String schemaAsJsonString) throws VariantRuntimeException {
+	public ParserResponse parse(String annotatedJsonString) throws VariantRuntimeException {
 		
-		// 1. Syntactical phase.
+		// 1. Pre-parser phase
+		String cleanJsonString = preParse(annotatedJsonString);
+		
+		// 2. Syntactical phase.
 		ParserResponseImpl response = new ParserResponseImpl();
 		
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
@@ -112,10 +115,10 @@ public class SchemaParser implements Keywords {
 		
 		try {
 			//cbb = jacksonDataMapper.readValue(configAsJsonString, ConfigBinderBean.class);
-			mappedJson = jacksonDataMapper.readValue(preParse(schemaAsJsonString), Map.class);
+			mappedJson = jacksonDataMapper.readValue(preParse(cleanJsonString), Map.class);
 		}
 		catch(JsonParseException parseException) {
-			toParserError(parseException, schemaAsJsonString, response);
+			toParserError(parseException, cleanJsonString, response);
 		} 
 		catch (Exception e) {
 			throw new RuntimeInternalException(e);
@@ -124,7 +127,7 @@ public class SchemaParser implements Keywords {
 		// Don't attempt to parse if JSON failed.
 		if (response.hasMessages()) return response;
 		
-		// 2. Semantical phase.
+		// 3. Semantical phase.
 		// Clean map will contain only entries with expected clauses with keys uppercased 
 		Map<String, Object> cleanMap = new LinkedHashMap<String, Object>();
 		

@@ -18,6 +18,7 @@ import com.variant.core.schema.State;
 import com.variant.core.session.CoreSession;
 import com.variant.server.ParserResponse;
 import com.variant.server.ParserMessage.Severity;
+import com.variant.server.test.ParserDisjointOkayTest;
 
 public class CoreSessionTest extends BaseTestCore {
 

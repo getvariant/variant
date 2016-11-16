@@ -20,7 +20,7 @@ import play.api.test.Helpers.writeableOf_AnyContentAsText
 /*
  * Reusable session JSON objects. 
  */
-object SessionSpec {
+object SessionTest {
 
 /*
    val foo = JsObject(Seq(
@@ -112,8 +112,9 @@ object SessionSpec {
 /**
  * Session Controller Tests
  */
-class SessionSpec extends VariantSpec {
+class SessionTest extends ServerBaseSpec {
    
+   import SessionTest._
    val endpoint = context + "/session"
 
    "SessionController" should {
@@ -134,7 +135,7 @@ class SessionSpec extends VariantSpec {
    
       "return 200 on PUT non-existent session" in {
          
-         val textBody = SessionSpec.body.expand("sid" -> "foo1")
+         val textBody = body.expand("sid" -> "foo1")
          val resp = route(app, FakeRequest(PUT, endpoint + "/foo").withTextBody(textBody)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
@@ -144,38 +145,38 @@ class SessionSpec extends VariantSpec {
        
          val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(resp) mustBe OK
-         contentAsString(resp) mustBe SessionSpec.body.expand("sid" -> "foo1")
+         contentAsString(resp) mustBe body.expand("sid" -> "foo1")
       }
 
       "replace existing session on PUT and return 200" in {
        
-         val reqPut = FakeRequest(PUT, endpoint + "/foo").withTextBody(SessionSpec.body.expand("sid" -> "foo2"))
+         val reqPut = FakeRequest(PUT, endpoint + "/foo").withTextBody(body.expand("sid" -> "foo2"))
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
          
          val respGet = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(respGet) mustBe OK
-         contentAsString(respGet) mustBe SessionSpec.body.expand("sid" -> "foo2")
+         contentAsString(respGet) mustBe body.expand("sid" -> "foo2")
       }
 
       "create session on PUT and return 200" in {
        
-         val reqPut = FakeRequest(PUT, endpoint + "/bar").withTextBody(SessionSpec.body.expand("sid" -> "bar1"))
+         val reqPut = FakeRequest(PUT, endpoint + "/bar").withTextBody(body.expand("sid" -> "bar1"))
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
          
          val respGet = route(app, FakeRequest(GET, endpoint + "/bar")).get
          status(respGet) mustBe OK
-         contentAsString(respGet) mustBe SessionSpec.body.expand("sid" -> "bar1")
+         contentAsString(respGet) mustBe body.expand("sid" -> "bar1")
       }
 
      "not lose existing session with different key" in {
 
          val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(resp) mustBe OK
-         contentAsString(resp) mustBe SessionSpec.body.expand("sid" -> "foo2")
+         contentAsString(resp) mustBe body.expand("sid" -> "foo2")
       }
 
      "expire existing sessions after timeout" in {
@@ -194,11 +195,11 @@ class SessionSpec extends VariantSpec {
        
          val sid = Random.nextInt(100000).toString
          val ts = System.currentTimeMillis()
-         val reqPut = FakeRequest(PUT, endpoint + "/" + sid).withTextBody(SessionSpec.body.expand("sid" -> sid, "ts" -> ts))
+         val reqPut = FakeRequest(PUT, endpoint + "/" + sid).withTextBody(body.expand("sid" -> sid, "ts" -> ts))
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
-         store.asString(sid).get mustBe SessionSpec.body.expand("sid" -> sid, "ts" -> ts)
+         store.asString(sid).get mustBe body.expand("sid" -> sid, "ts" -> ts)
          val session = store.asSession(sid.toString).get
          session.creationTimestamp() mustBe ts
          session.getId mustBe sid

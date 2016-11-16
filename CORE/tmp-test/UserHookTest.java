@@ -30,6 +30,7 @@ import com.variant.server.hook.StateParsedHook;
 import com.variant.server.hook.TestParsedHook;
 import com.variant.server.hook.TestQualificationHook;
 import com.variant.server.hook.TestTargetingHook;
+import com.variant.server.test.ParserDisjointOkayTest;
 
 /**
  * TODO: Need to also test annotations.
