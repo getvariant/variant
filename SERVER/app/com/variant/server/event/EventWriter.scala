@@ -17,10 +17,10 @@ import com.variant.core.VariantProperties
 class EventWriter (props: VariantProperties) {
 	
    private val logger = Logger(this.getClass)
-   private val bufferSize = props.getLong(EVENT_WRITER_BUFFER_SIZE)
-   private val pctFullSize = bufferSize * props.getLong(EVENT_WRITER_PERCENT_FULL) / 100
-	private val pctEmptySize = Math.ceil(bufferSize * 0.1).intValue()
-	private val maxFlusherDelayMillis = props.getLong(EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS)
+   val bufferSize = props.getInt(EVENT_WRITER_BUFFER_SIZE)
+   val pctFullSize = bufferSize * props.getInt(EVENT_WRITER_PERCENT_FULL) / 100
+	val pctEmptySize = Math.ceil(bufferSize * 0.1).intValue()
+	val maxDelayMillis = props.getLong(EVENT_WRITER_MAX_DELAY) * 1000
 
 	// Asynchronous flusher thread consumes events from the holding queue.
    private val flusherThread = new FlusherThread();
@@ -74,6 +74,15 @@ class EventWriter (props: VariantProperties) {
 	logger.debug("Event writer started.");
 
 	/**
+	 * Flush this writer immediately, without waiting for the internal flush.
+	 */
+	def flush() = {
+	   bufferQueue.synchronized {
+   	   flusherThread.flush()
+	   }
+	}
+	
+	/**
 	 * Shutdown this event writer.
 	 * Cannot be used after this.
 	 */
@@ -112,7 +121,7 @@ class EventWriter (props: VariantProperties) {
 		}
 		
 		// Block momentarily to wake up the flusher thread if the queue has reached the pctFull size.
-		synchronized {
+		bufferQueue.synchronized {
 		   if (currentSize >= pctFullSize) bufferQueue.notify();
 		}
 
@@ -145,7 +154,7 @@ class EventWriter (props: VariantProperties) {
    									
    				// Block until the queue is over pctFull again, but with timeout.
    				bufferQueue.synchronized {
-   					bufferQueue.wait(maxFlusherDelayMillis);
+   					bufferQueue.wait(maxDelayMillis);
    				}
    			}
    			catch {
@@ -166,12 +175,9 @@ class EventWriter (props: VariantProperties) {
    	}		
    	
    	/**
-   	 * Flush the entire queue to an event flusher.
-   	 * Package visibility to let test call this.  Must be synchronized because
-   	 * tests may call flush directly concurrently with the regular async path.
-   	 * Should be no overhead during regular code path.
+   	 * Flush the entire buffer.
    	 */
-   	private def flush() {
+   	def flush() {
    
    		var events = new LinkedList[FlushableEvent]();
    		while(!bufferQueue.isEmpty()) events.add(bufferQueue.poll());

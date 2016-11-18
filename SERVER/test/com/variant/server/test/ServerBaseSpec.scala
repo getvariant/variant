@@ -36,9 +36,10 @@ class ServerBaseSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll
             Map(
                   "play.http.context" -> "/variant-test"
                   ,"variant.schemas.dir" -> "test-schemas"
-                  ,"variant.session.timeout.secs" -> 1
-                  ,"variant.session.store.vacuum.interval.secs" -> 1
-                  ,"variant.event.writer.flush.max.delay.millis" -> 1000
+                  ,"variant.session.timeout" -> 1
+                  ,"variant.session.store.vacuum.interval" -> 1
+                  ,"variant.event.writer.buffer.size" -> 200
+                  ,"variant.event.writer.max.delay" -> 2
                   ,"variant.event.flusher.class.name" -> "com.variant.server.event.EventFlusherH2"
                   ,"variant.event.flusher.class.init" ->"""{"url":"jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;","user":"variant","password":"variant"}"""
             ))
@@ -59,8 +60,8 @@ class ServerBaseSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll
    override def beforeAll() {
 		synchronized { // once per JVM
 			if (!sqlSchemaCreated) {
-				recreateSchema(server.eventWriter);
-				sqlSchemaCreated = true;
+				recreateSchema()
+				sqlSchemaCreated = true
 			}
 		}
 	}
@@ -69,9 +70,9 @@ class ServerBaseSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll
 	 * @throws Exception 
 	 * 
 	 */
-	private def recreateSchema(ew: EventWriter) {
+	private def recreateSchema() {
 		
-		val jdbc = new JdbcService(ew);
+		val jdbc = new JdbcService(server.eventWriter);
 		
 		try {			
 			jdbc.getVendor() match {

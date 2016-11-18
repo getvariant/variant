@@ -33,6 +33,17 @@ public interface VariantProperties {
 	public long getLong(Key key);
 
 	/**
+	 * <p> System property as an int, given by its key.
+	 * 
+	 * @param key Property key
+	 * @return The raw value, as externally bound, or the default, converted to int, if defined,
+	 *         or null if neither.
+	 *         
+	 * @since 0.6
+	 */
+	public int getInt(Key key);
+
+	/**
 	 * <p>Type representing a system property key. 
 	 * Client and server have their own implementations.
 	 * 

@@ -15,7 +15,7 @@ import com.variant.server.UserError
 import play.api.libs.json.JsValue
 import play.api.http.HeaderNames
 import scala.collection.mutable.Map
-import com.variant.server.event.RemoteEvent
+import com.variant.server.event.ServerEvent
 
 //@Singleton -- Is this for non-shared state controllers?
 class Event @Inject() (store: SessionStore) extends Controller  {
@@ -67,9 +67,9 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
                   UserError.errors(UserError.UnknownState).asResult()   
                }
                else {
-                  val remoteEvent = new RemoteEvent(name.get, value.get, new Date(timestamp.getOrElse(System.currentTimeMillis())));   
-                  parsedParams.foreach(e => remoteEvent.setParameter(e._1, e._2))
-                  ssn.get.triggerEvent(remoteEvent)            
+                  val event = new ServerEvent(name.get, value.get, new Date(timestamp.getOrElse(System.currentTimeMillis())));   
+                  parsedParams.foreach(e => event.setParameter(e._1, e._2))
+                  ssn.get.triggerEvent(event)            
                   Ok
                }
             }

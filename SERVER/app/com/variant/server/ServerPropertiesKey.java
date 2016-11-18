@@ -8,11 +8,11 @@ public class ServerPropertiesKey implements VariantProperties.Key {
 	public static final ServerPropertiesKey SCHEMAS_DIR =
 			new ServerPropertiesKey("variant.schemas.dir");
 	
-	public static final ServerPropertiesKey SESSION_TIMEOUT_SECS =
-			new ServerPropertiesKey("variant.session.timeout.secs", 900);
+	public static final ServerPropertiesKey SESSION_TIMEOUT =
+			new ServerPropertiesKey("variant.session.timeout", 900);
 	
-	public static final ServerPropertiesKey  SESSION_STORE_VACUUM_INTERVAL_SECS =
-			new ServerPropertiesKey("variant.session.store.vacuum.interval.secs", 10);
+	public static final ServerPropertiesKey  SESSION_STORE_VACUUM_INTERVAL =
+			new ServerPropertiesKey("variant.session.store.vacuum.interval", 10);
 	
 	public static final ServerPropertiesKey EVENT_FLUSHER_CLASS_NAME =
 			new ServerPropertiesKey("variant.event.flusher.class.name", EventFlusherAppLogger.class.getName());
@@ -26,8 +26,8 @@ public class ServerPropertiesKey implements VariantProperties.Key {
 	public static final ServerPropertiesKey EVENT_WRITER_BUFFER_SIZE = 
 			new ServerPropertiesKey("variant.event.writer.buffer.size", 20000);
 	
-	public static final ServerPropertiesKey EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS = 
-			new ServerPropertiesKey("variant.event.writer.flush.max.delay.millis", 30000);
+	public static final ServerPropertiesKey EVENT_WRITER_MAX_DELAY = 
+			new ServerPropertiesKey("variant.event.writer.max.delay", 30000);
 	
 	private final String name;
 	private final Object defaultValue;

@@ -35,6 +35,11 @@ class ServerPropertiesImpl implements VariantProperties {
     }
     
     @Override
+    public int getInt(VariantProperties.Key key) {
+    	return Integer.parseInt(getString(key));
+    }
+
+    @Override
     public long getLong(VariantProperties.Key key) {
     	return Long.parseLong(getString(key));
     }

@@ -80,11 +80,8 @@ class SchemaService (hooker: UserHooker, properties: VariantProperties) {
 	private def parse(schemaFile: File, deploy: Boolean): ParserResponse = {
 
       // Read file content into memory string.
-      val richJson = Source.fromFile(schemaFile).mkString
-      
-      // Pre-parser
-      val json = parser.preParse(richJson)
-      
+      val json = Source.fromFile(schemaFile).mkString
+            
       // Parser
       val response = parser.parse(json)
       

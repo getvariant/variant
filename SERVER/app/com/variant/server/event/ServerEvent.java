@@ -9,14 +9,14 @@ import com.variant.core.event.VariantEvent;
 /**
  * Event received over HTTP and suitable to pass to the Core API.
  */
-public class RemoteEvent implements VariantEvent {
+public class ServerEvent implements VariantEvent {
 
 	private String name;
 	private String value;
 	private Date createDate = new Date();
 	private Map<String,Object> params = new HashMap<String,Object>();
 	
-	public RemoteEvent(String name, String value, Date createDate) {
+	public ServerEvent(String name, String value, Date createDate) {
 		this.name = name;
 		this.value = value;
 		this.createDate = createDate;

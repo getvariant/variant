@@ -75,7 +75,7 @@ public class JdbcAdapter {
 		finally {
 			if (conn != null) {
 				conn.rollback();
-				conn.close();
+//				conn.close();
 			}
 		}
 	}
@@ -97,7 +97,7 @@ public class JdbcAdapter {
 		finally {
 			if (conn != null) {
 				conn.rollback();
-				conn.close();
+//				conn.close();
 			}
 		}
 	}

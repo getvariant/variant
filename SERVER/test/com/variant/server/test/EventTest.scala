@@ -6,8 +6,6 @@ import org.scalatestplus.play._
 
 import play.api.test._
 import play.api.test.Helpers._
-import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json._
 
 import com.variant.server.UserError
 import com.variant.server.test.util.ParamString
@@ -15,7 +13,6 @@ import com.variant.server.ServerPropertiesKey._
 
 import scala.util.Random
 import scala.collection.JavaConversions._
-import scala.concurrent.duration._
 
 import com.variant.server.test.util.EventReader
 import com.variant.server.ServerPropertiesKey._
@@ -25,24 +22,6 @@ import com.variant.server.ServerPropertiesKey._
  */
 object EventTest {
 
-   /*
-   val foo = JsObject(Seq(
-        "sid" -> JsString("SID"),
-        "name" -> JsString("Event Name"),
-        "value" -> JsString("Event Value"),
-        "ts" -> JsNumber(System.currentTimeMillis()),
-        "params" -> JsArray(Seq(
-           JsObject(Seq(   
-              "name" -> JsString("Param One"),
-              "value" -> JsString("Pram One Value")
-           )),
-           JsObject(Seq(   
-              "name" -> JsString("Param One"),
-              "value" -> JsString("Pram One Value")
-           ))
-        ))
-   ))
-*/
    val body = ParamString("""
       {"sid":"${sid:SID}",
        "name":"${name:NAME}",
@@ -129,7 +108,6 @@ class EventTest extends ServerBaseSpec {
       }
 
       "return 200 and create event with existent session" in {
-         //status(resp) mustBe (OK)
          val sid = Random.nextInt(100000).toString
          // PUT session.
          val ssnBody = SessionTest.body.expand("sid" -> sid)
@@ -147,7 +125,7 @@ class EventTest extends ServerBaseSpec {
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
          // Read events back from the db, but must wait for the asych flusher.
-         val flushMaxDelay = server.properties.getLong(EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS)
+         val flushMaxDelay = server.properties.getLong(EVENT_WRITER_MAX_DELAY)
          flushMaxDelay  mustEqual 1000
          Thread.sleep(flushMaxDelay * 2)
          val eventsFromDatabase = EventReader(server.eventWriter).read()

@@ -180,8 +180,8 @@ class SessionTest extends ServerBaseSpec {
       }
 
      "expire existing sessions after timeout" in {
-        val timeout = server.properties.getLong(SESSION_TIMEOUT_SECS)
-        val vacuumInterval = server.properties.getLong(SESSION_STORE_VACUUM_INTERVAL_SECS)
+        val timeout = server.properties.getLong(SESSION_TIMEOUT)
+        val vacuumInterval = server.properties.getLong(SESSION_STORE_VACUUM_INTERVAL)
         timeout  mustEqual 1
         vacuumInterval  mustEqual 1
       

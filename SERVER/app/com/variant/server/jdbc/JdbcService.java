@@ -70,13 +70,13 @@ public class JdbcService {
 	private void parseSQLException(SQLException e, String statement) throws SQLException {
 
 		Vendor vendor = getVendor();
-		
+
 		final String[] SQL_STATES_OBJECT_DOES_NOT_EXIST = 
 				vendor == Vendor.POSTGRES ? new String[] {"42P01"} :
 				(vendor == Vendor.H2 ? new String[] {"90036"} : null);
 
 		final String[] SQL_STATES_OBJECT_ALREADY_EXIST = 
-				vendor == Vendor.POSTGRES ? new String[] {"42P07"} : null;
+				vendor == Vendor.POSTGRES ? new String[] {"42P07"} : new String[] {"42S01"};
 
 		String[] tokens = statement.split(" ");
 
