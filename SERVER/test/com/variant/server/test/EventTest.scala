@@ -124,10 +124,10 @@ class EventTest extends ServerBaseSpec {
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
+         
          // Read events back from the db, but must wait for the asych flusher.
-         val flushMaxDelay = server.properties.getLong(EVENT_WRITER_MAX_DELAY)
-         flushMaxDelay  mustEqual 1000
-         Thread.sleep(flushMaxDelay * 2)
+         server.eventWriter.maxDelayMillis  mustEqual 2000
+         Thread.sleep(server.eventWriter.maxDelayMillis + 500)
          val eventsFromDatabase = EventReader(server.eventWriter).read()
          eventsFromDatabase.size mustBe 1
          val event = eventsFromDatabase.head

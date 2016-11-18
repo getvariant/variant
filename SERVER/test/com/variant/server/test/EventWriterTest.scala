@@ -102,7 +102,7 @@ class EventWriterTest extends ServerBaseSpec {
          reader.read(e => e.getSessionId == ssn.getId).size mustBe 0
          
          // Read after delay - must be flushed
-         Thread.sleep(1000)
+         Thread.sleep(1500)
          reader.read(e => e.getSessionId == ssn.getId).size mustBe writer.pctFullSize
       }
 
