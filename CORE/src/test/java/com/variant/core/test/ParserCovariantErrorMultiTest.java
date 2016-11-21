@@ -1,9 +1,7 @@
 package com.variant.core.test;
 
 import static com.variant.core.schema.parser.ParserError.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -373,6 +371,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		ParserResponse response = parser.parse(schema);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -903,6 +902,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		ParserResponse response = parser.parse(schema);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -1172,6 +1172,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		ParserResponse response = parser.parse(schema);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));

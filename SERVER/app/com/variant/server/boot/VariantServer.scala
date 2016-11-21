@@ -15,7 +15,8 @@ import com.variant.server.schema.ServerSchema
 import com.variant.core.VariantProperties
 import play.api.Application
 import com.variant.core.impl.UserHooker
-import com.variant.server.schema.SchemaService
+import com.variant.server.schema.SchemaDeployerFromFS
+import com.variant.server.schema.SchemaDeployer
 
 /**
  * Need a trait to make DI to work.
@@ -24,14 +25,15 @@ trait VariantServer {
    def schema: Option[ServerSchema]
    def properties: VariantProperties
    def eventWriter: EventWriter
+   val hooker: UserHooker
 }
 
 /**
  * 
  */
 object VariantServer {
-   var instanceImpl: VariantServer = null
-   def instance: VariantServer = instanceImpl
+   private[boot] var instance: VariantServer = null
+   def server = instance
 }
 
 /**
@@ -39,24 +41,25 @@ object VariantServer {
  */
 @Singleton
 class VariantServerImpl @Inject() (
-      clock: Clock,
       configuration: Configuration, 
       appLifecycle: ApplicationLifecycle
-      //router: Provider[Router] DE craps out
+      //router: Provider[Router] DI craps out with circular dependency
       ) extends VariantServer {
-
-   private val logger = Logger(this.getClass)
    
-   private val start = clock.instant
+	VariantServer.instance = this
+
+	private val logger = Logger(this.getClass)
+   
    private val now = System.currentTimeMillis;
       
 	private[this] lazy val propertiesImpl = new ServerPropertiesImpl(configuration)
    private[this] lazy val eventWriterImpl = new EventWriter(propertiesImpl)
-   private[this] var schemaService: SchemaService = null
+   private[this] var schemaDeployer: SchemaDeployer = null
    
    override def eventWriter = eventWriterImpl
    override def properties = propertiesImpl
-   override def schema = schemaService.schema
+   override val hooker = new UserHooker() 
+   override def schema = schemaDeployer.schema
    
    /**
     * One time application bootup.
@@ -81,11 +84,17 @@ class VariantServerImpl @Inject() (
 				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"),
 				configuration.getString("play.http.context").get))
 
-      val hooker = new UserHooker()
-	   schemaService = SchemaService(hooker, properties)
-		VariantServer.instanceImpl = this
+		// File System schema service.
+      setSchemaDeployer(SchemaDeployerFromFS())
    }
 
+	/**
+	 * Set schema service, which can be instantiated independently.
+	 */
+	def setSchemaDeployer(deployer: SchemaDeployer) {
+	   schemaDeployer = deployer	   
+	}
+	
    /**
     * One time application shutdown.
     */

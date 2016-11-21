@@ -23,9 +23,6 @@ class Module (environment: Environment, config: Configuration) extends AbstractM
 
    override def configure() = {
 
-      // Use the system clock as the default implementation of Clock
-      bind(classOf[Clock]).toInstance(Clock.systemDefaultZone)
-
       // Variant server boot and shutdown
       bind(classOf[VariantServer]).to(classOf[VariantServerImpl]).asEagerSingleton
 

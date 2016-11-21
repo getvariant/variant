@@ -3,24 +3,23 @@ package com.variant.server.schema
 import com.variant.core.schema.Schema
 import scala.collection.JavaConverters._
 import java.io.File
+import com.variant.core.schema.ParserResponse
 
 /**
  * 
  */
 object ServerSchema {
-   def apply(coreSchema: Schema, file: File) = new ServerSchema(coreSchema, file)
+   def apply(name: String, schema: Schema) = new ServerSchema(name, schema)
 }
 
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (private val coreSchema: Schema, val file: File) extends Schema {
+class ServerSchema (val name: String, val coreSchema: Schema) extends Schema {
   
    import State._
    
    private var state: State = New
-   
-   var name: String = file.getName
    
    private def isValid = {
       state == Deployed

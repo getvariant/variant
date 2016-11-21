@@ -6,6 +6,7 @@ import javax.inject.Inject
 import com.variant.core.schema.Schema
 import com.variant.server.event.FlushableEventImpl
 import com.variant.server.boot.VariantServer
+import com.variant.server.schema.ServerSchema
 
 /**
  * Server session knows how to trigger an event.
@@ -18,12 +19,13 @@ object ServerSession {
    }
 }
 */
-class ServerSession (rawJson: String) extends CoreSession(rawJson, VariantServer.instance.schema.get) {
+class ServerSession (rawJson: String, server: VariantServer) extends CoreSession(rawJson, server.schema.get) {
    
+
    /**
     */
 	def triggerEvent(event: VariantEvent) {
 		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
-		VariantServer.instance.eventWriter.write(new FlushableEventImpl(event, this));
+		server.eventWriter.write(new FlushableEventImpl(event, this));
 	}
 }

@@ -143,7 +143,10 @@ public class SchemaParser implements Keywords {
 		}
 		
 		// Don't attempt to parse if JSON failed.
-		if (response.hasMessages()) return response;
+		if (response.hasMessages()) {
+			response.clearSchema();
+			return response;
+		}
 		
 		// 3. Semantical phase.
 		// Clean map will contain only entries with expected clauses with keys uppercased 
@@ -180,7 +183,10 @@ public class SchemaParser implements Keywords {
 			}
 		}
 
-		if (!response.getMessages(Severity.FATAL).isEmpty()) return response;
+		if (!response.getMessages(Severity.FATAL).isEmpty()) {
+			response.clearSchema();
+			return response;
+		}
 
 		Object tests = cleanMap.get(KEYWORD_TESTS.toUpperCase());
 		if (tests == null) {
@@ -201,7 +207,8 @@ public class SchemaParser implements Keywords {
 				}
 			}
 		}
-				
+		
+		if (response.hasMessages(Severity.ERROR)) response.clearSchema();
 		return response;
 	}
 

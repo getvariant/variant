@@ -16,6 +16,7 @@ import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_TEST_
 import static com.variant.core.schema.parser.ParserError.VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -142,6 +143,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -260,6 +262,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -379,6 +382,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -500,6 +504,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -691,6 +696,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -885,6 +891,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -1085,6 +1092,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -1287,6 +1295,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -1488,6 +1497,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -1650,6 +1660,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -1859,6 +1870,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -2390,6 +2402,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));

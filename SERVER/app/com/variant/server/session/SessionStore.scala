@@ -58,7 +58,7 @@ class SessionStoreImpl @Inject() (server: VariantServer) extends SessionStore {
 		Option(
 		   if (result != null) {
 		      result.lastAccessTimestamp = System.currentTimeMillis()
-		      result.asSession
+		      result.asSession(server)
 		   }
 		   else null  
 	    )
@@ -77,9 +77,9 @@ class SessionStoreEntry (val json: String) {
 	 * Lazily deserialize from json, if we have it.
 	 * @return
 	 */
-	def asSession = {
+	def asSession(server: VariantServer) = {
 		if (session == null && json != null) {
-			session = new ServerSession(json);
+			session = new ServerSession(json, server);
 		}
 		session;
 	}

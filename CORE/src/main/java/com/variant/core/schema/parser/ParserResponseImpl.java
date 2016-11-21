@@ -24,21 +24,6 @@ public class ParserResponseImpl implements ParserResponse {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * CLEANUP 
-	 * @return Highest severity if there are any messages, or null otherwise.
-	 *
-	@Override
-	public Severity highestMessageSeverity() {
-		
-		Severity result = null;
-		for (ParserMessage error: messages) {
-			if (result == null || result.lessThan(error.getSeverity()))
-				result = error.getSeverity();					
-		}
-		return result;
-	}
-	*/
-	/**
 	 * @return
 	 */
 	@Override
@@ -68,17 +53,18 @@ public class ParserResponseImpl implements ParserResponse {
 		return ! getMessages(severity).isEmpty();
 	}
 
-	//---------------------------------------------------------------------------------------------//
-	//                                    PUBLIC EXTENDED                                          //
-	//---------------------------------------------------------------------------------------------//
-
 	/**
 	 * Get the schema in progress, built by the current invocation of the parser.
 	 * @param view
 	 */
+	@Override
 	public Schema getSchema() {
 		return schema;
 	}
+
+	//---------------------------------------------------------------------------------------------//
+	//                                    PUBLIC EXTENDED                                          //
+	//---------------------------------------------------------------------------------------------//
 
 	/**
 	 * Add externally generated message.
@@ -91,7 +77,7 @@ public class ParserResponseImpl implements ParserResponse {
 	/**
 	 * Add internally generated messsage
 	 */
-	public ParserMessage addMessage(Error error, int line, int column, String...args) {
+	public ParserMessage addMessage(ParserError error, int line, int column, String...args) {
 		
 		ParserMessage result;
 		
@@ -115,4 +101,10 @@ public class ParserResponseImpl implements ParserResponse {
 		return result;
 	}
 
+	/**
+	 * Clear the schema in progress, at the end of an unsuccessful parse.
+	 */
+	public void clearSchema() {
+		schema = null;
+	}
 }

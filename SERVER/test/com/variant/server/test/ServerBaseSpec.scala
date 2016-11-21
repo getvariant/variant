@@ -49,6 +49,10 @@ class ServerBaseSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll
    protected val store = app.injector.instanceOf[SessionStore]
    protected val server = app.injector.instanceOf[VariantServer]
  
+   "Server must come up with a valid schema" in {
+      server.schema mustBe Some
+   }
+   
     /**
 	 * Each case runs in its own JVM. Each test runs in its
 	 * own instance of the test case. We want the jdbc schema
