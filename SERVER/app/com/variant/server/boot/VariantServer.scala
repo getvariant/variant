@@ -26,6 +26,7 @@ trait VariantServer {
    def properties: VariantProperties
    def eventWriter: EventWriter
    val hooker: UserHooker
+   var schemaDeployer: SchemaDeployer 
 }
 
 /**
@@ -54,47 +55,32 @@ class VariantServerImpl @Inject() (
       
 	private[this] lazy val propertiesImpl = new ServerPropertiesImpl(configuration)
    private[this] lazy val eventWriterImpl = new EventWriter(propertiesImpl)
-   private[this] var schemaDeployer: SchemaDeployer = null
-   
+      
    override def eventWriter = eventWriterImpl
    override def properties = propertiesImpl
    override val hooker = new UserHooker() 
    override def schema = schemaDeployer.schema
-   
-   /**
-    * One time application bootup.
-    */
-   def boot() {
+   override var schemaDeployer: SchemaDeployer = SchemaDeployer.fromFileSystem()
 
-      /* Display routers on startup
-      if (logger.isDebugEnabled) {
-         val routeDocs = router.get.documentation
-         if (routeDocs.isEmpty) 
-            throw new Exception("No routes defined!")
-         else
-            routeDocs.map { r =>
-               println("%-10s %-50s %s".format(r._1, r._2, r._3))
-            }
-      } */
 
-      logger.info(
-            String.format("%s release %s getvariant.com. Bootstrapped in %s. Listening on %s.",
-            SbtService.name,
-            SbtService.version,
-				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"),
-				configuration.getString("play.http.context").get))
+   /* Display routers on startup
+   if (logger.isDebugEnabled) {
+      val routeDocs = router.get.documentation
+      if (routeDocs.isEmpty) 
+         throw new Exception("No routes defined!")
+      else
+         routeDocs.map { r =>
+            println("%-10s %-50s %s".format(r._1, r._2, r._3))
+         }
+   } */
 
-		// File System schema service.
-      setSchemaDeployer(SchemaDeployerFromFS())
-   }
+   logger.info(
+         String.format("%s release %s getvariant.com. Bootstrapped in %s. Listening on %s.",
+         SbtService.name,
+         SbtService.version,
+			DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"),
+			configuration.getString("play.http.context").get))
 
-	/**
-	 * Set schema service, which can be instantiated independently.
-	 */
-	def setSchemaDeployer(deployer: SchemaDeployer) {
-	   schemaDeployer = deployer	   
-	}
-	
    /**
     * One time application shutdown.
     */
@@ -110,5 +96,4 @@ class VariantServerImpl @Inject() (
        Future.successful(())
    }
 
-   boot()
 }

@@ -1,6 +1,8 @@
-package com.variant.core.test
-/*
-import com.variant.server.test.ServerBaseSpec
+package com.variant.server.test
+
+import scala.collection.JavaConverters
+import com.variant.server.schema.SchemaDeployer
+import com.variant.core.schema.State
 
 class TargetingTest extends ServerBaseSpec {
 
@@ -22,10 +24,11 @@ class TargetingTest extends ServerBaseSpec {
 
       "Target according to weights if no targeting hooks" in {
 				
-		val schema = """
+		   val schemaJson = """
 {
    'states':[
       {
+         'name':'state1',
          'parameters':{
             'path':'/path/to/state1'
          }
@@ -78,27 +81,51 @@ class TargetingTest extends ServerBaseSpec {
    ]
 }"""
 
-		ParserResponse response = core.parseSchema(schema);
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-		Schema schema = core.getSchema();		
-		State state = schema.getState("state1");
-		com.variant.core.schema.Test test = schema.getTest("test1");
+		   server.schemaDeployer = SchemaDeployer.fromString("my schema", schemaJson)
+		   server.schema.isDefined mustBe true
+		   val schema = server.schema.get
+		   val state = schema.getState("state1")
+		   val test = schema.getTest("test1")
+		   
+   		val counts = Array(0, 0, 0)
+   		for (i <- 1 to trials) {
+   			var ssn = store.asSession("foo" + i).get
+   			VariantCoreStateRequest req = ssn.targetForState(state);
+   			String expName = req.getLiveExperience(test).getName();
+   			if (expName.equals("A")) counts[0]++;
+   			else if (expName.equals("B")) counts[1]++;
+   			else if (expName.equals("C")) counts[2]++;
+   			req.commit();
+   		} 
+   		verifyCounts(counts, new float[] {1, 2, 97});
+   
+         }
+	}
+	
+	/**
+	 * 
+	 * @param counts
+	 * @param weights
+	 */
+	private def verifyCounts(counts: Array[Int], weights: Array[Float]) {
+		var sumCounts = 0
+		var sumWeights = 0f
+		for (i <- 0 until counts.length) {
+			sumCounts += counts(i)
+			sumWeights += weights(i)
+		}
+		for (i <- 0 until counts.length) {
+			//System.out.println("Delta: " + (weights[i]/sumWeights * DELTA_AS_FRACTION));
+		   val countFraction = counts(i)/sumCounts
+		   val weightsFraction = weights(i)/sumWeights
+		   "Counts fraction must equal weights fraction plus minus small delta" in {
+   		   countFraction mustEqual (weightsFraction +- weightsFraction * deltaAsFraction)
+		   }
+		}
+	}
 
-		//
-		// No targeting listener - distribution according to weights.
-		//
-		int[] counts = {0, 0, 0};
-		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i, true).getBody();
-			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getLiveExperience(test).getName();
-			if (expName.equals("A")) counts[0]++;
-			else if (expName.equals("B")) counts[1]++;
-			else if (expName.equals("C")) counts[2]++;
-			req.commit();
-		} 
-		verifyCounts(counts, new float[] {1, 2, 97});
+}
+/*
 		
 		//
 		// Add one null listener - still distribution according to weights.
@@ -221,22 +248,6 @@ class TargetingTest extends ServerBaseSpec {
 		verifyCounts(counts, new float[] {50, 25, 25});
 	}
 	
-	/**
-	 * 
-	 * @param counts
-	 * @param weights
-	 */
-	private static void verifyCounts(int[] counts, float[] weights) {
-		float sumCounts = 0, sumWeights = 0;
-		for (int i = 0; i < counts.length; i++) {
-			sumCounts += counts[i];
-			sumWeights += weights[i];
-		}
-		for (int i = 0; i < counts.length; i++) {
-			//System.out.println("Delta: " + (weights[i]/sumWeights * DELTA_AS_FRACTION));
-			assertEquals(weights[i]/sumWeights * DELTA_AS_FRACTION, counts[i]/sumCounts, weights[i]/sumWeights);
-		}
-	}
 /*
 	/**
 	 * Basic targeting

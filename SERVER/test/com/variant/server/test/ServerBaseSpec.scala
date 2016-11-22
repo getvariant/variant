@@ -50,7 +50,7 @@ class ServerBaseSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll
    protected val server = app.injector.instanceOf[VariantServer]
  
    "Server must come up with a valid schema" in {
-      server.schema mustBe Some
+      server.schema.isDefined mustBe true 
    }
    
     /**

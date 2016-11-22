@@ -7,6 +7,7 @@ import com.variant.core.schema.Schema
 import com.variant.server.event.FlushableEventImpl
 import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerSchema
+import com.variant.core.impl.SessionId
 
 /**
  * Server session knows how to trigger an event.
@@ -19,9 +20,12 @@ object ServerSession {
    }
 }
 */
-class ServerSession (rawJson: String, server: VariantServer) extends CoreSession(rawJson, server.schema.get) {
+class ServerSession (rawJson: String) extends CoreSession(rawJson, VariantServer.server.schema.get) {
    
-
+   def this(sid: SessionId) {
+      super(sid, VariantServer.server.schema.get)
+   }
+   
    /**
     */
 	def triggerEvent(event: VariantEvent) {

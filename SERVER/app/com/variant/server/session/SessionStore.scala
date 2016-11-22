@@ -19,8 +19,22 @@ import com.variant.core.VariantProperties
  *
  */
 trait SessionStore {
+   /**
+    * Save session in the store.
+    * 
+    * Returns session entry of the session previously associated with this SID, 
+    * or null if no existing session with this SID.
+    */
 	def put(sid: String, json: String) : SessionStoreEntry
+	
+	/**
+	 * Retrieve a session from the store as a JSON string.
+	 */
 	def asString(sid: String) : Option[String]
+	
+	/**
+	 * Retrieve a session from this store as a ServerSession object.
+	 */
 	def asSession(sid: String) : Option[ServerSession]
 	//def getAll() : Set[Map.Entry[String, SessionStoreEntry]]
 }

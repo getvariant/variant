@@ -29,7 +29,19 @@ trait SchemaDeployer {
     */
    def schema: Option[ServerSchema]
    
-   def fromFileSystem() = SchemaDeployerFromFS()
+}
+
+object SchemaDeployer {
+
+   /**
+    * Deploy from the file system
+    */
+   def fromFileSystem() = new SchemaDeployerFromFS()
+
+   /**
+    * Deploy from the a memory string
+    */
+   def fromString(name: String, body: String) = new SchemaDeployerFromString(name, body)
 }
 
 abstract class AbstractSchemaDeployer() extends SchemaDeployer {
@@ -105,13 +117,13 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
 
 /**
  * File System based schema service implementation
- */
+ *
 object SchemaDeployerFromFS {
    def apply() = new SchemaDeployerFromFS()
 }
-
+*/
 /**
- * 
+ * Deploy schemas from a directory on the file system.
  */
 class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
 	         
@@ -144,7 +156,21 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
 		         throw new RuntimeInternalException("Unable to parse schema file %s".format(sf.getAbsolutePath), t)
 		   }
       }
+   }   
+}
+
+/**
+ * Deploy schemas from a string in memory.
+ */
+class SchemaDeployerFromString(name: String, body: String) extends AbstractSchemaDeployer {
+	         
+   private val logger = Logger(this.getClass)  
+   try {
+      parseAndDeploy(name, body)
    }
-   
+   catch {
+      case t: Throwable => 
+         throw new RuntimeInternalException("Unable to parse schema file %s".format(name), t)
+   }
 }
 
