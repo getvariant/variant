@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.VariantSession;
 import com.variant.client.impl.VariantSessionImpl;
-import com.variant.core.VariantCoreSession;
+import com.variant.core.CoreSession;
 
 /**
  * Keep track of all sessions in the JVM in order to provide idempotency of the getSession() call.
@@ -59,7 +59,7 @@ public class ClientSessionCache {
 	 * Add a new session to the cache. Session came from the server so we know the keepAlive.
 	 * @param coreSession
 	 */
-	public void add(VariantCoreSession session, long keepAlive) {
+	public void add(CoreSession session, long keepAlive) {
 		cache.put(session.getId(), new Entry((VariantSessionImpl)session, keepAlive));
 	}
 

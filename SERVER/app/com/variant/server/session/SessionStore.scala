@@ -92,10 +92,8 @@ class SessionStoreEntry (val json: String) {
 	 * @return
 	 */
 	def asSession(server: VariantServer) = {
-		if (session == null && json != null) {
-			session = new ServerSession(json, server);
-		}
-		session;
+		if (session == null && json != null) session = ServerSession.fromJson(json)
+		session
 	}
 }
 

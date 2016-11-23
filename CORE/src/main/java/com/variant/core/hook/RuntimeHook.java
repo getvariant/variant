@@ -1,6 +1,6 @@
 package com.variant.core.hook;
 
-import com.variant.core.session.CoreSession;
+import com.variant.core.CoreSession;
 
 
 /**
@@ -16,7 +16,7 @@ public interface RuntimeHook extends UserHook {
 	/**
 	 * Host code can obtain the current Variant session.
 	 * 
-	 * @return An object of type {@link com.variant.core.VariantCoreSession}.
+	 * @return An object of type {@link com.variant.core.CoreSession}.
      * @since 0.5
 	 */
 	public CoreSession getSession() ;

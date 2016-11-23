@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import com.variant.core.VariantCoreSession;
+import com.variant.core.CoreSession;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.schema.State;
@@ -24,7 +24,7 @@ import com.variant.core.schema.State;
  * @since 0.6
  *
  */
-public interface VariantSession extends VariantCoreSession {
+public interface VariantSession extends CoreSession {
 
 	/**
      * <p>Target session for a state. 

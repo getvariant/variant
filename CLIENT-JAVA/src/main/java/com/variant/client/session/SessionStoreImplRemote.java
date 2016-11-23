@@ -7,10 +7,10 @@ import org.apache.http.HttpStatus;
 import com.variant.client.http.HttpClient;
 import com.variant.client.http.HttpResponse;
 import com.variant.client.http.VariantHttpClientException;
-import com.variant.core.VariantCoreSession;
+import com.variant.core.CoreSession;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.session.CoreSession;
+import com.variant.core.session.CoreSessionImpl;
 import com.variant.core.session.SessionStore;
 
 public class SessionStoreImplRemote implements SessionStore {
@@ -59,7 +59,7 @@ public class SessionStoreImplRemote implements SessionStore {
 	 * Save the session in the remote server.
 	 */
 	@Override
-	public void save(VariantCoreSession session) {
+	public void save(CoreSession session) {
 
 		if (session == null) {
 			throw new IllegalArgumentException("No session");

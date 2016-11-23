@@ -5,6 +5,7 @@ import java.util.Collection;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
+import com.variant.core.session.CoreStateRequest;
 import com.variant.core.util.Tuples.Pair;
 
 /**
@@ -12,15 +13,15 @@ import com.variant.core.util.Tuples.Pair;
  *  
  * @author Igor Urisman
  * @since 0.5
- *
-public interface VariantCoreSession {
+ */
+public interface CoreSession {
 
 	/**
 	 * <p>Get this session's ID.
 	 * 
 	 * @return Session ID.
 	 * @since 0.5
-	 *
+	 */
 	public String getId();
 	
 	/**
@@ -28,7 +29,7 @@ public interface VariantCoreSession {
 	 * 
 	 * @return Milliseconds since the Epoch.
 	 * @since 0.6
-	 *
+	 */
 	public long creationTimestamp();
 
 	/**
@@ -36,7 +37,7 @@ public interface VariantCoreSession {
 	 * 
 	 * @return An object of type {@link Schema}.
 	 * @since 0.7
-	 *
+	 */
 	public Schema getSchema();
 	
 	/**
@@ -51,7 +52,7 @@ public interface VariantCoreSession {
 	 * @return A collection of {@link Pair}s of ({@link State}, Integer), corresponding
 	 *         to the traversed states. Call {@link Pair#arg1()} to obtain the state and 
 	 *         {@link Pair#arg2()} to obtain the count of times this state has been traversed.
-	 *
+	 */
 	public Collection<Pair<State, Integer>> getTraversedStates(); 
 
 	/**
@@ -60,7 +61,7 @@ public interface VariantCoreSession {
 	 * b) T is not OFF, and c) this session qualified for T.
 	 * 
 	 * @return A collection of object of type {@link Test}.
-	 *
+	 */
 	public Collection<Test> getTraversedTests(); 
 	
 	/**
@@ -69,17 +70,9 @@ public interface VariantCoreSession {
 	 * that disqualified it may no longer hold.
 	 * 
 	 * @return A collection of {@link Test}s which this session is disqualified for. 
-	 *
+	 */
 	public Collection<Test> getDisqualifiedTests();
 		
-	/* ON SERVER NOW
-	 * Trigger a custom event.
-	 * 
-	 * @param An implementation of {@link VariantEvent} which represents the custom event to be triggered.
-	 * @since 0.5
-	 *
-	public void triggerEvent(VariantEvent event);
-    */
 	/**
 	 * <p>Get most recent state request, which may be still in progress or already committed.
 	 * 
@@ -87,7 +80,7 @@ public interface VariantCoreSession {
 	 *         session.
 	 *  
 	 * @since 0.5
-	 *
-	public VariantCoreStateRequest getStateRequest();
+	 */
+	public CoreStateRequest getStateRequest();
 }
-*/
+

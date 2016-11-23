@@ -1,10 +1,5 @@
 package com.variant.core.session;
 
-import java.util.Map;
-
-import com.variant.core.impl.SessionId;
-import com.variant.core.net.PayloadWriter;
-import com.variant.core.net.SessionPayloadReader;
 
 /**
  * Session store that avoids any storage and always generates new session on get().

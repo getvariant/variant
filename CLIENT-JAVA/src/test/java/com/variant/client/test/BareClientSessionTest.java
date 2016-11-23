@@ -15,7 +15,7 @@ import com.variant.client.VariantSession;
 import com.variant.client.VariantStateRequest;
 import com.variant.client.impl.VariantSessionImpl;
 import com.variant.client.impl.VariantStateRequestImpl;
-import com.variant.core.VariantCoreSession;
+import com.variant.core.CoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.event.impl.util.VariantStringUtils;
@@ -155,7 +155,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
 
 		// Commit should have saved the session.
-		VariantCoreSession ssn3 = client.getSession("foo");
+		CoreSession ssn3 = client.getSession("foo");
 		assertEquals(ssn3, ssn2);
 		assertEquals(ssn3.getSchemaId(), schema.getId());
 		assertTrue(varReq.isCommitted());
@@ -189,7 +189,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 		assertEquals(23, varReq.getSession().getAttribute("23"));
 		ssn1.setAttribute("45", 45);
 		varReq.commit("");
-		VariantCoreSession ssn2 = client.getSession(sessionId);
+		CoreSession ssn2 = client.getSession(sessionId);
 		assertEquals(ssn1, ssn2);
 		assertEquals(23, ssn2.getAttribute("23"));
 		assertEquals(45, ssn2.getAttribute("45"));

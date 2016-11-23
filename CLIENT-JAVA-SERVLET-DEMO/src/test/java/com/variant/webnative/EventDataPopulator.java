@@ -9,7 +9,7 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantStateRequest;
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.core.VariantCoreSession;
+import com.variant.core.CoreSession;
 import com.variant.core.VariantCoreStateRequest;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;

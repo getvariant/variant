@@ -3,11 +3,15 @@ package com.variant.server.test
 import scala.collection.JavaConverters
 import com.variant.server.schema.SchemaDeployer
 import com.variant.core.schema.State
+import com.variant.server.session.ServerSession
+import com.variant.core.session.CoreStateRequest
+import com.variant.core.event.impl.util.VariantStringUtils
+import scala.collection.JavaConverters
 
 class TargetingTest extends ServerBaseSpec {
 
-	val trials = 500000;
-	val deltaAsFraction = .05f;
+	val trials = 500000
+	val deltaAsFraction = .05f
 
 	/**
 	 * Use the null event flusher and null session store, 
@@ -24,7 +28,7 @@ class TargetingTest extends ServerBaseSpec {
 
       "Target according to weights if no targeting hooks" in {
 				
-		   val schemaJson = """
+         val schemaJson = """
 {
    'states':[
       {
@@ -81,25 +85,25 @@ class TargetingTest extends ServerBaseSpec {
    ]
 }"""
 
-		   server.schemaDeployer = SchemaDeployer.fromString("my schema", schemaJson)
+		   server.installSchemaDeployer(SchemaDeployer.fromString("my schema", schemaJson))
 		   server.schema.isDefined mustBe true
 		   val schema = server.schema.get
 		   val state = schema.getState("state1")
 		   val test = schema.getTest("test1")
-		   
+
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			var ssn = store.asSession("foo" + i).get
-   			VariantCoreStateRequest req = ssn.targetForState(state);
-   			String expName = req.getLiveExperience(test).getName();
-   			if (expName.equals("A")) counts[0]++;
-   			else if (expName.equals("B")) counts[1]++;
-   			else if (expName.equals("C")) counts[2]++;
-   			req.commit();
+   			val ssn = new ServerSession("sid")
+   			val req = ssn.targetForState(state)
+   			val expName = req.getLiveExperience(test).getName()
+   			expName match {
+   			   case "A" => counts(0) += 1
+      			case "B" => counts(1) += 1
+      			case "C" => counts(2) += 1
+   			}
    		} 
-   		verifyCounts(counts, new float[] {1, 2, 97});
-   
-         }
+   		verifyCounts(counts, Array(1f, 2f, 97f))
+      }
 	}
 	
 	/**
@@ -108,6 +112,9 @@ class TargetingTest extends ServerBaseSpec {
 	 * @param weights
 	 */
 	private def verifyCounts(counts: Array[Int], weights: Array[Float]) {
+	   //println(counts.mkString(","))
+	   //println(weights.mkString(","))
+	   println(weights)
 		var sumCounts = 0
 		var sumWeights = 0f
 		for (i <- 0 until counts.length) {
@@ -116,11 +123,9 @@ class TargetingTest extends ServerBaseSpec {
 		}
 		for (i <- 0 until counts.length) {
 			//System.out.println("Delta: " + (weights[i]/sumWeights * DELTA_AS_FRACTION));
-		   val countFraction = counts(i)/sumCounts
-		   val weightsFraction = weights(i)/sumWeights
-		   "Counts fraction must equal weights fraction plus minus small delta" in {
-   		   countFraction mustEqual (weightsFraction +- weightsFraction * deltaAsFraction)
-		   }
+		   val countFraction = counts(i)/sumCounts.asInstanceOf[Float]
+		   val weightsFraction = weights(i)/sumWeights.asInstanceOf[Float]
+   		countFraction mustEqual (weightsFraction +- weightsFraction * deltaAsFraction)
 		}
 	}
 

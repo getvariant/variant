@@ -17,23 +17,25 @@ import play.api.Application
 import com.variant.core.impl.UserHooker
 import com.variant.server.schema.SchemaDeployerFromFS
 import com.variant.server.schema.SchemaDeployer
+import com.variant.server.runtime.VariantRuntime
 
 /**
  * Need a trait to make DI to work.
  */
 trait VariantServer {
+   val properties: VariantProperties
+   val eventWriter: EventWriter
+   def hooker: UserHooker
    def schema: Option[ServerSchema]
-   def properties: VariantProperties
-   def eventWriter: EventWriter
-   val hooker: UserHooker
-   var schemaDeployer: SchemaDeployer 
+   def installSchemaDeployer(newDeployer: SchemaDeployer): Unit
+   def runtime: VariantRuntime
 }
 
 /**
  * 
  */
 object VariantServer {
-   private[boot] var instance: VariantServer = null
+   private [boot] var instance: VariantServer = null
    def server = instance
 }
 
@@ -47,32 +49,29 @@ class VariantServerImpl @Inject() (
       //router: Provider[Router] DI craps out with circular dependency
       ) extends VariantServer {
    
-	VariantServer.instance = this
-
 	private val logger = Logger(this.getClass)
    
    private val now = System.currentTimeMillis;
-      
-	private[this] lazy val propertiesImpl = new ServerPropertiesImpl(configuration)
-   private[this] lazy val eventWriterImpl = new EventWriter(propertiesImpl)
-      
-   override def eventWriter = eventWriterImpl
-   override def properties = propertiesImpl
-   override val hooker = new UserHooker() 
+   
+	VariantServer.instance = this
+	
+   override val properties = new ServerPropertiesImpl(configuration)
+   override val eventWriter = new EventWriter(properties)      
+   override val hooker = new UserHooker()
+   override val runtime = new VariantRuntime(this)
+   
+   // Default schema deployer is from file system.
+   private var schemaDeployer: SchemaDeployer = SchemaDeployer.fromFileSystem()
+   
    override def schema = schemaDeployer.schema
-   override var schemaDeployer: SchemaDeployer = SchemaDeployer.fromFileSystem()
 
-
-   /* Display routers on startup
-   if (logger.isDebugEnabled) {
-      val routeDocs = router.get.documentation
-      if (routeDocs.isEmpty) 
-         throw new Exception("No routes defined!")
-      else
-         routeDocs.map { r =>
-            println("%-10s %-50s %s".format(r._1, r._2, r._3))
-         }
-   } */
+	/**
+	 * Override the default mutator for schema deployer because we need to do some housekeeping
+	 * if a new deployer is installed.
+	 */
+   def installSchemaDeployer (newDeployer: SchemaDeployer) {
+	   this.schemaDeployer = newDeployer
+	}
 
    logger.info(
          String.format("%s release %s getvariant.com. Bootstrapped in %s. Listening on %s.",

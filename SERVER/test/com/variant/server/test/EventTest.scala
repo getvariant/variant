@@ -1,7 +1,5 @@
 package com.variant.server.test
 
-import com.variant.core.session.CoreSession
-
 import org.scalatestplus.play._
 
 import play.api.test._

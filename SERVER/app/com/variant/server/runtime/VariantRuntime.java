@@ -10,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.variant.server.ServerError.*;
-import com.variant.core.session.CoreSession;
+
+import com.variant.core.CoreSession;
+import com.variant.core.session.CoreSessionImpl;
 import com.variant.core.session.CoreStateRequest;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.RuntimeErrorException;
@@ -28,9 +30,12 @@ import com.variant.core.schema.Test.OnState;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
+import com.variant.server.boot.VariantServer;
+import com.variant.server.boot.VariantServerImpl;
+import com.variant.server.schema.ServerSchema;
 
 /**
- * Entry point into the runtime.
+ * Stateless runtime methods.
  * 
  * @author Igor.
  *
@@ -38,11 +43,13 @@ import com.variant.core.schema.impl.TestOnStateImpl;
 public class VariantRuntime {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantRuntime.class);
+	
+	final private VariantServer server;
 
 	/**
 	 * 
 	 */
-	private static class TestTargetingHookImpl implements TestTargetingHook {
+	private class TestTargetingHookImpl implements TestTargetingHook {
 
 		private CoreSession session;
 		private Test test;
@@ -104,17 +111,6 @@ public class VariantRuntime {
 		}
 
 	}		
-
-	private Schema schema;
-	private UserHooker hooker;
-	
-	/**
-	 * Package visibility for test facade.
-	 */
-	VariantRuntime(Schema schema, UserHooker hooker) {
-		this.schema = schema;
-		this.hooker = hooker;
-	}
 	
 	/**
 	 * Target this session for all active tests.
@@ -161,7 +157,8 @@ public class VariantRuntime {
 	 */
 	private void targetSessionForState(CoreStateRequest req) {
 
-		CoreSession session = req.getSession();
+		ServerSchema schema = server.schema().get();
+		CoreSessionImpl session = req.getSession();
 		SessionScopedTargetingStabile targetingStabile = session.getTargetingStabile();
 		State state = req.getState();
 		
@@ -269,7 +266,7 @@ public class VariantRuntime {
 			if (isTargetable(ft, state, vector)) {
 				// Target this test. First post targeting hooks.
 				TestTargetingHookImpl hook = new TestTargetingHookImpl(session, ft, state);
-				hooker.post(hook);
+				server.hooker().post(hook);
 				Experience targetedExperience = hook.targetedExperience;
 				// If no listeners or no action by client code, do the random default.
 				if (targetedExperience == null) {
@@ -312,7 +309,7 @@ public class VariantRuntime {
 	 * @param session
 	 * @param test
 	 */
-	private boolean qualifyTest(Test test, CoreSession session) {
+	private boolean qualifyTest(Test test, CoreSessionImpl session) {
 
 		/**
 		 * 
@@ -362,7 +359,7 @@ public class VariantRuntime {
 		};
 
 		TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
-		hooker.post(hook);
+		server.hooker().post(hook);
 
 		if (!hook.qualified) {
 			session.addDisqualifiedTest(test);
@@ -519,7 +516,7 @@ public class VariantRuntime {
 	 */
 	Pair<Boolean, StateVariantImpl> resolveState(State state, Collection<Experience> vector) {
 
-		
+		ServerSchema schema = server.schema().get();
 		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
 			
 		for (Test t: schema.getTests()) {
@@ -572,13 +569,17 @@ public class VariantRuntime {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
+	public VariantRuntime(VariantServer server) {
+		this.server = server;
+	}
+	
 	/**
 	 * Implementation of {@link Variant#targetForState(VariantCoreSession, State, Object...)}
 	 * @param ssn
 	 * @param view
 	 * @return
 	 */
-	public CoreStateRequest targetSessionForState(CoreSession ssn, StateImpl state) {
+	public CoreStateRequest targetSessionForState(CoreSessionImpl ssn, StateImpl state) {
 
 		// Resolve the path and get all tests instrumented on the state.
 		CoreStateRequest result = new CoreStateRequest(ssn, state);

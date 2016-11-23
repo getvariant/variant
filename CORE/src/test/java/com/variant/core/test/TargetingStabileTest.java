@@ -8,12 +8,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.variant.core.impl.SessionId;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.core.session.CoreSession;
+import com.variant.core.session.CoreSessionImpl;
 import com.variant.core.session.SessionScopedTargetingStabile;
 
 public class TargetingStabileTest extends BaseTestCore {
@@ -30,7 +29,7 @@ public class TargetingStabileTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		Schema schema = response.getSchema();
 		
-		CoreSession ssn = new CoreSession(new SessionId("SID"), schema);
+		CoreSessionImpl ssn = new CoreSessionImpl("SID", schema);
 		assertNull(ssn.getStateRequest());
 		
 		// 

@@ -19,7 +19,7 @@ import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.CoreSession;
+import com.variant.core.session.CoreSessionImpl;
 import com.variant.core.session.SessionScopedTargetingStabile;
 
 
@@ -34,14 +34,14 @@ abstract public class VariantBaseTest {
 	 * @param experiences are expected as "test.exp" 
 	 * @return
 	 */
-    protected void setTargetingStabile(CoreSession ssn, String...experiences) {
+    protected void setTargetingStabile(CoreSessionImpl ssn, String...experiences) {
 		SessionScopedTargetingStabile stabile = new SessionScopedTargetingStabile();
 		for (String e: experiences) {
 			Experience exp = experience(e, ssn.getSchema());
 			stabile.add(exp);
 			//((CoreSessionImpl)ssn).addTraversedTest(exp.getTest());
 		}
-		((CoreSession)ssn).setTargetingStabile(stabile);
+		((CoreSessionImpl)ssn).setTargetingStabile(stabile);
 	}
 
 	//---------------------------------------------------------------------------------------------//

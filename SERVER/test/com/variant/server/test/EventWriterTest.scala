@@ -98,11 +98,11 @@ class EventWriterTest extends ServerBaseSpec {
          assert(writeTook < 500, "Write took too long")
          
          // Wait a bit, but less than max delay - must not have flushed
-         Thread.sleep(writer.maxDelayMillis - 1000)          
+         Thread.sleep(200)          
          reader.read(e => e.getSessionId == ssn.getId).size mustBe 0
          
          // Read after delay - must be flushed
-         Thread.sleep(1500)
+         Thread.sleep(2000)
          reader.read(e => e.getSessionId == ssn.getId).size mustBe writer.pctFullSize
       }
 

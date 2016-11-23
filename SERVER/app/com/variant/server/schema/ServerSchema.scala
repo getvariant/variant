@@ -4,6 +4,7 @@ import com.variant.core.schema.Schema
 import scala.collection.JavaConverters._
 import java.io.File
 import com.variant.core.schema.ParserResponse
+import com.variant.core.exception.RuntimeInternalException
 
 /**
  * 
@@ -19,39 +20,37 @@ class ServerSchema (val name: String, val coreSchema: Schema) extends Schema {
   
    import State._
    
-   private var state: State = New
+   var state: State = New
    
-   private def isValid = {
-      state == Deployed
+   private def checkState {
+      if (state != Deployed)
+         throw new RuntimeInternalException(
+               "Schema [%s] cannot be accessed due to state [%s]".format(name, state))
    }
 
    override def getId = {
-	   isValid
+	   checkState
 	   coreSchema.getId
 	}
 
 	override def getStates = {
-	   isValid
+	   checkState
 	   coreSchema.getStates
 	}
 
 	override def getState(name: String) = {
-	   isValid
+	   checkState
 	   coreSchema.getState(name)	   
 	}
 
 	override def getTests() = {
-      isValid
+      checkState
 	   coreSchema.getTests
 	}
 	
 	override def getTest(name: String) = {
-      isValid
+      checkState
 	   coreSchema.getTest(name)	   
-	}
-
-	def setState(state: State) {
-	   this.state = state
 	}
 	
 }

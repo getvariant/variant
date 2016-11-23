@@ -41,7 +41,7 @@ public class CoreStateRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private CoreSession session;	
+	private CoreSessionImpl session;	
 	private StateImpl state;
 	private Status status = Status.OK;
 	private StateVariant resolvedStateVariant;
@@ -64,7 +64,7 @@ public class CoreStateRequest implements Serializable {
 	 * Regular constructor
 	 * @param session
 	 */
-	public CoreStateRequest(CoreSession session, StateImpl state) {
+	public CoreStateRequest(CoreSessionImpl session, StateImpl state) {
 		this.session = session;
 		this.state = state;
 		session.setStateRequest(this);
@@ -129,7 +129,7 @@ public class CoreStateRequest implements Serializable {
 		return committed;
 	}
 */
-	public CoreSession getSession() {
+	public CoreSessionImpl getSession() {
 		return session;
 	}
 
@@ -290,7 +290,7 @@ public class CoreStateRequest implements Serializable {
 	 * @param fields
 	 * @return
 	 */
-	public static CoreStateRequest fromJson(Schema schema, CoreSession session, Map<String,?> fields) {
+	public static CoreStateRequest fromJson(Schema schema, CoreSessionImpl session, Map<String,?> fields) {
 		
 		Object stateName = fields.get(FIELD_NAME_STATE);
 		if (stateName == null) 

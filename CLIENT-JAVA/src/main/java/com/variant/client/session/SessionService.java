@@ -6,7 +6,7 @@ import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.session.CoreSession;
+import com.variant.core.session.CoreSessionImpl;
 import com.variant.core.session.SessionStore;
 import com.variant.core.util.inject.Injector;
 
@@ -57,7 +57,7 @@ public class SessionService {
 	 * @param session
 	 * TODO Make this async
 	 */
-	public void saveSession(CoreSession session) {
+	public void saveSession(CoreSessionImpl session) {
 		
 		if (core.getSchema() == null) throw new VariantRuntimeUserErrorException(Error.RUN_SCHEMA_UNDEFINED);
 		

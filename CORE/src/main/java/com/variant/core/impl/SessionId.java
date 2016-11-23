@@ -5,7 +5,7 @@ package com.variant.core.impl;
  * 
  * @author Igor
  *
- */
+ *
 public class SessionId {
 
 	public final String id;
@@ -15,3 +15,4 @@ public class SessionId {
 		this.id = id;
 	}
 }
+*/

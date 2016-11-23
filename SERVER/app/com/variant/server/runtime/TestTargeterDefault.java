@@ -9,7 +9,7 @@ import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.CoreSession;
+import com.variant.core.CoreSession;
 
 class TestTargeterDefault {
 

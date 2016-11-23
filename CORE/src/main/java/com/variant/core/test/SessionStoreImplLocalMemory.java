@@ -1,15 +1,5 @@
 package com.variant.core.test;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import com.variant.core.exception.VariantException;
-import com.variant.core.impl.SessionId;
-import com.variant.core.net.Payload;
-import com.variant.core.net.PayloadWriter;
-import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.session.CoreSession;
-import com.variant.core.session.SessionStore;
 
 /**
  * Session store implementation in local memory that uses JSON marshalling for better

@@ -1,26 +1,22 @@
 package com.variant.server.schema;
 
 import java.io.File
+
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.io.Source
-import com.variant.core.VariantProperties
+
 import com.variant.core.exception.Error.Severity
 import com.variant.core.exception.RuntimeInternalException
-import com.variant.core.impl.UserHooker
-import com.variant.core.schema.ParserResponse
+import com.variant.core.schema.ParserMessage
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.ServerError.MULTIPLE_SCHEMAS_NOT_SUPPORTED
 import com.variant.server.ServerError.SCHEMAS_DIR_MISSING
 import com.variant.server.ServerError.SCHEMAS_DIR_NOT_DIR
 import com.variant.server.ServerErrorException
 import com.variant.server.ServerPropertiesKey
-import play.api.Logger
 import com.variant.server.boot.VariantServer.server
-import com.variant.core.schema.parser.ParserResponseImpl
-import com.variant.server.boot.VariantServer
-import play.api.Application
-import javax.inject.Inject
-import com.variant.core.schema.ParserMessage
+
+import play.api.Logger
 
 trait SchemaDeployer {
  
@@ -59,19 +55,19 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
       val parser = new SchemaParser(server.hooker)
       val response = parser.parse(body)
 		val schema = ServerSchema(name, response.getSchema)		
-		if (response.hasMessages(Severity.ERROR)) schema.setState(State.Failed)
+		if (response.hasMessages(Severity.ERROR)) schema.state = State.Failed
       
 		if (response.hasMessages(Severity.ERROR)) {
 			logger.error("Schema %s was not deployed due to parser error(s):".format(schema.name))
 			response.getMessages(Severity.ERROR).foreach {log(_)}
 		}
 		else {
-   		deployedSchema.foreach { _.setState(State.Undeployed) }
+   		deployedSchema.foreach { _.state = State.Undeployed }
    		deployedSchema = Some(schema)
-   		deployedSchema.foreach { _.setState(State.Deployed) }
+   		deployedSchema.foreach { _.state = State.Deployed }
    		
    		val msg = new StringBuilder()
-   		msg.append("Deployed schema %s (%s):".format(schema.name, schema.getId));
+   		msg.append("Deployed schema [%s], ID [%s]:".format(schema.name, schema.getId));
    		for (test <- schema.getTests) {
    			msg.append("\n   ").append(test.getName()).append(":[");
    			var first = true;
