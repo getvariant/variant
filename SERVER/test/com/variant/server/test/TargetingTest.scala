@@ -7,6 +7,9 @@ import com.variant.server.session.ServerSession
 import com.variant.core.session.CoreStateRequest
 import com.variant.core.event.impl.util.VariantStringUtils
 import scala.collection.JavaConverters
+import com.variant.core.hook.HookListener
+import com.variant.core.hook.TestTargetingHook
+import scala.util.Random
 
 class TargetingTest extends ServerBaseSpec {
 
@@ -24,11 +27,7 @@ class TargetingTest extends ServerBaseSpec {
 	*/
 		
 
-	"Runtime" should {
-
-      "Target according to weights if no targeting hooks" in {
-				
-         val schemaJson = """
+   val schemaJson = """
 {
    'states':[
       {
@@ -85,12 +84,16 @@ class TargetingTest extends ServerBaseSpec {
    ]
 }"""
 
-		   server.installSchemaDeployer(SchemaDeployer.fromString("my schema", schemaJson))
-		   server.schema.isDefined mustBe true
-		   val schema = server.schema.get
-		   val state = schema.getState("state1")
-		   val test = schema.getTest("test1")
+   server.installSchemaDeployer(SchemaDeployer.fromString("my schema", schemaJson))
+   server.schema.isDefined mustBe true
+   val schema = server.schema.get
+   val state = schema.getState("state1")
+   val test = schema.getTest("test1")
 
+	"Runtime" should {
+
+      "target according to weights if no targeting hooks" in {
+				
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
    			val ssn = new ServerSession("sid")
@@ -104,6 +107,118 @@ class TargetingTest extends ServerBaseSpec {
    		} 
    		verifyCounts(counts, Array(1f, 2f, 97f))
       }
+       
+   	"target according to weights with null targeting listener" in {
+
+   		val nullListener = new NullTargetingHookListener()
+   	   nullListener.postCount mustBe 0
+   		server.hooker.addListener(nullListener)
+   		val counts = Array(0, 0, 0)
+   		for (i <- 1 to trials) {
+   			val ssn = new ServerSession("sid" + i)
+   			val req = ssn.targetForState(state)
+   			val expName = req.getLiveExperience(test).getName()
+   			expName match {
+   			   case "A" => counts(0) += 1
+      			case "B" => counts(1) += 1
+      			case "C" => counts(2) += 1
+   			}
+   		} 
+   		verifyCounts(counts, Array(1f, 2f, 97f))
+   		nullListener.postCount mustEqual trials
+      }
+      
+      "target according to weights with two null targeting listeners" in {
+
+         server.hooker.clear()
+         val nullListener1 = new NullTargetingHookListener()
+         val nullListener2 = new NullTargetingHookListener()
+   		server.hooker.addListener(nullListener1)
+   		server.hooker.addListener(nullListener2)
+   		val counts = Array(0, 0, 0)
+   		for (i <- 1 to trials) {
+   			val ssn = new ServerSession("sid" + 1)
+   			val req = ssn.targetForState(state)
+   			val expName = req.getLiveExperience(test).getName()
+   			expName match {
+   			   case "A" => counts(0) += 1
+      			case "B" => counts(1) += 1
+      			case "C" => counts(2) += 1
+   			}
+   		} 
+   		verifyCounts(counts, Array(1f, 2f, 97f))
+   		nullListener1.postCount mustEqual trials
+   		nullListener2.postCount mustEqual trials
+      }
+
+      "target at 1/1/0 with the null listener and the A/B listener" in {
+
+         server.hooker.clear()
+         val nullListener = new NullTargetingHookListener()
+   		val abListener = new ABTargetingHookListener()
+   		server.hooker.addListener(nullListener)
+   		server.hooker.addListener(abListener)
+   		val counts = Array(0, 0, 0)
+   		for (i <- 1 to trials) {
+   			val ssn = new ServerSession("sid" + 1)
+   			val req = ssn.targetForState(state)
+   			val expName = req.getLiveExperience(test).getName()
+   			expName match {
+   			   case "A" => counts(0) += 1
+      			case "B" => counts(1) += 1
+      			case "C" => counts(2) += 1
+   			}
+   		} 
+   		verifyCounts(counts, Array(1f, 1f, 0f))
+   		nullListener.postCount mustEqual trials
+   		abListener.postCount mustEqual trials
+      }
+      
+		"still target at 1/0/1 with the null listener and the AC listener" in {
+         
+         server.hooker.clear()
+         val nullListener = new NullTargetingHookListener()
+   		val acListener = new ACTargetingHookListener()
+   		server.hooker.addListener(nullListener)
+   		server.hooker.addListener(acListener)
+         val counts = Array(0,0,0)
+   		for (i <- 1 to trials) {
+   			val ssn = new ServerSession("sid" + 1)
+   			val req = ssn.targetForState(state)
+   			val expName = req.getLiveExperience(test).getName()
+   			expName match {
+   			   case "A" => counts(0) += 1
+      			case "B" => counts(1) += 1
+      			case "C" => counts(2) += 1
+   			}
+   		} 
+   		nullListener.postCount mustBe trials
+   		acListener.postCount mustBe trials
+   		verifyCounts(counts, Array(1, 0, 1))
+		}
+
+		"trarget at 2/1/1 with the a/b and a/c listeners" in {
+
+		   server.hooker.clear()
+   		val abNullListener = new ABNullTargetingHookListener()
+		   val acListener = new ACTargetingHookListener()
+   		server.hooker.addListener(abNullListener)
+   		server.hooker.addListener(acListener)
+         val counts = Array(0,0,0)
+   		for (i <- 1 to trials) {
+   			val ssn = new ServerSession("sid" + 1)
+   			val req = ssn.targetForState(state)
+   			val expName = req.getLiveExperience(test).getName()
+   			expName match {
+   			   case "A" => counts(0) += 1
+      			case "B" => counts(1) += 1
+      			case "C" => counts(2) += 1
+   			}
+   		}
+   		abNullListener.postCount mustBe trials
+   		acListener.postCount mustBe trials
+   		verifyCounts(counts, Array(50, 25, 25))
+		}
 	}
 	
 	/**
@@ -114,7 +229,6 @@ class TargetingTest extends ServerBaseSpec {
 	private def verifyCounts(counts: Array[Int], weights: Array[Float]) {
 	   //println(counts.mkString(","))
 	   //println(weights.mkString(","))
-	   println(weights)
 		var sumCounts = 0
 		var sumWeights = 0f
 		for (i <- 0 until counts.length) {
@@ -124,306 +238,86 @@ class TargetingTest extends ServerBaseSpec {
 		for (i <- 0 until counts.length) {
 			//System.out.println("Delta: " + (weights[i]/sumWeights * DELTA_AS_FRACTION));
 		   val countFraction = counts(i)/sumCounts.asInstanceOf[Float]
+		   // +- will complain if weightsFraction is 0: if so, give it a small positive value instead
 		   val weightsFraction = weights(i)/sumWeights.asInstanceOf[Float]
-   		countFraction mustEqual (weightsFraction +- weightsFraction * deltaAsFraction)
+
+		   if (weightsFraction == 0)
+      		countFraction mustEqual 0		      
+		   else
+      		countFraction mustEqual (weightsFraction +- weightsFraction * deltaAsFraction)
 		}
+	}
+}
+
+/**
+ * targeting listener does nothing, except increments the post counter.
+ */
+class NullTargetingHookListener extends HookListener[TestTargetingHook] {
+	
+	var postCount = 0;
+	
+	override def getHookClass() = classOf[TestTargetingHook]
+	
+	override def post(hook: TestTargetingHook) { 
+	   postCount += 1 
 	}
 
 }
-/*
-		
-		//
-		// Add one null listener - still distribution according to weights.
-		//
-		NullTargetingHookListener nullListener1 = new NullTargetingHookListener();
-		nullListener1.postCount = 0;
-		core.addHookListener(nullListener1);
-		counts[0] = counts[1] = counts[2] = 0;
-		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i, true).getBody();
-			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getLiveExperience(test).getName();			
-			if (expName.equals("A")) counts[0]++;
-			else if (expName.equals("B")) counts[1]++;
-			else if (expName.equals("C")) counts[2]++;
-			req.commit();
-		} 
-		assertEquals(TRIALS, nullListener1.postCount);
-		verifyCounts(counts, new float[] {1, 2, 97});
+/**
+ * Targeting listener returns A or B with equal probability.
+ */
+class ABTargetingHookListener extends HookListener[TestTargetingHook] {
 
-		//
-		// Add two null listeners - still distribution according to weights.
-		//
-		NullTargetingHookListener nullListener2 = new NullTargetingHookListener();
-		core.addHookListener(nullListener2);
-		counts[0] = counts[1] = counts[2] = 0;
-		nullListener2.postCount = nullListener1.postCount = 0;
-		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i, true).getBody();
-			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getLiveExperience(test).getName();			
-			if (expName.equals("A")) counts[0]++;
-			else if (expName.equals("B")) counts[1]++;
-			else if (expName.equals("C")) counts[2]++;
-			req.commit();
-		} 
-		assertEquals(TRIALS, nullListener1.postCount);
-		assertEquals(TRIALS, nullListener2.postCount);
-		verifyCounts(counts, new float[] {1, 2, 97});
-
-		//
-		// Add the A/B listener - changes distribution to 1/1/0.
-		//
-		ABTargetingHookListener ABListener = new ABTargetingHookListener();
-		core.addHookListener(ABListener);
-		counts[0] = counts[1] = counts[2] = 0;
-		ABListener.postCount = nullListener2.postCount = nullListener1.postCount = 0;
-		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i, true).getBody();
-			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getLiveExperience(test).getName();			
-			if (expName.equals("A")) counts[0]++;
-			else if (expName.equals("B")) counts[1]++;
-			else if (expName.equals("C")) counts[2]++;
-			req.commit();
-		} 
-		assertEquals(TRIALS, nullListener1.postCount);
-		assertEquals(TRIALS, nullListener2.postCount);
-		assertEquals(TRIALS, ABListener.postCount);
-		verifyCounts(counts, new float[] {1, 1, 0});
-
-		//
-		// Clear all listeners, then add the A/C listener - changes distribution to 1/0/1.
-		//
-		core.clearHookListeners();
-		ACTargetingHookListener ACListener = new ACTargetingHookListener();
-		core.addHookListener(ACListener);
-		counts[0] = counts[1] = counts[2] = 0;		
-		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i, true).getBody();
-			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getLiveExperience(test).getName();	
-			if (expName.equals("A")) counts[0]++;
-			else if (expName.equals("B")) counts[1]++;
-			else if (expName.equals("C")) counts[2]++;
-			req.commit();
-		} 
-		assertEquals(TRIALS, ACListener.postCount);
-		verifyCounts(counts, new float[] {1, 0, 1});
-
-		//
-		// Add null listener - should not change the distribution.
-		//
-		core.addHookListener(nullListener1);
-		nullListener1.postCount = ACListener.postCount = 0;
-		counts[0] = counts[1] = counts[2] = 0;		
-		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i, true).getBody();
-			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getLiveExperience(test).getName();	
-			if (expName.equals("A")) counts[0]++;
-			else if (expName.equals("B")) counts[1]++;
-			else if (expName.equals("C")) counts[2]++;
-			req.commit();
-		} 
-		assertEquals(TRIALS, nullListener1.postCount);
-		assertEquals(TRIALS, ACListener.postCount);
-		verifyCounts(counts, new float[] {1, 0, 1});
-
-		//
-		// Clear all listeners, then add the A/B/Null custom targeter + A/C targeter - changes distribution to 50/25/25.
-		//
-		core.clearHookListeners();
-		ABNullTargetingHookListener ABNullListener = new ABNullTargetingHookListener();
-		core.addHookListener(ABNullListener);
-		core.addHookListener(ACListener);
-		counts[0] = counts[1] = counts[2] = 0;
-		ABNullListener.postCount = ACListener.postCount = 0;
-		for (int i = 0; i < TRIALS; i++) {
-			VariantCoreSession ssn = core.getSession("foo" + i, true).getBody();
-			VariantCoreStateRequest req = ssn.targetForState(state);
-			String expName = req.getLiveExperience(test).getName();	
-			if (expName.equals("A")) counts[0]++;
-			else if (expName.equals("B")) counts[1]++;
-			else if (expName.equals("C")) counts[2]++;
-			req.commit();
-		} 
-		assertEquals(TRIALS, ABNullListener.postCount);
-		assertEquals(TRIALS, ACListener.postCount);
-		verifyCounts(counts, new float[] {50, 25, 25});
-	}
+	var postCount = 0;
+   val rand = new Random(System.currentTimeMillis())
+   
+	override def getHookClass() = classOf[TestTargetingHook]
 	
-/*
-	/**
-	 * Basic targeting
-	 * @throws Exception
-	 */
-	@Test
-	public void noWeightsExceptionTest() throws Exception {
-
-		String config = 
-				"{                                                             \n" +
-			    "   'states':[                                                 \n" +
-			    "     {  'name':'state1',                                      \n" +
-			    "        'parameters':{                                        \n" +
-			    "           'path':'/path/to/state1'                           \n" +
-			    "        }                                                     \n" +
-			    "     },                                                       \n" +
-			    "     {  'name':'state2',                                      \n" +
-			    "        'parameters':{                                        \n" +
-			    "           'path':'/path/to/state2'                           \n" +
-			    "        }                                                     \n" +
-			    "     }                                                        \n" +
-			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
-			    "     {                                                        \n" +
-			    "        'name':'test1',                                       \n" +
-			    "        'experiences':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':1 ,                                    \n" +
-			    "              'isControl':true                                \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'B'                                      \n" +
-/*			    "              'weight':2                                      \n" + */
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'C',                                     \n" +
-			    "              'weight':97                                     \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                          \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-			    "                    'parameters':{                            \n" +
-			    "                       'path':'/path/to/state1/test1.B'       \n" +
-			    "                    }                                         \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-			    "                    'parameters':{                            \n" +
-			    "                       'path':'/path/to/state1/test1.C'       \n" +
-			    "                    }                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		core.clearHookListeners();
-		ParserResponse response = core.parseSchema(config);
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-		Schema schema = core.getSchema();		
-		final State state = schema.getState("state1");
-		final VariantCoreSession ssn = core.getSession("foo", true).getBody();
-
-		new ExceptionInterceptor<VariantRuntimeException>() {
-			@Override public void toRun() { ssn.targetForState(state); }
-			@Override public void onThrown(VariantRuntimeException e) { 
-				assertEquals(e.getMessage(), new VariantRuntimeUserErrorException(Error.RUN_WEIGHT_MISSING, "test1", "B").getMessage()); 
-			}
-			@Override public Class<VariantRuntimeException> getExceptionClass() { return VariantRuntimeException.class; }
-		}.assertThrown();
-
+	override def post(hook: TestTargetingHook) {
+		postCount += 1
+		val test = hook.getTest()
+		val experience = if (rand.nextBoolean()) test.getExperience("A") else test.getExperience("B")
+		hook.setTargetedExperience(experience)
 	}
+}
+
+/**
+ * returns A or C in equal probabilities.
+ */
+class ACTargetingHookListener extends HookListener[TestTargetingHook] {
 	
-	/**
-	 * Always return null.
-	 */
-	private static class NullTargetingHookListener implements HookListener<TestTargetingHook> {
-		
-		private int postCount = 0;
-		
-		@Override
-		public Class<TestTargetingHook> getHookClass() {
-			return TestTargetingHook.class;
-		}
-		
-		@Override
-		public void post(TestTargetingHook hook) {
-			postCount++;
-			// do nothing.
+	var postCount = 0;
+	val rand = new Random(System.currentTimeMillis());
+	
+	override def getHookClass() = classOf[TestTargetingHook]
+	
+	override def post(hook: TestTargetingHook) {
+		postCount += 1
+		val test = hook.getTest()
+		if (test.getName().equals("test1") && hook.getTargetedExperience() == null) {
+			val experience = if (rand.nextBoolean()) test.getExperience("A") else test.getExperience("C")
+			hook.setTargetedExperience(experience);
 		}
 	}
+}
 
-	/**
-	 * returns A or B in equal probabilities.
-	 */
-	private static class ABTargetingHookListener implements HookListener<TestTargetingHook> {
-
-		private int postCount = 0;
-		private static Random rand = new Random(System.currentTimeMillis());
-
-		@Override
-		public Class<TestTargetingHook> getHookClass() {
-			return TestTargetingHook.class;
-		}
-		
-		@Override
-		public void post(TestTargetingHook hook) {
-			postCount++;
-			com.variant.core.schema.Test test = hook.getTest();
-			Experience experience = rand.nextBoolean() ? test.getExperience("A") : test.getExperience("B");
+/**
+ * returns A 25% of the time, B 25% of the time and null 50% of the time..
+ */
+class ABNullTargetingHookListener extends HookListener[TestTargetingHook] {
+	
+	var postCount = 0
+	val rand = new Random(System.currentTimeMillis())
+	
+	override def getHookClass() = classOf[TestTargetingHook]
+	
+	override def post(hook: TestTargetingHook) {
+		postCount += 1
+		var test = hook.getTest()
+		if (test.getName().equals("test1") && hook.getTargetedExperience() == null) {
+			val experience = if (rand.nextBoolean()) (if (rand.nextBoolean()) test.getExperience("A") else test.getExperience("B")) else null
 			hook.setTargetedExperience(experience);
 		}
 	}
 
-	/**
-	 * returns A or C in equal probabilities.
-	 */
-	private static class ACTargetingHookListener implements HookListener<TestTargetingHook> {
-		
-		private int postCount = 0;
-		private static Random rand = new Random(System.currentTimeMillis());
-		
-		@Override
-		public Class<TestTargetingHook> getHookClass() {
-			return TestTargetingHook.class;
-		}
-		
-		@Override
-		public void post(TestTargetingHook hook) {
-			postCount++;
-			com.variant.core.schema.Test test = hook.getTest();
-			if (test.getName().equals("test1") && hook.getTargetedExperience() == null) {
-				Experience experience = rand.nextBoolean() ? test.getExperience("A") : test.getExperience("C");
-				hook.setTargetedExperience(experience);
-			}
-		}
-	}
-
-	/**
-	 * returns A 25% of the time, B 25% of the time and null 50% of the time..
-	 */
-	private static class ABNullTargetingHookListener implements HookListener<TestTargetingHook> {
-		
-		private int postCount = 0;
-		private static Random rand = new Random(System.currentTimeMillis());
-		
-		@Override
-		public Class<TestTargetingHook> getHookClass() {
-			return TestTargetingHook.class;
-		}
-		
-		@Override
-		public void post(TestTargetingHook hook) {
-			postCount++;
-			com.variant.core.schema.Test test = hook.getTest();
-			if (test.getName().equals("test1") && hook.getTargetedExperience() == null) {
-				Experience experience = rand.nextBoolean() ? (rand.nextBoolean() ? test.getExperience("A") : test.getExperience("B")) : null;
-				hook.setTargetedExperience(experience);
-			}
-		}
-
-	}
-	*/
-	
 }
-*/

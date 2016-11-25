@@ -13,8 +13,8 @@ public class RuntimeError extends Error {
 	public static final RuntimeError EXPERIENCE_WEIGHT_MISSING = 
 			new RuntimeError(Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found");
 
-	public static final RuntimeError STATE_NOT_INSTRUMENTED_FOR_TEST =
-			new RuntimeError(Severity.ERROR, "State [%s] is not instrumented for test [%s]");
+	public static final RuntimeError STATE_NOT_INSTRUMENTED_BY_TEST =
+			new RuntimeError(Severity.ERROR, "State [%s] is not instrumented by test [%s]");
 
 	// PROPERTY_BAD_CLASS                                (Severity.ERROR, "Don't know how to convert to class [%s]");
 	

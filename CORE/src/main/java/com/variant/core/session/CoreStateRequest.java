@@ -1,6 +1,6 @@
 package com.variant.core.session;
 
-import static com.variant.core.exception.RuntimeError.STATE_NOT_INSTRUMENTED_FOR_TEST;
+import static com.variant.core.exception.RuntimeError.STATE_NOT_INSTRUMENTED_BY_TEST;
 
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -191,7 +191,7 @@ public class CoreStateRequest implements Serializable {
 			return test.getExperience(entry.getExperienceName());
 		}
 		
-		if (!found) throw new RuntimeErrorException(STATE_NOT_INSTRUMENTED_FOR_TEST, state.getName(), test.getName());
+		if (!found) throw new RuntimeErrorException(STATE_NOT_INSTRUMENTED_BY_TEST, state.getName(), test.getName());
 
 		return null;
 	}

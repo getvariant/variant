@@ -82,7 +82,7 @@ public class StateImpl implements State {
 		for (Test.OnState tov: test.getOnStates()) {
 			if (tov.getState().equals(this)) return tov.isNonvariant();
 		}
-		throw new RuntimeErrorException(STATE_NOT_INSTRUMENTED_FOR_TEST, name, test.getName());
+		throw new RuntimeErrorException(STATE_NOT_INSTRUMENTED_BY_TEST, name, test.getName());
 	}
 
 	//---------------------------------------------------------------------------------------------//
