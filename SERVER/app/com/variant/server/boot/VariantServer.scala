@@ -18,6 +18,7 @@ import com.variant.core.impl.UserHooker
 import com.variant.server.schema.SchemaDeployerFromFS
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.runtime.VariantRuntime
+import com.variant.core.schema.ParserResponse
 
 /**
  * Need a trait to make DI to work.
@@ -25,9 +26,9 @@ import com.variant.server.runtime.VariantRuntime
 trait VariantServer {
    val properties: VariantProperties
    val eventWriter: EventWriter
-   def hooker: UserHooker
    def schema: Option[ServerSchema]
-   def installSchemaDeployer(newDeployer: SchemaDeployer): Unit
+   def hooker: UserHooker
+   def installSchemaDeployer(newDeployer: SchemaDeployer): ParserResponse
    def runtime: VariantRuntime
 }
 
@@ -54,23 +55,24 @@ class VariantServerImpl @Inject() (
    private val now = System.currentTimeMillis;
    
 	VariantServer.instance = this
-	
-   override val properties = new ServerPropertiesImpl(configuration)
+
+	override val properties = new ServerPropertiesImpl(configuration)
    override val eventWriter = new EventWriter(properties)      
    override val hooker = new UserHooker()
    override val runtime = new VariantRuntime(this)
-   
-   // Default schema deployer is from file system.
-   private var schemaDeployer: SchemaDeployer = SchemaDeployer.fromFileSystem()
-   
-   override def schema = schemaDeployer.schema
 
+	   // Default schema deployer is from file system.
+   private var schemaDeployer: SchemaDeployer = null
+   installSchemaDeployer(SchemaDeployer.fromFileSystem())
+	   
+	override def schema = schemaDeployer.schema
 	/**
 	 * Override the default mutator for schema deployer because we need to do some housekeeping
 	 * if a new deployer is installed.
 	 */
-   def installSchemaDeployer (newDeployer: SchemaDeployer) {
-	   this.schemaDeployer = newDeployer
+   def installSchemaDeployer (newDeployer: SchemaDeployer): ParserResponse = {
+	   schemaDeployer = newDeployer
+	   schemaDeployer.deploy
 	}
 
    logger.info(

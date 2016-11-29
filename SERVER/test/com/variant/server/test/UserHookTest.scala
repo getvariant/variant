@@ -1,68 +1,140 @@
 package com.variant.server.test;
-/*
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.event.impl.util.VariantCollectionsUtils;
-import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.exception.Error;
-import com.variant.core.impl.VariantCore;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.CoreSession;
-import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.util.Tuples.Pair;
-import com.variant.server.ParserMessage;
-import com.variant.server.ParserResponse;
-import com.variant.server.ParserMessage.Severity;
-import com.variant.server.hook.HookListener;
-import com.variant.server.hook.StateParsedHook;
-import com.variant.server.hook.TestParsedHook;
-import com.variant.server.hook.TestQualificationHook;
-import com.variant.server.hook.TestTargetingHook;
-import com.variant.server.test.ParserDisjointOkayTest;
+import scala.util.Random
+import com.variant.core.hook.HookListener
+import com.variant.core.schema.StateParsedHook
+import com.variant.core.schema.State
+import scala.collection.mutable.ListBuffer
+import scala.collection.JavaConversions._
+import com.variant.core.exception.Error.Severity
+import com.variant.server.schema.SchemaDeployer
 
 /**
  * TODO: Need to also test annotations.
  * @author Igor
  * 
  */
-public class UserHookTest extends BaseTestCore {
+class UserHookTest extends ServerBaseSpec {
 
-	private static final String MESSAGE_TEXT_STATE = "Info-Message-State";
-	private static final String MESSAGE_TEXT_TEST = "Info-Message-Test";
-	
-	private Random rand = new Random();
-	
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	@org.junit.Test
-	public void stateParsedTest() throws Exception {
-			
-		VariantCore core = rebootApi();
-		StateParsedHookListenerImpl listener = new StateParsedHookListenerImpl();
-		core.addHookListener(listener);
-		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
-		assertEquals(core.getSchema().getStates(), listener.stateList);
-		assertEquals(core.getSchema().getStates().size(), response.getMessages().size());
-		for (ParserMessage msg: response.getMessages()) {
-			assertEquals(Severity.INFO, msg.getSeverity());
-			assertEquals(MESSAGE_TEXT_STATE, msg.getText());
-			
+   val schemaJson = """ 
+
+{
+   ///
+   'states':[
+      {'name':'state1'},
+		{'NAME':'state2'},
+		{'NaMe':'state3'}
+   ],            
+   ///
+   'tests':[ 
+	   {
+		   'name':'test1',
+			'isOn':false, 
+			'experiences':[
+			   {
+			      'name':'A',
+			    	'weight':10,
+			    	'isControl':true 
+			   },
+			   {                                                           
+			      'name':'B',                                              
+			    	'weight':20                                              
+			   }                                                           
+			],                                                             
+			'onStates':[                                                    
+			   {                                                           
+			      'stateRef':'state1',                                      
+			    	'variants':[                                             
+			    	   {                                                     
+			    	      'experienceRef':'B',                               
+						   'parameters':{                                     
+			    	         'path':'/path/to/state1/test1.B'                
+			    	      }                                                  
+			    	   }                                                     
+			      ]                                                        
+			   }                                                           
+		   ]                                                              
+      },                                                                
+      {                                                                 
+		   'name':'test2',                                                
+			'isOn': false,                                                 
+			'experiences':[                                                
+			  {                                                           
+			    'name':'C',                                              
+			    'weight':0.5,                                            
+			    'isControl':true                                         
+			  },                                                          
+			  {                                                           
+			     'name':'D',                                              
+			     'weight':0.6                                             
+			  }                                                           
+		   ],                                                             
+         'onStates':[                                                    
+			   {                                                           
+			      'stateRef':'state1',                                      
+			    	'variants':[                                             
+			    	   {                                                     
+			    	      'experienceRef':'D',                               
+						   'parameters':{                                     
+			    	         'path':'/path/to/state1/test2.D'                
+			    	      }                                                  
+			    	   }                                                     
+			    	]                                                        
+			   },                                                          
+			   {                                                           
+			      'stateRef':'state2',                                      
+			    	'isNonvariant':false,                                    
+			    	'variants':[                                             
+			    	   {                                                     
+			    	      'experienceRef':'D',                               
+						   'parameters':{                                     
+			    	         'path':'/path/to/state2/test2.D'                
+			    	      }                                                  
+			    	   }                                                     
+			    	]                                                        
+			   },                                                          
+			   {                                                           
+			      'stateRef':'state3',                                      
+			    	'isNonvariant':true                                      
+			   }                                                           
+		   ]
 		}
+	   ///	
+	]
+}
+"""
+   val MESSAGE_TEXT_STATE = "Info-Message-State"
+	val MESSAGE_TEXT_TEST = "Info-Message-Test"
+	
+	val rand = new Random()
+	
+	"StateParsedHookListener" should {
+	   "be posted when state is parsed" in {
+	      
+   		val listener = new HookListener[StateParsedHook]() {
+   		   val stateList = ListBuffer[State]()
+      		override def getHookClass() = classOf[StateParsedHook]
+		      override def post(hook: StateParsedHook) {
+			      stateList += hook.getState()
+      			hook.addMessage(Severity.INFO, MESSAGE_TEXT_STATE)
+		      }
+	      }
+   		   
+   		server.hooker.addListener(listener)
+   		val response = server.installSchemaDeployer(SchemaDeployer.fromString("my schema", schemaJson))
+   		server.schema.isDefined mustBe true
+   		val schema = server.schema.get
+   		listener.stateList.toSeq mustEqual schema.getStates.toSeq
+   		schema.getStates().size() mustEqual response.getMessages().size()
+   		for (msg <- response.getMessages) {
+   			msg.getSeverity mustBe Severity.INFO
+   			msg.getText mustBe MESSAGE_TEXT_STATE
+   			
+   		}  
+	   }
 	}
+}
+/*
 
 	/**
 	 * 
@@ -321,22 +393,6 @@ public class UserHookTest extends BaseTestCore {
 	/**
 	 * 
 	 */
-	private static class StateParsedHookListenerImpl implements HookListener<StateParsedHook> {
-
-		private ArrayList<State> stateList = new ArrayList<State>();
-
-		@Override
-		public Class<StateParsedHook> getHookClass() {
-			return StateParsedHook.class;
-		}
-		
-		@Override
-		public void post(StateParsedHook hook) {
-			stateList.add(hook.getState());
-			hook.addMessage(Severity.INFO, MESSAGE_TEXT_STATE);
-		}
-		
-	}
 	
 	/**
 	 * 

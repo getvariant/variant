@@ -1,10 +1,8 @@
 package com.variant.server.schema;
 
 import java.io.File
-
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.io.Source
-
 import com.variant.core.exception.Error.Severity
 import com.variant.core.exception.RuntimeInternalException
 import com.variant.core.schema.ParserMessage
@@ -15,16 +13,16 @@ import com.variant.server.ServerError.SCHEMAS_DIR_NOT_DIR
 import com.variant.server.ServerErrorException
 import com.variant.server.ServerPropertiesKey
 import com.variant.server.boot.VariantServer.server
-
 import play.api.Logger
+import com.variant.core.schema.ParserResponse
 
 trait SchemaDeployer {
  
    /**
-    * Currently deployed schema
+    * Deploy the schema represented by this schema deployer
     */
+   def deploy: ParserResponse
    def schema: Option[ServerSchema]
-   
 }
 
 object SchemaDeployer {
@@ -45,12 +43,12 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
    private val logger = Logger(this.getClass)  
    var deployedSchema: Option[ServerSchema] = None
 
-   def schema = deployedSchema
+   override def schema = deployedSchema
    
    /**
 	 * Parse a schema.
 	 */
-	protected def parseAndDeploy(name: String, body: String) {
+	protected def parseAndDeploy(name: String, body: String): ParserResponse = {
             
       val parser = new SchemaParser(server.hooker)
       val response = parser.parse(body)
@@ -88,6 +86,7 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
       		response.getMessages().foreach {log(_)}
    		}
 		}
+      response
 	}
    
    /**
@@ -120,6 +119,9 @@ object SchemaDeployerFromFS {
 */
 /**
  * Deploy schemas from a directory on the file system.
+ * Multiple schema files in directory are not yet supported,
+ * user error will be thrown if number of files in
+ * ServerPropertiesKey.SCHEMAS_DIR is other than 1.
  */
 class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
 	         
@@ -142,17 +144,10 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
    }
    else if (schemaFiles.length > 1)  
       throw new ServerErrorException(MULTIPLE_SCHEMAS_NOT_SUPPORTED)
-   else {
-      schemaFiles.foreach { sf => 
-         try {
-            parseAndDeploy(sf.getName, Source.fromFile(sf).mkString)
-         }
-		   catch {
-		      case t: Throwable => 
-		         throw new RuntimeInternalException("Unable to parse schema file %s".format(sf.getAbsolutePath), t)
-		   }
-      }
-   }   
+
+   val schemaFile = schemaFiles.head
+   
+   override def deploy() = parseAndDeploy(schemaFile.getName, Source.fromFile(schemaFile).mkString)
 }
 
 /**
@@ -160,13 +155,6 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
  */
 class SchemaDeployerFromString(name: String, body: String) extends AbstractSchemaDeployer {
 	         
-   private val logger = Logger(this.getClass)  
-   try {
-      parseAndDeploy(name, body)
-   }
-   catch {
-      case t: Throwable => 
-         throw new RuntimeInternalException("Unable to parse schema file %s".format(name), t)
-   }
+   override def deploy() = parseAndDeploy(name, body)
 }
 
