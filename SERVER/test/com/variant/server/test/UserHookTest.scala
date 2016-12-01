@@ -1,6 +1,5 @@
 package com.variant.server.test;
 
-import scala.util.Random
 import com.variant.core.hook.HookListener
 import com.variant.core.schema.StateParsedHook
 import com.variant.core.schema.State
@@ -12,6 +11,7 @@ import com.variant.core.schema.TestParsedHook
 import com.variant.core.schema.Test
 import com.variant.core.hook.TestQualificationHook
 import com.variant.server.session.ServerSession
+import org.scalatest.Assertions._
 
 /**
  * TODO: Need to also test annotations.
@@ -23,7 +23,6 @@ class UserHookTest extends ServerBaseSpec {
    val MESSAGE_TEXT_STATE = "Info-Message-State"
 	val MESSAGE_TEXT_TEST = "Info-Message-Test"
 	
-	val rand = new Random()
 	var schemaId = None
    
 	"StateParsedHook listener" should {
@@ -88,10 +87,10 @@ class UserHookTest extends ServerBaseSpec {
 
 	"TestQualificationHook" should {
 	   
-   	val ssn = new ServerSession(rand.nextString(5))
    	val nullListener = new TestQualificationHookListenerNil
-	   
-      "be posted for state1" in {
+	   var ssn = new ServerSession(newSid())
+
+      "be posted for tests instrumented on state1" in {
 
          server.hooker.clear()
          
@@ -110,7 +109,7 @@ class UserHookTest extends ServerBaseSpec {
    	   val test6 = schema.getTest("test6")
    	   
    		val req = ssn.targetForState(state1);
-		   ssn.getTraversedStates().size() mustBe 1
+		   ssn.getTraversedStates().size() mustEqual 1
 		   ssn.getTraversedStates().get(state1) mustEqual 1
 		   ssn.getTraversedTests().toSet mustEqual Set(test2, test3, test4, test5, test6)
 		   ssn.getDisqualifiedTests().size() mustEqual 0
@@ -123,9 +122,10 @@ class UserHookTest extends ServerBaseSpec {
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
 		   nullListener.testList.toSeq mustEqual Seq(test2, test3, test4, test5, test6)
+
 	   }
 	   
-	   "be posted for state2" in {
+	   "not be posted for tests already qualified" in {
 
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")
@@ -153,6 +153,46 @@ class UserHookTest extends ServerBaseSpec {
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
 		   nullListener.testList.toSeq mustEqual Seq(test1)
+
+	   }
+	   
+	   "not disqualify test1, but keep in targeting tracker" in {
+
+	      // New session. Disqualify, but keep in TT.
+	      nullListener.testList.clear()
+   	   val schema = server.schema.get
+   		val state1 = schema.getState("state1")
+   	   val test1 = schema.getTest("test1")
+   	   val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+
+   	   val disqualListener = new TestQualificationHookListenerDisqual(false, test1);
+		   server.hooker.addListener(disqualListener);
+
+		   nullListener.testList mustBe empty
+		   disqualListener.testList mustBe empty
+		   ssn = new ServerSession(newSid())
+		   setTargetingStabile(ssn, "test2.C", "test1.A")
+		   val req = ssn.targetForState(state1);
+		   ssn.getTraversedStates().size() mustEqual 1
+		   ssn.getTraversedStates().get(state1) mustEqual 1
+		   ssn.getTraversedTests().toSet mustEqual Set(test2, test3, test4, test5, test6)
+		   ssn.getDisqualifiedTests() mustBe empty
+		   disqualListener.testList mustBe empty
+
+		   val stabile = ssn.targetingStabile
+		   stabile.getAll().size() mustEqual 6  // test1 was not removed
+		   stabile.get("test1").toString() must startWith ("test1.A")
+		   stabile.get("test2").toString() must startWith ("test2.C")
+		   stabile.get("test3").toString() mustNot be (null)
+		   stabile.get("test4").toString() mustNot be (null)
+		   stabile.get("test5").toString() mustNot be (null)
+		   stabile.get("test6").toString() mustNot be (null)
+		   println(req.getResolvedParameter("path"))
+		   req.getResolvedParameter("path") must startWith ("/path/to/state1/")
 
 	   }
 	}
@@ -192,6 +232,27 @@ class UserHookTest extends ServerBaseSpec {
 		}		
 	}
 
+	/**
+	 * 
+	 */
+	class TestQualificationHookListenerDisqual(removeFromTargTracker: Boolean, testsToDisqualify:Test*) 
+	extends HookListener[TestQualificationHook] {
+
+		val testList = ListBuffer[Test]()
+		override def getHookClass() = classOf[TestQualificationHook]
+		
+		override def post(hook: TestQualificationHook) {
+			assert(hook.getSession() != null, "No session passed")
+			assert(hook.getTest() != null, "No test passed")
+			val test = testsToDisqualify.find { t => t.equals(hook.getTest()) }			
+			if (test.isDefined) {
+				testList.add(hook.getTest());
+				hook.setQualified(false);
+				hook.setRemoveFromTargetingTracker(removeFromTargTracker);
+			}
+		}		
+	}
+
 }
 
 
@@ -205,51 +266,6 @@ class UserHookTest extends ServerBaseSpec {
 	public void testQualificationTest() throws Exception {
 		
 		
-		
-		nullListener.testList.clear();
-		
-		// Repeat the same thing.  Test should have been put on the qualified list for the session
-		// so the hooks won't be posted.
-		assertTrue(nullListener.testList.isEmpty());
-		request = ssn.targetForState(state1);
-		assertEquals(1, ssn.getTraversedStates().size());
-		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
-		assertEquals(2, ssn.getTraversedStates().iterator().next().arg2().intValue());
-		assertEqualAsSets(ssn.getTraversedTests(), schema.getTest("test1"), schema.getTest("Test1"));
-
-		assertEquals(2, stabile.getAll().size());
-		assertNotNull(stabile.get("test1"));
-		assertNotNull(stabile.get("Test1"));
-		assertEquals(0, nullListener.testList.size());
-		request.commit();
-
-		// New session. Disqualify, but keep in TT.
-		TestQualificationHookListenerDisqualifyImpl disqualListener = new TestQualificationHookListenerDisqualifyImpl(false, schema.getTest("test1"));
-		core.addHookListener(disqualListener);
-		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-		assertTrue(nullListener.testList.isEmpty());
-		assertTrue(disqualListener.testList.isEmpty());
-		schema = core.getSchema();
-		state1 = schema.getState("state1");
-		sessionId = VariantStringUtils.random64BitString(rand);
-		VariantCoreSession ssn2 = core.getSession(sessionId, true).getBody();
-		setTargetingStabile(ssn2, "test2.D", "Test1.A");
-		request = ssn2.targetForState(state1);
-		assertEquals(1, ssn2.getTraversedStates().size());
-		assertEquals(state1, ssn2.getTraversedStates().iterator().next().arg1());
-		assertEquals(1, ssn2.getTraversedStates().iterator().next().arg2().intValue());
-		assertEqualAsSets(ssn2.getTraversedTests(), schema.getTest("Test1"));
-		assertEqualAsSets(ssn2.getDisqualifiedTests(), schema.getTest("test1"));
-
-		assertEquals(2, stabile.getAll().size());
-		assertNotNull(stabile.get("test1"));
-		assertNotNull(stabile.get("Test1"));
-		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1")), disqualListener.testList);
-		assertEquals("/path/to/state1/Test1.A", request.getResolvedParameter("path"));
-		request.commit();
-
 		// New session. Disqualify and drop from TT
 		core.clearHookListeners();
 		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"));
@@ -373,46 +389,6 @@ class UserHookTest extends ServerBaseSpec {
 			}
 		}.assertThrown(Error.RUN_HOOK_TARGETING_BAD_EXPERIENCE, test1BadListener.getClass().getName(), t1.getName(), t3.getControlExperience().toString());
 
-	}
-
-
-	/**
-	 * 
-	 */
-	private static class TestQualificationHookListenerDisqualifyImpl implements HookListener<TestQualificationHook> {
-
-		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
-		private com.variant.core.schema.Test[] testsToDisqualify;
-		private boolean removeFromTt;
-		
-		private TestQualificationHookListenerDisqualifyImpl(boolean removeFromTt, Test...testsToDisqualify) {
-			this.testsToDisqualify = testsToDisqualify;
-			this.removeFromTt = removeFromTt;
-		}
-
-		@Override
-		public Class<TestQualificationHook> getHookClass() {
-			return TestQualificationHook.class;
-		}
-
-		@Override
-		public void post(TestQualificationHook hook) {
-			assertNotNull(hook.getSession());
-			assertNotNull(hook.getTest());
-			boolean found = false;
-			for (com.variant.core.schema.Test test: testsToDisqualify) {
-				if (test.equals(hook.getTest())) {
-					found = true;
-					break;
-				}
-			}
-			
-			if (found) {
-				testList.add(hook.getTest());
-				hook.setQualified(false);
-				hook.setRemoveFromTargetingTracker(removeFromTt);
-			}
-		}		
 	}
 
 	/**

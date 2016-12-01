@@ -416,7 +416,7 @@ CLEANUP */
 	public boolean equals(Object o) {
 		try {
 			CoreSessionImpl other = (CoreSessionImpl) o;
-			return sid.equals(other.sid);
+			return other != null && sid.equals(other.sid);
 		}
 		catch(ClassCastException e) {
 			return false;

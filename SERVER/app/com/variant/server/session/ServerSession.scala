@@ -39,11 +39,16 @@ class ServerSession (private val sid: String) extends CoreSession {
       this("")
       this.coreSessionImpl = coreSession.asInstanceOf[CoreSessionImpl]
    }
-   /*
-    * Delegates to core methods
+
+   /**
+    * Tests will need access to the core session.
     */
-   private var coreSessionImpl = new CoreSessionImpl(sid, VariantServer.server.schema.get)
+   var coreSessionImpl = new CoreSessionImpl(sid, VariantServer.server.schema.get)
  
+  /*
+   * Delegates to core methods
+   */
+
    override def creationTimestamp = coreSessionImpl.creationTimestamp
    
    override def getDisqualifiedTests = coreSessionImpl.getDisqualifiedTests

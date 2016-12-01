@@ -12,6 +12,12 @@ import com.variant.server.jdbc.JdbcService
 import com.variant.server.event.EventWriter
 import com.variant.server.event.EventWriter
 import com.variant.server.boot.VariantServer
+import com.variant.core.session.CoreSessionImpl
+import com.variant.server.session.ServerSession
+import com.variant.core.session.SessionScopedTargetingStabile
+import com.variant.core.schema.Schema
+import java.util.Random
+import com.variant.core.event.impl.util.VariantStringUtils
 
 /**
  * Common to all tests.
@@ -71,6 +77,30 @@ class ServerBaseSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll
 	}
    
    /**
+    * Create and add a targeting stabile to a session.
+    */
+   protected def setTargetingStabile(ssn: ServerSession, experiences: String*) {
+		val stabile = new SessionScopedTargetingStabile()
+		experiences.foreach {e => stabile.add(experience(e, ssn.getSchema()))}
+		ssn.coreSessionImpl.setTargetingStabile(stabile);
+	}
+
+   /**
+    * Find experience object by its comma separated name.
+    */
+   protected def experience(name: String, schema: Schema) = {
+		val tokens = name.split("\\.")
+		assert(tokens.length == 2)
+		schema.getTest(tokens(0)).getExperience(tokens(1))
+	}
+
+   /**
+    * Generate a new random session ID.
+    */
+   protected def newSid() = 
+      VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()))
+   
+   /**
 	 * @throws Exception 
 	 * 
 	 */
@@ -88,7 +118,6 @@ class ServerBaseSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll
 		   case _: ClassCastException => 
 		   case e: Throwable => throw e		
 		}
-
 	}
 
 }
