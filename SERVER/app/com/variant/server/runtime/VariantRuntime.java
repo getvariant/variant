@@ -296,10 +296,10 @@ public class VariantRuntime {
 
 		// If all went well, we must be resolvable!
 		Pair<Boolean, StateVariantImpl> resolution = resolveState(state, vector);
-		if (!resolution.arg1()) throw new RuntimeInternalException(
+		if (!resolution._1()) throw new RuntimeInternalException(
 				"Vector [" + VariantStringUtils.toString(vector, ",") + "] is unresolvable");
 		
-		req.setResolvedStateVariant(resolution.arg2());
+		req.setResolvedStateVariant(resolution._2());
 	}
 
 	/**
@@ -397,7 +397,7 @@ public class VariantRuntime {
 				if (!e.isControl() && state.isInstrumentedBy(e.getTest()) && e.isDefinedOn(state)) 
 					instumentedVector.add(e);
 			}
-			if (!resolveState(state, instumentedVector).arg1()) return false;
+			if (!resolveState(state, instumentedVector)._1()) return false;
 		}
 		
 		return true;

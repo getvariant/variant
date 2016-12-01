@@ -26,6 +26,9 @@ libraryDependencies ++= Seq(
   "com.h2database" % "h2"   % "1.4.191"         % Test
 )
 
+// Test scoped classpath directory
+unmanagedClasspath in Test += baseDirectory.value / "test-conf"
+
 // Capture SBT build info in a source file available at compile time.
 sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { (d, v, n) =>
   val file = d / "SbtService.scala"

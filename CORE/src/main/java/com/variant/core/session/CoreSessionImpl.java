@@ -2,26 +2,23 @@ package com.variant.core.session;
 
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.CoreSession;
-import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.util.Tuples.Pair;
 
 /**
  * 
@@ -217,16 +214,16 @@ CLEANUP */
 		return currentRequest;
 	}
 
-	public Collection<Pair<State, Integer>> getTraversedStates() {
-		return VariantCollectionsUtils.mapToPairs(traversedStates);
+	public Map<State, Integer> getTraversedStates() {
+		return Collections.unmodifiableMap(traversedStates);
 	}
 
-	public Collection<Test> getTraversedTests() {
-		return CollectionUtils.unmodifiableCollection(traversedTests);
+	public Set<Test> getTraversedTests() {
+		return Collections.unmodifiableSet(traversedTests);
 	}
 
-	public Collection<Test> getDisqualifiedTests() {
-		return CollectionUtils.unmodifiableCollection(disqualTests);
+	public Set<Test> getDisqualifiedTests() {
+		return Collections.unmodifiableSet(disqualTests);
 	}
 
 

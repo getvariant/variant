@@ -16,8 +16,8 @@ public class Tuples {
      * @since 0.5
 	 */
 	public static class Pair<T1,T2>  {
-		private T1 arg1;
-		private T2 arg2;
+		private T1 _1;
+		private T2 _2;
 		
 		/**
 		 * Constructor.
@@ -25,19 +25,19 @@ public class Tuples {
 		 * @param arg2 Second element.
 		 */
 		public Pair(T1 arg1, T2 arg2) {
-			this.arg1 = arg1;
-			this.arg2 = arg2;
+			_1 = arg1;
+			_2 = arg2;
 		}
 		/**
 		 * Get first element.
 		 * @return
 		 */
-		public T1 arg1() { return arg1; }
+		public T1 _1() { return _1; }
 		/**
 		 * Get second element.
 		 * @return
 		 */
-		public T2 arg2() { return arg2; }
+		public T2 _2() { return _2; }
 
 		/**
 		 * Override {@code Object.equals(Object)}
@@ -54,7 +54,7 @@ public class Tuples {
 			catch (ClassCastException e){
 				return false;
 			}
-			return arg1.equals(otherPair.arg1) && arg2.equals(otherPair.arg2);
+			return _1.equals(otherPair._1) && _2.equals(otherPair._2);
 		}
 		
 		/**
@@ -63,7 +63,7 @@ public class Tuples {
 		 */
 		@Override
 		public String toString() {
-			return "(" + arg1 + ", " + arg2 + ")"; 
+			return "(" + _1 + ", " + _2 + ")"; 
 		}
 	}
 	
@@ -73,9 +73,9 @@ public class Tuples {
      * @since 0.5
 	 */
 	public static class Tripple<T1,T2,T3> {
-		private T1 arg1;
-		private T2 arg2;
-		private T3 arg3;
+		private T1 _1;
+		private T2 _2;
+		private T3 _3;
 
 		/**
 		 * Constructor.
@@ -84,25 +84,25 @@ public class Tuples {
 		 * @param arg3 Third element.
 		 */
 		public Tripple(T1 arg1, T2 arg2, T3 arg3) {
-			this.arg1 = arg1;
-			this.arg2 = arg2;
-			this.arg3 = arg3;
+			_1 = arg1;
+			_2 = arg2;
+			_3 = arg3;
 		}
 		/**
 		 * Get first element.
 		 * @return
 		 */
-		public T1 arg1() { return arg1; }
+		public T1 arg1() { return _1; }
 		/**
 		 * Get second element.
 		 * @return
 		 */
-		public T2 arg2() { return arg2; }
+		public T2 arg2() { return _2; }
 		/**
 		 * Get third element.
 		 * @return
 		 */
-		public T3 arg3() { return arg3; }
+		public T3 arg3() { return _3; }
 		
 		/**
 		 * Override {@code Object.equals(Object)}
@@ -119,7 +119,7 @@ public class Tuples {
 			catch (ClassCastException e){
 				return false;
 			}
-			return arg1.equals(otherTripple.arg1) && arg2.equals(otherTripple.arg2) && arg3.equals(otherTripple.arg3);
+			return _1.equals(otherTripple._1) && _2.equals(otherTripple._2) && _3.equals(otherTripple._3);
 		}
 		
 		/**
@@ -128,7 +128,7 @@ public class Tuples {
 		 */
 		@Override
 		public String toString() {
-			return "(" + arg1 + ", " + arg2 + ", " + arg3 + ")"; 
+			return "(" + _1 + ", " + _2 + ", " + _3 + ")"; 
 		}
 	}
 

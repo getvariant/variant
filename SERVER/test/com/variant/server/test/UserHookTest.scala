@@ -8,6 +8,10 @@ import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.exception.Error.Severity
 import com.variant.server.schema.SchemaDeployer
+import com.variant.core.schema.TestParsedHook
+import com.variant.core.schema.Test
+import com.variant.core.hook.TestQualificationHook
+import com.variant.server.session.ServerSession
 
 /**
  * TODO: Need to also test annotations.
@@ -16,112 +20,19 @@ import com.variant.server.schema.SchemaDeployer
  */
 class UserHookTest extends ServerBaseSpec {
 
-   val schemaJson = """ 
-
-{
-   ///
-   'states':[
-      {'name':'state1'},
-		{'NAME':'state2'},
-		{'NaMe':'state3'}
-   ],            
-   ///
-   'tests':[ 
-	   {
-		   'name':'test1',
-			'isOn':false, 
-			'experiences':[
-			   {
-			      'name':'A',
-			    	'weight':10,
-			    	'isControl':true 
-			   },
-			   {                                                           
-			      'name':'B',                                              
-			    	'weight':20                                              
-			   }                                                           
-			],                                                             
-			'onStates':[                                                    
-			   {                                                           
-			      'stateRef':'state1',                                      
-			    	'variants':[                                             
-			    	   {                                                     
-			    	      'experienceRef':'B',                               
-						   'parameters':{                                     
-			    	         'path':'/path/to/state1/test1.B'                
-			    	      }                                                  
-			    	   }                                                     
-			      ]                                                        
-			   }                                                           
-		   ]                                                              
-      },                                                                
-      {                                                                 
-		   'name':'test2',                                                
-			'isOn': false,                                                 
-			'experiences':[                                                
-			  {                                                           
-			    'name':'C',                                              
-			    'weight':0.5,                                            
-			    'isControl':true                                         
-			  },                                                          
-			  {                                                           
-			     'name':'D',                                              
-			     'weight':0.6                                             
-			  }                                                           
-		   ],                                                             
-         'onStates':[                                                    
-			   {                                                           
-			      'stateRef':'state1',                                      
-			    	'variants':[                                             
-			    	   {                                                     
-			    	      'experienceRef':'D',                               
-						   'parameters':{                                     
-			    	         'path':'/path/to/state1/test2.D'                
-			    	      }                                                  
-			    	   }                                                     
-			    	]                                                        
-			   },                                                          
-			   {                                                           
-			      'stateRef':'state2',                                      
-			    	'isNonvariant':false,                                    
-			    	'variants':[                                             
-			    	   {                                                     
-			    	      'experienceRef':'D',                               
-						   'parameters':{                                     
-			    	         'path':'/path/to/state2/test2.D'                
-			    	      }                                                  
-			    	   }                                                     
-			    	]                                                        
-			   },                                                          
-			   {                                                           
-			      'stateRef':'state3',                                      
-			    	'isNonvariant':true                                      
-			   }                                                           
-		   ]
-		}
-	   ///	
-	]
-}
-"""
    val MESSAGE_TEXT_STATE = "Info-Message-State"
 	val MESSAGE_TEXT_TEST = "Info-Message-Test"
 	
 	val rand = new Random()
-	
-	"StateParsedHookListener" should {
+	var schemaId = None
+   
+	"StateParsedHook listener" should {
 	   "be posted when state is parsed" in {
 	      
-   		val listener = new HookListener[StateParsedHook]() {
-   		   val stateList = ListBuffer[State]()
-      		override def getHookClass() = classOf[StateParsedHook]
-		      override def post(hook: StateParsedHook) {
-			      stateList += hook.getState()
-      			hook.addMessage(Severity.INFO, MESSAGE_TEXT_STATE)
-		      }
-	      }
-   		   
+   		val listener = new StateParsedHookListener
    		server.hooker.addListener(listener)
-   		val response = server.installSchemaDeployer(SchemaDeployer.fromString("my schema", schemaJson))
+   		val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json"))
+   		response.getMessages(Severity.ERROR) mustBe empty
    		server.schema.isDefined mustBe true
    		val schema = server.schema.get
    		listener.stateList.toSeq mustEqual schema.getStates.toSeq
@@ -132,44 +43,159 @@ class UserHookTest extends ServerBaseSpec {
    			
    		}  
 	   }
+   }
+	   
+	"TestParsedHook listener" should {
+	   "be posted when test is parsed" in {
+	      
+   	   server.hooker.clear()
+   	   val listener = new TestParsedHookListener
+   	   server.hooker.addListener(listener)
+         val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json"))
+      	response.getMessages(Severity.ERROR) mustBe empty
+         server.schema.isDefined mustBe true
+      	val schema = server.schema.get
+      	listener.testList.toSeq mustEqual schema.getTests.toSeq
+      	schema.getTests().size() mustEqual response.getMessages().size()
+   		for (msg <- response.getMessages) {
+   			msg.getSeverity mustBe Severity.INFO
+      		msg.getText mustBe MESSAGE_TEXT_TEST		
+   		}
+	   }
 	}
-}
-/*
+
+	"StateParsedHook and TestParsedHook listenes" should {
+	   "both be posted, states first, then tests" in {
+	      
+   	   server.hooker.clear()
+   	   val stateListener = new StateParsedHookListener
+   	   val testListener = new TestParsedHookListener
+   	   server.hooker.addListener(testListener, stateListener)
+         val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json"))
+      	response.getMessages(Severity.ERROR) mustBe empty
+         server.schema.isDefined mustBe true
+      	val schema = server.schema.get
+      	testListener.testList.toSeq mustEqual schema.getTests.toSeq
+      	stateListener.stateList.toSeq mustEqual schema.getStates.toSeq
+      	response.getMessages.size mustEqual schema.getTests.size + schema.getStates.size 
+   		for (i <- 0 until response.getMessages.size) {
+   		   val msg = response.getMessages.get(i)
+   			msg.getSeverity mustBe Severity.INFO
+      		msg.getText mustBe (if (i < schema.getStates.size) MESSAGE_TEXT_STATE else MESSAGE_TEXT_TEST)
+   		}
+	   }
+	}
+
+	"TestQualificationHook" should {
+	   
+   	val ssn = new ServerSession(rand.nextString(5))
+   	val nullListener = new TestQualificationHookListenerNil
+	   
+      "be posted for state1" in {
+
+         server.hooker.clear()
+         
+    		server.hooker.addListener(nullListener);
+         val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json"))
+   	   response.hasMessages() mustBe false		
+   		nullListener.testList mustBe empty
+   		server.schema.isDefined mustBe true
+   	   val schema = server.schema.get
+   		val state1 = schema.getState("state1")
+   	   val test1 = schema.getTest("test1")
+   	   val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+   	   
+   		val req = ssn.targetForState(state1);
+		   ssn.getTraversedStates().size() mustBe 1
+		   ssn.getTraversedStates().get(state1) mustEqual 1
+		   ssn.getTraversedTests().toSet mustEqual Set(test2, test3, test4, test5, test6)
+		   ssn.getDisqualifiedTests().size() mustEqual 0
+		   val stabile = ssn.targetingStabile
+		   stabile.getAll().size() mustEqual 5
+		   stabile.get("test1") mustBe (null)
+		   stabile.get("test2") mustNot be (null)
+		   stabile.get("test3") mustNot be (null)
+		   stabile.get("test4") mustNot be (null)
+		   stabile.get("test5") mustNot be (null)
+		   stabile.get("test6") mustNot be (null)
+		   nullListener.testList.toSeq mustEqual Seq(test2, test3, test4, test5, test6)
+	   }
+	   
+	   "be posted for state2" in {
+
+   	   val schema = server.schema.get
+   		val state1 = schema.getState("state1")
+   		val state2 = schema.getState("state2")
+   	   val test1 = schema.getTest("test1")
+   	   val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+   	   nullListener.testList.clear()
+   	   
+	      val req = ssn.targetForState(state2);
+		   ssn.getTraversedStates().size() mustEqual 2
+		   ssn.getTraversedStates().get(state1) mustEqual 1
+		   ssn.getTraversedStates().get(state2) mustEqual 1
+		   ssn.getTraversedTests().toSet mustEqual Set(test1, test2, test3, test4, test5, test6)
+		   ssn.getDisqualifiedTests().size() mustEqual 0
+		   val stabile = ssn.targetingStabile
+		   stabile.getAll().size() mustEqual 6
+		   stabile.get("test1") mustNot be (null)
+		   stabile.get("test2") mustNot be (null)
+		   stabile.get("test3") mustNot be (null)
+		   stabile.get("test4") mustNot be (null)
+		   stabile.get("test5") mustNot be (null)
+		   stabile.get("test6") mustNot be (null)
+		   nullListener.testList.toSeq mustEqual Seq(test1)
+
+	   }
+	}
 
 	/**
 	 * 
-	 * @throws Exception
 	 */
-	@org.junit.Test
-	public void testParsedTest() throws Exception {
-		
-		VariantCore core = rebootApi();
-		TestParsedHookListenerImpl listener = new TestParsedHookListenerImpl();
-		core.clearHookListeners();
-		core.addHookListener(listener);
-		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
-		assertEquals(core.getSchema().getTests(), listener.testList);
-		assertEquals(core.getSchema().getTests().size(), response.getMessages().size());
-		for (ParserMessage msg: response.getMessages()) {
-			assertEquals(Severity.INFO, msg.getSeverity());
-			assertEquals(MESSAGE_TEXT_TEST, msg.getText());
-			
-		}
+	class StateParsedHookListener extends HookListener[StateParsedHook] {
+	   val stateList = ListBuffer[State]()
+		override def getHookClass() = classOf[StateParsedHook]
+      override def post(hook: StateParsedHook) {
+	      stateList += hook.getState()
+			hook.addMessage(Severity.INFO, MESSAGE_TEXT_STATE)
+      }
+   }
 
-		StateParsedHookListenerImpl stateListener = new StateParsedHookListenerImpl();
-		core.addHookListener(stateListener);
-		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
-		assertEquals(VariantCollectionsUtils.list(core.getSchema().getTests(), core.getSchema().getTests()), listener.testList);
-		assertEquals(core.getSchema().getStates(), stateListener.stateList);
-		assertEquals(core.getSchema().getTests().size() + core.getSchema().getStates().size(), response.getMessages().size());
+	/**
+	 * 
+	 */
+	class TestParsedHookListener extends HookListener[TestParsedHook] {
+	   val testList = ListBuffer[Test]()
+		override def getHookClass() = classOf[TestParsedHook]
+      override def post(hook: TestParsedHook) {
+	      testList += hook.getTest()
+			hook.addMessage(Severity.INFO, MESSAGE_TEXT_TEST)
+      }
+   }
 
-		for (int i = 0; i < response.getMessages().size(); i++) {
-			ParserMessage msg = response.getMessages().get(i);
-			assertEquals(Severity.INFO, msg.getSeverity());
-			assertEquals(i < core.getSchema().getStates().size() ? MESSAGE_TEXT_STATE : MESSAGE_TEXT_TEST, msg.getText());
-		}
-
+	/**
+	 * Do nothing. Tests should be qualified by default.
+	 */
+	class TestQualificationHookListenerNil extends HookListener[TestQualificationHook] {
+		val testList = ListBuffer[Test]()
+		override def getHookClass() = classOf[TestQualificationHook]
+		override def post(hook: TestQualificationHook) {
+			testList += hook.getTest()
+		}		
 	}
+
+}
+
+
+/*
 
 	/**
 	 * 
@@ -178,49 +204,7 @@ class UserHookTest extends ServerBaseSpec {
 	@org.junit.Test
 	public void testQualificationTest() throws Exception {
 		
-		VariantCore core = rebootApi();
-		TestQualificationHookListenerNullImpl nullListener = new TestQualificationHookListenerNullImpl();
-		core.clearHookListeners();
-		core.addHookListener(nullListener);
-		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
 		
-		assertTrue(nullListener.testList.isEmpty());
-		Schema schema = core.getSchema();
-		State state1 = schema.getState("state1");
-		State state2 = schema.getState("state2");
-		String sessionId = VariantStringUtils.random64BitString(rand);
-		VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
-
-		VariantCoreStateRequest request = ssn.targetForState(state1);
-		assertEquals(1, ssn.getTraversedStates().size());
-		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
-		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());
-		assertEqualAsSets(ssn.getTraversedTests(), schema.getTest("test1"), schema.getTest("Test1"));
-		assertEquals(0, ssn.getDisqualifiedTests().size());
-		SessionScopedTargetingStabile stabile = ((CoreSession)ssn).getTargetingStabile();
-		assertEquals(2, stabile.getAll().size());
-		assertNotNull(stabile.get("test1"));
-		assertNull(stabile.get("test2"));
-		assertNotNull(stabile.get("Test1"));
-		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1"), schema.getTest("Test1")), nullListener.testList);
-		request.commit();
-		
-		// Targeting for state2 shouldn't change anything
-		request = ssn.targetForState(state2);
-		assertEquals(1, ssn.getTraversedStates().size());
-		assertEquals(state1, ssn.getTraversedStates().iterator().next().arg1());
-		assertEquals(1, ssn.getTraversedStates().iterator().next().arg2().intValue());
-		assertEqualAsSets(ssn.getTraversedTests(), schema.getTest("test1"), schema.getTest("Test1"));
-		assertEquals(0, ssn.getDisqualifiedTests().size());
-		stabile = ((CoreSession)ssn).getTargetingStabile();
-		assertEquals(2, stabile.getAll().size());
-		assertNotNull(stabile.get("test1"));
-		assertNull(stabile.get("test2"));
-		assertNotNull(stabile.get("Test1"));
-		assertEquals(VariantCollectionsUtils.list(schema.getTest("test1"), schema.getTest("Test1")), nullListener.testList);
-		request.commit();
 		
 		nullListener.testList.clear();
 		
@@ -390,46 +374,7 @@ class UserHookTest extends ServerBaseSpec {
 		}.assertThrown(Error.RUN_HOOK_TARGETING_BAD_EXPERIENCE, test1BadListener.getClass().getName(), t1.getName(), t3.getControlExperience().toString());
 
 	}
-	/**
-	 * 
-	 */
-	
-	/**
-	 * 
-	 */
-	private static class TestParsedHookListenerImpl implements HookListener<TestParsedHook> {
 
-		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
-		
-		@Override
-		public Class<TestParsedHook> getHookClass() {
-			return TestParsedHook.class;
-		}
-
-		@Override
-		public void post(TestParsedHook hook) {
-			testList.add(hook.getTest());
-			hook.addMessage(Severity.INFO, MESSAGE_TEXT_TEST);
-		}		
-	}
-
-	/**
-	 * Do nothing.  Tests should be qualified.
-	 */
-	private static class TestQualificationHookListenerNullImpl implements HookListener<TestQualificationHook> {
-
-		private ArrayList<com.variant.core.schema.Test> testList = new ArrayList<com.variant.core.schema.Test>();
-		
-		@Override
-		public Class<TestQualificationHook> getHookClass() {
-			return TestQualificationHook.class;
-		}
-
-		@Override
-		public void post(TestQualificationHook hook) {
-			testList.add(hook.getTest());
-		}		
-	}
 
 	/**
 	 * 

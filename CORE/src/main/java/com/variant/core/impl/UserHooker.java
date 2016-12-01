@@ -25,8 +25,10 @@ public class UserHooker {
 	 * 
 	 * @param listener
 	 */
-	public void addListener(HookListener<? extends UserHook> listener) {
-		listeners.add(listener);
+	@SuppressWarnings("unchecked") 
+	public void addListener(HookListener<? extends UserHook>... listeners) {
+		for (int i = 0; i < listeners.length; i++)
+			this.listeners.add(listeners[i]);
 	}
 	
 	/**

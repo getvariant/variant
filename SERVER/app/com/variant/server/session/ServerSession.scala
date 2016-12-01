@@ -28,43 +28,51 @@ object ServerSession {
 }
 
 /**
- * 
+ * Construct from session ID.
  */
 class ServerSession (private val sid: String) extends CoreSession {
    
+   /**
+    * Construct from already constructed core session object.
+    */
    def this(coreSession: CoreSession) = {
       this("")
-      this.coreSession = coreSession.asInstanceOf[CoreSessionImpl]
+      this.coreSessionImpl = coreSession.asInstanceOf[CoreSessionImpl]
    }
    /*
     * Delegates to core methods
     */
-   private var coreSession = new CoreSessionImpl(sid, VariantServer.server.schema.get)
+   private var coreSessionImpl = new CoreSessionImpl(sid, VariantServer.server.schema.get)
  
-   override def creationTimestamp = coreSession.creationTimestamp
+   override def creationTimestamp = coreSessionImpl.creationTimestamp
    
-   override def getDisqualifiedTests = coreSession.getDisqualifiedTests
+   override def getDisqualifiedTests = coreSessionImpl.getDisqualifiedTests
    
-   override def getId = coreSession.getId
+   override def getId = coreSessionImpl.getId
    
-   override def getSchema  = coreSession.getSchema
+   override def getSchema  = coreSessionImpl.getSchema
    
-   override def getStateRequest = coreSession.getStateRequest
+   override def getStateRequest = coreSessionImpl.getStateRequest
    
-   override def getTraversedStates = coreSession.getTraversedStates
+   override def getTraversedStates = coreSessionImpl.getTraversedStates
    
-   override def getTraversedTests = coreSession.getTraversedTests
+   override def getTraversedTests = coreSessionImpl.getTraversedTests
    
    /*
     * Server only functionality
     */
    
    def targetForState(state: State) = {
-      VariantServer.server.runtime.targetSessionForState(coreSession, state.asInstanceOf[StateImpl])   
+      VariantServer.server.runtime.targetSessionForState(coreSessionImpl, state.asInstanceOf[StateImpl])   
    }
    
 	def triggerEvent(event: VariantEvent) {
 		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
-		VariantServer.server.eventWriter.write(new FlushableEventImpl(event, coreSession));
+		VariantServer.server.eventWriter.write(new FlushableEventImpl(event, coreSessionImpl));
 	}
+	
+	/*
+	 * Expose targeting stabile for tests.
+	 */
+	def targetingStabile = coreSessionImpl.getTargetingStabile
 }

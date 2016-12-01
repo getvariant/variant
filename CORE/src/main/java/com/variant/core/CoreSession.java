@@ -1,12 +1,12 @@
 package com.variant.core;
 
-import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.session.CoreStateRequest;
-import com.variant.core.util.Tuples.Pair;
 
 /**
  * <p>Variant Core Session. CLEANUP
@@ -41,37 +41,36 @@ public interface CoreSession {
 	public Schema getSchema();
 	
 	/**
-	 * <p> The collection of states traversed by this session so far and their counts. For each state S,
-	 * the traversal count in incremented by one whenever all of the following conditions are met: 
+	 * <p> The collection of states, traversed by this session so far, and their respective visit counts. 
+	 *     For each state S, the traversal count in incremented by one whenever all of the following conditions are met: 
      * <ul> 
      * <li>The session is targeted for the state S</li>
      * <li>There exists a test T, which a) instruments state S, b) is not OFF, and c) this session qualified for.</li>
      * </ul>
 
 	 * 
-	 * @return A collection of {@link Pair}s of ({@link State}, Integer), corresponding
-	 *         to the traversed states. Call {@link Pair#arg1()} to obtain the state and 
-	 *         {@link Pair#arg2()} to obtain the count of times this state has been traversed.
+	 * @return A map, whose entries are keyed by {@link State} and values are Integer visit counts in
+	 *         that state.
 	 */
-	public Collection<Pair<State, Integer>> getTraversedStates(); 
+	public Map<State, Integer> getTraversedStates(); 
 
 	/**
-	 * <p> The collection of tests traversed by this session so far. A test T is traversed by
+	 * <p> The set of tests traversed by this session so far. A test T is traversed by
 	 * a session when the session is targeted for a state, which a) is instrumented by T,
 	 * b) T is not OFF, and c) this session qualified for T.
 	 * 
-	 * @return A collection of object of type {@link Test}.
+	 * @return A set of object of type {@link Test}.
 	 */
-	public Collection<Test> getTraversedTests(); 
+	public Set<Test> getTraversedTests(); 
 	
 	/**
-	 * <p>The collection of tests that this session is disqualified for. Whenever a session is disqualified
+	 * <p>The set of tests that this session is disqualified for. Whenever a session is disqualified
 	 * for a test, it remains disqualified for that test for the life of the session even if the condition 
 	 * that disqualified it may no longer hold.
 	 * 
-	 * @return A collection of {@link Test}s which this session is disqualified for. 
+	 * @return A set of {@link Test}s which this session is disqualified for. 
 	 */
-	public Collection<Test> getDisqualifiedTests();
+	public Set<Test> getDisqualifiedTests();
 		
 	/**
 	 * <p>Get most recent state request, which may be still in progress or already committed.

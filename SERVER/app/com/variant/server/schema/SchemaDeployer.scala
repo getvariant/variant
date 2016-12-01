@@ -15,6 +15,7 @@ import com.variant.server.ServerPropertiesKey
 import com.variant.server.boot.VariantServer.server
 import play.api.Logger
 import com.variant.core.schema.ParserResponse
+import org.apache.commons.io.IOUtils
 
 trait SchemaDeployer {
  
@@ -33,9 +34,15 @@ object SchemaDeployer {
    def fromFileSystem() = new SchemaDeployerFromFS()
 
    /**
-    * Deploy from the a memory string
+    * Deploy from a memory string
     */
    def fromString(name: String, body: String) = new SchemaDeployerFromString(name, body)
+   
+  /**
+    * Deploy from a classpath resource
+    */
+   def fromClasspath(resource: String) = new SchemaDeployerFromClasspath(resource)
+
 }
 
 abstract class AbstractSchemaDeployer() extends SchemaDeployer {
@@ -151,10 +158,22 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
 }
 
 /**
- * Deploy schemas from a string in memory.
+ * Deploy single schema from a string in memory.
  */
 class SchemaDeployerFromString(name: String, body: String) extends AbstractSchemaDeployer {
 	         
    override def deploy() = parseAndDeploy(name, body)
+}
+
+/**
+ * Deploy single schema from classpath. Uses resource name as schema name;
+ */
+class SchemaDeployerFromClasspath(resource: String) extends AbstractSchemaDeployer {
+	         
+   val stream = getClass.getResourceAsStream(resource)
+   if (stream == null)
+      throw new RuntimeInternalException("Unable to open classpath resource [%s]".format(resource))
+   val name = resource.substring(1, resource.length() - 5)   // drop leading slash and tailing '.json'
+   override def deploy() = parseAndDeploy(name, IOUtils.toString(stream))
 }
 
