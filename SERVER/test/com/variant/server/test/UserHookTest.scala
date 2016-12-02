@@ -156,10 +156,9 @@ class UserHookTest extends ServerBaseSpec {
 
 	   }
 	   
-	   "not disqualify test1, but keep in targeting tracker" in {
+	   "disqual test2, test6; not disqual test1, and keep all in targeting stabile" in {
 
 	      // New session. Disqualify, but keep in TT.
-	      nullListener.testList.clear()
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")
    	   val test1 = schema.getTest("test1")
@@ -169,32 +168,67 @@ class UserHookTest extends ServerBaseSpec {
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
 
-   	   val disqualListener = new TestQualificationHookListenerDisqual(false, test1);
-		   server.hooker.addListener(disqualListener);
+   	   server.hooker.clear()
+   	   val dl1 = new TestQualificationHookListenerDisqual(false, test1)
+   	   val dl2 = new TestQualificationHookListenerDisqual(false, test2)
+   	   val dl6 = new TestQualificationHookListenerDisqual(false, test6)
+		   server.hooker.addListener(dl1)
+		   server.hooker.addListener(dl2)
+		   server.hooker.addListener(dl6)
 
-		   nullListener.testList mustBe empty
-		   disqualListener.testList mustBe empty
 		   ssn = new ServerSession(newSid())
-		   setTargetingStabile(ssn, "test2.C", "test1.A")
+		   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
 		   val req = ssn.targetForState(state1);
-		   ssn.getTraversedStates().size() mustEqual 1
-		   ssn.getTraversedStates().get(state1) mustEqual 1
-		   ssn.getTraversedTests().toSet mustEqual Set(test2, test3, test4, test5, test6)
-		   ssn.getDisqualifiedTests() mustBe empty
-		   disqualListener.testList mustBe empty
+		   ssn.getTraversedStates().toSet mustEqual Set((state1, 1))
+		   ssn.getTraversedTests().toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedTests().toSet mustEqual Set(test2, test6)
 
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 6  // test1 was not removed
 		   stabile.get("test1").toString() must startWith ("test1.A")
 		   stabile.get("test2").toString() must startWith ("test2.C")
-		   stabile.get("test3").toString() mustNot be (null)
-		   stabile.get("test4").toString() mustNot be (null)
-		   stabile.get("test5").toString() mustNot be (null)
-		   stabile.get("test6").toString() mustNot be (null)
-		   println(req.getResolvedParameter("path"))
-		   req.getResolvedParameter("path") must startWith ("/path/to/state1/")
+		   stabile.get("test3").toString() must startWith ("test3")
+		   stabile.get("test4").toString() must startWith ("test4")
+		   stabile.get("test5").toString() must startWith ("test5")
+		   stabile.get("test6").toString() must startWith ("test6.B")
+		   req.getResolvedParameter("path") must startWith ("/path/to/state1")
 
 	   }
+
+	   "disqual test1, and drop tfrom targeting stabile" in {
+
+	      // New session. Disqualify, but keep in TT.
+   	   val schema = server.schema.get
+   		val state1 = schema.getState("state1")
+   		val state2 = schema.getState("state2")
+   	   val test1 = schema.getTest("test1")
+   	   val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+
+   	   // second test1 listener, in addition to one added in previous test.
+   	   val dl1 = new TestQualificationHookListenerDisqual(true, test1)
+		   server.hooker.addListener(dl1)
+
+		   val req = ssn.targetForState(state2);
+		   ssn.getTraversedStates().toSet mustEqual Set((state1,1), (state2,1))
+		   ssn.getTraversedTests().toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedTests().toSet mustEqual Set(test1, test2, test6)
+
+		   val stabile = ssn.targetingStabile
+		   stabile.getAll().size() mustEqual 5  // test1 was removed
+		   stabile.get("test1") must be (null)
+		   stabile.get("test2").toString() must startWith ("test2.C")
+		   stabile.get("test3").toString() must startWith ("test3")
+		   stabile.get("test4").toString() must startWith ("test4")
+		   stabile.get("test5").toString() must startWith ("test5")
+		   stabile.get("test6").toString() must startWith ("test6.B")
+		   req.getResolvedParameter("path") must startWith ("/path/to/state2")
+
+	   }
+
 	}
 
 	/**
@@ -233,9 +267,9 @@ class UserHookTest extends ServerBaseSpec {
 	}
 
 	/**
-	 * 
+	 * Disqualify passed tests and optionally remove their entries from targeting stabile
 	 */
-	class TestQualificationHookListenerDisqual(removeFromTargTracker: Boolean, testsToDisqualify:Test*) 
+	class TestQualificationHookListenerDisqual(removeFromStabile: Boolean, testsToDisqualify:Test*) 
 	extends HookListener[TestQualificationHook] {
 
 		val testList = ListBuffer[Test]()
@@ -248,7 +282,7 @@ class UserHookTest extends ServerBaseSpec {
 			if (test.isDefined) {
 				testList.add(hook.getTest());
 				hook.setQualified(false);
-				hook.setRemoveFromTargetingTracker(removeFromTargTracker);
+				hook.setRemoveFromTargetingTracker(removeFromStabile);
 			}
 		}		
 	}
@@ -266,40 +300,6 @@ class UserHookTest extends ServerBaseSpec {
 	public void testQualificationTest() throws Exception {
 		
 		
-		// New session. Disqualify and drop from TT
-		core.clearHookListeners();
-		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"));
-		core.addHookListener(disqualListener);
-		
-		response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-		assertTrue(disqualListener.testList.isEmpty());
-		schema = core.getSchema();
-		state1 = schema.getState("state1");
-		sessionId = VariantStringUtils.random64BitString(rand);
-		CoreSession ssn3 = (CoreSession) core.getSession(sessionId, true).getBody();
-		assertTrue(ssn3.getTraversedStates().isEmpty());
-		assertTrue(ssn3.getTraversedTests().isEmpty());
-		setTargetingStabile(ssn3, "test1.B","test2.D","Test1.A");
-		request = ssn3.targetForState(state1);
-		assertEqualAsSets(ssn3.getTraversedStates(), new Pair<State, Integer>(state1, 1));
-		assertEqualAsSets(ssn3.getTraversedTests(), schema.getTest("test1"));
-		assertEqualAsSets(ssn3.getDisqualifiedTests(), schema.getTest("Test1"));
-
-		VariantCoreSession ssn3uncommitted = core.getSession(sessionId, true).getBody();
-		assertTrue(ssn3uncommitted.getTraversedStates().isEmpty());
-		assertTrue(ssn3uncommitted.getTraversedTests().isEmpty());
-
-		stabile = ssn3.getTargetingStabile();
-		assertEquals(2, stabile.getAll().size());
-		assertNull(stabile.get("Test1"));
-		assertNotNull(stabile.get("test1"));
-		assertNotNull(stabile.get("test2"));
-		assertEquals(VariantCollectionsUtils.list(schema.getTest("Test1")), disqualListener.testList);
-		assertEquals("/path/to/state1/test1.B", request.getResolvedParameter("path"));
-		request.commit();
-
 		// Same session, but dispatch to state2 - it's only instrumented by the off test2. 
 		// The extra disqualifier should not matter because test1 has already been qualified for this session. The
 		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"), schema.getTest("test1"));
