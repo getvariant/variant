@@ -1,13 +1,13 @@
 //
-// Parser Covariant Okay Bit Test Schema.
+// Based on Parser Covariant Okay Bit Test Schema in Core.
 // All Tests:
 // Tests States
 //       1 2 3 4 5
 // test1   + + - -
-// test2 - + + +  
+// test2 - + + +   OFF
 // test3 - + - + 
 // test4 + +   - -
-// test5 + + - + -
+// test5 + + - + -  
 // test6 + - +   -
 // blank: not instrumented, -: nonvariant, +: has variants.
 // 
@@ -107,7 +107,8 @@
         ]                                                                
      },                                                                  
      {                                                                   
-        'name':'test2',                                                  
+        'name':'test2',      
+        'isOn': false,                                            
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                

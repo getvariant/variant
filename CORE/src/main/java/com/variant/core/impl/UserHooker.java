@@ -2,6 +2,9 @@ package com.variant.core.impl;
 
 import java.util.ArrayList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.variant.core.hook.HookListener;
 import com.variant.core.hook.UserHook;
 
@@ -12,6 +15,8 @@ import com.variant.core.hook.UserHook;
  *
  */
 public class UserHooker {
+
+	private static final Logger LOG = LoggerFactory.getLogger(UserHooker.class);
 
 	private ArrayList<HookListener<? extends UserHook>> listeners = 
 			new ArrayList<HookListener<? extends UserHook>>();
@@ -47,8 +52,11 @@ public class UserHooker {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public UserHook post(UserHook hook) {
 		for (HookListener listener: listeners) {
-			if (listener.getHookClass().isInstance(hook))
+			if (listener.getHookClass().isInstance(hook)) {
 				listener.post(hook);
+				if (LOG.isTraceEnabled())
+					LOG.trace("Posted user hook [" + hook.getClass().getName() + "]");
+			}
 		}
 		return hook;
 	}

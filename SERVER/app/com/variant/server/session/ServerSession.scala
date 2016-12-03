@@ -10,7 +10,7 @@ import com.variant.server.schema.ServerSchema
 import com.variant.core.session.CoreSessionImpl
 import com.variant.core.schema.State
 import com.variant.core.schema.impl.StateImpl
-import com.variant.server.runtime.VariantRuntime
+import com.variant.server.runtime.Runtime
 
 /**
  * Server session enriches core session with server side functionality.

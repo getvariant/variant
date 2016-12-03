@@ -34,8 +34,8 @@ public class ServerError extends RuntimeError {
 			new ServerError(Severity.ERROR, "Currently active experience [%s] is undefined on state [%s]");
 
 	public final static ServerError HOOK_TARGETING_BAD_EXPERIENCE = 
-			new ServerError(Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s]");
-	// HOOK_TARGETING_UNDEFINED_EXPERIENCE               (Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s], which is undefined on state [%s]");
+			new ServerError(Severity.ERROR, "Targeting hook listener [%s] for test [%s] cannot set experience [%s]");
+	// HOOK_TARGETING_UNDEFINED_EXPERIENCE               (Severity.ERROR, "Targeting hook listener [%s] for test [%s] cannot set experience [%s], which is undefined on state [%s]");
 
    /**
     * 

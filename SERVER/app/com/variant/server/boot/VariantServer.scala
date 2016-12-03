@@ -17,7 +17,7 @@ import play.api.Application
 import com.variant.core.impl.UserHooker
 import com.variant.server.schema.SchemaDeployerFromFS
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.runtime.VariantRuntime
+import com.variant.server.runtime.Runtime
 import com.variant.core.schema.ParserResponse
 
 /**
@@ -29,7 +29,7 @@ trait VariantServer {
    def schema: Option[ServerSchema]
    def hooker: UserHooker
    def installSchemaDeployer(newDeployer: SchemaDeployer): ParserResponse
-   def runtime: VariantRuntime
+   def runtime: Runtime
 }
 
 /**
@@ -59,7 +59,7 @@ class VariantServerImpl @Inject() (
 	override val properties = new ServerPropertiesImpl(configuration)
    override val eventWriter = new EventWriter(properties)      
    override val hooker = new UserHooker()
-   override val runtime = new VariantRuntime(this)
+   override val runtime = new Runtime(this)
 
 	   // Default schema deployer is from file system.
    private var schemaDeployer: SchemaDeployer = null

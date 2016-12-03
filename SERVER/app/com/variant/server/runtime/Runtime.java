@@ -19,10 +19,8 @@ import com.variant.core.exception.RuntimeErrorException;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.hook.TestQualificationHook;
 import com.variant.core.hook.TestTargetingHook;
-import com.variant.core.impl.UserHooker;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -31,7 +29,6 @@ import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.server.boot.VariantServer;
-import com.variant.server.boot.VariantServerImpl;
 import com.variant.server.schema.ServerSchema;
 
 /**
@@ -40,9 +37,9 @@ import com.variant.server.schema.ServerSchema;
  * @author Igor.
  *
  */
-public class VariantRuntime {
+public class Runtime {
 
-	private static final Logger LOG = LoggerFactory.getLogger(VariantRuntime.class);
+	private static final Logger LOG = LoggerFactory.getLogger(Runtime.class);
 	
 	final private VariantServer server;
 
@@ -268,19 +265,23 @@ public class VariantRuntime {
 				TestTargetingHookImpl hook = new TestTargetingHookImpl(session, ft, state);
 				server.hooker().post(hook);
 				Experience targetedExperience = hook.targetedExperience;
+				
+				String source = "default";
 				// If no listeners or no action by client code, do the random default.
 				if (targetedExperience == null) {
 					targetedExperience = new TestTargeterDefault().target(session, ft, state);
 				}
-										
-				vector.add(targetedExperience);
-				targetingStabile.add(targetedExperience);
-				
+				else
+					source = "user hook listener";
+					
 				if (LOG.isTraceEnabled()) {
 					LOG.trace(
-							"Session [" + session.getId() + "] targeted for test [" + 
+							"Session [" + session.getId() + "] targeted (" + source + ") for test [" + 
 							ft.getName() +"] with experience [" + targetedExperience.getName() + "]");
 				}
+
+				vector.add(targetedExperience);
+				targetingStabile.add(targetedExperience);				
 
 			}
 			else {
@@ -569,7 +570,7 @@ public class VariantRuntime {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	public VariantRuntime(VariantServer server) {
+	public Runtime(VariantServer server) {
 		this.server = server;
 	}
 	

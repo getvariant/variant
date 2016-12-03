@@ -12,6 +12,10 @@ import com.variant.core.schema.Test
 import com.variant.core.hook.TestQualificationHook
 import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
+import com.variant.core.hook.TestTargetingHook
+import com.variant.server.ServerErrorException
+import com.variant.server.ServerError
+import com.variant.core.exception.RuntimeErrorException
 
 /**
  * TODO: Need to also test annotations.
@@ -111,17 +115,17 @@ class UserHookTest extends ServerBaseSpec {
    		val req = ssn.targetForState(state1);
 		   ssn.getTraversedStates().size() mustEqual 1
 		   ssn.getTraversedStates().get(state1) mustEqual 1
-		   ssn.getTraversedTests().toSet mustEqual Set(test2, test3, test4, test5, test6)
+		   ssn.getTraversedTests().toSet mustEqual Set(test3, test4, test5, test6)
 		   ssn.getDisqualifiedTests().size() mustEqual 0
 		   val stabile = ssn.targetingStabile
-		   stabile.getAll().size() mustEqual 5
-		   stabile.get("test1") mustBe (null)
-		   stabile.get("test2") mustNot be (null)
+		   stabile.getAll().size() mustEqual 4
+		   stabile.get("test1") must be (null)
+		   stabile.get("test2") must be (null)
 		   stabile.get("test3") mustNot be (null)
 		   stabile.get("test4") mustNot be (null)
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
-		   nullListener.testList.toSeq mustEqual Seq(test2, test3, test4, test5, test6)
+		   nullListener.testList.toSeq mustEqual Seq(test3, test4, test5, test6)
 
 	   }
 	   
@@ -142,12 +146,12 @@ class UserHookTest extends ServerBaseSpec {
 		   ssn.getTraversedStates().size() mustEqual 2
 		   ssn.getTraversedStates().get(state1) mustEqual 1
 		   ssn.getTraversedStates().get(state2) mustEqual 1
-		   ssn.getTraversedTests().toSet mustEqual Set(test1, test2, test3, test4, test5, test6)
+		   ssn.getTraversedTests().toSet mustEqual Set(test1, test3, test4, test5, test6)
 		   ssn.getDisqualifiedTests().size() mustEqual 0
 		   val stabile = ssn.targetingStabile
-		   stabile.getAll().size() mustEqual 6
+		   stabile.getAll().size() mustEqual 5
 		   stabile.get("test1") mustNot be (null)
-		   stabile.get("test2") mustNot be (null)
+		   stabile.get("test2") must be (null)
 		   stabile.get("test3") mustNot be (null)
 		   stabile.get("test4") mustNot be (null)
 		   stabile.get("test5") mustNot be (null)
@@ -181,12 +185,12 @@ class UserHookTest extends ServerBaseSpec {
 		   val req = ssn.targetForState(state1);
 		   ssn.getTraversedStates().toSet mustEqual Set((state1, 1))
 		   ssn.getTraversedTests().toSet mustEqual Set(test3, test4, test5)
-		   ssn.getDisqualifiedTests().toSet mustEqual Set(test2, test6)
+		   ssn.getDisqualifiedTests().toSet mustEqual Set(test6)
 
 		   val stabile = ssn.targetingStabile
-		   stabile.getAll().size() mustEqual 6  // test1 was not removed
-		   stabile.get("test1").toString() must startWith ("test1.A")
-		   stabile.get("test2").toString() must startWith ("test2.C")
+		   stabile.getAll().size() mustEqual 6  
+		   stabile.get("test1").toString() must startWith ("test1.A") // disqualified but not removed
+		   stabile.get("test2").toString() must startWith ("test2.C") // OFF => not removed.
 		   stabile.get("test3").toString() must startWith ("test3")
 		   stabile.get("test4").toString() must startWith ("test4")
 		   stabile.get("test5").toString() must startWith ("test5")
@@ -197,7 +201,6 @@ class UserHookTest extends ServerBaseSpec {
 
 	   "disqual test1, and drop tfrom targeting stabile" in {
 
-	      // New session. Disqualify, but keep in TT.
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")
    		val state2 = schema.getState("state2")
@@ -215,12 +218,12 @@ class UserHookTest extends ServerBaseSpec {
 		   val req = ssn.targetForState(state2);
 		   ssn.getTraversedStates().toSet mustEqual Set((state1,1), (state2,1))
 		   ssn.getTraversedTests().toSet mustEqual Set(test3, test4, test5)
-		   ssn.getDisqualifiedTests().toSet mustEqual Set(test1, test2, test6)
+		   ssn.getDisqualifiedTests().toSet mustEqual Set(test1, test6)
 
 		   val stabile = ssn.targetingStabile
-		   stabile.getAll().size() mustEqual 5  // test1 was removed
-		   stabile.get("test1") must be (null)
-		   stabile.get("test2").toString() must startWith ("test2.C")
+		   stabile.getAll().size() mustEqual 5  
+		   stabile.get("test1") must be (null)                        // disqualified and removed
+		   stabile.get("test2").toString() must startWith ("test2.C") // OFF => not removed
 		   stabile.get("test3").toString() must startWith ("test3")
 		   stabile.get("test4").toString() must startWith ("test4")
 		   stabile.get("test5").toString() must startWith ("test5")
@@ -229,6 +232,121 @@ class UserHookTest extends ServerBaseSpec {
 
 	   }
 
+	   "honor session-current targeting settings when targeting for state3" in {
+
+   	   val schema = server.schema.get
+   		val state1 = schema.getState("state1")
+   		val state2 = schema.getState("state2")
+   		val state3 = schema.getState("state3")
+   	   val test1 = schema.getTest("test1")
+   	   val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+
+		   val req = ssn.targetForState(state3);
+		   ssn.getTraversedStates().toSet mustEqual Set((state1,1), (state2,1), (state3,1))
+		   ssn.getTraversedTests().toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedTests().toSet mustEqual Set(test1, test6)
+
+		   val stabile = ssn.targetingStabile
+		   stabile.getAll().size() mustEqual 5
+		   stabile.get("test1") must be (null)                        // disqualified and removed
+		   stabile.get("test2").toString() must startWith ("test2.C") // OFF => not removed
+		   stabile.get("test3").toString() must startWith ("test3")
+		   stabile.get("test4").toString() must startWith ("test4")
+		   stabile.get("test5").toString() must startWith ("test5")
+		   stabile.get("test6").toString() must startWith ("test6.B")
+		   req.getResolvedParameter("path") must startWith ("/path/to/state3")
+
+	   }
+
+	   "not be posted for an OFF test" in {
+
+   	   val schema = server.schema.get
+   		val state1 = schema.getState("state1")
+   		val state2 = schema.getState("state2")
+   		val state3 = schema.getState("state3")
+   		val state4 = schema.getState("state4")
+   	   val test1 = schema.getTest("test1")
+   	   val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+		
+	   	// ON - should be posted.
+		   val l1 = new TargetingHookListener(test1, test1.getExperience("B"));
+
+	   	// OFF - should not be posted.
+	   	val l2 = new TargetingHookListener(test2, test2.getExperience("C"))
+
+
+   	   server.hooker.clear()
+   		server.hooker.addListener(l1, l2)
+   		
+   		// New session.
+         ssn = new ServerSession(newSid())
+		   ssn.targetForState(state1)
+   		l1.count mustBe 0  // Not instrumented
+   		l2.count mustBe 0  // Off
+
+   		ssn.targetForState(state2)
+   		l1.count mustBe 0 // Instrumented, but unresolvable => didn't post.
+   		l2.count mustBe 0 // Off
+
+   		// New session
+   		ssn = new ServerSession(newSid())
+		   ssn.targetForState(state4)
+   		l1.count mustBe 1 
+   		l2.count mustBe 0  // Off
+
+   		ssn.targetForState(state4)
+   		l1.count mustBe 1
+   		l2.count mustBe 0 // Off
+
+	   }
+	}
+	
+	"Runtime" should {
+
+	   "Throw exception if targeting listener returns wrong experience" in {
+
+   	   val schema = server.schema.get
+   		val state1 = schema.getState("state1")
+   		val state2 = schema.getState("state2")
+   		val state3 = schema.getState("state3")
+   		val state4 = schema.getState("state4")
+   	   val test1 = schema.getTest("test1")
+   	   val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+		   
+
+		   val l = new TargetingHookListener(test1, test3.getControlExperience())
+		   server.hooker.addListener(l)
+	
+		   var ssn = new ServerSession(newSid())
+         ssn.targetForState(state1)   // Ok - state1 is not instrumented by test1
+         l.count mustEqual 0
+         ssn.targetForState(state2)   // Ok - listener is not posted because test1 is not free at this point.
+         l.count mustEqual 0
+
+         ssn = new ServerSession(newSid())
+   	   
+   	   val caughtEx = intercept[RuntimeErrorException] {
+             ssn.targetForState(state2)   // Kaboom
+         }
+         assert(
+               caughtEx.getMessage.equals(
+                     new RuntimeErrorException(
+                           ServerError.HOOK_TARGETING_BAD_EXPERIENCE, l.getClass.getName, "test1", "test3.A"
+                     ).getMessage)
+         )         
+	   }
 	}
 
 	/**
@@ -273,6 +391,7 @@ class UserHookTest extends ServerBaseSpec {
 	extends HookListener[TestQualificationHook] {
 
 		val testList = ListBuffer[Test]()
+
 		override def getHookClass() = classOf[TestQualificationHook]
 		
 		override def post(hook: TestQualificationHook) {
@@ -287,146 +406,26 @@ class UserHookTest extends ServerBaseSpec {
 		}		
 	}
 
-}
-
-
-/*
-
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	@org.junit.Test
-	public void testQualificationTest() throws Exception {
-		
-		
-		// Same session, but dispatch to state2 - it's only instrumented by the off test2. 
-		// The extra disqualifier should not matter because test1 has already been qualified for this session. The
-		disqualListener = new TestQualificationHookListenerDisqualifyImpl(true, schema.getTest("Test1"), schema.getTest("test1"));
-		core.addHookListener(disqualListener);
-		
-		assertTrue(disqualListener.testList.isEmpty());
-		schema = core.getSchema();
-		state1 = schema.getState("state1");
-		state2 = schema.getState("state2");
-		setTargetingStabile(ssn3, "test1.B","test2.D","Test1.A");
-		request = ssn3.targetForState(state2);
-		assertEqualAsSets(ssn3.getTraversedStates(), new Pair<State, Integer>(state1, 1));
-
-		assertEqualAsSets(ssn3.getTraversedTests(), schema.getTest("test1"));
-
-		stabile = ssn3.getTargetingStabile();
-		assertEquals(3, stabile.getAll().size());
-		assertEquals("A", stabile.get("Test1").getExperienceName());
-		assertEquals("B", stabile.get("test1").getExperienceName());
-		assertEquals("D", stabile.get("test2").getExperienceName());
-		assertTrue(disqualListener.testList.isEmpty());
-		assertEquals("/path/to/state2", request.getResolvedParameter("path"));
-		request.commit();
-		assertEqualAsSets(ssn3.getTraversedStates(), new Pair<State, Integer>(state1, 1));
-
-		assertEqualAsSets(ssn3.getTraversedTests(), schema.getTest("test1"));
-	}
-	
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	@org.junit.Test
-	public void testTargetingTest() throws Exception {
-		
-		final VariantCore core = rebootApi();
-		ParserResponse response = core.parseSchema(ParserDisjointOkayTest.SCHEMA);
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-
-		Schema schema = core.getSchema();
-		final Test t1 = schema.getTest("test1");
-		final Test t2 = schema.getTest("test2");
-		final Test t3 = schema.getTest("Test1");
-		final State s1 = schema.getState("state1");
-		final State s2 = schema.getState("state2");
-		final State s3 = schema.getState("state3");
-
-		core.clearHookListeners();
-		
-		// Listen to targeting posts from the off test "test2". Should never be posted.
-		TargetingHookListener test2Listener = new TargetingHookListener(t2, t2.getControlExperience());
-		core.addHookListener(test2Listener);
-				
-		String sessionId = VariantStringUtils.random64BitString(rand);
-		VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
-		ssn.targetForState(s1).commit();
-		assertEquals("Off tests should not be targeted", 0, test2Listener.count);
-		ssn.targetForState(s2).commit();
-		assertEquals("Off tests should not be targeted", 0, test2Listener.count);
-		ssn.targetForState(s3).commit();
-		assertEquals("Off tests should not be targeted", 0, test2Listener.count);
-		
-		// Listen to targeting posts from the on test "test1". Should be posted.
-		TargetingHookListener test1Listener = new TargetingHookListener(t1, t1.getControlExperience());
-		core.addHookListener(test1Listener);
-
-		sessionId = VariantStringUtils.random64BitString(rand);
-		ssn = core.getSession(sessionId, true).getBody();
-		ssn.targetForState(s1).commit();
-		assertEquals(1, test1Listener.count);
-		ssn.targetForState(s2).commit();
-		assertEquals(1, test1Listener.count);
-		ssn.targetForState(s3).commit();
-		assertEquals(1, test1Listener.count);
-
-		// Return the wrong experience. Should throw runtime user exception.
-		final TargetingHookListener test1BadListener = new TargetingHookListener(t1, t3.getControlExperience());
-		core.addHookListener(test1BadListener);
-		new VariantRuntimeExceptionInterceptor() { 
-			@Override public void toRun() {		
-				String sessionId = VariantStringUtils.random64BitString(rand);
-				VariantCoreSession ssn = core.getSession(sessionId, true).getBody();
-				ssn.targetForState(s2).commit();  // Not instrumented on s2
-				assertEquals("Off tests should not be targeted", 0, test1BadListener.count);
-				ssn.targetForState(s1);
-			}
-		}.assertThrown(Error.RUN_HOOK_TARGETING_BAD_EXPERIENCE, test1BadListener.getClass().getName(), t1.getName(), t3.getControlExperience().toString());
-
-	}
-
 	/**
 	 * 
 	 */
-	private static class TargetingHookListener implements HookListener<TestTargetingHook> {
+	class TargetingHookListener(forTest: Test, targetExperience: Test.Experience) 
+	extends HookListener[TestTargetingHook] {
 
-		private int count = 0;
-		private Test forTest;
-		private Experience targetExperience;
+		var count = 0
 		
-		/**
-		 * Target for experience exp if posted for test test.
-		 * @param test
-		 * @param exp 
-		 */
-		TargetingHookListener(Test forTest, Experience targetExperience) {
-			this.forTest = forTest;
-			this.targetExperience = targetExperience;
-		}
-		
-		@Override
-		public Class<TestTargetingHook> getHookClass() {
-			return TestTargetingHook.class;
-		}
+		override def getHookClass() = classOf[TestTargetingHook]
 
 		@Override
-		public void post(TestTargetingHook hook) {
-			assertNotNull(hook.getSession());
-			assertNotNull(hook.getTest());
-			assertNotNull(hook.getState());
+		override def post(hook: TestTargetingHook) {
+			assert(hook.getSession() != null, "No session passed")
+			assert(hook.getTest() != null, "No test passed")
+			assert(hook.getState() != null, "No state passed")
 			if (hook.getTest().equals(forTest)) {
-				count++;
+				count += 1
 				hook.setTargetedExperience(targetExperience);
 			}
 		}
-		
-	};
-
+	}
+	
 }
-*/
