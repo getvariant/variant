@@ -43,7 +43,7 @@ public class ParserResponseImpl implements ParserResponse {
 	public List<ParserMessage> getMessages(Severity severity) {
 		ArrayList<ParserMessage> response = new ArrayList<ParserMessage>();
 		for (ParserMessage msg: messages) {
-			if (msg.getSeverity().greaterOrEqualThan(severity)) response.add(msg);
+			if (msg.getSeverity().greaterOrEqual(severity)) response.add(msg);
 		}
 		return Collections.unmodifiableList(response);
 	}

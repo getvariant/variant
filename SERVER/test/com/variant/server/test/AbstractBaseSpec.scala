@@ -23,16 +23,15 @@ import com.variant.core.event.impl.util.VariantStringUtils
  * Common to all tests.
  * Builds a custom application.
  */
-object ServerBaseSpec {
+object AbstractBaseSpec {
    private var sqlSchemaCreated = false
 }
 
-class ServerBaseSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
+abstract class AbstractBaseSpec extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
 
-   import ServerBaseSpec._
+   import AbstractBaseSpec._
    
-   // Set system property, if needed
-   //sys.props += (("variant.schema.dir", "/schemas"))
+   val schemasDir: String
 
    // Override app if you need a Application with other than
    // default parameters. 

@@ -132,29 +132,36 @@ object SchemaDeployerFromFS {
  */
 class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
 	         
-   private val logger = Logger(this.getClass)  
-   var dirName = sys.props.get(ServerPropertiesKey.SCHEMAS_DIR.getExternalName)
-
-   // This will throw an exception if config property is unset.
-   if (dirName.isEmpty) dirName = Option(server.properties.getString(ServerPropertiesKey.SCHEMAS_DIR))
+   private val logger = Logger(this.getClass)
    
-   val dir = new File(dirName.get)
-   if (!dir.exists) 
-      throw new ServerErrorException(SCHEMAS_DIR_MISSING, dirName)
-   if (!dir.isDirectory) 
-      throw new ServerErrorException(SCHEMAS_DIR_NOT_DIR, dirName)            
+   /**
+    * Read content of schemas dir and deploy.
+    */
+   override def deploy() = {
 
-   val schemaFiles = dir.listFiles()
+      var dirName = sys.props.get(ServerPropertiesKey.SCHEMAS_DIR.getExternalName)
+
+      // This will throw an exception if config property is unset.
+      if (dirName.isEmpty) dirName = Option(server.properties.getString(ServerPropertiesKey.SCHEMAS_DIR))
+      
+      val dir = new File(dirName.get)
+      if (!dir.exists) 
+         throw new ServerErrorException(SCHEMAS_DIR_MISSING, dirName.get)
+      if (!dir.isDirectory) 
+         throw new ServerErrorException(SCHEMAS_DIR_NOT_DIR, dirName.get)            
    
-   if (schemaFiles.length == 0) {
-      logger.info("No schemas detected")
+      val schemaFiles = dir.listFiles()
+      
+      if (schemaFiles.length == 0) {
+         logger.info("No schemas detected")
+      }
+      else if (schemaFiles.length > 1)  
+         throw new ServerErrorException(MULTIPLE_SCHEMAS_NOT_SUPPORTED, dirName.get)
+   
+      val schemaFile = schemaFiles.head
+
+      parseAndDeploy(schemaFile.getName, Source.fromFile(schemaFile).mkString)
    }
-   else if (schemaFiles.length > 1)  
-      throw new ServerErrorException(MULTIPLE_SCHEMAS_NOT_SUPPORTED)
-
-   val schemaFile = schemaFiles.head
-   
-   override def deploy() = parseAndDeploy(schemaFile.getName, Source.fromFile(schemaFile).mkString)
 }
 
 /**

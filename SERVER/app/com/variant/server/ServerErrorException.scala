@@ -10,6 +10,6 @@ object ServerErrorException {
 /**
  * 
  */
-class ServerErrorException (error: RuntimeError, args: AnyRef*) extends RuntimeErrorException(error, args) {
+class ServerErrorException (error: RuntimeError, args: AnyRef*) extends RuntimeErrorException(error, args:_*) {
   
 }

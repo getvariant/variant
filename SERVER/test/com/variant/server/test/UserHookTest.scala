@@ -22,7 +22,7 @@ import com.variant.core.exception.RuntimeErrorException
  * @author Igor
  * 
  */
-class UserHookTest extends ServerBaseSpec {
+class UserHookTest extends BaseSpecWithSchema {
 
    val MESSAGE_TEXT_STATE = "Info-Message-State"
 	val MESSAGE_TEXT_TEST = "Info-Message-Test"
@@ -34,7 +34,7 @@ class UserHookTest extends ServerBaseSpec {
 	      
    		val listener = new StateParsedHookListener
    		server.hooker.addListener(listener)
-   		val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json"))
+   		val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
    		response.getMessages(Severity.ERROR) mustBe empty
    		server.schema.isDefined mustBe true
    		val schema = server.schema.get
@@ -54,7 +54,7 @@ class UserHookTest extends ServerBaseSpec {
    	   server.hooker.clear()
    	   val listener = new TestParsedHookListener
    	   server.hooker.addListener(listener)
-         val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json"))
+         val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
       	response.getMessages(Severity.ERROR) mustBe empty
          server.schema.isDefined mustBe true
       	val schema = server.schema.get
@@ -74,7 +74,7 @@ class UserHookTest extends ServerBaseSpec {
    	   val stateListener = new StateParsedHookListener
    	   val testListener = new TestParsedHookListener
    	   server.hooker.addListener(testListener, stateListener)
-         val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json"))
+         val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
       	response.getMessages(Severity.ERROR) mustBe empty
          server.schema.isDefined mustBe true
       	val schema = server.schema.get
@@ -99,7 +99,7 @@ class UserHookTest extends ServerBaseSpec {
          server.hooker.clear()
          
     		server.hooker.addListener(nullListener);
-         val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json"))
+         val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
    	   response.hasMessages() mustBe false		
    		nullListener.testList mustBe empty
    		server.schema.isDefined mustBe true

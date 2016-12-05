@@ -19,16 +19,23 @@ import com.variant.server.schema.SchemaDeployerFromFS
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.runtime.Runtime
 import com.variant.core.schema.ParserResponse
+import com.variant.server.ServerErrorException
+import com.variant.core.exception.RuntimeErrorException
+import com.variant.core.exception.Error.Severity
+import com.variant.core.exception.VariantRuntimeException
 
 /**
  * Need a trait to make DI to work.
  */
 trait VariantServer {
+   
+   val isUp: Boolean
    val properties: VariantProperties
+   val startupErrorLog: List[ServerErrorException]
    val eventWriter: EventWriter
    def schema: Option[ServerSchema]
    def hooker: UserHooker
-   def installSchemaDeployer(newDeployer: SchemaDeployer): ParserResponse
+   def installSchemaDeployer(newDeployer: SchemaDeployer): Option[ParserResponse]
    def runtime: Runtime
 }
 
@@ -36,8 +43,8 @@ trait VariantServer {
  * 
  */
 object VariantServer {
-   private [boot] var instance: VariantServer = null
-   def server = instance
+   private [boot] var _instance: VariantServer = null
+   def server = _instance
 }
 
 /**
@@ -54,34 +61,79 @@ class VariantServerImpl @Inject() (
    
    private val now = System.currentTimeMillis;
    
-	VariantServer.instance = this
+	VariantServer._instance = this
 
 	override val properties = new ServerPropertiesImpl(configuration)
    override val eventWriter = new EventWriter(properties)      
    override val hooker = new UserHooker()
    override val runtime = new Runtime(this)
 
-	   // Default schema deployer is from file system.
-   private var schemaDeployer: SchemaDeployer = null
+	private var _isUp = true
+	override lazy val isUp = _isUp
+	
+	private var _startupErrorLog = List[ServerErrorException]()
+	override lazy val startupErrorLog = _startupErrorLog
+	
+	// Default schema deployer is from file system.
+   private var _schemaDeployer: SchemaDeployer = null
    installSchemaDeployer(SchemaDeployer.fromFileSystem())
 	   
-	override def schema = schemaDeployer.schema
+	override def schema = _schemaDeployer.schema
+
 	/**
 	 * Override the default mutator for schema deployer because we need to do some housekeeping
 	 * if a new deployer is installed.
 	 */
-   def installSchemaDeployer (newDeployer: SchemaDeployer): ParserResponse = {
-	   schemaDeployer = newDeployer
-	   schemaDeployer.deploy
+   def installSchemaDeployer (newDeployer: SchemaDeployer): Option[ParserResponse] = {
+	   try {
+   	   _schemaDeployer = newDeployer
+	      Some(_schemaDeployer.deploy)
+	   }
+	   catch {
+	      case e: ServerErrorException => {
+	         _startupErrorLog :+= e
+	         None
+	      }
+	   }
 	}
 
-   logger.info(
-         String.format("%s release %s getvariant.com. Bootstrapped in %s. Listening on %s.",
-         SbtService.name,
-         SbtService.version,
-			DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS"),
-			configuration.getString("play.http.context").get))
+	// Flip isUp to false if we had errors.
+	startupErrorLog.foreach {e => if (e.getSeverity.greaterOrEqual(Severity.ERROR)) _isUp = false}
 
+	if (!isUp) {
+		   logger.error(
+            String.format("%s release %s. Failed to bootstrap due to following ERRORS:",
+            SbtService.name,
+            SbtService.version))
+	}
+	else if (!schema.isDefined) {
+      logger.warn(
+            String.format("%s release %s. Bootstrapped on %s in %s with WARNINGS:",
+            SbtService.name,
+            SbtService.version,
+            configuration.getString("play.http.context").get,
+   			DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")))
+	}
+	else {
+      logger.info(
+            String.format("%s release %s. Bootstrapped on %s in %s.",
+            SbtService.name,
+            SbtService.version,
+            configuration.getString("play.http.context").get,
+   			DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")))
+	}
+	
+	// Log startup messages
+	if (!isUp || !schema.isDefined) 
+	   startupErrorLog.foreach {
+	      e => e.getSeverity match {
+	         case Severity.FATAL => {logger.error("FATAL: " + e.getMessage, e)}
+	         case Severity.ERROR => {logger.error("ERROR: " + e.getMessage, e)}
+	         case Severity.WARN => logger.warn(e.getMessage)
+	         case _ => throw new VariantRuntimeException("Unexpected exception severity %s".format(e.getSeverity), e)
+	      }
+	   }
+	
    /**
     * One time application shutdown.
     */

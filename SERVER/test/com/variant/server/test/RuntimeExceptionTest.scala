@@ -10,7 +10,7 @@ import com.variant.core.exception.RuntimeError
 import com.variant.core.exception.RuntimeErrorException
 import com.variant.server.session.ServerSession
 
-class RuntimeExceptionTest extends ServerBaseSpec {
+class RuntimeExceptionTest extends BaseSpecWithSchema {
 
    val schemaJson = """
 {

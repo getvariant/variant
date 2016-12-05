@@ -1,82 +1,18 @@
-package com.variant.server.test
+package com.variant.server.test.controller
 
 import scala.util.Random
-
+import org.scalatestplus.play._
+import play.api.test._
+import play.api.test.Helpers._
+import scala.collection.JavaConversions._
 import com.variant.server.test.util.ParamString
 import com.variant.server.ServerPropertiesKey._
-
-import play.api.test.FakeRequest
-import play.api.test.Helpers.GET
-import play.api.test.Helpers.NOT_FOUND
-import play.api.test.Helpers.OK
-import play.api.test.Helpers.PUT
-import play.api.test.Helpers.contentAsString
-import play.api.test.Helpers.defaultAwaitTimeout
-import play.api.test.Helpers.route
-import play.api.test.Helpers.status
-import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
-import play.api.test.Helpers.writeableOf_AnyContentAsText
+import com.variant.server.test.BaseSpecWithSchema
 
 /*
  * Reusable session JSON objects. 
  */
 object SessionTest {
-
-/*
-   val foo = JsObject(Seq(
-      "sid" -> JsString("SID"),
-      "ts" -> JsNumber(System.currentTimeMillis()),
-      "schid" -> JsString("SCHID"),
-      "request" -> JsObject(Seq(
-         "state" -> JsString("STATE"),
-         "status" -> JsString("OK"),
-         "committed" -> JsBoolean(true),
-         "params" -> JsArray(Seq(
-            JsObject(Seq(   
-               "name" -> JsString("Param One"),
-               "value" -> JsString("Pram One Value")
-            )),
-            JsObject(Seq(   
-               "name" -> JsString("Param One"),
-               "value" -> JsString("Pram One Value")
-            ))
-         )),
-         "exps" -> JsArray(Seq(
-            JsString("test1.A.true"),
-            JsString("test2.B.false"),
-            JsString("test3.C.false")
-         ))
-      )),
-      "states" -> JsArray(Seq(
-         JsObject(Seq(   
-            "state" -> JsString("state1"),
-            "count" -> JsNumber(2)
-         )),
-         JsObject(Seq(   
-            "state" -> JsString("state2"),
-            "count" -> JsNumber(23)
-         )),
-         JsObject(Seq(   
-            "state" -> JsString("state3"),
-            "count" -> JsNumber(32)
-         ))
-      )),
-      "tests" -> JsArray(Seq(
-         JsObject(Seq(   
-            "test" -> JsString("state1"),
-            "qual" -> JsBoolean(true)
-         )),
-         JsObject(Seq(   
-            "test" -> JsString("state2"),
-            "qual" -> JsBoolean(false)
-         )),
-         JsObject(Seq(   
-            "test" -> JsString("state3"),
-            "qual" -> JsBoolean(true)
-         ))
-      ))
-   ))
-*/
 
    val body = ParamString("""
       {"sid": "${sid:SID}",
@@ -112,7 +48,7 @@ object SessionTest {
 /**
  * Session Controller Tests
  */
-class SessionTest extends ServerBaseSpec {
+class SessionTest extends BaseSpecWithSchema {
    
    import SessionTest._
    val endpoint = context + "/session"

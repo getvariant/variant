@@ -63,7 +63,7 @@ abstract public class Error {
 		 * @return True if other severity is greater or equal to this.
 		 * @since 0.5
 		 */
-		public boolean greaterOrEqualThan(Severity other) {
+		public boolean greaterOrEqual(Severity other) {
 			return ordinal() >= other.ordinal();
 		}
 
@@ -83,7 +83,7 @@ abstract public class Error {
 		 * @return True if other severity is less or equal to this.
 		 * @since 0.5
 		 */
-		public boolean lessOrEqualThan(Severity other) {
+		public boolean lessOrEqual(Severity other) {
 			return ordinal() <= other.ordinal();
 		}
 	}
