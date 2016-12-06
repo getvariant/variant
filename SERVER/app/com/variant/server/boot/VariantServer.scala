@@ -23,6 +23,7 @@ import com.variant.server.ServerErrorException
 import com.variant.core.exception.RuntimeErrorException
 import com.variant.core.exception.Error.Severity
 import com.variant.core.exception.VariantRuntimeException
+import com.variant.server.ServerError
 
 /**
  * Need a trait to make DI to work.
@@ -92,6 +93,10 @@ class VariantServerImpl @Inject() (
 	   catch {
 	      case e: ServerErrorException => {
 	         _startupErrorLog :+= e
+	         None
+	      }
+	      case e: Throwable => {
+	         _startupErrorLog :+= new ServerErrorException(ServerError.UNEXPECTED_FATAL_ERROR, e.getMessage)
 	         None
 	      }
 	   }

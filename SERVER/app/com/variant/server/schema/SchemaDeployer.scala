@@ -16,6 +16,7 @@ import com.variant.server.boot.VariantServer.server
 import play.api.Logger
 import com.variant.core.schema.ParserResponse
 import org.apache.commons.io.IOUtils
+import com.variant.core.event.impl.util.VariantStringUtils
 
 trait SchemaDeployer {
  
@@ -159,8 +160,8 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
          throw new ServerErrorException(MULTIPLE_SCHEMAS_NOT_SUPPORTED, dirName.get)
    
       val schemaFile = schemaFiles.head
-
-      parseAndDeploy(schemaFile.getName, Source.fromFile(schemaFile).mkString)
+      val schemaName = VariantStringUtils.baseName(schemaFile.getName).toUpperCase
+      parseAndDeploy(schemaName, Source.fromFile(schemaFile).mkString)
    }
 }
 

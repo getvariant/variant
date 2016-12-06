@@ -7,10 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class VariantStringUtils {
-
-	// All Variant's private resource files should incorporate this in their name
-	// to reduce chances of name collision with a resurce provided by client code.
-	public final static String RESOURCE_POSTFIX = "7F1BDFD1F67FA313";
 	
 	/**
 	 * Does the first string equal (ignore case) to any of the subsequent strings?
@@ -106,4 +102,13 @@ public class VariantStringUtils {
 		return matcher.find() ? matcher.group(0) : null;
 	}
 	
+	/**
+	 * Drop the suffix, i.e. the last dot and what follows. Leave as is if no dot.
+	 * @param in
+	 * @return
+	 */
+	public static String baseName(String in) {
+		int i = in.lastIndexOf('.');
+		return i < 0 ? in : in.substring(0, i);
+	}
 }
