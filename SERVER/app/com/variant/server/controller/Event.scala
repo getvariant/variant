@@ -1,7 +1,6 @@
 package com.variant.server.controller
 
 import javax.inject.Inject
-import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import com.variant.server.session.SessionStore
@@ -30,7 +29,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
      -d '{"sid":"SID","name":"NAME","val":"VALUE","crdate":1476124715698,"params":{"parm1":"foo","parm2":"bar"}}' \
      http://localhost:9000/variant/event
     */
-   def post() = Action { req =>
+   def post() = VariantAction { req =>
 
       def parse(json: JsValue): Result = {
          

@@ -1,7 +1,6 @@
 package com.variant.server.controller
 
 import javax.inject.Inject
-import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import com.variant.server.session.SessionStore
@@ -28,7 +27,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
         "tests": [{"test": "test1","qual": true},{"test": "test1","qual": true}]}' \
      http://localhost:9000/variant/session/SID 
     */
-   def put(id: String) = Action { req =>
+   def put(id: String) = VariantAction { req =>
 
       // To be a text, Content-Type header has to be text and supply a charset.
       req.body.asText match {
@@ -45,7 +44,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     * test with:
 curl -v -X GET http://localhost:9000/variant/session/SID
     */
-   def get(id: String) = Action {
+   def get(id: String) = VariantAction {
       val result = store.asString(id)
       if (result.isDefined) {
          logger.trace("Session found for ID " + id)
@@ -57,11 +56,11 @@ curl -v -X GET http://localhost:9000/variant/session/SID
       }
    }
  
-   def post(id: String) = Action {
+   def post(id: String) = VariantAction {
       NotImplemented
    }
  
-   def delete(id: String) = Action {
+   def delete(id: String) = VariantAction {
       NotImplemented
    }
 }
