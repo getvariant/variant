@@ -31,15 +31,7 @@ public class SchemaImpl implements Schema {
 	 * Package instantiation.
 	 */
 	public SchemaImpl() {}
-				
-/* CLEANUP this should move to client
-		if (state == InternalState.UNDEPLOYED)
-			throw new VariantRuntimeUserErrorException(Error.RUN_SCHEMA_OBSOLETE, ID);
-		else if (state == InternalState.FAILED)
-			throw new RuntimeInternalException("Called on a FAILED schema");
-	}
-*/
-	
+					
     //---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC INTERFACE                                         //
 	//---------------------------------------------------------------------------------------------//	
@@ -121,14 +113,4 @@ public class SchemaImpl implements Schema {
 		return tests.add(test);
 	}
 
-	//public enum InternalState {NEW, FAILED, DEPLOYED, UNDEPLOYED}
-
-	/* CLEANUP
-	 * Set internal state
-	 * @param state
-	 *
-	public void setInternalState(InternalState state) {
-		this.state = state;
-	}
-    */
 }

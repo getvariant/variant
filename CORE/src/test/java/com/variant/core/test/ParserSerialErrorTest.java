@@ -596,7 +596,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 		
 		SchemaParser parser = new SchemaParser(new UserHooker());
 		ParserResponse response = parser.parse(config);
-
+		printMessages(response);
 		assertTrue(response.hasMessages());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertFalse(response.hasMessages(Severity.ERROR));

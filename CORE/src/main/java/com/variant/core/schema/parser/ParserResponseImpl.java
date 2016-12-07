@@ -16,6 +16,7 @@ public class ParserResponseImpl implements ParserResponse {
 
 	private ArrayList<ParserMessage> messages = new ArrayList<ParserMessage>();
 	private SchemaImpl schema = new SchemaImpl();
+	private String schemaSrc = null;
 	
 	public ParserResponseImpl() {}
 	
@@ -53,13 +54,14 @@ public class ParserResponseImpl implements ParserResponse {
 		return ! getMessages(severity).isEmpty();
 	}
 
-	/**
-	 * Get the schema in progress, built by the current invocation of the parser.
-	 * @param view
-	 */
 	@Override
 	public Schema getSchema() {
 		return schema;
+	}
+
+	@Override
+	public String getSchemaSrc() {
+		return schemaSrc;
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -101,10 +103,15 @@ public class ParserResponseImpl implements ParserResponse {
 		return result;
 	}
 
+	public void setSchemaSrc(String schemaSrc) {
+		this.schemaSrc = schemaSrc;
+	}
+	
 	/**
 	 * Clear the schema in progress, at the end of an unsuccessful parse.
 	 */
 	public void clearSchema() {
 		schema = null;
+		schemaSrc = null;
 	}
 }

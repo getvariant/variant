@@ -57,16 +57,15 @@ public class SchemaParser implements Keywords {
 	
 	/**
 	 * Schema pre-parser.
-	 * 1. Remove comments.
+	 * 1. Remove comments (// to EOL.
 	 * 2. (TODO) variable expansion?
 	 * 
-	 * @param schema
+	 * @param annotatedJsonString
 	 * @return
 	 */
 	private String preParse(String annotatedJsonString) {
 		
-		// Lose comments from // to eol.
-		
+		// Pass 1. Remove //-style comments.
 		StringBuilder result = new StringBuilder();
 		String lines[] = annotatedJsonString.split("\n");
 		for (String line: lines) {
@@ -84,11 +83,12 @@ public class SchemaParser implements Keywords {
 			else {
 				result.append(line);
 			}
-			result.append("\n");
-		}
+			result.append('\n');
+		}		
+
 		return result.toString();
 	}
-
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -125,6 +125,8 @@ public class SchemaParser implements Keywords {
 		
 		// 2. Syntactical phase.
 		ParserResponseImpl response = new ParserResponseImpl();
+		
+		response.setSchemaSrc(annotatedJsonString);
 		
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
 		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
@@ -209,6 +211,7 @@ public class SchemaParser implements Keywords {
 		}
 		
 		if (response.hasMessages(Severity.ERROR)) response.clearSchema();
+		
 		return response;
 	}
 
