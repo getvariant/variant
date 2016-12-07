@@ -121,6 +121,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
+		assertNotNull(response.getSchemaSrc());
 		Schema schema = response.getSchema();
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
@@ -248,6 +249,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
+		assertNotNull(response.getSchemaSrc());
 		Schema schema = response.getSchema();
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
@@ -375,6 +377,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
+		assertNotNull(response.getSchemaSrc());
 		Schema schema = response.getSchema();
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
@@ -582,6 +585,7 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
+		assertNotNull(response.getSchemaSrc());
 		final Schema schema = response.getSchema();
 
 		//

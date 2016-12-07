@@ -372,6 +372,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 
 		assertTrue(response.hasMessages());
 		assertNull(response.getSchema());
+		assertNull(response.getSchemaSrc());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -903,6 +904,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 
 		assertTrue(response.hasMessages());
 		assertNull(response.getSchema());
+		assertNull(response.getSchemaSrc());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
@@ -1173,6 +1175,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 
 		assertTrue(response.hasMessages());
 		assertNull(response.getSchema());
+		assertNull(response.getSchemaSrc());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));

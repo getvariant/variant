@@ -392,6 +392,7 @@ public class ParserCovariantOkay5Test extends BaseTestCore {
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchema());
+		assertNotNull(response.getSchemaSrc());
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertFalse(response.hasMessages(Severity.ERROR));
 		assertFalse(response.hasMessages(Severity.WARN));
