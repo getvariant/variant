@@ -4,10 +4,9 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.core.exception.VariantSchemaModifiedException;
 import com.variant.core.schema.Schema;
-import com.variant.server.ParserResponse;
-import com.variant.server.hook.HookListener;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.hook.HookListener;
 
 /**
  * Variant Bare Java Client. Makes no assumptions about the host application other than 
@@ -18,17 +17,18 @@ import com.variant.server.hook.HookListener;
  */
 public interface VariantClient {
 		
-	/**
+	/* ----------------- How do we get to server properties?
+	 *                   Client should be stateless, i.e. no props?
 	 * This client's application properties.
 	 * These are the propertied that were in effect at the time when this Variant client instance was instantiated.
 	 * 
 	 * @return An instance of the {@link SystemProperties} type.
 	 * 
 	 * @since 0.6
-	 */
+	 *
 	public SystemProperties getProperties();
-
-	/**
+     * ------------------------------------------------------------------------------------------------- */
+	/* ------------------ NO CLIENT-SIDE HOOK MANAGEMENT.  REMOVE ME SOON ------------------------------
 	 * <p>Register a {@link HookListener} with this client.
 	 *
 	 * @param listener An instance of a caller-provided implementation of the 
@@ -36,17 +36,19 @@ public interface VariantClient {
 	 *        
 	 * @see HookListener
 	 * @since 0.6
-	 */
+	 *
 	public void addHookListener(HookListener<?> listener);
 	
-	/**
+	
+	/*
 	 * <p>Remove all previously registered (with {@link #addHookListener(HookListener)} listeners.
 	 * 
 	 * @since 0.5
-	 */
+	 *
 	public void clearHookListeners();
-
-	/**
+     *--------------------------------------------------------------------------------------------------*/
+	
+	/* ----------------------------- ON THE SERVER NOW ---------------------------------------------------
 	 * Parse and, optionally, deploy an experiment schema.
 	 * If no parse errors were encountered and the <code>deploy</code> argument is true, the schema 
 	 * will be deployed
@@ -58,9 +60,10 @@ public interface VariantClient {
 	 *         may be examined for the information on the outcome of this operation.
 	 * 
 	 * @since 0.5
-	 */
+	 *
 	public ParserResponse parseSchema(InputStream schema, boolean deploy);
-
+     */
+	
 	/**
 	 * Parse and, if no errors, deploy an experiment schema.  
 	 * Equivalent to <code>parseSchema(stream, true)</code>.
