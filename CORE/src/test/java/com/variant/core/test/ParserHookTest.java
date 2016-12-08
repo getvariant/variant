@@ -39,7 +39,7 @@ public class ParserHookTest extends BaseTestCore {
 		UserHooker hooker = new UserHooker();
 		hooker.addListener(listener);
 		SchemaParser parser = new SchemaParser(hooker);
-		ParserResponseImpl response = (ParserResponseImpl) parser.parse(ParserDisjointOkayTest.SCHEMA);
+		ParserResponseImpl response = (ParserResponseImpl) parser.parse(ParserSerialOkayTest.SCHEMA);
 		Schema schema = response.getSchema();
 		assertEquals(schema.getStates(), listener.stateList);
 		assertEquals(schema.getStates().size(), response.getMessages().size());
@@ -60,7 +60,7 @@ public class ParserHookTest extends BaseTestCore {
 		UserHooker hooker = new UserHooker();
 		hooker.addListener(testListener);
 		SchemaParser parser = new SchemaParser(hooker);
-		ParserResponseImpl response = (ParserResponseImpl) parser.parse(ParserDisjointOkayTest.SCHEMA);
+		ParserResponseImpl response = (ParserResponseImpl) parser.parse(ParserSerialOkayTest.SCHEMA);
 		Schema schema = response.getSchema();
 		assertEquals(schema.getTests(), testListener.testList);
 		assertEquals(schema.getTests().size(), response.getMessages().size());
@@ -72,7 +72,7 @@ public class ParserHookTest extends BaseTestCore {
 
 		StateParsedHookListenerImpl stateListener = new StateParsedHookListenerImpl();
 		hooker.addListener(stateListener);
-		response = (ParserResponseImpl) parser.parse(ParserDisjointOkayTest.SCHEMA);
+		response = (ParserResponseImpl) parser.parse(ParserSerialOkayTest.SCHEMA);
 		schema = response.getSchema();
 		assertEquals(VariantCollectionsUtils.list(schema.getTests(), schema.getTests()), testListener.testList);
 		assertEquals(schema.getStates(), stateListener.stateList);
