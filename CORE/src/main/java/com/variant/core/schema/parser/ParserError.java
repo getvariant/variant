@@ -5,10 +5,31 @@ import com.variant.core.exception.Error;
 public class ParserError extends Error {
 
 	// 
+	// Meta related errors
+	//
+	public static final ParserError NO_META_CLAUSE =
+			new ParserError(Severity.ERROR,  "'/meta' clause is missing");
+
+	public static final ParserError META_NOT_OBJECT =
+			new ParserError(Severity.ERROR, "'/meta' property must be an object"); 
+
+	public static final ParserError META_NAME_INVALID =
+			new ParserError(Severity.ERROR, "Schema name must be a string, containing letters, digits and _, and cannot start with a digit"); 
+
+	public static final ParserError META_NAME_MISSING =
+			new ParserError(Severity.ERROR, "Schema name is missing"); 
+
+	public static final ParserError META_COMMENT_INVALID =
+			new ParserError(Severity.ERROR, "Schema comment must be a string"); 
+
+	public static final ParserError META_UNSUPPORTED_PROPERTY =
+			new ParserError(Severity.WARN,  "Unsupported property 'meta/%s'"); 
+
+	// 
 	// State related errors
 	//
 	public static final ParserError NO_STATES_CLAUSE =
-			new ParserError(Severity.INFO,  "'/states' element is not found");
+			new ParserError(Severity.INFO,  "'/states' clause is missing");
 	
 	public static final ParserError NO_STATES = 
 			new ParserError(Severity.INFO, "No states found"); 
@@ -32,7 +53,7 @@ public class ParserError extends Error {
 	// Test related errors
 	//
 	public static final ParserError NO_TESTS_CLAUSE =
-			new ParserError(Severity.INFO,  "'/tests' element is missing"); 
+			new ParserError(Severity.INFO,  "'/tests' clause is missing"); 
 	
 	public static final ParserError NO_TESTS =
 			new ParserError(Severity.INFO,  "No tests found"); 

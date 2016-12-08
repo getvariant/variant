@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.StateImpl;
@@ -30,7 +29,7 @@ public class StatesParser implements Keywords {
 	 * @param response 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parseStates(Schema schema, Object statesObject, ParserResponseImpl response) {
+	static void parse(Object statesObject, ParserResponseImpl response) {
 
 		try {
 
@@ -41,7 +40,7 @@ public class StatesParser implements Keywords {
 			}
 			
 			for (Map<String, ?> rawState: rawStates) {
-				State state = parseState(schema, rawState, response);
+				State state = parseState(rawState, response);
 				if (state != null && !((SchemaImpl) response.getSchema()).addState(state)) {
 					response.addMessage(STATE_NAME_DUPE, state.getName());
 				}
@@ -59,7 +58,7 @@ public class StatesParser implements Keywords {
 	 * @param response
 	 */
 	@SuppressWarnings("unchecked")
-	private static State parseState(Schema schema, Map<String, ?> rawState, final ParserResponseImpl response) {
+	private static State parseState(Map<String, ?> rawState, final ParserResponseImpl response) {
 		
 		String name = null;
 		boolean nameFound = false;
@@ -110,7 +109,7 @@ public class StatesParser implements Keywords {
 		
 		if (params == null) params = new HashMap<String,String>();
 
-		return new StateImpl(schema, name, params);
+		return new StateImpl(response.getSchema(), name, params);
 	}
 
 }

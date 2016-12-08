@@ -41,6 +41,10 @@ public class ParserCovariantOkay5Test extends BaseTestCore {
 		final String SCHEMA = 
 
 		"{                                                                                \n" +
+			    "  'meta':{                                                               \n" +		    	    
+			    "      'name':'schema_name',                                              \n" +
+			    "      'comment':'schema comment'                                         \n" +
+			    "  },                                                                     \n" +
 	    	    //==========================================================================//
 	    	   
 	    	    "   'states':[                                                             \n" +

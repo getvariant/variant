@@ -1,19 +1,56 @@
 package com.variant.core.schema.parser;
 
+import static com.variant.core.schema.parser.ParserError.ALL_PROPER_EXPERIENCES_UNDEFINED;
+import static com.variant.core.schema.parser.ParserError.CONTROL_EXPERIENCE_DUPE;
+import static com.variant.core.schema.parser.ParserError.CONTROL_EXPERIENCE_MISSING;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_TESTREF_NOT_STRING;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_TESTREF_UNDEFINED;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_TESTS_NOT_LIST;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_TEST_DISJOINT;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_COVARIANT_UNDEFINED;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_DUPE;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_MISSING;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_PROPER_UNDEFINED;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCES_LIST_EMPTY;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCES_NOT_LIST;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCE_NAME_DUPE;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCE_NAME_INVALID;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCE_NAME_MISSING;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCE_NOT_OBJECT;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCE_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.ParserError.ISCONTROL_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.ParserError.ISNONVARIANT_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.ParserError.NO_TESTS;
+import static com.variant.core.schema.parser.ParserError.ONSTATES_LIST_EMPTY;
+import static com.variant.core.schema.parser.ParserError.ONSTATES_NOT_LIST;
+import static com.variant.core.schema.parser.ParserError.ONSTATES_NOT_OBJECT;
+import static com.variant.core.schema.parser.ParserError.STATEREF_DUPE;
+import static com.variant.core.schema.parser.ParserError.STATEREF_MISSING;
+import static com.variant.core.schema.parser.ParserError.STATEREF_NOT_STRING;
+import static com.variant.core.schema.parser.ParserError.STATEREF_UNDEFINED;
+import static com.variant.core.schema.parser.ParserError.TEST_ISON_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.ParserError.TEST_NAME_DUPE;
+import static com.variant.core.schema.parser.ParserError.TEST_NAME_INVALID;
+import static com.variant.core.schema.parser.ParserError.TEST_NAME_MISSING;
+import static com.variant.core.schema.parser.ParserError.TEST_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.ParserError.VARIANTS_ISNONVARIANT_INCOMPATIBLE;
+import static com.variant.core.schema.parser.ParserError.VARIANTS_ISNONVARIANT_XOR;
+import static com.variant.core.schema.parser.ParserError.VARIANTS_LIST_EMPTY;
+import static com.variant.core.schema.parser.ParserError.VARIANTS_NOT_LIST;
+import static com.variant.core.schema.parser.ParserError.VARIANT_DUPE;
+import static com.variant.core.schema.parser.ParserError.VARIANT_MISSING;
+import static com.variant.core.schema.parser.ParserError.WEIGHT_NOT_NUMBER;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import static com.variant.core.schema.parser.ParserError.*;
 import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
-import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -31,7 +68,7 @@ import com.variant.core.schema.impl.TestOnStateImpl;
  */
 public class TestsParser implements Keywords {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(TestsParser.class);
+	//private static final Logger LOG = LoggerFactory.getLogger(TestsParser.class);
 	
 	/**
 	 * @param result
@@ -39,7 +76,7 @@ public class TestsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parseTests(Object testsObject, ParserResponseImpl response) throws VariantRuntimeException {
+	static void parse(Object testsObject, ParserResponseImpl response) throws VariantRuntimeException {
 		List<Map<String, ?>> rawTests = null;
 		try {
 			rawTests = (List<Map<String, ?>>) testsObject;

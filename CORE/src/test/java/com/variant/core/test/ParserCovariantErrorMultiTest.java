@@ -29,6 +29,10 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		
 		String schema = 
 				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +
@@ -395,6 +399,10 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		
 		String schema = 
 				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +
@@ -930,6 +938,10 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		final String schema = 
 
 		"{                                                                                \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 	    	    //==========================================================================//
 	    	   
 	    	    "   'states':[                                                             \n" +

@@ -42,11 +42,12 @@ public class ParserCovariantOkayBigTest extends BaseTestCore {
 		assertFalse(response.hasMessages(Severity.WARN));
 		assertFalse(response.hasMessages(Severity.INFO));
 		
+		assertNotNull(response.getSchemaSrc());
 		Schema schema = response.getSchema();
 
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-
+		assertEquals(schema.getName(), "OkayBigTest");
+		assertEquals(schema.getComment(), "Schema for okay big test!");
+		
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");
 		final Test test3 = schema.getTest("test3");

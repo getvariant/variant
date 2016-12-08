@@ -5,7 +5,7 @@ package com.variant.core.schema.parser;
  */
 interface Keywords {
 
-	static String KEYWORD_NAME                      = "name";
+	static String KEYWORD_COMMENT                   = "comment";
 	static String KEYWORD_COVARIANT_EXPERIENCE_REFS = "covariantExperienceRefs";
 	static String KEYWORD_COVARIANT_TEST_REFS       = "covariantTestRefs";
 	static String KEYWORD_EXPERIENCES               = "experiences";
@@ -15,6 +15,8 @@ interface Keywords {
 	static String KEYWORD_IS_DEFINED                = "isDefined";
 	static String KEYWORD_IS_NONVARIANT             = "isNonvariant";
 	static String KEYWORD_IS_ON                     = "isOn";
+	static String KEYWORD_META                      = "meta";
+	static String KEYWORD_NAME                      = "name";
 	static String KEYWORD_ON_STATES                 = "onStates";
 	static String KEYWORD_PARAMETERS                = "parameters";
 	static String KEYWORD_STATES                    = "states";

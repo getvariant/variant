@@ -37,6 +37,9 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		final String SCHEMA = 
 
 				"{                                                                                 \n" +
+					    "  'meta':{                                                                \n" +
+					    "      'name':'errorsTest1'                                                \n" +
+					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +
@@ -231,6 +234,9 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		final String SCHEMA = 
 
 				"{                                                                                 \n" +
+					    "  'meta':{                                                                \n" +
+					    "      'name':'errorsTest2'                                                \n" +
+					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +
@@ -348,6 +354,9 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		final String SCHEMA = 
 
 				"{                                                                                 \n" +
+					    "  'meta':{                                                                \n" +
+					    "      'name':'errorsTest3'                                                \n" +
+					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +
@@ -496,6 +505,9 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		final String SCHEMA = 
 
 				"{                                                                                 \n" +
+					    "  'meta':{                                                                \n" +
+					    "      'name':'errorsTest4'                                                \n" +
+					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +
@@ -656,6 +668,9 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		 */
 		final String SCHEMA = 
 				"{                                                                                 \n" +
+					    "  'meta':{                                                                \n" +
+					    "      'name':'errorsTest5'                                                \n" +
+					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +
@@ -848,6 +863,9 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		 */
 		final String SCHEMA = 
 				"{                                                                                 \n" +
+					    "  'meta':{                                                                \n" +
+					    "      'name':'okayTest1'                                                \n" +
+					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +

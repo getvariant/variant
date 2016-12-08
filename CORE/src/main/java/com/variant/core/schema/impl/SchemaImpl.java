@@ -18,15 +18,16 @@ public class SchemaImpl implements Schema {
 
 	private final String ID = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
 	
+	// Meta
+	private String name = null;
+	private String comment = null;
+	
 	// Views are keyed by name
 	private LinkedHashSet<State> states = new LinkedHashSet<State>();
 	
 	// Tests are keyed by name
 	private LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
-	
-	// Life cycle.
-	// private InternalState state = InternalState.NEW;
-	
+		
 	/**
 	 * Package instantiation.
 	 */
@@ -35,9 +36,17 @@ public class SchemaImpl implements Schema {
     //---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC INTERFACE                                         //
 	//---------------------------------------------------------------------------------------------//	
-	/**
-	 * 
-	 */
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String getComment() {
+		return comment;
+	}
+
 	@Override
 	public String getId() {
 		return ID;
@@ -95,6 +104,16 @@ public class SchemaImpl implements Schema {
 	//                                       PUBLIC EXT                                            //
 	//---------------------------------------------------------------------------------------------//
 
+	/**
+	 * Set schema's meta data.
+	 * @param name
+	 * @param comment
+	 */
+	public void setMeta(String name, String comment) {
+		this.name = name;
+		this.comment = comment;
+	}
+	
 	/**
 	 * Add state to this schema.
 	 * @param state

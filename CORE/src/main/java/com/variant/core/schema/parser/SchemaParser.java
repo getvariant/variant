@@ -3,6 +3,7 @@ package com.variant.core.schema.parser;
 import static com.variant.core.schema.parser.ParserError.JSON_PARSE;
 import static com.variant.core.schema.parser.ParserError.NO_STATES_CLAUSE;
 import static com.variant.core.schema.parser.ParserError.NO_TESTS_CLAUSE;
+import static com.variant.core.schema.parser.ParserError.NO_META_CLAUSE;
 import static com.variant.core.schema.parser.ParserError.UNSUPPORTED_CLAUSE;
 
 import java.io.IOException;
@@ -151,12 +152,12 @@ public class SchemaParser implements Keywords {
 		}
 		
 		// 3. Semantical phase.
-		// Clean map will contain only entries with expected clauses with keys uppercased 
+		// Clean map will contain only entries with expected clauses AND keys uppercased.
 		Map<String, Object> cleanMap = new LinkedHashMap<String, Object>();
 		
-		// Pass 1. Uppercase all the expected clauses to support case insensitive key words.
+		// Pass 1.
 		for (Map.Entry<String, ?> entry: mappedJson.entrySet()) {
-			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_STATES, KEYWORD_TESTS)) {
+			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_META, KEYWORD_STATES, KEYWORD_TESTS)) {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {
@@ -164,7 +165,17 @@ public class SchemaParser implements Keywords {
 			}
 		}
 		
-		// Pass2. Look at all clauses.  Expected ones are already uppercased.
+		// Pass 2. Look at all clauses.  Expected ones are already uppercased.
+		
+		Object meta = cleanMap.get(KEYWORD_META.toUpperCase());
+		if (meta == null) {
+			response.addMessage(NO_META_CLAUSE);
+		}
+		else {			
+			// Parse meta info
+			MetaParser.parse(meta, response);
+		}
+
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());
 		if (states == null) {
 			response.addMessage(NO_STATES_CLAUSE);
@@ -172,7 +183,7 @@ public class SchemaParser implements Keywords {
 		else {
 			
 			// Parse all states
-			StatesParser.parseStates(response.getSchema(), states, response);
+			StatesParser.parse(states, response);
 			
 			// Post user hook listeners.
 			for (State state: response.getSchema().getStates()) {
@@ -197,7 +208,7 @@ public class SchemaParser implements Keywords {
 		else {
 			
 			// Parse all tests
-			TestsParser.parseTests(tests, response);
+			TestsParser.parse(tests, response);
 			
 			// Post user hook listeners.
 			for (Test test: response.getSchema().getTests()) {

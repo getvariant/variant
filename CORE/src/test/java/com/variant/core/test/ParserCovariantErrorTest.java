@@ -45,6 +45,10 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		
 		String config = 
 				"{                                                              \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 			    "   'states':[                                                  \n" +
 			    "     {  'name':'state1',                                       \n" +
 			    "        'parameters':{                                         \n" +
@@ -165,6 +169,10 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		
 		String config = 
 				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 	            "   'states':[                                                  \n" +
 	            "     {  'name':'state1',                                       \n" +
 	            "        'parameters':{                                         \n" +
@@ -285,7 +293,11 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 	public void covariantTestrefNotString_Test() throws Exception {
 		
 		String config = 
-				"{                                                             \n" +
+				"{                                                              \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +
@@ -409,6 +421,10 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		
 		String config = 
 				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +
@@ -530,6 +546,10 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		
 		String config = 
 				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +
@@ -726,6 +746,10 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		
 		String config = 
 				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +
@@ -922,7 +946,11 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		
 		
 		String config = 
-				"{                                                             \n" +
+				"{                                                              \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +
@@ -1126,7 +1154,11 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 	public void covariantExperienceTestRefUndefined_Test() throws Exception {
 		
 		String config = 
-				"{                                                             \n" +
+				"{                                                              \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +
@@ -1329,7 +1361,11 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		
 		
 		String config = 
-				"{                                                             \n" +
+				"{                                                              \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +
@@ -1531,6 +1567,10 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		
 		String config = 
 				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +
@@ -1691,7 +1731,11 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 	public void covariantExperienceTestRefNonvariant_Test() throws Exception {
 		
 		String config = 
-				"{                                                             \n" +
+				"{                                                              \n" +
+			    "  'meta':{                                                     \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +
@@ -1905,6 +1949,10 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		
 		String config = 
 				"{                                                             \n" +
+			    "  'meta':{                                                     \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
 				"        'parameters':{                                         \n" +

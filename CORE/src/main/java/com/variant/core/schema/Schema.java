@@ -14,6 +14,22 @@ import java.util.List;
 public interface Schema {
 
 	/**
+	 * <p>This schema's name.
+	 * 
+	 * @return Schema name, as provided in the meta clause.
+	 * @since 0.7
+	 */
+	public String getName();
+
+	/**
+	 * <p>This schema's comment.
+	 * 
+	 * @return Schema comment, as provided in the meta clause.
+	 * @since 0.7
+	 */
+	public String getComment();
+
+	/**
 	 * <p>This schema's ID.
 	 * 
 	 * @return Schema ID.

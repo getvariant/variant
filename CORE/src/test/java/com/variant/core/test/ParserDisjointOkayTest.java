@@ -29,6 +29,10 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		final String SCHEMA = 
 
 				"{                                                                                 \n" +
+					    "  'meta':{                                                                \n" +		    	    
+					    "      'name':'allTestsOffTest',                                           \n" +
+					    "      'comment':'!@#$%^&*'                                                \n" +
+					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	   
 			    	    "   'states':[                                                             \n" +
@@ -123,6 +127,10 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchemaSrc());
 		Schema schema = response.getSchema();
+		assertNotNull(response.getSchemaSrc());
+		assertEquals("allTestsOffTest", schema.getName());
+		assertEquals("!@#$%^&*", schema.getComment());
+
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
 		assertFalse(test1.isOn());
@@ -145,6 +153,9 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		final String SCHEMA = 
 
 				"{                                                                                 \n" +
+					    "  'meta':{                                                                \n" +		    	    
+					    "      'name':'oneOffOneDisqualifiedTest'                                  \n" +
+					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	   
 			    	    "   'states':[                                                             \n" +
@@ -251,6 +262,8 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchemaSrc());
 		Schema schema = response.getSchema();
+		assertEquals("oneOffOneDisqualifiedTest", schema.getName());
+		assertNull(schema.getComment());
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
 		assertFalse(test1.isOn());
@@ -273,6 +286,9 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		final String SCHEMA = 
 
 				"{                                                                                 \n" +
+					    "  'meta':{                                                                \n" +		    	    
+					    "      'name':'allTestsDisqualifiedTest'                                   \n" +
+					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	   
 			    	    "   'states':[                                                             \n" +
@@ -379,6 +395,8 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchemaSrc());
 		Schema schema = response.getSchema();
+		assertEquals("allTestsDisqualifiedTest", schema.getName());
+		assertNull(schema.getComment());
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
 		assertTrue(test1.isOn());
@@ -395,6 +413,9 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 	public static final String SCHEMA = 
 
 	"{                                                                                 \n" +
+		    "  'meta':{                                                                \n" +
+		    "      'name':'happy_path_schema'                                          \n" +
+		    "  },                                                                      \n" +
     	    //==========================================================================//
     	   
     	    "   'sTaTeS':[                                                             \n" +
@@ -587,6 +608,9 @@ public class ParserDisjointOkayTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchemaSrc());
 		final Schema schema = response.getSchema();
+		assertEquals("happy_path_schema", schema.getName());
+		assertNull(schema.getComment());
+
 
 		//
 		// Views.
