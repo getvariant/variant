@@ -1,5 +1,5 @@
 //
-// Based on Parser Covariant Okay Bit Test Schema in Core.
+// Based on Parser Covariant Okay Big Test Schema in Core.
 // All Tests:
 // Tests States
 //       1 2 3 4 5
@@ -15,6 +15,10 @@
  
  
 {                                                                                
+   'meta':{
+      'name':'parser_covariant_okay_big_test',
+      'comment':'Based on Parser Covariant Okay Bit Test Schema in Core.'
+   },
    'states':[                                                             
      {  'name':'state1',                                                  
         'parameters': {                                          

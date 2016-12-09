@@ -24,9 +24,9 @@
     <appender-ref ref="STDOUT" />
   </appender>
 
-  <logger name="play" level="INFO" />
-  <logger name="application" level="INFO" />
-  <logger name="com.variant" level="trace" />
+  <logger name="play" level="WARN" />
+  <logger name="application" level="WARN" />
+  <logger name="com.variant" level="INFO" />
 
   <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
   <logger name="com.avaje.ebean.config.PropertyMapLoader" level="OFF" />

@@ -118,6 +118,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          val context = app.configuration.getString("play.http.context").get
          val server = app.injector.instanceOf[VariantServer]
          server.isUp mustBe false
+         server.schema.isDefined mustBe false
          val resp = route(app, FakeRequest(GET, context + "/session/foo")).get
          status(resp) mustBe SERVICE_UNAVAILABLE
          contentAsString(resp) mustBe empty

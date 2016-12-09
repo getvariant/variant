@@ -103,8 +103,8 @@ class SessionStoreEntry (val json: String) {
 class VacuumThread(props: VariantProperties, storeMap: Map[String, SessionStoreEntry]) extends Thread {
 
    private val logger = Logger(this.getClass)	
-   private val sessionTimeoutMillis = props.getLong(SESSION_TIMEOUT) * 1000
-   private val vacuumingFrequencyMillis = props.getLong(SESSION_STORE_VACUUM_INTERVAL) * 1000
+   private val sessionTimeoutMillis = props.getInt(SESSION_TIMEOUT) * 1000
+   private val vacuumingFrequencyMillis = props.getInt(SESSION_STORE_VACUUM_INTERVAL) * 1000
 	setName("VariantSessionVacuum");
    setDaemon(true);
 

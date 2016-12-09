@@ -27,7 +27,7 @@ public class ServerPropertiesKey implements VariantProperties.Key {
 			new ServerPropertiesKey("variant.event.writer.buffer.size", 20000);
 	
 	public static final ServerPropertiesKey EVENT_WRITER_MAX_DELAY = 
-			new ServerPropertiesKey("variant.event.writer.max.delay", 30000);
+			new ServerPropertiesKey("variant.event.writer.max.delay", 30);
 	
 	private final String name;
 	private final Object defaultValue;

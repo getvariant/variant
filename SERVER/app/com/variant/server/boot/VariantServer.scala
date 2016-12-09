@@ -96,6 +96,7 @@ class VariantServerImpl @Inject() (
 	         None
 	      }
 	      case e: Throwable => {
+	         logger.error(e.getMessage, e)
 	         _startupErrorLog :+= new ServerErrorException(ServerError.UNEXPECTED_FATAL_ERROR, e.getMessage)
 	         None
 	      }

@@ -14,6 +14,9 @@ class RuntimeExceptionTest extends BaseSpecWithSchema {
 
    val schemaJson = """
 {
+   'meta':{
+      'name':'RuntimeExceptionTest'
+   },
    'states':[
       {'name':'state1'},
       {'NAME':'state2'},
@@ -101,7 +104,7 @@ class RuntimeExceptionTest extends BaseSpecWithSchema {
 
       "throw STATE_NOT_INSTRUMENTED_BY_TEST" in  {
 
-         server.installSchemaDeployer(SchemaDeployer.fromString("my schema", schemaJson))
+         server.installSchemaDeployer(SchemaDeployer.fromString(schemaJson))
          server.schema.isDefined mustBe true
          val schema = server.schema.get
          val state2 = schema.getState("state2")
@@ -129,7 +132,7 @@ class RuntimeExceptionTest extends BaseSpecWithSchema {
       "throw WEIGHT_MISSING" in {
 
          server.hooker.clear()
-         server.installSchemaDeployer(SchemaDeployer.fromString("my schema", schemaJson))
+         server.installSchemaDeployer(SchemaDeployer.fromString(schemaJson))
          server.schema.isDefined mustBe true
          val schema = server.schema.get
          val ssn = ServerSession("sid")

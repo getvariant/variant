@@ -29,6 +29,9 @@ class TargetingTest extends BaseSpecWithSchema {
 
    val schemaJson = """
 {
+   'meta':{
+      'name':'TargetingTest'
+   },
    'states':[
       {
          'name':'state1',
@@ -84,7 +87,7 @@ class TargetingTest extends BaseSpecWithSchema {
    ]
 }"""
 
-   server.installSchemaDeployer(SchemaDeployer.fromString("my schema", schemaJson))
+   server.installSchemaDeployer(SchemaDeployer.fromString(schemaJson))
    server.schema.isDefined mustBe true
    val schema = server.schema.get
    val state = schema.getState("state1")

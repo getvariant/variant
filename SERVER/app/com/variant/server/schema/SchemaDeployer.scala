@@ -37,7 +37,7 @@ object SchemaDeployer {
    /**
     * Deploy from a memory string
     */
-   def fromString(name: String, body: String) = new SchemaDeployerFromString(name, body)
+   def fromString(schemaSrc: String) = new SchemaDeployerFromString(schemaSrc)
    
   /**
     * Deploy from a classpath resource
@@ -56,15 +56,15 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
    /**
 	 * Parse a schema.
 	 */
-	protected def parseAndDeploy(name: String, body: String): ParserResponse = {
+	protected def parseAndDeploy(schemaSrc: String): ParserResponse = {
             
       val parser = new SchemaParser(server.hooker)
-      val response = parser.parse(body)
-		val schema = ServerSchema(name, response.getSchema)		
+      val response = parser.parse(schemaSrc)
+		val schema = ServerSchema(response)		
 		if (response.hasMessages(Severity.ERROR)) schema.state = State.Failed
       
 		if (response.hasMessages(Severity.ERROR)) {
-			logger.error("Schema %s was not deployed due to parser error(s):".format(schema.name))
+			logger.error("Schema was not deployed due to parser error(s):")
 			response.getMessages(Severity.ERROR).foreach {log(_)}
 		}
 		else {
@@ -73,7 +73,7 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
    		deployedSchema.foreach { _.state = State.Deployed }
    		
    		val msg = new StringBuilder()
-   		msg.append("Deployed schema [%s], ID [%s]:".format(schema.name, schema.getId));
+   		msg.append("Deployed schema [%s], ID [%s]:".format(schema.getName, schema.getId));
    		for (test <- schema.getTests) {
    			msg.append("\n   ").append(test.getName()).append(":[");
    			var first = true;
@@ -89,8 +89,8 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
    		
    		logger.info(msg.toString())
    		
-   		if (response.hasMessages(Severity.ERROR)) {
-   			logger.info("Schema deployed with non-fatal messages:".format(schema.name))
+   		if (response.hasMessages()) {
+   			logger.info("Schema deployed with non-fatal messages:".format(schema.getName))
       		response.getMessages().foreach {log(_)}
    		}
 		}
@@ -160,17 +160,16 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
          throw new ServerErrorException(MULTIPLE_SCHEMAS_NOT_SUPPORTED, dirName.get)
    
       val schemaFile = schemaFiles.head
-      val schemaName = VariantStringUtils.baseName(schemaFile.getName).toUpperCase
-      parseAndDeploy(schemaName, Source.fromFile(schemaFile).mkString)
+      parseAndDeploy(Source.fromFile(schemaFile).mkString)
    }
 }
 
 /**
  * Deploy single schema from a string in memory.
  */
-class SchemaDeployerFromString(name: String, body: String) extends AbstractSchemaDeployer {
+class SchemaDeployerFromString(schemaSrc: String) extends AbstractSchemaDeployer {
 	         
-   override def deploy() = parseAndDeploy(name, body)
+   override def deploy() = parseAndDeploy(schemaSrc)
 }
 
 /**
@@ -181,7 +180,7 @@ class SchemaDeployerFromClasspath(resource: String) extends AbstractSchemaDeploy
    val stream = getClass.getResourceAsStream(resource)
    if (stream == null)
       throw new RuntimeInternalException("Unable to open classpath resource [%s]".format(resource))
-   val name = resource.substring(1, resource.length() - 5)   // drop leading slash and tailing '.json'
-   override def deploy() = parseAndDeploy(name, IOUtils.toString(stream))
+   
+   override def deploy() = parseAndDeploy(IOUtils.toString(stream))
 }
 

@@ -20,7 +20,7 @@ class EventWriter (props: VariantProperties) {
    val bufferSize = props.getInt(EVENT_WRITER_BUFFER_SIZE)
    val pctFullSize = bufferSize * props.getInt(EVENT_WRITER_PERCENT_FULL) / 100
 	val pctEmptySize = Math.ceil(bufferSize * 0.1).intValue()
-	val maxDelayMillis = props.getLong(EVENT_WRITER_MAX_DELAY) * 1000
+	val maxDelayMillis = props.getInt(EVENT_WRITER_MAX_DELAY) * 1000
 
 	// Asynchronous flusher thread consumes events from the holding queue.
    private val flusherThread = new FlusherThread();

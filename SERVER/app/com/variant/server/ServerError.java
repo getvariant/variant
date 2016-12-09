@@ -16,7 +16,7 @@ public class ServerError extends RuntimeError {
 			new ServerError(Severity.FATAL, "Cannot pass both -Dvariant.config.resource and -Dvariant.config.file parameters");
 	*/
 	public final static ServerError UNEXPECTED_FATAL_ERROR = 
-			new ServerError(Severity.FATAL, "Unexpected FATAL error: %s");
+			new ServerError(Severity.FATAL, "Unexpected FATAL error: [%s]. See application log for details");
 
 	public final static ServerError SCHEMAS_DIR_MISSING = 
 			new ServerError(Severity.FATAL, "Schema deploy directory [%s] does not exist");

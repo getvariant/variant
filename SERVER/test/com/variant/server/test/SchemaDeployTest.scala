@@ -27,32 +27,63 @@ import java.io.File
 class SchemaDeployTest extends PlaySpec with OneAppPerTest {
    
    implicit override def newAppForTest(testData: TestData): Application = {
-      new GuiceApplicationBuilder().build()
+      
+      if (testData.name.startsWith("1.")) {
+         // Just application property
+         new GuiceApplicationBuilder()
+            .configure(
+               Map("variant.schemas.dir" -> "test-schemas")) 
+            .build()
+      }
+      else if (testData.name.startsWith("2.")) {
+         // Just system property
+         FileUtils.copyFile(new File("test-conf/ParserCovariantOkayBigTest.json"), new File("/tmp/test-schemas-override/test-schema.json"))
+         sys.props.contains("variant.schemas.dir") must be (false)
+         sys.props +=(("variant.schemas.dir","/tmp/test-schemas-override"))
+         new GuiceApplicationBuilder().build()
+      }
+      else if (testData.name.startsWith("3.")) {
+         // Both application and system property
+         FileUtils.copyFile(new File("test-conf/ParserCovariantOkayBigTest.json"), new File("/tmp/test-schemas-override/test-schema.json"))
+         sys.props -= ("variant.schemas.dir")
+         sys.props.contains("variant.schemas.dir") must be (false)
+         sys.props += (("variant.schemas.dir","/tmp/test-schemas-override"))
+         new GuiceApplicationBuilder()
+            .configure(
+               Map("variant.schemas.dir" -> "test-schemas")) 
+            .build()
+      }
+      else {
+         // All defaults.
+         new GuiceApplicationBuilder().build()
+      }
+
    }
  
-   "Schema should deploy from config property variant.schemas.dir" in {
+   "1. Schema should deploy from config property variant.schemas.dir" in {
       val server = app.injector.instanceOf[VariantServer]
       server.isUp mustBe true
       server.schema.isDefined mustBe true
       server.startupErrorLog.size mustEqual 0
-      server.schema.get.name mustEqual "big-covar-schema"
-      
+      server.schema.get.getName mustEqual "big_covar_schema"
    }
-/*
-   "System property variant.schemas.dir" should {
-
-      FileUtils.copyFile(new File("test-schemas/big-covar-schema.json"), new File("/tmp/test-schemas-override/test-schema.json"))
-      sys.props.contains("variant.schemas.dir") must be (false)
-      sys.props.+=(("variant.schemas.dir","/tmp/test-schemas-override"))
+   
+   "2. Schema should deploy from system property variant.schemas.dir" in {
       
-      "override the config property by the same name" in {
-         val server = app.injector.instanceOf[VariantServer]
-         server.isUp mustBe true
-         server.schema.isDefined mustBe true
-         server.startupErrorLog.size mustEqual 0
-
-      }
-      
+      val server = app.injector.instanceOf[VariantServer]
+      server.isUp mustBe true
+      server.schema.isDefined mustBe true
+      server.startupErrorLog.size mustEqual 0
+      server.schema.get.getName mustEqual "parser_covariant_okay_big_test"
    }
-*/ 
+
+   "3. Schema should deploy from system property variant.schemas.dir" in {
+      
+      val server = app.injector.instanceOf[VariantServer]
+      server.isUp mustBe true
+      server.schema.isDefined mustBe true
+      server.startupErrorLog.size mustEqual 0
+      server.schema.get.getName mustEqual "parser_covariant_okay_big_test"
+   }
+
 }

@@ -106,9 +106,10 @@ public class VariantStringUtils {
 	 * Drop the suffix, i.e. the last dot and what follows. Leave as is if no dot.
 	 * @param in
 	 * @return
-	 */
+	 *
 	public static String baseName(String in) {
 		int i = in.lastIndexOf('.');
 		return i < 0 ? in : in.substring(0, i);
 	}
+	*/
 }

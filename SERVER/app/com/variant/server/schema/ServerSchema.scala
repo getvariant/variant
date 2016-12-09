@@ -10,23 +10,37 @@ import com.variant.core.exception.RuntimeInternalException
  * 
  */
 object ServerSchema {
-   def apply(name: String, schema: Schema) = new ServerSchema(name, schema)
+   def apply(response: ParserResponse) = new ServerSchema(response)
 }
 
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (val name: String, val coreSchema: Schema) extends Schema {
+class ServerSchema (val response: ParserResponse) extends Schema {
   
    import State._
    
    var state: State = New
    
+   private var coreSchema =  response.getSchema
+   
    private def checkState {
       if (state != Deployed)
          throw new RuntimeInternalException(
-               "Schema [%s] cannot be accessed due to state [%s]".format(name, state))
+               "Schema [%s] cannot be accessed due to state [%s]".format(getName, state))
    }
+
+   /*------------------------------------ Public Implementations ------------------------------------*/
+
+   override def getName = {
+	   checkState
+	   coreSchema.getName
+	}
+
+   override def getComment = {
+	   checkState
+	   coreSchema.getComment
+	}
 
    override def getId = {
 	   checkState
@@ -52,7 +66,10 @@ class ServerSchema (val name: String, val coreSchema: Schema) extends Schema {
       checkState
 	   coreSchema.getTest(name)	   
 	}
+
+	/*------------------------------------ Public Extensions ------------------------------------*/
 	
+	val source = response.getSchemaSrc
 }
 
 /**
