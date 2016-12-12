@@ -8,6 +8,8 @@ import com.variant.server.boot.VariantServerImpl
 import com.variant.server.session.SessionStore
 import com.variant.server.session.SessionStoreImpl
 import play.api.routing.Router
+import com.variant.server.session.ConnectionStore
+import com.variant.server.session.ConnectionStoreImpl
 
 /**
  * This class is a Guice module that tells Guice how to bind several
@@ -25,6 +27,9 @@ class Module (environment: Environment, config: Configuration) extends AbstractM
 
       // Variant server boot and shutdown
       bind(classOf[VariantServer]).to(classOf[VariantServerImpl]).asEagerSingleton
+
+      // Connection Store
+      bind(classOf[ConnectionStore]).to(classOf[ConnectionStoreImpl]).asEagerSingleton
 
       // Session Store
       bind(classOf[SessionStore]).to(classOf[SessionStoreImpl]).asEagerSingleton

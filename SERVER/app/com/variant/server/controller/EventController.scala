@@ -17,7 +17,7 @@ import scala.collection.mutable.Map
 import com.variant.server.event.ServerEvent
 
 //@Singleton -- Is this for non-shared state controllers?
-class Event @Inject() (store: SessionStore) extends Controller  {
+class EventController @Inject() (store: SessionStore) extends Controller  {
    
    private val logger = Logger(this.getClass)	
  

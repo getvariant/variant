@@ -20,7 +20,8 @@ object UserError {
    val UnknownState = 6
    val BadContentType = 7
    val MissingParamName = 8
-   val SessionExpired = 9
+   val TooManyConnections = 9
+   val SessionExpired = 10
    
    val errors = Array(
      
@@ -34,6 +35,7 @@ object UserError {
      new UserError("No recent state request in session.", HttpStatus.SC_BAD_REQUEST),
      new UserError("Unsupported content type. Use 'application/json' or 'text/plain'.", HttpStatus.SC_BAD_REQUEST),
      new UserError("Parameter name is missing", HttpStatus.SC_BAD_REQUEST),
+     new UserError("Too many connections", HttpStatus.SC_BAD_REQUEST),
      
      // 403
      new UserError("Session expired", HttpStatus.SC_FORBIDDEN)

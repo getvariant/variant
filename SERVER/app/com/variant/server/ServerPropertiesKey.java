@@ -8,6 +8,9 @@ public class ServerPropertiesKey implements VariantProperties.Key {
 	public static final ServerPropertiesKey SCHEMAS_DIR =
 			new ServerPropertiesKey("variant.schemas.dir");
 	
+	public static final ServerPropertiesKey MAX_CONCURRENT_CONNECTIONS =
+			new ServerPropertiesKey("variant.max.concurrent.connections", 100);
+	
 	public static final ServerPropertiesKey SESSION_TIMEOUT =
 			new ServerPropertiesKey("variant.session.timeout", 900);
 	

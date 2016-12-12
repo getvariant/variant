@@ -8,7 +8,7 @@ import play.api.Logger
 import com.variant.server.UserError
 
 //@Singleton -- Is this for non-shared state controllers?
-class Session @Inject() (store: SessionStore) extends Controller  {
+class SessionController @Inject() (store: SessionStore) extends Controller  {
    
       private val logger = Logger(this.getClass)	
 

@@ -28,6 +28,28 @@ class ErrorHandler @Inject() (
       Future.successful(NotFound(message))
    }
 
+   /**
+    * Do not spill guts on server error.
+    */
+   override def onServerError(request: RequestHeader, exception: Throwable) = {
+      logger.error("Unhandled Server Error", exception)
+      Future.successful({
+         println("******************************** server " + exception.getMessage)
+         InternalServerError("Internal Server Error")
+      })
+   }
+
+   /**
+    * TODO: THIS DOESN'T SEEM TO WORK AT ALL IN DEV MODE!
+    */
+   def onDevServerError(request: RequestHeader, exception: Throwable) = {
+      logger.error("Unhandled Server Error", exception)
+      Future.successful({
+         println("******************************** server " + exception.getMessage)
+         InternalServerError("Internal Server Error")
+      })
+   }
+
 }
 
 /*
