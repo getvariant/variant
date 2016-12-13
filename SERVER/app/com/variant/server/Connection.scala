@@ -39,7 +39,6 @@ class Connection(val schema: ServerSchema) {
          "id" -> JsString(id),
          "ts" -> JsNumber(timestamp),
          "schema" -> JsString(schema.source)
-      )).toString
-      
+      )).toString  
    }
 }

@@ -8,8 +8,8 @@ import com.variant.server.boot.VariantServerImpl
 import com.variant.server.session.SessionStore
 import com.variant.server.session.SessionStoreImpl
 import play.api.routing.Router
-import com.variant.server.session.ConnectionStore
-import com.variant.server.session.ConnectionStoreImpl
+import com.variant.server.conn.ConnectionStore
+import com.variant.server.conn.ConnectionStoreImpl
 
 /**
  * This class is a Guice module that tells Guice how to bind several

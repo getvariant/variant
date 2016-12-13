@@ -13,7 +13,8 @@
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 # Variant Controllers
-GET     /connection/:schema      com.variant.server.controller.ConnectionController.get(schema: String)
+POST     /connection/:schema     com.variant.server.controller.ConnectionController.post(schema: String)
+DELETE  /connection/:id          com.variant.server.controller.ConnectionController.delete(id: String)
 
 POST    /event                   com.variant.server.controller.EventController.post()
 

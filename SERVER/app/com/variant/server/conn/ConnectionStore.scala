@@ -1,4 +1,4 @@
-package com.variant.server.session;
+package com.variant.server.conn;
 
 import java.util.Map
 import java.util.Set

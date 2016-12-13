@@ -7,9 +7,7 @@ import play.api.test.Helpers._
 import scala.collection.JavaConversions._
 import com.variant.server.UserError
 import com.variant.server.test.util.ParamString
-import com.variant.server.ServerPropertiesKey._
 import com.variant.server.test.util.EventReader
-import com.variant.server.ServerPropertiesKey._
 import com.variant.server.test.BaseSpecWithSchema
 //import com.variant.server.test.controller.SessionTest
 
