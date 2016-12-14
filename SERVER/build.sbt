@@ -27,7 +27,7 @@ libraryDependencies ++= Seq(
 )
 
 // Test scoped classpath directory
-//unmanagedClasspath in Test += baseDirectory.value / "test-conf"
+unmanagedClasspath in Test += baseDirectory.value / "test-conf"
 
 // Capture SBT build info in a source file available at compile time.
 sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { (d, v, n) =>
@@ -42,7 +42,7 @@ sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { 
 }
 
 // Config file when running in place with the "run" command.
-javaOptions in Runtime += "-Dconfig.file=test-conf/application.conf"
+// javaOptions in Runtime += "-Dconfig.file=test-conf/application.conf"
 
 //javaOptions in Test +="-Dlogger.resource=test-logback.xml"
 

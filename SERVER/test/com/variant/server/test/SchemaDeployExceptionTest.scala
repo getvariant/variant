@@ -41,8 +41,8 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
    }
 
    
-   "Regular startup without variant.schemas.dir property set" should {
-      "throw exception" in {
+   "Missing variant.schemas.dir property" should {
+      "throw UNEXPECTED_FATAL_ERROR" in {
          val server = app.injector.instanceOf[VariantServer]
          server.isUp mustBe false
          server.schema.isDefined mustBe false
