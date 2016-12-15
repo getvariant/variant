@@ -16,7 +16,6 @@ import org.apache.commons.io.IOUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.Error.Severity;
 import com.variant.core.exception.RuntimeError;
 import com.variant.core.exception.RuntimeInternalException;
@@ -25,6 +24,7 @@ import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
+import com.variant.core.util.VariantStringUtils;
 
 public class SchemaParser implements Keywords {
 	

@@ -12,7 +12,7 @@ import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.core.session.CoreSessionImpl;
+import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
 
 public class TargetingStabileTest extends BaseTestCore {
@@ -29,7 +29,7 @@ public class TargetingStabileTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		Schema schema = response.getSchema();
 		
-		CoreSessionImpl ssn = new CoreSessionImpl("SID", schema);
+		CoreSession ssn = new CoreSession("SID", schema);
 		assertNull(ssn.getStateRequest());
 		
 		// 

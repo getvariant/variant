@@ -18,7 +18,7 @@ public interface SessionStore extends Injectable {
 	/**
 	 * Get a session from the store by its ID. 
 	 * @param sessionId The ID of the session of interest.
-	 * @return An instance of {@link CoreSessionImpl} if session with this ID was
+	 * @return An instance of {@link CoreSession} if session with this ID was
 	 *         found in the store, or null if not.
 	 * @since 0.5
 	 */
@@ -29,6 +29,6 @@ public interface SessionStore extends Injectable {
 	 * @param session The session to be saved in the store.
 	 * @since 0.5
 	 */
-	public void save(CoreSessionImpl session);	
+	public void save(CoreSession session);	
 
 }

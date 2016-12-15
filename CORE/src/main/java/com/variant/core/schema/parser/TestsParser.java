@@ -47,7 +47,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
@@ -60,6 +59,7 @@ import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.TestExperienceImpl;
 import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
+import com.variant.core.util.VariantStringUtils;
 
 /**
  * Parse the TESTS clause.

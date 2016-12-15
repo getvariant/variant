@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import com.variant.core.event.impl.util.VariantCollectionsUtils;
 import com.variant.core.exception.Error.Severity;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
@@ -16,6 +15,7 @@ import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.core.schema.parser.SchemaParser;
+import com.variant.core.util.VariantCollectionsUtils;
 
 /**
  * All Tests:

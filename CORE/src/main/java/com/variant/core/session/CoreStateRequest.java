@@ -15,11 +15,10 @@ import org.apache.commons.collections4.set.UnmodifiableSet;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.event.VariantEvent;
-import com.variant.core.event.impl.StateVisitedEvent;
-import com.variant.core.event.impl.util.VariantCollectionsUtils;
+import com.variant.core.api.VariantEvent;
 import com.variant.core.exception.RuntimeErrorException;
 import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
@@ -28,6 +27,7 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.util.CaseInsensitiveMap;
+import com.variant.core.util.VariantCollectionsUtils;
 
 /**
  * 
@@ -41,7 +41,7 @@ public class CoreStateRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private CoreSessionImpl session;	
+	private CoreSession session;	
 	private StateImpl state;
 	private Status status = Status.OK;
 	private StateVariant resolvedStateVariant;
@@ -64,7 +64,7 @@ public class CoreStateRequest implements Serializable {
 	 * Regular constructor
 	 * @param session
 	 */
-	public CoreStateRequest(CoreSessionImpl session, StateImpl state) {
+	public CoreStateRequest(CoreSession session, StateImpl state) {
 		this.session = session;
 		this.state = state;
 		session.setStateRequest(this);
@@ -129,7 +129,7 @@ public class CoreStateRequest implements Serializable {
 		return committed;
 	}
 */
-	public CoreSessionImpl getSession() {
+	public CoreSession getSession() {
 		return session;
 	}
 
@@ -290,7 +290,7 @@ public class CoreStateRequest implements Serializable {
 	 * @param fields
 	 * @return
 	 */
-	public static CoreStateRequest fromJson(Schema schema, CoreSessionImpl session, Map<String,?> fields) {
+	public static CoreStateRequest fromJson(Schema schema, CoreSession session, Map<String,?> fields) {
 		
 		Object stateName = fields.get(FIELD_NAME_STATE);
 		if (stateName == null) 

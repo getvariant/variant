@@ -3,9 +3,9 @@ package com.variant.core.net;
 import java.util.Map;
 
 import com.variant.core.schema.Schema;
-import com.variant.core.session.CoreSessionImpl;
+import com.variant.core.session.CoreSession;
 
-public class SessionPayloadReader extends PayloadReader<CoreSessionImpl> {
+public class SessionPayloadReader extends PayloadReader<CoreSession> {
 
 	/**
 	 * 
@@ -20,8 +20,8 @@ public class SessionPayloadReader extends PayloadReader<CoreSessionImpl> {
 	 * Deserealizer.
 	 */
 	@Override
-	protected CoreSessionImpl deserealizeBody(Schema schema, Map<String, ?> mappedJson) {
-		return CoreSessionImpl.fromJson(mappedJson, schema);
+	protected CoreSession deserealizeBody(Schema schema, Map<String, ?> mappedJson) {
+		return CoreSession.fromJson(mappedJson, schema);
 	}
 
 }

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.hook.HookListener;
-import com.variant.core.hook.UserHook;
+import com.variant.core.api.HookListener;
+import com.variant.core.api.UserHook;
 
 /**
  * User Hook processor
