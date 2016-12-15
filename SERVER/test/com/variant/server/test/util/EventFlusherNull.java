@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantCoreInitParams;
+import com.variant.server.ServerProperties;
 import com.variant.server.event.EventFlusher;
 import com.variant.server.event.FlushableEvent;
 
@@ -21,7 +21,7 @@ class EventFlusherNull implements EventFlusher {
 	private static final Logger LOG = LoggerFactory.getLogger(EventFlusherNull.class);
 	
 	@Override
-	public void init(VariantCoreInitParams initParams) {}
+	public void init(ServerProperties props) {}
 	
 	@Override
 	public void flush(Collection<FlushableEvent> events) throws Exception {

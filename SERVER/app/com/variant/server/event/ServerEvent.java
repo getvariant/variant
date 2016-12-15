@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.variant.core.event.VariantEvent;
+import com.variant.core.api.VariantEvent;
 
 /**
  * Event received over HTTP and suitable to pass to the Core API.

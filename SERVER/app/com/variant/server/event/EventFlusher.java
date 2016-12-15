@@ -2,7 +2,7 @@ package com.variant.server.event;
 
 import java.util.Collection;
 
-import com.variant.core.VariantCoreInitParams;
+import com.variant.server.ServerProperties;
 
 /**
  * <p>An environment dependent implementation will use external mechanisms to flush a bunch
@@ -37,12 +37,11 @@ public interface EventFlusher {
 	 * Variant server calls this method immediately following the instantiation while 
 	 * initializing Variant Server. Use this to inject state from configuration.
 	 * 
-	 * @param initParams An instance of type {@link VariantCoreInitParams}, containing 
-	 *                   parsed JSON object, specified by the <code>event.flusher.class.init</code> system property. 
+	 * @param config Server configuration. 
 	 * 
 	 * @since 0.5
 	 */
-	public void init(VariantCoreInitParams initParams) throws Exception;
+	public void init(ServerProperties config) throws Exception;
 	
 	/**
 	 * <p>Flush a bunch of events to external storage.

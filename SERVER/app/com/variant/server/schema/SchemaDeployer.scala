@@ -16,7 +16,6 @@ import com.variant.server.boot.VariantServer.server
 import play.api.Logger
 import com.variant.core.schema.ParserResponse
 import org.apache.commons.io.IOUtils
-import com.variant.core.event.impl.util.VariantStringUtils
 
 trait SchemaDeployer {
  

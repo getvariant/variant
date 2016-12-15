@@ -6,8 +6,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.VariantCoreInitParams;
 import com.variant.core.schema.Test.Experience;
+import com.variant.server.ServerProperties;
 
 /**
  * <p>An environment independent implementation of {@link EventFlusher}, which appends
@@ -22,7 +22,7 @@ public class EventFlusherAppLogger implements EventFlusher {
 	private static final Logger LOG = LoggerFactory.getLogger(EventFlusherAppLogger.class);
 
 	@Override
-	public void init(VariantCoreInitParams initParams) {
+	public void init(ServerProperties props) {
 		LOG.debug("Bootstrapped");
 	}
 

@@ -11,14 +11,13 @@ import org.slf4j.LoggerFactory;
 
 import static com.variant.server.ServerError.*;
 
-import com.variant.core.CoreSession;
-import com.variant.core.session.CoreSessionImpl;
+import com.variant.core.session.CoreSession;
 import com.variant.core.session.CoreStateRequest;
-import com.variant.core.event.impl.util.VariantStringUtils;
+import com.variant.core.util.VariantStringUtils;
 import com.variant.core.exception.RuntimeErrorException;
 import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.hook.TestQualificationHook;
-import com.variant.core.hook.TestTargetingHook;
+import com.variant.core.api.TestQualificationHook;
+import com.variant.core.api.TestTargetingHook;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.schema.State;
@@ -155,7 +154,7 @@ public class Runtime {
 	private void targetSessionForState(CoreStateRequest req) {
 
 		ServerSchema schema = server.schema().get();
-		CoreSessionImpl session = req.getSession();
+		CoreSession session = req.getSession();
 		SessionScopedTargetingStabile targetingStabile = session.getTargetingStabile();
 		State state = req.getState();
 		
@@ -310,7 +309,7 @@ public class Runtime {
 	 * @param session
 	 * @param test
 	 */
-	private boolean qualifyTest(Test test, CoreSessionImpl session) {
+	private boolean qualifyTest(Test test, CoreSession session) {
 
 		/**
 		 * 
@@ -580,7 +579,7 @@ public class Runtime {
 	 * @param view
 	 * @return
 	 */
-	public CoreStateRequest targetSessionForState(CoreSessionImpl ssn, StateImpl state) {
+	public CoreStateRequest targetSessionForState(CoreSession ssn, StateImpl state) {
 
 		// Resolve the path and get all tests instrumented on the state.
 		CoreStateRequest result = new CoreStateRequest(ssn, state);

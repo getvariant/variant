@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import play.api.Logger
 import com.variant.server.boot.VariantServer
-import com.variant.core.VariantProperties
+import com.variant.server.ServerProperties
 
 /**
  * Sessions are stored serialized as unparsed JSON strings and only deserialized when are needed
@@ -100,7 +100,7 @@ class SessionStoreEntry (val json: String) {
 /**
  * Background thread deletes cache entries older than the keep-alive interval.
  */
-class VacuumThread(props: VariantProperties, storeMap: Map[String, SessionStoreEntry]) extends Thread {
+class VacuumThread(props: ServerProperties, storeMap: Map[String, SessionStoreEntry]) extends Thread {
 
    private val logger = Logger(this.getClass)	
    private val sessionTimeoutMillis = props.getInt(SESSION_TIMEOUT) * 1000

@@ -1,14 +1,17 @@
 package com.variant.server.event;
 
+import static com.variant.core.exception.RuntimeError.CONFIG_PROPERTY_NOT_SET;
+import static com.variant.server.ServerPropertiesKey.EVENT_FLUSHER_CLASS_INIT;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
-import static com.variant.core.exception.RuntimeError.*;
-import static com.variant.server.ServerPropertiesKey.EVENT_FLUSHER_CLASS_INIT;
-
-import com.variant.core.VariantCoreInitParams;
-import com.variant.core.exception.RuntimeErrorException;
+import com.typesafe.config.ConfigObject;
+import com.typesafe.config.ConfigValue;
+import com.variant.server.ServerErrorException;
+import com.variant.server.ServerProperties;
+import com.variant.server.ServerPropertiesKey;
 import com.variant.server.jdbc.EventFlusherJdbc;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
@@ -35,15 +38,27 @@ public class EventFlusherPostgres extends EventFlusherJdbc {
 	private String password = null;
 	
 	@Override
-	public void init(VariantCoreInitParams initParams) throws Exception {
-		url = (String) initParams.getOr(
-				"url", new RuntimeErrorException(PROPERTY_INIT_PROPERTY_NOT_SET, "url", EVENT_FLUSHER_CLASS_INIT.getExternalName()));
+	public void init(ServerProperties props) throws Exception {
 		
-		user = (String) initParams.getOr(
-				"user", new RuntimeErrorException(PROPERTY_INIT_PROPERTY_NOT_SET, "user", EVENT_FLUSHER_CLASS_INIT.getExternalName()));
+		ConfigObject conf = props.getObject(ServerPropertiesKey.EVENT_FLUSHER_CLASS_INIT);
 		
-		password = (String) initParams.getOr(
-				"password", new RuntimeErrorException(PROPERTY_INIT_PROPERTY_NOT_SET, "password", EVENT_FLUSHER_CLASS_INIT.getExternalName()));
+		ConfigValue val = conf.get("url");
+		if (val == null)
+			throw new ServerErrorException(
+					CONFIG_PROPERTY_NOT_SET, "url", getClass().getName(), EVENT_FLUSHER_CLASS_INIT.getExternalName());
+		url = (String) val.unwrapped(); 		// TODO: This will break if url exists but is no a string.
+
+		val = conf.get("user");
+		if (val == null)
+			throw new ServerErrorException(
+					CONFIG_PROPERTY_NOT_SET, "user", getClass().getName(), EVENT_FLUSHER_CLASS_INIT.getExternalName());
+		user = (String) val.unwrapped(); 		// TODO: This will break if url exists but is no a string.
+
+		val = conf.get("password");
+		if (val == null)
+			throw new ServerErrorException(
+					CONFIG_PROPERTY_NOT_SET, "password", getClass().getName(), EVENT_FLUSHER_CLASS_INIT.getExternalName());
+		password = (String) val.unwrapped(); 	// TODO: This will break if url exists but is no a string.
 
 	}
 

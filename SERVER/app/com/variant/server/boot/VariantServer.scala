@@ -12,7 +12,6 @@ import play.api.inject.ApplicationLifecycle
 import play.api.routing.Router
 import com.variant.core.schema.Schema
 import com.variant.server.schema.ServerSchema
-import com.variant.core.VariantProperties
 import play.api.Application
 import com.variant.core.impl.UserHooker
 import com.variant.server.schema.SchemaDeployerFromFS
@@ -24,6 +23,8 @@ import com.variant.core.exception.RuntimeErrorException
 import com.variant.core.exception.Error.Severity
 import com.variant.core.exception.VariantRuntimeException
 import com.variant.server.ServerError
+import com.variant.server.ServerProperties
+import com.variant.core.exception.RuntimeError
 
 /**
  * Need a trait to make DI to work.
@@ -31,7 +32,7 @@ import com.variant.server.ServerError
 trait VariantServer {
    
    val isUp: Boolean
-   val properties: VariantProperties
+   val properties: ServerProperties
    val startupErrorLog: List[ServerErrorException]
    val eventWriter: EventWriter
    def schema: Option[ServerSchema]
@@ -64,7 +65,7 @@ class VariantServerImpl @Inject() (
    
 	VariantServer._instance = this
 
-	override val properties = new ServerPropertiesImpl(configuration)
+	override val properties = new ServerProperties(configuration)
    override val eventWriter = new EventWriter(properties)      
    override val hooker = new UserHooker()
    override val runtime = new Runtime(this)

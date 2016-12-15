@@ -1,9 +1,8 @@
 package com.variant.server;
 
-import com.variant.core.VariantProperties;
 import com.variant.server.event.EventFlusherAppLogger;
 
-public class ServerPropertiesKey implements VariantProperties.Key {
+public class ServerPropertiesKey {
 	
 	public static final ServerPropertiesKey SCHEMAS_DIR =
 			new ServerPropertiesKey("variant.schemas.dir");
@@ -51,12 +50,10 @@ public class ServerPropertiesKey implements VariantProperties.Key {
    		this.defaultValue = null;
    	}
 
-   	@Override
 	public String getExternalName() {
 		return name;
 	}
 
-	@Override
 	public Object getDefault() {
 		return defaultValue;
 	}

@@ -1,7 +1,7 @@
 package com.variant.server
 
 import com.variant.server.schema.ServerSchema
-import com.variant.core.event.impl.util.VariantStringUtils
+import com.variant.core.util.VariantStringUtils
 import play.api.libs.json._
 
 /**

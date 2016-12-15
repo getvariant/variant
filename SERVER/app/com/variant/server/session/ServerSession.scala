@@ -1,13 +1,12 @@
 package com.variant.server.session
 
-import com.variant.core.CoreSession
-import com.variant.core.event.VariantEvent
+import com.variant.core.session.CoreSession
+import com.variant.core.api.VariantEvent
 import javax.inject.Inject
 import com.variant.core.schema.Schema
 import com.variant.server.event.FlushableEventImpl
 import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerSchema
-import com.variant.core.session.CoreSessionImpl
 import com.variant.core.schema.State
 import com.variant.core.schema.impl.StateImpl
 import com.variant.server.runtime.Runtime
@@ -22,7 +21,7 @@ object ServerSession {
    def apply(sid: String) = new ServerSession(sid)
   
    def fromJson(json: String) = {
-      val coreSession = CoreSessionImpl.fromJson(json, VariantServer.server.schema.get)
+      val coreSession = CoreSession.fromJson(json, VariantServer.server.schema.get)
       new ServerSession(coreSession)
    }
 }
@@ -30,54 +29,52 @@ object ServerSession {
 /**
  * Construct from session ID.
  */
-class ServerSession (private val sid: String) extends CoreSession {
+class ServerSession (private val sid: String) {
    
    /**
     * Construct from already constructed core session object.
     */
    def this(coreSession: CoreSession) = {
       this("")
-      this.coreSessionImpl = coreSession.asInstanceOf[CoreSessionImpl]
+      this.coreSession = coreSession.asInstanceOf[CoreSession]
    }
 
    /**
     * Tests will need access to the core session.
     */
-   var coreSessionImpl = new CoreSessionImpl(sid, VariantServer.server.schema.get)
+   var coreSession = new CoreSession(sid, VariantServer.server.schema.get)
  
   /*
    * Delegates to core methods
    */
-
-   override def creationTimestamp = coreSessionImpl.creationTimestamp
+   def creationTimestamp = coreSession.creationTimestamp
    
-   override def getDisqualifiedTests = coreSessionImpl.getDisqualifiedTests
+   def getDisqualifiedTests = coreSession.getDisqualifiedTests
    
-   override def getId = coreSessionImpl.getId
+   def getId = coreSession.getId
    
-   override def getSchema  = coreSessionImpl.getSchema
+   def getSchema  = coreSession.getSchema
    
-   override def getStateRequest = coreSessionImpl.getStateRequest
+   def getStateRequest = coreSession.getStateRequest
    
-   override def getTraversedStates = coreSessionImpl.getTraversedStates
+   def getTraversedStates = coreSession.getTraversedStates
    
-   override def getTraversedTests = coreSessionImpl.getTraversedTests
+   def getTraversedTests = coreSession.getTraversedTests
    
    /*
     * Server only functionality
     */
-   
    def targetForState(state: State) = {
-      VariantServer.server.runtime.targetSessionForState(coreSessionImpl, state.asInstanceOf[StateImpl])   
+      VariantServer.server.runtime.targetSessionForState(coreSession, state.asInstanceOf[StateImpl])   
    }
    
 	def triggerEvent(event: VariantEvent) {
 		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
-		VariantServer.server.eventWriter.write(new FlushableEventImpl(event, coreSessionImpl));
+		VariantServer.server.eventWriter.write(new FlushableEventImpl(event, coreSession));
 	}
 	
 	/*
 	 * Expose targeting stabile for tests.
 	 */
-	def targetingStabile = coreSessionImpl.getTargetingStabile
+	def targetingStabile = coreSession.getTargetingStabile
 }

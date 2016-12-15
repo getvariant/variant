@@ -1,6 +1,6 @@
 package com.variant.server.test;
 
-import com.variant.core.hook.HookListener
+import com.variant.core.api.HookListener
 import com.variant.core.schema.StateParsedHook
 import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
@@ -9,10 +9,10 @@ import com.variant.core.exception.Error.Severity
 import com.variant.server.schema.SchemaDeployer
 import com.variant.core.schema.TestParsedHook
 import com.variant.core.schema.Test
-import com.variant.core.hook.TestQualificationHook
+import com.variant.core.api.TestQualificationHook
 import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
-import com.variant.core.hook.TestTargetingHook
+import com.variant.core.api.TestTargetingHook
 import com.variant.server.ServerErrorException
 import com.variant.server.ServerError
 import com.variant.core.exception.RuntimeErrorException
@@ -113,10 +113,10 @@ class UserHookTest extends BaseSpecWithSchema {
    	   val test6 = schema.getTest("test6")
    	   
    		val req = ssn.targetForState(state1);
-		   ssn.getTraversedStates().size() mustEqual 1
-		   ssn.getTraversedStates().get(state1) mustEqual 1
-		   ssn.getTraversedTests().toSet mustEqual Set(test3, test4, test5, test6)
-		   ssn.getDisqualifiedTests().size() mustEqual 0
+		   ssn.getTraversedStates.size() mustEqual 1
+		   ssn.getTraversedStates.get(state1) mustEqual 1
+		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5, test6)
+		   ssn.getDisqualifiedTests.size() mustEqual 0
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 4
 		   stabile.get("test1") must be (null)
@@ -143,11 +143,11 @@ class UserHookTest extends BaseSpecWithSchema {
    	   nullListener.testList.clear()
    	   
 	      val req = ssn.targetForState(state2);
-		   ssn.getTraversedStates().size() mustEqual 2
-		   ssn.getTraversedStates().get(state1) mustEqual 1
-		   ssn.getTraversedStates().get(state2) mustEqual 1
-		   ssn.getTraversedTests().toSet mustEqual Set(test1, test3, test4, test5, test6)
-		   ssn.getDisqualifiedTests().size() mustEqual 0
+		   ssn.getTraversedStates.size() mustEqual 2
+		   ssn.getTraversedStates.get(state1) mustEqual 1
+		   ssn.getTraversedStates.get(state2) mustEqual 1
+		   ssn.getTraversedTests.toSet mustEqual Set(test1, test3, test4, test5, test6)
+		   ssn.getDisqualifiedTests.size() mustEqual 0
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 5
 		   stabile.get("test1") mustNot be (null)
@@ -183,9 +183,9 @@ class UserHookTest extends BaseSpecWithSchema {
 		   ssn = new ServerSession(newSid())
 		   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
 		   val req = ssn.targetForState(state1);
-		   ssn.getTraversedStates().toSet mustEqual Set((state1, 1))
-		   ssn.getTraversedTests().toSet mustEqual Set(test3, test4, test5)
-		   ssn.getDisqualifiedTests().toSet mustEqual Set(test6)
+		   ssn.getTraversedStates.toSet mustEqual Set((state1, 1))
+		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedTests.toSet mustEqual Set(test6)
 
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 6  
@@ -216,9 +216,9 @@ class UserHookTest extends BaseSpecWithSchema {
 		   server.hooker.addListener(dl1)
 
 		   val req = ssn.targetForState(state2);
-		   ssn.getTraversedStates().toSet mustEqual Set((state1,1), (state2,1))
-		   ssn.getTraversedTests().toSet mustEqual Set(test3, test4, test5)
-		   ssn.getDisqualifiedTests().toSet mustEqual Set(test1, test6)
+		   ssn.getTraversedStates.toSet mustEqual Set((state1,1), (state2,1))
+		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedTests.toSet mustEqual Set(test1, test6)
 
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 5  
@@ -246,9 +246,9 @@ class UserHookTest extends BaseSpecWithSchema {
    	   val test6 = schema.getTest("test6")
 
 		   val req = ssn.targetForState(state3);
-		   ssn.getTraversedStates().toSet mustEqual Set((state1,1), (state2,1), (state3,1))
-		   ssn.getTraversedTests().toSet mustEqual Set(test3, test4, test5)
-		   ssn.getDisqualifiedTests().toSet mustEqual Set(test1, test6)
+		   ssn.getTraversedStates.toSet mustEqual Set((state1,1), (state2,1), (state3,1))
+		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedTests.toSet mustEqual Set(test1, test6)
 
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 5

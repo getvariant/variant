@@ -3,7 +3,6 @@ package com.variant.server.event;
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
 import org.apache.commons.lang3.time.DurationFormatUtils
-import com.variant.core.impl.VariantCoreInitParamsImpl
 import com.variant.server.ServerError._
 import com.variant.server.ServerPropertiesKey._
 import play.api.Logger
@@ -12,9 +11,9 @@ import com.variant.core.exception.RuntimeErrorException
 import com.variant.core.exception.VariantRuntimeException
 import com.variant.core.test.VariantBaseTest.VariantInternalExceptionInterceptor
 import com.variant.core.exception.RuntimeInternalException
-import com.variant.core.VariantProperties
+import com.variant.server.ServerProperties
 
-class EventWriter (props: VariantProperties) {
+class EventWriter (props: ServerProperties) {
 	
    private val logger = Logger(this.getClass)
    val bufferSize = props.getInt(EVENT_WRITER_BUFFER_SIZE)
@@ -54,11 +53,11 @@ class EventWriter (props: VariantProperties) {
 			
 			val json = props.getString(EVENT_FLUSHER_CLASS_INIT)
 			try {
-            result.init(new VariantCoreInitParamsImpl(json));
+            result.init(props);
 			}
 			catch {
 			   case _: Throwable =>
-               throw new RuntimeErrorException(PROPERTY_INIT_INVALID_JSON, json, EVENT_FLUSHER_CLASS_INIT.getExternalName());
+               throw new RuntimeErrorException(CONFIG_INIT_INVALID_JSON, json, EVENT_FLUSHER_CLASS_INIT.getExternalName());
 			}
 			result	
 		}

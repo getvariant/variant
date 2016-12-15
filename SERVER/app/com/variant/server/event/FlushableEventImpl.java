@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 
-import com.variant.core.event.VariantEvent;
+import com.variant.core.api.VariantEvent;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.CoreSession;
+import com.variant.core.session.CoreSession;
 
 /**
  * Flushable event implementation suitable for the server.

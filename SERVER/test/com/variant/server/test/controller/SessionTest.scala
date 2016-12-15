@@ -137,7 +137,7 @@ class SessionTest extends BaseSpecWithSchema {
          contentAsString(respPut) mustBe empty
          store.asString(sid).get mustBe body.expand("sid" -> sid, "ts" -> ts)
          val session = store.asSession(sid.toString).get
-         session.creationTimestamp() mustBe ts
+         session.creationTimestamp mustBe ts
          session.getId mustBe sid
       
          Thread.sleep(2000);

@@ -5,10 +5,10 @@ import com.variant.server.schema.SchemaDeployer
 import com.variant.core.schema.State
 import com.variant.server.session.ServerSession
 import com.variant.core.session.CoreStateRequest
-import com.variant.core.event.impl.util.VariantStringUtils
+import com.variant.core.util.VariantStringUtils
 import scala.collection.JavaConverters
-import com.variant.core.hook.HookListener
-import com.variant.core.hook.TestTargetingHook
+import com.variant.core.api.HookListener
+import com.variant.core.api.TestTargetingHook
 import scala.util.Random
 
 class TargetingTest extends BaseSpecWithSchema {
