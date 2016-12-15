@@ -1,6 +1,6 @@
 package com.variant.client.impl;
 
-import com.variant.client.SystemProperties.Property;
+import com.variant.client.Properties.Property;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantInitParams;
 import com.variant.core.impl.VariantCoreInitParamsImpl;

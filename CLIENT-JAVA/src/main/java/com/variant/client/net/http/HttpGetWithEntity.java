@@ -1,4 +1,4 @@
-package com.variant.client.http;
+package com.variant.client.net.http;
 
 import java.net.URI;
 

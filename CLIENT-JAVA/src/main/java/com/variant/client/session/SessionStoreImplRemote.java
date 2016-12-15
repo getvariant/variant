@@ -4,21 +4,20 @@ import java.util.Map;
 
 import org.apache.http.HttpStatus;
 
-import com.variant.client.http.HttpClient;
-import com.variant.client.http.HttpResponse;
-import com.variant.client.http.VariantHttpClientException;
+import com.variant.client.net.http.HttpClient;
+import com.variant.client.net.http.HttpResponse;
+import com.variant.client.net.http.VariantHttpClientException;
 import com.variant.core.CoreSession;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.session.CoreSessionImpl;
 import com.variant.core.session.SessionStore;
 
-public class SessionStoreImplRemote implements SessionStore {
+public class SessionStoreImplRemote {
 
 	//private static final Logger LOG = LoggerFactory.getLogger(SessionStoreRemote.class);
 	
 	private String apiEndpointUrl = null;
-	private VariantCore coreApi = null;
 
 	/**
 	 * GET or create session by ID.
@@ -26,8 +25,7 @@ public class SessionStoreImplRemote implements SessionStore {
 	 * does not understand schemas.
 	 * 
 	 * @since 0.6
-	 */
-	@Override
+	 *
 	public SessionPayloadReader get(String sessionId, boolean create) {
 
 		if (sessionId == null || sessionId.length() == 0) {
@@ -58,7 +56,6 @@ public class SessionStoreImplRemote implements SessionStore {
 	/**
 	 * Save the session in the remote server.
 	 */
-	@Override
 	public void save(CoreSession session) {
 
 		if (session == null) {

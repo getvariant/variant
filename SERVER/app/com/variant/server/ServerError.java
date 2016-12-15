@@ -34,8 +34,6 @@ public class ServerError extends RuntimeError {
          new ServerError(Severity.FATAL, "Event flusher class [%s] must implement interface [%s]"); 
 	//SID_TRACKER_NO_INTERFACE                         (Severity.FATAL, "Session ID tracker class [%s] must implement interface [%s]");
 	//SESSION_STORE_NO_INTERFACE                       (Severity.FATAL, "Session store class [%s] must implement interface [%s]");
-	//SESSION_ID_TRACKER_NO_INTERFACE                  (Severity.FATAL, "Session ID tracker class [%s] must implement interface [%s]");
-	//TARGETING_TRACKER_NO_INTERFACE                   (Severity.FATAL, "Targeting tracker class [%s] must implement interface [%s]");
 	//PARSER_LISTENER_NO_INTERFACE                     (Severity.FATAL, "Class [%s], annotated as [%s] must implement interface [%s]");
 
 	public final static ServerError STATE_UNDEFINED_IN_EXPERIENCE =
@@ -48,7 +46,7 @@ public class ServerError extends RuntimeError {
    /**
     * 
     */
-   protected ServerError(Severity severity, String format) {
+   private ServerError(Severity severity, String format) {
 		super(severity, format);
 	}
 

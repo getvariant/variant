@@ -1,20 +1,15 @@
 package com.variant.client.impl;
 
-import static com.variant.core.exception.Error.RUN_PROPERTY_INIT_INVALID_JSON;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
-import java.util.Properties;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.client.SystemProperties;
+import com.variant.client.Properties;
 import com.variant.core.event.impl.util.PropertiesChain;
-import com.variant.core.exception.Error;
-import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.util.Tuples.Pair;
 
 /**
@@ -25,7 +20,7 @@ import com.variant.core.util.Tuples.Pair;
  * @author Igor
  *
  */
-public class SystemPropertiesImpl implements SystemProperties {
+public class SystemPropertiesImpl implements Properties {
 	
 	public static final String COMMANDLINE_RESOURCE_NAME = "variant.props.resource";
 	public static final String COMMANDLINE_FILE_NAME = "varaint.props.file";
@@ -48,9 +43,9 @@ public class SystemPropertiesImpl implements SystemProperties {
 	void overrideWith(InputStream is, String comment) {
 					
 		try {
-			Properties properties = new Properties();
-			properties.load(is);
-			propsChain.overrideWith(properties, comment);
+			java.util.Properties props = new java.util.Properties();
+			props.load(is);
+			propsChain.overrideWith(props, comment);
 		} catch (Throwable t) {
 			throw new RuntimeException("Unable to read input stream", t);
 		}
@@ -62,7 +57,7 @@ public class SystemPropertiesImpl implements SystemProperties {
 	 * @return
 	 */
 	private Integer getInteger(Property key) {
-		return Integer.parseInt(getString(key).arg1());
+		return Integer.parseInt(getString(key)._1());
 	}
 
 	/**
@@ -110,14 +105,14 @@ public class SystemPropertiesImpl implements SystemProperties {
 	 */
 	@SuppressWarnings("unchecked")
 	Map<String, String> getMap(Property key) {
-		String raw = getString(key).arg1();
+		String raw = getString(key)._1();
 		try {
 			ObjectMapper jacksonDataMapper = new ObjectMapper();
 			jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 			return jacksonDataMapper.readValue(raw, Map.class);
 		}
 		catch (Exception e) {
-			throw new VariantRuntimeUserErrorException(RUN_PROPERTY_INIT_INVALID_JSON, raw, key.name);
+			throw new ClientErrorException(ClientError.PROPERTY_INIT_INVALID_JSON, raw, key.name);
 		}
 	}
 
@@ -132,13 +127,13 @@ public class SystemPropertiesImpl implements SystemProperties {
 	@SuppressWarnings("unchecked")
 	public <T> T get(Property key, Class<T> clazz) {
 		if (clazz == String.class)
-			return (T) getString(key).arg1();
+			return (T) getString(key)._1();
 		else if (clazz == Integer.class)
 			return (T) getInteger(key);
 		else if (clazz == Map.class)
 			return (T) getMap(key);
 		else 
-			throw new VariantRuntimeUserErrorException(Error.RUN_PROPERTY_BAD_CLASS, clazz.getName());
+			throw new ClientErrorException(ClientError.PROPERTY_BAD_CLASS, clazz.getName());
 	}
 	
 	/**
@@ -149,9 +144,8 @@ public class SystemPropertiesImpl implements SystemProperties {
 	 * @return Raw String value.
 	 */	
 	@Override
-	@SuppressWarnings("unchecked")
 	public String get(Property key) {
-		return getString(key).arg1();
+		return getString(key)._1();
 	}
 
 	/**
@@ -162,7 +156,7 @@ public class SystemPropertiesImpl implements SystemProperties {
 	 */
 	@Override
 	public String getSource(Property key) {
-		return getString(key).arg2();
+		return getString(key)._2();
 	}
 
 }

@@ -1,9 +1,9 @@
 package com.variant.client.impl;
 
-import static com.variant.core.exception.Error.BOOT_SESSION_ID_TRACKER_NO_INTERFACE;
-import static com.variant.core.exception.Error.BOOT_TARGETING_TRACKER_NO_INTERFACE;
-import static com.variant.core.exception.Error.RUN_SCHEMA_UNDEFINED;
-import static com.variant.client.SystemProperties.Property.*;
+import static com.variant.client.Properties.Property.SESSION_ID_TRACKER_CLASS_INIT;
+import static com.variant.client.Properties.Property.SESSION_ID_TRACKER_CLASS_NAME;
+import static com.variant.client.Properties.Property.TARGETING_TRACKER_CLASS_INIT;
+import static com.variant.client.Properties.Property.TARGETING_TRACKER_CLASS_NAME;
 
 import java.io.InputStream;
 import java.util.Random;
@@ -12,8 +12,8 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.SystemProperties;
-import com.variant.client.SystemProperties.Property;
+import com.variant.client.Properties;
+import com.variant.client.Properties.Property;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
@@ -21,19 +21,14 @@ import com.variant.client.VariantTargetingTracker;
 import com.variant.client.session.ClientSessionCache;
 import com.variant.core.CoreSession;
 import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.exception.VariantBootstrapException;
 import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.exception.VariantRuntimeUserErrorException;
-import com.variant.core.exception.VariantSchemaModifiedException;
-import com.variant.core.impl.VariantComptime;
-import com.variant.core.impl.VariantCore;
+import com.variant.core.hook.HookListener;
 import com.variant.core.net.Payload;
 import com.variant.core.net.SessionPayloadReader;
+import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
 import com.variant.core.session.CoreSessionImpl;
 import com.variant.core.session.SessionStore;
-import com.variant.server.ParserResponse;
-import com.variant.server.hook.HookListener;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
@@ -47,66 +42,9 @@ public class VariantClientImpl implements VariantClient {
 	private static final Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
 	private static final Random RAND = new Random(System.currentTimeMillis());
 
-	private VariantCore core = null;
-	private SystemProperties properties = null;
+	private final Properties properties = new SystemPropertiesImpl();
 	private SessionStore sessionStore = null;
 	private ClientSessionCache cache = null;
-	
-	/**
-	 * Instantiate session ID tracker.
-	 * TODO: reflective object creation is expensive.
-	 * @param userData
-	 * @return
-	 */
-	private VariantSessionIdTracker initSessionIdTracker(Object...userData) {
-		// Session ID tracker.
-		String sidTrackerClassName = properties.get(SESSION_ID_TRACKER_CLASS_NAME, String.class);
-		try {
-			Class<?> sidTrackerClass = Class.forName(sidTrackerClassName);
-			Object sidTrackerObject = sidTrackerClass.newInstance();
-			if (sidTrackerObject instanceof VariantSessionIdTracker) {
-				VariantSessionIdTracker result = (VariantSessionIdTracker) sidTrackerObject;
-				VariantInitParamsImpl initParams = new VariantInitParamsImpl(this, SESSION_ID_TRACKER_CLASS_INIT);
-				result.init(initParams, userData);
-				return result;
-			}
-			else {
-				throw new VariantBootstrapException(BOOT_SESSION_ID_TRACKER_NO_INTERFACE, sidTrackerClassName, SessionStore.class.getName());
-			}
-		}
-		catch (Exception e) {
-			throw new RuntimeInternalException("Unable to instantiate session id tracker class [" + sidTrackerClassName + "]", e);
-		}
-
-	}
-		
-	/**
-	 * Instantiate targeting tracker.
-	 * TODO: reflective object creation is expensive.
-	 * @param userData
-	 * @return
-	 */
-	private VariantTargetingTracker initTargetingTracker(Object...userData) {
-		
-		// Instantiate targeting tracker.
-		String className = properties.get(TARGETING_TRACKER_CLASS_NAME, String.class);
-		
-		try {
-			Object object = Class.forName(className).newInstance();
-			if (object instanceof VariantTargetingTracker) {
-				VariantTargetingTracker result = (VariantTargetingTracker) object;
-				VariantInitParamsImpl initParams = new VariantInitParamsImpl(this, TARGETING_TRACKER_CLASS_INIT);
-				result.init(initParams, userData);
-				return result;
-			}
-			else {
-				throw new VariantBootstrapException(BOOT_TARGETING_TRACKER_NO_INTERFACE, className, VariantTargetingTracker.class.getName());
-			}
-		}
-		catch (Exception e) {
-			throw new RuntimeInternalException("Unable to instantiate targeting tracker class [" + className +"]", e);
-		}
-	}
 	
 	/**
 	 * Handshake with the server.
@@ -117,7 +55,7 @@ public class VariantClientImpl implements VariantClient {
 	}
 	
 	/**
-	 */
+	 *
 	private VariantSession _getSession(boolean create, Object... userData) {
 		
 		// Get session ID from the session ID tracker.
@@ -137,11 +75,11 @@ public class VariantClientImpl implements VariantClient {
 		// Have session ID. Try the local cache first.
 		VariantSession ssnFromCache = cache.get(sessionId);
 		
-		// Local case miss.
 		if (ssnFromCache == null) {
+			// Local case miss.
 			if (create) {
 				// Session expired locally, recreate OK.  Don't bother with the server.
-				CoreSession coreSession = new CoreSession(sessionId, core);
+				CoreSession coreSession = new CoreSessionImpl(sessionId);
 				coreSession.save();
 				VariantSessionImpl clientSession = new VariantSessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
@@ -200,29 +138,7 @@ public class VariantClientImpl implements VariantClient {
 
 	/**
 	 */
-	public VariantClientImpl(String...resourceNames) {
-		
-		long now = System.currentTimeMillis();
-		
-		core = new VariantCore(resourceNames);
-		core.getComptime().registerComponent(VariantComptime.Component.CLIENT, "0.7.0");		
-		properties = new SystemPropertiesImpl();
-		cache = new ClientSessionCache();
-
-		if (LOG.isDebugEnabled()) {
-			LOG.debug("+-- Bootstrapping Variant Client with following application properties: --");
-			for (Property prop: Property.values()) {
-				LOG.debug("| " + prop.name() + " = " + properties.get(prop));
-			}
-			LOG.debug("+------------- Fingers crossed, this is not PRODUCTION -------------");
-		}
-
-		LOG.info(String.format(
-				"%s release %s © 2015-16 getvariant.com. Bootstrapped in %s.", 
-				core.getComptime().getComponent(),
-				core.getComptime().getComponentVersion(),
-				DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")));
-	}
+	public VariantClientImpl(String...resourceNames) { /* What happened to the resource names? */ }
 
 	/**
 	 * <p>This API's application properties
@@ -232,7 +148,7 @@ public class VariantClientImpl implements VariantClient {
 	 * @since 0.6
 	 */
 	@Override
-	public SystemProperties getProperties() {
+	public Properties getProperties() {
 		return properties;
 	}
 
@@ -244,7 +160,7 @@ public class VariantClientImpl implements VariantClient {
 	 *        {@link com.variant.server.hook.HookListener} interface.
 	 *        
 	 * @since 0.6
-	 */
+	 *
 	@Override
 	public void addHookListener(HookListener<?> listener) {
 		core.addHookListener(listener);
@@ -254,7 +170,7 @@ public class VariantClientImpl implements VariantClient {
 	 * <p>Remove all previously registered (with {@link #addHookListener(HookListener)} listeners.
 	 * 
 	 * @since 0.5
-	 */
+	 *
 	@Override
 	public void clearHookListeners() {
 		core.clearHookListeners();
@@ -271,7 +187,7 @@ public class VariantClientImpl implements VariantClient {
 	 *         may be further examined about the outcome of this operation.
 	 * 
 	 * @since 0.5
-	 */
+	 *
 	@Override
 	public ParserResponse parseSchema(InputStream stream, boolean deploy) {		
 		return core.parseSchema(stream, deploy);
@@ -287,38 +203,27 @@ public class VariantClientImpl implements VariantClient {
 	 *         may be further examined about the outcome of this operation.
      *
 	 * @since 0.5
-	 */
+	 *
 	@Override
 	public ParserResponse parseSchema(InputStream stream) {
 		return core.parseSchema(stream);
 	}
 
-	/**
-	 * <p>Get currently deployed test schema, if any.
-	 * 
-	 * @return Current test schema as an instance of the {@link com.variant.core.schema.Schema} object.
-	 * 
-	 * @since 0.5
-	 */
-	@Override
-	public Schema getSchema() {
-		return core.getSchema();
-	}
 
 	/**
-	 */
+	 *
 	@Override
 	public VariantSession getOrCreateSession(Object... userData) {
 		return _getSession(true, userData);
 	}
 			
 	/**
-	 */
+	 *
 	@Override
 	public VariantSession getSession(Object... userData) {
 		return _getSession(false, userData);
 	}
-
+*/
 	//---------------------------------------------------------------------------------------------//
 	//                                      PUBLIC EXT                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -326,7 +231,7 @@ public class VariantClientImpl implements VariantClient {
 	/**
 	 * @return Core API Object.
 	 * @since 0.5
-	 */
+	 *
 	public VariantCore getCoreApi() {
 		return core;
 	}
@@ -335,12 +240,12 @@ public class VariantClientImpl implements VariantClient {
 	 * Save user session in session store.
 	 * @param session
 	 * TODO Make this async
-	 */
+	 *
 	public void saveSession(CoreSession session, Object...userData) {
 		if (getSchema() == null) throw new VariantRuntimeUserErrorException(RUN_SCHEMA_UNDEFINED);
 		if (!getSchema().getId().equals(session.getSchemaId())) 
 			throw new VariantSchemaModifiedException(getSchema().getId(), session.getSchemaId());
 		sessionStore.save(session);
 	}
-
+    */
 }

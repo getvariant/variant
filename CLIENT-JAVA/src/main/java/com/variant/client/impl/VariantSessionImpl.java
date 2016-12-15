@@ -3,6 +3,8 @@ package com.variant.client.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
@@ -10,18 +12,17 @@ import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantStateRequest;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.client.session.TargetingTrackerEntryImpl;
-import com.variant.core.VariantCoreSession;
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.CoreSession;
 import com.variant.core.event.VariantEvent;
 import com.variant.core.exception.Error;
-import com.variant.core.exception.VariantRuntimeUserErrorException;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.session.CoreSession;
+import com.variant.core.schema.impl.StateImpl;
+import com.variant.core.session.CoreSessionImpl;
 import com.variant.core.session.CoreStateRequest;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.xdm.impl.StateImpl;
 
 /**
  * Client side session implementation. Augments core session with client-side
@@ -38,7 +39,7 @@ public class VariantSessionImpl implements VariantSession {
 	private boolean isExpired = false;
 	
 	private VariantClientImpl client;
-	private CoreSession coreSession;
+	private CoreSessionImpl coreSession;
 	private VariantSessionIdTracker sessionIdTracker;
 	private VariantTargetingTracker targetingTracker;
 	private HashMap<String, Object> attributeMap = new HashMap<String, Object>();
@@ -55,7 +56,7 @@ public class VariantSessionImpl implements VariantSession {
 		Collection<VariantTargetingTracker.Entry> entries = tt.get();
 		if (entries != null)
 			for (VariantTargetingTracker.Entry e : entries)
-				result.add(e.getAsExperience(coreSession.getCoreApi().getSchema()), e.getTimestamp());
+				result.add(e.getAsExperience(coreSession.getSchema()), e.getTimestamp());
 		return result;
 	}
 
@@ -72,7 +73,7 @@ public class VariantSessionImpl implements VariantSession {
 	}
 	
 	/**
-	 * 
+	 * We should not throw exception here. Perhaps OPTINAL
 	 */
 	private void checkState() {
 		if (isExpired) {
@@ -83,6 +84,21 @@ public class VariantSessionImpl implements VariantSession {
 	// ---------------------------------------------------------------------------------------------//
 	//                                       PUBLIC AUGMENTED                                       //
 	// ---------------------------------------------------------------------------------------------//
+
+	/**
+	 * 
+	 */
+	public VariantSessionImpl(VariantClient client,
+			CoreSessionImpl coreSession,
+			VariantSessionIdTracker sessionIdTracker,
+			VariantTargetingTracker targetingTracker) {
+		
+		this.client = (VariantClientImpl) client;
+		this.coreSession = coreSession;
+		this.coreSession.setTargetingStabile(toTargetingStabile(targetingTracker));
+		this.sessionIdTracker = sessionIdTracker;
+		this.targetingTracker = targetingTracker;
+	}
 
 	/**
 	 *
@@ -98,21 +114,6 @@ public class VariantSessionImpl implements VariantSession {
 		}
 				
 		return core.getRuntime().targetSessionForState(this, (StateImpl) state);
-	}
-
-	/**
-	 * 
-	 */
-	public VariantSessionImpl(VariantClient client,
-			CoreSession coreSession,
-			VariantSessionIdTracker sessionIdTracker,
-			VariantTargetingTracker targetingTracker) {
-		
-		this.client = (VariantClientImpl) client;
-		this.coreSession = (CoreSession) coreSession;
-		this.coreSession.setTargetingStabile(toTargetingStabile(targetingTracker));
-		this.sessionIdTracker = sessionIdTracker;
-		this.targetingTracker = targetingTracker;
 	}
 
 	/**
@@ -161,25 +162,25 @@ public class VariantSessionImpl implements VariantSession {
 	}
 
 	@Override
-	public String getSchemaId() {
+	public Schema getSchema() {
 		checkState();
-		return coreSession.getSchemaId();
+		return coreSession.getSchema();
 	}
 
 	@Override
-	public Collection<Pair<State, Integer>> getTraversedStates() {
+	public Map<State, Integer> getTraversedStates() {
 		checkState();
 		return coreSession.getTraversedStates();
 	}
 
 	@Override
-	public Collection<Test> getTraversedTests() {
+	public Set<Test> getTraversedTests() {
 		checkState();
 		return coreSession.getTraversedTests();
 	}
 
 	@Override
-	public Collection<Test> getDisqualifiedTests() {
+	public Set<Test> getDisqualifiedTests() {
 		checkState();
 		return coreSession.getDisqualifiedTests();
 	}

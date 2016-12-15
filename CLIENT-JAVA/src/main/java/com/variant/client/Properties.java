@@ -6,7 +6,7 @@ import com.variant.core.VariantCoreInitParams;
 import com.variant.core.impl.VariantCoreInitParamsImpl;
 
 /**
- * <p>Variant system properties. 
+ * <p>Variant properties properties. 
  * Each property is a key-value pair with keys of type {@link Property} and value which is bound at deployment
  * time from classpath property files or JVM command line. Host code may obtain the raw value as a String or
  * converted to some datatype.
@@ -15,7 +15,7 @@ import com.variant.core.impl.VariantCoreInitParamsImpl;
  * @since 0.6
  * @see VariantCorePropertyKeys
  */
-public interface SystemProperties {
+public interface Properties {
 	
 	/**
 	 * <p> Interpreted value of an system property, given by its key, parameterized by expected type.
@@ -32,7 +32,7 @@ public interface SystemProperties {
 	 *         
 	 * @since 0.6
 	 */
-	public <T> T get(Property key, Class<T> clazz);
+	<T> T get(Property key, Class<T> clazz);
 
 	/**
 	 * <p> Uninterpreted value of an system property, given by its key, as String.
@@ -42,7 +42,7 @@ public interface SystemProperties {
 	 *         
 	 * @since 0.6
 	 */
-	public <T> T get(Property key);
+	String get(Property key);
 
 	/**
 	 * <p>Raw value of an system property, given by its key.
@@ -54,7 +54,7 @@ public interface SystemProperties {
 	 *         
 	 * @since 0.6
 	 */
-	public String getSource(Property key);
+	String getSource(Property key);
 
 	/**
 	 * <p>Type representing an system property.

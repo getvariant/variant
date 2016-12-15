@@ -49,7 +49,7 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 	}
 
 	@Override
-	protected SystemProperties getProperties() {
+	protected Properties getProperties() {
 		return client.getProperties();
 	}
 		

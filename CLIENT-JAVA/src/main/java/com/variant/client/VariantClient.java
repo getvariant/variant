@@ -1,12 +1,8 @@
 package com.variant.client;
 
-import java.io.InputStream;
-import java.util.Properties;
 
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.ParserResponse;
-import com.variant.core.hook.HookListener;
 
 /**
  * Variant Bare Java Client. Makes no assumptions about the host application other than 
@@ -17,17 +13,16 @@ import com.variant.core.hook.HookListener;
  */
 public interface VariantClient {
 		
-	/* ----------------- How do we get to server properties?
-	 *                   Client should be stateless, i.e. no props?
-	 * This client's application properties.
-	 * These are the propertied that were in effect at the time when this Variant client instance was instantiated.
+	/**
+	 * Configuration properties, as supplied by the external configuration.
 	 * 
-	 * @return An instance of the {@link SystemProperties} type.
+	 * @return An instance of the {@link Properties} type.
 	 * 
 	 * @since 0.6
-	 *
-	public SystemProperties getProperties();
-     * ------------------------------------------------------------------------------------------------- */
+	 */
+	public Properties getProperties();
+	
+    /* ------------------------------------------------------------------------------------------------- */
 	/* ------------------ NO CLIENT-SIDE HOOK MANAGEMENT.  REMOVE ME SOON ------------------------------
 	 * <p>Register a {@link HookListener} with this client.
 	 *
@@ -62,7 +57,7 @@ public interface VariantClient {
 	 * @since 0.5
 	 *
 	public ParserResponse parseSchema(InputStream schema, boolean deploy);
-     */
+
 	
 	/**
 	 * Parse and, if no errors, deploy an experiment schema.  
@@ -74,16 +69,17 @@ public interface VariantClient {
 	 *         may be examined for the information on the outcome of this operation.
      *
 	 * @since 0.5
-	 */
+	 *
 	public ParserResponse parseSchema(InputStream schema);
-
+    */
+    
 	/**
 	 * Get currently deployed experiment schema, if any.
 	 * 
 	 * @return Current experiment schema as an instance of the {@link Schema} object.
 	 * 
 	 * @since 0.5
-	 */
+	 *
 	public Schema getSchema();
 
 	/**
@@ -102,9 +98,9 @@ public interface VariantClient {
 	 * @return An object of type {@link VariantSession}. This call is guaranteed to be idempotent, i.e. a subsequent
 	 *         invocation with the same arguments will return the same object, unless the session expired between the
 	 *         invocations, in which case a new object will be returned. Never returns <code>null</code>.
-	 */
+	 *
 	public VariantSession getOrCreateSession(Object... userData);
-			
+
 	/**
 	 * Get caller's current Variant session. If the session ID exists in the underlying implementation 
 	 * of {@link VariantSessionIdTracker} and the session with this session ID has not expired on the server,
@@ -119,7 +115,7 @@ public interface VariantClient {
 	 * @since 0.6
 	 * @return An object of type {@link VariantSession}. This call is guaranteed to be idempotent, i.e. a subsequent
 	 *         invocation with the same arguments will return the same object or <code>null</code>.
-	 */
+	 *
 	public VariantSession getSession(Object... userData);
 	
 	/**

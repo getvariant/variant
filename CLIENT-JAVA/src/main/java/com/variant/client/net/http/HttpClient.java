@@ -1,4 +1,4 @@
-package com.variant.client.http;
+package com.variant.client.net.http;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
