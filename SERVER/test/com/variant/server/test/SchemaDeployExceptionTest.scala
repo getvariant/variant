@@ -8,9 +8,8 @@ import play.api.test.Helpers._
 import scala.collection.JavaConversions._
 import com.variant.server.UserError
 import com.variant.server.test.util.ParamString
-import com.variant.server.ServerPropertiesKey._
 import com.variant.server.test.util.EventReader
-import com.variant.server.ServerPropertiesKey._
+import com.variant.server.ConfigKeys
 import com.variant.server.session.SessionStore
 import com.variant.server.boot.VariantServer
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -18,7 +17,6 @@ import org.scalatest.TestData
 import com.variant.core.exception.Error
 import com.variant.server.ServerErrorException
 import com.variant.server.ServerError
-import com.variant.server.ServerPropertiesKey
 
 /**
  * Test various schema deployment error scenarios
@@ -52,7 +50,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          ex.getMessage mustEqual 
             new ServerErrorException(
                ServerError.UNEXPECTED_FATAL_ERROR, 
-               "Configuration property [%s] must be set but is not".format(ServerPropertiesKey.SCHEMAS_DIR.getExternalName)).getMessage
+               "Configuration property [%s] must be set but is not".format(ConfigKeys.SCHEMAS_DIR)).getMessage
       }
    }
 

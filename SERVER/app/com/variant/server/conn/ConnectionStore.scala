@@ -3,7 +3,7 @@ package com.variant.server.conn;
 import java.util.Map
 import java.util.Set
 import java.util.concurrent.ConcurrentHashMap
-import com.variant.server.ServerPropertiesKey._
+import com.variant.server.ConfigKeys._
 import com.variant.server.boot.VariantServer
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -43,7 +43,7 @@ class ConnectionStoreImpl() extends ConnectionStore {
 
    private val logger = Logger(this.getClass)	
 	private val connMap = new ConcurrentHashMap[String, Connection]()
-	private val maxSize = VariantServer.server.properties.getInt(MAX_CONCURRENT_CONNECTIONS)
+	private val maxSize = VariantServer.server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
    
 	/**
 	 */

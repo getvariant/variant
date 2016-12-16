@@ -5,9 +5,9 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.server.ServerProperties;
-import com.variant.server.event.EventFlusher;
-import com.variant.server.event.FlushableEvent;
+import com.typesafe.config.ConfigObject;
+import com.variant.server.EventFlusher;
+import com.variant.server.FlushableEvent;
 
 /**
  * Null implementation: all events are discarded.  Useful for testing.
@@ -21,7 +21,7 @@ class EventFlusherNull implements EventFlusher {
 	private static final Logger LOG = LoggerFactory.getLogger(EventFlusherNull.class);
 	
 	@Override
-	public void init(ServerProperties props) {}
+	public void init(ConfigObject config) {}
 	
 	@Override
 	public void flush(Collection<FlushableEvent> events) throws Exception {

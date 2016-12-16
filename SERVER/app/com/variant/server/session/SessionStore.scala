@@ -3,13 +3,13 @@ package com.variant.server.session;
 import java.util.Map
 import java.util.Set
 import java.util.concurrent.ConcurrentHashMap
-import com.variant.server.ServerPropertiesKey._
+import com.variant.server.ConfigKeys._
 import com.variant.server.boot.VariantServer
 import javax.inject.Inject
 import javax.inject.Singleton
 import play.api.Logger
 import com.variant.server.boot.VariantServer
-import com.variant.server.ServerProperties
+import com.typesafe.config.Config
 
 /**
  * Sessions are stored serialized as unparsed JSON strings and only deserialized when are needed
@@ -45,7 +45,7 @@ class SessionStoreImpl @Inject() (server: VariantServer) extends SessionStore {
    private val logger = Logger(this.getClass)	
 	private val cacheMap = new ConcurrentHashMap[String, SessionStoreEntry]();
 
-   new VacuumThread(server.properties, cacheMap).start();
+   new VacuumThread(server.config, cacheMap).start();
 
    /**
 	 */
@@ -100,11 +100,11 @@ class SessionStoreEntry (val json: String) {
 /**
  * Background thread deletes cache entries older than the keep-alive interval.
  */
-class VacuumThread(props: ServerProperties, storeMap: Map[String, SessionStoreEntry]) extends Thread {
+class VacuumThread(config: Config, storeMap: Map[String, SessionStoreEntry]) extends Thread {
 
    private val logger = Logger(this.getClass)	
-   private val sessionTimeoutMillis = props.getInt(SESSION_TIMEOUT) * 1000
-   private val vacuumingFrequencyMillis = props.getInt(SESSION_STORE_VACUUM_INTERVAL) * 1000
+   private val sessionTimeoutMillis = config.getInt(SESSION_TIMEOUT) * 1000
+   private val vacuumingFrequencyMillis = config.getInt(SESSION_STORE_VACUUM_INTERVAL) * 1000
 	setName("VariantSessionVacuum");
    setDaemon(true);
 

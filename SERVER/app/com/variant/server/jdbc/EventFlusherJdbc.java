@@ -11,8 +11,8 @@ import java.util.Map;
 
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.schema.Test;
-import com.variant.server.event.EventFlusher;
-import com.variant.server.event.FlushableEvent;
+import com.variant.server.EventFlusher;
+import com.variant.server.FlushableEvent;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
 

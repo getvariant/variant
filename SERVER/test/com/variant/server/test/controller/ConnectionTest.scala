@@ -8,9 +8,8 @@ import play.api.libs.json._
 import scala.collection.JavaConversions._
 import com.variant.server.UserError
 import com.variant.server.test.util.ParamString
-import com.variant.server.ServerPropertiesKey._
 import com.variant.server.test.util.EventReader
-import com.variant.server.ServerPropertiesKey._
+import com.variant.server.ConfigKeys
 import com.variant.server.test.BaseSpecWithSchema
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.core.impl.UserHooker
@@ -114,7 +113,7 @@ class ConnectionTest extends BaseSpecWithSchema {
       }
 
       "return 400 when attempting to open one too many connections" in {
-         val max = server.properties.getInt(MAX_CONCURRENT_CONNECTIONS)
+         val max = server.config.getInt(ConfigKeys.MAX_CONCURRENT_CONNECTIONS)
          for (i <- 1 to max) {
             val resp = route(app, FakeRequest(POST, endpoint + "/big_covar_schema").withHeaders("Content-Type" -> "text/plain")).get
             status(resp) mustBe OK

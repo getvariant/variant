@@ -4,22 +4,24 @@ import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
 import org.apache.commons.lang3.time.DurationFormatUtils
 import com.variant.server.ServerError._
-import com.variant.server.ServerPropertiesKey._
+import com.variant.server.ConfigKeys._
+import com.variant.server.EventFlusher
+import com.variant.server.FlushableEvent
 import play.api.Logger
+import com.typesafe.config.Config
 import com.variant.core.exception.RuntimeError._
 import com.variant.core.exception.RuntimeErrorException
 import com.variant.core.exception.VariantRuntimeException
 import com.variant.core.test.VariantBaseTest.VariantInternalExceptionInterceptor
 import com.variant.core.exception.RuntimeInternalException
-import com.variant.server.ServerProperties
 
-class EventWriter (props: ServerProperties) {
+class EventWriter (config: Config) {
 	
    private val logger = Logger(this.getClass)
-   val bufferSize = props.getInt(EVENT_WRITER_BUFFER_SIZE)
-   val pctFullSize = bufferSize * props.getInt(EVENT_WRITER_PERCENT_FULL) / 100
+   val bufferSize = config.getInt(EVENT_WRITER_BUFFER_SIZE)
+   val pctFullSize = bufferSize * config.getInt(EVENT_WRITER_PERCENT_FULL) / 100
 	val pctEmptySize = Math.ceil(bufferSize * 0.1).intValue()
-	val maxDelayMillis = props.getInt(EVENT_WRITER_MAX_DELAY) * 1000
+	val maxDelayMillis = config.getInt(EVENT_WRITER_MAX_DELAY) * 1000
 
 	// Asynchronous flusher thread consumes events from the holding queue.
    private val flusherThread = new FlusherThread();
@@ -41,7 +43,7 @@ class EventWriter (props: ServerProperties) {
 	 *  Instantiate externally defined event flusher.
 	 */
 	val flusher = {
-		val className = props.getString(EVENT_FLUSHER_CLASS_NAME)
+		val className = config.getString(EVENT_FLUSHER_CLASS_NAME)
 		try {
 			val result = {
 			   val clazz = Class.forName(className).newInstance();		
@@ -51,13 +53,13 @@ class EventWriter (props: ServerProperties) {
 		  	   clazz.asInstanceOf[EventFlusher]
 			}
 			
-			val json = props.getString(EVENT_FLUSHER_CLASS_INIT)
+			val json = config.getString(EVENT_FLUSHER_CLASS_INIT)
 			try {
-            result.init(props);
+            result.init(config.getObject(EVENT_FLUSHER_CLASS_INIT));
 			}
 			catch {
 			   case _: Throwable =>
-               throw new RuntimeErrorException(CONFIG_INIT_INVALID_JSON, json, EVENT_FLUSHER_CLASS_INIT.getExternalName());
+               throw new RuntimeErrorException(CONFIG_INIT_INVALID_JSON, json, EVENT_FLUSHER_CLASS_INIT);
 			}
 			result	
 		}
@@ -113,10 +115,10 @@ class EventWriter (props: ServerProperties) {
 		}
 		else {
 		   val msg = "Dropped %d event(s) due to buffer overflow. Consider increasing %d system property (current value %d)"
-			logger.trace(msg.format(1, EVENT_WRITER_BUFFER_SIZE.getExternalName(), bufferSize))
+			logger.trace(msg.format(1, EVENT_WRITER_BUFFER_SIZE, bufferSize))
 			dropCount += 1
 			if (dropCount % 1000 == 0)
-			   logger.info(msg.format(1000, EVENT_WRITER_BUFFER_SIZE.getExternalName(), bufferSize))
+			   logger.info(msg.format(1000, EVENT_WRITER_BUFFER_SIZE, bufferSize))
 		}
 		
 		// Block momentarily to wake up the flusher thread if the queue has reached the pctFull size.

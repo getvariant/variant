@@ -7,11 +7,9 @@ import com.variant.core.exception.Error.Severity
 import com.variant.core.exception.RuntimeInternalException
 import com.variant.core.schema.ParserMessage
 import com.variant.core.schema.parser.SchemaParser
-import com.variant.server.ServerError.MULTIPLE_SCHEMAS_NOT_SUPPORTED
-import com.variant.server.ServerError.SCHEMAS_DIR_MISSING
-import com.variant.server.ServerError.SCHEMAS_DIR_NOT_DIR
+import com.variant.server.ServerError._
 import com.variant.server.ServerErrorException
-import com.variant.server.ServerPropertiesKey
+import com.variant.server.ConfigKeys._
 import com.variant.server.boot.VariantServer.server
 import play.api.Logger
 import com.variant.core.schema.ParserResponse
@@ -139,10 +137,10 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
     */
    override def deploy() = {
 
-      var dirName = sys.props.get(ServerPropertiesKey.SCHEMAS_DIR.getExternalName)
+      var dirName = sys.props.get(SCHEMAS_DIR)
 
       // This will throw an exception if config property is unset.
-      if (dirName.isEmpty) dirName = Option(server.properties.getString(ServerPropertiesKey.SCHEMAS_DIR))
+      if (dirName.isEmpty) dirName = Option(server.config.getString(SCHEMAS_DIR))
       
       val dir = new File(dirName.get)
       if (!dir.exists) 

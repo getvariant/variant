@@ -36,8 +36,6 @@ class BaseSpecWithSchema extends PlaySpec with OneAppPerSuite with BeforeAndAfte
    // default parameters. 
    // TODO: find a way to externalize it, 
    implicit override lazy val app: Application = {
-      val testConf = ConfigFactory.parseFile(new File("test-conf/application.conf"))
-      println("*************************** " + testConf)
       
       new GuiceApplicationBuilder()
          .configure(

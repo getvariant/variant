@@ -9,6 +9,7 @@ import java.util.Map;
 import com.variant.core.api.VariantEvent;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
+import com.variant.server.FlushableEvent;
 
 /**
  * Flushable event implementation suitable for the server.

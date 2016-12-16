@@ -6,7 +6,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import scala.collection.JavaConversions._
 import com.variant.server.test.util.ParamString
-import com.variant.server.ServerPropertiesKey._
+import com.variant.server.ConfigKeys
 import com.variant.server.test.BaseSpecWithSchema
 
 /*
@@ -116,8 +116,8 @@ class SessionTest extends BaseSpecWithSchema {
       }
 
      "expire existing sessions after timeout" in {
-        val timeout = server.properties.getLong(SESSION_TIMEOUT)
-        val vacuumInterval = server.properties.getLong(SESSION_STORE_VACUUM_INTERVAL)
+        val timeout = server.config.getLong(ConfigKeys.SESSION_TIMEOUT)
+        val vacuumInterval = server.config.getLong(ConfigKeys.SESSION_STORE_VACUUM_INTERVAL)
         timeout  mustEqual 1
         vacuumInterval  mustEqual 1
       

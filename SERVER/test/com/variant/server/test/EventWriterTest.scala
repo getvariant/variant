@@ -6,7 +6,6 @@ import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
 import com.variant.server.event.ServerEvent
-import com.variant.server.ServerPropertiesKey._
 import java.util.Date
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.controller.SessionTest
@@ -14,7 +13,6 @@ import com.variant.server.test.controller.SessionTest
 class EventWriterTest extends BaseSpecWithSchema {
 
    val writer = server.eventWriter
-   val props = server.properties
    val reader = EventReader(writer)
    
    "Event writer" should {

@@ -1,6 +1,5 @@
 package com.variant.server.boot
 
-import java.time.Clock
 import scala.concurrent.Future
 import org.apache.commons.lang3.time.DurationFormatUtils
 import com.variant.server.event.EventWriter
@@ -23,8 +22,9 @@ import com.variant.core.exception.RuntimeErrorException
 import com.variant.core.exception.Error.Severity
 import com.variant.core.exception.VariantRuntimeException
 import com.variant.server.ServerError
-import com.variant.server.ServerProperties
 import com.variant.core.exception.RuntimeError
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
 
 /**
  * Need a trait to make DI to work.
@@ -32,7 +32,7 @@ import com.variant.core.exception.RuntimeError
 trait VariantServer {
    
    val isUp: Boolean
-   val properties: ServerProperties
+   val config: Config // Do not expose Play's Configuration
    val startupErrorLog: List[ServerErrorException]
    val eventWriter: EventWriter
    def schema: Option[ServerSchema]
@@ -54,7 +54,7 @@ object VariantServer {
  */
 @Singleton
 class VariantServerImpl @Inject() (
-      configuration: Configuration, 
+      playConfig: Configuration, 
       appLifecycle: ApplicationLifecycle
       //router: Provider[Router] DI craps out with circular dependency
       ) extends VariantServer {
@@ -65,10 +65,10 @@ class VariantServerImpl @Inject() (
    
 	VariantServer._instance = this
 
-	override val properties = new ServerProperties(configuration)
-   override val eventWriter = new EventWriter(properties)      
+	override val config = playConfig.underlying
+   override val eventWriter = new EventWriter(config)      
    override val hooker = new UserHooker()
-   override val runtime = new Runtime(this)
+   override val runtime = new Runtime(this) // THIS? 
 
 	private var _isUp = true
 	override lazy val isUp = _isUp
@@ -118,7 +118,7 @@ class VariantServerImpl @Inject() (
             String.format("%s release %s. Bootstrapped on %s in %s with WARNINGS:",
             SbtService.name,
             SbtService.version,
-            configuration.getString("play.http.context").get,
+            config.getString("play.http.context"),
    			DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")))
 	}
 	else {
@@ -126,7 +126,7 @@ class VariantServerImpl @Inject() (
             String.format("%s release %s. Bootstrapped on %s in %s.",
             SbtService.name,
             SbtService.version,
-            configuration.getString("play.http.context").get,
+            config.getString("play.http.context"),
    			DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")))
 	}
 	
