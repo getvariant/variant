@@ -4,7 +4,11 @@ import static com.variant.core.exception.RuntimeError.CONFIG_BOTH_FILE_AND_RESOU
 import static com.variant.core.exception.RuntimeError.CONFIG_FILE_NOT_FOUND;
 import static com.variant.core.exception.RuntimeError.CONFIG_RESOURCE_NOT_FOUND;
 
+import java.io.File;
 import java.io.InputStreamReader;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -20,10 +24,11 @@ import com.variant.core.util.VariantIoUtils;
  */
 public class VariantConfigFactory {
 
-	public static final String CONFIG_RESOURCE = "/variant.config";
+	public static final String CONFIG_RESOURCE = "/variant.conf";
 	public static final String SYSPROP_CONFIG_RESOURCE = "variant.config.resource";
-	public static final String SYSPROP_CONFIG_FILE = "varaint.config.file";
+	public static final String SYSPROP_CONFIG_FILE = "variant.config.file";
 
+	private static final Logger LOG = LoggerFactory.getLogger(VariantConfigFactory.class);
 	private VariantConfigFactory() {}
 	
 	/**
@@ -49,15 +54,17 @@ public class VariantConfigFactory {
 			try {
 				InputStreamReader reader = new InputStreamReader(VariantIoUtils.openResourceAsStream(resName));
 				result = ConfigFactory.parseReader(reader);
+				LOG.debug(String.format("Found config resource [%s]", resName));
 			}
 			catch (Exception e) {
-				throw new RuntimeErrorException(CONFIG_RESOURCE_NOT_FOUND, e, resName);
+				throw new RuntimeErrorException(CONFIG_RESOURCE_NOT_FOUND, resName);
 			}
 		}
 		else if (fileName != null) {
 			try {
-				InputStreamReader reader = new InputStreamReader(VariantIoUtils.openFileAsStream(resName));
+				InputStreamReader reader = new InputStreamReader(VariantIoUtils.openFileAsStream(fileName));
 				result = ConfigFactory.parseReader(reader);
+				LOG.debug(String.format("Found config file [%s]", fileName));
 			}
 			catch (Exception e) {
 				throw new RuntimeErrorException(CONFIG_FILE_NOT_FOUND, e, fileName);
@@ -68,9 +75,10 @@ public class VariantConfigFactory {
 			try {
 				InputStreamReader reader = new InputStreamReader(VariantIoUtils.openResourceAsStream(CONFIG_RESOURCE));
 				result = ConfigFactory.parseReader(reader);
+				LOG.info(String.format("Found config resource [%s]", CONFIG_RESOURCE));
 			}
 			catch (Exception e) {
-				// Doesn't have to be there.
+				LOG.debug(String.format("Could NOT find config resource [%s]", CONFIG_RESOURCE));
 			}
 		}
 		

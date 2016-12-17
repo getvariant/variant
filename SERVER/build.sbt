@@ -26,8 +26,9 @@ libraryDependencies ++= Seq(
   "com.h2database" % "h2"   % "1.4.191"         % Test
 )
 
-// Test scoped classpath directory
+// Test scoped classpath directory - need this for tests that deploy schema from classpath.
 unmanagedClasspath in Test += baseDirectory.value / "test-conf"
+//unmanagedClasspath in Runtime += baseDirectory.value / "test-conf"
 
 // Capture SBT build info in a source file available at compile time.
 sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { (d, v, n) =>
@@ -41,9 +42,8 @@ sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { 
   Seq(file)
 }
 
-// Config file when running in place with the "run" command.
-// javaOptions in Runtime += "-Dconfig.file=test-conf/application.conf"
+// Config overrides for run and test
+javaOptions in Runtime  += "-Dvariant.config.file=test-conf/variant-test.conf"
 
-//javaOptions in Test +="-Dlogger.resource=test-logback.xml"
 
 //fork in run := true

@@ -19,6 +19,11 @@ import java.util.Random
 import com.variant.core.util.VariantStringUtils
 import com.typesafe.config.ConfigFactory
 import java.io.File
+import com.variant.server.boot.VariantApplicationLoader
+import play.api.Mode
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import play.api.Configuration
 
 /**
  * Common to all tests.
@@ -32,26 +37,14 @@ class BaseSpecWithSchema extends PlaySpec with OneAppPerSuite with BeforeAndAfte
 
    import BaseSpecWithSchema._
    
-   // Override app if you need a Application with other than
-   // default parameters. 
-   // TODO: find a way to externalize it, 
+   // Custom applicaiton builder uses test specific config in front of the regular one.  
    implicit override lazy val app: Application = {
-      
+
       new GuiceApplicationBuilder()
-         .configure(
-               Map(
-                     "play.http.context" -> "/variant-test"
-                     ,"variant.schemas.dir" -> "test-schemas"
-                     ,"variant.session.timeout" -> 1
-                     ,"variant.session.store.vacuum.interval" -> 1
-                     ,"variant.event.writer.buffer.size" -> 200
-                     ,"variant.event.writer.max.delay" -> 2
-                     ,"variant.event.flusher.class.name" -> "com.variant.server.event.EventFlusherH2"
-                    ,"variant.event.flusher.class.init" ->"""{"url" -> "jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;", "user":"variant", "password":"variant")"""
-               ))
-          .build()
+         .configure(new Configuration(VariantApplicationLoader.config))
+         .build()
    }
-   
+
    protected val context = app.configuration.getString("play.http.context").get
    protected val store = app.injector.instanceOf[SessionStore]
    protected val server = app.injector.instanceOf[VariantServer]

@@ -18,6 +18,8 @@ import com.variant.server.ServerErrorException
 import com.variant.server.ServerError
 import org.apache.commons.io.FileUtils
 import java.io.File
+import play.api.Configuration
+import com.variant.server.boot.VariantApplicationLoader
 
 /**
  * Test various schema deployment scenarios
@@ -29,6 +31,7 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
       if (testData.name.startsWith("1.")) {
          // Just application property
          new GuiceApplicationBuilder()
+            .configure(new Configuration(VariantApplicationLoader.config))
             .configure(
                Map("variant.schemas.dir" -> "test-schemas")) 
             .build()
@@ -38,7 +41,9 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
          FileUtils.copyFile(new File("test-conf/ParserCovariantOkayBigTest.json"), new File("/tmp/test-schemas-override/test-schema.json"))
          sys.props.contains("variant.schemas.dir") must be (false)
          sys.props +=(("variant.schemas.dir","/tmp/test-schemas-override"))
-         new GuiceApplicationBuilder().build()
+         new GuiceApplicationBuilder()
+            .configure(new Configuration(VariantApplicationLoader.config))
+            .build()
       }
       else if (testData.name.startsWith("3.")) {
          // Both application and system property
@@ -47,13 +52,16 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
          sys.props.contains("variant.schemas.dir") must be (false)
          sys.props += (("variant.schemas.dir","/tmp/test-schemas-override"))
          new GuiceApplicationBuilder()
+            .configure(new Configuration(VariantApplicationLoader.config))
             .configure(
                Map("variant.schemas.dir" -> "test-schemas")) 
             .build()
       }
       else {
          // All defaults.
-         new GuiceApplicationBuilder().build()
+         new GuiceApplicationBuilder()
+            .configure(new Configuration(VariantApplicationLoader.config))
+            .build()
       }
 
    }

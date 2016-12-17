@@ -8,6 +8,15 @@ package com.variant.core.exception;
 public class RuntimeError extends Error {
 
 	// Configuration errors
+	public final static RuntimeError CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN = 
+			new RuntimeError(Severity.FATAL, "Cannot set both [variant.config.resource] and [variant.config.file] system parameters");
+
+	public final static RuntimeError CONFIG_RESOURCE_NOT_FOUND =
+			new RuntimeError(Severity.FATAL, "Config resource [%s] could not be found"); 
+	
+	public final static RuntimeError CONFIG_FILE_NOT_FOUND =
+			new RuntimeError(Severity.FATAL, "Config file [%s] could not be found"); 
+
 	public final static RuntimeError CONFIG_PROPERTY_NOT_SET = 
 			new RuntimeError(Severity.FATAL, "Configuration property [%s] must be set but is not");
 

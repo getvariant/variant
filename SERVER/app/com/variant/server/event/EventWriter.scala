@@ -53,13 +53,13 @@ class EventWriter (config: Config) {
 		  	   clazz.asInstanceOf[EventFlusher]
 			}
 			
-			val json = config.getString(EVENT_FLUSHER_CLASS_INIT)
+			val initObj = config.getObject(EVENT_FLUSHER_CLASS_INIT)
 			try {
-            result.init(config.getObject(EVENT_FLUSHER_CLASS_INIT));
+            result.init(initObj);
 			}
 			catch {
 			   case _: Throwable =>
-               throw new RuntimeErrorException(CONFIG_INIT_INVALID_JSON, json, EVENT_FLUSHER_CLASS_INIT);
+               throw new RuntimeErrorException(CONFIG_INIT_INVALID_JSON, initObj.render, EVENT_FLUSHER_CLASS_INIT);
 			}
 			result	
 		}

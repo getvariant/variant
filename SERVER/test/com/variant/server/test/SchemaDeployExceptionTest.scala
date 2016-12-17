@@ -17,6 +17,8 @@ import org.scalatest.TestData
 import com.variant.core.exception.Error
 import com.variant.server.ServerErrorException
 import com.variant.server.ServerError
+import play.api.Configuration
+import com.variant.server.boot.VariantApplicationLoader
 
 /**
  * Test various schema deployment error scenarios
@@ -24,18 +26,30 @@ import com.variant.server.ServerError
 class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
    
    implicit override def newAppForTest(testData: TestData): Application = {
-      new GuiceApplicationBuilder()
-         .configure(
-            if (testData.name.contains("SCHEMAS_DIR_MISSING")) 
-               Map("variant.schemas.dir" -> "non-existent") 
-            else if (testData.name.contains("SCHEMAS_DIR_NOT_DIR")) 
-               Map("variant.schemas.dir" -> "test-schemas-file")
-            else if (testData.name.contains("MULTIPLE_SCHEMAS_NOT_SUPPORTED")) 
-               Map("variant.schemas.dir" -> "test-schemas-multi")
-            else
-               Map.empty[String,Any]
-            )
-       .build()
+
+      if (testData.name.contains("UNEXPECTED_FATAL_ERROR")) 
+         new GuiceApplicationBuilder()
+            .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.schemas.dir")))
+            .build()
+      else if (testData.name.contains("SCHEMAS_DIR_MISSING")) 
+         new GuiceApplicationBuilder()
+            .configure(new Configuration(VariantApplicationLoader.config))
+            .configure(Map("variant.schemas.dir" -> "non-existent"))
+            .build()
+      else if (testData.name.contains("SCHEMAS_DIR_NOT_DIR")) 
+         new GuiceApplicationBuilder()
+            .configure(new Configuration(VariantApplicationLoader.config))
+            .configure(Map("variant.schemas.dir" -> "test-schemas-file"))
+            .build()
+      else if (testData.name.contains("MULTIPLE_SCHEMAS_NOT_SUPPORTED")) 
+         new GuiceApplicationBuilder()
+            .configure(new Configuration(VariantApplicationLoader.config))
+            .configure(Map("variant.schemas.dir" -> "test-schemas-multi"))
+            .build()
+      else 
+         new GuiceApplicationBuilder()
+            .configure(new Configuration(VariantApplicationLoader.config))
+            .build()
    }
 
    
@@ -50,7 +64,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          ex.getMessage mustEqual 
             new ServerErrorException(
                ServerError.UNEXPECTED_FATAL_ERROR, 
-               "Configuration property [%s] must be set but is not".format(ConfigKeys.SCHEMAS_DIR)).getMessage
+               "No configuration setting found for key '%s'".format(ConfigKeys.SCHEMAS_DIR)).getMessage
       }
    }
 
