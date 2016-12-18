@@ -5,7 +5,10 @@ import play.api.Configuration
 import play.api.inject._
 import play.api.inject.guice._
 import play.api.Logger
+
 import com.typesafe.config.ConfigFactory
+import com.variant.core.util.VariantConfigFactory;
+
 import java.io.InputStreamReader
 
 /**
@@ -43,7 +46,8 @@ object VariantApplicationLoader {
  */
 class VariantApplicationLoader extends GuiceApplicationLoader() {
    
-   import VariantApplicationLoader._
+
+import VariantApplicationLoader._
 
    val foo = new Configuration(config)
    

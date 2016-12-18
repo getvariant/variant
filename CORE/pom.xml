@@ -89,19 +89,12 @@
 			<version>4.12</version>
 		</dependency>
 	
-		<!-- Hazelcast distributed cache 		
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast</artifactId>
-            <version>3.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast-client</artifactId>
-            <version>3.4</version>
-        </dependency>
-      -->
+		<!-- Typesafe Config --> 		
+      <dependency>
+         <groupId>com.typesafe</groupId>
+         <artifactId>config</artifactId>
+         <version>1.2.1</version>
+      </dependency>
       
 		<!-- Annovention annotation discovery lib 
 		<dependency>
