@@ -56,7 +56,7 @@ import VariantApplicationLoader._
     */
    override def builder(context: ApplicationLoader.Context): GuiceApplicationBuilder = {
   
-      logger.info("Building Variant application loader in " + context.environment)
+      logger.debug("Building Variant application loader in " + context.environment)
       
       initialBuilder
          .in(context.environment)
