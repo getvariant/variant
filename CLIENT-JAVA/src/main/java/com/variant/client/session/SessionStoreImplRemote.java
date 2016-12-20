@@ -7,10 +7,9 @@ import org.apache.http.HttpStatus;
 import com.variant.client.net.http.HttpClient;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.client.net.http.VariantHttpClientException;
-import com.variant.core.CoreSession;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.session.CoreSessionImpl;
+import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionStore;
 
 public class SessionStoreImplRemote {

@@ -18,17 +18,16 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
-import com.variant.client.session.ClientSessionCache;
-import com.variant.core.CoreSession;
-import com.variant.core.event.impl.util.VariantStringUtils;
+import com.variant.client.session.SessionCache;
+import com.variant.core.HookListener;
 import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.hook.HookListener;
 import com.variant.core.net.Payload;
 import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
-import com.variant.core.session.CoreSessionImpl;
+import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionStore;
+import com.variant.core.util.VariantStringUtils;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
@@ -44,7 +43,7 @@ public class VariantClientImpl implements VariantClient {
 
 	private final Properties properties = new SystemPropertiesImpl();
 	private SessionStore sessionStore = null;
-	private ClientSessionCache cache = null;
+	private SessionCache cache = null;
 	
 	/**
 	 * Handshake with the server.

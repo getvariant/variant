@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections4.map.UnmodifiableMap;
 import org.apache.commons.collections4.set.UnmodifiableSet;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -54,8 +55,8 @@ public class CoreStateRequest implements Serializable {
 	// Active
 	private Set<Experience> liveExperiences; 
 	
-	private StateRequestStatus status;
-	private boolean isCommitted = false;
+	private StateRequestStatus status = StateRequestStatus.OK;
+	private boolean committed = false;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PACKAGE                                            //
@@ -94,41 +95,6 @@ public class CoreStateRequest implements Serializable {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	/**
-	 * Commit this state request and trigger the state visited event.
-	 * We don't actually need userData in this core implementation, but we want the method signature
-	 * ready for the client.
-	 * ON CLIENT NOW.
-	public void commit() {
-
-		session.checkState(); Used to check for enclosing session's non-expiration.
-		
-		if (isCommitted()) throw new IllegalStateException("Request already committed");
-		
-		// We won't have an event if nothing is instrumented on this state
-		if (event != null) {
-			// The status of this request.
-			event.getParameterMap().put("REQ_STATUS", status);
-			// log all resolved state params as event params.
-			for (Map.Entry<String,String> e: resolvedParameterMap.entrySet()) {
-				event.getParameterMap().put(e.getKey(), e.getValue());				
-			}
-			// Trigger state visited event
-			// session.triggerEvent(event); -- on the client and server now.
-			event = null;
-		}
-		
-		committed = true;
-		
-		session.save();
-	}
-
-	/**
-	 *
-	public boolean isCommitted() {
-		return committed;
-	}
-*/
 	public CoreSession getSession() {
 		return session;
 	}
@@ -137,16 +103,32 @@ public class CoreStateRequest implements Serializable {
 		return state;
 	}
 
+	public void commit() {
+		committed = true;
+	}
+
+	public boolean isCommitted() {
+		return committed;
+	}
+
+	public StateRequestStatus getStatus() {
+		return status;
+	}
+	
+	public void setStatus(StateRequestStatus status) {
+		this.status = status;
+	}
+
 	public StateVariant getResolvedStateVariant() {
 		return resolvedStateVariant;
 	}
 	
-	public  String getResolvedParameter(String name) {
-		return resolvedParameterMap.get(name);
-	}
-
-	public  Set<String> getResolvedParameterNames() {
-		return UnmodifiableSet.unmodifiableSet(resolvedParameterMap.keySet());
+	/**
+	 * Immutable parameter map, if need all.
+	 * @return
+	 */
+	public  Map<String,String> getResolvedParameters() {
+		return UnmodifiableMap.unmodifiableMap(resolvedParameterMap);
 	}
 	
 	public VariantEvent getStateVisitedEvent() {		
@@ -247,7 +229,7 @@ public class CoreStateRequest implements Serializable {
 		jsonGen.writeStartObject();
 		jsonGen.writeStringField(FIELD_NAME_STATE, state.getName());
 		jsonGen.writeStringField(FIELD_NAME_STATUS, status.toString());
-		jsonGen.writeBooleanField(FILED_NAME_COMMITTED, isCommitted);
+		jsonGen.writeBooleanField(FILED_NAME_COMMITTED, committed);
 		if (resolvedParameterMap.size() > 0) {
 			jsonGen.writeArrayFieldStart(FIELD_NAME_PARAMS);
 			for (Map.Entry<String,String> e: resolvedParameterMap.entrySet()) {
@@ -306,7 +288,7 @@ public class CoreStateRequest implements Serializable {
 		if (!(committed instanceof Boolean)) 
 			throw new RuntimeInternalException("Unable to deserialzie request: committed not boolean");
 
-		result.isCommitted = (Boolean) committed;
+		result.committed = (Boolean) committed;
 
 		Object paramListObj = fields.get(FIELD_NAME_PARAMS);
 		if (paramListObj != null) {

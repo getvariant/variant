@@ -12,6 +12,16 @@ import com.variant.core.schema.Schema;
 public interface Connection {
 	
 	/**
+     * <p>The Variant client instance that created this connection. 
+     *  
+	 * @return An instance of the {@link VariantClient} object, which originally created this object
+	 *         via {@link VariantClient#getSession(Object...)}.
+	 *
+	 * @since 0.7
+	 */
+	VariantClient getClient();
+
+	/**
 	 * Get or create caller's current Variant session. If the session ID exists in the underlying implementation 
 	 * of {@link VariantSessionIdTracker} and the session with this session ID has not expired on the server,
 	 * this session is returned. Otherwise, a new session is created. If the session has not expired but the 

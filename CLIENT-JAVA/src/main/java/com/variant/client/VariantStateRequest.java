@@ -1,8 +1,10 @@
 package com.variant.client;
 
+import java.util.Map;
 import java.util.Set;
 
-import com.variant.core.event.VariantEvent;
+import com.variant.core.StateRequestStatus;
+import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
@@ -48,25 +50,16 @@ public interface VariantStateRequest {
 	StateVariant getResolvedStateVariant();
 		
 	/**
-	 * The resolved state parameter. In case of trivial resolution, resolved state parameters are the ones declared at the
-	 * state level. In the case of non-trivial resolution, the parameters declared at the {@link StateVariant} level override
-	 * likely-named state parameterts declared at the state level.  
+	 * The resolved state parameters as an immutable map. In case of trivial resolution, 
+	 * resolved state parameters are the ones declared at the state level. In the case of 
+	 * non-trivial resolution, the parameters declared at the {@link StateVariant} level override
+	 * likely-named state parameters declared at the state level.  
 	 * 
-	 * @param name Case insensitive parameter name.
-	 * @return Resolved parameter value or null if no parameter with this name defined.
-	 * @since 0.6
-	 */
-	String getResolvedParameter(String name);
-
-	/**
-	 * The names of all resolved state parameters. In case of trivial resolution, resolved state parameters are the ones declared at the
-	 * state level. In the case of non-trivial resolution, the parameters declared at the {@link StateVariant} level override
-	 * likely-named state parameterts declared at the state level.  
-	 * 
-	 * @return An unmodifiable collection of all resolved state parameters.
-	 * @since 0.6
+	 * @param name Parameter name.
+	 * @return Immutable map keyed by parameter names. Empty, if no state parameters were declared.
+	 * @since 0.7
 	 */	
-	Set<String> getResolvedParameterNames();
+	Map<String, String> getResolvedParameters();
 
 	/**
 	 * <p>This session's all live experiences on this state.
@@ -101,18 +94,28 @@ public interface VariantStateRequest {
 	/**
 	 * Set the status of this request.
 	 * 
-	 * @param status {@link Status}
-	 *
-	void setStatus(Status status);
+	 * @param status
+	 * @since 0.6
+	 */
+	void setStatus(StateRequestStatus status);
+	
+	/**
+	 * Current status of this request.
+	 * 
+	 * @return Status of this request.
+	 */
+	StateRequestStatus getStatus();
 	
 	/**
 	 * Commit this state request.
-     * The pending state visited {@link VariantEvent} is triggered.
-     *
-	 * @since 0.6
+     * The pending state visited {@link VariantEvent} is triggered. 
+     * No-op if this request has already been committed, i.e. okay to call multiple times.
+	 * 
+	 * @param userData   An array of zero or more opaque objects which will be passed to {@link VariantSessionIdTracker#save(Object...)}
+	 * and {@link VariantTargetingTracker#save(Object...)} methods without interpretation.
 	 */
-	void commit();
-
+	boolean commit(Object...userData);
+	
 	/**
 	 * Is this request object represent a request that has been committed?
      * 
@@ -121,23 +124,4 @@ public interface VariantStateRequest {
 	 */
 	boolean isCommitted();
 
-	/**
-	 * Current status of this request.
-	 */
-	Status getStatus();
-
-	/**
-	 * Status of a {@link com.variant.core.VariantCoreStateRequest}.
-	 */
-	static enum Status {
-		OK, FAIL
-	}
-	
-	/**
-	 * Environment-depended signature replaces the inherited {@link #commit()}.
-	 * 
-	 * @param userData   An array of zero or more opaque objects which will be passed to {@link VariantSessionIdTracker#save(Object...)}
-	 * and {@link VariantTargetingTracker#save(Object...)} methods without interpretation.
-	 */
-	void commit(Object...userData);
 }

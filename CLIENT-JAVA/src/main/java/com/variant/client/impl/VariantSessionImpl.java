@@ -6,27 +6,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.variant.client.Connection;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantStateRequest;
 import com.variant.client.VariantTargetingTracker;
+
+import static com.variant.client.impl.ClientError.*;
+
 import com.variant.client.session.TargetingTrackerEntryImpl;
-import com.variant.core.CoreSession;
-import com.variant.core.event.VariantEvent;
-import com.variant.core.exception.Error;
+import com.variant.core.VariantEvent;
+import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.impl.StateImpl;
-import com.variant.core.session.CoreSessionImpl;
+import com.variant.core.session.CoreSession;
 import com.variant.core.session.CoreStateRequest;
 import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.util.Tuples.Pair;
 
 /**
- * Client side session implementation. Augments core session with client-side
- * functionality by wrapping it.
+ * Variant session as visible to the client code. 
  * 
  * @author Igor
  *
@@ -39,11 +40,10 @@ public class VariantSessionImpl implements VariantSession {
 	private boolean isExpired = false;
 	
 	private VariantClientImpl client;
-	private CoreSessionImpl coreSession;
+	private CoreSession coreSession;
 	private VariantSessionIdTracker sessionIdTracker;
 	private VariantTargetingTracker targetingTracker;
 	private HashMap<String, Object> attributeMap = new HashMap<String, Object>();
-	private boolean committed = false;
 	
 	/**
 	 * 
@@ -73,12 +73,13 @@ public class VariantSessionImpl implements VariantSession {
 	}
 	
 	/**
+	 * Make sure session has not expired.
 	 * We should not throw exception here. Perhaps OPTINAL
 	 */
-	private void checkState() {
-		if (isExpired) {
-			throw new VariantRuntimeUserErrorException(Error.RUN_SESSION_EXPIRED);
-		}
+	public void checkState() {
+//		if (isExpired) {
+//			throw new VariantRuntimeUserErrorException(Error.RUN_SESSION_EXPIRED);
+//		}
 	}
 
 	// ---------------------------------------------------------------------------------------------//
@@ -89,7 +90,7 @@ public class VariantSessionImpl implements VariantSession {
 	 * 
 	 */
 	public VariantSessionImpl(VariantClient client,
-			CoreSessionImpl coreSession,
+			CoreSession coreSession,
 			VariantSessionIdTracker sessionIdTracker,
 			VariantTargetingTracker targetingTracker) {
 		
@@ -109,19 +110,12 @@ public class VariantSessionImpl implements VariantSession {
 		checkState();
 		
 		// Can't have two requests at one time
-		if (currentRequest != null && !currentRequest.isCommitted()) {
-			throw new VariantRuntimeUserErrorException(RUN_ACTIVE_REQUEST);
+		if (coreSession.getStateRequest() != null && !coreSession.getStateRequest().isCommitted()) {
+			throw new ClientErrorException(ACTIVE_REQUEST);
 		}
 				
 		return core.getRuntime().targetSessionForState(this, (StateImpl) state);
-	}
 
-	/**
-	 * 
-	 */
-	@Override
-	public VariantStateRequest targetForState(State state) {
-		checkState();
 		CoreStateRequest coreReq = (CoreStateRequest) coreSession.targetForState(state);
 		targetingTracker.set(fromTargetingStabile(coreSession.getTargetingStabile()));
 		return new VariantStateRequestImpl(coreReq, this);
@@ -162,7 +156,7 @@ public class VariantSessionImpl implements VariantSession {
 	}
 
 	@Override
-	public Schema getSchema() {
+	public Connection getConnectoin() {
 		checkState();
 		return coreSession.getSchema();
 	}
@@ -188,6 +182,9 @@ public class VariantSessionImpl implements VariantSession {
 	@Override
 	public void triggerEvent(VariantEvent event) {
 		checkState();
+		// Trigger state visited event
+		session.triggerEvent(event);
+
 		coreSession.triggerEvent(event);
 	}
 
@@ -201,36 +198,6 @@ public class VariantSessionImpl implements VariantSession {
 	@Override
 	public VariantClient getClient() {
 		return client;
-	}
-
-	/**
-	 * Commit this state request and trigger the state visited event.
-	 * We don't actually need userData in this core implementation, but we want the method signature
-	 * ready for the client.
-	 */
-	@Override
-	public void commit() {
-
-		session.checkState(); Used to check for enclosing session's non-expiration.
-		
-		if (isCommitted()) throw new IllegalStateException("Request already committed");
-		
-		// We won't have an event if nothing is instrumented on this state
-		if (event != null) {
-			// The status of this request.
-			event.getParameterMap().put("REQ_STATUS", status);
-			// log all resolved state params as event params.
-			for (Map.Entry<String,String> e: resolvedParameterMap.entrySet()) {
-				event.getParameterMap().put(e.getKey(), e.getValue());				
-			}
-			// Trigger state visited event
-			// session.triggerEvent(event); -- on the client and server now.
-			event = null;
-		}
-		
-		committed = true;
-		
-		session.save();
 	}
 
 	/**

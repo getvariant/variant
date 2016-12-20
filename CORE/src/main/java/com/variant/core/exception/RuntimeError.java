@@ -33,7 +33,6 @@ public class RuntimeError extends Error {
 	public static final RuntimeError STATE_NOT_INSTRUMENTED_BY_TEST =
 			new RuntimeError(Severity.ERROR, "State [%s] is not instrumented by test [%s]");
 	
-	// ACTIVE_REQUEST                                    (Severity.ERROR, "Commit current state request first");
 	// SCHEMA_UNDEFINED                                  (Severity.ERROR, "Cannot create a session on an idle Variant instance. Deploy a schema first");
 	// SESSION_EXPIRED                                   (Severity.ERROR, "This session has expired"); 
 	// METHOD_UNSUPPORTED                                (Severity.ERROR, "Method unsupported in Core");

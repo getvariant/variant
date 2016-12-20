@@ -3,8 +3,7 @@ package com.variant.client;
 import java.util.Map;
 import java.util.Set;
 
-import com.variant.core.CoreSession;
-import com.variant.core.event.VariantEvent;
+import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.session.CoreStateRequest;
@@ -28,7 +27,25 @@ import com.variant.core.session.CoreStateRequest;
  * @since 0.6
  *
  */
-public interface VariantSession extends CoreSession {
+public interface VariantSession {
+
+	/**
+     * <p>Session ID. 
+     *  
+	 * @return Session ID.  
+	 *
+	 * @since 0.7
+	 */
+	String getId();
+
+	/**
+     * <p>This session's creation timestamp as the Epoch time. 
+     *  
+	 * @return Creation timestamp.
+	 *
+	 * @since 0.7
+	 */
+	public long creationTimestamp();
 
 	/**
      * <p>Target session for a state. 
@@ -41,14 +58,14 @@ public interface VariantSession extends CoreSession {
 	VariantStateRequest targetForState(State state);
 	
 	/**
-     * <p>The Variant client instance that created this session. 
+     * <p>The server connection whch created this session. 
      *  
-	 * @return An instance of the {@link VariantClient} object, which originally created this object
-	 *         via {@link VariantClient#getSession(Object...)}.
+	 * @return An instance of the {@link Connection} object, which originally created this object
+	 *         via {@link Connection#getSession(Object...)}.
 	 *
-	 * @since 0.6
-	 */
-	VariantClient getClient();
+	 * @since 0.7
+	 */	
+	public Connection getConnectoin();
 	
 	/**
 	 * <p> The collection of states, traversed by this session so far, and their respective visit counts. 

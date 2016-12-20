@@ -15,14 +15,14 @@ import com.variant.client.VariantSession;
 import com.variant.client.VariantStateRequest;
 import com.variant.client.impl.VariantSessionImpl;
 import com.variant.client.impl.VariantStateRequestImpl;
-import com.variant.core.CoreSession;
 import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.event.impl.util.VariantCollectionsUtils;
-import com.variant.core.event.impl.util.VariantStringUtils;
 import com.variant.core.exception.Error;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
+import com.variant.core.session.CoreSession;
+import com.variant.core.util.VariantCollectionsUtils;
+import com.variant.core.util.VariantStringUtils;
 import com.variant.server.ParserResponse;
 
 public class BareClientSessionTest extends BareClientBaseTest {

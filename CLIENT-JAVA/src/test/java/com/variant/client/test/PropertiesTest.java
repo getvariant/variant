@@ -13,12 +13,12 @@ import org.junit.Test;
 
 import com.variant.client.impl.SystemPropertiesImpl;
 import com.variant.core.VariantCorePropertyKeys;
-import com.variant.core.event.impl.util.VariantIoUtils;
 import com.variant.core.exception.Error;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.exception.VariantRuntimeUserErrorException;
 import com.variant.core.impl.VariantCore;
 import com.variant.core.impl.VariantPropertiesTestFacade;
+import com.variant.core.util.VariantIoUtils;
 import com.variant.core.util.Tuples.Pair;
 
 public class PropertiesTest {

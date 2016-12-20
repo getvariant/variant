@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.VariantSession;
 import com.variant.client.impl.VariantSessionImpl;
-import com.variant.core.CoreSession;
+import com.variant.core.session.CoreSession;
 
 /**
  * Keep track of all sessions in the JVM in order to provide idempotency of the getSession() call.
@@ -18,9 +18,9 @@ import com.variant.core.CoreSession;
  * @author Igor
  *
  */
-public class ClientSessionCache {
+public class SessionCache {
 
-	private static Logger LOG = LoggerFactory.getLogger(ClientSessionCache.class);
+	private static Logger LOG = LoggerFactory.getLogger(SessionCache.class);
 	
 	private static long DEFAULT_KEEP_ALIVE = DateUtils.MILLIS_PER_MINUTE * 30;
 	private static long VACUUM_INTERVAL = DateUtils.MILLIS_PER_SECOND * 30;
@@ -104,7 +104,7 @@ public class ClientSessionCache {
 	/**
 	 * Static singleton
 	 */
-	private ClientSessionCache(){}
+	private SessionCache(){}
 	
 	/**
 	 * Add a new session to the cache. Session came from the server so we know the keepAlive.

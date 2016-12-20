@@ -5,21 +5,26 @@ import static com.variant.client.Properties.Property.SESSION_ID_TRACKER_CLASS_NA
 import static com.variant.client.Properties.Property.TARGETING_TRACKER_CLASS_INIT;
 import static com.variant.client.Properties.Property.TARGETING_TRACKER_CLASS_NAME;
 
+import java.util.Random;
+
 import org.apache.http.HttpStatus;
 
 import com.variant.client.Connection;
+import com.variant.client.Properties;
+import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
 import com.variant.client.net.http.HttpClient;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.client.net.http.VariantHttpClientException;
-import com.variant.core.CoreSession;
-import com.variant.core.VariantProperties;
+import com.variant.client.session.SessionCache;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.schema.Schema;
+import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionStore;
+import com.variant.core.util.VariantStringUtils;
 
 /**
  * A connection to the server.
@@ -52,14 +57,13 @@ public class ConnectionImpl implements Connection {
 	 */
 	private VariantSessionIdTracker initSessionIdTracker(Object...userData) {
 		// Session ID tracker.
-		String sidTrackerClassName = props.get(SESSION_ID_TRACKER_CLASS_NAME, String.class);
+		String sidTrackerClassName = client.getProperties().get(SESSION_ID_TRACKER_CLASS_NAME, String.class);
 		try {
 			Class<?> sidTrackerClass = Class.forName(sidTrackerClassName);
 			Object sidTrackerObject = sidTrackerClass.newInstance();
 			if (sidTrackerObject instanceof VariantSessionIdTracker) {
 				VariantSessionIdTracker result = (VariantSessionIdTracker) sidTrackerObject;
-				VariantInitParamsImpl initParams = new VariantInitParamsImpl(this, SESSION_ID_TRACKER_CLASS_INIT);
-				result.init(initParams, userData);
+				result.init(client, userData);
 				return result;
 			}
 			else {
@@ -81,14 +85,13 @@ public class ConnectionImpl implements Connection {
 	private VariantTargetingTracker initTargetingTracker(Object...userData) {
 		
 		// Instantiate targeting tracker.
-		String className = properties.get(TARGETING_TRACKER_CLASS_NAME, String.class);
+		String className = client.getProperties().get(TARGETING_TRACKER_CLASS_NAME, String.class);
 		
 		try {
 			Object object = Class.forName(className).newInstance();
 			if (object instanceof VariantTargetingTracker) {
 				VariantTargetingTracker result = (VariantTargetingTracker) object;
-				VariantInitParamsImpl initParams = new VariantInitParamsImpl(this, TARGETING_TRACKER_CLASS_INIT);
-				result.init(initParams, userData);
+				result.init(client, userData);
 				return result;
 			}
 			else {
@@ -123,13 +126,13 @@ public class ConnectionImpl implements Connection {
 		}
 		
 		// Have session ID. Try the local cache first.
-		VariantSession ssnFromCache = cache.get(sessionId);
+		VariantSession ssnFromCache = SessionCache.get(sessionId);
 		
 		if (ssnFromCache == null) {
 			// Local case miss.
 			if (create) {
 				// Session expired locally, recreate OK.  Don't bother with the server.
-				CoreSession coreSession = new CoreSessionImpl(sessionId);
+				CoreSession coreSession = new CoreSession(sessionId, schema);
 				coreSession.save();
 				VariantSessionImpl clientSession = new VariantSessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
@@ -182,14 +185,18 @@ public class ConnectionImpl implements Connection {
 		return ssnFromCache;	
 	}
 
+	private static final Random RAND = new Random(System.currentTimeMillis());
+	
+	private VariantClient client;
 	private Status status;
-	private VariantProperties props;
+	private Schema schema;
 	
 	/**
 	 * 
 	 */
-	ConnectionImpl(VariantProperties props) {
-		this.props = props;
+	ConnectionImpl(VariantClient client, Schema schema) {
+		this.client = client;
+		this.schema = schema;
 		status = Status.OPEN;
 	}
 	
@@ -247,7 +254,7 @@ public class ConnectionImpl implements Connection {
 	 * @param session
 	 * TODO Make this async
 	 */
-	public void saveSession(CoreSessionImpl session) {
+	public void saveSession(CoreSession session) {
 		
 		if (core.getSchema() == null) throw new VariantRuntimeUserErrorException(Error.RUN_SCHEMA_UNDEFINED);
 		

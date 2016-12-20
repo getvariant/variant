@@ -1,12 +1,12 @@
 package com.variant.client.impl;
 
-import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 import com.variant.client.VariantSession;
 import com.variant.client.VariantStateRequest;
-import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.event.VariantEvent;
+import com.variant.core.StateRequestStatus;
+import com.variant.core.VariantEvent;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
@@ -17,13 +17,11 @@ import com.variant.core.session.CoreStateRequest;
 public class VariantStateRequestImpl implements VariantStateRequest {
 
 	private VariantSessionImpl session;
-	private CoreStateRequest coreStateRequest;
-	
-	public VariantStateRequestImpl(
-			VariantCoreStateRequest coreStateRequest, 
-			VariantSessionImpl clientSession) 
+	private CoreStateRequest coreRequest;
+
+	public VariantStateRequestImpl(CoreStateRequest coreStateRequest, VariantSessionImpl clientSession) 
 	{	
-		this.coreStateRequest = (CoreStateRequest) coreStateRequest;
+		this.coreRequest = (CoreStateRequest) coreStateRequest;
 		this.session = (VariantSessionImpl) clientSession;
 	}
 
@@ -32,70 +30,81 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	//---------------------------------------------------------------------------------------------//
 	@Override
 	public State getState() {
-		return coreStateRequest.getState();
+		return coreRequest.getState();
 	}
 
 	@Override
 	public StateVariant getResolvedStateVariant() {
-		return coreStateRequest.getResolvedStateVariant();
+		return coreRequest.getResolvedStateVariant();
 	}
 
 	@Override
-	public String getResolvedParameter(String name) {
-		return coreStateRequest.getResolvedParameter(name);
+	public Map<String,String> getResolvedParameters() {
+		return coreRequest.getResolvedParameters();
 	}
 
 	@Override
-	public Set<String> getResolvedParameterNames() {
-		return coreStateRequest.getResolvedParameterNames();
-	}
-
-	@Override
-	public Collection<Experience> getLiveExperiences() {
-		return coreStateRequest.getLiveExperiences();
+	public Set<Experience> getLiveExperiences() {
+		return coreRequest.getLiveExperiences();
 	}
 
 	@Override
 	public Experience getLiveExperience(Test test) {
-		return coreStateRequest.getLiveExperience(test);
+		return coreRequest.getLiveExperience(test);
 	}
 
 	@Override
 	public VariantEvent getStateVisitedEvent() {
-		return coreStateRequest.getStateVisitedEvent();
+		return coreRequest.getStateVisitedEvent();
 	}
 
 	@Override
-	public void setStatus(Status status) {
-		coreStateRequest.setStatus(status);
-	}
-	
-	@Override
-	public boolean isCommitted() {
-		return coreStateRequest.isCommitted();
-	}
-
-	@Override
-	public void commit() {
-		throw new VariantRuntimeException("Method not supported. Use commit(Object...) instead.");
-	}
-	
-	@Override
-	public void commit(Object... userData) {
+	public boolean commit(Object... userData) {
 		
-		coreStateRequest.commit();
-		
-		// Trigger state visited event
-		session.triggerEvent(event);
+		if (coreRequest.isCommitted()) return false;
 
+		session.checkState(); // Used to check for enclosing session's non-expiration.
+		
 		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 		session.getTargetingTracker().save(userData);
 		session.getSessionIdTracker().save(userData);
+		
+		
+		// Trigger state visited event
+		VariantEvent event = coreRequest.getStateVisitedEvent();
+
+		// We won't have an event if nothing is instrumented on this state
+		if (event != null) {
+			// The status of this request.
+			event.getParameterMap().put("$REQ_STATUS", coreRequest.getStatus());
+			// log all resolved state params as event params.
+			for (Map.Entry<String,String> e: coreRequest.getResolvedParameters().entrySet()) {
+				event.getParameterMap().put(e.getKey(), e.getValue());				
+			}
+			// Trigger state visited event
+			session.triggerEvent(event);
+			event = null;
+		}
+		
+		coreRequest.commit();
+		
+		session.save();
+
 	}
 
 	@Override
-	public Status getStatus() {
-		return coreStateRequest.getStatus();
+	public boolean isCommitted() {
+		return coreRequest.isCommitted();
+	}
+
+	@Override
+	public void setStatus(StateRequestStatus status) {
+		coreRequest.setStatus(status);
+	}
+
+	@Override
+	public StateRequestStatus getStatus() {
+		return coreRequest.getStatus();
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -109,8 +118,9 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		return session;
 	}
 
+	/*
 	public CoreStateRequest getCoreStateRequest () {
-		return coreStateRequest;
+		return coreRequest;
 	}
-
+*/
 }

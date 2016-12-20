@@ -2,8 +2,6 @@ package com.variant.client;
 
 import com.variant.client.session.SessionIdTrackerImplDefault;
 import com.variant.client.session.TargetingTrackerDefault;
-import com.variant.core.VariantCoreInitParams;
-import com.variant.core.impl.VariantCoreInitParamsImpl;
 
 /**
  * <p>Variant properties properties. 
