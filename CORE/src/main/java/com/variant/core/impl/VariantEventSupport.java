@@ -3,7 +3,7 @@ package com.variant.core.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.variant.core.api.VariantEvent;
+import com.variant.core.VariantEvent;
 
 /**
  * 

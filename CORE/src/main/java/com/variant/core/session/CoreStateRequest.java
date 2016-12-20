@@ -4,9 +4,9 @@ import static com.variant.core.exception.RuntimeError.STATE_NOT_INSTRUMENTED_BY_
 
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,7 +15,8 @@ import org.apache.commons.collections4.set.UnmodifiableSet;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.api.VariantEvent;
+import com.variant.core.StateRequestStatus;
+import com.variant.core.VariantEvent;
 import com.variant.core.exception.RuntimeErrorException;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.impl.StateVisitedEvent;
@@ -43,7 +44,6 @@ public class CoreStateRequest implements Serializable {
 	
 	private CoreSession session;	
 	private StateImpl state;
-	private Status status = Status.OK;
 	private StateVariant resolvedStateVariant;
 	private Map<String,String> resolvedParameterMap;
 	private StateVisitedEvent event = null;
@@ -51,11 +51,11 @@ public class CoreStateRequest implements Serializable {
 	// For transitional server side use only.
 	// private String stateName = null;
 	
-	// This doesn't change over the life of a request, so we'll only compute this once.
-	private Collection<Experience> activeExperiences; 
+	// Active
+	private Set<Experience> liveExperiences; 
 	
-	// Client subclass will manipulate this. We just need it for serialization.
-	protected boolean isCommitted = false;
+	private StateRequestStatus status;
+	private boolean isCommitted = false;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PACKAGE                                            //
@@ -148,21 +148,21 @@ public class CoreStateRequest implements Serializable {
 	public  Set<String> getResolvedParameterNames() {
 		return UnmodifiableSet.unmodifiableSet(resolvedParameterMap.keySet());
 	}
-
-	public void setStatus(Status status) {
-		this.status = status;
-	}
 	
 	public VariantEvent getStateVisitedEvent() {		
 		return event;
 	}
 
-	public Collection<Experience> getLiveExperiences() {
+	/**
+	 * Live experiences don't change during the session, ok to cache as this is a session scoped object.
+	 * @return
+	 */
+	public synchronized Set<Experience> getLiveExperiences() {
 		
-		if (activeExperiences == null) {
+		if (liveExperiences == null) {
 
 			SessionScopedTargetingStabile stabile = session.getTargetingStabile();
-			ArrayList<Experience> result = new ArrayList<Experience>();
+			HashSet<Experience> result = new HashSet<Experience>();
 
 			for (Test test: state.getInstrumentedTests()) {
 				if (!test.isOn() || session.getDisqualifiedTests().contains(test)) continue;
@@ -170,9 +170,9 @@ public class CoreStateRequest implements Serializable {
 				if (entry == null) throw new RuntimeInternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
 				result.add(test.getExperience(entry.getExperienceName()));
 			}
-			activeExperiences = result;
+			liveExperiences = result;
 		}
-		return activeExperiences;
+		return liveExperiences;
 	}
 
 	public Experience getLiveExperience(Test test) {
@@ -196,10 +196,6 @@ public class CoreStateRequest implements Serializable {
 		return null;
 	}
 	
-	//---------------------------------------------------------------------------------------------//
-	//                                        PUBLIC EXT                                           //
-	//---------------------------------------------------------------------------------------------//
-
 	/**
 	 * @param path
 	 */
@@ -214,13 +210,6 @@ public class CoreStateRequest implements Serializable {
 		}
 	}
 		
-	/**
-	 * @return
-	 */
-	public Status getStatus() {
-		return status;
-	}
-
 	/**
 	 * A transitional hack to get access to state name on the server where we
 	 * don't yet have the schema and cannot properly instantiate state by state
@@ -303,14 +292,14 @@ public class CoreStateRequest implements Serializable {
 		
 		CoreStateRequest result = new CoreStateRequest(session, (StateImpl) schema.getState((String)stateName));
 		
-		Object statusStr = fields.get(FIELD_NAME_STATUS);
+		String statusStr = (String) fields.get(FIELD_NAME_STATUS);
 		if (statusStr == null) 
 			throw new RuntimeInternalException("Unable to deserialzie request: no status");
 		if (!(statusStr instanceof String)) 
 			throw new RuntimeInternalException("Unable to deserialzie request: status not string");
 
-		result.status = Status.valueOf((String)statusStr);
-
+		result.status = StateRequestStatus.valueOf(statusStr);
+		
 		Object committed = fields.get(FILED_NAME_COMMITTED);
 		if (committed == null) 
 			throw new RuntimeInternalException("Unable to deserialzie request: no committed");
@@ -339,30 +328,22 @@ public class CoreStateRequest implements Serializable {
 
 		Object experiencesListObj = fields.get(FIELD_NAME_EXPERIENCES);
 		if (experiencesListObj != null) {
-			ArrayList<Experience> experiencesList = new ArrayList<Experience>();
+			result.liveExperiences = new HashSet<Experience>();
 			try {
 				List<?> experiencesListRaw = (List<?>) experiencesListObj; 
 				for (Object obj: experiencesListRaw) {
 					String expQualifiedName = (String) obj;
 					// qualified name = testName.expName.bool - need to parse.
 					String[] tokens = expQualifiedName.split("\\.");
-					experiencesList.add(schema.getTest(tokens[0]).getExperience(tokens[1]));
+					result.liveExperiences.add(schema.getTest(tokens[0]).getExperience(tokens[1]));
 				}
 			}
 			catch (Exception e) {
 				throw new RuntimeInternalException("Unable to deserialzie request: bad experiences spec", e);
 			}
-			result.activeExperiences = experiencesList;
 		}
 
 		return result;
 	}
 	
-	/**
-	 * Status of a {@link com.variant.core.VariantCoreStateRequest}.
-	 */
-	static enum Status {
-		OK, FAIL
-	}
-
 }

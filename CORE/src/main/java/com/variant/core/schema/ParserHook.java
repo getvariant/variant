@@ -1,6 +1,6 @@
 package com.variant.core.schema;
 
-import com.variant.core.api.UserHook;
+import com.variant.core.UserHook;
 import com.variant.core.exception.Error.Severity;
 
 /**
