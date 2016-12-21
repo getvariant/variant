@@ -1,7 +1,7 @@
 package com.variant.server.session
 
 import com.variant.core.session.CoreSession
-import com.variant.core.api.VariantEvent
+import com.variant.core.VariantEvent
 import javax.inject.Inject
 import com.variant.core.schema.Schema
 import com.variant.server.event.FlushableEventImpl

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -16,8 +17,8 @@ import com.variant.core.session.CoreStateRequest;
 import com.variant.core.util.VariantStringUtils;
 import com.variant.core.exception.RuntimeErrorException;
 import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.api.TestQualificationHook;
-import com.variant.core.api.TestTargetingHook;
+import com.variant.core.TestQualificationHook;
+import com.variant.core.TestTargetingHook;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.schema.State;
@@ -593,10 +594,10 @@ public class Runtime {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Session [").append(ssn.getId()).append("] resolved state [").append(state.getName()).append("] as [");
 			boolean first = true;
-			for (String paramName: result.getResolvedParameterNames()) {
+			for (Map.Entry<String,String> e: result.getResolvedParameters().entrySet()) {
 				if (first) first = false;
 				else sb.append(",");
-				sb.append(result.getResolvedParameter(paramName));
+				sb.append(e.getValue());
 			}
 			sb.append("] for experience vector [").append(StringUtils.join(targetingStabile.getAll().toArray(), ",")).append("]");
 			LOG.trace(sb.toString());

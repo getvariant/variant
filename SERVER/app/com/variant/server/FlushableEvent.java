@@ -2,7 +2,7 @@ package com.variant.server;
 
 import java.util.Collection;
 
-import com.variant.core.api.VariantEvent;
+import com.variant.core.VariantEvent;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
 

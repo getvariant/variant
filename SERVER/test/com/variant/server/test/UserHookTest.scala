@@ -1,6 +1,6 @@
 package com.variant.server.test;
 
-import com.variant.core.api.HookListener
+import com.variant.core.HookListener
 import com.variant.core.schema.StateParsedHook
 import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
@@ -9,10 +9,10 @@ import com.variant.core.exception.Error.Severity
 import com.variant.server.schema.SchemaDeployer
 import com.variant.core.schema.TestParsedHook
 import com.variant.core.schema.Test
-import com.variant.core.api.TestQualificationHook
+import com.variant.core.TestQualificationHook
 import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
-import com.variant.core.api.TestTargetingHook
+import com.variant.core.TestTargetingHook
 import com.variant.server.ServerErrorException
 import com.variant.server.ServerError
 import com.variant.core.exception.RuntimeErrorException
@@ -195,7 +195,7 @@ class UserHookTest extends BaseSpecWithSchema {
 		   stabile.get("test4").toString() must startWith ("test4")
 		   stabile.get("test5").toString() must startWith ("test5")
 		   stabile.get("test6").toString() must startWith ("test6.B")
-		   req.getResolvedParameter("path") must startWith ("/path/to/state1")
+		   req.getResolvedParameters().get("path") must startWith ("/path/to/state1")
 
 	   }
 
@@ -228,7 +228,7 @@ class UserHookTest extends BaseSpecWithSchema {
 		   stabile.get("test4").toString() must startWith ("test4")
 		   stabile.get("test5").toString() must startWith ("test5")
 		   stabile.get("test6").toString() must startWith ("test6.B")
-		   req.getResolvedParameter("path") must startWith ("/path/to/state2")
+		   req.getResolvedParameters().get("path") must startWith ("/path/to/state2")
 
 	   }
 
@@ -258,7 +258,7 @@ class UserHookTest extends BaseSpecWithSchema {
 		   stabile.get("test4").toString() must startWith ("test4")
 		   stabile.get("test5").toString() must startWith ("test5")
 		   stabile.get("test6").toString() must startWith ("test6.B")
-		   req.getResolvedParameter("path") must startWith ("/path/to/state3")
+		   req.getResolvedParameters().get("path") must startWith ("/path/to/state3")
 
 	   }
 

@@ -7,8 +7,8 @@ import com.variant.server.session.ServerSession
 import com.variant.core.session.CoreStateRequest
 import com.variant.core.util.VariantStringUtils
 import scala.collection.JavaConverters
-import com.variant.core.api.HookListener
-import com.variant.core.api.TestTargetingHook
+import com.variant.core.HookListener
+import com.variant.core.TestTargetingHook
 import scala.util.Random
 
 class TargetingTest extends BaseSpecWithSchema {
