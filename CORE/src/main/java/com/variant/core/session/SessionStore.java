@@ -1,6 +1,6 @@
 package com.variant.core.session;
-
-import com.variant.core.net.SessionPayloadReader;
+/*
+import com.variant.client.net.SessionPayloadReader;
 import com.variant.core.util.inject.Injectable;
 
 
@@ -12,7 +12,7 @@ import com.variant.core.util.inject.Injectable;
  * 
  * @author Igor Urisman
  * @since 0.5
- */
+ *
 public interface SessionStore extends Injectable {
 	
 	/**
@@ -21,14 +21,15 @@ public interface SessionStore extends Injectable {
 	 * @return An instance of {@link CoreSession} if session with this ID was
 	 *         found in the store, or null if not.
 	 * @since 0.5
-	 */
+	 *
 	public SessionPayloadReader get(String sessionId, boolean create);
 
 	/**
 	 * Save the session.
 	 * @param session The session to be saved in the store.
 	 * @since 0.5
-	 */
+	 *
 	public void save(CoreSession session);	
 
 }
+*/
