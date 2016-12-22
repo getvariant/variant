@@ -2,7 +2,7 @@ package com.variant.client.session;
 
 import java.util.Collection;
 
-import com.variant.client.Properties;
+import com.variant.client.ConfigKeys;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantTargetingTracker;
 
@@ -17,7 +17,7 @@ public class TargetingTrackerDefault implements VariantTargetingTracker {
 	
 	private final static String MESSAGE = 
 			"Supply a functional implementation in applicaiton property " + 
-					Properties.Property.TARGETING_TRACKER_CLASS_NAME;
+					ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 
 	@Override
 	public void init(VariantClient client, Object...userData) {}		
