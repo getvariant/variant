@@ -1,5 +1,10 @@
 package com.variant.server;
 
+/**
+  * Known configuration keys.
+  * @author Igor Urisman
+  * @since 0.7
+  */
 public interface ConfigKeys {
 	
 	public static final String SCHEMAS_DIR =                   "variant.schemas.dir";	

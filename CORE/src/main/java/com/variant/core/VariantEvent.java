@@ -47,6 +47,6 @@ public interface VariantEvent {
 	 * @return Custom parameters. Will be passed to the implementation of {@link EventFlusher}.
 	 * @since 0.5
 	 */
-	public Map<String,Object> getParameterMap();
+	public Map<String, String> getParameterMap();
 
 }

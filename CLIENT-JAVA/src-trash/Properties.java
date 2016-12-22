@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import com.variant.client.session.SessionIdTrackerImplDefault;
+import com.variant.client.session.SessionIdTrackerDefault;
 import com.variant.client.session.TargetingTrackerDefault;
 
 /**
@@ -62,7 +62,7 @@ public interface Properties {
 	public enum Property {
 
 		TEST_MAX_IDLE_DAYS_TO_TARGET("test.max.idle.days.to.target", "0"),
-		SESSION_ID_TRACKER_CLASS_NAME("session.id.tracker.class.name", SessionIdTrackerImplDefault.class.getName()),
+		SESSION_ID_TRACKER_CLASS_NAME("session.id.tracker.class.name", SessionIdTrackerDefault.class.getName()),
 		SESSION_ID_TRACKER_CLASS_INIT("session.id.tracker.class.init", "{}"),
 		TARGETING_TRACKER_CLASS_NAME("targeting.tracker.class.name", TargetingTrackerDefault.class.getName()),
 		TARGETING_TRACKER_CLASS_INIT("targeting.tracker.class.init", "{}"),

@@ -1,20 +1,20 @@
 package com.variant.client.session;
 
-import com.variant.client.VariantClientPropertyKeys;
-import com.variant.client.VariantInitParams;
+import com.variant.client.Properties;
+import com.variant.client.VariantClient;
 import com.variant.client.VariantSessionIdTracker;
 
 /**
  * Unusable default implementation of {@link VariantSessionIdTracker}. 
  * Must be overridden.
  */
-public class SessionIdTrackerImplDefault implements VariantSessionIdTracker {
+public class SessionIdTrackerDefault implements VariantSessionIdTracker {
 
 	private final static String MESSAGE = 
 			"Supply a functional implementation in applicaiton property " + 
-					VariantClientPropertyKeys.SESSION_ID_TRACKER_CLASS_NAME.propertyName();
+					Properties.Property.SESSION_ID_TRACKER_CLASS_NAME;
 	@Override
-	public void init(VariantInitParams initParams, Object...userData) {}
+	public void init(VariantClient client, Object...userData) {}
 
 	@Override
 	public void save(Object... userData) {

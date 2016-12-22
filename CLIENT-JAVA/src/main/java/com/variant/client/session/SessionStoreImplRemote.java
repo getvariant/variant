@@ -8,10 +8,8 @@ import com.variant.client.net.SessionPayloadReader;
 import com.variant.client.net.http.HttpClient;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.client.net.http.VariantHttpClientException;
-import com.variant.core.impl.VariantCore;
 import com.variant.core.session.CoreSession;
-import com.variant.core.session.SessionStore;
-
+/*
 public class SessionStoreImplRemote {
 
 	//private static final Logger LOG = LoggerFactory.getLogger(SessionStoreRemote.class);
@@ -54,7 +52,7 @@ public class SessionStoreImplRemote {
 
 	/**
 	 * Save the session in the remote server.
-	 */
+	 *
 	public void save(CoreSession session) {
 
 		if (session == null) {
@@ -72,13 +70,13 @@ public class SessionStoreImplRemote {
 
 	/**
 	 * 
-	 */
+	 *
 	@Override
 	public void shutdown() {}
 
 	/**
 	 * 
-	 */
+	 *
 	@Override
 	public void init(VariantCore core, Map<String, Object> initObject) {
 		coreApi = core;
@@ -87,3 +85,4 @@ public class SessionStoreImplRemote {
 	}
 	
 }
+*/

@@ -1,6 +1,7 @@
 package com.variant.client;
 
 
+import com.typesafe.config.Config;
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.schema.Schema;
 
@@ -14,13 +15,14 @@ import com.variant.core.schema.Schema;
 public interface VariantClient {
 		
 	/**
-	 * Configuration properties, as supplied by the external configuration.
+	 * Externally supplied configuration.
+	 * See https://github.com/typesafehub/config for details on Typesafe Config.
 	 * 
-	 * @return An instance of the {@link Properties} type.
+	 * @return An instance of the {@link Config} type.
 	 * 
-	 * @since 0.6
+	 * @since 0.7
 	 */
-	public Properties getProperties();
+	public Config getConfig();
 	
     /* ------------------------------------------------------------------------------------------------- */
 	/* ------------------ NO CLIENT-SIDE HOOK MANAGEMENT.  REMOVE ME SOON ------------------------------
@@ -126,23 +128,16 @@ public interface VariantClient {
 	public static class Factory {
 		
 		/**
-		 * Obtain a new instance of {@link VariantClient}. Takes zero or more String arguments
-		 * which are understood to be Java classpath resource names. Each resource is expected 
-		 * to contain a set of system property definitions, as specified by Java's 
-		 * {@link Properties#load(java.io.Reader)} method. When Variant client needs to look 
-		 * up a property value, these files are examined left to right and the first value found is
-		 * used.  If a value wasn't found in any of the supplied files, or if no files were supplied, 
-		 * a default is used.
+		 * Obtain a new instance of {@link VariantClient}.
+		 * Host application should hold on to and reuse the object returned by this method whenever possible.
+		 * One of these per address space is recommended.
 		 * 
-		 * Host application should hold on to and reuse the object returned by this method.
-		 * 
-		 * @param  resourceNames Zero or more system property files as classpath resource names.
 		 * @return Instance of the {@link VariantClient} type.
 		 * @since 0.6
 		 */
-		public static VariantClient getInstance(String...resourceNames) {
+		public static VariantClient getInstance() {
 			
-			return new VariantClientImpl(resourceNames);
+			return new VariantClientImpl();
 		}
 
 	}

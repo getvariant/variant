@@ -1,15 +1,19 @@
 package com.variant.client.impl;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Properties;
 import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.Properties;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import com.variant.client.VariantClient;
+import com.variant.client.net.Server;
 import com.variant.client.net.SessionPayloadReader;
-import com.variant.client.session.SessionCache;
-import com.variant.core.session.SessionStore;
+import com.variant.core.util.VariantConfigFactory;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
@@ -22,10 +26,28 @@ public class VariantClientImpl implements VariantClient {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
 	private static final Random RAND = new Random(System.currentTimeMillis());
+	private static final String defaultConfResourceName = "/com/variant/client/variant-default.conf";
+	
+	private final Config config = configure();
+	private final Server server = new Server(this);
+	
+	/**
+	 * Instantiate the configuration object.
+	 * @return
+	 */
+	private Config configure() {
+		InputStream defaultStream = getClass().getResourceAsStream(defaultConfResourceName);
 
-	private final Properties properties = new SystemPropertiesImpl();
-	private SessionStore sessionStore = null;
-	private SessionCache cache = null;
+		if (defaultStream == null) {
+			LOG.warn(String.format("Could NOT find default config resource [%s]",defaultConfResourceName));
+			return VariantConfigFactory.load();
+		}
+		else {
+			LOG.debug(String.format("Found default config resource [%s]", defaultConfResourceName));
+			Config variantDefault = ConfigFactory.parseReader(new InputStreamReader(defaultStream));
+			return VariantConfigFactory.load().withFallback(variantDefault);
+		}
+	}
 	
 	/**
 	 * Handshake with the server.
@@ -34,6 +56,7 @@ public class VariantClientImpl implements VariantClient {
 	private void handshake(SessionPayloadReader payloadReader) {
 		// Nothing for now.
 	}
+	
 	
 	/**
 	 *
@@ -119,18 +142,15 @@ public class VariantClientImpl implements VariantClient {
 
 	/**
 	 */
-	public VariantClientImpl(String...resourceNames) { /* What happened to the resource names? */ }
+	public VariantClientImpl() {
+		
+	}
 
 	/**
-	 * <p>This API's application properties
-	 * 
-	 * @return An instance of the {@link CoreProperties} type.
-	 * 
-	 * @since 0.6
 	 */
 	@Override
-	public Properties getProperties() {
-		return properties;
+	public Config getConfig() {
+		return config;
 	}
 
 	/**
@@ -210,23 +230,11 @@ public class VariantClientImpl implements VariantClient {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * @return Core API Object.
-	 * @since 0.5
-	 *
-	public VariantCore getCoreApi() {
-		return core;
-	}
-
-	/**
 	 * Save user session in session store.
 	 * @param session
 	 * TODO Make this async
-	 *
-	public void saveSession(CoreSession session, Object...userData) {
-		if (getSchema() == null) throw new VariantRuntimeUserErrorException(RUN_SCHEMA_UNDEFINED);
-		if (!getSchema().getId().equals(session.getSchemaId())) 
-			throw new VariantSchemaModifiedException(getSchema().getId(), session.getSchemaId());
-		sessionStore.save(session);
+	 */
+	public Server getServer() {
+		return server;
 	}
-    */
 }

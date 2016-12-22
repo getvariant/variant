@@ -3,6 +3,7 @@ package com.variant.client.net.http;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -27,6 +28,7 @@ public class HttpClient {
 	 * @return
 	 */
 	public HttpResponse get(String url) { 		
+		
 		CloseableHttpResponse resp = null;
 		long start = System.currentTimeMillis();
 		try {
@@ -46,7 +48,7 @@ public class HttpClient {
 			return new HttpResponse(get, resp);
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unable to perform HTTP GET: " + e.getMessage(), e);
+			throw new RuntimeInternalException("Unexpected exception in HTTP GET: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					
@@ -56,12 +58,43 @@ public class HttpClient {
 	} 
 
 	/**
+	 * Send a POST.
+	 * @param url
+	 * @param body
+	 * @return
+	 */
+	public HttpResponse post(String url, String body) {
+		
+		CloseableHttpResponse resp = null;
+		long start = System.currentTimeMillis();
+		try {
+			HttpPost post = new HttpPost(url);
+			post.setHeader("Content-Type", "application/json");
+			post.setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
+			resp = client.execute(post);
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(String.format("POST %s [%s] : %s in %s", url, body, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
+			}
+		    return new HttpResponse(post, resp);
+		}
+		catch (Exception e) {
+			throw new RuntimeInternalException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
+		} finally {
+			if (resp != null) {
+				try {resp.close();}					
+				catch (Exception e) {}
+			}
+		}		
+	}
+	
+	/**
 	 * Send a PUT.
 	 * @param url
 	 * @param body
 	 * @return
 	 */
 	public HttpResponse put(String url, String body) {
+		
 		CloseableHttpResponse resp = null;
 		long start = System.currentTimeMillis();
 		try {
@@ -75,7 +108,7 @@ public class HttpClient {
 		    return new HttpResponse(put, resp);
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unable to perform HTTP POST: " + e.getMessage(), e);
+			throw new RuntimeInternalException("Unexpected exception in HTTP PUT: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					
@@ -83,4 +116,5 @@ public class HttpClient {
 			}
 		}		
 	}
+
 }

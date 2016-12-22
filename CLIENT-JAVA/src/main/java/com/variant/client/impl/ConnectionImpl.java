@@ -131,7 +131,7 @@ public class ConnectionImpl implements Connection {
 			if (create) {
 				// Session expired locally, recreate OK.  Don't bother with the server.
 				CoreSession coreSession = new CoreSession(sessionId, schema);
-				coreSession.save();
+				.save();
 				VariantSessionImpl clientSession = new VariantSessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
 				return clientSession;
@@ -221,40 +221,6 @@ public class ConnectionImpl implements Connection {
 		return _getSession(false, userData);
 	}
 
-	/**
-	 * Get a session 
-	 * Recreate if does not exist and <code>create</code> is true.
-	 * @return 
-	 */
-	public SessionPayloadReader getSession(String id, boolean create) throws VariantRuntimeException {
-		
-		assertValid();
-		
-		if (id == null || id.length() == 0) {
-			throw new IllegalArgumentException("No session ID");
-		}
-
-		HttpClient httpClient = new HttpClient();
-		HttpResponse resp = httpClient.get(apiEndpointUrl + "session/" + sessionId);
-
-		if (resp.getStatus() == HttpStatus.SC_OK) {
-			return new SessionPayloadReader(coreApi, resp.getBody());
-		}
-		else if (resp.getStatus() == HttpStatus.SC_NO_CONTENT) {
-			if (create) {
-				CoreSession newSession = new CoreSession(sessionId, coreApi);
-				save(newSession);
-				return new SessionPayloadReader(coreApi, newSession.toJson());
-			}
-			else {
-				return null;
-			}
-		}
-		else {
-			throw new VariantHttpClientException(resp);
-		}
-
-	}
 	
 	/**
 	 * Persist user session in session store.

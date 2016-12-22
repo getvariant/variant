@@ -106,7 +106,7 @@ public interface VariantSession {
 	 *         session.
 	 *  
 	 * @since 0.5
-	 */
+	 *
 	public VariantStateRequest getStateRequest();
 
 	/**
@@ -114,7 +114,7 @@ public interface VariantSession {
 	 * 
 	 * @param An implementation of {@link VariantEvent} which represents the custom event to be triggered.
 	 * @since 0.7
-	 *
+	 */
 	public void triggerEvent(VariantEvent event);
 		
 	/**

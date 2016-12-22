@@ -178,16 +178,13 @@ public class VariantSessionImpl implements VariantSession {
 		return coreSession.getDisqualifiedTests();
 	}
 
-/*
+
 	@Override
 	public void triggerEvent(VariantEvent event) {
 		checkState();
-		// Trigger state visited event
-		session.triggerEvent(event);
-
-		coreSession.triggerEvent(event);
+		((VariantClientImpl)conn.getClient()).getServer().saveEvent(this, event);
 	}
-
+/*
 	@Override
 	public VariantStateRequest getStateRequest() {
 		checkState();
@@ -198,6 +195,14 @@ public class VariantSessionImpl implements VariantSession {
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
+
+	/**
+	 * 
+	 * @return
+	 */
+	public void save() {
+
+	}
 
 	/**
 	 * 
