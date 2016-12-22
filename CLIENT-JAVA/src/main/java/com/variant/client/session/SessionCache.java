@@ -7,13 +7,15 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.client.Connection;
 import com.variant.client.VariantSession;
+import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.VariantSessionImpl;
-import com.variant.core.session.CoreSession;
 
 /**
- * Keep track of all sessions in the JVM in order to provide idempotency of the getSession() call.
- * Static singleton. Sessions from all connections are stored 
+ * Keep track of all sessions in a client instance in order to provide idempotency of the getSession() call.
+ * Static singleton. Sessions from all connections are stored in this object.
+ * 
  * 
  * @author Igor
  *
@@ -22,28 +24,24 @@ public class SessionCache {
 
 	private static Logger LOG = LoggerFactory.getLogger(SessionCache.class);
 	
-	private static long DEFAULT_KEEP_ALIVE = DateUtils.MILLIS_PER_MINUTE * 30;
+	//private static long DEFAULT_KEEP_ALIVE = DateUtils.MILLIS_PER_MINUTE * 30;
+	
 	private static long VACUUM_INTERVAL = DateUtils.MILLIS_PER_SECOND * 30;
-	
-	private static ConcurrentHashMap<String, Entry> cache = new ConcurrentHashMap<String, Entry>();
-	private static VacuumThread vacuumThread;
-	
+		
 	/**
 	 */
-	private static class Entry {
+	private class Entry {
 		
 		VariantSessionImpl session;
 		long accessTimestamp;
-		long keepAliveMillis;
 		
-		Entry(VariantSessionImpl session, long keepAliveMillis) {
+		Entry(VariantSessionImpl session) {
 			this.session = session;
 			this.accessTimestamp = System.currentTimeMillis();
-			this.keepAliveMillis = keepAliveMillis;
 		}
 		
 		boolean isIdle() {
-			return accessTimestamp + keepAliveMillis < System.currentTimeMillis();
+			return accessTimestamp + conn.getSessionTimeout()*1000 < System.currentTimeMillis();
 		}
 	}
 	
@@ -54,8 +52,8 @@ public class SessionCache {
 	 * @author Igor.
 	 *
 	 */
-	private static class VacuumThread extends Thread {
-		
+	private class VacuumThread extends Thread {
+				
 		@Override
 		public void run() {
 			
@@ -94,34 +92,27 @@ public class SessionCache {
 		}
 	}
 
-	static {
+	private final ConnectionImpl conn;
+	private ConcurrentHashMap<String, Entry> cache = new ConcurrentHashMap<String, Entry>();
+	private VacuumThread vacuumThread;
+
+	/**
+	 * 
+	 */
+	public SessionCache(Connection conn) {
+		this.conn = (ConnectionImpl) conn;
 		vacuumThread = new VacuumThread();
 		vacuumThread.setDaemon(false);
 		vacuumThread.setName(VacuumThread.class.getSimpleName());
 		vacuumThread.start();
 	}
-
-	/**
-	 * Static singleton
-	 */
-	private SessionCache(){}
 	
 	/**
-	 * Add a new session to the cache. Session came from the server so we know the keepAlive.
+	 * Add a new session to the cache.
 	 * @param coreSession
 	 */
-	public static void add(CoreSession session, long keepAlive) {
-		cache.put(session.getId(), new Entry((VariantSessionImpl)session, keepAlive));
-	}
-
-	/**
-	 * Add a new session to the cache. Session was created locally and does not yet have a keepAlive.
-	 * We assign a long keepAlive, hoping it is greater than the timeout on the server. When it comes
-	 * back from the server for the first time, keepAlive will be set properly.
-	 * @param coreSession
-	 */
-	public static void add(VariantSessionImpl session) {
-		cache.put(session.getId(), new Entry(session, DEFAULT_KEEP_ALIVE));
+	public void add(VariantSessionImpl session) {
+		cache.put(session.getId(), new Entry(session));
 	}
 
 	/**
@@ -129,7 +120,7 @@ public class SessionCache {
 	 * @param sessionId
 	 * @return session object if found, null otherwise.
 	 */
-	public static VariantSession get(String sessionId) {
+	public VariantSession get(String sessionId) {
 		
 		Entry entry = cache.get(sessionId);
 		if (entry != null) {
@@ -143,7 +134,7 @@ public class SessionCache {
 	 * Expire locally a session that has already expired on the server.
 	 * @param sessionId
 	 */
-	public static void expire(String sessionId) {
+	public void expire(String sessionId) {
 		Entry entry = cache.remove(sessionId);
 		if (entry != null) entry.session.expire();
 	}

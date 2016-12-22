@@ -1,29 +1,27 @@
 package com.variant.client.impl;
 
-import static com.variant.client.Properties.Property.SESSION_ID_TRACKER_CLASS_INIT;
 import static com.variant.client.Properties.Property.SESSION_ID_TRACKER_CLASS_NAME;
-import static com.variant.client.Properties.Property.TARGETING_TRACKER_CLASS_INIT;
 import static com.variant.client.Properties.Property.TARGETING_TRACKER_CLASS_NAME;
 
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.http.HttpStatus;
 
 import com.variant.client.Connection;
-import com.variant.client.Properties;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
+import com.variant.client.net.SessionPayloadReader;
 import com.variant.client.net.http.HttpClient;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.client.net.http.VariantHttpClientException;
 import com.variant.client.session.SessionCache;
 import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.net.SessionPayloadReader;
+import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.session.CoreSession;
-import com.variant.core.session.SessionStore;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -57,9 +55,9 @@ public class ConnectionImpl implements Connection {
 	 */
 	private VariantSessionIdTracker initSessionIdTracker(Object...userData) {
 		// Session ID tracker.
-		String sidTrackerClassName = client.getProperties().get(SESSION_ID_TRACKER_CLASS_NAME, String.class);
+		String className = client.getProperties().get(SESSION_ID_TRACKER_CLASS_NAME, String.class);
 		try {
-			Class<?> sidTrackerClass = Class.forName(sidTrackerClassName);
+			Class<?> sidTrackerClass = Class.forName(className);
 			Object sidTrackerObject = sidTrackerClass.newInstance();
 			if (sidTrackerObject instanceof VariantSessionIdTracker) {
 				VariantSessionIdTracker result = (VariantSessionIdTracker) sidTrackerObject;
@@ -67,11 +65,11 @@ public class ConnectionImpl implements Connection {
 				return result;
 			}
 			else {
-				throw new ClientErrorException(ClientError.SESSION_ID_TRACKER_NO_INTERFACE, sidTrackerClassName, SessionStore.class.getName());
+				throw new ClientErrorException(ClientError.SESSION_ID_TRACKER_NO_INTERFACE, className, VariantSessionIdTracker.class.getName());
 			}
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unable to instantiate session id tracker class [" + sidTrackerClassName + "]", e);
+			throw new RuntimeInternalException("Unable to instantiate session id tracker class [" + className + "]", e);
 		}
 
 	}
@@ -126,7 +124,7 @@ public class ConnectionImpl implements Connection {
 		}
 		
 		// Have session ID. Try the local cache first.
-		VariantSession ssnFromCache = SessionCache.get(sessionId);
+		VariantSession ssnFromCache = cache.get(sessionId);
 		
 		if (ssnFromCache == null) {
 			// Local case miss.
@@ -187,9 +185,10 @@ public class ConnectionImpl implements Connection {
 
 	private static final Random RAND = new Random(System.currentTimeMillis());
 	
-	private VariantClient client;
+	private final VariantClient client;
+	private final Schema schema;
+	private final SessionCache cache;
 	private Status status;
-	private Schema schema;
 	
 	/**
 	 * 
@@ -197,9 +196,17 @@ public class ConnectionImpl implements Connection {
 	ConnectionImpl(VariantClient client, Schema schema) {
 		this.client = client;
 		this.schema = schema;
+		this.cache = new SessionCache(this);
 		status = Status.OPEN;
 	}
 	
+	/**
+	 */
+	@Override
+	public VariantClient getClient() {
+		return client;
+	}
+
 	/**
 	 */
 	@Override
@@ -276,5 +283,19 @@ public class ConnectionImpl implements Connection {
 		return core.getSchema();
 	}
 
+	/**
+	 * Server side session timeout, seconds
+	 */
+	public int getSessionTimeout() {
+		return 0;
+	}
 
+	/**
+	 * JSON deserialization.
+	 * @param parsedJson
+	 * @return
+	 */
+	public static Connection fromJson(Map<String,?> parsedJson) {
+		return null;
+	}
 }

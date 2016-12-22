@@ -7,10 +7,9 @@ import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 
-abstract public class PayloadReader<T>  {
+abstract public class AbstractPayloadReader<T>  {
 
 	private T content = null;
-	private Schema schema;
 	
 	/**
 	 * 
@@ -18,10 +17,10 @@ abstract public class PayloadReader<T>  {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void parse(String payload) {
+	private void parseJson(String payload) {
 		try {
 			ObjectMapper mapper = new ObjectMapper();		
-			this.content = (T) parse(schema, mapper.readValue(payload, Map.class));
+			this.content = (T) parser().parse(mapper.readValue(payload, Map.class));
 		}
 		catch (VariantRuntimeException e) {
 			throw e;
@@ -30,22 +29,27 @@ abstract public class PayloadReader<T>  {
 			throw new RuntimeInternalException("Unable to deserealize payload: [" + payload + "]", e);
 		}
 	}
+	
+	abstract protected AbstractParser<T> parser();
+	
+	/**
+	 * Implementations will differ at construction but have an expected parse() signature.
+	 */
+	protected interface AbstractParser<T> {
+		T parse(Map<String,?> mappedJson);
+	}
 
-	protected abstract T parse(Schema schema, Map<String,?> mappedJson);
+	/**
+	 * 
+	 */
+	protected AbstractPayloadReader(String payload) {
+		parseJson(payload);
+	}
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-		
-	/**
-	 * 
-	 * @param core
-	 */
-	public PayloadReader(Schema schema, String payload) {
-		this.schema = schema;
-		parse(payload);
-	}
-	
+			
 	/**
 	 * 
 	 * @return

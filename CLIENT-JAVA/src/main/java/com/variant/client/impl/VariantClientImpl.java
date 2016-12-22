@@ -1,33 +1,15 @@
 package com.variant.client.impl;
 
-import static com.variant.client.Properties.Property.SESSION_ID_TRACKER_CLASS_INIT;
-import static com.variant.client.Properties.Property.SESSION_ID_TRACKER_CLASS_NAME;
-import static com.variant.client.Properties.Property.TARGETING_TRACKER_CLASS_INIT;
-import static com.variant.client.Properties.Property.TARGETING_TRACKER_CLASS_NAME;
-
-import java.io.InputStream;
 import java.util.Random;
 
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.Properties;
-import com.variant.client.Properties.Property;
 import com.variant.client.VariantClient;
-import com.variant.client.VariantSession;
-import com.variant.client.VariantSessionIdTracker;
-import com.variant.client.VariantTargetingTracker;
+import com.variant.client.net.SessionPayloadReader;
 import com.variant.client.session.SessionCache;
-import com.variant.core.HookListener;
-import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.net.Payload;
-import com.variant.core.net.SessionPayloadReader;
-import com.variant.core.schema.ParserResponse;
-import com.variant.core.schema.Schema;
-import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionStore;
-import com.variant.core.util.VariantStringUtils;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 

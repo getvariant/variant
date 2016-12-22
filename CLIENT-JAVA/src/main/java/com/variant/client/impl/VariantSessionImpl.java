@@ -39,7 +39,7 @@ public class VariantSessionImpl implements VariantSession {
 
 	private boolean isExpired = false;
 	
-	private VariantClientImpl client;
+	private final ConnectionImpl conn;
 	private CoreSession coreSession;
 	private VariantSessionIdTracker sessionIdTracker;
 	private VariantTargetingTracker targetingTracker;
@@ -85,16 +85,15 @@ public class VariantSessionImpl implements VariantSession {
 	// ---------------------------------------------------------------------------------------------//
 	//                                       PUBLIC AUGMENTED                                       //
 	// ---------------------------------------------------------------------------------------------//
-
 	/**
 	 * 
 	 */
-	public VariantSessionImpl(VariantClient client,
+	public VariantSessionImpl(Connection conn,
 			CoreSession coreSession,
 			VariantSessionIdTracker sessionIdTracker,
 			VariantTargetingTracker targetingTracker) {
 		
-		this.client = (VariantClientImpl) client;
+		this.conn = (ConnectionImpl) conn;
 		this.coreSession = coreSession;
 		this.coreSession.setTargetingStabile(toTargetingStabile(targetingTracker));
 		this.sessionIdTracker = sessionIdTracker;
@@ -103,7 +102,7 @@ public class VariantSessionImpl implements VariantSession {
 
 	/**
 	 *
-	 */
+	 *
 	@Override
 	public VariantStateRequest targetForState(State state) {
 				
@@ -132,7 +131,7 @@ public class VariantSessionImpl implements VariantSession {
 	@Override
 	public Object setAttribute(String name, Object value) {
 		return attributeMap.put(name, value);
-	}
+	}    
 
 	@Override
 	public Object getAttribute(String name) {
@@ -158,7 +157,7 @@ public class VariantSessionImpl implements VariantSession {
 	@Override
 	public Connection getConnectoin() {
 		checkState();
-		return coreSession.getSchema();
+		return conn;
 	}
 
 	@Override
@@ -179,6 +178,7 @@ public class VariantSessionImpl implements VariantSession {
 		return coreSession.getDisqualifiedTests();
 	}
 
+/*
 	@Override
 	public void triggerEvent(VariantEvent event) {
 		checkState();
@@ -189,24 +189,12 @@ public class VariantSessionImpl implements VariantSession {
 	}
 
 	@Override
-	public VariantCoreStateRequest getStateRequest() {
+	public VariantStateRequest getStateRequest() {
 		checkState();
 		VariantCoreStateRequest coreRequest = coreSession.getStateRequest();
 		return coreRequest == null ? null : new VariantStateRequestImpl(coreRequest, this);
 	}
-
-	@Override
-	public VariantClient getClient() {
-		return client;
-	}
-
-	/**
-	 */
-	@Override
-	public boolean isCommitted() {
-		return committed;
-	}
-
+*/
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
@@ -231,7 +219,7 @@ public class VariantSessionImpl implements VariantSession {
 	 * 
 	 * @param coreSession
 	 */
-	public void replaceCoreSession(VariantCoreSession coreSession) {
+	public void replaceCoreSession(CoreSession coreSession) {
 		this.coreSession = (CoreSession) coreSession;
 	}
 	

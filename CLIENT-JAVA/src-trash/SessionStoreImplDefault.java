@@ -2,8 +2,8 @@ package com.variant.client.session;
 
 import java.util.Map;
 
+import com.variant.client.net.SessionPayloadReader;
 import com.variant.core.impl.VariantCore;
-import com.variant.core.net.SessionPayloadReader;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionStore;
 

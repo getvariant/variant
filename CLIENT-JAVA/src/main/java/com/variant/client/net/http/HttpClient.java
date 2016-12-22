@@ -21,7 +21,7 @@ public class HttpClient {
 	public HttpClient() {}
 	
 	/**
-	 * Send a GET with an optional body.
+	 * Send a GET.
 	 * @param url
 	 * @param body
 	 * @return
@@ -56,7 +56,7 @@ public class HttpClient {
 	} 
 
 	/**
-	 * 
+	 * Send a PUT.
 	 * @param url
 	 * @param body
 	 * @return

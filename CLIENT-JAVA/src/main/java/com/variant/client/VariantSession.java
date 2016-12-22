@@ -54,7 +54,7 @@ public interface VariantSession {
 	 *         may be further examined for more information about the outcome of this operation.  
 	 *
 	 * @since 0.5
-	 */
+	 *
 	VariantStateRequest targetForState(State state);
 	
 	/**
@@ -107,14 +107,14 @@ public interface VariantSession {
 	 *  
 	 * @since 0.5
 	 */
-	public CoreStateRequest getStateRequest();
+	public VariantStateRequest getStateRequest();
 
 	/**
 	 * Trigger a custom event.
 	 * 
 	 * @param An implementation of {@link VariantEvent} which represents the custom event to be triggered.
 	 * @since 0.7
-	 */
+	 *
 	public void triggerEvent(VariantEvent event);
 		
 	/**

@@ -2,8 +2,8 @@ package com.variant.client.session;
 
 import java.util.Collection;
 
-import com.variant.client.VariantClientPropertyKeys;
-import com.variant.client.VariantInitParams;
+import com.variant.client.Properties;
+import com.variant.client.VariantClient;
 import com.variant.client.VariantTargetingTracker;
 
 /**
@@ -17,10 +17,10 @@ public class TargetingTrackerDefault implements VariantTargetingTracker {
 	
 	private final static String MESSAGE = 
 			"Supply a functional implementation in applicaiton property " + 
-					VariantClientPropertyKeys.TARGETING_TRACKER_CLASS_NAME.propertyName();
+					Properties.Property.TARGETING_TRACKER_CLASS_NAME;
 
 	@Override
-	public void init(VariantInitParams initParams, Object...userData) {}		
+	public void init(VariantClient client, Object...userData) {}		
 
 	@Override
 	public void save(Object...userData) {
@@ -36,6 +36,5 @@ public class TargetingTrackerDefault implements VariantTargetingTracker {
 	public void set(Collection<Entry> entries) {
 		throw new UnsupportedOperationException(MESSAGE);
 	}
-
 
 }

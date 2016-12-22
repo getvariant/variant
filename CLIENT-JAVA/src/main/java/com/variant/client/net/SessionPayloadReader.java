@@ -2,26 +2,31 @@ package com.variant.client.net;
 
 import java.util.Map;
 
-import com.variant.core.schema.Schema;
+import com.variant.client.Connection;
 import com.variant.core.session.CoreSession;
 
-public class SessionPayloadReader extends PayloadReader<CoreSession> {
+public class SessionPayloadReader extends ConnectedPayloadReader<CoreSession> {
 
 	/**
 	 * 
 	 * @param core
 	 * @param payload
 	 */
-	public SessionPayloadReader(Schema schema, String payload) {
-		super(schema, payload);
+	public SessionPayloadReader(Connection conn, String payload) {
+		super(conn, payload);
 	}
 
 	/**
 	 * Parser.
 	 */
 	@Override
-	protected CoreSession parse(Schema schema, Map<String, ?> mappedJson) {
-		return CoreSession.fromJson(mappedJson, schema);
-	}
+	protected AbstractPayloadReader.AbstractParser<CoreSession> parser() {
 
+		return new AbstractPayloadReader.AbstractParser<CoreSession>() {
+			@Override
+			public CoreSession parse(Map<String, ?> mappedJson) {
+				return CoreSession.fromJson(mappedJson, conn.getSchemama());
+			}
+		};
+	}
 }
