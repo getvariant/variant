@@ -25,7 +25,7 @@ public class SessionPayloadReader extends ConnectedPayloadReader<CoreSession> {
 		return new AbstractPayloadReader.AbstractParser<CoreSession>() {
 			@Override
 			public CoreSession parse(Map<String, ?> mappedJson) {
-				return CoreSession.fromJson(mappedJson, conn.getSchemama());
+				return CoreSession.fromJson(mappedJson, conn.getSchema());
 			}
 		};
 	}

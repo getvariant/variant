@@ -196,14 +196,10 @@ public class VariantSessionImpl implements VariantSession {
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
 
-	/**
-	 * 
-	 * @return
-	 */
 	public void save() {
-
+		((VariantClientImpl) conn.getClient()).getServer().saveSession(conn, coreSession);
 	}
-
+	
 	/**
 	 * 
 	 * @return

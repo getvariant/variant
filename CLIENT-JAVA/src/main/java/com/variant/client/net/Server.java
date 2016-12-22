@@ -2,8 +2,8 @@ package com.variant.client.net;
 
 import org.apache.http.HttpStatus;
 
+import static com.variant.client.ConfigKeys.*;
 import com.variant.client.Connection;
-import com.variant.client.Properties.Property;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.net.http.HttpClient;
@@ -40,7 +40,7 @@ public class Server {
 	 */
 	public Server(VariantClient client) {
 		this.client = client;
-		String ep = client.getProperties().get(Property.SERVER_ENDPOINT_URL);
+		String ep = client.getConfig().getString(SERVER_ENDPOINT_URL);
 		endpointUrl = !ep.endsWith("/") ? ep : ep + "/";
 	}
 	
@@ -111,7 +111,7 @@ public class Server {
 
 		// Remote
 		HttpClient httpClient = new HttpClient();
-		HttpResponse resp = httpClient.put(endpointUrl + "session/" + session.getId(), session.toJson(conn.getSchemama()));
+		HttpResponse resp = httpClient.put(endpointUrl + "session/" + session.getId(), session.toJson(conn.getSchema()));
 		
 		if (resp.getStatus() != HttpStatus.SC_OK) {
 			throw new VariantHttpClientException(resp);

@@ -1,25 +1,20 @@
 package com.variant.client.impl;
 
-import static com.variant.client.Properties.Property.SESSION_ID_TRACKER_CLASS_NAME;
-import static com.variant.client.Properties.Property.TARGETING_TRACKER_CLASS_NAME;
+import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
+import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 
 import java.util.Map;
 import java.util.Random;
-
-import org.apache.http.HttpStatus;
 
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantSession;
 import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.VariantTargetingTracker;
+import com.variant.client.net.Server;
 import com.variant.client.net.SessionPayloadReader;
-import com.variant.client.net.http.HttpClient;
-import com.variant.client.net.http.HttpResponse;
-import com.variant.client.net.http.VariantHttpClientException;
 import com.variant.client.session.SessionCache;
 import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.VariantStringUtils;
@@ -55,7 +50,7 @@ public class ConnectionImpl implements Connection {
 	 */
 	private VariantSessionIdTracker initSessionIdTracker(Object...userData) {
 		// Session ID tracker.
-		String className = client.getProperties().get(SESSION_ID_TRACKER_CLASS_NAME, String.class);
+		String className = client.getConfig().getString(SESSION_ID_TRACKER_CLASS_NAME);
 		try {
 			Class<?> sidTrackerClass = Class.forName(className);
 			Object sidTrackerObject = sidTrackerClass.newInstance();
@@ -83,7 +78,7 @@ public class ConnectionImpl implements Connection {
 	private VariantTargetingTracker initTargetingTracker(Object...userData) {
 		
 		// Instantiate targeting tracker.
-		String className = client.getProperties().get(TARGETING_TRACKER_CLASS_NAME, String.class);
+		String className = client.getConfig().getString(TARGETING_TRACKER_CLASS_NAME);
 		
 		try {
 			Object object = Class.forName(className).newInstance();
@@ -124,14 +119,14 @@ public class ConnectionImpl implements Connection {
 		}
 		
 		// Have session ID. Try the local cache first.
-		VariantSession ssnFromCache = cache.get(sessionId);
+		VariantSessionImpl ssnFromCache = (VariantSessionImpl) cache.get(sessionId);
 		
 		if (ssnFromCache == null) {
 			// Local case miss.
 			if (create) {
 				// Session expired locally, recreate OK.  Don't bother with the server.
 				CoreSession coreSession = new CoreSession(sessionId, schema);
-				.save();
+				server.saveSession(this, coreSession);
 				VariantSessionImpl clientSession = new VariantSessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
 				return clientSession;
@@ -143,28 +138,19 @@ public class ConnectionImpl implements Connection {
 		}		
 		
 		// Local cache hit. Try the the server.
-		// If session exists remotely, but the schema has changed, ignore the remote version.
-		SessionPayloadReader payloadReader = null;
+		SessionPayloadReader payloadReader = server.get(this, sessionId);
 		CoreSession ssnFromStore = null;
-
-		try {
-			payloadReader = core.getSession(sessionId, create);
-		}
-		catch(VariantSchemaModifiedException e) {}
-
-		// Ensure we are compatible with the server.
-		if (payloadReader != null)	{
-			handshake(payloadReader);
-			ssnFromStore = (CoreSession) payloadReader.getBody();			
-		}
 		
-		if (ssnFromStore == null) {
+		if (payloadReader != null)	{
+			ssnFromStore = (CoreSession) payloadReader.getContent();			
+		}
+		else {
 			// Session expired on server => expire it here too.
 			cache.expire(sessionId);
 			if (create) {
 				// Recreate from scratch
-				CoreSession coreSession = new CoreSession(sessionId, core);
-				coreSession.save();
+				CoreSession coreSession = new CoreSession(sessionId, schema);
+				server.saveSession(this, coreSession);
 				VariantSessionImpl clientSession = new VariantSessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
 				return clientSession;
@@ -178,15 +164,16 @@ public class ConnectionImpl implements Connection {
 		// Local and remote hits. 
 		// Replace remote in local, as it may have been changed by another client,
 		// update local timeout, and return the existing local object.
-		((VariantSessionImpl)ssnFromCache).replaceCoreSession(ssnFromStore);
-		cache.add(ssnFromCache, payloadReader.getProperty(Payload.Property.SSN_TIMEOUT, Long.class));
+		ssnFromCache.replaceCoreSession(ssnFromStore);
+		cache.add(ssnFromCache);
 		return ssnFromCache;	
 	}
 
 	private static final Random RAND = new Random(System.currentTimeMillis());
 	
-	private final VariantClient client;
+	private final VariantClientImpl client;
 	private final Schema schema;
+	private final Server server;
 	private final SessionCache cache;
 	private Status status;
 	
@@ -194,8 +181,9 @@ public class ConnectionImpl implements Connection {
 	 * 
 	 */
 	ConnectionImpl(VariantClient client, Schema schema) {
-		this.client = client;
+		this.client = (VariantClientImpl) client;
 		this.schema = schema;
+		this.server = this.client.getServer();
 		this.cache = new SessionCache(this);
 		status = Status.OPEN;
 	}
@@ -221,33 +209,24 @@ public class ConnectionImpl implements Connection {
 		return _getSession(false, userData);
 	}
 
-	
-	/**
-	 * Persist user session in session store.
-	 * @param session
-	 * TODO Make this async
-	 */
-	public void saveSession(CoreSession session) {
-		
-		if (core.getSchema() == null) throw new VariantRuntimeUserErrorException(Error.RUN_SCHEMA_UNDEFINED);
-		
-		if (!core.getSchema().getId().equals(session.getSchemaId())) 
-			throw new VariantRuntimeUserErrorException(Error.RUN_SCHEMA_MODIFIED, core.getSchema().getId(), session.getSchemaId());
-		
-		sessionStore.save(session);
-	}
-
-	/**
-	 * <p>Get currently deployed test schema, if any.
-	 * 
-	 * @return Current test schema as an instance of the {@link com.variant.core.schema.Schema} object.
-	 * 
-	 * @since 0.5
-	 */
 	@Override
 	public Schema getSchema() {
-		return core.getSchema();
+		return schema;
 	}
+
+	@Override
+	public Status getStatus() {
+		return status;
+	}
+
+	@Override
+	public void close() {
+		status = Status.CLOSED_BY_CLIENT;
+	}
+
+	// ---------------------------------------------------------------------------------------------//
+	//                                           PUBLIC EXT                                         //
+	// ---------------------------------------------------------------------------------------------//
 
 	/**
 	 * Server side session timeout, seconds
@@ -264,4 +243,5 @@ public class ConnectionImpl implements Connection {
 	public static Connection fromJson(Map<String,?> parsedJson) {
 		return null;
 	}
+
 }

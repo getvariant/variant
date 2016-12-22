@@ -76,7 +76,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		// We won't have an event if nothing is instrumented on this state
 		if (event != null) {
 			// The status of this request.
-			event.getParameterMap().put("$REQ_STATUS", coreRequest.getStatus());
+			event.getParameterMap().put("$REQ_STATUS", coreRequest.getStatus().name());
 			// log all resolved state params as event params.
 			for (Map.Entry<String,String> e: coreRequest.getResolvedParameters().entrySet()) {
 				event.getParameterMap().put(e.getKey(), e.getValue());				
@@ -87,9 +87,9 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 		}
 		
 		coreRequest.commit();
-		
 		session.save();
-
+		
+		return true;
 	}
 
 	@Override

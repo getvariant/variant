@@ -64,7 +64,7 @@ public interface Connection {
 	 * 
 	 * @since 0.7
 	 */
-	public Schema getSchemama();
+	public Schema getSchema();
 
 	/**
 	 * The status of this connection.
