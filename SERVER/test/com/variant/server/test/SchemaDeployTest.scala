@@ -38,7 +38,7 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
       }
       else if (testData.name.startsWith("2.")) {
          // Just system property
-         FileUtils.copyFile(new File("test-conf/ParserCovariantOkayBigTest.json"), new File("/tmp/test-schemas-override/test-schema.json"))
+         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTest.json"), new File("/tmp/test-schemas-override/test-schema.json"))
          sys.props.contains("variant.schemas.dir") must be (false)
          sys.props +=(("variant.schemas.dir","/tmp/test-schemas-override"))
          new GuiceApplicationBuilder()
@@ -47,7 +47,7 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
       }
       else if (testData.name.startsWith("3.")) {
          // Both application and system property
-         FileUtils.copyFile(new File("test-conf/ParserCovariantOkayBigTest.json"), new File("/tmp/test-schemas-override/test-schema.json"))
+         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTest.json"), new File("/tmp/test-schemas-override/test-schema.json"))
          sys.props -= ("variant.schemas.dir")
          sys.props.contains("variant.schemas.dir") must be (false)
          sys.props += (("variant.schemas.dir","/tmp/test-schemas-override"))

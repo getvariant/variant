@@ -49,18 +49,18 @@ class VariantApplicationLoader extends GuiceApplicationLoader() {
 
 import VariantApplicationLoader._
 
-   val foo = new Configuration(config)
+   val extra = new Configuration(config)
    
    /**
     * Override builder() with Variant configuration.
     */
    override def builder(context: ApplicationLoader.Context): GuiceApplicationBuilder = {
   
-      logger.debug("Building Variant application loader in " + context.environment)
+      logger.debug("Building Variant application in " + context.environment)
       
       initialBuilder
          .in(context.environment)
-         .loadConfig(foo ++ context.initialConfiguration)
+         .loadConfig(context.initialConfiguration ++ extra)
          .overrides(overrides(context): _*)
   }
 }

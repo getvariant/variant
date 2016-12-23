@@ -20,6 +20,7 @@ import com.variant.server.Connection
  *
  */
 trait ConnectionStore {
+
    /**
     * Save a connection in this store.
     * Can be retrieved by its ID.

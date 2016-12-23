@@ -10,7 +10,7 @@ public class ConnectionTest extends BareClientBaseTest {
 	 */
 	@org.junit.Test
 	public void basicTest() throws Exception {
+
 		
-		System.out.println("***************************************************");
 	}	
 }
