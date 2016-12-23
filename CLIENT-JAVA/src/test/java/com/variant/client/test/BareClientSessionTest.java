@@ -33,7 +33,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 	 * No Schema.
 	 *  
 	 * @throws Exception
-	 */
+	 *
 	@org.junit.Test
 	public void noSchemaTest() throws Exception {
 		
@@ -51,7 +51,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 	 * Old Schema.
 	 *  
 	 * @throws Exception
-	 */
+	 *
 	@org.junit.Test
 	public void oldSchemaTest() throws Exception {
 
@@ -82,7 +82,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 	 * No session ID in cookie.
 	 * 
 	 * @throws Exception
-	 */
+	 *
 	@org.junit.Test
 	public void noSessionIdInTrackerTest() throws Exception {
 		
@@ -168,7 +168,7 @@ public class BareClientSessionTest extends BareClientBaseTest {
 	 * set/get session attributes.
 	 * 
 	 * @throws Exception
-	 */
+	 *
 	@org.junit.Test
 	public void sessionAttributesTest() throws Exception {
 		
@@ -193,5 +193,6 @@ public class BareClientSessionTest extends BareClientBaseTest {
 		assertEquals(23, ssn2.getAttribute("23"));
 		assertEquals(45, ssn2.getAttribute("45"));
 	}
-
+*/
+	
 }
