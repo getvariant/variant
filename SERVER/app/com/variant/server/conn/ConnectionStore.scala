@@ -44,7 +44,8 @@ class ConnectionStoreImpl() extends ConnectionStore {
 
    private val logger = Logger(this.getClass)	
 	private val connMap = new ConcurrentHashMap[String, Connection]()
-	private val maxSize = VariantServer.server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
+	//println("*********************** " + VariantServer.server)
+	private lazy val maxSize = VariantServer.server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
    
 	/**
 	 */
