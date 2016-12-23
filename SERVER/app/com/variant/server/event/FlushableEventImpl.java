@@ -56,7 +56,7 @@ public class FlushableEventImpl implements FlushableEvent, Serializable {
 	}
 
 	@Override
-	public Map<String,Object> getParameterMap() {
+	public Map<String,String> getParameterMap() {
 		return userEvent.getParameterMap();
 	}
 	
@@ -102,7 +102,7 @@ public class FlushableEventImpl implements FlushableEvent, Serializable {
 		.append("eventValue:").append(getEventValue()).append("', ")
 		.append("params:{");
 		boolean first = true;
-		for (Map.Entry<String, Object> e: getParameterMap().entrySet()) {
+		for (Map.Entry<String, String> e: getParameterMap().entrySet()) {
 			if (first) first = false;
 			else result.append(",");
 			result.append("'").append(e.getKey()).append("':");

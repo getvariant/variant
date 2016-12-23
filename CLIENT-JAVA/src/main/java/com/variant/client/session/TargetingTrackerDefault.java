@@ -3,7 +3,7 @@ package com.variant.client.session;
 import java.util.Collection;
 
 import com.variant.client.ConfigKeys;
-import com.variant.client.VariantClient;
+import com.variant.client.Connection;
 import com.variant.client.VariantTargetingTracker;
 
 /**
@@ -20,7 +20,7 @@ public class TargetingTrackerDefault implements VariantTargetingTracker {
 					ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 
 	@Override
-	public void init(VariantClient client, Object...userData) {}		
+	public void init(Connection conn, Object...userData) {}		
 
 	@Override
 	public void save(Object...userData) {

@@ -27,14 +27,14 @@ public interface VariantTargetingTracker {
 	 * immediately following the instantiation within the scope of the {@link VariantClient#getSession(Object...)} method.
 	 * Use this to inject state from configuration.
 	 * 
-	 * @param client    The instance of the Variant client API which is initializing this object. 
+	 * @param conn      The Variant server connection which is initializing this object.
 	 * @param userData  An array of zero or more opaque objects which {@link VariantClient#getSession(Object...)}  
 	 *                  or {@link VariantClient#getOrCreateSession(Object...)} method will pass here without 
 	 *                  interpretation.
 	 * 
 	 * @since 0.6
 	 */
-	public void init(VariantClient client, Object...userData);
+	public void init(Connection connection, Object...userData);
 
 	
 	/**

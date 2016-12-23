@@ -59,7 +59,7 @@ public class EventFlusherAppLogger implements EventFlusher {
 		}
 		
 		for (FlushableEvent event: events) {
-			for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
+			for (Map.Entry<String, String> param: event.getParameterMap().entrySet()) {
 
 				StringBuilder msg = new StringBuilder();
 				msg.append("EVENT_PARAMS:{")

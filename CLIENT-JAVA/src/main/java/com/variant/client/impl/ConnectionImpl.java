@@ -56,7 +56,7 @@ public class ConnectionImpl implements Connection {
 			Object sidTrackerObject = sidTrackerClass.newInstance();
 			if (sidTrackerObject instanceof VariantSessionIdTracker) {
 				VariantSessionIdTracker result = (VariantSessionIdTracker) sidTrackerObject;
-				result.init(client, userData);
+				result.init(this, userData);
 				return result;
 			}
 			else {
@@ -84,7 +84,7 @@ public class ConnectionImpl implements Connection {
 			Object object = Class.forName(className).newInstance();
 			if (object instanceof VariantTargetingTracker) {
 				VariantTargetingTracker result = (VariantTargetingTracker) object;
-				result.init(client, userData);
+				result.init(this, userData);
 				return result;
 			}
 			else {

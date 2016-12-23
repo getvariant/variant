@@ -117,7 +117,7 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 					index = 0;
 					for (FlushableEvent event: events) {
 						long eventId = eventIds[index++];
-						for (Map.Entry<String, Object> param: event.getParameterMap().entrySet()) {
+						for (Map.Entry<String, String> param: event.getParameterMap().entrySet()) {
 
 							stmt.setLong(1, eventId);
 							stmt.setString(2, param.getKey());

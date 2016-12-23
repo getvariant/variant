@@ -3,10 +3,8 @@ package com.variant.client.session;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.variant.client.VariantClient;
-import com.variant.client.VariantInitParams;
+import com.variant.client.Connection;
 import com.variant.client.VariantTargetingTracker;
-import com.variant.core.VariantProperties;
 
 /**
  *** Suitable for tests only. ***
@@ -15,7 +13,6 @@ import com.variant.core.VariantProperties;
  */
 public class TargetingTrackerSimple extends TargetingTrackerString {
 
-	private VariantClient client = null;
 	private String buffer = null;
 		
 	/**
@@ -24,8 +21,7 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 	 * 1... - {@link VariantTargetingTracker.Entry} objects, if any
 	 */
 	@Override
-	public void init(VariantInitParams initParams, Object...userData) {
-		client = initParams.getVariantClient();
+	public void init(Connection conn, Object...userData) {
 		Collection<Entry> entries = new ArrayList<Entry>(userData.length);
 		for (int i = 0; i < userData.length; i++) {
 			if (i > 0)	entries.add((Entry)userData[i]);
@@ -40,7 +36,7 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 
 	@Override
 	public Collection<Entry> get() {
-		return fromString(buffer, client.getSchema());
+		return fromString(buffer);
 	}
 
 	@Override
@@ -49,8 +45,10 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 	}
 
 	@Override
-	protected Properties getProperties() {
-		return client.getProperties();
+	Connection getConnection() {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
 		
 }

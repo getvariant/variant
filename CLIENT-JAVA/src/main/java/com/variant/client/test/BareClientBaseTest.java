@@ -7,35 +7,25 @@ import com.variant.client.VariantTargetingTracker;
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.impl.VariantCore;
 import com.variant.core.schema.Schema;
+import com.variant.core.test.VariantBaseTest;
 import com.variant.core.util.inject.Injector;
-import com.variant.server.test.util.CoreBaseTest;
 
 /**
  * Base class for all Core JUnit tests.
  */
-public abstract class BareClientBaseTest extends CoreBaseTest {
+public abstract class BareClientBaseTest extends VariantBaseTest {
 	
 	private static Boolean sqlSchemaCreated = false;
 
-	private VariantCore core = null;
-	
-	/**
-	 * Subclasses will override this
-	 * @return
-	 */
-	protected VariantCore getCoreApi() {
-		return core;
-	}
-	
+		
 	/**
 	 * Each case runs in its own JVM. Each test runs in its
 	 * own instance of the test case. We want the jdbc schema
 	 * created only once per jvm, but the api be instance scoped.
 	 * 
 	 * @throws Exception
-	 */
+	 * ON THE SERVER
 	@Before
 	public void _beforeTestCase() throws Exception {
 		
@@ -46,17 +36,17 @@ public abstract class BareClientBaseTest extends CoreBaseTest {
 			}
 		}
 	}
-	
+	*/
 	/**
 	 * Subclasses will be able to override this
-	 */
+	 *
 	protected VariantClient newBareClient() {
 		Injector.setConfigNameAsResource("/variant/injector-bare-client-test.json");
 		VariantClientImpl result =  (VariantClientImpl) VariantClient.Factory.getInstance("/variant/bare-client-test.props");
 		core = result.getCoreApi();
 		return result;
 	}
-
+	*/
 	/**
 	 * Build up userData arguments for the *Simple trackers. 
 	 * They expect user data as follows:

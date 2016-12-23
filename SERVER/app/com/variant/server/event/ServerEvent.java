@@ -14,7 +14,7 @@ public class ServerEvent implements VariantEvent {
 	private String name;
 	private String value;
 	private Date createDate = new Date();
-	private Map<String,Object> params = new HashMap<String,Object>();
+	private Map<String,String> params = new HashMap<String,String>();
 	
 	public ServerEvent(String name, String value, Date createDate) {
 		this.name = name;
@@ -42,7 +42,7 @@ public class ServerEvent implements VariantEvent {
 	}
 
 	@Override
-	public Map<String, Object> getParameterMap() {
+	public Map<String, String> getParameterMap() {
 		return params;
 	}
 

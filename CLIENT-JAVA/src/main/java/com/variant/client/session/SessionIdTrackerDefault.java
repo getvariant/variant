@@ -1,7 +1,7 @@
 package com.variant.client.session;
 
 import com.variant.client.ConfigKeys;
-import com.variant.client.VariantClient;
+import com.variant.client.Connection;
 import com.variant.client.VariantSessionIdTracker;
 
 /**
@@ -14,7 +14,7 @@ public class SessionIdTrackerDefault implements VariantSessionIdTracker {
 			"Supply a functional implementation in applicaiton property " + 
 					ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 	@Override
-	public void init(VariantClient client, Object...userData) {}
+	public void init(Connection conn, Object...userData) {}
 
 	@Override
 	public void save(Object... userData) {
