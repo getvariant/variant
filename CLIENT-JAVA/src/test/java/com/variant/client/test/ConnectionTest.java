@@ -1,7 +1,9 @@
 package com.variant.client.test;
 
+import com.variant.client.VariantClient;
 
-public class ConnectionTest extends BareClientBaseTest {
+
+public class ConnectionTest extends BaseTest {
 	
 	/**
 	 * No Schema.
@@ -10,7 +12,8 @@ public class ConnectionTest extends BareClientBaseTest {
 	 */
 	@org.junit.Test
 	public void basicTest() throws Exception {
-
+		
+		VariantClient client = VariantClient.Factory.getInstance();
 		
 	}	
 }

@@ -24,7 +24,7 @@ import com.variant.core.session.CoreSession;
 import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantStringUtils;
 
-public class BareClientSessionTest extends BareClientBaseTest {
+public class SessionTest extends BaseTest {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
 	private final Random random = new Random(System.currentTimeMillis());
