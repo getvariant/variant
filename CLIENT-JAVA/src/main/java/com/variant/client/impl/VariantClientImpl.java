@@ -1,19 +1,13 @@
 package com.variant.client.impl;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.Properties;
-import java.util.Random;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import com.variant.client.VariantClient;
 import com.variant.client.net.Server;
 import com.variant.client.net.SessionPayloadReader;
-import com.variant.core.util.VariantConfigFactory;
+import com.variant.client.util.VariantConfigLoader;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
@@ -25,30 +19,11 @@ import com.variant.core.util.VariantConfigFactory;
 public class VariantClientImpl implements VariantClient {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
-	private static final Random RAND = new Random(System.currentTimeMillis());
-	private static final String defaultConfResourceName = "/com/variant/client/variant-default.conf";
 	
-	private final Config config = configure();
-	private final Server server = new Server(this);
-	
-	/**
-	 * Instantiate the configuration object.
-	 * @return
-	 */
-	private Config configure() {
-		InputStream defaultStream = getClass().getResourceAsStream(defaultConfResourceName);
+	private final Config config = new VariantConfigLoader("/variant.conf", "/com/variant/client/variant-default.conf").load();
 
-		if (defaultStream == null) {
-			LOG.warn(String.format("Could NOT find default config resource [%s]",defaultConfResourceName));
-			return VariantConfigFactory.load();
-		}
-		else {
-			LOG.debug(String.format("Found default config resource [%s]", defaultConfResourceName));
-			Config variantDefault = ConfigFactory.parseReader(new InputStreamReader(defaultStream));
-			return VariantConfigFactory.load().withFallback(variantDefault);
-		}
-	}
-	
+	private final Server server = new Server(this);
+		
 	/**
 	 * Handshake with the server.
 	 * @param payloadReader

@@ -87,9 +87,6 @@
                <artifactId>maven-surefire-plugin</artifactId>
                <version>2.18.1</version>
                <configuration>
-                   <!-- Do not reuse JVMs between test cases 
-                        because Variant.bootstrap() can only be called once per JVM's lifetime. 
-                   -->
 			       <reuseForks>false</reuseForks>
 			       <systemPropertyVariables>
                       <variant.version>${variant.version}</variant.version>

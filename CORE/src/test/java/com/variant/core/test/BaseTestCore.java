@@ -1,6 +1,5 @@
  package com.variant.core.test;
 
-import com.variant.core.util.inject.Injector;
 
 /**
  * Base class for all Core JUnit tests.

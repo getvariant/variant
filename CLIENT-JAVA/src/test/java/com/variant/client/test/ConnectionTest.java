@@ -3,7 +3,7 @@ package com.variant.client.test;
 import com.variant.client.VariantClient;
 
 
-public class ConnectionTest extends BaseTest {
+public class ConnectionTest extends BaseTestWithServer {
 	
 	/**
 	 * No Schema.
@@ -12,6 +12,7 @@ public class ConnectionTest extends BaseTest {
 	 */
 	@org.junit.Test
 	public void basicTest() throws Exception {
+		
 		
 		VariantClient client = VariantClient.Factory.getInstance();
 		

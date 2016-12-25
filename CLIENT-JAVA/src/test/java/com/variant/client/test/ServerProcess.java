@@ -2,12 +2,12 @@ package com.variant.client.test;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +77,8 @@ public class ServerProcess {
 				File svrDir = new File(new File(".."), "SERVER");
 				Process rm = Runtime.getRuntime().exec("rm " + svrDir.getAbsolutePath() + "/target/universal/stage/RUNNING_PID");
 				rm.waitFor();
+				IOUtils.copy(rm.getInputStream(), System.out);
+				IOUtils.copy(rm .getErrorStream(), System.out);
 				
 				/*
 				// Example: sbt "testProd -Dvariant.schemas.dir=none"

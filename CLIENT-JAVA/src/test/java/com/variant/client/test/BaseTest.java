@@ -20,7 +20,7 @@ public abstract class BaseTest extends VariantBaseTest {
 	 */
 	@Before
 	public void _beforeTestCase() throws Exception {
-		ServerProcess.start();
+		
 	}
 
 	/**
@@ -32,7 +32,7 @@ public abstract class BaseTest extends VariantBaseTest {
 		core = result.getCoreApi();
 		return result;
 	}
-	*/
+    */
 	/**
 	 * Build up userData arguments for the *Simple trackers. 
 	 * They expect user data as follows:

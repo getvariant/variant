@@ -24,7 +24,7 @@ trait ConnectionStore {
    /**
     * Save a connection in this store.
     * Can be retrieved by its ID.
-    * @returns true if stored or false if connection table is full.
+    * Returns true if stored or false if connection table is full.
     */
 	def put(conn: Connection): Boolean
 		

@@ -1,5 +1,5 @@
 package com.variant.client.test;
-
+/*
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
@@ -21,7 +21,7 @@ import com.variant.core.impl.VariantPropertiesTestFacade;
 import com.variant.core.util.VariantIoUtils;
 import com.variant.core.util.Tuples.Pair;
 
-public class PropertiesTest {
+public class ConfigTest {
 
 	@Test
 	public void test() throws Exception {
@@ -170,3 +170,4 @@ public class PropertiesTest {
 	}
 
 }
+*/
