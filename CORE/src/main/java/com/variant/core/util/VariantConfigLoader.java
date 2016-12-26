@@ -1,4 +1,4 @@
-package com.variant.client.util;
+package com.variant.core.util;
 
 import static com.variant.core.exception.RuntimeError.CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
 import static com.variant.core.exception.RuntimeError.CONFIG_FILE_NOT_FOUND;
@@ -15,7 +15,6 @@ import com.typesafe.config.ConfigFactory;
 import com.variant.core.exception.RuntimeErrorException;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.util.Tuples.Pair;
-import com.variant.core.util.VariantIoUtils;
 
 /**
  * Variant Configuration. A Typesafe Config based implementation.

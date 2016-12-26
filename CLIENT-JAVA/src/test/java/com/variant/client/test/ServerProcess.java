@@ -95,7 +95,7 @@ public class ServerProcess {
 
 				String command = System.getProperty("user.home") + "/Work/sbt/bin/sbt";
 				ProcessBuilder pb = new ProcessBuilder();
-				pb.command(command, "testProd");
+				pb.command(command, "testProd -Dvariant.config.file=conf-test/variant.conf");
 				pb.directory(svrDir);
 
 				Process p = pb.start();

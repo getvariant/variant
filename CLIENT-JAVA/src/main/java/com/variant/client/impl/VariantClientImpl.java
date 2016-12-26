@@ -7,7 +7,7 @@ import com.typesafe.config.Config;
 import com.variant.client.VariantClient;
 import com.variant.client.net.Server;
 import com.variant.client.net.SessionPayloadReader;
-import com.variant.client.util.VariantConfigLoader;
+import com.variant.core.util.VariantConfigLoader;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
