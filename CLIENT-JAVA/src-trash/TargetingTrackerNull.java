@@ -13,10 +13,10 @@ import com.variant.client.VariantTargetingTracker;
  * @author Igor
  *
  */
-public class TargetingTrackerDefault implements VariantTargetingTracker {
+public class TargetingTrackerNull implements VariantTargetingTracker {
 	
 	private final static String MESSAGE = 
-			"Supply a functional implementation in applicaiton property " + 
+			"Supply a functional implementation of targeting tracker in config property " + 
 					ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 
 	@Override

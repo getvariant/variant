@@ -8,10 +8,10 @@ import com.variant.client.VariantSessionIdTracker;
  * Unusable default implementation of {@link VariantSessionIdTracker}. 
  * Must be overridden.
  */
-public class SessionIdTrackerDefault implements VariantSessionIdTracker {
+public class SessionIdTrackerNull implements VariantSessionIdTracker {
 
 	private final static String MESSAGE = 
-			"Supply a functional implementation in applicaiton property " + 
+			"Supply a functional implementation of session ID tracker in config property " + 
 					ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 	@Override
 	public void init(Connection conn, Object...userData) {}

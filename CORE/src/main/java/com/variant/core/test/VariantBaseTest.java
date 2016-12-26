@@ -264,7 +264,7 @@ abstract public class VariantBaseTest {
 	 * Concrete exception intercepter for VariantInternalException
 	 *
 	 */
-	protected static abstract class VariantInternalExceptionInterceptor 
+	protected static abstract class RuntimeInternalExceptionInterceptor 
 		extends ExceptionInterceptor<RuntimeInternalException> {
 		
 		@Override

@@ -12,7 +12,6 @@ import com.typesafe.config.Config
 import com.variant.core.exception.RuntimeError._
 import com.variant.core.exception.RuntimeErrorException
 import com.variant.core.exception.VariantRuntimeException
-import com.variant.core.test.VariantBaseTest.VariantInternalExceptionInterceptor
 import com.variant.core.exception.RuntimeInternalException
 
 class EventWriter (config: Config) {

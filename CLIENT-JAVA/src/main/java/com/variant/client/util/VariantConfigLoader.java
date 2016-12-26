@@ -90,7 +90,7 @@ public class VariantConfigLoader {
 					throw new RuntimeErrorException(CONFIG_RESOURCE_NOT_FOUND, resName);				
 				}
 				else {
-					LOG.debug(String.format(FORMAT_RESOURCE_FOUND, resName, res._2()));
+					LOG.debug(String.format(FORMAT_RESOURCE_FOUND, "", resName, res._2()));
 					result = ConfigFactory.parseReader(new InputStreamReader(res._1()));
 				}
 			}
@@ -100,7 +100,7 @@ public class VariantConfigLoader {
 		}
 		else if (fileName != null) {
 			try {
-				InputStream is = VariantIoUtils.openFileAsStream(resName);
+				InputStream is = VariantIoUtils.openFileAsStream(fileName);
 				if (is == null) {
 					throw new RuntimeErrorException(CONFIG_FILE_NOT_FOUND, fileName);
 				}
@@ -131,4 +131,5 @@ public class VariantConfigLoader {
 		
 		return result.withFallback(variantDefault);
 	}
+	
 }
