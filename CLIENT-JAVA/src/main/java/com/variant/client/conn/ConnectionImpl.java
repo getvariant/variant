@@ -1,4 +1,4 @@
-package com.variant.client.impl;
+package com.variant.client.conn;
 
 import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
@@ -8,16 +8,21 @@ import java.util.Random;
 
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
-import com.variant.client.VariantSession;
-import com.variant.client.VariantSessionIdTracker;
-import com.variant.client.VariantTargetingTracker;
-import com.variant.client.net.Server;
+import com.variant.client.Session;
+import com.variant.client.SessionIdTracker;
+import com.variant.client.TargetingTracker;
+import com.variant.client.impl.ClientError;
+import com.variant.client.impl.ClientErrorException;
+import com.variant.client.impl.VariantClientImpl;
+import com.variant.client.impl.SessionImpl;
+import com.variant.client.net.ConnectionPayloadReader;
 import com.variant.client.net.SessionPayloadReader;
 import com.variant.client.session.SessionCache;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.schema.Schema;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.VariantStringUtils;
+import com.variant.core.util.Tuples.Pair;
 
 /**
  * A connection to the server.
@@ -48,19 +53,19 @@ public class ConnectionImpl implements Connection {
 	 * @param userData
 	 * @return
 	 */
-	private VariantSessionIdTracker initSessionIdTracker(Object...userData) {
+	private SessionIdTracker initSessionIdTracker(Object...userData) {
 		// Session ID tracker.
 		String className = client.getConfig().getString(SESSION_ID_TRACKER_CLASS_NAME);
 		try {
 			Class<?> sidTrackerClass = Class.forName(className);
 			Object sidTrackerObject = sidTrackerClass.newInstance();
-			if (sidTrackerObject instanceof VariantSessionIdTracker) {
-				VariantSessionIdTracker result = (VariantSessionIdTracker) sidTrackerObject;
+			if (sidTrackerObject instanceof SessionIdTracker) {
+				SessionIdTracker result = (SessionIdTracker) sidTrackerObject;
 				result.init(this, userData);
 				return result;
 			}
 			else {
-				throw new ClientErrorException(ClientError.SESSION_ID_TRACKER_NO_INTERFACE, className, VariantSessionIdTracker.class.getName());
+				throw new ClientErrorException(ClientError.SESSION_ID_TRACKER_NO_INTERFACE, className, SessionIdTracker.class.getName());
 			}
 		}
 		catch (Exception e) {
@@ -75,20 +80,20 @@ public class ConnectionImpl implements Connection {
 	 * @param userData
 	 * @return
 	 */
-	private VariantTargetingTracker initTargetingTracker(Object...userData) {
+	private TargetingTracker initTargetingTracker(Object...userData) {
 		
 		// Instantiate targeting tracker.
 		String className = client.getConfig().getString(TARGETING_TRACKER_CLASS_NAME);
 		
 		try {
 			Object object = Class.forName(className).newInstance();
-			if (object instanceof VariantTargetingTracker) {
-				VariantTargetingTracker result = (VariantTargetingTracker) object;
+			if (object instanceof TargetingTracker) {
+				TargetingTracker result = (TargetingTracker) object;
 				result.init(this, userData);
 				return result;
 			}
 			else {
-				throw new ClientErrorException(ClientError.TARGETING_TRACKER_NO_INTERFACE, className, VariantTargetingTracker.class.getName());
+				throw new ClientErrorException(ClientError.TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
 			}
 		}
 		catch (Exception e) {
@@ -102,10 +107,10 @@ public class ConnectionImpl implements Connection {
 	 * @param userData
 	 * @return
 	 */
-	private VariantSession _getSession(boolean create, Object... userData) {
+	private Session _getSession(boolean create, Object... userData) {
 		
 		// Get session ID from the session ID tracker.
-		VariantSessionIdTracker sidTracker = initSessionIdTracker(userData);
+		SessionIdTracker sidTracker = initSessionIdTracker(userData);
 		String sessionId = sidTracker.get();
 		if (sessionId == null) {
 			if (create) {
@@ -119,7 +124,7 @@ public class ConnectionImpl implements Connection {
 		}
 		
 		// Have session ID. Try the local cache first.
-		VariantSessionImpl ssnFromCache = (VariantSessionImpl) cache.get(sessionId);
+		SessionImpl ssnFromCache = (SessionImpl) cache.get(sessionId);
 		
 		if (ssnFromCache == null) {
 			// Local case miss.
@@ -127,7 +132,7 @@ public class ConnectionImpl implements Connection {
 				// Session expired locally, recreate OK.  Don't bother with the server.
 				CoreSession coreSession = new CoreSession(sessionId, schema);
 				server.saveSession(this, coreSession);
-				VariantSessionImpl clientSession = new VariantSessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
+				SessionImpl clientSession = new SessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
 				return clientSession;
 			}
@@ -151,7 +156,7 @@ public class ConnectionImpl implements Connection {
 				// Recreate from scratch
 				CoreSession coreSession = new CoreSession(sessionId, schema);
 				server.saveSession(this, coreSession);
-				VariantSessionImpl clientSession = new VariantSessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
+				SessionImpl clientSession = new SessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
 				cache.add(clientSession);
 				return clientSession;
 			}
@@ -169,23 +174,23 @@ public class ConnectionImpl implements Connection {
 		return ssnFromCache;	
 	}
 
+
 	private static final Random RAND = new Random(System.currentTimeMillis());
 	
-	private final VariantClientImpl client;
-	private final Schema schema;
+	private final SessionCache cache = new SessionCache(this);
 	private final Server server;
-	private final SessionCache cache;
-	private Status status;
-	
+	private final VariantClient client; 
+	private final Schema schema = null;
+	private Status status = Status.OPEN;
+
 	/**
 	 * 
 	 */
-	ConnectionImpl(VariantClient client, Schema schema) {
-		this.client = (VariantClientImpl) client;
-		this.schema = schema;
-		this.server = this.client.getServer();
-		this.cache = new SessionCache(this);
-		status = Status.OPEN;
+	ConnectionImpl(VariantClient client, String url) {
+		this.client = client;
+		this.server = new Server(url);
+		ConnectionPayloadReader payload = server.connect();
+		System.out.println(payload.getContent());
 	}
 	
 	/**
@@ -198,14 +203,14 @@ public class ConnectionImpl implements Connection {
 	/**
 	 */
 	@Override
-	public VariantSession getOrCreateSession(Object... userData) {
+	public Session getOrCreateSession(Object... userData) {
 		return _getSession(true, userData);
 	}
 			
 	/**
 	 */
 	@Override
-	public VariantSession getSession(Object... userData) {
+	public Session getSession(Object... userData) {
 		return _getSession(false, userData);
 	}
 
@@ -227,6 +232,13 @@ public class ConnectionImpl implements Connection {
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
+
+	/**
+	 * This connection's unerlying server.
+	 */
+	public Server getServer() {
+		return server;
+	}
 
 	/**
 	 * Server side session timeout, seconds

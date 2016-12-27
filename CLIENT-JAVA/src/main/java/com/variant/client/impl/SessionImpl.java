@@ -8,13 +8,14 @@ import java.util.Set;
 
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
-import com.variant.client.VariantSession;
-import com.variant.client.VariantSessionIdTracker;
-import com.variant.client.VariantStateRequest;
-import com.variant.client.VariantTargetingTracker;
+import com.variant.client.Session;
+import com.variant.client.SessionIdTracker;
+import com.variant.client.StateRequest;
+import com.variant.client.TargetingTracker;
 
 import static com.variant.client.impl.ClientError.*;
 
+import com.variant.client.conn.ConnectionImpl;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.VariantEvent;
 import com.variant.core.impl.StateVisitedEvent;
@@ -32,7 +33,7 @@ import com.variant.core.session.SessionScopedTargetingStabile;
  * @author Igor
  *
  */
-public class VariantSessionImpl implements VariantSession {
+public class SessionImpl implements Session {
 
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
@@ -41,8 +42,8 @@ public class VariantSessionImpl implements VariantSession {
 	
 	private final ConnectionImpl conn;
 	private CoreSession coreSession;
-	private VariantSessionIdTracker sessionIdTracker;
-	private VariantTargetingTracker targetingTracker;
+	private SessionIdTracker sessionIdTracker;
+	private TargetingTracker targetingTracker;
 	private HashMap<String, Object> attributeMap = new HashMap<String, Object>();
 	
 	/**
@@ -50,12 +51,12 @@ public class VariantSessionImpl implements VariantSession {
 	 * @param tt
 	 * @return
 	 */
-	private SessionScopedTargetingStabile toTargetingStabile(VariantTargetingTracker tt) {
+	private SessionScopedTargetingStabile toTargetingStabile(TargetingTracker tt) {
 
 		SessionScopedTargetingStabile result = new SessionScopedTargetingStabile();
-		Collection<VariantTargetingTracker.Entry> entries = tt.get();
+		Collection<TargetingTracker.Entry> entries = tt.get();
 		if (entries != null)
-			for (VariantTargetingTracker.Entry e : entries)
+			for (TargetingTracker.Entry e : entries)
 				result.add(e.getAsExperience(coreSession.getSchema()), e.getTimestamp());
 		return result;
 	}
@@ -65,8 +66,8 @@ public class VariantSessionImpl implements VariantSession {
 	 * @param stabile
 	 * @return
 	 */
-	private Collection<VariantTargetingTracker.Entry> fromTargetingStabile(SessionScopedTargetingStabile stabile) {
-		ArrayList<VariantTargetingTracker.Entry> result = new ArrayList<VariantTargetingTracker.Entry>(stabile.size());
+	private Collection<TargetingTracker.Entry> fromTargetingStabile(SessionScopedTargetingStabile stabile) {
+		ArrayList<TargetingTracker.Entry> result = new ArrayList<TargetingTracker.Entry>(stabile.size());
 		for (SessionScopedTargetingStabile.Entry stabileEntry: stabile.getAll()) 
 			result.add(new TargetingTrackerEntryImpl(stabileEntry));
 		return result;
@@ -88,10 +89,10 @@ public class VariantSessionImpl implements VariantSession {
 	/**
 	 * 
 	 */
-	public VariantSessionImpl(Connection conn,
+	public SessionImpl(Connection conn,
 			CoreSession coreSession,
-			VariantSessionIdTracker sessionIdTracker,
-			VariantTargetingTracker targetingTracker) {
+			SessionIdTracker sessionIdTracker,
+			TargetingTracker targetingTracker) {
 		
 		this.conn = (ConnectionImpl) conn;
 		this.coreSession = coreSession;
@@ -182,7 +183,7 @@ public class VariantSessionImpl implements VariantSession {
 	@Override
 	public void triggerEvent(VariantEvent event) {
 		checkState();
-		((VariantClientImpl)conn.getClient()).getServer().saveEvent(this, event);
+		conn.getServer().saveEvent(this, event);
 	}
 /*
 	@Override
@@ -197,14 +198,14 @@ public class VariantSessionImpl implements VariantSession {
 	// ---------------------------------------------------------------------------------------------//
 
 	public void save() {
-		((VariantClientImpl) conn.getClient()).getServer().saveSession(conn, coreSession);
+		conn.getServer().saveSession(conn, coreSession);
 	}
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public VariantSessionIdTracker getSessionIdTracker() {
+	public SessionIdTracker getSessionIdTracker() {
 		return sessionIdTracker;
 	}
 
@@ -212,7 +213,7 @@ public class VariantSessionImpl implements VariantSession {
 	 * 
 	 * @return
 	 */
-	public VariantTargetingTracker getTargetingTracker() {
+	public TargetingTracker getTargetingTracker() {
 		return targetingTracker;
 	}
 

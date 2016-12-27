@@ -1,8 +1,8 @@
 package com.variant.client.session;
 
 import com.variant.client.Connection;
-import com.variant.client.VariantSessionIdTracker;
-import com.variant.client.VariantTargetingTracker;
+import com.variant.client.SessionIdTracker;
+import com.variant.client.TargetingTracker;
 
 /**
  *** Suitable for tests only. ***
@@ -10,14 +10,14 @@ import com.variant.client.VariantTargetingTracker;
  * No tracking in external state, simply treats first elem of the userData array
  * as the session ID.
  */
-public class SessionIdTrackerSimple implements VariantSessionIdTracker {
+public class SessionIdTrackerSimple implements SessionIdTracker {
 
 	private String sessionId;
 
 	/**
 	 * Interpret userData as:
 	 * 0    - session ID - String
-	 * 1... - {@link VariantTargetingTracker.Entry} objects, if any
+	 * 1... - {@link TargetingTracker.Entry} objects, if any
 	 */
 	@Override
 	public void init(Connection conn, Object... userData) {

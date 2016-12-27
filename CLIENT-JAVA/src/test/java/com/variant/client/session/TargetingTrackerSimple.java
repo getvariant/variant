@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.variant.client.Connection;
-import com.variant.client.VariantTargetingTracker;
+import com.variant.client.TargetingTracker;
 
 /**
  *** Suitable for tests only. ***
@@ -18,7 +18,7 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 	/**
 	 * Interpret userData as:
 	 * 0    - session ID - String
-	 * 1... - {@link VariantTargetingTracker.Entry} objects, if any
+	 * 1... - {@link TargetingTracker.Entry} objects, if any
 	 */
 	@Override
 	public void init(Connection conn, Object...userData) {

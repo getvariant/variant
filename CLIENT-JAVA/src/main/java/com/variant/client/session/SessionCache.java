@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.Connection;
-import com.variant.client.VariantSession;
-import com.variant.client.impl.ConnectionImpl;
-import com.variant.client.impl.VariantSessionImpl;
+import com.variant.client.Session;
+import com.variant.client.conn.ConnectionImpl;
+import com.variant.client.impl.SessionImpl;
 
 /**
  * Keep track of all sessions in a client instance in order to provide idempotency of the getSession() call.
@@ -32,10 +32,10 @@ public class SessionCache {
 	 */
 	private class Entry {
 		
-		VariantSessionImpl session;
+		SessionImpl session;
 		long accessTimestamp;
 		
-		Entry(VariantSessionImpl session) {
+		Entry(SessionImpl session) {
 			this.session = session;
 			this.accessTimestamp = System.currentTimeMillis();
 		}
@@ -111,7 +111,7 @@ public class SessionCache {
 	 * Add a new session to the cache.
 	 * @param coreSession
 	 */
-	public void add(VariantSessionImpl session) {
+	public void add(SessionImpl session) {
 		cache.put(session.getId(), new Entry(session));
 	}
 
@@ -120,7 +120,7 @@ public class SessionCache {
 	 * @param sessionId
 	 * @return session object if found, null otherwise.
 	 */
-	public VariantSession get(String sessionId) {
+	public Session get(String sessionId) {
 		
 		Entry entry = cache.get(sessionId);
 		if (entry != null) {

@@ -1,12 +1,12 @@
 package com.variant.client.session;
 
-import com.variant.client.VariantTargetingTracker;
+import com.variant.client.TargetingTracker;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.SessionScopedTargetingStabile;
 
-public class TargetingTrackerEntryImpl implements VariantTargetingTracker.Entry {
+public class TargetingTrackerEntryImpl implements TargetingTracker.Entry {
 		
 	private String testName, experienceName;
 	private long timestamp;

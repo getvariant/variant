@@ -24,7 +24,20 @@ public interface VariantClient {
 	 */
 	public Config getConfig();
 	
-    /* ------------------------------------------------------------------------------------------------- */
+	/**
+	 * Attempts to get a connection to the given server URL.
+	 * 
+	 * @param URL string of the form {@code <server-URI>:<schema-name>}. E.g. {@code https://localhost/variant:my-schema}
+	 *        is a valid URL.
+	 *        
+	 * @return An instance of the {@link Connection} type.
+	 * 
+	 * @since 0.7
+	 */
+	public Connection getConnection(String url);
+	
+
+	/* ------------------------------------------------------------------------------------------------- */
 	/* ------------------ NO CLIENT-SIDE HOOK MANAGEMENT.  REMOVE ME SOON ------------------------------
 	 * <p>Register a {@link HookListener} with this client.
 	 *
@@ -75,7 +88,7 @@ public interface VariantClient {
 	public ParserResponse parseSchema(InputStream schema);
     */
     
-	/**
+	/*
 	 * Get currently deployed experiment schema, if any.
 	 * 
 	 * @return Current experiment schema as an instance of the {@link Schema} object.

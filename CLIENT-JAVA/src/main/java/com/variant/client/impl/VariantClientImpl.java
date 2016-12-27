@@ -4,8 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
+import com.variant.client.Connection;
 import com.variant.client.VariantClient;
-import com.variant.client.net.Server;
+import com.variant.client.conn.ConnectionFactory;
+import com.variant.client.conn.ConnectionImpl;
+import com.variant.client.conn.Server;
+import com.variant.client.net.ConnectionPayloadReader;
 import com.variant.client.net.SessionPayloadReader;
 import com.variant.core.util.VariantConfigLoader;
 
@@ -21,9 +25,8 @@ public class VariantClientImpl implements VariantClient {
 	private static final Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
 	
 	private final Config config = new VariantConfigLoader("/variant.conf", "/com/variant/client/variant-default.conf").load();
-
-	private final Server server = new Server(this);
-		
+	private final ConnectionFactory connFactory = new ConnectionFactory();
+	
 	/**
 	 * Handshake with the server.
 	 * @param payloadReader
@@ -124,6 +127,14 @@ public class VariantClientImpl implements VariantClient {
 	/**
 	 */
 	@Override
+	public Connection getConnection(String url) {		
+		ConnectionImpl result = connFactory.connectTo(this, url);
+		return result;
+	}
+	
+	/**
+	 */
+	@Override
 	public Config getConfig() {
 		return config;
 	}
@@ -204,12 +215,4 @@ public class VariantClientImpl implements VariantClient {
 	//                                      PUBLIC EXT                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	/**
-	 * Save user session in session store.
-	 * @param session
-	 * TODO Make this async
-	 */
-	public Server getServer() {
-		return server;
-	}
 }

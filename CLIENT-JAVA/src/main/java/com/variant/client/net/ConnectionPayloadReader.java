@@ -3,7 +3,7 @@ package com.variant.client.net;
 import java.util.Map;
 
 import com.variant.client.Connection;
-import com.variant.client.impl.ConnectionImpl;
+import com.variant.client.conn.ConnectionImpl;
 
 public class ConnectionPayloadReader extends AbstractPayloadReader<Connection> {
 

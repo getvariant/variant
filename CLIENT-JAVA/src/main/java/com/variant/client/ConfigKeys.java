@@ -12,7 +12,6 @@ public interface ConfigKeys {
 	public static final String SESSION_ID_TRACKER_CLASS_INIT = "session.id.tracker.class.init";
 	public static final String TARGETING_TRACKER_CLASS_NAME = "targeting.tracker.class.name";
 	public static final String TARGETING_TRACKER_CLASS_INIT = "targeting.tracker.class.init";
-	public static final String SERVER_ENDPOINT_URL = "server.endpoint.url";
 
 }
 

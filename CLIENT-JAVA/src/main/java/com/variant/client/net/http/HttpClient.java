@@ -58,7 +58,7 @@ public class HttpClient {
 	} 
 
 	/**
-	 * Send a POST.
+	 * Send a POST with a body
 	 * @param url
 	 * @param body
 	 * @return
@@ -87,6 +87,35 @@ public class HttpClient {
 		}		
 	}
 	
+	/**
+	 * Send a POST without a body
+	 * @param url
+	 * @param body
+	 * @return
+	 */
+	public HttpResponse post(String url) {
+		
+		CloseableHttpResponse resp = null;
+		long start = System.currentTimeMillis();
+		try {
+			HttpPost post = new HttpPost(url);
+			post.setHeader("Content-Type", "application/json");
+			resp = client.execute(post);
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(String.format("POST %s : %s in %s", url, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
+			}
+		    return new HttpResponse(post, resp);
+		}
+		catch (Exception e) {
+			throw new RuntimeInternalException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
+		} finally {
+			if (resp != null) {
+				try {resp.close();}					
+				catch (Exception e) {}
+			}
+		}		
+	}
+
 	/**
 	 * Send a PUT.
 	 * @param url

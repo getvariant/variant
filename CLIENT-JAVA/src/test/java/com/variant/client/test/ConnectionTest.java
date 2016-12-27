@@ -1,5 +1,6 @@
 package com.variant.client.test;
 
+import com.variant.client.Connection;
 import com.variant.client.VariantClient;
 
 
@@ -15,6 +16,7 @@ public class ConnectionTest extends BaseTestWithServer {
 		
 		
 		VariantClient client = VariantClient.Factory.getInstance();
+		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");
 		
 	}	
 }

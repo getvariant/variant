@@ -2,7 +2,7 @@ package com.variant.client.test;
 
 import org.junit.Before;
 
-import com.variant.client.VariantTargetingTracker;
+import com.variant.client.TargetingTracker;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.schema.Schema;

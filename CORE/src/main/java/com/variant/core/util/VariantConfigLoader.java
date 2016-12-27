@@ -104,7 +104,7 @@ public class VariantConfigLoader {
 					throw new RuntimeErrorException(CONFIG_FILE_NOT_FOUND, fileName);
 				}
 				else {
-					LOG.debug(String.format(FORMAT_FILE_FOUND, resName));
+					LOG.debug(String.format(FORMAT_FILE_FOUND, fileName));
 					result = ConfigFactory.parseReader(new InputStreamReader(is));
 				}
 			}

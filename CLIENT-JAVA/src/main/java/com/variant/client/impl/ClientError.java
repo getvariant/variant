@@ -12,8 +12,8 @@ import com.variant.core.exception.RuntimeError;
 public class ClientError extends RuntimeError {
 
 	
-	//public static final ClientError PROPERTY_BAD_CLASS =
-	//		new ClientError(Severity.ERROR, "Don't know how to convert to class [%s]");
+	public static final ClientError BAD_CONN_URL =
+			new ClientError(Severity.ERROR, "Invalid connection URL [%s]");
 
 	public static final ClientError TARGETING_TRACKER_NO_INTERFACE =
 			new ClientError(Severity.FATAL, "Targeting tracker class [%s] must implement interface [%s]");

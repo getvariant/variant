@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.ConfigKeys;
 import com.variant.client.Connection;
-import com.variant.client.VariantTargetingTracker;
+import com.variant.client.TargetingTracker;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
@@ -22,7 +22,7 @@ import com.variant.core.schema.Test.Experience;
  * @author Igor
  *
  */
-public abstract class TargetingTrackerString implements VariantTargetingTracker {
+public abstract class TargetingTrackerString implements TargetingTracker {
 
 	private static Logger LOG = LoggerFactory.getLogger(TargetingTrackerString.class);
 	

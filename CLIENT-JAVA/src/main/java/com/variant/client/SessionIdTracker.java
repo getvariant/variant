@@ -29,7 +29,7 @@ package com.variant.client;
  * @since 0.6
  */
 
-public interface VariantSessionIdTracker {
+public interface SessionIdTracker {
 
 	/**
 	 * <p>Called by Variant to initialize a newly instantiated concrete implementation. Variant client calls this method 

@@ -1,26 +1,37 @@
-package com.variant.client.net;
+package com.variant.client.conn;
 
 import org.apache.http.HttpStatus;
 
 import static com.variant.client.ConfigKeys.*;
+
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
-import com.variant.client.VariantSession;
+import com.variant.client.Session;
+import com.variant.client.impl.ClientError;
+import com.variant.client.impl.ClientErrorException;
+import com.variant.client.net.ConnectionPayloadReader;
+import com.variant.client.net.SessionPayloadReader;
 import com.variant.client.net.http.HttpClient;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.client.net.http.VariantHttpClientException;
 import com.variant.core.VariantEvent;
+import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.impl.VariantEventSupport;
 import com.variant.core.session.CoreSession;
+import com.variant.core.util.Tuples.Pair;
 
 /**
- * The abstraction of the remote server.
+ * The abstraction of the remote server.  
+ * One server per connection, one connection per server.
+ * 
  * @author Igor
  */
 public class Server {
 
-	private final VariantClient client;
 	private final String endpointUrl;
+	private final String schemaName;
+	
+	private boolean isConnected = false;
 	
 	/**
 	 * Consistency checks.
@@ -30,37 +41,46 @@ public class Server {
 		
 	}
 	
-	private void checkState(VariantSession ssn) {
+	private void checkState(Session ssn) {
 		
 	}
 
+	//
+	// Bootstrapping 
+	// Package visibility as we only want ConnectionImpl to call this.
+	//
+
 	/**
-	 * One Server per client.
-	 * @param client
+	 * 
 	 */
-	public Server(VariantClient client) {
-		this.client = client;
-		String ep = client.getConfig().getString(SERVER_ENDPOINT_URL);
-		endpointUrl = !ep.endsWith("/") ? ep : ep + "/";
+	Server(String url) {
+		int lastColonIx = url.lastIndexOf(':');
+		if (lastColonIx < 0) throw new ClientErrorException(ClientError.BAD_CONN_URL, url);
+		endpointUrl = url.substring(0, lastColonIx);
+		schemaName = url.substring(lastColonIx + 1);
 	}
 	
-	public ConnectionPayloadReader getConnection(String schema) {
-		throw new RuntimeException("Unsupported");
-	}
+	ConnectionPayloadReader connect() {
+		
+		if (isConnected) throw new RuntimeInternalException("Already connected");
 
-	//---------------------------------------------------------------------------------------------//
-	//                                        /CONNECTION                                          //
-	//---------------------------------------------------------------------------------------------//
+		// Remote
+		HttpClient httpClient = new HttpClient();
+		HttpResponse resp = httpClient.post(endpointUrl + "/connection/" + schemaName);
+		
+		if (resp.getStatus() != HttpStatus.SC_OK) {
+			throw new VariantHttpClientException(resp);
+		}		
 
-	public ConnectionPayloadReader getConnection() {
-		return null;
+		isConnected = true;
+		return new ConnectionPayloadReader(resp.getBody());
 	}
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                           /EVENT                                            //
 	//---------------------------------------------------------------------------------------------//
 
-	public void saveEvent(VariantSession ssn, VariantEvent event) {
+	public void saveEvent(Session ssn, VariantEvent event) {
 		
 		checkState(ssn);
 		

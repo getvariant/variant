@@ -20,7 +20,7 @@ import com.variant.core.schema.Test.Experience;
  * @since 0.6
  */
 
-public interface VariantTargetingTracker {
+public interface TargetingTracker {
 	
 	/**
 	 * <p>Called by Variant to initialize a newly instantiated concrete implementation. Variant client calls this method 

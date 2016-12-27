@@ -11,22 +11,22 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * Represents a Variant state request, as returned by {@link VariantSession#targetForState(State)}.
+ * Represents a Variant state request, as returned by {@link Session#targetForState(State)}.
  *
  * 
  * @author Igor Urisman
  * @since 0.6
  *
  */
-public interface VariantStateRequest {
+public interface StateRequest {
 
 	/**
-	 * The Variant session that obtained this request via {@link VariantSession#targetForState(State)}.
+	 * The Variant session that obtained this request via {@link Session#targetForState(State)}.
 	 * 
-	 * @return An object of type {@link VariantSession}.
+	 * @return An object of type {@link Session}.
 	 * @since 0.6
 	 */
-	public VariantSession getSession();
+	public Session getSession();
 	
 	/**
 	 * The {@link State} of this request, which was passed to {@link VariantCoreSession#targetForState(State)}.
@@ -111,8 +111,8 @@ public interface VariantStateRequest {
      * The pending state visited {@link VariantEvent} is triggered. 
      * No-op if this request has already been committed, i.e. okay to call multiple times.
 	 * 
-	 * @param userData   An array of zero or more opaque objects which will be passed to {@link VariantSessionIdTracker#save(Object...)}
-	 * and {@link VariantTargetingTracker#save(Object...)} methods without interpretation.
+	 * @param userData   An array of zero or more opaque objects which will be passed to {@link SessionIdTracker#save(Object...)}
+	 * and {@link TargetingTracker#save(Object...)} methods without interpretation.
 	 */
 	boolean commit(Object...userData);
 	

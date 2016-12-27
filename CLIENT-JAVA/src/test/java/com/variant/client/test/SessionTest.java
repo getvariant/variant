@@ -11,10 +11,10 @@ import java.util.Collection;
 import java.util.Random;
 
 import com.variant.client.VariantClient;
-import com.variant.client.VariantSession;
-import com.variant.client.VariantStateRequest;
-import com.variant.client.impl.VariantSessionImpl;
-import com.variant.client.impl.VariantStateRequestImpl;
+import com.variant.client.Session;
+import com.variant.client.StateRequest;
+import com.variant.client.impl.SessionImpl;
+import com.variant.client.impl.StateRequestImpl;
 import com.variant.core.exception.Error;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;

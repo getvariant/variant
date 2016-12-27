@@ -3,8 +3,8 @@ package com.variant.client.impl;
 import java.util.Map;
 import java.util.Set;
 
-import com.variant.client.VariantSession;
-import com.variant.client.VariantStateRequest;
+import com.variant.client.Session;
+import com.variant.client.StateRequest;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.VariantEvent;
 import com.variant.core.exception.VariantRuntimeException;
@@ -14,15 +14,15 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreStateRequest;
 
-public class VariantStateRequestImpl implements VariantStateRequest {
+public class StateRequestImpl implements StateRequest {
 
-	private VariantSessionImpl session;
+	private SessionImpl session;
 	private CoreStateRequest coreRequest;
 
-	public VariantStateRequestImpl(CoreStateRequest coreStateRequest, VariantSessionImpl clientSession) 
+	public StateRequestImpl(CoreStateRequest coreStateRequest, SessionImpl clientSession) 
 	{	
 		this.coreRequest = (CoreStateRequest) coreStateRequest;
-		this.session = (VariantSessionImpl) clientSession;
+		this.session = (SessionImpl) clientSession;
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -114,7 +114,7 @@ public class VariantStateRequestImpl implements VariantStateRequest {
 	 * Override with a narrower return type to return the client session, instead of core.
 	 */
 	@Override
-	public VariantSession getSession() {
+	public Session getSession() {
 		return session;
 	}
 

@@ -27,7 +27,7 @@ import com.variant.core.session.CoreStateRequest;
  * @since 0.6
  *
  */
-public interface VariantSession {
+public interface Session {
 
 	/**
      * <p>Session ID. 
@@ -50,7 +50,7 @@ public interface VariantSession {
 	/**
      * <p>Target session for a state. 
      *  
-	 * @return An instance of the {@link VariantStateRequest} object, which
+	 * @return An instance of the {@link StateRequest} object, which
 	 *         may be further examined for more information about the outcome of this operation.  
 	 *
 	 * @since 0.5
