@@ -4,60 +4,62 @@ import org.apache.http.HttpStatus
 import play.api.mvc.Result
 import play.api.mvc.ResponseHeader
 import play.api.http.HttpEntity
+import play.api.libs.json
+import play.api.libs.json._
 import akka.util.ByteString
 
 /**
- * 
+ * ALL 400 BAD_REQUEST.
  */
 object UserError {
-
-   val JsonParseError = 0
-   val MissingProperty = 1
-   val InvalidDate = 2
-   val UnsupportedProperty = 3
-   val PropertyNotAString = 4
-   val EmptyBody = 5
-   val UnknownState = 6
-   val BadContentType = 7
-   val MissingParamName = 8
-   val UnknownSchema = 9
-   val TooManyConnections = 10
-   val SessionExpired = 11
+        
+   // Payload parse errors, syntax 001 - 125
+   val JsonParseError = new UserError(1, "JSON parsing error: '%s'")
+   val BadContentType = new UserError(2, "Unsupported content type", "Use 'application/json' or 'text/plain'.")
    
-   val errors = Array(
-     
-     // 400
-     new UserError("JSON parsing error: '%s'.", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Missing required property '%s'.", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Invalid date specification in property '%s'. Epoch millis expected.", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Unsupported property '%s' in payload.", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Property '%s' must be a string.", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Body expected but was null.", HttpStatus.SC_BAD_REQUEST),
-     new UserError("No recent state request in session.", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Unsupported content type. Use 'application/json' or 'text/plain'.", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Parameter name is missing", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Unknown schema [%s]", HttpStatus.SC_BAD_REQUEST),
-     new UserError("Too many connections", HttpStatus.SC_BAD_REQUEST),
-     
-     // 403
-     new UserError("Session expired", HttpStatus.SC_FORBIDDEN)
+   // Payload parse errors, semantical 126-150
+   val MissingProperty = new UserError(126, "Missing required property '%s'")
+   val InvalidDate = new UserError(127, "Invalid date specification in property '%s'", "Epoch milliseconds expected")
+   val UnsupportedProperty = new UserError(128, "Unsupported property '%s' in payload")
+   val PropertyNotAString = new UserError(129, "Property '%s' must be a string")
+   val EmptyBody = new UserError(130, "Body expected but was null")
+   val MissingParamName = new UserError(131, "Parameter name is missing")
+   
+   // Event Writing errors 151 - 200
+   val UnknownState = new UserError(151, "No recent state request in session")
+   
+   // Connection errors 201 - 250
+   val UnknownSchema = new UserError(201, "Unknown schema [%s]")
+   val TooManyConnections = new UserError(202, "Too many connections")
+  
+   // Session errors 251 - 300
+   val SessionExpired = new UserError(251, "Session expired")
 
-   );
 }
 
 /**
  * 
  */
-class UserError(msgFormat: String, httpStatus: Int) {
+class UserError(val code: Int, val msgFormat: String, val comment: Option[String] = None) {
+   
+   def this(code: Int, msgFormat: String, comment: String) = this(code, msgFormat, Some(comment))
    
 //   def toFailure(args:String*) = Result(Header(status = httpStatus, responsePhrase = message(args:_*)) 
+   
    def asResult(args:String*) = {
+      
+      val bodyJson : JsObject = Json.obj(
+         "code" -> code,
+         "message" -> message(args:_*))
+     
+      if (comment.isDefined) bodyJson + ("comment" -> JsString(comment.get))
+      
       Result(
-          header = ResponseHeader(httpStatus, Map.empty),
-          body = HttpEntity.Strict(ByteString(asMessage(args:_*)), Some("text/plain"))
+          header = ResponseHeader(HttpStatus.SC_BAD_REQUEST, Map.empty),
+          body = HttpEntity.Strict(ByteString(bodyJson.toString()), Some("application/json"))
         )   
     }
    
-   def asMessage(args:String*) = String.format(msgFormat, args:_*)
+   def message(args:String*) = String.format(msgFormat, args:_*)
 
 }

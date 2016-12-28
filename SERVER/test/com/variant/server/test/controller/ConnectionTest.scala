@@ -6,7 +6,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.collection.JavaConversions._
-import com.variant.server.UserError
+import com.variant.server.UserError._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.ConfigKeys
@@ -74,7 +74,10 @@ class ConnectionTest extends BaseSpecWithSchema {
       "return  400 and error on POST to non-existent schema" in {
          val resp = route(app, FakeRequest(POST, endpoint + "/foo").withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe BAD_REQUEST
-         contentAsString(resp) mustBe UserError.errors(UserError.UnknownSchema).asMessage("foo")        
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe UnknownSchema.code 
+         (respJson \ "message").as[String] mustBe UnknownSchema.message("foo")        
       }
 
       var connId: String = null
@@ -89,7 +92,7 @@ class ConnectionTest extends BaseSpecWithSchema {
          connId = (json \ "id").asOpt[String].get
          (json \ "ts").asOpt[Long].isDefined mustBe true
          (json \ "schema").asOpt[String].isDefined mustBe true
-         val schemaSrc = (json \ "schema").asOpt[String].get
+         val schemaSrc = (json \ "schema").as[String]
          val parser = new SchemaParser(new UserHooker())
          val parserResp = parser.parse(schemaSrc)
          parserResp.hasMessages() mustBe false
@@ -109,7 +112,10 @@ class ConnectionTest extends BaseSpecWithSchema {
       "return 400 on DELETE of the schema that no longer exists" in {
          val resp = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe BAD_REQUEST
-         contentAsString(resp) mustBe UserError.errors(UserError.UnknownSchema).asMessage(connId)      
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe UnknownSchema.code 
+         (respJson \ "message").as[String] mustBe UnknownSchema.message(connId)
       }
 
       "return 400 when attempting to open one too many connections" in {
@@ -138,7 +144,10 @@ class ConnectionTest extends BaseSpecWithSchema {
          // One over
          val resp1 = route(app, FakeRequest(POST, endpoint + "/big_covar_schema").withHeaders("Content-Type" -> "text/plain")).get
          status(resp1) mustBe BAD_REQUEST
-         contentAsString(resp1) mustBe UserError.errors(UserError.TooManyConnections).asMessage() 
+         val respJson = contentAsJson(resp1)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe TooManyConnections.code 
+         (respJson \ "message").as[String] mustBe TooManyConnections.message()
          
          // Close one
          val resp2 = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get

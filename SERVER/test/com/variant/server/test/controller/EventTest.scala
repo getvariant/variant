@@ -5,7 +5,7 @@ import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
 import scala.collection.JavaConversions._
-import com.variant.server.UserError
+import com.variant.server.UserError._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.BaseSpecWithSchema
@@ -65,40 +65,58 @@ class EventTest extends BaseSpecWithSchema {
       "return  400 and error on POST with no body" in {
          val resp = route(app, FakeRequest(POST, endpoint).withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe BAD_REQUEST
-         contentAsString(resp) must startWith ("JSON parsing error")        
-         contentAsString(resp) must include ("No content")        
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe JsonParseError.code 
+         (respJson \ "message").as[String] must startWith ("JSON parsing error") 
+         (respJson \ "message").as[String] must include ("No content") 
      }
       
       "return  400 and error on POST with invalid JSON" in {
          val resp = route(app, FakeRequest(POST, endpoint).withBody("bad json").withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe BAD_REQUEST
-         contentAsString(resp) must startWith ("JSON parsing error")        
-         contentAsString(resp) must include ("Unrecognized token")        
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe JsonParseError.code 
+         (respJson \ "message").as[String] must startWith ("JSON parsing error") 
+         (respJson \ "message").as[String] must include ("Unrecognized token") 
      }
 
       "return  400 and error on POST with no sid" in {
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(bodyNoSid)).get
          status(resp) mustBe BAD_REQUEST
-         contentAsString(resp) mustBe UserError.errors(UserError.MissingProperty).asMessage("sid")
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe MissingProperty.code 
+         (respJson \ "message").as[String] mustBe MissingProperty.message("sid") 
       }
 
       "return  400 and error on POST with no name" in {
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(bodyNoName)).get
          status(resp) mustBe BAD_REQUEST
-         contentAsString(resp) mustBe UserError.errors(UserError.MissingProperty).asMessage("name")
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe MissingProperty.code 
+         (respJson \ "message").as[String] mustBe MissingProperty.message("name") 
       }
       
       "return  403 and error on POST with non-existent session" in {
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(body.expand())).get
-         status(resp) mustBe FORBIDDEN
-         contentAsString(resp) mustBe UserError.errors(UserError.SessionExpired).asMessage("name")
+         status(resp) mustBe BAD_REQUEST
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe SessionExpired.code 
+         (respJson \ "message").as[String] mustBe SessionExpired.message() 
       }
      
       "return 400 and error on POST with missing param name" in {
          val eventBody = bodyNoParamName.expand()
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
          status(resp)mustBe BAD_REQUEST
-         contentAsString(resp) mustBe UserError.errors(UserError.MissingParamName).asMessage()
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe MissingParamName.code 
+         (respJson \ "message").as[String] mustBe MissingParamName.message() 
       }
 
       "return 200 and create event with existent session" in {

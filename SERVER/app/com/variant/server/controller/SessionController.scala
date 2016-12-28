@@ -5,7 +5,7 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import com.variant.server.session.SessionStore
 import play.api.Logger
-import com.variant.server.UserError
+import com.variant.server.UserError._
 
 //@Singleton -- Is this for non-shared state controllers?
 class SessionController @Inject() (store: SessionStore) extends Controller  {
@@ -35,7 +35,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
             store.put(id, body)
             Ok
          }
-         case None => UserError.errors(UserError.EmptyBody).asResult()
+         case None => EmptyBody.asResult()
       }
    }
  

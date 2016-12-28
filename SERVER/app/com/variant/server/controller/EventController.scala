@@ -6,7 +6,7 @@ import play.api.mvc.Request
 import com.variant.server.session.SessionStore
 import play.api.Logger
 import play.api.libs.json._
-import com.variant.server.UserError
+import com.variant.server.UserError._
 import java.util.Date
 import play.api.mvc.Result
 import play.api.mvc.AnyContent
@@ -43,7 +43,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          params.map((x:JsArray) => {
             x.as[Array[JsValue]].foreach(p => {
                val name = (p \ "name").asOpt[String] 
-               if (name.isEmpty) return UserError.errors(UserError.MissingParamName).asResult()
+               if (name.isEmpty) return MissingParamName.asResult()
                val value = (p \ "value").asOpt[String]
                parsedParams(name.get) = value.getOrElse(null)                            
             })
@@ -51,19 +51,19 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 
          // 400 if no required fields 
          if (sid.isEmpty)  {
-            UserError.errors(UserError.MissingProperty).asResult("sid")
+            MissingProperty.asResult("sid")
          }
          else if (name.isEmpty)  {
-            UserError.errors(UserError.MissingProperty).asResult("name")
+            MissingProperty.asResult("name")
          }
          else {    
             val ssn = store.asSession(sid.get)
             if (ssn.isEmpty) {
-               UserError.errors(UserError.SessionExpired).asResult()
+               SessionExpired.asResult()
             }
             else {
                if (ssn.get.getStateRequest == null) {
-                  UserError.errors(UserError.UnknownState).asResult()   
+                  UnknownState.asResult()   
                }
                else {
                   val event = new ServerEvent(name.get, value.get, new Date(timestamp.getOrElse(System.currentTimeMillis())));   
@@ -81,9 +81,9 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
                parse(Json.parse(req.body.asText.get))
             }
             catch {
-               case t: Throwable => UserError.errors(UserError.JsonParseError).asResult(t.getMessage)
+               case t: Throwable => JsonParseError.asResult(t.getMessage)
             }
-         case _ => UserError.errors(UserError.BadContentType).asResult()
+         case _ => BadContentType.asResult()
       }
    }   
 }
