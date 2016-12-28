@@ -47,8 +47,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.InternalException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
@@ -76,13 +75,13 @@ public class TestsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parse(Object testsObject, ParserResponseImpl response) throws VariantRuntimeException {
+	static void parse(Object testsObject, ParserResponseImpl response) {
 		List<Map<String, ?>> rawTests = null;
 		try {
 			rawTests = (List<Map<String, ?>>) testsObject;
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException(e);
+			throw new InternalException(e);
 		}
 		
 		if (rawTests.size() == 0) {
@@ -103,8 +102,7 @@ public class TestsParser implements Keywords {
 	 * @param response
 	 * @throws VariantRuntimeException 
 	 */
-	private static Test parseTest(Map<String, ?> test, ParserResponseImpl response) 
-			throws VariantRuntimeException {
+	private static Test parseTest(Map<String, ?> test, ParserResponseImpl response){
 		
 		List<TestExperienceImpl> experiences = new ArrayList<TestExperienceImpl>();
 		List<TestOnStateImpl> onViews = new ArrayList<TestOnStateImpl>();
@@ -405,7 +403,7 @@ public class TestsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	private static TestOnStateImpl parseTestOnView(Object testOnStateObject, TestImpl test, ParserResponseImpl response) throws VariantRuntimeException {
+	private static TestOnStateImpl parseTestOnView(Object testOnStateObject, TestImpl test, ParserResponseImpl response) {
 		
 		Map<String, Object> rawTestOnState = null;
 		

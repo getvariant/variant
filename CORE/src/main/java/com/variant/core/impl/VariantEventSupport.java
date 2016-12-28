@@ -8,8 +8,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.variant.core.VariantEvent;
-import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.exception.InternalException;
 
 /**
  * 
@@ -61,7 +60,7 @@ abstract public class VariantEventSupport implements VariantEvent {
 	 * @return
 	 * @throws JsonProcessingException 
 	 */
-	public String toJson(String sid) throws VariantRuntimeException {
+	public String toJson(String sid) {
 		try {
 			StringWriter result = new StringWriter(1024);
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
@@ -83,7 +82,7 @@ abstract public class VariantEventSupport implements VariantEvent {
 			return result.toString();
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unable to serialize session", e);
+			throw new InternalException("Unable to serialize session", e);
 		}
 	}
 }

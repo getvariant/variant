@@ -1,7 +1,7 @@
 package com.variant.core.schema.parser;
 
-import com.variant.core.exception.Error.Severity;
-import com.variant.core.exception.Error;
+import com.variant.core.UserError;
+import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 
 /**
@@ -24,7 +24,7 @@ public class ParserMessageImpl implements ParserMessage {
 	 * @param args
 	 * @since 0.5
 	 */
-	 public ParserMessageImpl(Error error, String...args) {
+	 public ParserMessageImpl(UserError error, String...args) {
 		severity = error.severity;
 		message = String.format(error.format, (Object[]) args);
 		code = error.code;
@@ -38,7 +38,7 @@ public class ParserMessageImpl implements ParserMessage {
 	 * @param args
 	 * @since 0.5
 	 */
-	public ParserMessageImpl(Error error, int line, int column, String...args) {
+	public ParserMessageImpl(UserError error, int line, int column, String...args) {
 		this(error, args);
 		this.line = line;
 		this.column = column;

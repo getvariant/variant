@@ -2,7 +2,7 @@ package com.variant.core.schema;
 
 import java.util.List;
 
-import com.variant.core.exception.Error.Severity;
+import com.variant.core.UserError.Severity;
 
 /**
  * Represents the outcome of the XDM schema parsing operation.

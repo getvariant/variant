@@ -1,6 +1,6 @@
 package com.variant.core.svrstub;
 
-import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.exception.InternalException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
@@ -33,7 +33,7 @@ public class TestExperienceServerStub implements Test.Experience  {
 
 	@Override
 	public Number getWeight() {
-		throw new RuntimeInternalException("Method not supported");
+		throw new InternalException("Method not supported");
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class TestExperienceServerStub implements Test.Experience  {
 
 	@Override
 	public boolean isDefinedOn(State state) {
-		throw new RuntimeInternalException("Method not supported");
+		throw new InternalException("Method not supported");
 	}
 	
 	

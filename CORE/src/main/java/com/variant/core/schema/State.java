@@ -2,8 +2,6 @@ package com.variant.core.schema;
 
 import java.util.List;
 
-import com.variant.core.exception.VariantRuntimeException;
-
 /**
  * Representation of State XDM element.
  * 

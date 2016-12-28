@@ -2,7 +2,7 @@ package com.variant.core.schema.parser;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.variant.core.exception.Error;
+import com.variant.core.UserError;
 
 /**
  * JSON syntax error.
@@ -20,7 +20,7 @@ public class SyntaxError extends ParserMessageImpl {
 	 * @param column
 	 * @param args
 	 */
-	public SyntaxError(Error template, int line, int column, String...args) {
+	public SyntaxError(UserError template, int line, int column, String...args) {
 		super(template, line, column, args);
 		rawInput = args[1];
 	}

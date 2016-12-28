@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import com.variant.core.HookListener;
-import com.variant.core.exception.Error.Severity;
+import com.variant.core.UserError.Severity;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;

@@ -4,7 +4,7 @@ import static com.variant.core.schema.parser.ParserError.*;
 
 import java.util.Map;
 
-import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.exception.InternalException;
 import com.variant.core.schema.impl.SchemaImpl;
 
 /**
@@ -75,7 +75,7 @@ public class MetaParser implements Keywords {
 			
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException(e);
+			throw new InternalException(e);
 		}
 		
 	}

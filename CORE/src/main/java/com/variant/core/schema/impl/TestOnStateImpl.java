@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.commons.collections4.list.UnmodifiableList;
 
-import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
@@ -92,7 +91,7 @@ public class TestOnStateImpl implements Test.OnState {
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
-	public VariantSpace variantSpace() throws VariantRuntimeException {
+	public VariantSpace variantSpace() {
 		if (variantSpace == null) variantSpace = new VariantSpace(this);
 		return variantSpace;
 	}

@@ -11,10 +11,9 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.variant.core.exception.RuntimeError;
-import com.variant.core.exception.RuntimeErrorException;
-import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.UserException;
+import com.variant.core.exception.InternalException;
+import com.variant.core.exception.CommonError;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
@@ -241,21 +240,21 @@ abstract public class VariantBaseTest {
 	 * Concrete exception intercepter for VariantRuntimeException
 	 *
 	 */
-	protected static abstract class RuntimeErrorExceptionInterceptor 
-		extends ExceptionInterceptor<RuntimeErrorException> {
+	protected static abstract class UserExceptionInterceptor 
+		extends ExceptionInterceptor<UserException> {
 		
 		@Override
-		final public Class<RuntimeErrorException> getExceptionClass() {
-			return RuntimeErrorException.class;
+		final public Class<UserException> getExceptionClass() {
+			return UserException.class;
 		}
 		
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
-		final public void assertThrown(RuntimeError template, Object...args) throws Exception {
-			VariantRuntimeException result = super.run();
+		final public void assertThrown(CommonError template, Object...args) throws Exception {
+			UserException result = super.run();
 			assertNotNull("Expected exception not thrown", result);
-			assertEquals(new RuntimeErrorException(template, args).getMessage(), result.getMessage());
+			assertEquals(new UserException(template, args).getMessage(), result.getMessage());
 		}
 		
 	}
@@ -264,19 +263,19 @@ abstract public class VariantBaseTest {
 	 * Concrete exception intercepter for VariantInternalException
 	 *
 	 */
-	protected static abstract class RuntimeInternalExceptionInterceptor 
-		extends ExceptionInterceptor<RuntimeInternalException> {
+	protected static abstract class InternalExceptionInterceptor 
+		extends ExceptionInterceptor<InternalException> {
 		
 		@Override
-		final public Class<RuntimeInternalException> getExceptionClass() {
-			return RuntimeInternalException.class;
+		final public Class<InternalException> getExceptionClass() {
+			return InternalException.class;
 		}
 		
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
 		final public void assertThrown(String format, Object...args) throws Exception {
-			RuntimeInternalException result = super.run();
+			InternalException result = super.run();
 			assertNotNull("Expected exception not thrown", result);
 			assertEquals(String.format(format, args), result.getMessage());
 		}

@@ -1,12 +1,30 @@
 package com.variant.core.schema.parser;
 
+import static com.variant.core.schema.parser.ParserError.COVARIANT_EXPERIENCEREFS_NOT_ALLOWED;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_EXPERIENCEREFS_NOT_LIST;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_EXPERIENCE_DUPE;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_EXPERIENCE_REF_NOT_OBJECT;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
+import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_TEST_NOT_COVARIANT;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_MISSING;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_NOT_STRING;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_PARAMS_NOT_ALLOWED;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_PARAMS_NOT_OBJECT;
+import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_UNDEFINED;
+import static com.variant.core.schema.parser.ParserError.ISDEFINED_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.ParserError.VARIANTS_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.ParserError.VARIANT_NOT_OBJECT;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.variant.core.schema.parser.ParserError.*;
-
-import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.StateImpl;
@@ -34,8 +52,7 @@ public class VariantParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static StateVariantImpl parseVariant(Object variantObject, TestOnStateImpl tov, ParserResponseImpl response) 
-	throws VariantRuntimeException {
+	public static StateVariantImpl parseVariant(Object variantObject, TestOnStateImpl tov, ParserResponseImpl response) {
 		
 		TestImpl test = (TestImpl) tov.getTest();
 		StateImpl state = (StateImpl) tov.getState();

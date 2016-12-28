@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.variant.core.exception.RuntimeError.*;
+import static com.variant.core.exception.CommonError.*;
 
-import com.variant.core.exception.RuntimeErrorException;
+import com.variant.core.UserException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -82,7 +82,7 @@ public class StateImpl implements State {
 		for (Test.OnState tov: test.getOnStates()) {
 			if (tov.getState().equals(this)) return tov.isNonvariant();
 		}
-		throw new RuntimeErrorException(STATE_NOT_INSTRUMENTED_BY_TEST, name, test.getName());
+		throw new UserException(STATE_NOT_INSTRUMENTED_BY_TEST, name, test.getName());
 	}
 
 	//---------------------------------------------------------------------------------------------//

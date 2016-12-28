@@ -1,8 +1,8 @@
 package com.variant.core.schema.parser;
 
-import com.variant.core.exception.Error;
+import com.variant.core.UserError;
 
-public class ParserError extends Error {
+public class ParserError extends UserError {
 
 	// 
 	// Meta related errors

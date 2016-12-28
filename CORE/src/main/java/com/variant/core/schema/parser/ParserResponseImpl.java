@@ -5,8 +5,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.variant.core.schema.parser.ParserError.*;
-import com.variant.core.exception.Error;
-import com.variant.core.exception.Error.Severity;
+
+import com.variant.core.UserError;
+import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
@@ -97,7 +98,7 @@ public class ParserResponseImpl implements ParserResponse {
 	 * 
 	 * @param error
 	 */
-	public ParserMessage addMessage(Error error, String...args) {
+	public ParserMessage addMessage(UserError error, String...args) {
 		ParserMessage result = new ParserMessageImpl(error, args);
 		messages.add(result);
 		return result;

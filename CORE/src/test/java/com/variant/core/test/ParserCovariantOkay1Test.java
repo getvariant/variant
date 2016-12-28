@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
-import com.variant.core.exception.Error.Severity;
+import com.variant.core.UserError.Severity;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.StateVariant;

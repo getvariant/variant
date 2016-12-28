@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.exception.InternalException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.StateImpl;
@@ -47,7 +47,7 @@ public class StatesParser implements Keywords {
 			}
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException(e);
+			throw new InternalException(e);
 		}
 		
 	}

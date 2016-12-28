@@ -1,9 +1,9 @@
 package com.variant.core.schema.parser;
 
 import static com.variant.core.schema.parser.ParserError.JSON_PARSE;
+import static com.variant.core.schema.parser.ParserError.NO_META_CLAUSE;
 import static com.variant.core.schema.parser.ParserError.NO_STATES_CLAUSE;
 import static com.variant.core.schema.parser.ParserError.NO_TESTS_CLAUSE;
-import static com.variant.core.schema.parser.ParserError.NO_META_CLAUSE;
 import static com.variant.core.schema.parser.ParserError.UNSUPPORTED_CLAUSE;
 
 import java.io.IOException;
@@ -16,10 +16,10 @@ import org.apache.commons.io.IOUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.exception.Error.Severity;
-import com.variant.core.exception.RuntimeError;
-import com.variant.core.exception.RuntimeInternalException;
-import com.variant.core.exception.VariantRuntimeException;
+import com.variant.core.UserError.Severity;
+import com.variant.core.VariantException;
+import com.variant.core.exception.InternalException;
+import com.variant.core.exception.CommonError;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.State;
@@ -108,7 +108,7 @@ public class SchemaParser implements Keywords {
 			String input = IOUtils.toString(annotatedJsonStream);
 			return parse(input);
 		} catch (IOException e) {
-			throw new RuntimeInternalException("Unable to read input from stream", e);
+			throw new InternalException("Unable to read input from stream", e);
 		}
 	}
 
@@ -119,7 +119,7 @@ public class SchemaParser implements Keywords {
 	 * @throws VariantRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	public ParserResponse parse(String annotatedJsonString) throws VariantRuntimeException {
+	public ParserResponse parse(String annotatedJsonString) {
 		
 		// 1. Pre-parser phase
 		String cleanJsonString = preParse(annotatedJsonString);
@@ -142,7 +142,7 @@ public class SchemaParser implements Keywords {
 			toParserError(parseException, cleanJsonString, response);
 		} 
 		catch (Exception e) {
-			throw new RuntimeInternalException(e);
+			throw new InternalException(e);
 		}
 		
 		// Don't attempt to parse if JSON failed.
@@ -190,8 +190,8 @@ public class SchemaParser implements Keywords {
 				try {
 					hooker.post(new StateParsedHookImpl(state, response));
 				}
-				catch (VariantRuntimeException e) {
-					response.addMessage(RuntimeError.HOOK_LISTENER_EXCEPTION, StateParsedHookImpl.class.getName(), e.getMessage());
+				catch (VariantException e) {
+					response.addMessage(CommonError.HOOK_LISTENER_EXCEPTION, StateParsedHookImpl.class.getName(), e.getMessage());
 				}
 			}
 		}
@@ -215,8 +215,8 @@ public class SchemaParser implements Keywords {
 				try {
 					hooker.post(new TestParsedHookImpl(test, response));
 				}
-				catch (VariantRuntimeException e) {
-					response.addMessage(RuntimeError.HOOK_LISTENER_EXCEPTION, TestParsedHookImpl.class.getName(), e.getMessage());
+				catch (VariantException e) {
+					response.addMessage(CommonError.HOOK_LISTENER_EXCEPTION, TestParsedHookImpl.class.getName(), e.getMessage());
 				}
 			}
 		}

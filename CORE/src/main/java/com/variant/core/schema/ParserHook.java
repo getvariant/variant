@@ -1,7 +1,7 @@
 package com.variant.core.schema;
 
 import com.variant.core.UserHook;
-import com.variant.core.exception.Error.Severity;
+import com.variant.core.UserError.Severity;
 
 /**
  * <p>Super-interface for all user hook types that post their listeners at schema parse time.

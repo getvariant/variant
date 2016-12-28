@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.exception.InternalException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -83,7 +83,7 @@ public class TestImpl implements Test {
 		for (TestExperienceImpl e: experiences) {
 			if (e.isControl()) return e;
 		}
-		throw new RuntimeInternalException("No control experience found in test [' + getName() + ']");
+		throw new InternalException("No control experience found in test [' + getName() + ']");
 	}
 
 	/**
