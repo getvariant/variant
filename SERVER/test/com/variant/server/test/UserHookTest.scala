@@ -5,7 +5,7 @@ import com.variant.core.schema.StateParsedHook
 import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
-import com.variant.core.exception.Error.Severity
+import com.variant.core.UserError.Severity._
 import com.variant.server.schema.SchemaDeployer
 import com.variant.core.schema.TestParsedHook
 import com.variant.core.schema.Test
@@ -13,9 +13,9 @@ import com.variant.core.TestQualificationHook
 import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
 import com.variant.core.TestTargetingHook
-import com.variant.server.ServerErrorException
-import com.variant.server.ServerError
-import com.variant.core.exception.RuntimeErrorException
+import com.variant.core.UserErrorException
+import com.variant.core.UserError
+import com.variant.server.boot.ServerErrorLocal._
 
 /**
  * TODO: Need to also test annotations.
@@ -35,13 +35,13 @@ class UserHookTest extends BaseSpecWithSchema {
    		val listener = new StateParsedHookListener
    		server.hooker.addListener(listener)
    		val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
-   		response.getMessages(Severity.ERROR) mustBe empty
+   		response.getMessages(ERROR) mustBe empty
    		server.schema.isDefined mustBe true
    		val schema = server.schema.get
    		listener.stateList.toSeq mustEqual schema.getStates.toSeq
    		schema.getStates().size() mustEqual response.getMessages().size()
    		for (msg <- response.getMessages) {
-   			msg.getSeverity mustBe Severity.INFO
+   			msg.getSeverity mustBe INFO
    			msg.getText mustBe MESSAGE_TEXT_STATE
    			
    		}  
@@ -55,13 +55,13 @@ class UserHookTest extends BaseSpecWithSchema {
    	   val listener = new TestParsedHookListener
    	   server.hooker.addListener(listener)
          val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
-      	response.getMessages(Severity.ERROR) mustBe empty
+      	response.getMessages(ERROR) mustBe empty
          server.schema.isDefined mustBe true
       	val schema = server.schema.get
       	listener.testList.toSeq mustEqual schema.getTests.toSeq
       	schema.getTests().size() mustEqual response.getMessages().size()
    		for (msg <- response.getMessages) {
-   			msg.getSeverity mustBe Severity.INFO
+   			msg.getSeverity mustBe INFO
       		msg.getText mustBe MESSAGE_TEXT_TEST		
    		}
 	   }
@@ -75,7 +75,7 @@ class UserHookTest extends BaseSpecWithSchema {
    	   val testListener = new TestParsedHookListener
    	   server.hooker.addListener(testListener, stateListener)
          val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
-      	response.getMessages(Severity.ERROR) mustBe empty
+      	response.getMessages(ERROR) mustBe empty
          server.schema.isDefined mustBe true
       	val schema = server.schema.get
       	testListener.testList.toSeq mustEqual schema.getTests.toSeq
@@ -83,7 +83,7 @@ class UserHookTest extends BaseSpecWithSchema {
       	response.getMessages.size mustEqual schema.getTests.size + schema.getStates.size 
    		for (i <- 0 until response.getMessages.size) {
    		   val msg = response.getMessages.get(i)
-   			msg.getSeverity mustBe Severity.INFO
+   			msg.getSeverity mustBe INFO
       		msg.getText mustBe (if (i < schema.getStates.size) MESSAGE_TEXT_STATE else MESSAGE_TEXT_TEST)
    		}
 	   }
@@ -337,13 +337,13 @@ class UserHookTest extends BaseSpecWithSchema {
 
          ssn = new ServerSession(newSid())
    	   
-   	   val caughtEx = intercept[RuntimeErrorException] {
+   	   val caughtEx = intercept[UserErrorException] {
              ssn.targetForState(state2)   // Kaboom
          }
          assert(
                caughtEx.getMessage.equals(
-                     new RuntimeErrorException(
-                           ServerError.HOOK_TARGETING_BAD_EXPERIENCE, l.getClass.getName, "test1", "test3.A"
+                     new UserErrorException(
+                           HOOK_TARGETING_BAD_EXPERIENCE, l.getClass.getName, "test1", "test3.A"
                      ).getMessage)
          )         
 	   }
@@ -357,7 +357,7 @@ class UserHookTest extends BaseSpecWithSchema {
 		override def getHookClass() = classOf[StateParsedHook]
       override def post(hook: StateParsedHook) {
 	      stateList += hook.getState()
-			hook.addMessage(Severity.INFO, MESSAGE_TEXT_STATE)
+			hook.addMessage(MESSAGE_TEXT_STATE)
       }
    }
 
@@ -369,7 +369,7 @@ class UserHookTest extends BaseSpecWithSchema {
 		override def getHookClass() = classOf[TestParsedHook]
       override def post(hook: TestParsedHook) {
 	      testList += hook.getTest()
-			hook.addMessage(Severity.INFO, MESSAGE_TEXT_TEST)
+			hook.addMessage(MESSAGE_TEXT_TEST)
       }
    }
 

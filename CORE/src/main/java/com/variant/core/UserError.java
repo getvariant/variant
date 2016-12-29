@@ -1,5 +1,7 @@
 package com.variant.core;
 
+import com.variant.core.schema.ParserMessage;
+
 /**
  * The immutable, uncontextualized part of a system error.
  * All errors are in subclasses.
@@ -18,25 +20,36 @@ Range   Base         Major Area               Minor Area
 001-020                                       Meta
 021-050                                       State
 051-150                                       Test
-151-170                                       *Unused
+151-170                                       --Unused
 171-200                                       Other
 201-220              Configuration
 241-250              Parse time user hooks
-251-270              Common runtime
-271-300              *Available
+251-270              Other common runtime
+271-300              --Available
 
 301-400 Client Local
-301-400              *Available
+301-400              --Available
         
 401-600 Server local 
-401-520              Server bootstrap
-421-540              Schema deployment
-441-560              Event writing
-461-600              *Available
+401-420              Server bootstrap
+421-440              Schema deployment
+441-460              Event writing
+461-480              Run time user hooks
+481-500              Other server runtime
+501-600              --Available
 
-601-800        Server API   Connection
-       
-901-999 Reserved
+601-800 Server API
+601-700              Internal
+601-610                                       Payload syntax error
+611-630                                       Payload parse error
+631-700                                       Other internal errors
+701-800              User
+701-720                                       Connection
+721-740                                       Session
+741-760                                       Event
+761-800                                       --Available
+
+801-999 --Reserved
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -44,12 +57,18 @@ abstract public class UserError {
 		
 	public final int code;
 	public final Severity severity;
-	public final String format;
+	public final String msgFormat;
+	public final String comment;
 	
-	protected UserError(int code, Severity severity, String format) {
+	protected UserError(int code, Severity severity, String msgFormat, String comment) {
 		this.code = code;
 		this.severity = severity;
-		this.format = format;
+		this.msgFormat = msgFormat;
+		this.comment = comment;
+	}
+
+	protected UserError(int code, Severity severity, String msgFormat) {
+		this(code, severity, msgFormat, null);
 	}
 
 	/**

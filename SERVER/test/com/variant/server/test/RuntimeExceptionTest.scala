@@ -1,8 +1,8 @@
 package com.variant.server.test
 
-import com.variant.core.exception.RuntimeError
-import com.variant.core.exception.RuntimeErrorException
-import com.variant.core.exception.VariantRuntimeException
+import com.variant.core.UserErrorException
+import com.variant.server.boot.ServerErrorLocal._
+import com.variant.core.exception.CommonError._  // IU: Not clea why I have to include this, if I already include ServerErrorLocal, which extends it.
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.session.ServerSession
 
@@ -119,8 +119,8 @@ class RuntimeExceptionTest extends BaseSpecWithSchema {
 			   fail("Expected exception not thrown")
    		}
 	   	catch {
-	   	   case vre: VariantRuntimeException =>  vre.getMessage() mustEqual
-      			new RuntimeErrorException(RuntimeError.STATE_NOT_INSTRUMENTED_BY_TEST, "state2", "test1").getMessage()
+	   	   case uex: UserErrorException =>  uex.getMessage() mustEqual
+      			new UserErrorException(STATE_NOT_INSTRUMENTED_BY_TEST, "state2", "test1").getMessage()
 		   }
 	   	
       }
@@ -138,8 +138,8 @@ class RuntimeExceptionTest extends BaseSpecWithSchema {
 			   fail("Expected exception not thrown")
    			}
          catch {
-            case vre: VariantRuntimeException =>  vre.getMessage() mustEqual
-      			new RuntimeErrorException(RuntimeError.EXPERIENCE_WEIGHT_MISSING, "test1", "A").getMessage()
+            case uex: UserErrorException =>  uex.getMessage() mustEqual
+      			new UserErrorException(EXPERIENCE_WEIGHT_MISSING, "test1", "A").getMessage()
    		}
       }
    }

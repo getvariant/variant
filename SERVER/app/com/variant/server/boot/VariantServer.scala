@@ -17,14 +17,12 @@ import com.variant.server.schema.SchemaDeployerFromFS
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.runtime.Runtime
 import com.variant.core.schema.ParserResponse
-import com.variant.server.ServerErrorException
-import com.variant.core.exception.RuntimeErrorException
-import com.variant.core.exception.Error.Severity
-import com.variant.core.exception.VariantRuntimeException
-import com.variant.server.ServerError
-import com.variant.core.exception.RuntimeError
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
+import com.variant.core.VariantException
+import com.variant.core.exception.InternalException
+import com.variant.core.UserErrorException
+import com.variant.core.UserError.Severity._
 
 /**
  * Need a trait to make DI to work.
@@ -33,7 +31,7 @@ trait VariantServer {
    
    val isUp: Boolean
    val config: Config // Do not expose Play's Configuration
-   val startupErrorLog: List[ServerErrorException]
+   val startupErrorLog: List[UserErrorException]
    val eventWriter: EventWriter
    def schema: Option[ServerSchema]
    def hooker: UserHooker
@@ -73,7 +71,7 @@ class VariantServerImpl @Inject() (
 	private var _isUp = true
 	override lazy val isUp = _isUp
 	
-	private var _startupErrorLog = List[ServerErrorException]()
+	private var _startupErrorLog = List[UserErrorException]()
 	override lazy val startupErrorLog = _startupErrorLog
 	
 	// Default schema deployer is from file system.
@@ -92,20 +90,15 @@ class VariantServerImpl @Inject() (
 	      Some(_schemaDeployer.deploy)
 	   }
 	   catch {
-	      case e: ServerErrorException => {
+	      case e: UserErrorException => {
 	         _startupErrorLog :+= e
-	         None
-	      }
-	      case e: Throwable => {
-	         logger.error(e.getMessage, e)
-	         _startupErrorLog :+= new ServerErrorException(ServerError.UNEXPECTED_FATAL_ERROR, e.getMessage)
 	         None
 	      }
 	   }
 	}
 
 	// Flip isUp to false if we had errors.
-	startupErrorLog.foreach {e => if (e.getSeverity.greaterOrEqual(Severity.ERROR)) _isUp = false}
+	startupErrorLog.foreach {e => if (e.getSeverity.greaterOrEqual(ERROR)) _isUp = false}
 
 	if (!isUp) {
 		   logger.error(
@@ -134,10 +127,10 @@ class VariantServerImpl @Inject() (
 	if (!isUp || !schema.isDefined) 
 	   startupErrorLog.foreach {
 	      e => e.getSeverity match {
-	         case Severity.FATAL => {logger.error("FATAL: " + e.getMessage, e)}
-	         case Severity.ERROR => {logger.error("ERROR: " + e.getMessage, e)}
-	         case Severity.WARN => logger.warn(e.getMessage)
-	         case _ => throw new VariantRuntimeException("Unexpected exception severity %s".format(e.getSeverity), e)
+	         case FATAL => {logger.error("FATAL: " + e.getMessage, e)}
+	         case ERROR => {logger.error("ERROR: " + e.getMessage, e)}
+	         case WARN => logger.warn(e.getMessage)
+	         case _ => throw new InternalException("Unexpected exception severity %s".format(e.getSeverity), e)
 	      }
 	   }
 	

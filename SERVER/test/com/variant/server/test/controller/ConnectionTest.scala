@@ -6,7 +6,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.collection.JavaConversions._
-import com.variant.server.UserError._
+import com.variant.server.boot.ServerErrorApi._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.ConfigKeys

@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.exception.InternalException;
 import com.variant.core.schema.Test;
 import com.variant.server.EventFlusher;
 import com.variant.server.FlushableEvent;
@@ -101,12 +101,12 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 					while(gennedKeys.next()) {
 
 						if (index == events.size()) 
-							throw new RuntimeInternalException("Received more genereated keys than inserted event records.");
+							throw new InternalException("Received more genereated keys than inserted event records.");
 						
 						eventIds[index++] = gennedKeys.getLong(1);
 					}
 					if (index < events.size()) 
-						throw new RuntimeInternalException("Received fewer genereated keys than inserted event records.");
+						throw new InternalException("Received fewer genereated keys than inserted event records.");
 
 					stmt.close();
 

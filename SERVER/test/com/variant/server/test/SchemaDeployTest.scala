@@ -6,16 +6,12 @@ import play.api.Application
 import play.api.test._
 import play.api.test.Helpers._
 import scala.collection.JavaConversions._
-import com.variant.server.UserError
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.session.SessionStore
 import com.variant.server.boot.VariantServer
 import play.api.inject.guice.GuiceApplicationBuilder
 import org.scalatest.TestData
-import com.variant.core.exception.Error
-import com.variant.server.ServerErrorException
-import com.variant.server.ServerError
 import org.apache.commons.io.FileUtils
 import java.io.File
 import play.api.Configuration

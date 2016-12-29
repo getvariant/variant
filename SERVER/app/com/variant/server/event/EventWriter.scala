@@ -3,16 +3,15 @@ package com.variant.server.event;
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
 import org.apache.commons.lang3.time.DurationFormatUtils
-import com.variant.server.ServerError._
+import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.ConfigKeys._
 import com.variant.server.EventFlusher
 import com.variant.server.FlushableEvent
 import play.api.Logger
 import com.typesafe.config.Config
-import com.variant.core.exception.RuntimeError._
-import com.variant.core.exception.RuntimeErrorException
-import com.variant.core.exception.VariantRuntimeException
-import com.variant.core.exception.RuntimeInternalException
+import com.variant.core.exception.InternalException
+import com.variant.core.UserErrorException
+import com.variant.core.VariantException
 
 class EventWriter (config: Config) {
 	
@@ -47,26 +46,20 @@ class EventWriter (config: Config) {
 			val result = {
 			   val clazz = Class.forName(className).newInstance();		
    			if (!clazz.isInstanceOf[EventFlusher]) {
-   				throw new RuntimeErrorException(EVENT_FLUSHER_NO_INTERFACE, className, classOf[EventFlusher].getName);
+   				throw new UserErrorException(EVENT_FLUSHER_NO_INTERFACE, className, classOf[EventFlusher].getName);
 	   		}
 		  	   clazz.asInstanceOf[EventFlusher]
 			}
 			
 			val initObj = config.getObject(EVENT_FLUSHER_CLASS_INIT)
-			try {
-            result.init(initObj);
-			}
-			catch {
-			   case _: Throwable =>
-               throw new RuntimeErrorException(CONFIG_INIT_INVALID_JSON, initObj.render, EVENT_FLUSHER_CLASS_INIT);
-			}
+         result.init(initObj);
 			result	
 		}
 		catch {
-		   case e : VariantRuntimeException => throw e
+		   case e : VariantException => throw e
 		   case e : Throwable => {
 		      logger.error("Unable to instantiate event flusher class [" + className +"]", e)
-		      throw new RuntimeInternalException("Unable to instantiate event flusher class [" + className +"]", e);
+		      throw new InternalException("Unable to instantiate event flusher class [" + className +"]", e);
 		   }
 		}
 	}

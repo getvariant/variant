@@ -6,11 +6,10 @@ import play.api.mvc.Request
 import com.variant.server.session.SessionStore
 import play.api.Logger
 import play.api.libs.json._
-import com.variant.server.UserError._
+import com.variant.server.boot.ServerErrorApi._
 import java.util.Date
 import play.api.mvc.Result
 import play.api.mvc.AnyContent
-import com.variant.server.UserError
 import play.api.libs.json.JsValue
 import play.api.http.HeaderNames
 import scala.collection.mutable.Map

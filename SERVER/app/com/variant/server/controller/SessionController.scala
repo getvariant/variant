@@ -5,7 +5,7 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import com.variant.server.session.SessionStore
 import play.api.Logger
-import com.variant.server.UserError._
+import com.variant.server.boot.ServerErrorApi._
 
 //@Singleton -- Is this for non-shared state controllers?
 class SessionController @Inject() (store: SessionStore) extends Controller  {

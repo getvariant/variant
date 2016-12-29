@@ -10,15 +10,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.variant.server.ServerError.*;
-
+import com.variant.core.exception.InternalException;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.CoreStateRequest;
 import com.variant.core.util.VariantStringUtils;
-import com.variant.core.exception.RuntimeErrorException;
-import com.variant.core.exception.RuntimeInternalException;
 import com.variant.core.TestQualificationHook;
 import com.variant.core.TestTargetingHook;
+import com.variant.core.UserErrorException;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.schema.State;
@@ -28,6 +26,9 @@ import com.variant.core.schema.Test.OnState;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
+
+import static com.variant.server.boot.ServerErrorLocal.*;
+
 import com.variant.server.boot.VariantServer;
 import com.variant.server.schema.ServerSchema;
 
@@ -91,7 +92,7 @@ public class Runtime {
 				if (e.equals(te)) {
 					if (!e.isDefinedOn(state)) {
 						StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-						throw new RuntimeErrorException(
+						throw new UserErrorException(
 								HOOK_TARGETING_BAD_EXPERIENCE, 
 								caller.getClassName(), test.getName(), e, test.getName());
 					}
@@ -102,7 +103,7 @@ public class Runtime {
 			// If we're here, the experience is not from the test we're listening for.
 			// Figure out the caller class and throw an exception.
 			StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-			throw new RuntimeErrorException(
+			throw new UserErrorException(
 					HOOK_TARGETING_BAD_EXPERIENCE, 
 					caller.getClassName(), test.getName(), e);
 		}
@@ -162,7 +163,7 @@ public class Runtime {
 		// State must be in current schema.
 		State schemaState = schema.getState(state.getName());
 		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
-			throw new RuntimeInternalException("State [" + state.getName() + "] is not in schema");
+			throw new InternalException("State [" + state.getName() + "] is not in schema");
 		
 		// 1. Build the active test list.
 		ArrayList<Test> activeTestList = new ArrayList<Test>();
@@ -193,12 +194,12 @@ public class Runtime {
 				// Already traversed, hence must be already targeted.
 				Experience exp = targetingStabile.getAsExperience(test.getName(), schema);
 				if (exp == null)
-					throw new RuntimeInternalException(
+					throw new InternalException(
 							"Active traversed test [" + test.getName() + "] not in targeting stabile");
 
 				// It's a user error to hit an undefined state in an active experience.
 				if (!exp.isDefinedOn(state))  {
-					throw new RuntimeErrorException(STATE_UNDEFINED_IN_EXPERIENCE, exp.toString(), state.getName());
+					throw new UserErrorException(STATE_UNDEFINED_IN_EXPERIENCE, exp.toString(), state.getName());
 				}
 
 				alreadyTargeted.add(exp);
@@ -297,7 +298,7 @@ public class Runtime {
 
 		// If all went well, we must be resolvable!
 		Pair<Boolean, StateVariantImpl> resolution = resolveState(state, vector);
-		if (!resolution._1()) throw new RuntimeInternalException(
+		if (!resolution._1()) throw new InternalException(
 				"Vector [" + VariantStringUtils.toString(vector, ",") + "] is unresolvable");
 		
 		req.setResolvedStateVariant(resolution._2());
@@ -418,14 +419,14 @@ public class Runtime {
 					
 		// V must be resolvable.
 		if (!isResolvable(v))
-			throw new RuntimeInternalException(
+			throw new InternalException(
 					String.format("Input vector [%s] must be resolvable, but is not", VariantStringUtils.toString(v, ",")));
 
 		// W must not contain experiences that contradict those in V
 		for (Experience ew: w) {
 			for (Experience ev: v) {
 				if (ew.getTest().equals(ev.getTest()))
-					throw new RuntimeInternalException(
+					throw new InternalException(
 							String.format("Experience [%s] in second argument contradicts experience [%s] in first argument", ew, ev));
 			}
 		}
@@ -465,11 +466,11 @@ public class Runtime {
 		// alreadyTargetedExperiences should not contain an experience for the input test.
 		for (Experience e: alreadyTargetedExperiences) {
 			if (test.equals(e.getTest())) 
-				throw new RuntimeInternalException("Input test [" + test + "] is already targeted");
+				throw new InternalException("Input test [" + test + "] is already targeted");
 		}
 
 		if (!isResolvable(alreadyTargetedExperiences))
-			throw new RuntimeInternalException(
+			throw new InternalException(
 					"Input vector [" + StringUtils.join(alreadyTargetedExperiences, ",") + "] is already unresolvable");
 		
 		// Find some non-control, defined experience. Untargetable if none.
@@ -525,15 +526,15 @@ public class Runtime {
 			for (Experience e: vector) {
 				if (e.getTest().equals(t)) {
 					if (found) {
-						throw new RuntimeInternalException("Duplicate test [" + t + "] in input vector");
+						throw new InternalException("Duplicate test [" + t + "] in input vector");
 					}
 					else {
 						
 						if (!state.isInstrumentedBy(e.getTest()))
-							throw new RuntimeInternalException("Uninstrumented test [" + e + "] in input vector");
+							throw new InternalException("Uninstrumented test [" + e + "] in input vector");
 
 						if (!e.isDefinedOn(state))
-							throw new RuntimeInternalException("Undefined experience [" + e + "] in input vector");
+							throw new InternalException("Undefined experience [" + e + "] in input vector");
 
 						found = true;
 

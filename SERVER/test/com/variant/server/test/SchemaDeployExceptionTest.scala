@@ -6,7 +6,7 @@ import play.api.Application
 import play.api.test._
 import play.api.test.Helpers._
 import scala.collection.JavaConversions._
-import com.variant.server.UserError
+import com.variant.core.UserError.Severity._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.ConfigKeys
@@ -14,11 +14,10 @@ import com.variant.server.session.SessionStore
 import com.variant.server.boot.VariantServer
 import play.api.inject.guice.GuiceApplicationBuilder
 import org.scalatest.TestData
-import com.variant.core.exception.Error
-import com.variant.server.ServerErrorException
-import com.variant.server.ServerError
 import play.api.Configuration
 import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.boot.ServerErrorLocal._
+import com.variant.core.UserErrorException
 
 /**
  * Test various schema deployment error scenarios
@@ -60,10 +59,10 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          server.schema.isDefined mustBe false
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
-         ex.getSeverity mustEqual Error.Severity.FATAL
+         ex.getSeverity mustEqual FATAL
          ex.getMessage mustEqual 
-            new ServerErrorException(
-               ServerError.UNEXPECTED_FATAL_ERROR, 
+            new UserErrorException(
+               SCHEMAS_DIR_MISSING, 
                "No configuration setting found for key '%s'".format(ConfigKeys.SCHEMAS_DIR)).getMessage
       }
    }
@@ -76,8 +75,8 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          server.schema.isDefined mustBe false
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
-         ex.getSeverity mustEqual Error.Severity.FATAL
-         ex.getMessage mustEqual new ServerErrorException(ServerError.SCHEMAS_DIR_MISSING, "non-existent").getMessage
+         ex.getSeverity mustEqual FATAL
+         ex.getMessage mustEqual new UserErrorException(SCHEMAS_DIR_MISSING, "non-existent").getMessage
       }
       
       "return 503 in every http request after SCHEMAS_DIR_MISSING" in {
@@ -99,8 +98,8 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          server.schema.isDefined mustBe false
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
-         ex.getSeverity mustEqual Error.Severity.FATAL
-         ex.getMessage mustEqual new ServerErrorException(ServerError.SCHEMAS_DIR_NOT_DIR, "test-schemas-file").getMessage
+         ex.getSeverity mustEqual FATAL
+         ex.getMessage mustEqual new UserErrorException(SCHEMAS_DIR_NOT_DIR, "test-schemas-file").getMessage
       }
       
       "return 503 in every http request after SCHEMAS_DIR_NOT_DIR" in {
@@ -122,8 +121,8 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          server.schema.isDefined mustBe false
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
-         ex.getSeverity mustEqual Error.Severity.FATAL
-         ex.getMessage mustEqual new ServerErrorException(ServerError.MULTIPLE_SCHEMAS_NOT_SUPPORTED, "test-schemas-multi").getMessage
+         ex.getSeverity mustEqual FATAL
+         ex.getMessage mustEqual new UserErrorException(MULTIPLE_SCHEMAS_NOT_SUPPORTED, "test-schemas-multi").getMessage
       }
 
       "return 503 in every http request after MULTIPLE_SCHEMAS_NOT_SUPPORTED" in {

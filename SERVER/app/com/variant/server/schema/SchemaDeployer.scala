@@ -3,17 +3,17 @@ package com.variant.server.schema;
 import java.io.File
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.io.Source
-import com.variant.core.exception.Error.Severity
-import com.variant.core.exception.RuntimeInternalException
+import com.variant.core.UserError.Severity
+import com.variant.core.exception.InternalException
 import com.variant.core.schema.ParserMessage
 import com.variant.core.schema.parser.SchemaParser
-import com.variant.server.ServerError._
-import com.variant.server.ServerErrorException
+import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.ConfigKeys._
 import com.variant.server.boot.VariantServer.server
 import play.api.Logger
 import com.variant.core.schema.ParserResponse
 import org.apache.commons.io.IOUtils
+import com.variant.core.UserErrorException
 
 trait SchemaDeployer {
  
@@ -144,9 +144,9 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
       
       val dir = new File(dirName.get)
       if (!dir.exists) 
-         throw new ServerErrorException(SCHEMAS_DIR_MISSING, dirName.get)
+         throw new UserErrorException(SCHEMAS_DIR_MISSING, dirName.get)
       if (!dir.isDirectory) 
-         throw new ServerErrorException(SCHEMAS_DIR_NOT_DIR, dirName.get)            
+         throw new UserErrorException(SCHEMAS_DIR_NOT_DIR, dirName.get)            
    
       val schemaFiles = dir.listFiles()
       
@@ -154,7 +154,7 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
          logger.info("No schemas detected")
       }
       else if (schemaFiles.length > 1)  
-         throw new ServerErrorException(MULTIPLE_SCHEMAS_NOT_SUPPORTED, dirName.get)
+         throw new UserErrorException(MULTIPLE_SCHEMAS_NOT_SUPPORTED, dirName.get)
    
       val schemaFile = schemaFiles.head
       parseAndDeploy(Source.fromFile(schemaFile).mkString)
@@ -176,7 +176,7 @@ class SchemaDeployerFromClasspath(resource: String) extends AbstractSchemaDeploy
 	         
    val stream = getClass.getResourceAsStream(resource)
    if (stream == null)
-      throw new RuntimeInternalException("Unable to open classpath resource [%s]".format(resource))
+      throw new InternalException("Unable to open classpath resource [%s]".format(resource))
    
    override def deploy() = parseAndDeploy(IOUtils.toString(stream))
 }
