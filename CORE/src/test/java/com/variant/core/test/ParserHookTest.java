@@ -1,24 +1,23 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.ArrayList;
 
 import org.junit.Test;
 
-import com.variant.core.exception.CommonError;
 import com.variant.core.HookListener;
 import com.variant.core.UserError.Severity;
 import com.variant.core.UserErrorException;
+import com.variant.core.exception.CommonError;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateParsedHook;
 import com.variant.core.schema.TestParsedHook;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.core.util.VariantCollectionsUtils;
 
 /**
  * TODO: Test parse time user hooks.
@@ -47,7 +46,7 @@ public class ParserHookTest extends BaseTestCore {
 		assertEquals(11, response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
 			assertEquals(Severity.ERROR, msg.getSeverity());
-			assertEquals(new UserErrorException(CommonError.USER_ADDED_HOOK_LISTENER_ERROR, MESSAGE_TEXT_STATE).getMessage(), msg.getText());			
+			assertEquals(new UserErrorException(CommonError.HOOK_LISTENER_ERROR, MESSAGE_TEXT_STATE).getMessage(), msg.getText());			
 		}
 	}
 
@@ -68,7 +67,7 @@ public class ParserHookTest extends BaseTestCore {
 		assertEquals(3, response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
 			assertEquals(Severity.ERROR, msg.getSeverity());
-			assertEquals(new UserErrorException(CommonError.USER_ADDED_HOOK_LISTENER_ERROR, MESSAGE_TEXT_TEST).getMessage(), msg.getText());			
+			assertEquals(new UserErrorException(CommonError.HOOK_LISTENER_ERROR, MESSAGE_TEXT_TEST).getMessage(), msg.getText());			
 			
 		}
 

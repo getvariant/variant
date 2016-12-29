@@ -13,6 +13,8 @@ import play.api.libs.json.Json.toJsFieldJsValueWrapper
  */
 object ServerErrorApi {
     
+   val InternalErrorFormat = "Internal server error [%s]"
+   
    //
    // 601-610 Internal, Payload syntax error
    //
@@ -59,12 +61,13 @@ class ServerErrorApi(val code: Int, val msgFormat: String, val comment: Option[S
    def this(code: Int, msgFormat: String, comment: String) = this(code, msgFormat, Some(comment))
 
    import play.api.Logger
+   import ServerErrorApi._
    
    val logger = Logger(this.getClass)
          
    def asResult(args:String*) = {
       
-      if (code <= 700) {
+      if (code > 700) {
          val bodyJson : JsObject = Json.obj(
             "code" -> code,
             "message" -> message(args:_*))
@@ -81,7 +84,7 @@ class ServerErrorApi(val code: Int, val msgFormat: String, val comment: Option[S
                           
          Result(
              header = ResponseHeader(HttpStatus.SC_INTERNAL_SERVER_ERROR, Map.empty),
-             body = HttpEntity.Strict(ByteString("Internal server error [%s]".format(code)), Some("text/plain; charset=us-ascii"))
+             body = HttpEntity.Strict(ByteString(InternalErrorFormat.format(code)), Some("text/plain; charset=us-ascii"))
            )            
       }
     }

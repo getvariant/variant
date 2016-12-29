@@ -43,7 +43,7 @@ public class CommonError extends UserError {
 	//
 	// 251-270              Common runtime
 	//
-	public static final CommonError USER_ADDED_HOOK_LISTENER_ERROR =
+	public static final CommonError HOOK_LISTENER_ERROR =
 			new CommonError(251, Severity.ERROR, "User hook listener raised the following error: [%s]");
 
 	public static final CommonError STATE_NOT_INSTRUMENTED_BY_TEST =

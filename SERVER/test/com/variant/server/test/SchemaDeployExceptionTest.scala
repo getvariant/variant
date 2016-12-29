@@ -16,6 +16,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import org.scalatest.TestData
 import play.api.Configuration
 import com.variant.server.boot.VariantApplicationLoader
+import com.variant.core.exception.CommonError._
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.UserErrorException
 
@@ -26,7 +27,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
    
    implicit override def newAppForTest(testData: TestData): Application = {
 
-      if (testData.name.contains("UNEXPECTED_FATAL_ERROR")) 
+      if (testData.name.contains("CONFIG_PROPERTY_NOT_SET")) 
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.schemas.dir")))
             .build()
@@ -53,7 +54,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
 
    
    "Missing variant.schemas.dir property" should {
-      "throw UNEXPECTED_FATAL_ERROR" in {
+      "throw CONFIG_PROPERTY_NOT_SET" in {
          val server = app.injector.instanceOf[VariantServer]
          server.isUp mustBe false
          server.schema.isDefined mustBe false
@@ -61,9 +62,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual FATAL
          ex.getMessage mustEqual 
-            new UserErrorException(
-               SCHEMAS_DIR_MISSING, 
-               "No configuration setting found for key '%s'".format(ConfigKeys.SCHEMAS_DIR)).getMessage
+            new UserErrorException(CONFIG_PROPERTY_NOT_SET, ConfigKeys.SCHEMAS_DIR).getMessage
       }
    }
 

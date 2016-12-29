@@ -14,8 +14,8 @@ import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
 import com.variant.core.TestTargetingHook
 import com.variant.core.UserErrorException
-import com.variant.core.UserError
 import com.variant.server.boot.ServerErrorLocal._
+import com.variant.core.exception.CommonError._
 
 /**
  * TODO: Need to also test annotations.
@@ -35,14 +35,13 @@ class UserHookTest extends BaseSpecWithSchema {
    		val listener = new StateParsedHookListener
    		server.hooker.addListener(listener)
    		val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
-   		response.getMessages(ERROR) mustBe empty
-   		server.schema.isDefined mustBe true
-   		val schema = server.schema.get
-   		listener.stateList.toSeq mustEqual schema.getStates.toSeq
-   		schema.getStates().size() mustEqual response.getMessages().size()
+   		response.getMessages(FATAL) mustBe empty
+   		response.getMessages(ERROR) mustNot be (empty)
+   		server.schema.isDefined mustBe false
+   		response.getMessages.size mustBe 5
    		for (msg <- response.getMessages) {
-   			msg.getSeverity mustBe INFO
-   			msg.getText mustBe MESSAGE_TEXT_STATE
+   			msg.getSeverity mustBe ERROR
+   			msg.getText mustBe (new UserErrorException(HOOK_LISTENER_ERROR, MESSAGE_TEXT_STATE).getMessage())
    			
    		}  
 	   }
@@ -55,15 +54,15 @@ class UserHookTest extends BaseSpecWithSchema {
    	   val listener = new TestParsedHookListener
    	   server.hooker.addListener(listener)
          val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
-      	response.getMessages(ERROR) mustBe empty
-         server.schema.isDefined mustBe true
-      	val schema = server.schema.get
-      	listener.testList.toSeq mustEqual schema.getTests.toSeq
-      	schema.getTests().size() mustEqual response.getMessages().size()
+   		response.getMessages(FATAL) mustBe empty
+   		response.getMessages(ERROR) mustNot be (empty)
+   		server.schema.isDefined mustBe false
+   		response.getMessages.size mustBe 6
    		for (msg <- response.getMessages) {
-   			msg.getSeverity mustBe INFO
-      		msg.getText mustBe MESSAGE_TEXT_TEST		
-   		}
+   			msg.getSeverity mustBe ERROR
+   			msg.getText mustBe (new UserErrorException(HOOK_LISTENER_ERROR, MESSAGE_TEXT_TEST).getMessage())
+   			
+   		}  
 	   }
 	}
 
@@ -75,16 +74,14 @@ class UserHookTest extends BaseSpecWithSchema {
    	   val testListener = new TestParsedHookListener
    	   server.hooker.addListener(testListener, stateListener)
          val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
-      	response.getMessages(ERROR) mustBe empty
-         server.schema.isDefined mustBe true
-      	val schema = server.schema.get
-      	testListener.testList.toSeq mustEqual schema.getTests.toSeq
-      	stateListener.stateList.toSeq mustEqual schema.getStates.toSeq
-      	response.getMessages.size mustEqual schema.getTests.size + schema.getStates.size 
+   		response.getMessages(FATAL) mustBe empty
+   		response.getMessages(ERROR) mustNot be (empty)
+   		server.schema.isDefined mustBe false
+   		response.getMessages.size mustBe 11
    		for (i <- 0 until response.getMessages.size) {
    		   val msg = response.getMessages.get(i)
-   			msg.getSeverity mustBe INFO
-      		msg.getText mustBe (if (i < schema.getStates.size) MESSAGE_TEXT_STATE else MESSAGE_TEXT_TEST)
+   			msg.getSeverity mustBe ERROR
+      		msg.getText mustBe (new UserErrorException(HOOK_LISTENER_ERROR, (if (i < 5) MESSAGE_TEXT_STATE else MESSAGE_TEXT_TEST)).getMessage)
    		}
 	   }
 	}

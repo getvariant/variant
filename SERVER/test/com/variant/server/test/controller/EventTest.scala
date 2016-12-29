@@ -9,11 +9,8 @@ import com.variant.server.boot.ServerErrorApi._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.BaseSpecWithSchema
-//import com.variant.server.test.controller.SessionTest
+import com.variant.core.UserErrorException
 
-/*
- * Reusable event JSON objects. 
- */
 object EventTest {
 
    val body = ParamString("""
@@ -62,42 +59,32 @@ class EventTest extends BaseSpecWithSchema {
       }
 
 
-      "return  400 and error on POST with no body" in {
+      "return  500 and error on POST with no body" in {
          val resp = route(app, FakeRequest(POST, endpoint).withHeaders("Content-Type" -> "text/plain")).get
-         status(resp) mustBe BAD_REQUEST
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "code").as[Int] mustBe JsonParseError.code 
-         (respJson \ "message").as[String] must startWith ("JSON parsing error") 
-         (respJson \ "message").as[String] must include ("No content") 
+         status(resp) mustBe INTERNAL_SERVER_ERROR
+         val body = contentAsString(resp)
+         body mustBe InternalErrorFormat.format(JsonParseError.code)
      }
       
-      "return  400 and error on POST with invalid JSON" in {
+      "return  500 and error on POST with invalid JSON" in {
          val resp = route(app, FakeRequest(POST, endpoint).withBody("bad json").withHeaders("Content-Type" -> "text/plain")).get
-         status(resp) mustBe BAD_REQUEST
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "code").as[Int] mustBe JsonParseError.code 
-         (respJson \ "message").as[String] must startWith ("JSON parsing error") 
-         (respJson \ "message").as[String] must include ("Unrecognized token") 
+         status(resp) mustBe INTERNAL_SERVER_ERROR
+         val body = contentAsString(resp)
+         body mustBe InternalErrorFormat.format(JsonParseError.code)
      }
 
-      "return  400 and error on POST with no sid" in {
+      "return  500 and error on POST with no sid" in {
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(bodyNoSid)).get
-         status(resp) mustBe BAD_REQUEST
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "code").as[Int] mustBe MissingProperty.code 
-         (respJson \ "message").as[String] mustBe MissingProperty.message("sid") 
+         status(resp) mustBe INTERNAL_SERVER_ERROR
+         val body = contentAsString(resp)
+         body mustBe InternalErrorFormat.format(MissingProperty.code)
       }
 
-      "return  400 and error on POST with no name" in {
+      "return 500 and error on POST with no name" in {
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(bodyNoName)).get
-         status(resp) mustBe BAD_REQUEST
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "code").as[Int] mustBe MissingProperty.code 
-         (respJson \ "message").as[String] mustBe MissingProperty.message("name") 
+         status(resp) mustBe INTERNAL_SERVER_ERROR
+         val body = contentAsString(resp)
+         body mustBe InternalErrorFormat.format(MissingProperty.code)
       }
       
       "return  403 and error on POST with non-existent session" in {
@@ -109,14 +96,12 @@ class EventTest extends BaseSpecWithSchema {
          (respJson \ "message").as[String] mustBe SessionExpired.message() 
       }
      
-      "return 400 and error on POST with missing param name" in {
+      "return 500 and error on POST with missing param name" in {
          val eventBody = bodyNoParamName.expand()
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
-         status(resp)mustBe BAD_REQUEST
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "code").as[Int] mustBe MissingParamName.code 
-         (respJson \ "message").as[String] mustBe MissingParamName.message() 
+         status(resp)mustBe INTERNAL_SERVER_ERROR
+         val body = contentAsString(resp)
+         body mustBe InternalErrorFormat.format(MissingParamName.code)
       }
 
       "return 200 and create event with existent session" in {

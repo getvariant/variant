@@ -74,7 +74,7 @@ public class ParserResponseImpl implements ParserResponse {
 	 * Add externally generated message.
 	 */
     public void addMessage(String message) {
-		ParserMessage result = new ParserMessageImpl(CommonError.USER_ADDED_HOOK_LISTENER_ERROR, message);
+		ParserMessage result = new ParserMessageImpl(CommonError.HOOK_LISTENER_ERROR, message);
 		messages.add(result);
 	}
 

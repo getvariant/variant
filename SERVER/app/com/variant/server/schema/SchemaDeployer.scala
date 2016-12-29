@@ -5,6 +5,7 @@ import scala.collection.JavaConversions.asScalaBuffer
 import scala.io.Source
 import com.variant.core.UserError.Severity
 import com.variant.core.exception.InternalException
+import com.variant.core.exception.CommonError._
 import com.variant.core.schema.ParserMessage
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.boot.ServerErrorLocal._
@@ -139,8 +140,11 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
 
       var dirName = sys.props.get(SCHEMAS_DIR)
 
-      // This will throw an exception if config property is unset.
-      if (dirName.isEmpty) dirName = Option(server.config.getString(SCHEMAS_DIR))
+      if (dirName.isEmpty) {
+         if (!server.config.hasPath(SCHEMAS_DIR))
+            throw new UserErrorException(CONFIG_PROPERTY_NOT_SET, SCHEMAS_DIR);
+         dirName = Option(server.config.getString(SCHEMAS_DIR))
+      }
       
       val dir = new File(dirName.get)
       if (!dir.exists) 
