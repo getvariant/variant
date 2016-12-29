@@ -3,7 +3,7 @@ package com.variant.client.net;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.exception.InternalException;
 import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.Schema;
 
@@ -26,7 +26,7 @@ abstract public class AbstractPayloadReader<T>  {
 			throw e;
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unable to deserealize payload: [" + payload + "]", e);
+			throw new InternalException("Unable to deserealize payload: [" + payload + "]", e);
 		}
 	}
 	

@@ -15,7 +15,7 @@ import com.variant.client.net.http.HttpClient;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.client.net.http.VariantHttpClientException;
 import com.variant.core.VariantEvent;
-import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.exception.InternalException;
 import com.variant.core.impl.VariantEventSupport;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.Tuples.Pair;
@@ -62,7 +62,7 @@ public class Server {
 	
 	ConnectionPayloadReader connect() {
 		
-		if (isConnected) throw new RuntimeInternalException("Already connected");
+		if (isConnected) throw new InternalException("Already connected");
 
 		// Remote
 		HttpClient httpClient = new HttpClient();

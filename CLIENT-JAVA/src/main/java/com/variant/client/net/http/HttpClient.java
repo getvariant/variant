@@ -11,7 +11,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.exception.InternalException;
 
 public class HttpClient {
 
@@ -48,7 +48,7 @@ public class HttpClient {
 			return new HttpResponse(get, resp);
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unexpected exception in HTTP GET: " + e.getMessage(), e);
+			throw new InternalException("Unexpected exception in HTTP GET: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					
@@ -78,7 +78,7 @@ public class HttpClient {
 		    return new HttpResponse(post, resp);
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
+			throw new InternalException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					
@@ -107,7 +107,7 @@ public class HttpClient {
 		    return new HttpResponse(post, resp);
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
+			throw new InternalException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					
@@ -137,7 +137,7 @@ public class HttpClient {
 		    return new HttpResponse(put, resp);
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unexpected exception in HTTP PUT: " + e.getMessage(), e);
+			throw new InternalException("Unexpected exception in HTTP PUT: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					

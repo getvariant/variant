@@ -15,7 +15,7 @@ import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.impl.SessionImpl;
 import com.variant.client.impl.StateRequestImpl;
-import com.variant.core.exception.Error;
+import com.variant.core.UserError;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;

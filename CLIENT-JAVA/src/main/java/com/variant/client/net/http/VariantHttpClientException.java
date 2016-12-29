@@ -1,8 +1,8 @@
 package com.variant.client.net.http;
 
-import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.exception.InternalException;
 
-public class VariantHttpClientException extends RuntimeInternalException {
+public class VariantHttpClientException extends InternalException {
 
 	private static final long serialVersionUID = 1L;
 

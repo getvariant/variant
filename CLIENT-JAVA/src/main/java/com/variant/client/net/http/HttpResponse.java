@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -26,8 +27,14 @@ public class HttpResponse {
 	 * @throws ParseException 
 	 */
 	HttpResponse(HttpRequest request, CloseableHttpResponse underlyingResponse) throws ParseException, IOException {
+
+		if (HttpStatus.SC_OK != underlyingResponse.getStatusLine().getStatusCode()) {
+			
+		}
+
+		
 		this.request = request;
-		status = underlyingResponse.getStatusLine();
+		
 		HttpEntity entity = underlyingResponse.getEntity();
 		if (entity != null) body = EntityUtils.toString(entity);
 		headers = underlyingResponse.getAllHeaders();
@@ -36,10 +43,11 @@ public class HttpResponse {
 	/**
 	 * Status code of the response
 	 * @return
-	 */
+	 * ANYTHING OTHER THAN 200 IS A PROBLM AND WE'LL THROW AN EXCEPTION RIGHT HERE.
 	public int getStatus() {
 		return status.getStatusCode();
 	}
+	*/
 	
 	/**
 	 * 

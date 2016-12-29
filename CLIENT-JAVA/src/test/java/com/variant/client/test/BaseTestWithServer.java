@@ -4,7 +4,7 @@ import org.junit.Before;
 
 import com.variant.client.TargetingTracker;
 import com.variant.client.session.TargetingTrackerEntryImpl;
-import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.exception.InternalException;
 import com.variant.core.schema.Schema;
 import com.variant.core.test.VariantBaseTest;
 

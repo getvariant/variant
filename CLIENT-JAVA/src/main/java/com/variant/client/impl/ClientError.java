@@ -1,6 +1,6 @@
 package com.variant.client.impl;
 
-import com.variant.core.exception.RuntimeError;
+import com.variant.core.exception.CommonError;
 
 /**
  * Server originated errors.
@@ -9,7 +9,7 @@ import com.variant.core.exception.RuntimeError;
  * WARN  - Server is usable, but
  * INFO  - Server is usable.
  */
-public class ClientError extends RuntimeError {
+public class ClientError extends CommonError {
 
 	
 	public static final ClientError BAD_CONN_URL =

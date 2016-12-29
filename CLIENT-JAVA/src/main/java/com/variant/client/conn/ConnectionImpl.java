@@ -7,22 +7,20 @@ import java.util.Map;
 import java.util.Random;
 
 import com.variant.client.Connection;
-import com.variant.client.VariantClient;
 import com.variant.client.Session;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.TargetingTracker;
+import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientError;
 import com.variant.client.impl.ClientErrorException;
-import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.impl.SessionImpl;
 import com.variant.client.net.ConnectionPayloadReader;
 import com.variant.client.net.SessionPayloadReader;
 import com.variant.client.session.SessionCache;
-import com.variant.core.exception.RuntimeInternalException;
+import com.variant.core.exception.InternalException;
 import com.variant.core.schema.Schema;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.VariantStringUtils;
-import com.variant.core.util.Tuples.Pair;
 
 /**
  * A connection to the server.
@@ -49,7 +47,7 @@ public class ConnectionImpl implements Connection {
 	
 	/**
 	 * Instantiate session ID tracker.
-	 * TODO: reflective object creation is expensive.
+	 * 
 	 * @param userData
 	 * @return
 	 */
@@ -69,14 +67,14 @@ public class ConnectionImpl implements Connection {
 			}
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unable to instantiate session id tracker class [" + className + "]", e);
+			throw new InternalException("Unable to instantiate session id tracker class [" + className + "]", e);
 		}
 
 	}
 		
 	/**
 	 * Instantiate targeting tracker.
-	 * TODO: reflective object creation is expensive.
+	 * 
 	 * @param userData
 	 * @return
 	 */
@@ -97,7 +95,7 @@ public class ConnectionImpl implements Connection {
 			}
 		}
 		catch (Exception e) {
-			throw new RuntimeInternalException("Unable to instantiate targeting tracker class [" + className +"]", e);
+			throw new InternalException("Unable to instantiate targeting tracker class [" + className +"]", e);
 		}
 	}
 	
@@ -190,7 +188,7 @@ public class ConnectionImpl implements Connection {
 		this.client = client;
 		this.server = new Server(url);
 		ConnectionPayloadReader payload = server.connect();
-		System.out.println(payload.getContent());
+		
 	}
 	
 	/**
