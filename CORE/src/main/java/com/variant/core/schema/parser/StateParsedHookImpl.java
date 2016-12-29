@@ -1,6 +1,5 @@
 package com.variant.core.schema.parser;
 
-import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateParsedHook;
@@ -31,7 +30,7 @@ class StateParsedHookImpl implements StateParsedHook {
 	}
 	
 	@Override
-    public void addMessage(Severity severity, String message) {
-    	((ParserResponseImpl) response).addMessage(severity, message);
+    public void addMessage(String message) {
+    	((ParserResponseImpl) response).addMessage(message);
     }
 }

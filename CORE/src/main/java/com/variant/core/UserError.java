@@ -6,16 +6,50 @@ package com.variant.core;
  * 
  * @author Igor
  */
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ERROR NUMBERS
+=====================================================================
+Range   Base         Major Area               Minor Area
+------- ------------ ------------------------ -----------------------
+001-300 Common       
+001-200              Schema parser
+001-020                                       Meta
+021-050                                       State
+051-150                                       Test
+151-170                                       *Unused
+171-200                                       Other
+201-220              Configuration
+241-250              Parse time user hooks
+251-270              Common runtime
+271-300              *Available
+
+301-400 Client Local
+301-400              *Available
+        
+401-600 Server local 
+401-520              Server bootstrap
+421-540              Schema deployment
+441-560              Event writing
+461-600              *Available
+
+601-800        Server API   Connection
+       
+901-999 Reserved
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
 abstract public class UserError {
 		
+	public final int code;
 	public final Severity severity;
 	public final String format;
-	public final String code;
 	
-	protected UserError(Severity severity, String format) {
+	protected UserError(int code, Severity severity, String format) {
+		this.code = code;
 		this.severity = severity;
 		this.format = format;
-		this.code = getClass().getSimpleName();
 	}
 
 	/**
@@ -42,7 +76,7 @@ abstract public class UserError {
 		 */
 		ERROR,
 		/**
-		 * Fatal Error. Current operation will fail.
+		 * Fatal Error. Variant environment is not usable.
 		 * @since 0.5
 		 */
 		FATAL;

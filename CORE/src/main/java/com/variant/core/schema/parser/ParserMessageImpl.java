@@ -13,9 +13,9 @@ import com.variant.core.schema.ParserMessage;
  */
 public class ParserMessageImpl implements ParserMessage {
 	
-	private Severity severity;
-	private String message;
-	private String code;	
+	private final Severity severity;
+	private final String message;
+	private final int code;	
 	private Integer line = null, column = null;
 
 	/**
@@ -42,18 +42,6 @@ public class ParserMessageImpl implements ParserMessage {
 		this(error, args);
 		this.line = line;
 		this.column = column;
-	}
-
-	/**
-	 * User defined errors do not use templates.
-	 * @param template
-	 * @param args
-	 * @since 0.5
-	 */
-	public ParserMessageImpl(Severity severity, String message) {
-		this.severity = severity;
-		this.message = message;
-		code = "USER_DEFINED_MESSAGE";
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -83,7 +71,7 @@ public class ParserMessageImpl implements ParserMessage {
 	 * @return
 	 * @since 0.5
 	 */
-	public String getCode() {
+	public int getCode() {
 		return code;
 	}
 

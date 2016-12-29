@@ -7,7 +7,7 @@ import java.util.Map;
 
 import static com.variant.core.exception.CommonError.*;
 
-import com.variant.core.UserException;
+import com.variant.core.UserErrorException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -82,7 +82,7 @@ public class StateImpl implements State {
 		for (Test.OnState tov: test.getOnStates()) {
 			if (tov.getState().equals(this)) return tov.isNonvariant();
 		}
-		throw new UserException(STATE_NOT_INSTRUMENTED_BY_TEST, name, test.getName());
+		throw new UserErrorException(STATE_NOT_INSTRUMENTED_BY_TEST, name, test.getName());
 	}
 
 	//---------------------------------------------------------------------------------------------//

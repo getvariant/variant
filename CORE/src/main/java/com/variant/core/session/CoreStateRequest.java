@@ -17,7 +17,7 @@ import org.apache.commons.collections4.set.UnmodifiableSet;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.core.StateRequestStatus;
-import com.variant.core.UserException;
+import com.variant.core.UserErrorException;
 import com.variant.core.VariantEvent;
 import com.variant.core.exception.InternalException;
 import com.variant.core.impl.StateVisitedEvent;
@@ -173,7 +173,7 @@ public class CoreStateRequest implements Serializable {
 			return test.getExperience(entry.getExperienceName());
 		}
 		
-		if (!found) throw new UserException(STATE_NOT_INSTRUMENTED_BY_TEST, state.getName(), test.getName());
+		if (!found) throw new UserErrorException(STATE_NOT_INSTRUMENTED_BY_TEST, state.getName(), test.getName());
 
 		return null;
 	}

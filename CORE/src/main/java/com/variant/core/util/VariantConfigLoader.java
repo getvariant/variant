@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.variant.core.UserException;
+import com.variant.core.UserErrorException;
 import com.variant.core.exception.InternalException;
 import com.variant.core.util.Tuples.Pair;
 
@@ -77,7 +77,7 @@ public class VariantConfigLoader {
 		String fileName = System.getProperty(SYSPROP_CONFIG_FILE);
 		
 		if (resName != null && fileName!= null) {
-			throw new UserException(CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN);
+			throw new UserErrorException(CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN);
 		}
 				
 		Config result = ConfigFactory.empty();
@@ -86,7 +86,7 @@ public class VariantConfigLoader {
 			try {
 				Pair<InputStream, String> res = VariantIoUtils.openResourceAsStream(resName);
 				if (res == null) {
-					throw new UserException(CONFIG_RESOURCE_NOT_FOUND, resName);				
+					throw new UserErrorException(CONFIG_RESOURCE_NOT_FOUND, resName);				
 				}
 				else {
 					LOG.debug(String.format(FORMAT_RESOURCE_FOUND, "", resName, res._2()));
@@ -101,7 +101,7 @@ public class VariantConfigLoader {
 			try {
 				InputStream is = VariantIoUtils.openFileAsStream(fileName);
 				if (is == null) {
-					throw new UserException(CONFIG_FILE_NOT_FOUND, fileName);
+					throw new UserErrorException(CONFIG_FILE_NOT_FOUND, fileName);
 				}
 				else {
 					LOG.debug(String.format(FORMAT_FILE_FOUND, fileName));

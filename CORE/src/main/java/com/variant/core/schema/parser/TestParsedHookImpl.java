@@ -31,8 +31,8 @@ class TestParsedHookImpl implements TestParsedHook {
 	}
 
 	@Override
-    public void addMessage(Severity severity, String message) {
-    	((ParserResponseImpl) response).addMessage(severity, message);
+    public void addMessage(String message) {
+    	((ParserResponseImpl) response).addMessage(message);
     }
 
 }

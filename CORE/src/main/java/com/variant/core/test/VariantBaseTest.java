@@ -11,7 +11,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.variant.core.UserException;
+import com.variant.core.UserErrorException;
 import com.variant.core.exception.InternalException;
 import com.variant.core.exception.CommonError;
 import com.variant.core.schema.ParserMessage;
@@ -241,20 +241,20 @@ abstract public class VariantBaseTest {
 	 *
 	 */
 	protected static abstract class UserExceptionInterceptor 
-		extends ExceptionInterceptor<UserException> {
+		extends ExceptionInterceptor<UserErrorException> {
 		
 		@Override
-		final public Class<UserException> getExceptionClass() {
-			return UserException.class;
+		final public Class<UserErrorException> getExceptionClass() {
+			return UserErrorException.class;
 		}
 		
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
 		final public void assertThrown(CommonError template, Object...args) throws Exception {
-			UserException result = super.run();
+			UserErrorException result = super.run();
 			assertNotNull("Expected exception not thrown", result);
-			assertEquals(new UserException(template, args).getMessage(), result.getMessage());
+			assertEquals(new UserErrorException(template, args).getMessage(), result.getMessage());
 		}
 		
 	}

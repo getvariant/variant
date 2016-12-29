@@ -8,6 +8,7 @@ import static com.variant.core.schema.parser.ParserError.*;
 
 import com.variant.core.UserError;
 import com.variant.core.UserError.Severity;
+import com.variant.core.exception.CommonError;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
@@ -72,8 +73,8 @@ public class ParserResponseImpl implements ParserResponse {
 	/**
 	 * Add externally generated message.
 	 */
-    public void addMessage(Severity severity, String message) {
-		ParserMessage result = new ParserMessageImpl(severity, message);
+    public void addMessage(String message) {
+		ParserMessage result = new ParserMessageImpl(CommonError.USER_ADDED_HOOK_LISTENER_ERROR, message);
 		messages.add(result);
 	}
 

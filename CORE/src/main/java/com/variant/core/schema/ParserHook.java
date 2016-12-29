@@ -1,7 +1,6 @@
 package com.variant.core.schema;
 
 import com.variant.core.UserHook;
-import com.variant.core.UserError.Severity;
 
 /**
  * <p>Super-interface for all user hook types that post their listeners at schema parse time.
@@ -27,6 +26,6 @@ public interface ParserHook extends UserHook {
 	 * 	
      * @since 0.6
 	 */
-    void addMessage(Severity severity, String message);
+    void addMessage(String message);
 
 }

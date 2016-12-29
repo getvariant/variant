@@ -33,7 +33,7 @@ public interface ParserMessage {
 	 * @return Code string.
 	 * @since 0.5
 	 */
-	public String getCode();
+	public int getCode();
 
 	/**
 	 * Line number in the source document where the syntax error was encountered.

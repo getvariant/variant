@@ -1,13 +1,15 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 
 import org.junit.Test;
 
+import com.variant.core.exception.CommonError;
 import com.variant.core.HookListener;
 import com.variant.core.UserError.Severity;
+import com.variant.core.UserErrorException;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
@@ -25,8 +27,8 @@ import com.variant.core.util.VariantCollectionsUtils;
  */
 public class ParserHookTest extends BaseTestCore {
 
-	private static final String MESSAGE_TEXT_STATE = "Info-Message-State";
-	private static final String MESSAGE_TEXT_TEST = "Info-Message-Test";
+	private static final String MESSAGE_TEXT_STATE = "Message-State";
+	private static final String MESSAGE_TEXT_TEST = "Message-Test";
 	
 	/**
 	 * 
@@ -40,12 +42,12 @@ public class ParserHookTest extends BaseTestCore {
 		hooker.addListener(listener);
 		SchemaParser parser = new SchemaParser(hooker);
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(ParserSerialOkayTest.SCHEMA);
-		Schema schema = response.getSchema();
-		assertEquals(schema.getStates(), listener.stateList);
-		assertEquals(schema.getStates().size(), response.getMessages().size());
+		assertNull(response.getSchema());
+		assertEquals(11, listener.stateList.size());
+		assertEquals(11, response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
-			assertEquals(Severity.INFO, msg.getSeverity());
-			assertEquals(MESSAGE_TEXT_STATE, msg.getText());			
+			assertEquals(Severity.ERROR, msg.getSeverity());
+			assertEquals(new UserErrorException(CommonError.USER_ADDED_HOOK_LISTENER_ERROR, MESSAGE_TEXT_STATE).getMessage(), msg.getText());			
 		}
 	}
 
@@ -61,28 +63,15 @@ public class ParserHookTest extends BaseTestCore {
 		hooker.addListener(testListener);
 		SchemaParser parser = new SchemaParser(hooker);
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(ParserSerialOkayTest.SCHEMA);
-		Schema schema = response.getSchema();
-		assertEquals(schema.getTests(), testListener.testList);
-		assertEquals(schema.getTests().size(), response.getMessages().size());
+		assertNull(response.getSchema());
+		assertEquals(3, testListener.testList.size());
+		assertEquals(3, response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
-			assertEquals(Severity.INFO, msg.getSeverity());
-			assertEquals(MESSAGE_TEXT_TEST, msg.getText());
+			assertEquals(Severity.ERROR, msg.getSeverity());
+			assertEquals(new UserErrorException(CommonError.USER_ADDED_HOOK_LISTENER_ERROR, MESSAGE_TEXT_TEST).getMessage(), msg.getText());			
 			
 		}
 
-		StateParsedHookListenerImpl stateListener = new StateParsedHookListenerImpl();
-		hooker.addListener(stateListener);
-		response = (ParserResponseImpl) parser.parse(ParserSerialOkayTest.SCHEMA);
-		schema = response.getSchema();
-		assertEquals(VariantCollectionsUtils.list(schema.getTests(), schema.getTests()), testListener.testList);
-		assertEquals(schema.getStates(), stateListener.stateList);
-		assertEquals(schema.getTests().size() + schema.getStates().size(), response.getMessages().size());
-
-		for (int i = 0; i < response.getMessages().size(); i++) {
-			ParserMessage msg = response.getMessages().get(i);
-			assertEquals(Severity.INFO, msg.getSeverity());
-			assertEquals(i < schema.getStates().size() ? MESSAGE_TEXT_STATE : MESSAGE_TEXT_TEST, msg.getText());
-		}
 	}
 
 	/**
@@ -100,7 +89,7 @@ public class ParserHookTest extends BaseTestCore {
 		@Override
 		public void post(StateParsedHook hook) {
 			stateList.add(hook.getState());
-			hook.addMessage(Severity.INFO, MESSAGE_TEXT_STATE);
+			hook.addMessage(MESSAGE_TEXT_STATE);
 		}
 		
 	}
@@ -120,7 +109,7 @@ public class ParserHookTest extends BaseTestCore {
 		@Override
 		public void post(TestParsedHook hook) {
 			testList.add(hook.getTest());
-			hook.addMessage(Severity.INFO, MESSAGE_TEXT_TEST);
+			hook.addMessage(MESSAGE_TEXT_TEST);
 		}		
 	}
 
