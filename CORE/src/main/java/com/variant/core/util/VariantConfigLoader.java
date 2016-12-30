@@ -29,7 +29,7 @@ public class VariantConfigLoader {
 	private static final String SYSPROP_CONFIG_FILE = "variant.config.file";
 
 	private static final String FORMAT_EXCEPTION = "Unable to open [%s]";
-	private static final String FORMAT_RESOURCE_FOUND = "Found %s config resource [%s] as [%s]";
+	private static final String FORMAT_RESOURCE_FOUND = "Found %sconfig resource [%s] as [%s]";
 	private static final String FORMAT_RESOURCE_NOT_FOUND = "Could not find %s config resource [%s]";
 	private static final String FORMAT_FILE_FOUND = "Found config file [%s]";
 
@@ -68,7 +68,7 @@ public class VariantConfigLoader {
 			throw new InternalException((String.format(FORMAT_RESOURCE_NOT_FOUND, "default", defaultResourceName)));
 		}
 
-		LOG.debug(String.format(FORMAT_RESOURCE_FOUND, "default", defaultResourceName, defaultConfig._2()));
+		LOG.debug(String.format(FORMAT_RESOURCE_FOUND, "default ", defaultResourceName, defaultConfig._2()));
 		
 		Config variantDefault = ConfigFactory.parseReader(new InputStreamReader(defaultConfig._1()));
 

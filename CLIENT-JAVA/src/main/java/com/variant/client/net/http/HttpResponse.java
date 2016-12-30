@@ -1,6 +1,7 @@
 package com.variant.client.net.http;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -8,6 +9,10 @@ import org.apache.http.HttpRequest;
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.variant.client.ClientException;
 
 public class HttpResponse {
 
@@ -32,7 +37,29 @@ public class HttpResponse {
 		HttpEntity entity = underlyingResponse.getEntity();
 		this.body = entity == null ? null : EntityUtils.toString(entity);
 	}
+	
+	/**
+	 * Client exception contained herein.
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	ClientException toClientException() {
+
+		ObjectMapper jacksonDataMapper = new ObjectMapper();
+		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 		
+		Map<String, ?> map = null;
+				
+		try {
+			map = jacksonDataMapper.readValue(body, Map.class);
+			return new ClientException((Integer) map.get("code"), (String) map.get("message"), (String) map.get("comment"));
+		}
+		catch(IOException parseException) {
+			return new ClientException(0, body, null);
+		}
+	
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder buff = new StringBuilder();

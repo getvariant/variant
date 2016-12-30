@@ -7,18 +7,27 @@ import com.variant.client.VariantClient;
 
 public class ConnectionTest extends BaseTestWithServer {
 	
+	private VariantClient client = VariantClient.Factory.getInstance();
+
 	/**
-	 * No Schema.
+	 * Non existent schema.
 	 *  
 	 * @throws Exception
 	 */
 	@org.junit.Test
 	public void nonExistentSchemaTest() throws Exception {
 		
-		VariantClient client = VariantClient.Factory.getInstance();
-		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");
-		
+		Connection conn = client.getConnection("http://localhost:9000/test:bad_schema");
 		assertNotNull(conn);
 		
 	}	
+	
+	//@org.junit.Test
+	public void goodSchemaTest() throws Exception {
+		
+		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		assertNotNull(conn);
+		
+	}	
+
 }

@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.ClientException;
-import com.variant.core.VariantException;
 import com.variant.core.exception.InternalException;
 
 public class HttpClient {
@@ -113,13 +112,13 @@ public class HttpClient {
 				return result;
 			case HttpStatus.SC_BAD_REQUEST:
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-				throw new ClientException(result);
+				throw result.toClientException();
 			default:
 				throw new InternalException("Bad response from server [" + result.toString() + "]");
 			}
 		}
-		catch (VariantException ve) {
-			throw ve;
+		catch (ClientException ce) {
+			throw ce;
 		}
 		catch (Throwable e) {
 			throw new InternalException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
