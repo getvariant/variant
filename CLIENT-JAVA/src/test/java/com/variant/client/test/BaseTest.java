@@ -1,7 +1,9 @@
 package com.variant.client.test;
 
-import org.junit.Before;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import com.variant.client.ClientException;
 import com.variant.client.TargetingTracker;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.exception.InternalException;
@@ -12,27 +14,7 @@ import com.variant.core.test.VariantBaseTest;
  * Base class for all Core JUnit tests.
  */
 public abstract class BaseTest extends VariantBaseTest {
-	
-		
-	/**
-	 * Start the server.
-	 * @throws Exception
-	 */
-	@Before
-	public void _beforeTestCase() throws Exception {
-		
-	}
 
-	/**
-	 * Subclasses will be able to override this
-	 *
-	protected VariantClient newBareClient() {
-		Injector.setConfigNameAsResource("/variant/injector-bare-client-test.json");
-		VariantClientImpl result =  (VariantClientImpl) VariantClient.Factory.getInstance("/variant/bare-client-test.props");
-		core = result.getCoreApi();
-		return result;
-	}
-    */
 	/**
 	 * Build up userData arguments for the *Simple trackers. 
 	 * They expect user data as follows:
@@ -57,5 +39,34 @@ public abstract class BaseTest extends VariantBaseTest {
 		
 		return result;
 	}
+	
+	//---------------------------------------------------------------------------------------------//
+	//                                MORE EXCEPTION INTERCEPTORS                                  //
+	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 *
+	 */
+	protected static abstract class ClientExceptionInterceptor 
+		extends ExceptionInterceptor<ClientException> {
+		
+		@Override
+		final public Class<ClientException> getExceptionClass() {
+			return ClientException.class;
+		}
+		
+		/**
+		 * Call this if you want assertion always thrown.
+		 */
+		final public void assertThrown(int code, String message, String comment) throws Exception {
+			ClientException result = super.run();
+			assertNotNull("Expected exception not thrown", result);
+			assertEquals(code, result.getCode());
+			assertEquals(message, result.getMessage());
+			assertEquals(comment, result.getComment());
+		}
+		
+	}
+
 }
 

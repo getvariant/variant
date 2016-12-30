@@ -1,25 +1,18 @@
 package com.variant.client.test;
 
-import org.junit.Before;
-
-import com.variant.client.TargetingTracker;
-import com.variant.client.session.TargetingTrackerEntryImpl;
-import com.variant.core.exception.InternalException;
-import com.variant.core.schema.Schema;
-import com.variant.core.test.VariantBaseTest;
+import org.junit.BeforeClass;
 
 /**
  * Base class for all Core JUnit tests.
  */
 public abstract class BaseTestWithServer extends BaseTest {
-	
 		
 	/**
-	 * Start the server.
+	 * Start the server before each test case
 	 * @throws Exception
 	 */
-	@Before
-	public void _beforeTestCase() throws Exception {
+	@BeforeClass
+	public static void beforeClass() throws Exception {
 		ServerProcess.start();
 	}
 

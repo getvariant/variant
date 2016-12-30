@@ -1,16 +1,17 @@
 package com.variant.client;
 
+/**
+ * Superclass for all Variant client exceptions.
+ * 
+ * @author Igor Urisman
+ * @since 0.7
+ */
+@SuppressWarnings("serial")
 public class ClientException extends RuntimeException {
-
-	private static final long serialVersionUID = 1L;
 
 	private int code;
 	private String comment;
 	
-	/**
-	 * 
-	 * @param httpResponse
-	 */
 	public ClientException(int code, String message, String comment) {
 		super(message);
 		this.code = code;

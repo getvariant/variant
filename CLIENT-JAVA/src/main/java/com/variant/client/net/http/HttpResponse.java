@@ -1,6 +1,7 @@
 package com.variant.client.net.http;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.Header;
@@ -13,6 +14,7 @@ import org.apache.http.util.EntityUtils;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.client.ClientException;
+import com.variant.client.InternalErrorException;
 
 public class HttpResponse {
 
@@ -52,7 +54,17 @@ public class HttpResponse {
 				
 		try {
 			map = jacksonDataMapper.readValue(body, Map.class);
-			return new ClientException((Integer) map.get("code"), (String) map.get("message"), (String) map.get("comment"));
+			Integer code = (Integer) map.get("code");
+			String message = (String) map.get("message");
+			String comment = (String) map.get("comment");
+			
+			switch (code) {
+			case 601: return new InternalErrorException(message, comment);
+			//case 701: return new Unknown
+			
+			default: return new ClientException(code, message, comment);
+
+			}
 		}
 		catch(IOException parseException) {
 			return new ClientException(0, body, null);

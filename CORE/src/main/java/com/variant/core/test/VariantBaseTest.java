@@ -194,6 +194,10 @@ abstract public class VariantBaseTest {
 		assertEqualAsSets(actual.entrySet(), expected.entrySet(), comp);
 	}
 
+	//---------------------------------------------------------------------------------------------//
+	//                                  EXCEPTION INTERCEPTORS                                     //
+	//---------------------------------------------------------------------------------------------//
+
 	/**
 	 * Generic Exception Interceptor
 	 *
