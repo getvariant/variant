@@ -2,10 +2,8 @@ package com.variant.client.conn;
 
 import org.apache.http.HttpStatus;
 
-import static com.variant.client.ConfigKeys.*;
-
 import com.variant.client.Connection;
-import com.variant.client.VariantClient;
+import com.variant.client.InternalErrorException;
 import com.variant.client.Session;
 import com.variant.client.impl.ClientError;
 import com.variant.client.impl.ClientErrorException;
@@ -13,12 +11,9 @@ import com.variant.client.net.ConnectionPayloadReader;
 import com.variant.client.net.SessionPayloadReader;
 import com.variant.client.net.http.HttpClient;
 import com.variant.client.net.http.HttpResponse;
-import com.variant.client.net.http.VariantHttpClientException;
 import com.variant.core.VariantEvent;
-import com.variant.core.exception.InternalException;
 import com.variant.core.impl.VariantEventSupport;
 import com.variant.core.session.CoreSession;
-import com.variant.core.util.Tuples.Pair;
 
 /**
  * The abstraction of the remote server.  
@@ -62,15 +57,12 @@ public class Server {
 	
 	ConnectionPayloadReader connect() {
 		
-		if (isConnected) throw new InternalException("Already connected");
+		if (isConnected) throw new InternalErrorException("Already connected");
 
 		// Remote
 		HttpClient httpClient = new HttpClient();
 		HttpResponse resp = httpClient.post(endpointUrl + "/connection/" + schemaName);
 		
-		if (resp.status != HttpStatus.SC_OK) {
-			throw new VariantHttpClientException(resp);
-		}		
 
 		isConnected = true;
 		return new ConnectionPayloadReader(resp.body);
@@ -115,7 +107,8 @@ public class Server {
 			return null;
 		}
 		else {
-			throw new VariantHttpClientException(resp);
+			//throw new VariantHttpClientException(resp);
+			return null;
 		}
 	}
 
@@ -131,7 +124,7 @@ public class Server {
 		HttpResponse resp = httpClient.put(endpointUrl + "session/" + session.getId(), session.toJson(conn.getSchema()));
 		
 		if (resp.status != HttpStatus.SC_OK) {
-			throw new VariantHttpClientException(resp);
+			//throw new VariantHttpClientException(resp);
 		}
 	}
 

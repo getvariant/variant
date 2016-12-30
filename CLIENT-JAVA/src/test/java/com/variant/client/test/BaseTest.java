@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.variant.client.ClientException;
+import com.variant.client.InternalErrorException;
 import com.variant.client.TargetingTracker;
 import com.variant.client.session.TargetingTrackerEntryImpl;
-import com.variant.core.exception.InternalException;
 import com.variant.core.schema.Schema;
 import com.variant.core.test.VariantBaseTest;
 
@@ -29,7 +29,7 @@ public abstract class BaseTest extends VariantBaseTest {
 	protected Object[] userDataForSimpleIn(Schema schema, String sessionId, String...experiences) {
 		
 		if (experiences.length > 0 && schema == null) 
-			throw new InternalException("Schema cannot be null if experiences are given");
+			throw new InternalErrorException("Schema cannot be null if experiences are given");
 		
 		Object[] result = new Object[experiences.length + 1];
 		result[0] = sessionId;

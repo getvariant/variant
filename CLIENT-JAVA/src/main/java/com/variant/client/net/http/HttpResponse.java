@@ -1,7 +1,6 @@
 package com.variant.client.net.http;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.Header;
@@ -67,7 +66,7 @@ public class HttpResponse {
 			}
 		}
 		catch(IOException parseException) {
-			return new ClientException(0, body, null);
+			return new ClientException(0, body);
 		}
 	
 	}

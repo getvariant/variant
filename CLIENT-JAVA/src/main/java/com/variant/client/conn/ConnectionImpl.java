@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Random;
 
 import com.variant.client.Connection;
+import com.variant.client.InternalErrorException;
 import com.variant.client.Session;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.TargetingTracker;
@@ -67,7 +68,7 @@ public class ConnectionImpl implements Connection {
 			}
 		}
 		catch (Exception e) {
-			throw new InternalException("Unable to instantiate session id tracker class [" + className + "]", e);
+			throw new InternalErrorException("Unable to instantiate session id tracker class [" + className + "]", e);
 		}
 
 	}
@@ -95,7 +96,7 @@ public class ConnectionImpl implements Connection {
 			}
 		}
 		catch (Exception e) {
-			throw new InternalException("Unable to instantiate targeting tracker class [" + className +"]", e);
+			throw new InternalErrorException("Unable to instantiate targeting tracker class [" + className +"]", e);
 		}
 	}
 	

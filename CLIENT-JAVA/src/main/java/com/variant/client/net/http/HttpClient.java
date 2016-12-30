@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.ClientException;
-import com.variant.core.exception.InternalException;
+import com.variant.client.InternalErrorException;
 
 public class HttpClient {
 
@@ -50,7 +50,7 @@ public class HttpClient {
 			return new HttpResponse(get, resp);
 		}
 		catch (Exception e) {
-			throw new InternalException("Unexpected exception in HTTP GET: " + e.getMessage(), e);
+			throw new InternalErrorException("Unexpected exception in HTTP GET: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					
@@ -80,7 +80,7 @@ public class HttpClient {
 		    return new HttpResponse(post, resp);
 		}
 		catch (Exception e) {
-			throw new InternalException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
+			throw new InternalErrorException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					
@@ -114,14 +114,14 @@ public class HttpClient {
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
 				throw result.toClientException();
 			default:
-				throw new InternalException("Bad response from server [" + result.toString() + "]");
+				throw new InternalErrorException("Bad response from server [" + result.toString() + "]");
 			}
 		}
 		catch (ClientException ce) {
 			throw ce;
 		}
 		catch (Throwable e) {
-			throw new InternalException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
+			throw new InternalErrorException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					
@@ -151,7 +151,7 @@ public class HttpClient {
 		    return new HttpResponse(put, resp);
 		}
 		catch (Exception e) {
-			throw new InternalException("Unexpected exception in HTTP PUT: " + e.getMessage(), e);
+			throw new InternalErrorException("Unexpected exception in HTTP PUT: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					

@@ -18,6 +18,24 @@ public class ClientException extends RuntimeException {
 		this.comment = comment;
 	}
 
+	public ClientException(int code, String message) {
+		super(message);
+		this.code = code;
+		this.comment = null;
+	}
+
+	public ClientException(int code, String message, String comment, Throwable t) {
+		super(message, t);
+		this.code = code;
+		this.comment = comment;
+	}
+
+	public ClientException(int code, String message, Throwable t) {
+		super(message, t);
+		this.code = code;
+		this.comment = null;
+	}
+
 	public int getCode() {
 		return code;
 	}

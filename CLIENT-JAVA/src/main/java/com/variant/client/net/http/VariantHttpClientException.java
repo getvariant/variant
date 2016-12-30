@@ -1,5 +1,6 @@
 package com.variant.client.net.http;
 
+/*
 import com.variant.core.exception.InternalException;
 
 public class VariantHttpClientException extends InternalException {
@@ -13,9 +14,10 @@ public class VariantHttpClientException extends InternalException {
 	/**
 	 * @param resp
 	 * @return
-	 */
+	 *
 	private static String makeMessage(HttpResponse resp) {
 		return String.format("HTTP request [%s] failed: [%s] [%s]",resp.request.getRequestLine(), resp.status, resp.body);
 	}
 
 }
+*/

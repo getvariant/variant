@@ -13,4 +13,16 @@ public class InternalErrorException extends ClientException {
 		super(601, message, comment);
 	}
 
+	public InternalErrorException(String message) {
+		super(601, message);
+	}
+
+	public InternalErrorException(String message, String comment, Throwable t) {
+		super(601, message, comment, t);
+	}
+
+	public InternalErrorException(String message, Throwable t) {
+		super(601, message, t);
+	}
+
 }
