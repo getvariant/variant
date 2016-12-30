@@ -13,13 +13,12 @@ import play.api.libs.json.Json.toJsFieldJsValueWrapper
  */
 object ServerErrorApi {
     
-   val InternalErrorFormat = "Internal server error [%s]"
-   
    //
    // 601-610 Internal, Payload syntax error
    //
-   val JsonParseError = new ServerErrorApi(601, "JSON parsing error: '%s'")
-   val BadContentType = new ServerErrorApi(602, "Unsupported content type", "Use 'application/json' or 'text/plain'.")
+   val InternalError = new ServerErrorApi(601, "Internal server error [%s]")
+   val JsonParseError = new ServerErrorApi(602, "JSON parsing error: '%s'")
+   val BadContentType = new ServerErrorApi(603, "Unsupported content type", "Use 'application/json' or 'text/plain'.")
    
    //
    // 611-630 Internal, Payload parse error
@@ -80,11 +79,17 @@ class ServerErrorApi(val code: Int, val msgFormat: String, val comment: Option[S
            )   
       }
       else {
+
          logger.error("Internal API error [%s] [%s]".format(code, message(args:_*)))
-                          
+
+         
+         val bodyJson : JsObject = Json.obj(
+            "code" -> InternalError.code,
+            "message" -> InternalError.message(code.toString))
+
          Result(
              header = ResponseHeader(HttpStatus.SC_INTERNAL_SERVER_ERROR, Map.empty),
-             body = HttpEntity.Strict(ByteString(InternalErrorFormat.format(code)), Some("text/plain; charset=us-ascii"))
+             body = HttpEntity.Strict(ByteString(bodyJson.toString()), Some("application/json"))
            )            
       }
     }

@@ -62,29 +62,38 @@ class EventTest extends BaseSpecWithSchema {
       "return  500 and error on POST with no body" in {
          val resp = route(app, FakeRequest(POST, endpoint).withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe INTERNAL_SERVER_ERROR
-         val body = contentAsString(resp)
-         body mustBe InternalErrorFormat.format(JsonParseError.code)
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe InternalError.code 
+         (respJson \ "message").as[String] mustBe InternalError.message(JsonParseError.code.toString) 
+
      }
       
       "return  500 and error on POST with invalid JSON" in {
          val resp = route(app, FakeRequest(POST, endpoint).withBody("bad json").withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe INTERNAL_SERVER_ERROR
-         val body = contentAsString(resp)
-         body mustBe InternalErrorFormat.format(JsonParseError.code)
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe InternalError.code 
+         (respJson \ "message").as[String] mustBe InternalError.message(JsonParseError.code.toString) 
      }
 
       "return  500 and error on POST with no sid" in {
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(bodyNoSid)).get
          status(resp) mustBe INTERNAL_SERVER_ERROR
-         val body = contentAsString(resp)
-         body mustBe InternalErrorFormat.format(MissingProperty.code)
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe InternalError.code 
+         (respJson \ "message").as[String] mustBe InternalError.message(MissingProperty.code.toString) 
       }
 
       "return 500 and error on POST with no name" in {
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(bodyNoName)).get
          status(resp) mustBe INTERNAL_SERVER_ERROR
-         val body = contentAsString(resp)
-         body mustBe InternalErrorFormat.format(MissingProperty.code)
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe InternalError.code 
+         (respJson \ "message").as[String] mustBe InternalError.message(MissingProperty.code.toString) 
       }
       
       "return  403 and error on POST with non-existent session" in {
@@ -100,8 +109,10 @@ class EventTest extends BaseSpecWithSchema {
          val eventBody = bodyNoParamName.expand()
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
          status(resp)mustBe INTERNAL_SERVER_ERROR
-         val body = contentAsString(resp)
-         body mustBe InternalErrorFormat.format(MissingParamName.code)
+         val respJson = contentAsJson(resp)
+         respJson mustNot be (null)
+         (respJson \ "code").as[Int] mustBe InternalError.code 
+         (respJson \ "message").as[String] mustBe InternalError.message(MissingParamName.code.toString) 
       }
 
       "return 200 and create event with existent session" in {
