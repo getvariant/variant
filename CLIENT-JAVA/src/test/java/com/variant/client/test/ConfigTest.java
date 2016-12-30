@@ -33,7 +33,7 @@ public class ConfigTest extends BaseTest {
 
 		// Override with file and resource - error
 		System.setProperty("variant.config.file", "src/test/resources/variant-ConfigTest2.conf");
-		new RuntimeErrorExceptionInterceptor() { 
+		new UserExceptionInterceptor() { 
 			@Override public void toRun() {
 				VariantClient.Factory.getInstance().getConfig();				
 			}

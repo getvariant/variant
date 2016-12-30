@@ -3,9 +3,8 @@ package com.variant.client.net;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.variant.core.VariantException;
 import com.variant.core.exception.InternalException;
-import com.variant.core.exception.VariantRuntimeException;
-import com.variant.core.schema.Schema;
 
 abstract public class AbstractPayloadReader<T>  {
 
@@ -22,7 +21,7 @@ abstract public class AbstractPayloadReader<T>  {
 			ObjectMapper mapper = new ObjectMapper();		
 			this.content = (T) parser().parse(mapper.readValue(payload, Map.class));
 		}
-		catch (VariantRuntimeException e) {
+		catch (VariantException e) {
 			throw e;
 		}
 		catch (Exception e) {

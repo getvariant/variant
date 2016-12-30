@@ -11,27 +11,30 @@ import com.variant.core.exception.CommonError;
  */
 public class ClientError extends CommonError {
 
+	//
+	// 301-400 Client Local errors.
+	//
 	
 	public static final ClientError BAD_CONN_URL =
-			new ClientError(Severity.ERROR, "Invalid connection URL [%s]");
+			new ClientError(301, Severity.ERROR, "Invalid connection URL [%s]");
 
 	public static final ClientError TARGETING_TRACKER_NO_INTERFACE =
-			new ClientError(Severity.FATAL, "Targeting tracker class [%s] must implement interface [%s]");
+			new ClientError(302, Severity.FATAL, "Targeting tracker class [%s] must implement interface [%s]");
 	
 	public static final ClientError SESSION_ID_TRACKER_NO_INTERFACE =
-			new ClientError(Severity.FATAL, "Session ID tracker class [%s] must implement interface [%s]");
+			new ClientError(303, Severity.FATAL, "Session ID tracker class [%s] must implement interface [%s]");
 
 	public static final ClientError CONNECTION_CLOSED =
-			new ClientError(Severity.ERROR, "This connection has been closed");
+			new ClientError(304, Severity.ERROR, "This connection has been closed");
 
 	public static final ClientError ACTIVE_REQUEST =
-			new ClientError(Severity.ERROR, "Commit current state request first");
+			new ClientError(305, Severity.ERROR, "Commit current state request first");
 
    /**
     * 
     */
-   private ClientError(Severity severity, String format) {
-		super(severity, format);
+   private ClientError(int code, Severity severity, String format) {
+		super(code, severity, format);
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.variant.client.net.http;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -11,6 +12,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.client.ClientException;
+import com.variant.core.VariantException;
 import com.variant.core.exception.InternalException;
 
 public class HttpClient {
@@ -104,9 +107,21 @@ public class HttpClient {
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(String.format("POST %s : %s in %s", url, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
 			}
-		    return new HttpResponse(post, resp);
+			HttpResponse result = new HttpResponse(post, resp);
+			switch (result.status) {
+			case HttpStatus.SC_OK:
+				return result;
+			case HttpStatus.SC_BAD_REQUEST:
+			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+				throw new ClientException(result);
+			default:
+				throw new InternalException("Bad response from server [" + result.toString() + "]");
+			}
 		}
-		catch (Exception e) {
+		catch (VariantException ve) {
+			throw ve;
+		}
+		catch (Throwable e) {
 			throw new InternalException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {

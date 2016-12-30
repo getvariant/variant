@@ -7,7 +7,6 @@ import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.VariantEvent;
-import com.variant.core.exception.VariantRuntimeException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;

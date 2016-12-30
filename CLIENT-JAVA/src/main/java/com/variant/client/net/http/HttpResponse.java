@@ -5,18 +5,16 @@ import java.io.IOException;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
-import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
-import org.apache.http.StatusLine;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.util.EntityUtils;
 
 public class HttpResponse {
 
-	HttpRequest request = null;
-	StatusLine status = null;
-	String body = null;
-	Header[] headers = null;
+	public final HttpRequest request;
+	public final int status;
+	public final String body;
+	public final Header[] headers;
 	
 	/**
 	 * Fully consumed the response entity and retain what we need in this object,
@@ -28,43 +26,13 @@ public class HttpResponse {
 	 */
 	HttpResponse(HttpRequest request, CloseableHttpResponse underlyingResponse) throws ParseException, IOException {
 
-		if (HttpStatus.SC_OK != underlyingResponse.getStatusLine().getStatusCode()) {
-			
-		}
-
-		
 		this.request = request;
-		
+		this.status = underlyingResponse.getStatusLine().getStatusCode();
+		this.headers = underlyingResponse.getAllHeaders();
 		HttpEntity entity = underlyingResponse.getEntity();
-		if (entity != null) body = EntityUtils.toString(entity);
-		headers = underlyingResponse.getAllHeaders();
+		this.body = entity == null ? null : EntityUtils.toString(entity);
 	}
-	
-	/**
-	 * Status code of the response
-	 * @return
-	 * ANYTHING OTHER THAN 200 IS A PROBLM AND WE'LL THROW AN EXCEPTION RIGHT HERE.
-	public int getStatus() {
-		return status.getStatusCode();
-	}
-	*/
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public String getBody() {
-		return body;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public HttpRequest getOriginalRequest() {
-		return request;
-	}
-	
+		
 	@Override
 	public String toString() {
 		StringBuilder buff = new StringBuilder();

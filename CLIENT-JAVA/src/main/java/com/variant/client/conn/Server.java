@@ -68,12 +68,12 @@ public class Server {
 		HttpClient httpClient = new HttpClient();
 		HttpResponse resp = httpClient.post(endpointUrl + "/connection/" + schemaName);
 		
-		if (resp.getStatus() != HttpStatus.SC_OK) {
+		if (resp.status != HttpStatus.SC_OK) {
 			throw new VariantHttpClientException(resp);
 		}		
 
 		isConnected = true;
-		return new ConnectionPayloadReader(resp.getBody());
+		return new ConnectionPayloadReader(resp.body);
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -88,9 +88,6 @@ public class Server {
 		HttpClient httpClient = new HttpClient();
 		HttpResponse resp = httpClient.post(endpointUrl + "event/", ((VariantEventSupport)event).toJson(ssn.getId()));
 		
-		if (resp.getStatus() != HttpStatus.SC_OK) {
-			throw new VariantHttpClientException(resp);
-		}		
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -111,10 +108,10 @@ public class Server {
 		HttpClient httpClient = new HttpClient();
 		HttpResponse resp = httpClient.get(endpointUrl + "session/" + sessionId);
 
-		if (resp.getStatus() == HttpStatus.SC_OK) {
-			return new SessionPayloadReader(conn, resp.getBody());
+		if (resp.status == HttpStatus.SC_OK) {
+			return new SessionPayloadReader(conn, resp.body);
 		}
-		else if (resp.getStatus() == HttpStatus.SC_NO_CONTENT) {
+		else if (resp.status == HttpStatus.SC_NO_CONTENT) {
 			return null;
 		}
 		else {
@@ -133,7 +130,7 @@ public class Server {
 		HttpClient httpClient = new HttpClient();
 		HttpResponse resp = httpClient.put(endpointUrl + "session/" + session.getId(), session.toJson(conn.getSchema()));
 		
-		if (resp.getStatus() != HttpStatus.SC_OK) {
+		if (resp.status != HttpStatus.SC_OK) {
 			throw new VariantHttpClientException(resp);
 		}
 	}

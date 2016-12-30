@@ -15,14 +15,7 @@ public class VariantHttpClientException extends InternalException {
 	 * @return
 	 */
 	private static String makeMessage(HttpResponse resp) {
-		StringBuilder result = new StringBuilder();
-		result.append("HTTP request  [").
-			append(resp.getOriginalRequest().getRequestLine()).
-			append("] failed: ").
-			append(resp.getStatus()).
-			append(" ").
-			append(resp.body);
-		return result.toString();
+		return String.format("HTTP request [%s] failed: [%s] [%s]",resp.request.getRequestLine(), resp.status, resp.body);
 	}
 
 }
