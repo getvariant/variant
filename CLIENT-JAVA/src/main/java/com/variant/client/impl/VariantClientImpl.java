@@ -8,9 +8,6 @@ import com.variant.client.Connection;
 import com.variant.client.VariantClient;
 import com.variant.client.conn.ConnectionFactory;
 import com.variant.client.conn.ConnectionImpl;
-import com.variant.client.conn.Server;
-import com.variant.client.net.ConnectionPayloadReader;
-import com.variant.client.net.SessionPayloadReader;
 import com.variant.core.util.VariantConfigLoader;
 
 /**
@@ -30,11 +27,11 @@ public class VariantClientImpl implements VariantClient {
 	/**
 	 * Handshake with the server.
 	 * @param payloadReader
-	 */
-	private void handshake(SessionPayloadReader payloadReader) {
+	 *
+	private void handshake(Payload payloadReader) {
 		// Nothing for now.
 	}
-	
+	*/
 	
 	/**
 	 *

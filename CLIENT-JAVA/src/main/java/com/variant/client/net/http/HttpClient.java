@@ -45,7 +45,7 @@ public class HttpClient {
 			// connection cannot be safely re-used and will be shut down and discarded
 			// by the connection manager.
 			if (LOG.isTraceEnabled()) {
-				LOG.trace(String.format("GET %s : %s in %s", url, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
+				LOG.trace(String.format("GET %s : %s (%s)", url, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
 			}
 			return new HttpResponse(get, resp);
 		}
@@ -104,7 +104,7 @@ public class HttpClient {
 			post.setHeader("Content-Type", "application/json");
 			resp = client.execute(post);
 			if (LOG.isTraceEnabled()) {
-				LOG.trace(String.format("POST %s : %s in %s", url, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
+				LOG.trace(String.format("POST %s : %s (%s)", url, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
 			}
 			HttpResponse result = new HttpResponse(post, resp);
 			switch (result.status) {
@@ -146,7 +146,7 @@ public class HttpClient {
 			put.setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
 			resp = client.execute(put);
 			if (LOG.isTraceEnabled()) {
-				LOG.trace(String.format("PUT %s [%s] : %s in %s", url, body, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
+				LOG.trace(String.format("PUT %s [%s] : %s (%s)", url, body, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
 			}
 		    return new HttpResponse(put, resp);
 		}

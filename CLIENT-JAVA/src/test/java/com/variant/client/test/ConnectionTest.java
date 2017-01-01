@@ -12,8 +12,6 @@ public class ConnectionTest extends BaseTestWithServer {
 
 	/**
 	 * Non existent schema.
-	 *  
-	 * @throws Exception
 	 */
 	@org.junit.Test
 	public void nonExistentSchemaTest() throws Exception {
@@ -33,6 +31,9 @@ public class ConnectionTest extends BaseTestWithServer {
 		
 	}	
 	
+	/**
+	 * Good schema.
+	 */
 	@org.junit.Test
 	public void goodSchemaTest() throws Exception {
 		
@@ -41,8 +42,10 @@ public class ConnectionTest extends BaseTestWithServer {
 		
 	}	
 
-	/** revive this
-	@org.junit.Test
+	/**
+	 * TODO: revive this after close.
+	 */
+	//@org.junit.Test
 	public void tooManyConnectionsTest() {
 		long now = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {
@@ -51,5 +54,5 @@ public class ConnectionTest extends BaseTestWithServer {
         }
         System.out.println("***************** " + (System.currentTimeMillis() - now));
 	}
-	*/
+
 }

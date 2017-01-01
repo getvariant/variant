@@ -1,48 +1,37 @@
 package com.variant.client.net;
-
+/*
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.client.InternalErrorException;
 import com.variant.core.VariantException;
 
-abstract public class AbstractPayloadReader<T>  {
+public class PayloadReader<T extends Payload> {
 
 	private T content = null;
-	
+		
 	/**
 	 * 
-	 * @param buffer
-	 * @return
-	 */
+	 *
 	@SuppressWarnings("unchecked")
-	private void parseJson(String payload) {
+	public PayloadReader(String raw, Class<T> cls) {
 		try {
-			ObjectMapper mapper = new ObjectMapper();		
-			this.content = (T) parser().parse(mapper.readValue(payload, Map.class));
+			ObjectMapper mapper = new ObjectMapper();
+			
+			if (cls.isInstance(Payload.Connection.class)) {
+				content = (T) Payload.Connection.parse(mapper.readValue(raw, Map.class));
+				
+			}
+			else {
+				throw new VariantException(String.format("Don't know how to parse payload type [%s]", cls.getName()));
+			}
 		}
 		catch (VariantException e) {
 			throw e;
 		}
-		catch (Exception e) {
-			throw new InternalErrorException("Unable to deserealize payload: [" + payload + "]", e);
+		catch (Throwable t) {
+			throw new VariantException(String.format("Unable to parse payload of type [%s]", cls.getName()), t);
 		}
-	}
-	
-	abstract protected AbstractParser<T> parser();
-	
-	/**
-	 * Implementations will differ at construction but have an expected parse() signature.
-	 */
-	protected interface AbstractParser<T> {
-		T parse(Map<String,?> mappedJson);
-	}
-
-	/**
-	 * 
-	 */
-	protected AbstractPayloadReader(String payload) {
-		parseJson(payload);
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -52,7 +41,7 @@ abstract public class AbstractPayloadReader<T>  {
 	/**
 	 * 
 	 * @return
-	 */
+	 *
 	public T getContent() {
 		return content;
 	}
@@ -60,9 +49,9 @@ abstract public class AbstractPayloadReader<T>  {
 	/**
 	 * 
 	 * @return
-	 */
+	 *
 	public boolean isEmpty() {
 		return content == null;
 	}
-	
 }
+*/

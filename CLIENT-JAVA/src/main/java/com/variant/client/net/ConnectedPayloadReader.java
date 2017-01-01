@@ -1,8 +1,8 @@
 package com.variant.client.net;
-
+/*
 import com.variant.client.Connection;
 
-public abstract class ConnectedPayloadReader<T> extends AbstractPayloadReader<T> {
+public abstract class ConnectedPayloadReader<T extends Payload> extends PayloadReader<T> {
 
 	protected final Connection conn;
 	
@@ -12,3 +12,4 @@ public abstract class ConnectedPayloadReader<T> extends AbstractPayloadReader<T>
 	}
 
 }
+*/

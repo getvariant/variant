@@ -19,10 +19,12 @@ public class ServerProcess {
 	/**
 	 * Static singleton.
 	 */
-	private ServerProcess() {}
+	 public ServerProcess() {}
 	
-	private static Thread proc = null;
-	private static InputStream sbtLog;
+	private Thread svrProc = null;
+	private Thread logReader = null;
+	private InputStream sbtLog;
+	private boolean serverUp = false;
 	
 	/**
 	 * Start the server in the background. If there's already a process in the background,
@@ -30,31 +32,28 @@ public class ServerProcess {
 	 * 
 	 * @param config
 	 */
-	public static void start() throws Exception {
+	public void start() throws Exception {
 		
 		start(new HashMap<String,String>());
 	}
 	
-	public static void start(Map<String,String> config) throws Exception {
+	public void start(Map<String,String> config) throws Exception {
 		
-		if (proc != null && proc.isAlive()) throw new RuntimeException("Server thread is alive. Call stop() first");
+		if (svrProc != null && svrProc.isAlive()) throw new RuntimeException("Server thread is alive. Call stop() first");
 
-		proc = new ProcessThread();
-		proc.start();
-		// Wait for the proc thread to init
-		while (sbtLog == null) Thread.sleep(100);
+		svrProc = new ProcessThread();
+		svrProc.start();
+
+		logReader = new LogReaderThread();
+		logReader.start();
 		
 		long start = System.currentTimeMillis();
-		BufferedReader sbtLogReader = new BufferedReader(new InputStreamReader(sbtLog));
-		while(true) {
+		while(!serverUp) {
 			if (System.currentTimeMillis() > start + STARTUP_TIMEOUT_MILLIS) {
+				stop();
 				throw new RuntimeException("Server failed to startup in [" + STARTUP_TIMEOUT_MILLIS + "] millis");
 			}
-			String line = null;
-			while((line = sbtLogReader.readLine()) != null) {
-				System.out.println(String.format("[%s] %s", ServerProcess.class.getSimpleName(), line));
-				if (line.contains("Variant Experiment Server release")) return;
-			}
+			Thread.sleep(100);
 		}
 	}
 	
@@ -62,37 +61,24 @@ public class ServerProcess {
 	 * Stop the server.
 	 */
 	public void stop() {
-		proc.interrupt();
+		svrProc.interrupt();
+		logReader.interrupt();
 	}
 	
 	/**
 	 * Background thread which runs the process and blocks on IO from it.
 	 */
-	private static class ProcessThread extends Thread {
+	private class ProcessThread extends Thread {
 		
 		@Override
 		public void run() {
 			try {
-
 				File svrDir = new File(new File(".."), "SERVER");
 				Process rm = Runtime.getRuntime().exec("rm " + svrDir.getAbsolutePath() + "/target/universal/stage/RUNNING_PID");
 				rm.waitFor();
 				IOUtils.copy(rm.getInputStream(), System.out);
 				IOUtils.copy(rm .getErrorStream(), System.out);
 				
-				/*
-				// Example: sbt "testProd -Dvariant.schemas.dir=none"
-				StringBuilder buff = new StringBuilder("sbt \"testProd");
-				if (config != null) {
-					for (Map.Entry<String, String> e: config.entrySet()) {
-						buff.append(" ").append("-D").append(e.getKey()).append("=").append(e.getValue());
-					}
-				}
-				buff.append("\"");
-				String command = buff.toString();
-				LOG.debug("Running server as [" + command + "]");
-				*/
-
 				String command = System.getProperty("user.home") + "/Work/sbt/bin/sbt";
 				ProcessBuilder pb = new ProcessBuilder();
 				pb.command(command, "testProd -Dvariant.config.file=conf-test/variant.conf");
@@ -107,4 +93,35 @@ public class ServerProcess {
 		}
 	}
 
+	/**
+	 * Background server log reader thread.
+	 */
+	private class LogReaderThread extends Thread {
+		
+		@Override
+		public void run() {
+			try {
+				BufferedReader sbtLogReader = null;				
+				while(true) {
+					if (sbtLog != null) {
+						if (sbtLogReader == null)
+							sbtLogReader = new BufferedReader(new InputStreamReader(sbtLog));
+						String line = null;
+						while((line = sbtLogReader.readLine()) != null) {
+							System.out.println(String.format("[%s] %s", ServerProcess.class.getSimpleName(), line));
+							if (line.contains("Variant Experiment Server release")) {
+								Thread.sleep(300);  // Wait for the port to open.
+								serverUp = true;
+							}
+						}
+					}
+					Thread.sleep(100);
+				}
+			}
+			catch (Exception e) {
+				LOG.error("Exception in log reader thread", e);
+			}
+		}
+	}
+	
 }

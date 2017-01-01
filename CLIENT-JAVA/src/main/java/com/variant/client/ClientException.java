@@ -13,25 +13,25 @@ public class ClientException extends RuntimeException {
 	private String comment;
 	
 	public ClientException(int code, String message, String comment) {
-		super(message);
+		super("[" + code + "] " + message);
 		this.code = code;
 		this.comment = comment;
 	}
 
 	public ClientException(int code, String message) {
-		super(message);
+		super("[" + code + "] " + message);
 		this.code = code;
 		this.comment = null;
 	}
 
 	public ClientException(int code, String message, String comment, Throwable t) {
-		super(message, t);
+		super("[" + code + "] " + message, t);
 		this.code = code;
 		this.comment = comment;
 	}
 
 	public ClientException(int code, String message, Throwable t) {
-		super(message, t);
+		super("[" + code + "] " + message, t);
 		this.code = code;
 		this.comment = null;
 	}

@@ -7,8 +7,7 @@ import com.variant.client.InternalErrorException;
 import com.variant.client.Session;
 import com.variant.client.impl.ClientError;
 import com.variant.client.impl.ClientErrorException;
-import com.variant.client.net.ConnectionPayloadReader;
-import com.variant.client.net.SessionPayloadReader;
+import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpClient;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.core.VariantEvent;
@@ -55,17 +54,19 @@ public class Server {
 		schemaName = url.substring(lastColonIx + 1);
 	}
 	
-	ConnectionPayloadReader connect() {
+	/**
+	 * Connect this server to a schema.
+	 * @return
+	 */
+	Payload.Connection connect() {
 		
 		if (isConnected) throw new InternalErrorException("Already connected");
 
 		// Remote
 		HttpClient httpClient = new HttpClient();
 		HttpResponse resp = httpClient.post(endpointUrl + "/connection/" + schemaName);
-		
-
 		isConnected = true;
-		return new ConnectionPayloadReader(resp.body);
+		return Payload.Connection.fromResponse(resp);
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -93,7 +94,7 @@ public class Server {
 	 * 
 	 * @since 0.6
 	 */
-	public SessionPayloadReader get(Connection conn, String sessionId) {
+	public Payload.Session get(Connection conn, String sessionId) {
 
 		checkState(conn);
 
@@ -101,7 +102,8 @@ public class Server {
 		HttpResponse resp = httpClient.get(endpointUrl + "session/" + sessionId);
 
 		if (resp.status == HttpStatus.SC_OK) {
-			return new SessionPayloadReader(conn, resp.body);
+			return null;
+			//return new SessionPayloadReader(conn, resp.body);
 		}
 		else if (resp.status == HttpStatus.SC_NO_CONTENT) {
 			return null;

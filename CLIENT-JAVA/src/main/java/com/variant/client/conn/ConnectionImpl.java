@@ -15,11 +15,16 @@ import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientError;
 import com.variant.client.impl.ClientErrorException;
 import com.variant.client.impl.SessionImpl;
-import com.variant.client.net.ConnectionPayloadReader;
-import com.variant.client.net.SessionPayloadReader;
+import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
-import com.variant.core.exception.InternalException;
+import com.variant.core.UserError.Severity;
+import com.variant.core.VariantException;
+import com.variant.core.impl.UserHooker;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.parser.SchemaParser;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.VariantStringUtils;
 
@@ -142,11 +147,11 @@ public class ConnectionImpl implements Connection {
 		}		
 		
 		// Local cache hit. Try the the server.
-		SessionPayloadReader payloadReader = server.get(this, sessionId);
+		Payload.Session payload = server.get(this, sessionId);
 		CoreSession ssnFromStore = null;
 		
-		if (payloadReader != null)	{
-			ssnFromStore = (CoreSession) payloadReader.getContent();			
+		if (payload != null)	{
+//			ssnFromStore = (CoreSession) payloadReader.getContent();			
 		}
 		else {
 			// Session expired on server => expire it here too.
@@ -176,10 +181,12 @@ public class ConnectionImpl implements Connection {
 
 	private static final Random RAND = new Random(System.currentTimeMillis());
 	
+	private final String id;
+	private final long timestamp;
 	private final SessionCache cache = new SessionCache(this);
 	private final Server server;
 	private final VariantClient client; 
-	private final Schema schema = null;
+	private final Schema schema;
 	private Status status = Status.OPEN;
 
 	/**
@@ -187,9 +194,23 @@ public class ConnectionImpl implements Connection {
 	 */
 	ConnectionImpl(VariantClient client, String url) {
 		this.client = client;
-		this.server = new Server(url);
-		ConnectionPayloadReader payload = server.connect();
 		
+		// This connection's server object.
+		this.server = new Server(url);
+		
+		// Get the schema from the server, if exists.
+		Payload.Connection payload = server.connect();
+		
+		id = payload.id;
+		timestamp = payload.timestamp;
+		
+		ParserResponse resp = new SchemaParser(new UserHooker()).parse(payload.schemaSrc);
+		if (resp.hasMessages(Severity.ERROR)) {
+			StringBuilder buff = new StringBuilder("Unable to parse schema:\n");
+			for (ParserMessage msg: resp.getMessages()) buff.append("    ").append(msg.toString()).append("\n");
+			throw new VariantException(buff.toString());
+		}
+		schema = resp.getSchema();
 	}
 	
 	/**
@@ -239,6 +260,10 @@ public class ConnectionImpl implements Connection {
 		return server;
 	}
 
+	public String getId() {
+		return id;
+	}
+	
 	/**
 	 * Server side session timeout, seconds
 	 */
@@ -250,9 +275,12 @@ public class ConnectionImpl implements Connection {
 	 * JSON deserialization.
 	 * @param parsedJson
 	 * @return
-	 */
+	 *
 	public static Connection fromJson(Map<String,?> parsedJson) {
-		return null;
+		// Parse the schema.  We don't have user hooks on the client.
+	    ParserResponse pr = new SchemaParser(null).parse(payload.getContent());
+			val schema = ServerSchema(response)		
+			if (response.hasMessages(Severity.ERROR)) schema.state = State.Failed
 	}
-
+*/
 }

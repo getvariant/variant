@@ -1,5 +1,6 @@
 package com.variant.client.test;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
 /**
@@ -7,13 +8,22 @@ import org.junit.BeforeClass;
  */
 public abstract class BaseTestWithServer extends BaseTest {
 		
+	private static ServerProcess svrProc;
+	
 	/**
 	 * Start the server before each test case
 	 * @throws Exception
 	 */
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		ServerProcess.start();
+		svrProc = new ServerProcess();
+		svrProc.start();
+	}
+
+	
+	@AfterClass
+	public static void afterClass() throws Exception {
+		svrProc.stop();
 	}
 
 }
