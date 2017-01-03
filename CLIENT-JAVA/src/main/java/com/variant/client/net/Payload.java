@@ -5,6 +5,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.core.VariantException;
+import com.variant.core.session.CoreSession;
 
 
 /**
@@ -60,8 +61,15 @@ abstract public class Payload {
 	 */
 	public static class Session extends Payload {
 		
-		protected Payload parse(Map<String,?> mappedJson) {
-			return null;
+		public final CoreSession session;
+		
+		private Session(CoreSession session) {
+			this.session = session;
+		}
+		
+		public static Session fromResponse(com.variant.client.Connection conn, HttpResponse resp) {
+			
+			return new Session(CoreSession.fromJson(resp.body, conn.getSchema()));
 		}
 	}
 

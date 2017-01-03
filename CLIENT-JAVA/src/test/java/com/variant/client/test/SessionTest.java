@@ -10,9 +10,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 
+import com.variant.client.Connection;
 import com.variant.client.VariantClient;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
+import com.variant.client.Connection.Status;
 import com.variant.client.impl.SessionImpl;
 import com.variant.client.impl.StateRequestImpl;
 import com.variant.core.UserError;
@@ -24,76 +26,26 @@ import com.variant.core.session.CoreSession;
 import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantStringUtils;
 
-public class SessionTest extends BaseTest {
+public class SessionTest extends BaseTestWithServer {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
 	private final Random random = new Random(System.currentTimeMillis());
 	
 	/**
-	 * No Schema.
-	 *  
-	 * @throws Exception
-	 *
-	@org.junit.Test
-	public void noSchemaTest() throws Exception {
-		
-		assertNull(client.getSchema());
-
-		new VariantRuntimeExceptionInterceptor() {
-			@Override public void toRun() { 
-				Object[] userData = userDataForSimpleIn(client.getSchema(), "foo");
-				client.getOrCreateSession(userData); 
-			}
-		}.assertThrown(Error.RUN_SCHEMA_UNDEFINED);	
-	}
-
-	/**
-	 * Old Schema.
-	 *  
-	 * @throws Exception
-	 *
-	@org.junit.Test
-	public void oldSchemaTest() throws Exception {
-
-		ParserResponse response = client.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-		assertNull(response.highestMessageSeverity());
-
-		String oldSchemaId = client.getSchema().getId();
-		final VariantSession ssn1 = client.getOrCreateSession(userDataForSimpleIn(client.getSchema(), "foo"));
-		VariantStateRequest req = ssn1.targetForState(client.getSchema().getState("state1"));
-		req.commit("");
-		
-		// replace the schema and the session save should fail.
-		response = client.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-		assertNull(response.highestMessageSeverity());
-		
-		new VariantRuntimeExceptionInterceptor() {
-			@Override public void toRun() { 
-				ssn1.targetForState(client.getSchema().getState("state1"));
-			}
-		}.assertThrown(Error.RUN_SCHEMA_MODIFIED, client.getSchema().getId(), oldSchemaId);
-	}
-
-	/**
-	 * No session ID in cookie.
+	 * No session ID in tracker.
 	 * 
 	 * @throws Exception
-	 *
+	 */
 	@org.junit.Test
 	public void noSessionIdInTrackerTest() throws Exception {
 		
-		ParserResponse response = client.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-		assertNull(response.highestMessageSeverity());
-
-		Schema schema = client.getSchema();
-		
-		VariantSession ssn1 = client.getSession("foo");
+		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		assertNotNull(conn);
+		assertEquals(Status.OPEN, conn.getStatus());
+		String sessionId = VariantStringUtils.random64BitString(random);
+		Session ssn = conn.getSession(sessionId);
+		assertNull(ssn);
+/*		
 		assertNull(ssn1);
 		ssn1 = client.getOrCreateSession("foo");
 		assertNotNull(ssn1);
@@ -162,6 +114,7 @@ public class SessionTest extends BaseTest {
 				"[(state1, 1)]", 
 				Arrays.toString(ssn3.getTraversedStates().toArray()));
 		assertEqualAsSets(expectedTests, ssn3.getTraversedTests());		
+*/
 	}
 	
 	/**

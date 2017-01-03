@@ -111,8 +111,7 @@ public class Server {
 		HttpResponse resp = httpClient.get(endpointUrl + "session/" + sessionId);
 
 		if (resp.status == HttpStatus.SC_OK) {
-			return null;
-			//return new SessionPayloadReader(conn, resp.body);
+			return Payload.Session.fromResponse(conn, resp);
 		}
 		else if (resp.status == HttpStatus.SC_NO_CONTENT) {
 			return null;

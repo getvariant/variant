@@ -125,47 +125,41 @@ public class ConnectionImpl implements Connection {
 			}
 		}
 		
-		// Have session ID. Try the local cache first.
-		SessionImpl ssnFromCache = (SessionImpl) cache.get(sessionId);
+		SessionImpl result = _getSession(sessionId);
 		
-		if (ssnFromCache == null) {
-			// Local case miss.
-			if (create) {
-				// Session expired locally, recreate OK.  Don't bother with the server.
-				CoreSession coreSession = new CoreSession(sessionId, schema);
-				server.saveSession(this, coreSession);
-				SessionImpl clientSession = new SessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
-				cache.add(clientSession);
-				return clientSession;
-			}
-			else {
-				// Session expired locally, recreate not OK.
-				return null;
-			}
-		}		
+		if (result == null && create) {
+			// Session expired locally, recreate OK.  Don't bother with the server.
+			CoreSession coreSession = new CoreSession(sessionId, schema);
+			server.saveSession(this, coreSession);
+			result = new SessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
+			cache.add(result);
+		}
+
+		return result;
+	}
+	/**
+	 * Get an existing session by session ID from the server.
+	 * @param create
+	 * @param userData
+	 * @return
+	 */
+	private SessionImpl _getSession(String sid) {
+				
+		// Local cache first.
+		SessionImpl ssnFromCache = (SessionImpl) cache.get(sid);
+		if (ssnFromCache == null) return null;
 		
-		// Local cache hit. Try the the server.
-		Payload.Session payload = server.get(this, sessionId);
+		// Local cache hit. Still have to hit the the server.
+		Payload.Session payload = server.get(this, sid);
 		CoreSession ssnFromStore = null;
 		
 		if (payload != null)	{
-//			ssnFromStore = (CoreSession) payloadReader.getContent();			
+			ssnFromStore = payload.session;			
 		}
 		else {
 			// Session expired on server => expire it here too.
-			cache.expire(sessionId);
-			if (create) {
-				// Recreate from scratch
-				CoreSession coreSession = new CoreSession(sessionId, schema);
-				server.saveSession(this, coreSession);
-				SessionImpl clientSession = new SessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
-				cache.add(clientSession);
-				return clientSession;
-			}
-			else {
-				// Do not recreate.
-				return null;
-			}
+			cache.expire(sid);
+			return null;
 		}
 		
 		// Local and remote hits. 
@@ -232,6 +226,11 @@ public class ConnectionImpl implements Connection {
 		return _getSession(false, userData);
 	}
 
+	@Override
+	public Session getSessionById(String sessionId) {
+		return _getSession(sessionId);
+	}
+	
 	@Override
 	public Schema getSchema() {
 		return schema;

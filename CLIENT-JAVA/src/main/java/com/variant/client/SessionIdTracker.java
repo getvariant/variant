@@ -32,8 +32,8 @@ package com.variant.client;
 public interface SessionIdTracker {
 
 	/**
-	 * <p>Called by Variant to initialize a newly instantiated concrete implementation. Variant client calls this method 
-	 * immediately following the instantiation within the scope of the {@link VariantClient#getSession(Object...)} method.
+	 * <p>Called by Variant to initialize a newly instantiated concrete implementation. Called 
+	 * immediately following the instantiation, within the scope of the {@link VariantClient#getSession(Object...)} method.
 	 * Use this to inject state from configuration.
 	 * 
 	 * @param conn      The Variant server connection which is initializing this object.
