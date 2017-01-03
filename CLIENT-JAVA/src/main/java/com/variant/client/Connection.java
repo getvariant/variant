@@ -4,7 +4,8 @@ import com.variant.core.schema.Schema;
 
 
 /**
- * A connection to the server.
+ * A connection to the server. 
+ * Not thread safe, avoid sharing a connection object between threads.
  * 
  * @author Igor Urisman
  * @since 0.7
@@ -75,7 +76,7 @@ public interface Connection {
 	Status getStatus();
 	
 	/**
-	 * Close this connection.
+	 * Close this connection. No-op if this connection has already been closed.
 	 * 
 	 * @since 0.7
 	 */

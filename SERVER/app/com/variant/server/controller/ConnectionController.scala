@@ -22,7 +22,6 @@ class ConnectionController @Inject() (store: ConnectionStore) extends Controller
 curl -v -X POST http://localhost:9000/variant/connection/SID
     */
    def post(name: String) = VariantAction {
-                  println("************************1");
          var result: Option[ServerSchema] = None
          VariantServer.server.schema.foreach {s => if (s.getName().equals(name)) result = Some(s)}
          result match {
@@ -36,7 +35,6 @@ curl -v -X POST http://localhost:9000/variant/connection/SID
                }
                else {
                   logger.info("Unable to open connection to chema [%s]: connection table is full".format(name))
-                  println("************************2");
                   TooManyConnections.asResult()
                }
             }
@@ -60,7 +58,7 @@ curl -v -X DELETE http://localhost:9000/variant/connection/SID
       }
       else {
          logger.debug("Unable to close connection: schema ID [%s] does not exist".format(id)) 
-         UnknownSchema.asResult(id)
+         UnknownConnection.asResult(id)
       }
    }
 }

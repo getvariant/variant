@@ -62,11 +62,20 @@ public class Server {
 		
 		if (isConnected) throw new InternalErrorException("Already connected");
 
-		// Remote
 		HttpClient httpClient = new HttpClient();
 		HttpResponse resp = httpClient.post(endpointUrl + "/connection/" + schemaName);
 		isConnected = true;
 		return Payload.Connection.fromResponse(resp);
+	}
+	
+	/**
+	 * Close this server connection.
+	 */
+	void disconnect(String id) {
+		if (!isConnected) return;
+		HttpClient httpClient = new HttpClient();
+		HttpResponse resp = httpClient.delete(endpointUrl + "/connection/" + id);
+		isConnected = true;		
 	}
 	
 	//---------------------------------------------------------------------------------------------//

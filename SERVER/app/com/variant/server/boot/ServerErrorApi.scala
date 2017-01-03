@@ -38,7 +38,8 @@ object ServerErrorApi {
    // 701-720 User, Connection
    //
    val UnknownSchema = new ServerErrorApi(701, "Unknown schema [%s]")
-   val TooManyConnections = new ServerErrorApi(702, "Too many connections")
+   val UnknownConnection = new ServerErrorApi(702, "Unknown connection [%s]")
+   val TooManyConnections = new ServerErrorApi(703, "Too many connections")
 
    //
    // 721-740 User, Connection

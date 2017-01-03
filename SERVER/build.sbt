@@ -44,6 +44,3 @@ sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { 
 
 // Config overrides for run and test
 javaOptions in Test += "-Dvariant.config.file=conf-test/variant.conf"
-
-
-//fork in run := true

@@ -3,7 +3,6 @@ package com.variant.client.conn;
 import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 
-import java.util.Map;
 import java.util.Random;
 
 import com.variant.client.Connection;
@@ -23,7 +22,6 @@ import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
 import com.variant.core.schema.parser.SchemaParser;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.VariantStringUtils;
@@ -246,7 +244,10 @@ public class ConnectionImpl implements Connection {
 
 	@Override
 	public void close() {
-		status = Status.CLOSED_BY_CLIENT;
+		if (status == Status.OPEN) {
+			server.disconnect(id);
+			status = Status.CLOSED_BY_CLIENT;
+		}
 	}
 
 	// ---------------------------------------------------------------------------------------------//
@@ -260,6 +261,9 @@ public class ConnectionImpl implements Connection {
 		return server;
 	}
 
+	/**
+	 * 
+	 */
 	public String getId() {
 		return id;
 	}

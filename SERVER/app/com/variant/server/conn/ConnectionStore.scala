@@ -29,12 +29,12 @@ trait ConnectionStore {
 	def put(conn: Connection): Boolean
 		
 	/**
-	 * Retrieve a connection from this store.
+	 * Retrieve a connection from this store by its ID.
 	 */
 	def get(id: String) : Option[Connection]
 	
 	/**
-	 * Delete a connection from this store.
+	 * Delete a connection from this store by its ID.
 	 */
 	def remove(id: String): Option[Connection]
 }
@@ -44,7 +44,6 @@ class ConnectionStoreImpl() extends ConnectionStore {
 
    private val logger = Logger(this.getClass)	
 	private val connMap = new ConcurrentHashMap[String, Connection]()
-	//println("*********************** " + VariantServer.server)
 	private lazy val maxSize = VariantServer.server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
    
 	/**

@@ -3,6 +3,7 @@ package com.variant.client.net.http;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
@@ -152,6 +153,47 @@ public class HttpClient {
 		}
 		catch (Exception e) {
 			throw new InternalErrorException("Unexpected exception in HTTP PUT: " + e.getMessage(), e);
+		} finally {
+			if (resp != null) {
+				try {resp.close();}					
+				catch (Exception e) {}
+			}
+		}		
+	}
+
+	/**
+	 * Send a DELETE without a body
+	 * @param url
+	 * @param body
+	 * @return
+	 */
+	public HttpResponse delete(String url) {
+		
+		CloseableHttpResponse resp = null;
+		long start = System.currentTimeMillis();
+		try {
+			HttpDelete delete = new HttpDelete(url);
+			delete.setHeader("Content-Type", "application/json");
+			resp = client.execute(delete);
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(String.format("DELETE %s : %s (%s)", url, resp.getStatusLine(), DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
+			}
+			HttpResponse result = new HttpResponse(delete, resp);
+			switch (result.status) {
+			case HttpStatus.SC_OK:
+				return result;
+			case HttpStatus.SC_BAD_REQUEST:
+			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+				throw result.toClientException();
+			default:
+				throw new InternalErrorException("Bad response from server [" + result.toString() + "]");
+			}
+		}
+		catch (ClientException ce) {
+			throw ce;
+		}
+		catch (Throwable e) {
+			throw new InternalErrorException("Unexpected exception in HTTP DELETE: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					

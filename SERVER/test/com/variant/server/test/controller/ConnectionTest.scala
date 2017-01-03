@@ -103,19 +103,19 @@ class ConnectionTest extends BaseSpecWithSchema {
          schema.getName mustEqual "big_covar_schema"
       }
       
-      "close connection on DELETE with valid schema name" in {
+      "close connection on DELETE with valid id" in {
          val resp = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
 
-      "return 400 on DELETE of the schema that no longer exists" in {
+      "return 400 on DELETE of connection that no longer exists" in {
          val resp = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
-         (respJson \ "code").as[Int] mustBe UnknownSchema.code 
-         (respJson \ "message").as[String] mustBe UnknownSchema.message(connId)
+         (respJson \ "code").as[Int] mustBe UnknownConnection.code 
+         (respJson \ "message").as[String] mustBe UnknownConnection.message(connId)
       }
 
       "return 400 when attempting to open one too many connections" in {

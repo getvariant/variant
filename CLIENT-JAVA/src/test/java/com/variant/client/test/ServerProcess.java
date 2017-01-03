@@ -14,16 +14,17 @@ import org.slf4j.LoggerFactory;
 public class ServerProcess {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ServerProcess.class);
-	private static final long STARTUP_TIMEOUT_MILLIS = 20000; // give up if server didn't startup in 10 secs;
+	private static final long STARTUP_TIMEOUT_MILLIS = 25000; // give up if server didn't startup in 25 secs;
 	
 	/**
 	 * Static singleton.
 	 */
 	 public ServerProcess() {}
 	
-	private Thread svrProc = null;
-	private Thread logReader = null;
-	private InputStream sbtLog;
+	private ProcessThread svrProc = null;
+	private LogReaderThread logReader = null;
+	private InputStream sbtOut;
+	private InputStream sbtErr;
 	private boolean serverUp = false;
 	
 	/**
@@ -61,6 +62,8 @@ public class ServerProcess {
 	 * Stop the server.
 	 */
 	public void stop() {
+		// a slight delay to let the log reader have a chance to run one more time.
+		try {Thread.sleep(100);} catch(Throwable t) {}
 		svrProc.interrupt();
 		logReader.interrupt();
 	}
@@ -73,24 +76,15 @@ public class ServerProcess {
 		@Override
 		public void run() {
 			try {
-				File svrDir = new File(new File(".."), "SERVER");
-				Process rm = Runtime.getRuntime().exec("rm " + svrDir.getAbsolutePath() + "/target/universal/stage/RUNNING_PID");
-				rm.waitFor();
-				IOUtils.copy(rm.getInputStream(), System.out);
-				IOUtils.copy(rm .getErrorStream(), System.out);
-				
-				String command = System.getProperty("user.home") + "/Work/sbt/bin/sbt";
-				ProcessBuilder pb = new ProcessBuilder();
-				pb.command(command, "testProd -Dvariant.config.file=conf-test/variant.conf");
-				pb.directory(svrDir);
-
-				Process p = pb.start();
-				sbtLog = p.getInputStream();
+				Process sbt = Runtime.getRuntime().exec("bin/startServer.sh");
+				sbtOut = sbt.getInputStream();
+				sbtErr = sbt .getErrorStream();
 			}
 			catch (Exception e) {
 				LOG.error("Exception in proc thread", e);
 			}
 		}
+		
 	}
 
 	/**
@@ -101,21 +95,33 @@ public class ServerProcess {
 		@Override
 		public void run() {
 			try {
-				BufferedReader sbtLogReader = null;				
+				BufferedReader sbtOutReader = null;				
+				BufferedReader sbtErrReader = null;				
 				while(true) {
-					if (sbtLog != null) {
-						if (sbtLogReader == null)
-							sbtLogReader = new BufferedReader(new InputStreamReader(sbtLog));
+					if (sbtOut != null && sbtErr != null) {
+
+						// Read out
+						if (sbtOutReader == null)
+							sbtOutReader = new BufferedReader(new InputStreamReader(sbtOut));
+						
 						String line = null;
-						while((line = sbtLogReader.readLine()) != null) {
-							System.out.println(String.format("[%s] %s", ServerProcess.class.getSimpleName(), line));
+						while((line = sbtOutReader.readLine()) != null) {
+							System.out.println(String.format("<SBT OUT> %s", line));
 							if (line.contains("Variant Experiment Server release")) {
-								Thread.sleep(300);  // Wait for the port to open.
+								Thread.sleep(1500); // The above msg comes up just before the port is bound -> wait.
 								serverUp = true;
 							}
 						}
+
+						// Read error
+						if (sbtErrReader == null)
+							sbtErrReader = new BufferedReader(new InputStreamReader(sbtErr));
+
+						while((line = sbtErrReader.readLine()) != null) {
+							System.out.println(String.format("<SBT ERR> %s", ServerProcess.class.getSimpleName(), line));
+						}
 					}
-					Thread.sleep(100);
+					Thread.sleep(10);
 				}
 			}
 			catch (Exception e) {
