@@ -10,7 +10,7 @@ import org.apache.http.client.methods.HttpPost;
  * 
  * @author Igor
  *
- */
+ *
 public class HttpGetWithEntity extends HttpPost {
 
     public final static String METHOD_NAME = "GET";
@@ -23,3 +23,4 @@ public class HttpGetWithEntity extends HttpPost {
         return METHOD_NAME;
     }
 }
+*/

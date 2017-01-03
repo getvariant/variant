@@ -8,7 +8,7 @@ import com.variant.client.Session;
 import com.variant.client.impl.ClientError;
 import com.variant.client.impl.ClientErrorException;
 import com.variant.client.net.Payload;
-import com.variant.client.net.http.HttpClient;
+import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.core.VariantEvent;
 import com.variant.core.impl.VariantEventSupport;
@@ -62,8 +62,8 @@ public class Server {
 		
 		if (isConnected) throw new InternalErrorException("Already connected");
 
-		HttpClient httpClient = new HttpClient();
-		HttpResponse resp = httpClient.post(endpointUrl + "/connection/" + schemaName);
+		HttpAdapter httpAdapter = new HttpAdapter();
+		HttpResponse resp = httpAdapter.post(endpointUrl + "/connection/" + schemaName);
 		isConnected = true;
 		return Payload.Connection.fromResponse(resp);
 	}
@@ -73,7 +73,7 @@ public class Server {
 	 */
 	void disconnect(String id) {
 		if (!isConnected) return;
-		HttpClient httpClient = new HttpClient();
+		HttpAdapter httpClient = new HttpAdapter();
 		HttpResponse resp = httpClient.delete(endpointUrl + "/connection/" + id);
 		isConnected = true;		
 	}
@@ -87,7 +87,7 @@ public class Server {
 		checkState(ssn);
 		
 		// Remote
-		HttpClient httpClient = new HttpClient();
+		HttpAdapter httpClient = new HttpAdapter();
 		HttpResponse resp = httpClient.post(endpointUrl + "event/", ((VariantEventSupport)event).toJson(ssn.getId()));
 		
 	}
@@ -107,7 +107,7 @@ public class Server {
 
 		checkState(conn);
 
-		HttpClient httpClient = new HttpClient();
+		HttpAdapter httpClient = new HttpAdapter();
 		HttpResponse resp = httpClient.get(endpointUrl + "session/" + sessionId);
 
 		if (resp.status == HttpStatus.SC_OK) {
@@ -130,7 +130,7 @@ public class Server {
 		checkState(conn);
 
 		// Remote
-		HttpClient httpClient = new HttpClient();
+		HttpAdapter httpClient = new HttpAdapter();
 		HttpResponse resp = httpClient.put(endpointUrl + "session/" + session.getId(), session.toJson(conn.getSchema()));
 		
 		if (resp.status != HttpStatus.SC_OK) {

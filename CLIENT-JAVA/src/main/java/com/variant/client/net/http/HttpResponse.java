@@ -8,6 +8,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.core.JsonParser;
@@ -30,7 +31,7 @@ public class HttpResponse {
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
-	HttpResponse(HttpRequest request, CloseableHttpResponse underlyingResponse) throws ParseException, IOException {
+	HttpResponse(HttpUriRequest request, CloseableHttpResponse underlyingResponse) throws ParseException, IOException {
 
 		this.request = request;
 		this.status = underlyingResponse.getStatusLine().getStatusCode();

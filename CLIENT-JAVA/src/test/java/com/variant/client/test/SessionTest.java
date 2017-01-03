@@ -43,8 +43,20 @@ public class SessionTest extends BaseTestWithServer {
 		assertNotNull(conn);
 		assertEquals(Status.OPEN, conn.getStatus());
 		String sessionId = VariantStringUtils.random64BitString(random);
-		Session ssn = conn.getSession(sessionId);
+		
+		// By session ID
+		Session ssn = conn.getSessionById(sessionId);
 		assertNull(ssn);
+
+		// Via SID tracker, no create.
+		ssn = conn.getSession(sessionId);
+		assertNull(ssn);
+
+		// Via SID tracker, create.
+		ssn = conn.getOrCreateSession(sessionId);
+		assertNotNull(ssn);
+
+		//ssn = conn.getSession(userData)
 /*		
 		assertNull(ssn1);
 		ssn1 = client.getOrCreateSession("foo");
