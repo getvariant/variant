@@ -74,6 +74,7 @@ public class ConnectionTest extends BaseTestWithServer {
 			
 			@Override public void onThrown(ClientException e) {
 				assertNull(conn);
+				assertEquals(703, e.getCode());
 			}
 		}.assertThrown();
 
