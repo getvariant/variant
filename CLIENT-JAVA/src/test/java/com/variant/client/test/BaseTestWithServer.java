@@ -3,6 +3,8 @@ package com.variant.client.test;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.variant.client.test.util.ServerProcess;
+
 /**
  * Base class for all Core JUnit tests.
  */
