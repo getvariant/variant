@@ -6,9 +6,12 @@ import play.api.mvc.Request
 import com.variant.server.session.SessionStore
 import play.api.Logger
 import com.variant.server.boot.ServerErrorApi._
+import play.api.libs.json._
+import com.variant.server.boot.VariantServer
+import com.variant.server.ConfigKeys
 
 //@Singleton -- Is this for non-shared state controllers?
-class SessionController @Inject() (store: SessionStore) extends Controller  {
+class SessionController @Inject() (store: SessionStore, server: VariantServer) extends Controller  {
    
       private val logger = Logger(this.getClass)	
 
@@ -47,8 +50,15 @@ curl -v -X GET http://localhost:9000/variant/session/SID
    def get(id: String) = VariantAction {
       val result = store.asString(id)
       if (result.isDefined) {
+         
          logger.trace("Session found for ID " + id)
-         Ok(result.get)
+    
+         val response = JsObject(Seq(
+            "timeout" -> JsNumber(server.config.getInt(ConfigKeys.SESSION_TIMEOUT)),
+            "session" -> JsString(result.get)
+         ))
+         
+         Ok(response.toString)
       }
       else {
          logger.trace(s"No session found for ID [$id]")         

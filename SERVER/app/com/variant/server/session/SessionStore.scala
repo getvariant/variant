@@ -19,6 +19,7 @@ import com.typesafe.config.Config
  *
  */
 trait SessionStore {
+   
    /**
     * Save session in the store.
     * 
@@ -102,7 +103,7 @@ class SessionStoreEntry (val json: String) {
  */
 class VacuumThread(config: Config, storeMap: Map[String, SessionStoreEntry]) extends Thread {
 
-   private val logger = Logger(this.getClass)	
+   private val logger = Logger(this.getClass)
    private val sessionTimeoutMillis = config.getInt(SESSION_TIMEOUT) * 1000
    private val vacuumingFrequencyMillis = config.getInt(SESSION_STORE_VACUUM_INTERVAL) * 1000
 	setName("VariantSessionVacuum");

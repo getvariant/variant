@@ -30,9 +30,8 @@ class Connection(val schema: ServerSchema) {
    val timestamp = System.currentTimeMillis()
    
    /**
-    * Serialize as JSON. Schema source is already valid JSON. We avoid
-    * extra deserialization/serialization of it by dropping it in as a
-    * stirng substition.
+    * Serialize as JSON. Schema source is shipped over as a string
+    * to be parsed by client.
     */
    def asJson = {
       JsObject(Seq(

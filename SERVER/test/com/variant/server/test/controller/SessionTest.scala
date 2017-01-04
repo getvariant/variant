@@ -81,7 +81,9 @@ class SessionTest extends BaseSpecWithSchema {
        
          val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(resp) mustBe OK
-         contentAsString(resp) mustBe body.expand("sid" -> "foo1")
+         val respAsJson = contentAsJson(resp)
+         (respAsJson \ "timeout").as[Int] mustBe server.config.getInt(ConfigKeys.SESSION_TIMEOUT)
+         (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "foo1")
       }
 
       "replace existing session on PUT and return 200" in {
@@ -93,7 +95,9 @@ class SessionTest extends BaseSpecWithSchema {
          
          val respGet = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(respGet) mustBe OK
-         contentAsString(respGet) mustBe body.expand("sid" -> "foo2")
+         val respAsJson = contentAsJson(respGet)
+         (respAsJson \ "timeout").as[Int] mustBe server.config.getInt(ConfigKeys.SESSION_TIMEOUT)
+         (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "foo2")
       }
 
       "create session on PUT and return 200" in {
@@ -105,14 +109,18 @@ class SessionTest extends BaseSpecWithSchema {
          
          val respGet = route(app, FakeRequest(GET, endpoint + "/bar")).get
          status(respGet) mustBe OK
-         contentAsString(respGet) mustBe body.expand("sid" -> "bar1")
+         val respAsJson = contentAsJson(respGet)
+         (respAsJson \ "timeout").as[Int] mustBe server.config.getInt(ConfigKeys.SESSION_TIMEOUT)
+         (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "bar1")
       }
 
      "not lose existing session with different key" in {
 
          val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(resp) mustBe OK
-         contentAsString(resp) mustBe body.expand("sid" -> "foo2")
+         val respAsJson = contentAsJson(resp)
+         (respAsJson \ "timeout").as[Int] mustBe server.config.getInt(ConfigKeys.SESSION_TIMEOUT)
+         (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "foo2")
       }
 
      "expire existing sessions after timeout" in {
