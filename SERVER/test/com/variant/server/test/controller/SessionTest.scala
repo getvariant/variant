@@ -82,7 +82,6 @@ class SessionTest extends BaseSpecWithSchema {
          val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
-         (respAsJson \ "timeout").as[Int] mustBe server.config.getInt(ConfigKeys.SESSION_TIMEOUT)
          (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "foo1")
       }
 
@@ -96,7 +95,6 @@ class SessionTest extends BaseSpecWithSchema {
          val respGet = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(respGet) mustBe OK
          val respAsJson = contentAsJson(respGet)
-         (respAsJson \ "timeout").as[Int] mustBe server.config.getInt(ConfigKeys.SESSION_TIMEOUT)
          (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "foo2")
       }
 
@@ -110,7 +108,6 @@ class SessionTest extends BaseSpecWithSchema {
          val respGet = route(app, FakeRequest(GET, endpoint + "/bar")).get
          status(respGet) mustBe OK
          val respAsJson = contentAsJson(respGet)
-         (respAsJson \ "timeout").as[Int] mustBe server.config.getInt(ConfigKeys.SESSION_TIMEOUT)
          (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "bar1")
       }
 
@@ -119,7 +116,6 @@ class SessionTest extends BaseSpecWithSchema {
          val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
-         (respAsJson \ "timeout").as[Int] mustBe server.config.getInt(ConfigKeys.SESSION_TIMEOUT)
          (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "foo2")
       }
 

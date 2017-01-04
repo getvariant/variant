@@ -54,7 +54,6 @@ curl -v -X GET http://localhost:9000/variant/session/SID
          logger.trace("Session found for ID " + id)
     
          val response = JsObject(Seq(
-            "timeout" -> JsNumber(server.config.getInt(ConfigKeys.SESSION_TIMEOUT)),
             "session" -> JsString(result.get)
          ))
          

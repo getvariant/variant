@@ -3,6 +3,7 @@ package com.variant.server
 import com.variant.server.schema.ServerSchema
 import com.variant.core.util.VariantStringUtils
 import play.api.libs.json._
+import com.variant.server.boot.VariantServer
 
 /**
  * Represents client connection
@@ -36,6 +37,7 @@ class Connection(val schema: ServerSchema) {
    def asJson = {
       JsObject(Seq(
          "id" -> JsString(id),
+         "ssnto" -> JsNumber(VariantServer.server.config.getInt(ConfigKeys.SESSION_TIMEOUT)),
          "ts" -> JsNumber(timestamp),
          "schema" -> JsString(schema.source)
       )).toString  
