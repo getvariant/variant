@@ -35,7 +35,7 @@ public class SessionImpl implements Session {
 	private CoreSession coreSession;
 	private SessionIdTracker sessionIdTracker;
 	private TargetingTracker targetingTracker;
-	private HashMap<String, Object> attributeMap = new HashMap<String, Object>();
+	private HashMap<String, String> attributeMap = new HashMap<String, String>();
 	
 	/**
 	 * 
@@ -121,13 +121,18 @@ public class SessionImpl implements Session {
 	}
 	
 	@Override
-	public Object setAttribute(String name, Object value) {
+	public String setAttribute(String name, String value) {
 		return attributeMap.put(name, value);
 	}    
 
 	@Override
-	public Object getAttribute(String name) {
+	public String getAttribute(String name) {
 		return attributeMap.get(name);
+	}
+
+	@Override
+	public String clearAttribute(String name) {
+		return attributeMap.remove(name);
 	}
 
 	// ---------------------------------------------------------------------------------------------//

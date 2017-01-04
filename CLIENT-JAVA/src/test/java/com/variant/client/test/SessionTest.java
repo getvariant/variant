@@ -61,7 +61,7 @@ public class SessionTest extends BaseTestWithServer {
 	 * @throws Exception
 	 */
 	@org.junit.Test
-	public void sessionExpirationTest() throws Exception {
+	public void expirationTest() throws Exception {
 		
 		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
 		assertNotNull(conn);
@@ -87,35 +87,34 @@ public class SessionTest extends BaseTestWithServer {
 		}
 
 	}
+	
 	/**
 	 * set/get session attributes.
 	 * 
 	 * @throws Exception
-	 *
+	 */
 	@org.junit.Test
-	public void sessionAttributesTest() throws Exception {
+	public void attributesTest() throws Exception {
 		
-		ParserResponse response = client.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
-		if (response.hasMessages()) printMessages(response);
-		assertFalse(response.hasMessages());
-		assertNull(response.highestMessageSeverity());
+		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		assertNotNull(conn);
+		assertEquals(Status.OPEN, conn.getStatus());
 
+		// Via SID tracker, create.
 		String sessionId = VariantStringUtils.random64BitString(random);
-
-		VariantSession ssn1 = client.getOrCreateSession(sessionId);
-		assertNotNull(ssn1);
-		ssn1.setAttribute("23", 23);
-		assertEquals(23, ssn1.getAttribute("23"));
-		State state2 = client.getSchema().getState("state2");		
-		VariantStateRequest varReq = ssn1.targetForState(state2);
-		assertEquals(23, varReq.getSession().getAttribute("23"));
-		ssn1.setAttribute("45", 45);
-		varReq.commit("");
-		CoreSession ssn2 = client.getSession(sessionId);
-		assertEquals(ssn1, ssn2);
-		assertEquals(23, ssn2.getAttribute("23"));
-		assertEquals(45, ssn2.getAttribute("45"));
+		Session ssn = conn.getOrCreateSession(sessionId);
+		assertNotNull(ssn);
+		assertEquals(sessionId, ssn.getId());
+		
+		assertNull(ssn.getAttribute("foo"));
+		assertNull(ssn.clearAttribute("foo"));
+		String attr = "VALUE";
+		ssn.setAttribute("foo", attr);
+		assertEquals(attr, ssn.getAttribute("foo"));
+		assertEquals(attr, ssn.clearAttribute("foo"));
+		assertNull(ssn.getAttribute("foo"));
+		assertNull(ssn.clearAttribute("foo"));
 	}
-*/
+
 	
 }
