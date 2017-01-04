@@ -5,14 +5,14 @@ import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 
 import java.util.Random;
 
+import static com.variant.client.impl.ClientUserError.*;
 import com.variant.client.Connection;
 import com.variant.client.InternalErrorException;
 import com.variant.client.Session;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.TargetingTracker;
 import com.variant.client.VariantClient;
-import com.variant.client.impl.ClientError;
-import com.variant.client.impl.ClientErrorException;
+import com.variant.client.impl.ClientUserErrorException;
 import com.variant.client.impl.SessionImpl;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
@@ -45,7 +45,7 @@ public class ConnectionImpl implements Connection {
 		
 		case CLOSED_BY_CLIENT: 
 		case CLOSED_BY_SERVER:
-			throw new ClientErrorException(ClientError.CONNECTION_CLOSED);
+			throw new ClientUserErrorException(CONNECTION_CLOSED);
 		}
 	}
 	
@@ -67,7 +67,7 @@ public class ConnectionImpl implements Connection {
 				return result;
 			}
 			else {
-				throw new ClientErrorException(ClientError.SESSION_ID_TRACKER_NO_INTERFACE, className, SessionIdTracker.class.getName());
+				throw new ClientUserErrorException(SESSION_ID_TRACKER_NO_INTERFACE, className, SessionIdTracker.class.getName());
 			}
 		}
 		catch (Exception e) {
@@ -95,7 +95,7 @@ public class ConnectionImpl implements Connection {
 				return result;
 			}
 			else {
-				throw new ClientErrorException(ClientError.TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
+				throw new ClientUserErrorException(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
 			}
 		}
 		catch (Exception e) {
@@ -151,17 +151,14 @@ public class ConnectionImpl implements Connection {
 		
 		// Local cache hit. Still have to hit the the server.
 		Payload.Session payload = server.get(this, sid);
-		CoreSession ssnFromStore = null;
 		
-		if (payload != null)	{
-			ssnFromStore = payload.session;			
-		}
-		else {
+		if (payload == null) {
 			// Session expired on server => expire it here too.
 			cache.expire(sid);
-			return null;
+			return null;			
 		}
 		
+		CoreSession ssnFromStore =  payload.session;			
 		// Local and remote hits. 
 		// Replace remote in local, as it may have been changed by another client,
 		// update local timeout, and return the existing local object.
@@ -174,8 +171,9 @@ public class ConnectionImpl implements Connection {
 	private static final Random RAND = new Random(System.currentTimeMillis());
 	
 	private final String id;
+	private final long sessionTimeoutMillis;
 	private final long timestamp;
-	private final SessionCache cache = new SessionCache(this);
+	private final SessionCache cache;
 	private final Server server;
 	private final VariantClient client; 
 	private final Schema schema;
@@ -195,6 +193,8 @@ public class ConnectionImpl implements Connection {
 		
 		id = payload.id;
 		timestamp = payload.timestamp;
+		sessionTimeoutMillis = payload.sessionTimeout * 1000;
+		cache = new SessionCache(sessionTimeoutMillis);
 		
 		ParserResponse resp = new SchemaParser(new UserHooker()).parse(payload.schemaSrc);
 		if (resp.hasMessages(Severity.ERROR)) {
@@ -258,26 +258,24 @@ public class ConnectionImpl implements Connection {
 	// ---------------------------------------------------------------------------------------------//
 
 	/**
+	 */
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 */
+	public long getSessionTimeoutMillis() {
+		return sessionTimeoutMillis;
+	}
+
+	/**
 	 * This connection's unerlying server.
 	 */
 	public Server getServer() {
 		return server;
 	}
-
-	/**
-	 * 
-	 */
-	public String getId() {
-		return id;
-	}
 	
-	/**
-	 * Server side session timeout, seconds
-	 */
-	public int getSessionTimeout() {
-		return 0;
-	}
-
 	/**
 	 * JSON deserialization.
 	 * @param parsedJson

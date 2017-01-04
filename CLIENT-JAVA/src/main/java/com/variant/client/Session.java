@@ -6,7 +6,6 @@ import java.util.Set;
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.session.CoreStateRequest;
 
 /**
  * <p>Represents a Variant user session. Variant has its own notion of user session, 
@@ -67,6 +66,16 @@ public interface Session {
 	 */	
 	public Connection getConnectoin();
 	
+	/**
+     * <p>Session timeout interval, as set by the server. This session will be destroyed after it is inactive
+     *    for this many milliseconds. 
+     *  
+	 * @return Timeout interval in milliseconds.
+	 *
+	 * @since 0.7
+	 */	
+	public long getTimeoutMillis();
+
 	/**
 	 * <p> The collection of states, traversed by this session so far, and their respective visit counts. 
 	 *     For each state S, the traversal count in incremented by one whenever all of the following conditions are met: 

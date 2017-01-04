@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.typesafe.config.Config;
 import com.variant.client.VariantClient;
-import com.variant.client.impl.ClientError;
+import com.variant.client.impl.ClientUserError;
 
 public class ConfigTest extends BaseTest {
 
@@ -37,7 +37,7 @@ public class ConfigTest extends BaseTest {
 			@Override public void toRun() {
 				VariantClient.Factory.getInstance().getConfig();				
 			}
-		}.assertThrown(ClientError.CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN);
+		}.assertThrown(ClientUserError.CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN);
 
 
 		// Override with just file

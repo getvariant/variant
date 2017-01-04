@@ -1,12 +1,10 @@
 package com.variant.client.conn;
 
-import org.apache.http.HttpStatus;
-
 import com.variant.client.Connection;
 import com.variant.client.InternalErrorException;
 import com.variant.client.Session;
-import com.variant.client.impl.ClientError;
-import com.variant.client.impl.ClientErrorException;
+import com.variant.client.impl.ClientUserError;
+import com.variant.client.impl.ClientUserErrorException;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
@@ -24,7 +22,8 @@ public class Server {
 
 	private final String endpointUrl;
 	private final String schemaName;
-	
+	private final HttpAdapter adapter = new HttpAdapter();
+
 	private boolean isConnected = false;
 	
 	/**
@@ -45,7 +44,7 @@ public class Server {
 	 */
 	Server(String url) {
 		int lastColonIx = url.lastIndexOf(':');
-		if (lastColonIx < 0) throw new ClientErrorException(ClientError.BAD_CONN_URL, url);
+		if (lastColonIx < 0) throw new ClientUserErrorException(ClientUserError.BAD_CONN_URL, url);
 		String ep = url.substring(0, lastColonIx);
 		endpointUrl = ep.endsWith("/") ? ep : ep + "/";
 		schemaName = url.substring(lastColonIx + 1);
@@ -59,8 +58,7 @@ public class Server {
 		
 		if (isConnected) throw new InternalErrorException("Already connected");
 
-		HttpAdapter httpAdapter = new HttpAdapter();
-		HttpResponse resp = httpAdapter.post(endpointUrl + "connection/" + schemaName);
+		HttpResponse resp = adapter.post(endpointUrl + "connection/" + schemaName);
 		isConnected = true;
 		return Payload.Connection.fromResponse(resp);
 	}
@@ -70,8 +68,7 @@ public class Server {
 	 */
 	void disconnect(String id) {
 		if (!isConnected) return;
-		HttpAdapter httpClient = new HttpAdapter();
-		httpClient.delete(endpointUrl + "connection/" + id);
+		adapter.delete(endpointUrl + "connection/" + id);
 		isConnected = true;		
 	}
 	
@@ -84,8 +81,7 @@ public class Server {
 		checkState(ssn);
 		
 		// Remote
-		HttpAdapter httpClient = new HttpAdapter();
-		HttpResponse resp = httpClient.post(endpointUrl + "event/", ((VariantEventSupport)event).toJson(ssn.getId()));
+		adapter.post(endpointUrl + "event/", ((VariantEventSupport)event).toJson(ssn.getId()));
 		
 	}
 	
@@ -104,19 +100,8 @@ public class Server {
 
 		checkState(conn);
 
-		HttpAdapter httpClient = new HttpAdapter();
-		HttpResponse resp = httpClient.get(endpointUrl + "session/" + sessionId);
-
-		if (resp.status == HttpStatus.SC_OK) {
-			return Payload.Session.fromResponse(conn, resp);
-		}
-		else if (resp.status == HttpStatus.SC_NO_CONTENT) {
-			return null;
-		}
-		else {
-			//throw new VariantHttpClientException(resp);
-			return null;
-		}
+		HttpResponse resp = adapter.get(endpointUrl + "session/" + sessionId);
+		return Payload.Session.fromResponse(conn, resp);
 	}
 
 	/**
@@ -127,8 +112,7 @@ public class Server {
 		checkState(conn);
 
 		// Remote
-		HttpAdapter httpClient = new HttpAdapter();
-		httpClient.put(endpointUrl + "session/" + session.getId(), session.toJson());
+		adapter.put(endpointUrl + "session/" + session.getId(), session.toJson());
 		
 	}
 

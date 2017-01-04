@@ -7,24 +7,15 @@ import java.util.Map;
 import java.util.Set;
 
 import com.variant.client.Connection;
-import com.variant.client.VariantClient;
 import com.variant.client.Session;
 import com.variant.client.SessionIdTracker;
-import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
-
-import static com.variant.client.impl.ClientError.*;
-
 import com.variant.client.conn.ConnectionImpl;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.VariantEvent;
-import com.variant.core.impl.StateVisitedEvent;
-import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.session.CoreSession;
-import com.variant.core.session.CoreStateRequest;
 import com.variant.core.session.SessionScopedTargetingStabile;
 
 /**
@@ -185,6 +176,12 @@ public class SessionImpl implements Session {
 		checkState();
 		conn.getServer().saveEvent(this, event);
 	}
+	
+	@Override
+	public long getTimeoutMillis() {
+		return conn.getSessionTimeoutMillis();
+	}
+
 /*
 	@Override
 	public VariantStateRequest getStateRequest() {

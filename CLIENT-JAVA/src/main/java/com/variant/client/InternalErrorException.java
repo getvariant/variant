@@ -1,7 +1,7 @@
 package com.variant.client;
 
 /**
- * Thrown when the underlying connection has been closed.
+ * Exceptions that are not due to user action.
  * 
  * @author Igor Urisman
  * @since 0.7

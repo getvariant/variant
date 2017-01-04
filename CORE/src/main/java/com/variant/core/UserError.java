@@ -28,7 +28,8 @@ Range   Base         Major Area               Minor Area
 271-300              --Available
 
 301-400 Client Local
-301-400              --Available
+301-330              Internal
+331-400              User
         
 401-600 Server local 
 401-420              Server bootstrap

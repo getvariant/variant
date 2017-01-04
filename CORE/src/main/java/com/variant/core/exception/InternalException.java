@@ -2,9 +2,9 @@ package com.variant.core.exception;
 
 import com.variant.core.VariantException;
 
+@SuppressWarnings("serial")
 public class InternalException extends VariantException {
 
-	private static final long serialVersionUID = 1L;
 	private static final String MSG_PREFIX = "Internal exception: ";
 	
 	/**

@@ -1,29 +1,13 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Random;
 
 import com.variant.client.Connection;
-import com.variant.client.VariantClient;
-import com.variant.client.Session;
-import com.variant.client.StateRequest;
 import com.variant.client.Connection.Status;
-import com.variant.client.impl.SessionImpl;
-import com.variant.client.impl.StateRequestImpl;
-import com.variant.core.UserError;
-import com.variant.core.schema.ParserResponse;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.session.CoreSession;
-import com.variant.core.util.VariantCollectionsUtils;
+import com.variant.client.Session;
+import com.variant.client.VariantClient;
 import com.variant.core.util.VariantStringUtils;
 
 public class SessionTest extends BaseTestWithServer {
@@ -45,90 +29,64 @@ public class SessionTest extends BaseTestWithServer {
 		String sessionId = VariantStringUtils.random64BitString(random);
 		
 		// By session ID
-		Session ssn = conn.getSessionById(sessionId);
-		assertNull(ssn);
+		Session ssn1 = conn.getSessionById(sessionId);
+		assertNull(ssn1);
 
 		// Via SID tracker, no create.
-		ssn = conn.getSession(sessionId);
-		assertNull(ssn);
+		ssn1 = conn.getSession(sessionId);
+		assertNull(ssn1);
 
 		// Via SID tracker, create.
-		ssn = conn.getOrCreateSession(sessionId);
-		assertNotNull(ssn);
-
-		//ssn = conn.getSession(userData)
-/*		
-		assertNull(ssn1);
-		ssn1 = client.getOrCreateSession("foo");
+		ssn1 = conn.getOrCreateSession(sessionId);
 		assertNotNull(ssn1);
+		assertEquals(sessionId, ssn1.getId());
+		assertEquals(System.currentTimeMillis(), ssn1.creationTimestamp(), 1);
+		assertEquals(conn, ssn1.getConnectoin());
+		assertTrue(ssn1.getDisqualifiedTests().isEmpty());
+		assertTrue(ssn1.getTraversedStates().isEmpty());
+		assertTrue(ssn1.getTraversedTests().isEmpty());		
 
-		assertNotNull(ssn1.getId());
-		assertEquals(ssn1.getSchemaId(), schema.getId());
-		assertNull(ssn1.getStateRequest());		
-		assertEquals(0, ssn1.getTraversedStates().size());
-		assertEquals(0, ssn1.getTraversedTests().size());
-		
-		VariantSession ssn2 = client.getSession("foo");
-		assertNotNull(ssn2);
-		
+		// Get same session by SID
+		Session ssn2 = conn.getSessionById(sessionId);
 		assertEquals(ssn1, ssn2);
-		assertNull(ssn2.getStateRequest());		
-		assertEquals(ssn2.getSchemaId(), schema.getId());
-		assertEquals(0, ssn2.getTraversedStates().size());
-		assertEquals(0, ssn2.getTraversedTests().size());
-
-		State state1 = schema.getState("state1");		
-		VariantStateRequest varReq = ssn2.targetForState(state1);
-		//System.out.println(((VariantSessionImpl)ssn2).toJson());
-		assertEquals(state1, varReq.getState());
-		assertEquals(ssn2.getSchemaId(), schema.getId());
-		assertEquals(
-				((VariantStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
-				((VariantStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
-		assertEquals(
-				"[(state1, 1)]", 
-				Arrays.toString(ssn2.getTraversedStates().toArray()));
 		
-		Collection<Test> expectedTests = VariantCollectionsUtils.list(
-				schema.getTest("test2"),
-				schema.getTest("test3"),
-				schema.getTest("test4"),
-				schema.getTest("test5"),
-				schema.getTest("test6"));
-		
-		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
-
-		varReq.commit("");
-
-		assertEquals(5, ((VariantSessionImpl)ssn2).getTargetingTracker().get().size());
-		assertEquals(5, varReq.getLiveExperiences().size());
-		for (Test expectedTest: expectedTests) {
-			assertNotNull(varReq.getLiveExperience(expectedTest));
-		}
-		
-		// The session shouldn't have changed after commit.
-		assertEquals(ssn2.getSchemaId(), schema.getId());
-		assertEquals(
-				((VariantStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
-				((VariantStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
-		assertEquals(
-				"[(state1, 1)]", 
-				Arrays.toString(ssn2.getTraversedStates().toArray()));
-
-		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
-
-		// Commit should have saved the session.
-		CoreSession ssn3 = client.getSession("foo");
-		assertEquals(ssn3, ssn2);
-		assertEquals(ssn3.getSchemaId(), schema.getId());
-		assertTrue(varReq.isCommitted());
-		assertEquals(
-				"[(state1, 1)]", 
-				Arrays.toString(ssn3.getTraversedStates().toArray()));
-		assertEqualAsSets(expectedTests, ssn3.getTraversedTests());		
-*/
+		// Get same session via SID tracker
+		ssn2 = conn.getSession(sessionId);
+		assertEquals(ssn1, ssn2);	
 	}
 	
+	/**
+	 * No session ID in tracker.
+	 * 
+	 * @throws Exception
+	 */
+	@org.junit.Test
+	public void sessionExpirationTest() throws Exception {
+		
+		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		assertNotNull(conn);
+		assertEquals(Status.OPEN, conn.getStatus());
+		
+		Session[] sessions = new Session[100];
+		for (int i = 0; i < sessions.length; i++) {
+			String id = VariantStringUtils.random64BitString(random);
+			sessions[i] = conn.getOrCreateSession(id);
+			assertNotNull(sessions[i]);
+		}
+		
+		for (int i = 0; i < sessions.length; i++) {
+			assertFalse(sessions[i].isExpired());
+		}
+
+		assertEquals(1000, sessions[0].getTimeoutMillis());
+		// Let vacuum thread a chance to run.
+		Thread.sleep(2000);
+		
+		for (int i = 0; i < sessions.length; i++) {
+			assertTrue(sessions[i].isExpired());
+		}
+
+	}
 	/**
 	 * set/get session attributes.
 	 * 

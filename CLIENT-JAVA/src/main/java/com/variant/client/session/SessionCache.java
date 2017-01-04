@@ -7,9 +7,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.Connection;
 import com.variant.client.Session;
-import com.variant.client.conn.ConnectionImpl;
 import com.variant.client.impl.SessionImpl;
 
 /**
@@ -23,11 +21,7 @@ import com.variant.client.impl.SessionImpl;
 public class SessionCache {
 
 	private static Logger LOG = LoggerFactory.getLogger(SessionCache.class);
-	
-	//private static long DEFAULT_KEEP_ALIVE = DateUtils.MILLIS_PER_MINUTE * 30;
-	
-	private static long VACUUM_INTERVAL = DateUtils.MILLIS_PER_SECOND * 30;
-		
+			
 	/**
 	 */
 	private class Entry {
@@ -41,7 +35,7 @@ public class SessionCache {
 		}
 		
 		boolean isIdle() {
-			return accessTimestamp + conn.getSessionTimeout()*1000 < System.currentTimeMillis();
+			return accessTimestamp + sessionTimeoutMillis < System.currentTimeMillis();
 		}
 	}
 	
@@ -70,7 +64,7 @@ public class SessionCache {
 						}
 					}
 										
-					Thread.sleep(VACUUM_INTERVAL);
+					Thread.sleep(vacuumInterval);
 
 				}
 				catch (InterruptedException e) {
@@ -92,15 +86,25 @@ public class SessionCache {
 		}
 	}
 
-	private final ConnectionImpl conn;
+	private final long sessionTimeoutMillis;
+	private final long vacuumInterval;
+	
 	private ConcurrentHashMap<String, Entry> cache = new ConcurrentHashMap<String, Entry>();
 	private VacuumThread vacuumThread;
+
+	// ---------------------------------------------------------------------------------------------//
+	//                                             PUBLIC                                           //
+	// ---------------------------------------------------------------------------------------------//
 
 	/**
 	 * 
 	 */
-	public SessionCache(Connection conn) {
-		this.conn = (ConnectionImpl) conn;
+	public SessionCache(long sessionTimeoutMillis) {
+	
+		this.sessionTimeoutMillis = sessionTimeoutMillis;
+		// Vacuum therad wakes up no less frequently than 30 seconds, but more frequently for tests,
+		// when the timeout is set low, e.g. 1 sec.
+		this.vacuumInterval = Math.min(sessionTimeoutMillis / 2, DateUtils.MILLIS_PER_SECOND * 30);
 		vacuumThread = new VacuumThread();
 		vacuumThread.setDaemon(false);
 		vacuumThread.setName(VacuumThread.class.getSimpleName());
