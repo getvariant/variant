@@ -77,7 +77,6 @@ public class HttpAdapter {
 	 * @return
 	 */
 	public HttpResponse put(final String url, final String body) {
-
 		return remoter.call(
 				new HttpRemoter.Requestable() {	
 					@Override public HttpUriRequest requestOp() throws Exception {

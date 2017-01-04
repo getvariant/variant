@@ -59,11 +59,8 @@ public class HttpResponse {
 			String comment = (String) map.get("comment");
 			
 			switch (code) {
-			case 601: return new InternalErrorException(message, comment);
-			//case 701: return new Unknown
-			
+			case 601: return new InternalErrorException(message, comment);			
 			default: return new ClientException(code, message, comment);
-
 			}
 		}
 		catch(IOException parseException) {

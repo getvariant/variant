@@ -39,18 +39,15 @@ public class Server {
 		
 	}
 
-	//
-	// Bootstrapping 
-	// Package visibility as we only want ConnectionImpl to call this.
-	//
-
 	/**
-	 * 
+	 * Bootstrapping 
+	 * Package visibility as we only want ConnectionImpl to call this.
 	 */
 	Server(String url) {
 		int lastColonIx = url.lastIndexOf(':');
 		if (lastColonIx < 0) throw new ClientErrorException(ClientError.BAD_CONN_URL, url);
-		endpointUrl = url.substring(0, lastColonIx);
+		String ep = url.substring(0, lastColonIx);
+		endpointUrl = ep.endsWith("/") ? ep : ep + "/";
 		schemaName = url.substring(lastColonIx + 1);
 	}
 	
@@ -63,7 +60,7 @@ public class Server {
 		if (isConnected) throw new InternalErrorException("Already connected");
 
 		HttpAdapter httpAdapter = new HttpAdapter();
-		HttpResponse resp = httpAdapter.post(endpointUrl + "/connection/" + schemaName);
+		HttpResponse resp = httpAdapter.post(endpointUrl + "connection/" + schemaName);
 		isConnected = true;
 		return Payload.Connection.fromResponse(resp);
 	}
@@ -74,7 +71,7 @@ public class Server {
 	void disconnect(String id) {
 		if (!isConnected) return;
 		HttpAdapter httpClient = new HttpAdapter();
-		HttpResponse resp = httpClient.delete(endpointUrl + "/connection/" + id);
+		httpClient.delete(endpointUrl + "connection/" + id);
 		isConnected = true;		
 	}
 	
@@ -131,11 +128,8 @@ public class Server {
 
 		// Remote
 		HttpAdapter httpClient = new HttpAdapter();
-		HttpResponse resp = httpClient.put(endpointUrl + "session/" + session.getId(), session.toJson(conn.getSchema()));
+		httpClient.put(endpointUrl + "session/" + session.getId(), session.toJson());
 		
-		if (resp.status != HttpStatus.SC_OK) {
-			//throw new VariantHttpClientException(resp);
-		}
 	}
 
 }

@@ -34,11 +34,11 @@ class HttpRemoter {
 		CloseableHttpResponse resp = null;
 		try {
 			HttpUriRequest req = requestable.requestOp();
-			req.setHeader("Content-Type", "application/json");
+			req.setHeader("Content-Type", "text/plain; charset=utf-8");
 			resp = client.execute(req);
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(String.format(
-						"%s %s - %s (%s)", 
+						"%s %s : %s (%s)", 
 						req.getMethod(), req.getURI(), 
 						resp.getStatusLine().getStatusCode(), 
 						DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
@@ -52,7 +52,10 @@ class HttpRemoter {
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
 				throw result.toClientException();
 			default:
-				throw new InternalErrorException("Bad response from server [" + result.toString() + "]");
+				throw new InternalErrorException(
+						String.format("Unexpected response from server: [%s %s : %s]",
+								req.getMethod(), req.getURI(), result.status)
+				);
 			}
 		}
 		catch (ClientException ce) {
