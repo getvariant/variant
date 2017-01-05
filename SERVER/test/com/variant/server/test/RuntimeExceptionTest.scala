@@ -2,11 +2,13 @@ package com.variant.server.test
 
 import com.variant.core.UserErrorException
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.exception.CommonError._  // IU: Not clea why I have to include this, if I already include ServerErrorLocal, which extends it.
+import com.variant.core.exception.CommonError._
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.session.ServerSession
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.OneAppPerSuite
 
-class RuntimeExceptionTest extends BaseSpecWithSchema {
+class RuntimeExceptionTest extends BaseSpecWithServer {
 
    val schemaJson = """
 {

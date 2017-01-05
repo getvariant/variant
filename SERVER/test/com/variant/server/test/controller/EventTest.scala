@@ -8,7 +8,7 @@ import scala.collection.JavaConversions._
 import com.variant.server.boot.ServerErrorApi._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
-import com.variant.server.test.BaseSpecWithSchema
+import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.UserErrorException
 
 object EventTest {
@@ -38,7 +38,7 @@ object EventTest {
 /**
  * Event Controller
  */
-class EventTest extends BaseSpecWithSchema {
+class EventTest extends BaseSpecWithServer {
    
    import EventTest._
    

@@ -11,7 +11,7 @@ import com.variant.core.HookListener
 import com.variant.core.TestTargetingHook
 import scala.util.Random
 
-class TargetingTest extends BaseSpecWithSchema {
+class TargetingTest extends BaseSpecWithServer {
 
 	val trials = 500000
 	val deltaAsFraction = .05f

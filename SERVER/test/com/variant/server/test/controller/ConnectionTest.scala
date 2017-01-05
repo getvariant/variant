@@ -10,7 +10,7 @@ import com.variant.server.boot.ServerErrorApi._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.ConfigKeys._
-import com.variant.server.test.BaseSpecWithSchema
+import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.core.impl.UserHooker
 
@@ -44,7 +44,7 @@ object ConnectionTest {
 /**
  * Event Controller
  */
-class ConnectionTest extends BaseSpecWithSchema {
+class ConnectionTest extends BaseSpecWithServer {
    
    import EventTest._
    

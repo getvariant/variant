@@ -10,7 +10,7 @@ import java.util.Date
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.controller.SessionTest
 		
-class EventWriterTest extends BaseSpecWithSchema {
+class EventWriterTest extends BaseSpecWithServer {
 
    val writer = server.eventWriter
    val reader = EventReader(writer)

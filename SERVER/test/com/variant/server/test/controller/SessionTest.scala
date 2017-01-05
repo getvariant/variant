@@ -7,7 +7,7 @@ import play.api.test.Helpers._
 import scala.collection.JavaConversions._
 import com.variant.server.test.util.ParamString
 import com.variant.server.ConfigKeys
-import com.variant.server.test.BaseSpecWithSchema
+import com.variant.server.test.BaseSpecWithServer
 
 /*
  * Reusable session JSON objects. 
@@ -48,7 +48,7 @@ object SessionTest {
 /**
  * Session Controller Tests
  */
-class SessionTest extends BaseSpecWithSchema {
+class SessionTest extends BaseSpecWithServer {
    
    import SessionTest._
    val endpoint = context + "/session"

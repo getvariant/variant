@@ -22,7 +22,7 @@ import com.variant.core.exception.CommonError._
  * @author Igor
  * 
  */
-class UserHookTest extends BaseSpecWithSchema {
+class UserHookTest extends BaseSpecWithServer {
 
    val MESSAGE_TEXT_STATE = "Info-Message-State"
 	val MESSAGE_TEXT_TEST = "Info-Message-Test"
