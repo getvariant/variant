@@ -37,7 +37,7 @@ public class ConnectionImpl implements Connection {
 	 * Is this connection still valid?
 	 * @return
 	 */
-	private void assertValid() {
+	private void statusCheck() {
 		
 		switch (status) {
 		
@@ -125,7 +125,7 @@ public class ConnectionImpl implements Connection {
 			}
 		}
 		
-		SessionImpl result = _getSession(sessionId);
+		SessionImpl result = getSessionFromServer(sessionId);
 		
 		if (result == null && create) {
 			// Session expired locally, recreate OK.  Don't bother with the server.
@@ -143,7 +143,7 @@ public class ConnectionImpl implements Connection {
 	 * @param userData
 	 * @return
 	 */
-	private SessionImpl _getSession(String sid) {
+	private SessionImpl getSessionFromServer(String sid) {
 				
 		// Local cache first.
 		SessionImpl ssnFromCache = (SessionImpl) cache.get(sid);
@@ -213,6 +213,7 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public VariantClient getClient() {
+		statusCheck();
 		return client;
 	}
 
@@ -220,6 +221,7 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public Session getOrCreateSession(Object... userData) {
+		statusCheck();
 		return _getSession(true, userData);
 	}
 			
@@ -227,16 +229,19 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public Session getSession(Object... userData) {
+		statusCheck();
 		return _getSession(false, userData);
 	}
 
 	@Override
 	public Session getSessionById(String sessionId) {
-		return _getSession(sessionId);
+		statusCheck();
+		return getSessionFromServer(sessionId);
 	}
 	
 	@Override
 	public Schema getSchema() {
+		statusCheck();
 		return schema;
 	}
 

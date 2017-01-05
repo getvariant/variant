@@ -8,6 +8,9 @@ import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 import com.variant.core.util.VariantStringUtils;
 
 public class SessionTest extends BaseTestWithServer {
@@ -16,9 +19,6 @@ public class SessionTest extends BaseTestWithServer {
 	private final Random random = new Random(System.currentTimeMillis());
 	
 	/**
-	 * No session ID in tracker.
-	 * 
-	 * @throws Exception
 	 */
 	@org.junit.Test
 	public void noSessionIdInTrackerTest() throws Exception {
@@ -56,9 +56,6 @@ public class SessionTest extends BaseTestWithServer {
 	}
 	
 	/**
-	 * No session ID in tracker.
-	 * 
-	 * @throws Exception
 	 */
 	@org.junit.Test
 	public void expirationTest() throws Exception {
@@ -89,9 +86,6 @@ public class SessionTest extends BaseTestWithServer {
 	}
 	
 	/**
-	 * set/get session attributes.
-	 * 
-	 * @throws Exception
 	 */
 	@org.junit.Test
 	public void attributesTest() throws Exception {
@@ -116,5 +110,31 @@ public class SessionTest extends BaseTestWithServer {
 		assertNull(ssn.clearAttribute("foo"));
 	}
 
-	
+	/**
+	 */
+	@org.junit.Test
+	public void targetingTest() throws Exception {
+		
+		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		assertNotNull(conn);
+		assertEquals(Status.OPEN, conn.getStatus());
+
+		// Via SID tracker, create.
+		String sessionId = VariantStringUtils.random64BitString(random);
+		Session ssn = conn.getOrCreateSession(sessionId);
+		assertNotNull(ssn);
+		assertEquals(sessionId, ssn.getId());
+
+	   	Schema schema = conn.getSchema();
+	   	State state1 = schema.getState("state1");
+	   	Test test1 = schema.getTest("test1");
+	   	//Test test2 = schema.getTest("test2");
+	   	//Test test3 = schema.getTest("test3");
+	   	//Test test4 = schema.getTest("test4");
+	   	//Test test5 = schema.getTest("test5");
+	   	//Test test6 = schema.getTest("test6");
+
+	   	
+		
+	}
 }

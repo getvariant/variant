@@ -7,6 +7,8 @@ import com.variant.client.ClientException;
 import com.variant.client.InternalErrorException;
 import com.variant.client.TargetingTracker;
 import com.variant.client.session.TargetingTrackerEntryImpl;
+import com.variant.core.UserError;
+import com.variant.core.exception.InternalException;
 import com.variant.core.schema.Schema;
 import com.variant.core.test.VariantBaseTest;
 
@@ -54,10 +56,27 @@ public abstract class BaseTest extends VariantBaseTest {
 		final public Class<ClientException> getExceptionClass() {
 			return ClientException.class;
 		}
-		
+
 		/**
-		 * Call this if you want assertion always thrown.
+		 * Client side errors: we have access to them at comp time.
 		 */
+		final public void assertThrown(UserError error, Object...args) throws Exception {
+			ClientException result = super.run();
+			assertNotNull("Expected exception not thrown", result);
+			assertEquals(result.getCode(), error.code);
+			assertEquals(String.format(error.msgFormat, args), result.getMessage());
+		}
+		/**
+		 * Server side errors: We don't have access to them at comp time
+		 */
+		final public void assertThrown(int code) throws Exception {
+			ClientException result = super.run();
+			assertNotNull("Expected exception not thrown", result);
+			assertEquals(code, result.getCode());
+		}
+		/**
+		 * 
+		 *
 		final public void assertThrown(int code, String message, String comment) throws Exception {
 			ClientException result = super.run();
 			assertNotNull("Expected exception not thrown", result);
@@ -65,6 +84,7 @@ public abstract class BaseTest extends VariantBaseTest {
 			assertEquals(message, result.getMessage());
 			assertEquals(comment, result.getComment());
 		}
+		*/
 		
 	}
 

@@ -9,9 +9,11 @@ import java.util.Set;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionIdTracker;
+import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
 import com.variant.client.conn.ConnectionImpl;
 import com.variant.client.session.TargetingTrackerEntryImpl;
+import static com.variant.client.impl.ClientUserError.*;
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -94,22 +96,24 @@ public class SessionImpl implements Session {
 
 	/**
 	 *
-	 *
+	 */
 	@Override
-	public VariantStateRequest targetForState(State state) {
+	public StateRequest targetForState(State state) {
 				
 		checkState();
 		
 		// Can't have two requests at one time
 		if (coreSession.getStateRequest() != null && !coreSession.getStateRequest().isCommitted()) {
-			throw new ClientErrorException(ACTIVE_REQUEST);
+			throw new ClientUserErrorException(ACTIVE_REQUEST);
 		}
-				
-		return core.getRuntime().targetSessionForState(this, (StateImpl) state);
+/*
+		return core.getRuntime().targetSessionForState(this, (StateImpl) state); ... callthe server...
 
 		CoreStateRequest coreReq = (CoreStateRequest) coreSession.targetForState(state);
 		targetingTracker.set(fromTargetingStabile(coreSession.getTargetingStabile()));
 		return new VariantStateRequestImpl(coreReq, this);
+		*/
+		return null;  // temp
 	}
 
 	/**

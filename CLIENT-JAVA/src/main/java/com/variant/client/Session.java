@@ -53,8 +53,8 @@ public interface Session {
 	 *         may be further examined for more information about the outcome of this operation.  
 	 *
 	 * @since 0.5
-	 *
-	VariantStateRequest targetForState(State state);
+	 */
+	StateRequest targetForState(State state);
 	
 	/**
      * <p>The server connection whch created this session. 
