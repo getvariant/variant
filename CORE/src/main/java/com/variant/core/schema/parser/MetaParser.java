@@ -1,10 +1,15 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.ParserError.*;
+import static com.variant.core.schema.parser.ParserError.META_COMMENT_INVALID;
+import static com.variant.core.schema.parser.ParserError.META_NAME_INVALID;
+import static com.variant.core.schema.parser.ParserError.META_NAME_MISSING;
+import static com.variant.core.schema.parser.ParserError.META_NOT_OBJECT;
+import static com.variant.core.schema.parser.ParserError.META_UNSUPPORTED_PROPERTY;
 
 import java.util.Map;
 
-import com.variant.core.exception.InternalException;
+import com.variant.core.UserError.Severity;
+import com.variant.core.exception.CoreException;
 import com.variant.core.schema.impl.SchemaImpl;
 
 /**
@@ -75,7 +80,7 @@ public class MetaParser implements Keywords {
 			
 		}
 		catch (Exception e) {
-			throw new InternalException(e);
+			throw new CoreException.Internal(e);
 		}
 		
 	}

@@ -1,6 +1,6 @@
 package com.variant.core.svrstub;
 
-import com.variant.core.exception.InternalException;
+import com.variant.core.exception.CoreException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
@@ -8,7 +8,7 @@ import com.variant.core.schema.Test;
  * Server side stub.
  * Transitional hack to avoid instantiating the fully fledged object since we don't
  * yet have schema on server. 
- */
+ *
 public class TestExperienceServerStub implements Test.Experience  {
 
 	private String name;
@@ -33,7 +33,7 @@ public class TestExperienceServerStub implements Test.Experience  {
 
 	@Override
 	public Number getWeight() {
-		throw new InternalException("Method not supported");
+		throw new CoreException.Internal("Method not supported");
 	}
 
 	@Override
@@ -43,8 +43,9 @@ public class TestExperienceServerStub implements Test.Experience  {
 
 	@Override
 	public boolean isDefinedOn(State state) {
-		throw new InternalException("Method not supported");
+		throw new CoreException.Internal("Method not supported");
 	}
 	
 	
 }
+*/

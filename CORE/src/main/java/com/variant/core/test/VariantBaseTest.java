@@ -11,9 +11,8 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.variant.core.UserErrorException;
-import com.variant.core.exception.InternalException;
 import com.variant.core.exception.CommonError;
+import com.variant.core.exception.CoreException;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
@@ -244,21 +243,21 @@ abstract public class VariantBaseTest {
 	 * Concrete exception intercepter for VariantRuntimeException
 	 *
 	 */
-	protected static abstract class UserExceptionInterceptor 
-		extends ExceptionInterceptor<UserErrorException> {
+	protected static abstract class CoreUserExceptionInterceptor 
+		extends ExceptionInterceptor<CoreException.User> {
 		
 		@Override
-		final public Class<UserErrorException> getExceptionClass() {
-			return UserErrorException.class;
+		final public Class<CoreException.User> getExceptionClass() {
+			return CoreException.User.class;
 		}
 		
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
 		final public void assertThrown(CommonError template, Object...args) throws Exception {
-			UserErrorException result = super.run();
+			CoreException.User result = super.run();
 			assertNotNull("Expected exception not thrown", result);
-			assertEquals(new UserErrorException(template, args).getMessage(), result.getMessage());
+			assertEquals(new CoreException.User(template, args).getMessage(), result.getMessage());
 		}
 		
 	}
@@ -267,19 +266,19 @@ abstract public class VariantBaseTest {
 	 * Concrete exception intercepter for VariantInternalException
 	 *
 	 */
-	protected static abstract class InternalExceptionInterceptor 
-		extends ExceptionInterceptor<InternalException> {
+	protected static abstract class CoreInternalExceptionInterceptor 
+		extends ExceptionInterceptor<CoreException.Internal> {
 		
 		@Override
-		final public Class<InternalException> getExceptionClass() {
-			return InternalException.class;
+		final public Class<CoreException.Internal> getExceptionClass() {
+			return CoreException.Internal.class;
 		}
 		
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
 		final public void assertThrown(String format, Object...args) throws Exception {
-			InternalException result = super.run();
+			CoreException.Internal result = super.run();
 			assertNotNull("Expected exception not thrown", result);
 			assertEquals(String.format(format, args), result.getMessage());
 		}
@@ -288,7 +287,7 @@ abstract public class VariantBaseTest {
 	/**
 	 * Concrete exception intercepter for IllegalArgumentException
 	 *
-	 */
+	 *
 	protected static abstract class IllegalArgumentExceptionInterceptor 
 		extends ExceptionInterceptor<IllegalArgumentException> {
 		
@@ -297,5 +296,5 @@ abstract public class VariantBaseTest {
 			return IllegalArgumentException.class;
 		}		
 	}
-
+*/
 }

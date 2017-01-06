@@ -18,7 +18,7 @@ import play.api.Configuration
 import com.variant.server.boot.VariantApplicationLoader
 import com.variant.core.exception.CommonError._
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.UserErrorException
+import com.variant.server.ServerException
 
 /**
  * Test various schema deployment error scenarios
@@ -62,7 +62,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual FATAL
          ex.getMessage mustEqual 
-            new UserErrorException(CONFIG_PROPERTY_NOT_SET, ConfigKeys.SCHEMAS_DIR).getMessage
+            new ServerException.User(CONFIG_PROPERTY_NOT_SET, ConfigKeys.SCHEMAS_DIR).getMessage
       }
    }
 
@@ -75,7 +75,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual FATAL
-         ex.getMessage mustEqual new UserErrorException(SCHEMAS_DIR_MISSING, "non-existent").getMessage
+         ex.getMessage mustEqual new ServerException.User(SCHEMAS_DIR_MISSING, "non-existent").getMessage
       }
       
       "return 503 in every http request after SCHEMAS_DIR_MISSING" in {
@@ -98,7 +98,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual FATAL
-         ex.getMessage mustEqual new UserErrorException(SCHEMAS_DIR_NOT_DIR, "test-schemas-file").getMessage
+         ex.getMessage mustEqual new ServerException.User(SCHEMAS_DIR_NOT_DIR, "test-schemas-file").getMessage
       }
       
       "return 503 in every http request after SCHEMAS_DIR_NOT_DIR" in {
@@ -121,7 +121,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual FATAL
-         ex.getMessage mustEqual new UserErrorException(MULTIPLE_SCHEMAS_NOT_SUPPORTED, "test-schemas-multi").getMessage
+         ex.getMessage mustEqual new ServerException.User(MULTIPLE_SCHEMAS_NOT_SUPPORTED, "test-schemas-multi").getMessage
       }
 
       "return 503 in every http request after MULTIPLE_SCHEMAS_NOT_SUPPORTED" in {

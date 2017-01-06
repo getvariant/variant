@@ -12,14 +12,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.map.UnmodifiableMap;
-import org.apache.commons.collections4.set.UnmodifiableSet;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.core.StateRequestStatus;
-import com.variant.core.UserErrorException;
 import com.variant.core.VariantEvent;
-import com.variant.core.exception.InternalException;
+import com.variant.core.exception.CoreException;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -149,7 +147,7 @@ public class CoreStateRequest implements Serializable {
 			for (Test test: state.getInstrumentedTests()) {
 				if (!test.isOn() || session.getDisqualifiedTests().contains(test)) continue;
 				SessionScopedTargetingStabile.Entry entry = stabile.get(test.getName());
-				if (entry == null) throw new InternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
+				if (entry == null) throw new CoreException.Internal("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
 				result.add(test.getExperience(entry.getExperienceName()));
 			}
 			liveExperiences = result;
@@ -169,11 +167,11 @@ public class CoreStateRequest implements Serializable {
 			if (!t.isOn() || session.getDisqualifiedTests().contains(test)) return null;
 			
 			SessionScopedTargetingStabile.Entry entry = session.getTargetingStabile().get(test.getName());
-			if (entry == null) throw new InternalException("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
+			if (entry == null) throw new CoreException.Internal("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
 			return test.getExperience(entry.getExperienceName());
 		}
 		
-		if (!found) throw new UserErrorException(STATE_NOT_INSTRUMENTED_BY_TEST, state.getName(), test.getName());
+		if (!found) throw new CoreException.User(STATE_NOT_INSTRUMENTED_BY_TEST, state.getName(), test.getName());
 
 		return null;
 	}
@@ -265,9 +263,9 @@ public class CoreStateRequest implements Serializable {
 		
 		Object stateName = fields.get(FIELD_NAME_STATE);
 		if (stateName == null) 
-			throw new InternalException("Unable to deserialzie request: no state");
+			throw new CoreException.Internal("Unable to deserialzie request: no state");
 		if (!(stateName instanceof String)) 
-			throw new InternalException("Unable to deserialzie request: state not string");
+			throw new CoreException.Internal("Unable to deserialzie request: state not string");
 		
 		// If we're on the server, we don't have the schema => we can't instantiate a State object,
 		// but we need the state name to log events.
@@ -276,17 +274,17 @@ public class CoreStateRequest implements Serializable {
 		
 		String statusStr = (String) fields.get(FIELD_NAME_STATUS);
 		if (statusStr == null) 
-			throw new InternalException("Unable to deserialzie request: no status");
+			throw new CoreException.Internal("Unable to deserialzie request: no status");
 		if (!(statusStr instanceof String)) 
-			throw new InternalException("Unable to deserialzie request: status not string");
+			throw new CoreException.Internal("Unable to deserialzie request: status not string");
 
 		result.status = StateRequestStatus.valueOf(statusStr);
 		
 		Object committed = fields.get(FILED_NAME_COMMITTED);
 		if (committed == null) 
-			throw new InternalException("Unable to deserialzie request: no committed");
+			throw new CoreException.Internal("Unable to deserialzie request: no committed");
 		if (!(committed instanceof Boolean)) 
-			throw new InternalException("Unable to deserialzie request: committed not boolean");
+			throw new CoreException.Internal("Unable to deserialzie request: committed not boolean");
 
 		result.committed = (Boolean) committed;
 
@@ -303,7 +301,7 @@ public class CoreStateRequest implements Serializable {
 				}
 			}
 			catch (Exception e) {
-				throw new InternalException("Unable to deserialzie request: bad params spec", e);
+				throw new CoreException.Internal("Unable to deserialzie request: bad params spec", e);
 			}
 			result.resolvedParameterMap = paramMap;
 		}
@@ -321,7 +319,7 @@ public class CoreStateRequest implements Serializable {
 				}
 			}
 			catch (Exception e) {
-				throw new InternalException("Unable to deserialzie request: bad experiences spec", e);
+				throw new CoreException.Internal("Unable to deserialzie request: bad experiences spec", e);
 			}
 		}
 

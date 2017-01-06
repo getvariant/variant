@@ -7,6 +7,7 @@ import com.variant.server.session.ServerSession
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerSuite
 import com.variant.server.ServerException
+import com.variant.core.exception.CoreException
 
 class RuntimeExceptionTest extends BaseSpecWithServer {
 
@@ -121,8 +122,8 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
 			   fail("Expected exception not thrown")
    		}
 	   	catch {
-	   	   case uex: ServerException.User =>  uex.getMessage() mustEqual
-      			new ServerException.User(STATE_NOT_INSTRUMENTED_BY_TEST, "state2", "test1").getMessage()
+	   	   case uex: CoreException.User =>  uex.getMessage() mustEqual
+      			new CoreException.User(STATE_NOT_INSTRUMENTED_BY_TEST, "state2", "test1").getMessage()
 		   }
 	   	
       }

@@ -1,13 +1,13 @@
 package com.variant.core.schema.impl;
 
+import static com.variant.core.exception.CommonError.STATE_NOT_INSTRUMENTED_BY_TEST;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static com.variant.core.exception.CommonError.*;
-
-import com.variant.core.UserErrorException;
+import com.variant.core.exception.CoreException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -82,7 +82,7 @@ public class StateImpl implements State {
 		for (Test.OnState tov: test.getOnStates()) {
 			if (tov.getState().equals(this)) return tov.isNonvariant();
 		}
-		throw new UserErrorException(STATE_NOT_INSTRUMENTED_BY_TEST, name, test.getName());
+		throw new CoreException.User(STATE_NOT_INSTRUMENTED_BY_TEST, name, test.getName());
 	}
 
 	//---------------------------------------------------------------------------------------------//

@@ -47,7 +47,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.variant.core.exception.InternalException;
+import com.variant.core.exception.CoreException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
@@ -81,7 +81,7 @@ public class TestsParser implements Keywords {
 			rawTests = (List<Map<String, ?>>) testsObject;
 		}
 		catch (Exception e) {
-			throw new InternalException(e);
+			throw new CoreException.Internal(e);
 		}
 		
 		if (rawTests.size() == 0) {

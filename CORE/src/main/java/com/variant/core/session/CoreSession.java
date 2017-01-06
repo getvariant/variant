@@ -14,7 +14,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.VariantException;
-import com.variant.core.exception.InternalException;
+import com.variant.core.exception.CoreException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -67,7 +67,7 @@ public class CoreSession implements Serializable {
 			throw e;
 		}
 		catch (Exception e) {
-			throw new InternalException("Unable to deserialzie session: [" + annotatedJson + "]", e);
+			throw new CoreException.Internal("Unable to deserialzie session: [" + annotatedJson + "]", e);
 		}
 
 	}
@@ -84,16 +84,16 @@ public class CoreSession implements Serializable {
 		
 		Object idObj = parsedJson.get(FIELD_NAME_ID);
 		if (idObj == null) 
-			throw new InternalException("No id");
+			throw new CoreException.Internal("No id");
 		if (!(idObj instanceof String)) 
-			throw new InternalException("id not string");
+			throw new CoreException.Internal("id not string");
 		result.sid = (String)idObj;
 		
 		Object schidObj = parsedJson.get(FIELD_NAME_SCHEMA_ID);
 		if (schidObj == null ) 
-			throw new InternalException("No schema id");
+			throw new CoreException.Internal("No schema id");
 		if (!(schidObj instanceof String)) 
-			throw new InternalException("Schema id not string");
+			throw new CoreException.Internal("Schema id not string");
 
 /* If schema has changed, we may not be able to deserialize it. Remember that we don't yet have a schema on server.
 		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER && !core.getSchema().getId().equals(schidObj)) {
@@ -102,16 +102,16 @@ public class CoreSession implements Serializable {
 CLEANUP */									
 		Object tsObj = parsedJson.get(FIELD_NAME_TIMESTAMP);
 		if (tsObj == null) 
-			throw new InternalException("No timestamp");
+			throw new CoreException.Internal("No timestamp");
 		if (!(tsObj instanceof Number)) 
-			throw new InternalException("Timestamp is not number");
+			throw new CoreException.Internal("Timestamp is not number");
 
 		result.timestamp = ((Number)tsObj).longValue();
 		
 		Object currentRequestObj = parsedJson.get(FIELD_NAME_CURRENT_REQUEST);
 		if (currentRequestObj != null) {
 			if (!(currentRequestObj instanceof Map<?,?>)) 
-			throw new InternalException("currentRequest not map");
+			throw new CoreException.Internal("currentRequest not map");
 			result.currentRequest = CoreStateRequest.fromJson(schema, result, (Map<String,?>)currentRequestObj);
 		}
 		
@@ -130,7 +130,7 @@ CLEANUP */
 				}
 			}
 			catch (Exception e) {
-				throw new InternalException("Unable to deserialzie session: bad stabil spec", e);
+				throw new CoreException.Internal("Unable to deserialzie session: bad stabil spec", e);
 			}
 		}
 		result.setTargetingStabile(targetingStabile);
@@ -153,7 +153,7 @@ CLEANUP */
 				}
 			}
 			catch (Exception e) {
-				throw new InternalException("Unable to deserialzie session: bad states spec", e);
+				throw new CoreException.Internal("Unable to deserialzie session: bad states spec", e);
 			}
 			result.traversedStates = statesMap;
 		}
@@ -168,7 +168,7 @@ CLEANUP */
 				}
 			}
 			catch (Exception e) {
-				throw new InternalException("Unable to deserialzie session: bad tests spec", e);
+				throw new CoreException.Internal("Unable to deserialzie session: bad tests spec", e);
 			}
 			result.traversedTests = tests;
 		}
@@ -184,7 +184,7 @@ CLEANUP */
 				}
 			}
 			catch (Exception e) {
-				throw new InternalException("Unable to deserialzie session: bad disqual tests spec", e);
+				throw new CoreException.Internal("Unable to deserialzie session: bad disqual tests spec", e);
 			}
 			result.disqualTests = tests;
 		}
@@ -274,7 +274,7 @@ CLEANUP */
 	public void addTraversedTest(Test test) {
 
 		if (traversedTests.contains(test)) 
-			throw new InternalException(
+			throw new CoreException.Internal(
 					String.format("Test [%s] already contained in the traversed list", test.getName()));
 		
 		traversedTests.add(test);
@@ -287,7 +287,7 @@ CLEANUP */
 	public void addDisqualifiedTest(Test test) {
 
 		if (disqualTests.contains(test)) {
-				throw new InternalException(
+				throw new CoreException.Internal(
 						String.format("Test [%s] already contained in the disqual list", test.getName()));
 		}	
 		disqualTests.add(test);
@@ -407,7 +407,7 @@ CLEANUP */
 			return result.toString();
 		}
 		catch (Exception e) {
-			throw new InternalException("Unable to serialize session", e);
+			throw new CoreException.Internal("Unable to serialize session", e);
 		}
 	}
 	

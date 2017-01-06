@@ -1,8 +1,7 @@
 package com.variant.core.svrstub;
-
+/*
 import java.util.List;
 
-import com.variant.core.exception.InternalException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -77,3 +76,4 @@ public class TestServerStub implements Test {
 
 	
 }
+*/

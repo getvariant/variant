@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.variant.core.VariantEvent;
-import com.variant.core.exception.InternalException;
+import com.variant.core.exception.CoreException;
 
 /**
  * 
@@ -82,7 +82,7 @@ abstract public class VariantEventSupport implements VariantEvent {
 			return result.toString();
 		}
 		catch (Exception e) {
-			throw new InternalException("Unable to serialize session", e);
+			throw new CoreException.Internal("Unable to serialize session", e);
 		}
 	}
 }

@@ -9,7 +9,6 @@ import com.variant.core.exception.ServerError._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.BaseSpecWithServer
-import com.variant.core.UserErrorException
 
 object EventTest {
 

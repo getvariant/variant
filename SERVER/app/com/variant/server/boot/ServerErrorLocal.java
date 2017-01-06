@@ -8,9 +8,6 @@ import com.variant.core.exception.CommonError;
  */
 public class ServerErrorLocal extends CommonError {
 
-//	public final static ServerError UNEXPECTED_FATAL_ERROR = 
-//			new ServerError(Severity.FATAL, "Unexpected FATAL error: [%s]. See application log for details");
-
 	//
 	// 401-420 Server bootstrap
 	//

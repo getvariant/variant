@@ -9,7 +9,6 @@ import com.variant.server.EventFlusher
 import com.variant.server.FlushableEvent
 import play.api.Logger
 import com.typesafe.config.Config
-import com.variant.core.UserErrorException
 import com.variant.core.VariantException
 import com.variant.server.ServerException
 

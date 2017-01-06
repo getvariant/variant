@@ -18,8 +18,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
-import com.variant.core.exception.InternalException;
 import com.variant.core.exception.CommonError;
+import com.variant.core.exception.CoreException;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.State;
@@ -108,7 +108,7 @@ public class SchemaParser implements Keywords {
 			String input = IOUtils.toString(annotatedJsonStream);
 			return parse(input);
 		} catch (IOException e) {
-			throw new InternalException("Unable to read input from stream", e);
+			throw new CoreException.Internal("Unable to read input from stream", e);
 		}
 	}
 
@@ -142,7 +142,7 @@ public class SchemaParser implements Keywords {
 			toParserError(parseException, cleanJsonString, response);
 		} 
 		catch (Exception e) {
-			throw new InternalException(e);
+			throw new CoreException.Internal(e);
 		}
 		
 		// Don't attempt to parse if JSON failed.

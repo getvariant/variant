@@ -19,7 +19,6 @@ import com.variant.server.runtime.Runtime
 import com.variant.core.schema.ParserResponse
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
-import com.variant.core.exception.InternalException
 import com.variant.core.UserError.Severity._
 import com.variant.server.ServerException
 
