@@ -15,11 +15,14 @@ object VariantAction extends ActionBuilder[Request] with Results {
       
    private val logger = Logger(this.getClass)
    
+   /**
+    * Play's wrapper around the code in the concrete action. 
+    */
    def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
 
       if (!VariantServer.server.isUp) {
          // If the server didn't come up, regurn 503
-         logger.trace("Server unavailable");
+         logger.warn("Server unavailable");
          Future.successful(ServiceUnavailable)
       }
       else {
@@ -28,4 +31,9 @@ object VariantAction extends ActionBuilder[Request] with Results {
          block(request)
       }
    }
+   
+   /*
+    * Implicit converter from UserError to Result.
+    */
+   
 }

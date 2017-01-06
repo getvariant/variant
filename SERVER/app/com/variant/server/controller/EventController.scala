@@ -6,7 +6,7 @@ import play.api.mvc.Request
 import com.variant.server.session.SessionStore
 import play.api.Logger
 import play.api.libs.json._
-import com.variant.server.boot.ServerErrorApi._
+import com.variant.core.exception.ServerError._
 import java.util.Date
 import play.api.mvc.Result
 import play.api.mvc.AnyContent
@@ -14,6 +14,7 @@ import play.api.libs.json.JsValue
 import play.api.http.HeaderNames
 import scala.collection.mutable.Map
 import com.variant.server.event.ServerEvent
+import com.variant.server.boot.ServerErrorRemote
 
 //@Singleton -- Is this for non-shared state controllers?
 class EventController @Inject() (store: SessionStore) extends Controller  {
@@ -42,7 +43,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          params.map((x:JsArray) => {
             x.as[Array[JsValue]].foreach(p => {
                val name = (p \ "name").asOpt[String] 
-               if (name.isEmpty) return MissingParamName.asResult()
+               if (name.isEmpty) return ServerErrorRemote(MissingParamName).asResult()
                val value = (p \ "value").asOpt[String]
                parsedParams(name.get) = value.getOrElse(null)                            
             })
@@ -50,19 +51,19 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 
          // 400 if no required fields 
          if (sid.isEmpty)  {
-            MissingProperty.asResult("sid")
+            ServerErrorRemote(MissingProperty).asResult("sid")
          }
          else if (name.isEmpty)  {
-            MissingProperty.asResult("name")
+            ServerErrorRemote(MissingProperty).asResult("name")
          }
          else {    
             val ssn = store.asSession(sid.get)
             if (ssn.isEmpty) {
-               SessionExpired.asResult()
+               ServerErrorRemote(SessionExpired).asResult()
             }
             else {
                if (ssn.get.getStateRequest == null) {
-                  UnknownState.asResult()   
+                  ServerErrorRemote(UnknownState).asResult()   
                }
                else {
                   val event = new ServerEvent(name.get, value.get, new Date(timestamp.getOrElse(System.currentTimeMillis())));   
@@ -80,9 +81,9 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
                parse(Json.parse(req.body.asText.get))
             }
             catch {
-               case t: Throwable => JsonParseError.asResult(t.getMessage)
+               case t: Throwable => ServerErrorRemote(JsonParseError).asResult(t.getMessage)
             }
-         case _ => BadContentType.asResult()
+         case _ => ServerErrorRemote(BadContentType).asResult()
       }
    }   
 }

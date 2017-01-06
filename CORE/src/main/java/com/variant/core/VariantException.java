@@ -1,7 +1,8 @@
 package com.variant.core;
 
 /**
- * Top-level Variant exception. All variant exceptions inherit from here.
+ * Top-level Variant exception. All variant exceptions inherit from here,
+ * server and client.
  * 
  * @author Igor Urisman
  * @since 0.5

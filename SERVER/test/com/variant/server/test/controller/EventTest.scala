@@ -5,7 +5,7 @@ import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
 import scala.collection.JavaConversions._
-import com.variant.server.boot.ServerErrorApi._
+import com.variant.core.exception.ServerError._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.BaseSpecWithServer
@@ -65,7 +65,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "code").as[Int] mustBe InternalError.code 
-         (respJson \ "message").as[String] mustBe InternalError.message(JsonParseError.code.toString) 
+         (respJson \ "message").as[String] mustBe InternalError.asMessage(JsonParseError.code.toString) 
 
      }
       
@@ -75,7 +75,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "code").as[Int] mustBe InternalError.code 
-         (respJson \ "message").as[String] mustBe InternalError.message(JsonParseError.code.toString) 
+         (respJson \ "message").as[String] mustBe InternalError.asMessage(JsonParseError.code.toString) 
      }
 
       "return  500 and error on POST with no sid" in {
@@ -84,7 +84,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "code").as[Int] mustBe InternalError.code 
-         (respJson \ "message").as[String] mustBe InternalError.message(MissingProperty.code.toString) 
+         (respJson \ "message").as[String] mustBe InternalError.asMessage(MissingProperty.code.toString) 
       }
 
       "return 500 and error on POST with no name" in {
@@ -93,7 +93,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "code").as[Int] mustBe InternalError.code 
-         (respJson \ "message").as[String] mustBe InternalError.message(MissingProperty.code.toString) 
+         (respJson \ "message").as[String] mustBe InternalError.asMessage(MissingProperty.code.toString) 
       }
       
       "return  403 and error on POST with non-existent session" in {
@@ -102,7 +102,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "code").as[Int] mustBe SessionExpired.code 
-         (respJson \ "message").as[String] mustBe SessionExpired.message() 
+         (respJson \ "message").as[String] mustBe SessionExpired.asMessage() 
       }
      
       "return 500 and error on POST with missing param name" in {
@@ -112,7 +112,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "code").as[Int] mustBe InternalError.code 
-         (respJson \ "message").as[String] mustBe InternalError.message(MissingParamName.code.toString) 
+         (respJson \ "message").as[String] mustBe InternalError.asMessage(MissingParamName.code.toString) 
       }
 
       "return 200 and create event with existent session" in {

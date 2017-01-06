@@ -73,6 +73,15 @@ abstract public class UserError {
 	}
 
 	/**
+	 * Runtime message
+	 * @param args
+	 * @return
+	 */
+	public String asMessage(Object...args) {
+		return String.format(msgFormat, args);
+	}
+
+	/**
 	 * Severity of a {@link ParserMessage}.
 	 * 
 	 * @since 0.5

@@ -28,7 +28,7 @@ libraryDependencies ++= Seq(
 
 // Test scoped classpath directory - need this for tests that deploy schema from classpath.
 unmanagedClasspath in Test += baseDirectory.value / "conf-test"
-//unmanagedClasspath in Runtime += baseDirectory.value / "test-conf"
+unmanagedClasspath in Runtime += baseDirectory.value / "conf-test"
 
 // Capture SBT build info in a source file available at compile time.
 sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { (d, v, n) =>
@@ -44,3 +44,4 @@ sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { 
 
 // Config overrides for run and test
 javaOptions in Test += "-Dvariant.config.file=conf-test/variant.conf"
+//javaOptions in Runtime += "-Dvariant.config.file=conf-test/variant.conf"

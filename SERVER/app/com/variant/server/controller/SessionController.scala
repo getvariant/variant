@@ -5,10 +5,11 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import com.variant.server.session.SessionStore
 import play.api.Logger
-import com.variant.server.boot.ServerErrorApi._
+import com.variant.core.exception.ServerError._
 import play.api.libs.json._
 import com.variant.server.boot.VariantServer
 import com.variant.server.ConfigKeys
+import com.variant.server.boot.ServerErrorRemote
 
 //@Singleton -- Is this for non-shared state controllers?
 class SessionController @Inject() (store: SessionStore, server: VariantServer) extends Controller  {
@@ -38,7 +39,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
             store.put(id, body)
             Ok
          }
-         case None => EmptyBody.asResult()
+         case None => ServerErrorRemote(EmptyBody).asResult()
       }
    }
  
@@ -47,11 +48,11 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     * test with:
 curl -v -X GET http://localhost:9000/variant/session/SID
     */
-   def get(id: String) = VariantAction {
-      val result = store.asString(id)
+   def get(sid: String) = VariantAction {
+      val result = store.asString(sid)
       if (result.isDefined) {
          
-         logger.trace("Session found for ID " + id)
+         logger.trace("Session found for ID " + sid)
     
          val response = JsObject(Seq(
             "session" -> JsString(result.get)
@@ -60,7 +61,7 @@ curl -v -X GET http://localhost:9000/variant/session/SID
          Ok(response.toString)
       }
       else {
-         logger.trace(s"No session found for ID [$id]")         
+         logger.trace(s"No session found for ID [$sid]")         
          NotFound
       }
    }

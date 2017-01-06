@@ -21,3 +21,4 @@ POST    /event                   com.variant.server.controller.EventController.p
 GET     /session/:id             com.variant.server.controller.SessionController.get(id: String)
 PUT     /session/:id             com.variant.server.controller.SessionController.put(id: String)
 
+POST    /target                  com.variant.server.controller.TargetController.post()

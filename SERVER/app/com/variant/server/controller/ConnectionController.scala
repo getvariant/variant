@@ -5,7 +5,8 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import com.variant.server.session.SessionStore
 import play.api.Logger
-import com.variant.server.boot.ServerErrorApi._
+import com.variant.core.exception.ServerError._
+import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerSchema
 import com.variant.server.Connection
@@ -35,12 +36,12 @@ curl -v -X POST http://localhost:9000/variant/connection/SID
                }
                else {
                   logger.info("Unable to open connection to chema [%s]: connection table is full".format(name))
-                  TooManyConnections.asResult()
+                  ServerErrorRemote(TooManyConnections).asResult()
                }
             }
             case None => {
                logger.debug("Schema [%s] not found".format(name))
-               UnknownSchema.asResult(name)
+               ServerErrorRemote(UnknownSchema).asResult(name)
             }
          }
    }
@@ -58,7 +59,7 @@ curl -v -X DELETE http://localhost:9000/variant/connection/SID
       }
       else {
          logger.debug("Unable to close connection: schema ID [%s] does not exist".format(id)) 
-         UnknownConnection.asResult(id)
+         ServerErrorRemote(UnknownConnection).asResult(id)
       }
    }
 }

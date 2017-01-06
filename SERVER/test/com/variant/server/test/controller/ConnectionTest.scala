@@ -6,7 +6,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.collection.JavaConversions._
-import com.variant.server.boot.ServerErrorApi._
+import com.variant.core.exception.ServerError._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.ConfigKeys._
@@ -77,7 +77,7 @@ class ConnectionTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "code").as[Int] mustBe UnknownSchema.code 
-         (respJson \ "message").as[String] mustBe UnknownSchema.message("foo")        
+         (respJson \ "message").as[String] mustBe UnknownSchema.asMessage("foo")        
       }
 
       var connId: String = null
@@ -115,7 +115,7 @@ class ConnectionTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "code").as[Int] mustBe UnknownConnection.code 
-         (respJson \ "message").as[String] mustBe UnknownConnection.message(connId)
+         (respJson \ "message").as[String] mustBe UnknownConnection.asMessage(connId)
       }
 
       "return 400 when attempting to open one too many connections" in {
@@ -146,7 +146,7 @@ class ConnectionTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp1)
          respJson mustNot be (null)
          (respJson \ "code").as[Int] mustBe TooManyConnections.code 
-         (respJson \ "message").as[String] mustBe TooManyConnections.message()
+         (respJson \ "message").as[String] mustBe TooManyConnections.asMessage()
          
          // Close one
          val resp2 = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
