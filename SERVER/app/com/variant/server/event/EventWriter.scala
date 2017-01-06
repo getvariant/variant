@@ -9,9 +9,9 @@ import com.variant.server.EventFlusher
 import com.variant.server.FlushableEvent
 import play.api.Logger
 import com.typesafe.config.Config
-import com.variant.core.exception.InternalException
 import com.variant.core.UserErrorException
 import com.variant.core.VariantException
+import com.variant.server.ServerException
 
 class EventWriter (config: Config) {
 	
@@ -46,7 +46,7 @@ class EventWriter (config: Config) {
 			val result = {
 			   val clazz = Class.forName(className).newInstance();		
    			if (!clazz.isInstanceOf[EventFlusher]) {
-   				throw new UserErrorException(EVENT_FLUSHER_NO_INTERFACE, className, classOf[EventFlusher].getName);
+   				throw new ServerException.User(EVENT_FLUSHER_NO_INTERFACE, className, classOf[EventFlusher].getName);
 	   		}
 		  	   clazz.asInstanceOf[EventFlusher]
 			}
@@ -59,7 +59,7 @@ class EventWriter (config: Config) {
 		   case e : VariantException => throw e
 		   case e : Throwable => {
 		      logger.error("Unable to instantiate event flusher class [" + className +"]", e)
-		      throw new InternalException("Unable to instantiate event flusher class [" + className +"]", e);
+		      throw new ServerException.Internal("Unable to instantiate event flusher class [" + className +"]", e);
 		   }
 		}
 	}

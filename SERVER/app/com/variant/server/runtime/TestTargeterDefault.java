@@ -2,12 +2,11 @@ package com.variant.server.runtime;
 
 import java.util.Random;
 
-import com.variant.core.UserErrorException;
-import com.variant.core.exception.InternalException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
+import com.variant.server.ServerException;
 import com.variant.server.boot.ServerErrorLocal;
 
 class TestTargeterDefault {
@@ -32,13 +31,13 @@ class TestTargeterDefault {
 			if (e.getWeight() == null ) {
 				// It's not a syntax error not to supply the weight, but if we're
 				// here it means that no targeter hook fired, and that's a runtime error.
-				throw new UserErrorException(ServerErrorLocal.EXPERIENCE_WEIGHT_MISSING, e.getTest().getName(), e.getName());
+				throw new ServerException.User(ServerErrorLocal.EXPERIENCE_WEIGHT_MISSING, e.getTest().getName(), e.getName());
 			}
 			weightSum += e.getWeight().doubleValue();
 		}
 
 		if (weightSum == 0) {
-			throw new InternalException(
+			throw new ServerException.Internal(
 					String.format("No defined states in test [%s] on state [%s]", test.getName(), state.getName()));
 		}
 		

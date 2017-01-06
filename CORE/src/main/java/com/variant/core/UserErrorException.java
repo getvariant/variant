@@ -45,7 +45,7 @@ public class UserErrorException extends VariantException {
 	 */
 	@Override
 	public String getMessage() {
-		return String.format(error.msgFormat, (Object[]) args);
+		return error.asMessage(args);
 	}
 
 	/**

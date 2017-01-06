@@ -8,7 +8,7 @@ import play.api.Logger
 import com.variant.core.exception.ServerError._
 import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerSchema
-import com.variant.server.Connection
+import com.variant.server.conn.Connection
 import com.variant.server.conn.ConnectionStore
 import play.api.libs.json._
 import play.api.mvc.Result

@@ -69,7 +69,6 @@ class ServerSession (private val sid: String) {
    }
    
 	def triggerEvent(event: VariantEvent) {
-		if (event == null) throw new IllegalArgumentException("Event cannot be null");		
 		VariantServer.server.eventWriter.write(new FlushableEventImpl(event, coreSession));
 	}
 	

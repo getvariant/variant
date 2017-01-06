@@ -13,14 +13,13 @@ import com.variant.core.TestQualificationHook
 import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
 import com.variant.core.TestTargetingHook
-import com.variant.core.UserErrorException
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.exception.CommonError._
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerSuite
 import com.variant.server.runtime.Runtime
 import com.variant.server.runtime.RuntimeTestFacade
-import com.variant.core.exception.InternalException
+import com.variant.server.ServerException
 
 /**
  * TODO: Need to also test annotations.
@@ -46,23 +45,23 @@ class RuntimeTest extends BaseSpecWithServer {
 
    	   val runtime = RuntimeTestFacade(server)
    	   
-   	   var caughtEx = intercept[InternalException] {
+   	   var caughtEx = intercept[ServerException.Internal] {
              runtime.resolveState(state1, Array(experience("test1.B", schema)))
          }
          assert(
             caughtEx.getMessage.equals(
-               new InternalException("Uninstrumented test [test1.B] in input vector").getMessage)
+               new ServerException.Internal("Uninstrumented test [test1.B] in input vector").getMessage)
          )
          
          var resolution = runtime.resolveState(state1, Array(experience("test2.B", schema)))   // nonvariant.
          resolution mustBe (true, null)
 
-         caughtEx = intercept[InternalException] {
+         caughtEx = intercept[ServerException.Internal] {
              runtime.resolveState(state1, Array(experience("test1.A", schema), experience("test2.B", schema)))
          }
          assert(
             caughtEx.getMessage.equals(
-               new InternalException("Uninstrumented test [test1.A] in input vector").getMessage)
+               new ServerException.Internal("Uninstrumented test [test1.A] in input vector").getMessage)
          )
 
          resolution = runtime.resolveState(
@@ -73,7 +72,7 @@ class RuntimeTest extends BaseSpecWithServer {
 		   )
 		   resolution mustBe (true, null)
 
-		   caughtEx = intercept[InternalException] {
+		   caughtEx = intercept[ServerException.Internal] {
 				runtime.resolveState(
 					state1,	 
 					Array(
@@ -85,7 +84,7 @@ class RuntimeTest extends BaseSpecWithServer {
 			}
 		   assert(
 		         caughtEx.getMessage.equals(
-               new InternalException("Duplicate test [test2] in input vector").getMessage)
+               new ServerException.Internal("Duplicate test [test2] in input vector").getMessage)
          )
          
          resolution = runtime.resolveState(
@@ -99,7 +98,7 @@ class RuntimeTest extends BaseSpecWithServer {
 		   resolution._1 mustBe true
 		   resolution._2.getParameter("path") mustBe "/path/to/state1/test4.B"
 
-         caughtEx = intercept[InternalException] {
+         caughtEx = intercept[ServerException.Internal] {
 				runtime.resolveState(
 						state1, 
 						Array(
@@ -112,7 +111,7 @@ class RuntimeTest extends BaseSpecWithServer {
 			}
 		   assert(
 		         caughtEx.getMessage.equals(
-               new InternalException("Uninstrumented test [test1.C] in input vector").getMessage)
+               new ServerException.Internal("Uninstrumented test [test1.C] in input vector").getMessage)
          )
 
          

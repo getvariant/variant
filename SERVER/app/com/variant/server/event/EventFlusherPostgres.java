@@ -9,8 +9,8 @@ import java.util.Properties;
 
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
-import com.variant.core.UserErrorException;
 import com.variant.server.EventFlusher;
+import com.variant.server.ServerException;
 import com.variant.server.jdbc.EventFlusherJdbc;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
@@ -41,19 +41,19 @@ public class EventFlusherPostgres extends EventFlusherJdbc {
 				
 		ConfigValue val = config.get("url");
 		if (val == null)
-			throw new UserErrorException(
+			throw new ServerException.User(
 					CONFIG_PROPERTY_NOT_SET, "url", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 		url = (String) val.unwrapped(); 		// TODO: This will break if url exists but is no a string.
 
 		val = config.get("user");
 		if (val == null)
-			throw new UserErrorException(
+			throw new ServerException.User(
 					CONFIG_PROPERTY_NOT_SET, "user", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 		user = (String) val.unwrapped(); 		// TODO: This will break if url exists but is no a string.
 
 		val = config.get("password");
 		if (val == null)
-			throw new UserErrorException(
+			throw new ServerException.User(
 					CONFIG_PROPERTY_NOT_SET, "password", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 		password = (String) val.unwrapped(); 	// TODO: This will break if url exists but is no a string.
 

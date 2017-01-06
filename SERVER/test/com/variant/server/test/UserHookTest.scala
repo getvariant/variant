@@ -13,9 +13,9 @@ import com.variant.core.TestQualificationHook
 import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
 import com.variant.core.TestTargetingHook
-import com.variant.core.UserErrorException
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.exception.CommonError._
+import com.variant.server.ServerException
 
 /**
  * TODO: Need to also test annotations.
@@ -41,7 +41,7 @@ class UserHookTest extends BaseSpecWithServer {
    		response.getMessages.size mustBe 5
    		for (msg <- response.getMessages) {
    			msg.getSeverity mustBe ERROR
-   			msg.getText mustBe (new UserErrorException(HOOK_LISTENER_ERROR, MESSAGE_TEXT_STATE).getMessage())
+   			msg.getText mustBe (new ServerException.User(HOOK_LISTENER_ERROR, MESSAGE_TEXT_STATE).getMessage())
    			
    		}  
 	   }
@@ -60,7 +60,7 @@ class UserHookTest extends BaseSpecWithServer {
    		response.getMessages.size mustBe 6
    		for (msg <- response.getMessages) {
    			msg.getSeverity mustBe ERROR
-   			msg.getText mustBe (new UserErrorException(HOOK_LISTENER_ERROR, MESSAGE_TEXT_TEST).getMessage())
+   			msg.getText mustBe (new ServerException.User(HOOK_LISTENER_ERROR, MESSAGE_TEXT_TEST).getMessage())
    			
    		}  
 	   }
@@ -81,7 +81,7 @@ class UserHookTest extends BaseSpecWithServer {
    		for (i <- 0 until response.getMessages.size) {
    		   val msg = response.getMessages.get(i)
    			msg.getSeverity mustBe ERROR
-      		msg.getText mustBe (new UserErrorException(HOOK_LISTENER_ERROR, (if (i < 5) MESSAGE_TEXT_STATE else MESSAGE_TEXT_TEST)).getMessage)
+      		msg.getText mustBe (new ServerException.User(HOOK_LISTENER_ERROR, (if (i < 5) MESSAGE_TEXT_STATE else MESSAGE_TEXT_TEST)).getMessage)
    		}
 	   }
 	}
@@ -334,12 +334,12 @@ class UserHookTest extends BaseSpecWithServer {
 
          ssn = new ServerSession(newSid())
    	   
-   	   val caughtEx = intercept[UserErrorException] {
+   	   val caughtEx = intercept[ServerException.User] {
              ssn.targetForState(state2)   // Kaboom
          }
          assert(
                caughtEx.getMessage.equals(
-                     new UserErrorException(
+                     new ServerException.User(
                            HOOK_TARGETING_BAD_EXPERIENCE, l.getClass.getName, "test1", "test3.A"
                      ).getMessage)
          )         

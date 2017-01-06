@@ -19,10 +19,9 @@ import com.variant.server.runtime.Runtime
 import com.variant.core.schema.ParserResponse
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
-import com.variant.core.VariantException
 import com.variant.core.exception.InternalException
-import com.variant.core.UserErrorException
 import com.variant.core.UserError.Severity._
+import com.variant.server.ServerException
 
 /**
  * Need a trait to make DI to work.
@@ -31,7 +30,7 @@ trait VariantServer {
    
    val isUp: Boolean
    val config: Config // Do not expose Play's Configuration
-   val startupErrorLog: List[UserErrorException]
+   val startupErrorLog: List[ServerException.User]
    val eventWriter: EventWriter
    def schema: Option[ServerSchema]
    def hooker: UserHooker
@@ -71,7 +70,7 @@ class VariantServerImpl @Inject() (
 	private var _isUp = true
 	override lazy val isUp = _isUp
 	
-	private var _startupErrorLog = List[UserErrorException]()
+	private var _startupErrorLog = List[ServerException.User]()
 	override lazy val startupErrorLog = _startupErrorLog
 	
 	// Default schema deployer is from file system.
@@ -90,7 +89,7 @@ class VariantServerImpl @Inject() (
 	      Some(_schemaDeployer.deploy)
 	   }
 	   catch {
-	      case e: UserErrorException => {
+	      case e: ServerException.User => {
 	         _startupErrorLog :+= e
 	         None
 	      }
@@ -130,7 +129,7 @@ class VariantServerImpl @Inject() (
 	         case FATAL => {logger.error("FATAL: " + e.getMessage, e)}
 	         case ERROR => {logger.error("ERROR: " + e.getMessage, e)}
 	         case WARN => logger.warn(e.getMessage)
-	         case _ => throw new InternalException("Unexpected exception severity %s".format(e.getSeverity), e)
+	         case _ => throw new ServerException.Internal("Unexpected exception severity %s".format(e.getSeverity), e)
 	      }
 	   }
 	

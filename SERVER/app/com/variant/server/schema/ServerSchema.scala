@@ -4,7 +4,7 @@ import com.variant.core.schema.Schema
 import scala.collection.JavaConverters._
 import java.io.File
 import com.variant.core.schema.ParserResponse
-import com.variant.core.exception.InternalException
+import com.variant.server.ServerException
 
 /**
  * 
@@ -26,7 +26,7 @@ class ServerSchema (val response: ParserResponse) extends Schema {
    
    private def checkState {
       if (state != Deployed)
-         throw new InternalException(
+         throw new ServerException.Internal(
                "Schema [%s] cannot be accessed due to state [%s]".format(getName, state))
    }
 

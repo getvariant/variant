@@ -48,7 +48,7 @@ class ServerErrorRemote(error: ServerError) {
          
          val bodyJson : JsObject = Json.obj(
             "code" -> ServerError.InternalError.code,
-            "message" -> ServerError.InternalError.asMessage(error.asMessage(args:_*)))
+            "message" -> ServerError.InternalError.asMessage(error.code.toString))
 
          Result(
              header = ResponseHeader(HttpStatus.SC_INTERNAL_SERVER_ERROR, Map.empty),

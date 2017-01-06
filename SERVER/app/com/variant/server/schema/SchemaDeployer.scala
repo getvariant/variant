@@ -4,7 +4,6 @@ import java.io.File
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.io.Source
 import com.variant.core.UserError.Severity
-import com.variant.core.exception.InternalException
 import com.variant.core.exception.CommonError._
 import com.variant.core.schema.ParserMessage
 import com.variant.core.schema.parser.SchemaParser
@@ -14,7 +13,7 @@ import com.variant.server.boot.VariantServer.server
 import play.api.Logger
 import com.variant.core.schema.ParserResponse
 import org.apache.commons.io.IOUtils
-import com.variant.core.UserErrorException
+import com.variant.server.ServerException
 
 trait SchemaDeployer {
  
@@ -117,13 +116,6 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
 }
 
 /**
- * File System based schema service implementation
- *
-object SchemaDeployerFromFS {
-   def apply() = new SchemaDeployerFromFS()
-}
-*/
-/**
  * Deploy schemas from a directory on the file system.
  * Multiple schema files in directory are not yet supported,
  * user error will be thrown if number of files in
@@ -142,15 +134,15 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
 
       if (dirName.isEmpty) {
          if (!server.config.hasPath(SCHEMAS_DIR))
-            throw new UserErrorException(CONFIG_PROPERTY_NOT_SET, SCHEMAS_DIR);
+            throw new ServerException.User(CONFIG_PROPERTY_NOT_SET, SCHEMAS_DIR);
          dirName = Option(server.config.getString(SCHEMAS_DIR))
       }
       
       val dir = new File(dirName.get)
       if (!dir.exists) 
-         throw new UserErrorException(SCHEMAS_DIR_MISSING, dirName.get)
+         throw new ServerException.User(SCHEMAS_DIR_MISSING, dirName.get)
       if (!dir.isDirectory) 
-         throw new UserErrorException(SCHEMAS_DIR_NOT_DIR, dirName.get)            
+         throw new ServerException.User(SCHEMAS_DIR_NOT_DIR, dirName.get)            
    
       val schemaFiles = dir.listFiles()
       
@@ -158,7 +150,7 @@ class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
          logger.info("No schemas detected")
       }
       else if (schemaFiles.length > 1)  
-         throw new UserErrorException(MULTIPLE_SCHEMAS_NOT_SUPPORTED, dirName.get)
+         throw new ServerException.User(MULTIPLE_SCHEMAS_NOT_SUPPORTED, dirName.get)
    
       val schemaFile = schemaFiles.head
       parseAndDeploy(Source.fromFile(schemaFile).mkString)
@@ -180,7 +172,7 @@ class SchemaDeployerFromClasspath(resource: String) extends AbstractSchemaDeploy
 	         
    val stream = getClass.getResourceAsStream(resource)
    if (stream == null)
-      throw new InternalException("Unable to open classpath resource [%s]".format(resource))
+      throw new ServerException.Internal("Unable to open classpath resource [%s]".format(resource))
    
    override def deploy() = parseAndDeploy(IOUtils.toString(stream))
 }

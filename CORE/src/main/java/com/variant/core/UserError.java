@@ -56,9 +56,9 @@ Range   Base         Major Area               Minor Area
 
 abstract public class UserError {
 		
+	private final String msgFormat;
 	public final int code;
 	public final Severity severity;
-	public final String msgFormat;
 	public final String comment;
 	
 	protected UserError(int code, Severity severity, String msgFormat, String comment) {

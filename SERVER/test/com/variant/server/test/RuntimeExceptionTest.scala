@@ -1,12 +1,12 @@
 package com.variant.server.test
 
-import com.variant.core.UserErrorException
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.exception.CommonError._
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.session.ServerSession
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerSuite
+import com.variant.server.ServerException
 
 class RuntimeExceptionTest extends BaseSpecWithServer {
 
@@ -121,8 +121,8 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
 			   fail("Expected exception not thrown")
    		}
 	   	catch {
-	   	   case uex: UserErrorException =>  uex.getMessage() mustEqual
-      			new UserErrorException(STATE_NOT_INSTRUMENTED_BY_TEST, "state2", "test1").getMessage()
+	   	   case uex: ServerException.User =>  uex.getMessage() mustEqual
+      			new ServerException.User(STATE_NOT_INSTRUMENTED_BY_TEST, "state2", "test1").getMessage()
 		   }
 	   	
       }
@@ -140,8 +140,8 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
 			   fail("Expected exception not thrown")
    			}
          catch {
-            case uex: UserErrorException =>  uex.getMessage() mustEqual
-      			new UserErrorException(EXPERIENCE_WEIGHT_MISSING, "test1", "A").getMessage()
+            case uex: ServerException.User =>  uex.getMessage() mustEqual
+      			new ServerException.User(EXPERIENCE_WEIGHT_MISSING, "test1", "A").getMessage()
    		}
       }
    }

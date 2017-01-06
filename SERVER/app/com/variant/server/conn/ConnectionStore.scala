@@ -9,7 +9,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import play.api.Logger
 import com.variant.server.boot.VariantServer
-import com.variant.server.Connection
 
 /**
  * Connection Store.

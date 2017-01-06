@@ -1,16 +1,15 @@
 package com.variant.core;
 
 /**
- * Top-level Variant exception. All variant exceptions inherit from here,
- * server and client.
+ * The super-type for all Variant exception. 
+ * All Variant exceptions, server and client, inherit from here.
  * 
  * @author Igor Urisman
  * @since 0.5
  *
  */
+@SuppressWarnings("serial")
 public class VariantException extends RuntimeException {
-
-	private static final long serialVersionUID = 1L;
 
 	/**
 	 * 
