@@ -78,7 +78,7 @@ abstract public class UserError {
 	 * @return
 	 */
 	public String asMessage(Object...args) {
-		return String.format(msgFormat, args);
+		return "[" + code + "] " + String.format(msgFormat, args);
 	}
 
 	/**
