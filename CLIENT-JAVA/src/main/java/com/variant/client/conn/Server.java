@@ -1,10 +1,9 @@
 package com.variant.client.conn;
 
+import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.InternalErrorException;
 import com.variant.client.Session;
 import com.variant.client.impl.ClientUserError;
-import com.variant.client.impl.ClientUserErrorException;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
@@ -44,7 +43,7 @@ public class Server {
 	 */
 	Server(String url) {
 		int lastColonIx = url.lastIndexOf(':');
-		if (lastColonIx < 0) throw new ClientUserErrorException(ClientUserError.BAD_CONN_URL, url);
+		if (lastColonIx < 0) throw new ClientException.User(ClientUserError.BAD_CONN_URL, url);
 		String ep = url.substring(0, lastColonIx);
 		endpointUrl = ep.endsWith("/") ? ep : ep + "/";
 		schemaName = url.substring(lastColonIx + 1);
@@ -56,7 +55,7 @@ public class Server {
 	 */
 	Payload.Connection connect() {
 		
-		if (isConnected) throw new InternalErrorException("Already connected");
+		if (isConnected) throw new ClientException.Internal("Already connected");
 
 		HttpResponse resp = adapter.post(endpointUrl + "connection/" + schemaName);
 		isConnected = true;

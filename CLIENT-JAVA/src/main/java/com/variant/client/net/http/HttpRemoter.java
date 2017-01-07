@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.ClientException;
-import com.variant.client.InternalErrorException;
 
 /**
  * The very bottom of the HTTP Stack. 
@@ -52,7 +51,7 @@ class HttpRemoter {
 			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
 				throw result.toClientException();
 			default:
-				throw new InternalErrorException(
+				throw new ClientException.Internal(
 						String.format("Unexpected response from server: [%s %s : %s]",
 								req.getMethod(), req.getURI(), result.status)
 				);
@@ -62,7 +61,7 @@ class HttpRemoter {
 			throw ce;
 		}
 		catch (Throwable e) {
-			throw new InternalErrorException("Unexpected exception in HTTP POST: " + e.getMessage(), e);
+			throw new ClientException.Internal("Unexpected exception in HTTP POST: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					

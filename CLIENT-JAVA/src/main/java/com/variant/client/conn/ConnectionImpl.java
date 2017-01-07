@@ -2,17 +2,18 @@ package com.variant.client.conn;
 
 import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
+import static com.variant.client.impl.ClientUserError.CONNECTION_CLOSED;
+import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
+import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
 
 import java.util.Random;
 
-import static com.variant.client.impl.ClientUserError.*;
+import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.InternalErrorException;
 import com.variant.client.Session;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.TargetingTracker;
 import com.variant.client.VariantClient;
-import com.variant.client.impl.ClientUserErrorException;
 import com.variant.client.impl.SessionImpl;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
@@ -45,7 +46,7 @@ public class ConnectionImpl implements Connection {
 		
 		case CLOSED_BY_CLIENT: 
 		case CLOSED_BY_SERVER:
-			throw new ClientUserErrorException(CONNECTION_CLOSED);
+			throw new ClientException.User(CONNECTION_CLOSED);
 		}
 	}
 	
@@ -67,11 +68,11 @@ public class ConnectionImpl implements Connection {
 				return result;
 			}
 			else {
-				throw new ClientUserErrorException(SESSION_ID_TRACKER_NO_INTERFACE, className, SessionIdTracker.class.getName());
+				throw new ClientException.User(SESSION_ID_TRACKER_NO_INTERFACE, className, SessionIdTracker.class.getName());
 			}
 		}
 		catch (Exception e) {
-			throw new InternalErrorException("Unable to instantiate session id tracker class [" + className + "]", e);
+			throw new ClientException.Internal("Unable to instantiate session id tracker class [" + className + "]", e);
 		}
 
 	}
@@ -95,11 +96,11 @@ public class ConnectionImpl implements Connection {
 				return result;
 			}
 			else {
-				throw new ClientUserErrorException(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
+				throw new ClientException.User(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
 			}
 		}
 		catch (Exception e) {
-			throw new InternalErrorException("Unable to instantiate targeting tracker class [" + className +"]", e);
+			throw new ClientException.Internal("Unable to instantiate targeting tracker class [" + className +"]", e);
 		}
 	}
 	

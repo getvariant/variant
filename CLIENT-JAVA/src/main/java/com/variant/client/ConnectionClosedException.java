@@ -5,12 +5,13 @@ package com.variant.client;
  * 
  * @author Igor Urisman
  * @since 0.7
- */
+ *
 @SuppressWarnings("serial")
-public class ConnectionClosedException extends ClientException {
+public class ConnectionClosedException extends ClientException.User {
 	
-	public ConnectionClosedException(String message, String comment) {
-		super(701, message, comment);
+	public ConnectionClosedException() {
+		super(
 	}
 
 }
+*/

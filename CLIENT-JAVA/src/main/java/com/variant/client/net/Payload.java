@@ -1,10 +1,11 @@
 package com.variant.client.net;
 
+import static com.variant.client.impl.ClientInternalError.NET_PAYLOAD_ELEMENT_MISSING;
+
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import static com.variant.client.impl.ClientInternalError.*;
-import com.variant.client.impl.ClientInternalErrorException;
+import com.variant.client.ClientException;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.core.VariantException;
 import com.variant.core.session.CoreSession;
@@ -43,13 +44,13 @@ abstract public class Payload {
 				Long ts = (Long) map.get("ts");
 				String schemaSrc = (String) map.get("schema");
 				if (id == null)
-					throw new ClientInternalErrorException(NET_PAYLOAD_ELEMENT_MISSING, "id", Connection.class.getName());
+					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "id", Connection.class.getName());
 				if (ts == null)
-					throw new ClientInternalErrorException(NET_PAYLOAD_ELEMENT_MISSING, "ts", Connection.class.getName());
+					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "ts", Connection.class.getName());
 				if (ssnto == null)
-					throw new ClientInternalErrorException(NET_PAYLOAD_ELEMENT_MISSING, "ssnto", Connection.class.getName());
+					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "ssnto", Connection.class.getName());
 				if (schemaSrc == null)
-					throw new ClientInternalErrorException(NET_PAYLOAD_ELEMENT_MISSING, "schema", Connection.class.getName());
+					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema", Connection.class.getName());
 				
 				return new Connection(id, ssnto, ts, schemaSrc);
 			}
@@ -82,7 +83,7 @@ abstract public class Payload {
 				Map<String,?> map = mapper.readValue(resp.body, Map.class);
 				String coreSsnSrc = (String) map.get("session");
 				if (coreSsnSrc == null)
-					throw new ClientInternalErrorException(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
+					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
 
 				return new Session(CoreSession.fromJson(coreSsnSrc, conn.getSchema()));
 			}

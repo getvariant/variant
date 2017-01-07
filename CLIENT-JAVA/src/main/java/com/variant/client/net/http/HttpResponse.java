@@ -1,6 +1,7 @@
 package com.variant.client.net.http;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.Header;
@@ -14,7 +15,8 @@ import org.apache.http.util.EntityUtils;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.client.ClientException;
-import com.variant.client.InternalErrorException;
+import com.variant.client.impl.ClientInternalError;
+import com.variant.core.exception.ServerError;
 
 public class HttpResponse {
 
@@ -53,18 +55,23 @@ public class HttpResponse {
 		Map<String, ?> map = null;
 				
 		try {
+			
+			// Reconstitute the server error.
 			map = jacksonDataMapper.readValue(body, Map.class);
 			Integer code = (Integer) map.get("code");
-			String message = (String) map.get("message");
-			String comment = (String) map.get("comment");
+			boolean isInternal = (Boolean) map.get("isInternal");
+			List<String> args = (List<String>) map.get("args");
+			ServerError error = ServerError.byCode(code);
 			
-			switch (code) {
-			case 601: return new InternalErrorException(message, comment);			
-			default: return new ClientException(code, message, comment);
+			if (isInternal) {
+				return new ClientException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.asMessage(args.toArray()));
+			}
+			else {
+				return new ClientException.User(error, args.toArray());
 			}
 		}
 		catch(IOException parseException) {
-			return new ClientException(0, body);
+			return new ClientException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, parseException.getMessage());
 		}
 	
 	}

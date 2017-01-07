@@ -1,6 +1,9 @@
 package com.variant.core.exception;
 
+import java.lang.reflect.Field;
+
 import com.variant.core.UserError;
+import com.variant.core.util.VariantReflectUtils;
 
 
 /**
@@ -72,6 +75,25 @@ public class ServerError extends UserError {
 			new ServerError(741, "No recent state request in session");
 
 
+	/**
+	 * Get the error by its code.
+	 * 
+	 * @param code
+	 * @return
+	 */
+	public static ServerError byCode(int code) {
+		try {
+			for (Field f: VariantReflectUtils.getStaticFields(ServerError.class, ServerError.class)) {
+				ServerError e = (ServerError) f.get(null);
+				if (e.code == code) return e;
+			}
+		}
+		catch (Exception e) { 
+			throw new CoreException.Internal(e);
+		}
+		return null;
+	}
+	
 	/**
 	 * With comment
 	 */

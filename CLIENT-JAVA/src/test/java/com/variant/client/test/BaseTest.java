@@ -4,11 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.variant.client.ClientException;
-import com.variant.client.InternalErrorException;
 import com.variant.client.TargetingTracker;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.UserError;
-import com.variant.core.exception.InternalException;
 import com.variant.core.schema.Schema;
 import com.variant.core.test.VariantBaseTest;
 
@@ -31,7 +29,7 @@ public abstract class BaseTest extends VariantBaseTest {
 	protected Object[] userDataForSimpleIn(Schema schema, String sessionId, String...experiences) {
 		
 		if (experiences.length > 0 && schema == null) 
-			throw new InternalErrorException("Schema cannot be null if experiences are given");
+			throw new ClientException.Internal("Schema cannot be null if experiences are given");
 		
 		Object[] result = new Object[experiences.length + 1];
 		result[0] = sessionId;
@@ -49,26 +47,25 @@ public abstract class BaseTest extends VariantBaseTest {
 	/**
 	 *
 	 */
-	protected static abstract class ClientExceptionInterceptor 
-		extends ExceptionInterceptor<ClientException> {
+	protected static abstract class ClientUserExceptionInterceptor 
+		extends ExceptionInterceptor<ClientException.User> {
 		
 		@Override
-		final public Class<ClientException> getExceptionClass() {
-			return ClientException.class;
+		final public Class<ClientException.User> getExceptionClass() {
+			return ClientException.User.class;
 		}
 
 		/**
 		 * Client side errors: we have access to them at comp time.
 		 */
 		final public void assertThrown(UserError error, Object...args) throws Exception {
-			ClientException result = super.run();
+			ClientException.User result = super.run();
 			assertNotNull("Expected exception not thrown", result);
-			assertEquals(result.getCode(), error.code);
-			assertEquals(String.format(error.msgFormat, args), result.getMessage());
+			assertEquals(result.getError(), error);
 		}
 		/**
 		 * Server side errors: We don't have access to them at comp time
-		 */
+		 *
 		final public void assertThrown(int code) throws Exception {
 			ClientException result = super.run();
 			assertNotNull("Expected exception not thrown", result);

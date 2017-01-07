@@ -11,8 +11,14 @@ public class ClientInternalError extends CommonError {
 	//
 	// 301-330 Client Local internal errors.
 	//
+	public static final ClientInternalError INTERNAL_ERROR =
+			new ClientInternalError(301, Severity.ERROR, "Unexpected error [%s]");
+
+	public static final ClientInternalError INTERNAL_SERVER_ERROR =
+			new ClientInternalError(302, Severity.ERROR, "Unexpected server error [%s]");
+
 	public static final ClientInternalError NET_PAYLOAD_ELEMENT_MISSING =
-			new ClientInternalError(301, Severity.ERROR, "Element [%s] is missing in payload [%s]");
+			new ClientInternalError(303, Severity.ERROR, "Element [%s] is missing in payload [%s]");
 
    /**
     * 

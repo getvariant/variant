@@ -7,6 +7,7 @@ import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
+import com.variant.core.exception.ServerError;
 
 public class ConnectionTest extends BaseTestWithServer {
 	
@@ -17,19 +18,16 @@ public class ConnectionTest extends BaseTestWithServer {
 	@org.junit.Test
 	public void connectToNonExistentSchemaTest() throws Exception {
 		
-		new ClientExceptionInterceptor() {
-			
+		new ClientUserExceptionInterceptor() {
 			Connection conn = null;
-
 			@Override public void toRun() {
 				conn = client.getConnection("http://localhost:9000/test:bad_schema");
 			}
-			
-			@Override public void onThrown(ClientException e) {
+			@Override public void onThrown(ClientException.User e) {
 				assertNull(conn);
 			}
 		}.assertThrown();
-		
+	
 	}	
 	
 	/**
@@ -67,15 +65,13 @@ public class ConnectionTest extends BaseTestWithServer {
     		assertNotNull(connections[i]);        	
         }
 		
-		new ClientExceptionInterceptor() {
+		new ClientUserExceptionInterceptor() {
 			
-			Connection conn = null;
-
 			@Override public void toRun() {
-				conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+				Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
 			}
 			
-		}.assertThrown(703);
+		}.assertThrown(ServerError.TooManyConnections);
 
         for (int i = 0; i < 10; i++) {
     		connections[i].close();		
@@ -112,7 +108,7 @@ public class ConnectionTest extends BaseTestWithServer {
 		assertEquals(Status.CLOSED_BY_CLIENT, conn.getStatus());
 
 		// Throw user error exception when trying to use this connection.
-		new ClientExceptionInterceptor() {
+		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
 				conn.getSession("foo");

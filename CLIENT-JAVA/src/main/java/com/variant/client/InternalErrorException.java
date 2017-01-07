@@ -5,7 +5,7 @@ package com.variant.client;
  * 
  * @author Igor Urisman
  * @since 0.7
- */
+ *
 @SuppressWarnings("serial")
 public class InternalErrorException extends ClientException {
 	
@@ -26,3 +26,4 @@ public class InternalErrorException extends ClientException {
 	}
 
 }
+*/
