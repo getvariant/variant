@@ -76,8 +76,9 @@ class ConnectionTest extends BaseSpecWithServer {
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
+         (respJson \ "isInternal").as[Boolean] mustBe UnknownSchema.isInternal() 
          (respJson \ "code").as[Int] mustBe UnknownSchema.code 
-         (respJson \ "message").as[String] mustBe UnknownSchema.asMessage("foo")        
+         (respJson \ "args").as[Seq[String]] mustBe Seq("foo")
       }
 
       var connId: String = null
@@ -114,8 +115,9 @@ class ConnectionTest extends BaseSpecWithServer {
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
+         (respJson \ "isInternal").as[Boolean] mustBe UnknownConnection.isInternal() 
          (respJson \ "code").as[Int] mustBe UnknownConnection.code 
-         (respJson \ "message").as[String] mustBe UnknownConnection.asMessage(connId)
+         (respJson \ "args").as[Seq[String]] mustBe Seq(connId)
       }
 
       "return 400 when attempting to open one too many connections" in {
@@ -145,8 +147,9 @@ class ConnectionTest extends BaseSpecWithServer {
          status(resp1) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp1)
          respJson mustNot be (null)
+         (respJson \ "isInternal").as[Boolean] mustBe TooManyConnections.isInternal() 
          (respJson \ "code").as[Int] mustBe TooManyConnections.code 
-         (respJson \ "message").as[String] mustBe TooManyConnections.asMessage()
+         (respJson \ "args").as[Seq[String]] mustBe empty
          
          // Close one
          val resp2 = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get

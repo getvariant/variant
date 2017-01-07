@@ -13,8 +13,8 @@ public class ServerError extends UserError {
 	//
 	// 601-610 Internal, Payload syntax error
 	//
-	public static final ServerError InternalError = 
-			new ServerError(601, "Internal server error [%s]");
+	//public static final ServerError InternalError = 
+	//		new ServerError(601, "Internal server error [%s]");
 	
 	public static final ServerError JsonParseError = 
 			new ServerError(602, "JSON parsing error: '%s'");
@@ -86,4 +86,7 @@ public class ServerError extends UserError {
 		super(code, Severity.ERROR, format);
 	}
 
+	public boolean isInternal() {
+		return code <= 700;
+	}
 }
