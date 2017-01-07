@@ -12,25 +12,25 @@ public class ClientUserError extends CommonError {
 	//
 	
 	public static final ClientUserError BAD_CONN_URL =
-			new ClientUserError(331, Severity.ERROR, "Invalid connection URL [%s]");
+			new ClientUserError(331, "Invalid connection URL [%s]");
 
 	public static final ClientUserError TARGETING_TRACKER_NO_INTERFACE =
-			new ClientUserError(332, Severity.FATAL, "Targeting tracker class [%s] must implement interface [%s]");
+			new ClientUserError(332, "Targeting tracker class [%s] must implement interface [%s]");
 	
 	public static final ClientUserError SESSION_ID_TRACKER_NO_INTERFACE =
-			new ClientUserError(333, Severity.FATAL, "Session ID tracker class [%s] must implement interface [%s]");
+			new ClientUserError(333, "Session ID tracker class [%s] must implement interface [%s]");
 
 	public static final ClientUserError CONNECTION_CLOSED =
-			new ClientUserError(334, Severity.ERROR, "This connection has been closed");
+			new ClientUserError(334, "This connection has been closed");
 
 	public static final ClientUserError ACTIVE_REQUEST =
-			new ClientUserError(335, Severity.ERROR, "Commit current state request first");
+			new ClientUserError(335, "Commit current state request first");
 
    /**
     * 
     */
-   private ClientUserError(int code, Severity severity, String format) {
-		super(code, severity, format);
+   private ClientUserError(int code, String format) {
+		super(code, Severity.ERROR, format);
 	}
 
 }

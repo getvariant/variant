@@ -2,7 +2,6 @@ package com.variant.client.conn;
 
 import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
-import static com.variant.client.impl.ClientUserError.CONNECTION_CLOSED;
 import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
 import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
 
@@ -10,6 +9,7 @@ import java.util.Random;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
+import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.TargetingTracker;
@@ -46,7 +46,7 @@ public class ConnectionImpl implements Connection {
 		
 		case CLOSED_BY_CLIENT: 
 		case CLOSED_BY_SERVER:
-			throw new ClientException.User(CONNECTION_CLOSED);
+			throw new ConnectionClosedException();
 		}
 	}
 	

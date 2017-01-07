@@ -63,13 +63,14 @@ public abstract class BaseTest extends VariantBaseTest {
 			assertNotNull("Expected exception not thrown", result);
 			assertEquals(result.getError(), error);
 		}
+		
 		/**
 		 * Server side errors: We don't have access to them at comp time
-		 *
-		final public void assertThrown(int code) throws Exception {
-			ClientException result = super.run();
+		 */
+		final public void assertThrown(Class<? extends ClientException.User> cls) throws Exception {
+			ClientException.User result = super.run();
 			assertNotNull("Expected exception not thrown", result);
-			assertEquals(code, result.getCode());
+			assertEquals(cls, result.getClass());
 		}
 		/**
 		 * 

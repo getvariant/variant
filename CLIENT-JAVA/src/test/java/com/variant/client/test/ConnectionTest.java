@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
+import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.core.exception.ServerError;
@@ -114,9 +115,9 @@ public class ConnectionTest extends BaseTestWithServer {
 				conn.getSession("foo");
 			}
 			
-		}.assertThrown(ClientUserError.CONNECTION_CLOSED);
+		}.assertThrown(ConnectionClosedException.class);
 
-		
+		conn.getSession("foo");
 	}	
 
 }
