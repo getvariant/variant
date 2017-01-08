@@ -3,7 +3,7 @@ package com.variant.server.controller
 import javax.inject.Inject
 import play.api.mvc.Controller
 import play.api.mvc.Request
-import com.variant.server.session.SessionStore
+import com.variant.server.conn.SessionStore
 import play.api.Logger
 import com.variant.core.exception.ServerError._
 import com.variant.server.boot.VariantServer

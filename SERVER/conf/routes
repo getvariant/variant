@@ -14,11 +14,11 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 # Variant Controllers
 POST     /connection/:schema     com.variant.server.controller.ConnectionController.post(schema: String)
-DELETE  /connection/:id          com.variant.server.controller.ConnectionController.delete(id: String)
+DELETE  /connection/:cid         com.variant.server.controller.ConnectionController.delete(cid: String)
 
 POST    /event                   com.variant.server.controller.EventController.post()
 
 GET     /session/:id             com.variant.server.controller.SessionController.get(id: String)
-PUT     /session/:id             com.variant.server.controller.SessionController.put(id: String)
+PUT     /session/:cid            com.variant.server.controller.SessionController.put(cid: String)
 
 POST    /target                  com.variant.server.controller.TargetController.post()

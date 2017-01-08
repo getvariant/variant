@@ -10,7 +10,7 @@ import com.variant.core.UserError.Severity._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.ConfigKeys
-import com.variant.server.session.SessionStore
+import com.variant.server.conn.SessionStore
 import com.variant.server.boot.VariantServer
 import play.api.inject.guice.GuiceApplicationBuilder
 import org.scalatest.TestData

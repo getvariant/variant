@@ -5,8 +5,7 @@ import play.api.Environment
 import play.api.Play
 import com.variant.server.boot.VariantServer
 import com.variant.server.boot.VariantServerImpl
-import com.variant.server.session.SessionStore
-import com.variant.server.session.SessionStoreImpl
+import com.variant.server.conn.SessionStore
 import play.api.routing.Router
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.ConnectionStoreImpl
@@ -31,8 +30,8 @@ class Module (environment: Environment, config: Configuration) extends AbstractM
       // Connection Store
       bind(classOf[ConnectionStore]).to(classOf[ConnectionStoreImpl]).asEagerSingleton
 
-      // Session Store
-      bind(classOf[SessionStore]).to(classOf[SessionStoreImpl]).asEagerSingleton
+      // Session Store - part of connection store now.
+      // bind(classOf[SessionStore]).to(classOf[SessionStoreImpl]).asEagerSingleton
 
   }
 

@@ -121,7 +121,7 @@ class EventTest extends BaseSpecWithServer {
          (respJson \ "code").as[Int] mustBe MissingParamName.code 
          (respJson \ "args").as[Seq[String]] mustBe empty 
       }
-
+/*
       "return 200 and create event with existent session" in {
          val sid = Random.nextInt(100000).toString
          // PUT session.
@@ -169,5 +169,7 @@ class EventTest extends BaseSpecWithServer {
             }
          })  
       }
+      * 
+      */
    }
 }

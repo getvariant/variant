@@ -9,6 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import play.api.Logger
 import com.variant.server.boot.VariantServer
+import scala.collection.concurrent.TrieMap
 
 /**
  * Connection Store.
@@ -36,19 +37,21 @@ trait ConnectionStore {
 	 * Delete a connection from this store by its ID.
 	 */
 	def remove(id: String): Option[Connection]
+	
 }
 
 @Singleton
 class ConnectionStoreImpl() extends ConnectionStore {
 
-   private val logger = Logger(this.getClass)	
-	private val connMap = new ConcurrentHashMap[String, Connection]()
+   private val logger = Logger(this.getClass)
 	private lazy val maxSize = VariantServer.server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
+   private val connMap = new TrieMap[String, Connection]()
+   private val vacuumThread = new VacuumThread(connMap).start()
    
 	/**
 	 */
 	override def put(conn: Connection): Boolean = {
-      if (connMap.size() >= maxSize) {
+      if (connMap.size >= maxSize) {
          false
       }
       else {
@@ -60,18 +63,70 @@ class ConnectionStoreImpl() extends ConnectionStore {
 	/**
 	 */
    override def get(id: String): Option[Connection] = {
-      val result = connMap.get(id)
-      if (result == null) None
-      else Some(result)
+      connMap.get(id)
 	}
    
    /**
     */
    override def remove(id: String): Option[Connection] = {
       val result = connMap.remove(id)
-      if (result == null) None
-      else Some(result)      
+      result.foreach {_.destroy()}
+      result
    }
 
 }
 
+/**
+ * Background vacuum thread disposes of expired session entries.
+ */
+class VacuumThread(connMap: TrieMap[String, Connection]) extends Thread {
+
+   private val config = VariantServer.server.config
+   private val logger = Logger(this.getClass)
+   private val sessionTimeoutMillis = config.getInt(SESSION_TIMEOUT) * 1000
+   private val vacuumingFrequencyMillis = config.getInt(SESSION_STORE_VACUUM_INTERVAL) * 1000
+	setName("VariantSessionVacuum");
+   setDaemon(true);
+
+
+	override def run() {
+
+      logger.info(s"Vacuum thread $getName started")		
+		var interrupted = false
+		
+		while (true) {			
+			
+			try {
+				val now = System.currentTimeMillis();
+				var count = 0;
+				
+				for ((id, conn) <- connMap) {
+				   conn.deleteIf { entry => 
+				      if (sessionTimeoutMillis > 0 && entry.millisSinceLastTouch > sessionTimeoutMillis) {
+				         count += 1
+      			      logger.trace(String.format("Vacuumed expired session ID [%s]", entry.session.getId));
+				         true
+				      }
+				      else false
+				   }
+				}
+							
+				if (logger.isDebugEnabled && count > 0) logger.debug(s"Vacuumed $count session(s)");
+				if (logger.isTraceEnabled) logger.trace(s"Vacuumed $count session(s)");
+
+				Thread.sleep(vacuumingFrequencyMillis)
+				logger.trace("Vacuum thread woke up after %s millis".format(System.currentTimeMillis() - now))
+			}
+			catch {
+			   case _: InterruptedException => interrupted = true;
+			   case t: Throwable =>	logger.error("Unexpected exception in vacuuming thread.", t);
+			}
+			
+			if (interrupted || isInterrupted()) {
+				logger.info("Vacuum thread " + Thread.currentThread().getName() + " interrupted and exited.");
+				connMap.clear()
+				return;
+			}
+		}
+	}
+}

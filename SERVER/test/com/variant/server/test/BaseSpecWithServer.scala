@@ -6,7 +6,7 @@ import play.api.test.Helpers._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.Application
 import javax.inject.Inject
-import com.variant.server.session.SessionStore
+import com.variant.server.conn.SessionStore
 import org.scalatest.BeforeAndAfterAll
 import com.variant.server.jdbc.JdbcService
 import com.variant.server.event.EventWriter
@@ -24,6 +24,7 @@ import play.api.Mode
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import play.api.Configuration
+import com.variant.server.conn.ConnectionStore
 
 /**
  * Common to all tests.
@@ -46,7 +47,7 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
    }
 
    protected val context = app.configuration.getString("play.http.context").get
-   protected val store = app.injector.instanceOf[SessionStore]
+   protected val connStore = app.injector.instanceOf[ConnectionStore]
    protected val server = app.injector.instanceOf[VariantServer]
  
    "Server must come up with a valid schema" in {

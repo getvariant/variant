@@ -45,7 +45,10 @@ public class ServerError extends UserError {
 	
 	public static final ServerError MissingParamName = 
 			new ServerError(616, "Parameter name is missing");
-	   
+
+	public static final ServerError InvalidSessionId = 
+			new ServerError(616, "Invalid session ID [%s]");
+
 	//
 	// 631-700 Internal, other internal errors.
 	//	

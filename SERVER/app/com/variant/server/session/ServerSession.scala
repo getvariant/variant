@@ -18,31 +18,20 @@ import com.variant.server.runtime.Runtime
 
 object ServerSession {
   
-   def apply(sid: String) = new ServerSession(sid)
+   //def apply(sid: String) = new ServerSession(sid)
   
-   def fromJson(json: String) = {
-      val coreSession = CoreSession.fromJson(json, VariantServer.server.schema.get)
-      new ServerSession(coreSession)
-   }
+   def apply(json: String) = new ServerSession(json)
 }
 
 /**
  * Construct from session ID.
  */
-class ServerSession (private val sid: String) {
+class ServerSession (private val json: String) {
    
-   /**
-    * Construct from already constructed core session object.
-    */
-   def this(coreSession: CoreSession) = {
-      this("")
-      this.coreSession = coreSession.asInstanceOf[CoreSession]
-   }
-
    /**
     * Tests will need access to the core session.
     */
-   var coreSession = new CoreSession(sid, VariantServer.server.schema.get)
+   var coreSession = CoreSession.fromJson(json, VariantServer.server.schema.get)
  
   /*
    * Delegates to core methods

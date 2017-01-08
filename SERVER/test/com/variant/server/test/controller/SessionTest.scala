@@ -131,6 +131,7 @@ class SessionTest extends BaseSpecWithServer {
            .foreach(sid => status(route(app, FakeRequest(GET, endpoint + "/" + sid)).get) mustBe NOT_FOUND)  
       }
       
+     /*
       "deserialize payload into session object" in {
        
          val sid = Random.nextInt(100000).toString
@@ -148,6 +149,6 @@ class SessionTest extends BaseSpecWithServer {
          store.asSession(sid) mustBe empty
 
       }
-
+*/
    }
 }

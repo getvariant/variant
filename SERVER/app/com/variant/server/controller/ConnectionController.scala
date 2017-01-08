@@ -3,7 +3,7 @@ package com.variant.server.controller
 import javax.inject.Inject
 import play.api.mvc.Controller
 import play.api.mvc.Request
-import com.variant.server.session.SessionStore
+import com.variant.server.conn.SessionStore
 import play.api.Logger
 import com.variant.core.exception.ServerError._
 import com.variant.server.boot.ServerErrorRemote
@@ -20,7 +20,7 @@ class ConnectionController @Inject() (store: ConnectionStore) extends Controller
    /**
     * GET a new connection to a schema.
     * test with:
-curl -v -X POST http://localhost:9000/variant/connection/SID
+curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
     */
    def post(name: String) = VariantAction {
          var result: Option[ServerSchema] = None
@@ -49,17 +49,17 @@ curl -v -X POST http://localhost:9000/variant/connection/SID
    /**
     * Close a connection.
     * test with:
-curl -v -X DELETE http://localhost:9000/variant/connection/SID
+curl -v -X DELETE http://localhost:9000/variant/connection/CID
     */
-   def delete(id: String) = VariantAction {
-      val conn = store.remove(id)
+   def delete(cid: String) = VariantAction {
+      val conn = store.remove(cid)
       if (conn.isDefined) {
-         logger.info("Closed connection [%s] to schema [%s]".format(id, conn.get.schema.getName()))
+         logger.info("Closed connection [%s] to schema [%s]".format(cid, conn.get.schema.getName()))
          Ok
       }
       else {
-         logger.debug("Unable to close connection: schema ID [%s] does not exist".format(id)) 
-         ServerErrorRemote(UnknownConnection).asResult(id)
+         logger.debug("Unable to close connection: schema ID [%s] does not exist".format(cid)) 
+         ServerErrorRemote(UnknownConnection).asResult(cid)
       }
    }
 }
