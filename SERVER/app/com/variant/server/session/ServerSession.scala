@@ -21,19 +21,21 @@ object ServerSession {
    /**
     * Server session deserialized from core session's JSON.
     */
-   def apply(json: String) = new ServerSession(CoreSession.fromJson(json, VariantServer.server.schema.get))
+   def apply(json: String) = new ServerSession(json)
    
    /**
     * New server session with nothing in it, but the SID - good for tests.
     */
-   def empty(sid: String) = new ServerSession(new CoreSession(sid, VariantServer.server.schema.get))
+   def empty(sid: String) = new ServerSession(new CoreSession(sid, VariantServer.server.schema.get).toJson())
 }
 
 /**
  * Construct from session ID.
  */
-class ServerSession (val coreSession: CoreSession) {
-    
+class ServerSession (val json: String) {
+   
+   val coreSession = CoreSession.fromJson(json, VariantServer.server.schema.get)
+   
   /*
    * Delegates to core methods
    */

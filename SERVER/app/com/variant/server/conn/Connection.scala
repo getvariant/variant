@@ -46,15 +46,15 @@ class Connection(val schema: ServerSchema) {
    }
    
    /**
-    * Lookup session as object.
+    * Lookup session.
     */
    def getSession(sid: String): Option[ServerSession] = ssnStore.asSession(sid)
 
    /**
     * Lookup session as JSON string.
-    */
+    *
    def getSessionJson(sid: String): Option[String] = ssnStore.asJson(sid)
-
+*/
    /**
     * Invoke function on each session store entry in this connection.
     */

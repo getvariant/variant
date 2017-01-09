@@ -13,9 +13,10 @@ import com.variant.server.conn.ConnectionStore
 import play.api.libs.json._
 import play.api.mvc.Result
 import com.variant.server.boot.ServerErrorRemote
+import com.variant.server.ServerException
 
 //@Singleton -- Is this for non-shared state controllers?
-class TargetController @Inject() (store: SessionStore) extends Controller  {
+class TargetController @Inject() (override val connStore: ConnectionStore) extends VariantController  {
    
    private val logger = Logger(this.getClass)	
 
@@ -31,24 +32,29 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 
       def parse(json: JsValue): Result = {
          
-         val sid = (json \ "sid").asOpt[String]
+         val scid = (json \ "sid").asOpt[String]
          val state = (json \ "state").asOpt[String]
          
-         if (sid.isEmpty)  {
-            ServerErrorRemote(MissingProperty).asResult("sid")
-         }
-         else if (state.isEmpty)  {
-            ServerErrorRemote(MissingProperty).asResult("state")
-         }
-         else {    
-            val ssn = store.asSession(sid.get)
-            if (ssn.isEmpty) {
-               ServerErrorRemote(SessionExpired).asResult()
-            }
-            else {
-               Ok("TODO")
-            }
+         if (scid.isEmpty)
+            throw new ServerException.Remote(MissingProperty, "sid")
+   
+         if (state.isEmpty) 
+            throw new ServerException.Remote(MissingProperty, "state")
 
+         val (sid,cid) = parseScid(scid.get)
+         val ssn = lookupSession(scid.get)
+            
+         if (ssn.isDefined) {
+            logger.debug(s"Found session [$sid]")
+            
+            val response = JsObject(Seq(
+               "session" -> JsString(ssn.get.json)
+            ))
+            Ok(response.toString)
+         }
+         else {
+            logger.debug(s"Not found session [$sid]")         
+            ServerErrorRemote(SessionExpired).asResult()
          }
       }
       

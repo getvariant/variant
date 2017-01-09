@@ -16,12 +16,10 @@ import com.variant.server.session.ServerSession
 import com.variant.server.ServerException
 
 //@Singleton -- Is this for non-shared state controllers?
-class SessionController @Inject() (connStore: ConnectionStore, server: VariantServer) extends VariantController  {
+class SessionController @Inject() (override val connStore: ConnectionStore, server: VariantServer) extends VariantController  {
    
       private val logger = Logger(this.getClass)	
-      
-   // def index = TODO
- 
+       
    /**
     * PUT new session into the session store.
     * @param cid Connection ID
@@ -38,22 +36,14 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     */
    def put(scid: String) = VariantAction { req =>
 
-      val (sid,cid) = parseScid(scid)
-      val conn = connStore.get(cid)
-
-      if (!conn.isDefined) {
-         logger.debug(s"Not found connection [$cid]")               
-         ServerErrorRemote(UnknownConnection).asResult(cid)
-      }
-      else {
-         logger.debug(s"Found connection [$cid]")
-         req.body.asText match {
-            case Some(body) => {
-               conn.get.addSession(sid, body)
-               Ok
-            }
-            case None => ServerErrorRemote(EmptyBody).asResult()
+      val (sid, cid) = parseScid(scid)
+      val conn = lookupConnection(scid)
+      req.body.asText match {
+         case Some(body) => {
+            conn.addSession(sid, body)
+            Ok
          }
+         case None => ServerErrorRemote(EmptyBody).asResult()
       }
    }
  
@@ -65,26 +55,18 @@ curl -v -X GET http://localhost:9000/variant/session/SID
    def get(scid: String) = VariantAction {
       
       val (sid,cid) = parseScid(scid)
-      val conn = connStore.get(cid)
+      val result = lookupSession(scid)
       
-      if (!conn.isDefined) {
-         logger.debug(s"Not found connection [$cid]")               
-         ServerErrorRemote(UnknownConnection).asResult(cid)
+      if (result.isDefined) {
+         logger.debug(s"Found session [$sid]")
+         val response = JsObject(Seq(
+            "session" -> JsString(result.get.json)
+         ))
+         Ok(response.toString)
       }
       else {
-         logger.debug(s"Found connection [$cid]")
-         val result = conn.get.getSessionJson(sid)
-         if (result.isDefined) {
-            logger.debug("Session found for ID " + sid)
-            val response = JsObject(Seq(
-               "session" -> JsString(result.get)
-            ))
-            Ok(response.toString)
-         }
-         else {
-            logger.debug(s"No session found for ID [$sid]")         
-            ServerErrorRemote(SessionExpired).asResult()
-         }
+         logger.debug(s"Not found session [$sid]")         
+         ServerErrorRemote(SessionExpired).asResult()
       }
    }
  
