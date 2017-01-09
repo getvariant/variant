@@ -1,6 +1,8 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
@@ -115,9 +117,49 @@ public class ConnectionTest extends BaseTestWithServer {
 				conn.getSession("foo");
 			}
 			
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
 		}.assertThrown(ConnectionClosedException.class);
-
-		conn.getSession("foo");
+		
+		assertEquals(Status.CLOSED_BY_CLIENT, conn.getStatus());
 	}	
 
+	/**
+	 */
+	@org.junit.Test
+	public void closedByServerTest() throws Exception {
+		
+		final Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		assertNotNull(conn);
+		assertEquals(Status.OPEN, conn.getStatus());
+		assertNotNull(conn.getClient());
+		assertNotNull(conn.getSchema());
+		assertEquals("big_covar_schema", conn.getSchema().getName());
+		assertEquals(5, conn.getSchema().getStates().size());
+		assertEquals(6, conn.getSchema().getTests().size());
+
+		server.restart();
+
+		assertEquals(Status.OPEN, conn.getStatus());
+
+		assertNull(conn.getSession("foo"));        
+		assertNull(conn.getSessionById("foo"));
+
+		new ClientUserExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn.getOrCreateSession("foo");
+			}
+			
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
+		}.assertThrown(ConnectionClosedException.class);
+
+		assertEquals(Status.CLOSED_BY_SERVER, conn.getStatus());
+	}	
+	
 }

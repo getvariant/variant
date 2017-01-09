@@ -10,7 +10,7 @@ import com.variant.client.test.util.ServerProcess;
  */
 public abstract class BaseTestWithServer extends BaseTest {
 		
-	private static ServerProcess svrProc;
+	protected static ServerProcess server;
 	
 	/**
 	 * Start the server before each test case
@@ -18,14 +18,14 @@ public abstract class BaseTestWithServer extends BaseTest {
 	 */
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		svrProc = new ServerProcess();
-		svrProc.start();
+		server = new ServerProcess();
+		server.start();
 	}
 
 	
 	@AfterClass
 	public static void afterClass() throws Exception {
-		svrProc.stop();
+		server.stop();
 	}
 
 }

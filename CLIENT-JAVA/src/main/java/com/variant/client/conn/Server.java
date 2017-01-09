@@ -1,13 +1,16 @@
 package com.variant.client.conn;
 
 import com.variant.client.ClientException;
-import com.variant.client.Connection;
+import com.variant.client.Connection.Status;
+import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
+import com.variant.client.net.http.HttpRemoter;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.core.VariantEvent;
+import com.variant.core.exception.ServerError;
 import com.variant.core.impl.VariantEventSupport;
 import com.variant.core.session.CoreSession;
 
@@ -21,15 +24,16 @@ public class Server {
 
 	private final String endpointUrl;
 	private final String schemaName;
-	private final HttpAdapter adapter = new HttpAdapter();
-
+	private HttpRemoter remoter = new HttpRemoter();
+	private final HttpAdapter adapter = new HttpAdapter(remoter);
+	private ConnectionImpl connection;
 	private boolean isConnected = false;
 	
 	/**
 	 * Consistency checks.
 	 * @param conn
 	 */
-	private void checkState(Connection conn) {
+	private void checkState() {
 		
 	}
 	
@@ -38,10 +42,29 @@ public class Server {
 	}
 
 	/**
+	 * SCID
+	 */
+	private String scid(String sid) {
+		return sid + "." + connection.getId();
+	}
+	
+	/**
+	 * Destroy this server.
+	 */
+	private void destroy() {
+		if (remoter != null) {
+			remoter.destroy();
+			remoter = null;
+		}
+		isConnected = false;
+	}
+	
+	/**
 	 * Bootstrapping 
 	 * Package visibility as we only want ConnectionImpl to call this.
 	 */
-	Server(String url) {
+	Server(ConnectionImpl connection, String url) {
+		this.connection = connection;
 		int lastColonIx = url.lastIndexOf(':');
 		if (lastColonIx < 0) throw new ClientException.User(ClientUserError.BAD_CONN_URL, url);
 		String ep = url.substring(0, lastColonIx);
@@ -66,9 +89,10 @@ public class Server {
 	 * Close this server connection.
 	 */
 	void disconnect(String id) {
-		if (!isConnected) return;
-		adapter.delete(endpointUrl + "connection/" + id);
-		isConnected = true;		
+		if (isConnected) {
+			adapter.delete(endpointUrl + "connection/" + id);
+			destroy();
+		}
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -95,24 +119,33 @@ public class Server {
 	 * 
 	 * @since 0.6
 	 */
-	public Payload.Session get(Connection conn, String sessionId) {
+	public Payload.Session get(String sid) {
 
-		checkState(conn);
+		checkState();
 
-		HttpResponse resp = adapter.get(endpointUrl + "session/" + sessionId);
-		return Payload.Session.fromResponse(conn, resp);
+		HttpResponse resp = adapter.get(endpointUrl + "session/" + scid(sid));
+		return Payload.Session.fromResponse(connection, resp);
 	}
 
 	/**
 	 * Save core session on the remote server.
 	 */
-	public void saveSession(Connection conn, CoreSession session) {
+	public void saveSession(CoreSession session) {
 		
-		checkState(conn);
+		checkState();
 
 		// Remote
-		adapter.put(endpointUrl + "session/" + session.getId(), session.toJson());
-		
+		try {
+			adapter.put(endpointUrl + "session/" + scid(session.getId()), session.toJson());
+		}
+		catch (ClientException.User ce) {
+			if (ce.getError() == ServerError.UnknownConnection) {
+				// The server has hung up on this connection.
+				destroy();
+				connection.close(Status.CLOSED_BY_SERVER);
+				throw new ConnectionClosedException();
+			}
+		}
 	}
 
 }

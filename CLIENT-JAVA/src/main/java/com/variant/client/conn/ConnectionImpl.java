@@ -38,7 +38,7 @@ public class ConnectionImpl implements Connection {
 	 * Is this connection still valid?
 	 * @return
 	 */
-	private void statusCheck() {
+	private void preChecks() {
 		
 		switch (status) {
 		
@@ -131,7 +131,7 @@ public class ConnectionImpl implements Connection {
 		if (result == null && create) {
 			// Session expired locally, recreate OK.  Don't bother with the server.
 			CoreSession coreSession = new CoreSession(sessionId, schema);
-			server.saveSession(this, coreSession);
+			server.saveSession(coreSession);
 			result = new SessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
 			cache.add(result);
 		}
@@ -151,7 +151,7 @@ public class ConnectionImpl implements Connection {
 		if (ssnFromCache == null) return null;
 		
 		// Local cache hit. Still have to hit the the server.
-		Payload.Session payload = server.get(this, sid);
+		Payload.Session payload = server.get(sid);
 		
 		if (payload == null) {
 			// Session expired on server => expire it here too.
@@ -187,7 +187,7 @@ public class ConnectionImpl implements Connection {
 		this.client = client;
 		
 		// This connection's server object.
-		this.server = new Server(url);
+		this.server = new Server(this, url);
 		
 		// Get the schema from the server, if exists.
 		Payload.Connection payload = server.connect();
@@ -214,7 +214,7 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public VariantClient getClient() {
-		statusCheck();
+		preChecks();
 		return client;
 	}
 
@@ -222,7 +222,7 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public Session getOrCreateSession(Object... userData) {
-		statusCheck();
+		preChecks();
 		return _getSession(true, userData);
 	}
 			
@@ -230,19 +230,19 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public Session getSession(Object... userData) {
-		statusCheck();
+		preChecks();
 		return _getSession(false, userData);
 	}
 
 	@Override
 	public Session getSessionById(String sessionId) {
-		statusCheck();
+		preChecks();
 		return getSessionFromServer(sessionId);
 	}
 	
 	@Override
 	public Schema getSchema() {
-		statusCheck();
+		preChecks();
 		return schema;
 	}
 
@@ -253,10 +253,7 @@ public class ConnectionImpl implements Connection {
 
 	@Override
 	public void close() {
-		if (status == Status.OPEN) {
-			server.disconnect(id);
-			status = Status.CLOSED_BY_CLIENT;
-		}
+		close(Status.CLOSED_BY_CLIENT);
 	}
 
 	// ---------------------------------------------------------------------------------------------//
@@ -275,6 +272,13 @@ public class ConnectionImpl implements Connection {
 		return sessionTimeoutMillis;
 	}
 
+	public void close(Status status) {
+		if (this.status == Status.OPEN) {
+			server.disconnect(id);
+			this.status = status;
+		}		
+	}
+	
 	/**
 	 * This connection's unerlying server.
 	 */

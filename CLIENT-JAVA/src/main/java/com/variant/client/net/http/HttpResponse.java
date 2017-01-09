@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
+import org.apache.http.HttpStatus;
 import org.apache.http.ParseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -55,7 +56,6 @@ public class HttpResponse {
 		Map<String, ?> map = null;
 				
 		try {
-			
 			// Reconstitute the server error.
 			map = jacksonDataMapper.readValue(body, Map.class);
 			Integer code = (Integer) map.get("code");
@@ -64,7 +64,7 @@ public class HttpResponse {
 			ServerError error = ServerError.byCode(code);
 			
 			if (isInternal) {
-				return new ClientException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.asMessage(args.toArray()));
+				return new ClientException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.code, error.asMessage(args.toArray()));
 			}
 			else {
 				return new ClientException.User(error, args.toArray());

@@ -39,7 +39,6 @@ public class ServerProcess {
 	public void start(Map<String,String> config) throws Exception {
 		
 		if (svrProc != null && svrProc.isAlive()) throw new RuntimeException("Server thread is alive. Call stop() first");
-
 		svrProc = new ProcessThread();
 		svrProc.start();
 
@@ -60,29 +59,47 @@ public class ServerProcess {
 	 * Stop the server.
 	 */
 	public void stop() {
-		// a slight delay to let the log reader have a chance to run one more time.
+		// a slight delay to let the log reader have a chance to run one more time and catch up.
 		try {Thread.sleep(100);} catch(Throwable t) {}
-		svrProc.interrupt();
+		svrProc.destroyProc();
 		logReader.interrupt();
+		sbtErr = sbtOut = null;
+		serverUp = false;
 	}
-	
+
+	/**
+	 * Restart the server.
+	 * @throws Exception 
+	 */
+	public void restart() throws Exception {
+		stop();
+		Thread.sleep(1000);  // Let async cleanup finish.
+		start();
+	}
+
 	/**
 	 * Background thread which runs the process and blocks on IO from it.
 	 */
 	private class ProcessThread extends Thread {
 		
+		private Process sbt;
+		
 		@Override
 		public void run() {
 			try {
-				Process sbt = Runtime.getRuntime().exec("bin/startServer.sh");
+				sbt = Runtime.getRuntime().exec("bin/startServer.sh");
 				sbtOut = sbt.getInputStream();
-				sbtErr = sbt .getErrorStream();
+				sbtErr = sbt.getErrorStream();
 			}
 			catch (Exception e) {
 				LOG.error("Exception in proc thread", e);
 			}
+			LOG.debug("ProcessTread done");
 		}
 		
+		private void destroyProc() {
+			sbt.destroy();
+		}
 	}
 
 	/**
@@ -95,16 +112,15 @@ public class ServerProcess {
 			try {
 				BufferedReader sbtOutReader = null;				
 				BufferedReader sbtErrReader = null;				
-				while(true) {
+				while(true && ! isInterrupted()) {
 					if (sbtOut != null && sbtErr != null) {
-
 						// Read out
 						if (sbtOutReader == null)
 							sbtOutReader = new BufferedReader(new InputStreamReader(sbtOut));
 						
 						String line = null;
 						while((line = sbtOutReader.readLine()) != null) {
-							System.out.println(String.format("<SBT OUT> %s", line));
+							System.out.println("<SBT OUT> " + line);
 							if (line.contains("Variant Experiment Server release")) {
 								Thread.sleep(1500); // The above msg comes up just before the port is bound -> wait.
 								serverUp = true;
@@ -116,15 +132,14 @@ public class ServerProcess {
 							sbtErrReader = new BufferedReader(new InputStreamReader(sbtErr));
 
 						while((line = sbtErrReader.readLine()) != null) {
-							System.out.println(String.format("<SBT ERR> %s", ServerProcess.class.getSimpleName(), line));
+							System.err.println("<SBT ERR> " + line);
 						}
 					}
 					Thread.sleep(10);
 				}
 			}
-			catch (Exception e) {
-				LOG.error("Exception in log reader thread", e);
-			}
+			catch (Exception e) {}
+			LOG.debug("LogReaderTread done");
 		}
 	}
 	

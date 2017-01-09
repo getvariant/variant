@@ -4,12 +4,12 @@ import java.util.Map
 import java.util.Set
 import java.util.concurrent.ConcurrentHashMap
 import com.variant.server.ConfigKeys._
-import com.variant.server.boot.VariantServer
 import javax.inject.Inject
 import javax.inject.Singleton
 import play.api.Logger
 import com.variant.server.boot.VariantServer
 import scala.collection.concurrent.TrieMap
+import com.typesafe.config.Config
 
 /**
  * Connection Store.
@@ -41,12 +41,12 @@ trait ConnectionStore {
 }
 
 @Singleton
-class ConnectionStoreImpl() extends ConnectionStore {
+class ConnectionStoreImpl @Inject() (server: VariantServer) extends ConnectionStore {
 
    private val logger = Logger(this.getClass)
-	private lazy val maxSize = VariantServer.server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
+	private lazy val maxSize = server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
    private val connMap = new TrieMap[String, Connection]()
-   private val vacuumThread = new VacuumThread(connMap).start()
+   private val vacuumThread = new VacuumThread(connMap, server.config).start()
    
 	/**
 	 */
@@ -79,9 +79,8 @@ class ConnectionStoreImpl() extends ConnectionStore {
 /**
  * Background vacuum thread disposes of expired session entries.
  */
-class VacuumThread(connMap: TrieMap[String, Connection]) extends Thread {
+class VacuumThread(connMap: TrieMap[String, Connection], config: Config) extends Thread {
 
-   private val config = VariantServer.server.config
    private val logger = Logger(this.getClass)
    private val sessionTimeoutMillis = config.getInt(SESSION_TIMEOUT) * 1000
    private val vacuumingFrequencyMillis = config.getInt(SESSION_STORE_VACUUM_INTERVAL) * 1000

@@ -15,14 +15,14 @@ import com.variant.client.ClientException;
  * The very bottom of the HTTP Stack. 
  * Makes actual network calls.
  */
-class HttpRemoter {
+public class HttpRemoter {
 
 	final private static Logger LOG = LoggerFactory.getLogger(HttpRemoter.class);
 
 	/**
 	 * Package construction.
 	 */
-	HttpRemoter(){};
+	public HttpRemoter(){};
 	
 	// The only HTTP client per Variant Client. Has built-in connection pool.
 	private CloseableHttpClient client = HttpClients.createDefault();
@@ -48,7 +48,7 @@ class HttpRemoter {
 			case HttpStatus.SC_OK:
 				return result;
 			case HttpStatus.SC_BAD_REQUEST:
-			case HttpStatus.SC_INTERNAL_SERVER_ERROR:
+				if (LOG.isDebugEnabled()) LOG.debug("Server status " + result.status + ": " + result.body);
 				throw result.toClientException();
 			default:
 				throw new ClientException.Internal(
@@ -72,5 +72,13 @@ class HttpRemoter {
 	
 	interface Requestable {
 		HttpUriRequest requestOp() throws Exception;
+	}
+	
+	/**
+	 * Close the HTTP client gracefully, in order to avoid hangup errors in the log,
+	 * because the HTTP Client may hold connections open for optimization.
+	 */
+	public void destroy() {
+		try { client.close(); } catch(Throwable t) {}
 	}
 }

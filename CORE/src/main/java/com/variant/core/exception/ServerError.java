@@ -47,7 +47,7 @@ public class ServerError extends UserError {
 			new ServerError(616, "Parameter name is missing");
 
 	public static final ServerError InvalidSCID = 
-			new ServerError(616, "Invalid SCID [%s]");
+			new ServerError(617, "Invalid SCID [%s]");
 
 	//
 	// 631-700 Internal, other internal errors.

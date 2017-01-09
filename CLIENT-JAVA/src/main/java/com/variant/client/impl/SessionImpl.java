@@ -35,7 +35,7 @@ public class SessionImpl implements Session {
 
 	private boolean isExpired = false;
 	
-	private final ConnectionImpl conn;
+	private final ConnectionImpl conn;  // Connection which created this session.
 	private CoreSession coreSession;
 	private SessionIdTracker sessionIdTracker;
 	private TargetingTracker targetingTracker;
@@ -206,7 +206,7 @@ public class SessionImpl implements Session {
 	// ---------------------------------------------------------------------------------------------//
 
 	public void save() {
-		conn.getServer().saveSession(conn, coreSession);
+		conn.getServer().saveSession(coreSession);
 	}
 	
 	/**

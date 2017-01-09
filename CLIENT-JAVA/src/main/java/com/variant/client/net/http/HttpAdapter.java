@@ -8,14 +8,16 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 
 public class HttpAdapter {
-
-	private HttpRemoter remoter = new HttpRemoter();
 		
+	private final HttpRemoter remoter;
+	
 	// ---------------------------------------------------------------------------------------------//
 	//                                             PUBLIC                                           //
 	// ---------------------------------------------------------------------------------------------//
 
-	public HttpAdapter() {}
+	public HttpAdapter(HttpRemoter remoter) {
+		this.remoter = remoter;
+	}
 	
 	/**
 	 * Send a GET.
@@ -105,4 +107,5 @@ public class HttpAdapter {
 		);
 	}
 
+	
 }
