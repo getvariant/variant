@@ -108,8 +108,10 @@ public class SessionImpl implements Session {
 		if (coreSession.getStateRequest() != null && !coreSession.getStateRequest().isCommitted()) {
 			throw new ClientException.User(ACTIVE_REQUEST);
 		}
+		
+		conn.getServer().target(getId(), state.getName());
 /*
-		return core.getRuntime().targetSessionForState(this, (StateImpl) state); ... callthe server...
+		return core.getRuntime().targetSessionForState(this, (StateImpl) state); 
 
 		CoreStateRequest coreReq = (CoreStateRequest) coreSession.targetForState(state);
 		targetingTracker.set(fromTargetingStabile(coreSession.getTargetingStabile()));

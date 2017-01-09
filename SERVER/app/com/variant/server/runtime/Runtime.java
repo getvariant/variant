@@ -580,10 +580,10 @@ public class Runtime {
 	 * @param view
 	 * @return
 	 */
-	public CoreStateRequest targetSessionForState(CoreSession ssn, StateImpl state) {
+	public CoreStateRequest targetSessionForState(CoreSession ssn, State state) {
 
 		// Resolve the path and get all tests instrumented on the state.
-		CoreStateRequest result = new CoreStateRequest(ssn, state);
+		CoreStateRequest result = new CoreStateRequest(ssn, (StateImpl)state);
 		
 		targetSessionForState(result);		
 		

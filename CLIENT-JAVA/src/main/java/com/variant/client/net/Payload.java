@@ -96,4 +96,36 @@ abstract public class Payload {
 		}
 	}
 
+	/**
+	 * 
+	 */
+	public static class StateRequest extends Payload {
+		
+		public final CoreSession session;
+		
+		private StateRequest(CoreSession session) {
+			this.session = session;
+		}
+		
+		public static StateRequest fromResponse(com.variant.client.Connection conn, HttpResponse resp) {
+
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				@SuppressWarnings("unchecked")
+				Map<String,?> map = mapper.readValue(resp.body, Map.class);
+				String coreSsnSrc = (String) map.get("session");
+				if (coreSsnSrc == null)
+					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
+
+				return new StateRequest(CoreSession.fromJson(coreSsnSrc, conn.getSchema()));
+			}
+			catch (VariantException va) {
+				throw va;
+			}
+			catch (Throwable t) {
+					throw new VariantException(String.format("Unable to parse payload type [%s]", Session.class.getName()), t);
+			}
+		}
+	}
+
 }

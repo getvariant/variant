@@ -14,6 +14,8 @@ import play.api.libs.json._
 import play.api.mvc.Result
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.ServerException
+import com.variant.core.schema.State
+import com.variant.server.session.ServerSession
 
 //@Singleton -- Is this for non-shared state controllers?
 class TargetController @Inject() (override val connStore: ConnectionStore) extends VariantController  {
@@ -30,7 +32,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     */
    def post() = VariantAction { req =>
 
-      def parse(json: JsValue): Result = {
+      def parse(json: JsValue): (ServerSession, State) = {
          
          val scid = (json \ "sid").asOpt[String]
          val state = (json \ "state").asOpt[String]
@@ -43,25 +45,19 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 
          val (sid,cid) = parseScid(scid.get)
          val ssn = lookupSession(scid.get)
-            
-         if (ssn.isDefined) {
-            logger.debug(s"Found session [$sid]")
-            
-            val response = JsObject(Seq(
-               "session" -> JsString(ssn.get.json)
-            ))
-            Ok(response.toString)
-         }
-         else {
-            logger.debug(s"Not found session [$sid]")         
-            ServerErrorRemote(SessionExpired).asResult()
-         }
+
+         if (!ssn.isDefined)
+            throw new ServerException.Remote(SessionExpired, "state")
+
+         (ssn.get, VariantServer.server.schema.get.getState(state.get))
       }
       
       req.contentType match {
          case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
             try {
-               parse(Json.parse(req.body.asText.get))
+               val (ssn, state) = parse(Json.parse(req.body.asText.get))
+               VariantServer.server.runtime.targetSessionForState(ssn.coreSession, state);
+               Ok("TODO")
             }
             catch {
                case t: Throwable => ServerErrorRemote(JsonParseError).asResult(t.getMessage)

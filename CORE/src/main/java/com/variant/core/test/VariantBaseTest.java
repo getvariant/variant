@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Pattern;
 
 import com.variant.core.exception.CommonError;
@@ -19,6 +20,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
+import com.variant.core.util.VariantStringUtils;
 
 
 /**
@@ -26,6 +28,8 @@ import com.variant.core.session.SessionScopedTargetingStabile;
  */
 
 abstract public class VariantBaseTest {
+	
+	private final static Random rand = new Random(System.currentTimeMillis());
 	
 	/**
 	 * @param ssn The session which will receive this stabile.
@@ -45,6 +49,13 @@ abstract public class VariantBaseTest {
 	//---------------------------------------------------------------------------------------------//
 	//                                         HELPERS                                             //
 	//---------------------------------------------------------------------------------------------//
+
+    /**
+     * Generate a new random session ID.
+     */
+    protected String newSid() { 
+    	return VariantStringUtils.random64BitString(rand);
+    }
 
 	/**
 	 * Print all messages to std out.

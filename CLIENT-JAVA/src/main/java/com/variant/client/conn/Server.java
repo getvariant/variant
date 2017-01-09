@@ -113,11 +113,8 @@ public class Server {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * GET or create session by ID.
-	 * In 0.6 we're not able to create session on the server because the server
-	 * does not understand schemas.
-	 * 
-	 * @since 0.6
+	 * GET /session
+	 * Get or create session by ID.
 	 */
 	public Payload.Session get(String sid) {
 
@@ -146,6 +143,24 @@ public class Server {
 				throw new ConnectionClosedException();
 			}
 		}
+	}
+
+	//---------------------------------------------------------------------------------------------//
+	//                                          /TARGET                                            //
+	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 * POST /target.
+     * Target session for a state
+	 */
+	public Payload.StateRequest target(String sid, String state) {
+
+		checkState();
+
+		String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", scid(sid), state);
+		
+		HttpResponse resp = adapter.post(endpointUrl + "target", body);
+		return Payload.StateRequest.fromResponse(connection, resp);
 	}
 
 }
