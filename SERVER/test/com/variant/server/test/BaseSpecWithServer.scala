@@ -25,6 +25,8 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import play.api.Configuration
 import com.variant.server.conn.ConnectionStore
+import play.api.libs.json.JsValue
+import com.variant.core.exception.ServerError
 
 /**
  * Common to all tests.
@@ -71,6 +73,21 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
 		}
 	}
    
+   /**
+    * 
+    */
+   protected def scid(sid: String, cid: String) = sid + "." + cid
+   
+   /**
+    * Parse an 400 error body
+    */
+   protected def parseError(body: JsValue): (Boolean, ServerError, Seq[String]) = {
+      body mustNot be (null)
+      val isInternal = (body \ "isInternal").as[Boolean]
+      val code = (body \ "code").as[Int] 
+      val args = (body \ "args").as[Seq[String]]
+      (isInternal, ServerError.byCode(code), args)
+   }
    /**
     * Create and add a targeting stabile to a session.
     */

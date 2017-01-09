@@ -74,11 +74,10 @@ class ConnectionTest extends BaseSpecWithServer {
       "return  400 and error on POST to non-existent schema" in {
          val resp = route(app, FakeRequest(POST, endpoint + "/foo").withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe BAD_REQUEST
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "isInternal").as[Boolean] mustBe UnknownSchema.isInternal() 
-         (respJson \ "code").as[Int] mustBe UnknownSchema.code 
-         (respJson \ "args").as[Seq[String]] mustBe Seq("foo")
+         val (isInternal, error, args) = parseError(contentAsJson(resp))
+         isInternal mustBe UnknownSchema.isInternal() 
+         error mustBe UnknownSchema
+         args mustBe Seq("foo")
       }
 
       var connId: String = null
@@ -113,11 +112,10 @@ class ConnectionTest extends BaseSpecWithServer {
       "return 400 on DELETE of connection that no longer exists" in {
          val resp = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe BAD_REQUEST
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "isInternal").as[Boolean] mustBe UnknownConnection.isInternal() 
-         (respJson \ "code").as[Int] mustBe UnknownConnection.code 
-         (respJson \ "args").as[Seq[String]] mustBe Seq(connId)
+         val (isInternal, error, args) = parseError(contentAsJson(resp))
+         isInternal mustBe UnknownConnection.isInternal() 
+         error mustBe UnknownConnection
+         args mustBe Seq(connId.toString())
       }
 
       "return 400 when attempting to open one too many connections" in {
@@ -145,11 +143,10 @@ class ConnectionTest extends BaseSpecWithServer {
          // One over
          val resp1 = route(app, FakeRequest(POST, endpoint + "/big_covar_schema").withHeaders("Content-Type" -> "text/plain")).get
          status(resp1) mustBe BAD_REQUEST
-         val respJson = contentAsJson(resp1)
-         respJson mustNot be (null)
-         (respJson \ "isInternal").as[Boolean] mustBe TooManyConnections.isInternal() 
-         (respJson \ "code").as[Int] mustBe TooManyConnections.code 
-         (respJson \ "args").as[Seq[String]] mustBe empty
+         val (isInternal, error, args) = parseError(contentAsJson(resp1))
+         isInternal mustBe TooManyConnections.isInternal() 
+         error mustBe TooManyConnections
+         args mustBe empty
          
          // Close one
          val resp2 = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get

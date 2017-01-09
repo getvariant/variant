@@ -99,7 +99,7 @@ class TargetingTest extends BaseSpecWithServer {
 				
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = new ServerSession("sid")
+   			val ssn = ServerSession.empty("sid")
    			val req = ssn.targetForState(state)
    			val expName = req.getLiveExperience(test).getName()
    			expName match {
@@ -118,7 +118,7 @@ class TargetingTest extends BaseSpecWithServer {
    		server.hooker.addListener(nullListener)
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = new ServerSession("sid" + i)
+   			val ssn = ServerSession.empty("sid" + i)
    			val req = ssn.targetForState(state)
    			val expName = req.getLiveExperience(test).getName()
    			expName match {
@@ -140,7 +140,7 @@ class TargetingTest extends BaseSpecWithServer {
    		server.hooker.addListener(nullListener2)
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = new ServerSession("sid" + 1)
+   			val ssn = ServerSession.empty("sid" + 1)
    			val req = ssn.targetForState(state)
    			val expName = req.getLiveExperience(test).getName()
    			expName match {
@@ -163,7 +163,7 @@ class TargetingTest extends BaseSpecWithServer {
    		server.hooker.addListener(abListener)
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = new ServerSession("sid" + 1)
+   			val ssn = ServerSession.empty("sid" + 1)
    			val req = ssn.targetForState(state)
    			val expName = req.getLiveExperience(test).getName()
    			expName match {
@@ -186,7 +186,7 @@ class TargetingTest extends BaseSpecWithServer {
    		server.hooker.addListener(acListener)
          val counts = Array(0,0,0)
    		for (i <- 1 to trials) {
-   			val ssn = new ServerSession("sid" + 1)
+   			val ssn = ServerSession.empty("sid" + 1)
    			val req = ssn.targetForState(state)
    			val expName = req.getLiveExperience(test).getName()
    			expName match {
@@ -209,7 +209,7 @@ class TargetingTest extends BaseSpecWithServer {
    		server.hooker.addListener(acListener)
          val counts = Array(0,0,0)
    		for (i <- 1 to trials) {
-   			val ssn = new ServerSession("sid" + 1)
+   			val ssn = ServerSession.empty("sid" + 1)
    			val req = ssn.targetForState(state)
    			val expName = req.getLiveExperience(test).getName()
    			expName match {

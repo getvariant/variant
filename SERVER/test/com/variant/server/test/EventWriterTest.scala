@@ -9,6 +9,7 @@ import com.variant.server.event.ServerEvent
 import java.util.Date
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.controller.SessionTest
+import com.variant.server.conn.Connection
 		
 class EventWriterTest extends BaseSpecWithServer {
 
@@ -24,24 +25,29 @@ class EventWriterTest extends BaseSpecWithServer {
 
       }
     
+      var connId: String = null
+      
+      "obtain a connection" in {
+         // POST new connection
+         val connResp = route(app, FakeRequest(POST, context + "/connection/big_covar_schema")).get
+         status(connResp) mustBe OK
+         val json = contentAsJson(connResp) 
+         json mustNot be (null)
+         connId = (json \ "id").as[String]
+         connId mustNot be (null)
+      }
+      
       "flush an event after EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS" in {
          
+         // PUT session.
          val sid = Random.nextInt(100000).toString
          reader.read(e => e.getSessionId == sid).size mustBe 0 
-
-         // POST new connection
-         val connResp = route(app, FakeRequest(PUT, context + "/connection/big_covar_schema")).get
-         status(connResp) mustBe OK
-         contentAsString(connResp) mustBe empty
-         
-/*         
-         // PUT session.
          val ssnBody = SessionTest.body.expand("sid" -> sid)
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session/" + sid).withTextBody(ssnBody)).get
+         val ssnResp = route(app, FakeRequest(PUT, context + "/session/" + scid(sid,connId)).withTextBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
-
-         val ssn = connStore.asSession(sid).get
+         
+         val ssn = connStore.get(connId).get.getSession(sid).get
          val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
          val se = new ServerEvent(name, value, new Date(timestamp));
          ssn.triggerEvent(se);
@@ -74,19 +80,17 @@ class EventWriterTest extends BaseSpecWithServer {
             }
          })  
       }
-     
+
       "not flush before EVENT_WRITER_MAX_DELAY if fewer than EVENT_WRITER_PERCENT_FULL" in {
          
          val sid = Random.nextInt(100000).toString
          reader.read(e => e.getSessionId == sid).size mustBe 0 
-
-         // PUT session.
          val ssnBody = SessionTest.body.expand("sid" -> sid)
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session/" + sid).withTextBody(ssnBody)).get
+         val ssnResp = route(app, FakeRequest(PUT, context + "/session/" + scid(sid,connId)).withTextBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
 
-         val ssn = store.asSession(sid).get
+         val ssn = connStore.get(connId).get.getSession(sid).get
 
          // Ensure the writer buffer is empty.
          writer.flush()
@@ -103,6 +107,7 @@ class EventWriterTest extends BaseSpecWithServer {
          assert(writeTook < 500, "Write took too long")
          
          // Wait a bit, but less than max delay - must not have flushed
+         // TODO Occasionally, this fails due to a race condition.
          Thread.sleep(200)          
          reader.read(e => e.getSessionId == ssn.getId).size mustBe 0
          
@@ -115,14 +120,12 @@ class EventWriterTest extends BaseSpecWithServer {
          
          val sid = Random.nextInt(100000).toString
          reader.read(e => e.getSessionId == sid).size mustBe 0 
-
-         // PUT session.
          val ssnBody = SessionTest.body.expand("sid" -> sid)
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session/" + sid).withTextBody(ssnBody)).get
+         val ssnResp = route(app, FakeRequest(PUT, context + "/session/" + scid(sid,connId)).withTextBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
 
-         val ssn = store.asSession(sid).get
+         val ssn = connStore.get(connId).get.getSession(sid).get
          
          val startOfWrite = System.currentTimeMillis()
 
@@ -138,8 +141,6 @@ class EventWriterTest extends BaseSpecWithServer {
          // Wait a bit, but less than max delay - must be flushed
          Thread.sleep(writer.maxDelayMillis - 1000)          
          reader.read(e => e.getSessionId == ssn.getId).size mustBe (writer.pctFullSize + 1)
-         * 
-         */
       }
    }
 }

@@ -134,7 +134,7 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
          server.installSchemaDeployer(SchemaDeployer.fromString(schemaJson))
          server.schema.isDefined mustBe true
          val schema = server.schema.get
-         val ssn = ServerSession("sid")
+         val ssn = ServerSession.empty("sid")
    
    		try {
    		   ssn.targetForState(schema.getState("state1"))

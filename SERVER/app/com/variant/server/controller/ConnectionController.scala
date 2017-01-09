@@ -18,7 +18,7 @@ class ConnectionController @Inject() (store: ConnectionStore) extends Controller
    private val logger = Logger(this.getClass)	
 
    /**
-    * GET a new connection to a schema.
+    * POST a new connection to a schema.
     * test with:
 curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
     */

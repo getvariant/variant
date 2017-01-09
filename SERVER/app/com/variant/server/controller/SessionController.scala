@@ -16,18 +16,9 @@ import com.variant.server.session.ServerSession
 import com.variant.server.ServerException
 
 //@Singleton -- Is this for non-shared state controllers?
-class SessionController @Inject() (connStore: ConnectionStore, server: VariantServer) extends Controller  {
+class SessionController @Inject() (connStore: ConnectionStore, server: VariantServer) extends VariantController  {
    
       private val logger = Logger(this.getClass)	
-
-      /**
-       * SCID is Session id, followed by Conn ID, separated by :
-       */
-      private def parseScid(sid:String) : (String,String) = {
-         val tokens = sid.split("\\:")
-         if (tokens.length != 2) throw new ServerException.User(InvalidSessionId, sid)
-         (tokens(0),tokens(1))
-      }
       
    // def index = TODO
  
@@ -72,7 +63,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 curl -v -X GET http://localhost:9000/variant/session/SID
     */
    def get(scid: String) = VariantAction {
-
+      
       val (sid,cid) = parseScid(scid)
       val conn = connStore.get(cid)
       
@@ -92,7 +83,7 @@ curl -v -X GET http://localhost:9000/variant/session/SID
          }
          else {
             logger.debug(s"No session found for ID [$sid]")         
-            NotFound
+            ServerErrorRemote(SessionExpired).asResult()
          }
       }
    }

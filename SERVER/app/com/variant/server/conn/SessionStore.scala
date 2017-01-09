@@ -38,12 +38,12 @@ class SessionStore() {
 	 */
 	def put(sid: String, json: String) {
 	   val result = new Entry(json)
-	   cacheMap.put(result.session.getId, result)
+	   cacheMap.put(sid, result)
 	}
 	
 	/**
 	 */
-	def asSession(sid: String): Option[ServerSession] = {		
+	def asSession(sid: String): Option[ServerSession] = {
 		cacheMap.get(sid).map { e =>
 		   e.touch()
 		   e.session

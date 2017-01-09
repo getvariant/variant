@@ -93,7 +93,7 @@ public class Runtime {
 						StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
 						throw new ServerException.User(
 								HOOK_TARGETING_BAD_EXPERIENCE, 
-								caller.getClassName(), test.getName(), e, test.getName());
+								caller.getClassName(), test.getName(), e.toString(), test.getName());
 					}
 					targetedExperience = e;
 					return;
@@ -104,7 +104,7 @@ public class Runtime {
 			StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
 			throw new ServerException.User(
 					HOOK_TARGETING_BAD_EXPERIENCE, 
-					caller.getClassName(), test.getName(), e);
+					caller.getClassName(), test.getName(), e.toString());
 		}
 
 	}		

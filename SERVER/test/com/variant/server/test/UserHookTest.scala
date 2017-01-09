@@ -89,7 +89,7 @@ class UserHookTest extends BaseSpecWithServer {
 	"TestQualificationHook" should {
 	   
    	val nullListener = new TestQualificationHookListenerNil
-	   var ssn = new ServerSession(newSid())
+	   var ssn = ServerSession.empty(newSid())
 
       "be posted for tests instrumented on state1" in {
 
@@ -177,7 +177,7 @@ class UserHookTest extends BaseSpecWithServer {
 		   server.hooker.addListener(dl2)
 		   server.hooker.addListener(dl6)
 
-		   ssn = new ServerSession(newSid())
+		   ssn = ServerSession.empty(newSid())
 		   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
 		   val req = ssn.targetForState(state1);
 		   ssn.getTraversedStates.toSet mustEqual Set((state1, 1))
@@ -284,7 +284,7 @@ class UserHookTest extends BaseSpecWithServer {
    		server.hooker.addListener(l1, l2)
    		
    		// New session.
-         ssn = new ServerSession(newSid())
+         ssn = ServerSession.empty(newSid())
 		   ssn.targetForState(state1)
    		l1.count mustBe 0  // Not instrumented
    		l2.count mustBe 0  // Off
@@ -294,7 +294,7 @@ class UserHookTest extends BaseSpecWithServer {
    		l2.count mustBe 0 // Off
 
    		// New session
-   		ssn = new ServerSession(newSid())
+   		ssn = ServerSession.empty(newSid())
 		   ssn.targetForState(state4)
    		l1.count mustBe 1 
    		l2.count mustBe 0  // Off
@@ -326,13 +326,13 @@ class UserHookTest extends BaseSpecWithServer {
 		   val l = new TargetingHookListener(test1, test3.getControlExperience())
 		   server.hooker.addListener(l)
 	
-		   var ssn = new ServerSession(newSid())
+		   var ssn = ServerSession.empty(newSid())
          ssn.targetForState(state1)   // Ok - state1 is not instrumented by test1
          l.count mustEqual 0
          ssn.targetForState(state2)   // Ok - listener is not posted because test1 is not free at this point.
          l.count mustEqual 0
 
-         ssn = new ServerSession(newSid())
+         ssn = ServerSession.empty(newSid())
    	   
    	   val caughtEx = intercept[ServerException.User] {
              ssn.targetForState(state2)   // Kaboom

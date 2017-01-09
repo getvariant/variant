@@ -46,12 +46,18 @@ public class ServerError extends UserError {
 	public static final ServerError MissingParamName = 
 			new ServerError(616, "Parameter name is missing");
 
-	public static final ServerError InvalidSessionId = 
-			new ServerError(616, "Invalid session ID [%s]");
+	public static final ServerError InvalidSCID = 
+			new ServerError(616, "Invalid SCID [%s]");
 
 	//
 	// 631-700 Internal, other internal errors.
 	//	
+
+	/**
+	 */
+	public boolean isInternal() {
+		return code <= 700;
+	}
 
 	//
 	// 701-720 User, Connection
@@ -66,7 +72,7 @@ public class ServerError extends UserError {
 			new ServerError(703, "Too many connections");
 
 	//
-	// 721-740 User, Connection
+	// 721-740 User, Session
 	//
 	public static final ServerError SessionExpired = 
 			new ServerError(721, "Session expired");
@@ -111,7 +117,4 @@ public class ServerError extends UserError {
 		super(code, Severity.ERROR, format);
 	}
 
-	public boolean isInternal() {
-		return code <= 700;
-	}
 }

@@ -3,6 +3,7 @@ package com.variant.server;
 import com.variant.core.UserError;
 import com.variant.core.VariantException;
 import com.variant.core.UserError.Severity;
+import com.variant.core.exception.ServerError;
 
 /**
  * The super-type for all Variant server exception. 
@@ -30,7 +31,7 @@ public class ServerException extends VariantException {
 	}
 	
 	/**
-	 * Server internal exceptions. These are not the result of an invalid user action, but an internal bug.
+	 * Server local internal exceptions. These are not the result of an invalid user action, but an internal bug.
 	 * 
 	 * @since 0.7
 	 */
@@ -45,60 +46,72 @@ public class ServerException extends VariantException {
 		}
 	}
 	
+	/**
+	 * Server local User exceptions - result of an invalid user action, but an internal bug.
+	 * 
+	 * @since 0.7
+	 */
 	public static class User extends ServerException {
 
-		private static final long serialVersionUID = 1L;
 		private UserError error;
-		private Object[] args;
+		private String[] args;
 		
 		/**
-		 * 
-		 * @param template
-		 * @param args
 		 */
-		public User(UserError error, Object...args) {
+		public User(UserError error, String...args) {
 			super();
 			this.error = error;
 			this.args = args;
 		}
 
 		/**
-		 * 
-		 * @param template
-		 * @param t
-		 * @param args
 		 */
-		public User(UserError error, Throwable t, Object...args) {
+		public User(UserError error, Throwable t, String...args) {
 			super(t);
 			this.error = error;
 			this.args = args;
 		}
 
 		/**
-		 * 
-		 * @return
 		 */
 		public Severity getSeverity() {
 			return error.severity;
 		}
 		
 		/**
-		 * 
-		 * @return
 		 */
 		@Override
 		public String getMessage() {
-			return error.asMessage(args);
+			return error.asMessage((Object[])args);
 		}
 
 		/**
-		 * 
-		 * @return
 		 */
 		public String getComment() {
 			return error.comment;
 		}
+	}
+	
+	/**
+	 * Server remote exceptions will be sent to client, i.e. needs to map to an remote server error.
+	 * 
+	 * @since 0.7
+	 */
+	public static class Remote extends ServerException {
 
+		public final ServerError error;
+		public final String[] args;
+		
+		/**
+		 * 
+		 * @param template
+		 * @param args
+		 */
+		public Remote(ServerError error, String...args) {
+			super();
+			this.error = error;
+			this.args = args;
+		}
 	}
 
 }

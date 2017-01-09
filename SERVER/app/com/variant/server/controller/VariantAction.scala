@@ -4,6 +4,8 @@ import play.api.mvc._
 import scala.concurrent.Future
 import com.variant.server.boot.VariantServer
 import play.api.Logger
+import com.variant.server.ServerException
+import com.variant.server.boot.ServerErrorRemote
 
 /**
  * Common actions logic chains to concrete action.
@@ -28,12 +30,14 @@ object VariantAction extends ActionBuilder[Request] with Results {
       else {
          // Delegate to the actual action
          logger.trace("Delegated to concrete action");
-         block(request)
+         try {
+            block(request)
+         }
+         catch {
+            case sre: ServerException.Remote => 
+               Future.successful(ServerErrorRemote(sre.error).asResult(sre.args:_*))
+         }
       }
    }
-   
-   /*
-    * Implicit converter from UserError to Result.
-    */
-   
+    
 }

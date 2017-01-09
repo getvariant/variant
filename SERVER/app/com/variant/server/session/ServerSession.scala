@@ -17,22 +17,23 @@ import com.variant.server.runtime.Runtime
  */
 
 object ServerSession {
-  
-   //def apply(sid: String) = new ServerSession(sid)
-  
-   def apply(json: String) = new ServerSession(json)
+    
+   /**
+    * Server session deserialized from core session's JSON.
+    */
+   def apply(json: String) = new ServerSession(CoreSession.fromJson(json, VariantServer.server.schema.get))
+   
+   /**
+    * New server session with nothing in it, but the SID - good for tests.
+    */
+   def empty(sid: String) = new ServerSession(new CoreSession(sid, VariantServer.server.schema.get))
 }
 
 /**
  * Construct from session ID.
  */
-class ServerSession (private val json: String) {
-   
-   /**
-    * Tests will need access to the core session.
-    */
-   var coreSession = CoreSession.fromJson(json, VariantServer.server.schema.get)
- 
+class ServerSession (val coreSession: CoreSession) {
+    
   /*
    * Delegates to core methods
    */
