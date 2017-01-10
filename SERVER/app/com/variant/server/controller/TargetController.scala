@@ -16,12 +16,14 @@ import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.ServerException
 import com.variant.core.schema.State
 import com.variant.server.session.ServerSession
+import com.variant.core.session.CoreStateRequest
 
 //@Singleton -- Is this for non-shared state controllers?
 class TargetController @Inject() (override val connStore: ConnectionStore) extends VariantController  {
    
    private val logger = Logger(this.getClass)	
-
+   private lazy val schema = VariantServer.server.schema.get
+   
    /**
     * POST: target a session for a state.
     * test with:
@@ -49,15 +51,18 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          if (!ssn.isDefined)
             throw new ServerException.Remote(SessionExpired, "state")
 
-         (ssn.get, VariantServer.server.schema.get.getState(state.get))
+         (ssn.get, schema.getState(state.get))
       }
       
       req.contentType match {
          case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
             try {
                val (ssn, state) = parse(Json.parse(req.body.asText.get))
-               VariantServer.server.runtime.targetSessionForState(ssn.coreSession, state);
-               Ok("TODO")
+               var stateReq: CoreStateRequest = VariantServer.server.runtime.targetSessionForState(ssn.coreSession, state)
+               val response = JsObject(Seq(
+                  "session" -> JsString(ssn.coreSession.toJson())
+               ))
+              Ok(response.toString)
             }
             catch {
                case t: Throwable => ServerErrorRemote(JsonParseError).asResult(t.getMessage)

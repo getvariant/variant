@@ -41,7 +41,7 @@ public class SessionTest extends BaseTestWithServer {
 		assertNotNull(ssn1);
 		assertEquals(sid, ssn1.getId());
 		assertEquals(System.currentTimeMillis(), ssn1.creationTimestamp(), 1);
-		assertEquals(conn, ssn1.getConnectoin());
+		assertEquals(conn, ssn1.getConnection());
 		assertTrue(ssn1.getDisqualifiedTests().isEmpty());
 		assertTrue(ssn1.getTraversedStates().isEmpty());
 		assertTrue(ssn1.getTraversedTests().isEmpty());		

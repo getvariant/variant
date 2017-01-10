@@ -64,7 +64,7 @@ public interface Session {
 	 *
 	 * @since 0.7
 	 */	
-	public Connection getConnectoin();
+	public Connection getConnection();
 	
 	/**
      * <p>Session timeout interval, as set by the server. This session will be destroyed after it is inactive

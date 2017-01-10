@@ -15,6 +15,7 @@ import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
 import com.variant.client.conn.ConnectionImpl;
+import com.variant.client.net.Payload;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
@@ -109,15 +110,12 @@ public class SessionImpl implements Session {
 			throw new ClientException.User(ACTIVE_REQUEST);
 		}
 		
-		conn.getServer().target(getId(), state.getName());
-/*
-		return core.getRuntime().targetSessionForState(this, (StateImpl) state); 
+		Payload.Session payload = conn.getServer().target(getId(), state.getName());
 
-		CoreStateRequest coreReq = (CoreStateRequest) coreSession.targetForState(state);
+		// Server returns the new CoreSession object which reflects the targeted state.
+		coreSession = payload.session;
 		targetingTracker.set(fromTargetingStabile(coreSession.getTargetingStabile()));
-		return new VariantStateRequestImpl(coreReq, this);
-		*/
-		return null;  // temp
+		return new StateRequestImpl(coreSession.getStateRequest(), this);
 	}
 
 	/**
@@ -160,7 +158,7 @@ public class SessionImpl implements Session {
 	}
 
 	@Override
-	public Connection getConnectoin() {
+	public Connection getConnection() {
 		checkState();
 		return conn;
 	}
@@ -212,24 +210,24 @@ public class SessionImpl implements Session {
 	}
 	
 	/**
-	 * 
-	 * @return
 	 */
 	public SessionIdTracker getSessionIdTracker() {
 		return sessionIdTracker;
 	}
 
 	/**
-	 * 
-	 * @return
 	 */
 	public TargetingTracker getTargetingTracker() {
 		return targetingTracker;
 	}
 
 	/**
-	 * 
-	 * @param coreSession
+	 */
+	public CoreSession getCoreSession() {
+		return coreSession;
+	}
+
+	/**
 	 */
 	public void replaceCoreSession(CoreSession coreSession) {
 		this.coreSession = (CoreSession) coreSession;

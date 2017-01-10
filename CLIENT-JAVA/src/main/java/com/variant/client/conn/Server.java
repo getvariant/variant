@@ -12,6 +12,7 @@ import com.variant.client.net.http.HttpResponse;
 import com.variant.core.VariantEvent;
 import com.variant.core.exception.ServerError;
 import com.variant.core.impl.VariantEventSupport;
+import com.variant.core.schema.State;
 import com.variant.core.session.CoreSession;
 
 /**
@@ -153,14 +154,14 @@ public class Server {
 	 * POST /target.
      * Target session for a state
 	 */
-	public Payload.StateRequest target(String sid, String state) {
+	public Payload.Session target(String sid, String state) {
 
 		checkState();
 
 		String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", scid(sid), state);
 		
 		HttpResponse resp = adapter.post(endpointUrl + "target", body);
-		return Payload.StateRequest.fromResponse(connection, resp);
+		return Payload.Session.fromResponse(connection, resp);
 	}
 
 }

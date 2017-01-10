@@ -6,9 +6,11 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.client.ClientException;
+import com.variant.client.impl.SessionImpl;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.core.VariantException;
 import com.variant.core.session.CoreSession;
+import com.variant.core.session.CoreStateRequest;
 
 
 /**
@@ -86,38 +88,6 @@ abstract public class Payload {
 					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
 
 				return new Session(CoreSession.fromJson(coreSsnSrc, conn.getSchema()));
-			}
-			catch (VariantException va) {
-				throw va;
-			}
-			catch (Throwable t) {
-					throw new VariantException(String.format("Unable to parse payload type [%s]", Session.class.getName()), t);
-			}
-		}
-	}
-
-	/**
-	 * 
-	 */
-	public static class StateRequest extends Payload {
-		
-		public final CoreSession session;
-		
-		private StateRequest(CoreSession session) {
-			this.session = session;
-		}
-		
-		public static StateRequest fromResponse(com.variant.client.Connection conn, HttpResponse resp) {
-
-			try {
-				ObjectMapper mapper = new ObjectMapper();
-				@SuppressWarnings("unchecked")
-				Map<String,?> map = mapper.readValue(resp.body, Map.class);
-				String coreSsnSrc = (String) map.get("session");
-				if (coreSsnSrc == null)
-					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
-
-				return new StateRequest(CoreSession.fromJson(coreSsnSrc, conn.getSchema()));
 			}
 			catch (VariantException va) {
 				throw va;
