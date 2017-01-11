@@ -2,9 +2,9 @@ package com.variant.core.util;
 
 import java.util.Map;
 
-public class CaseInsensitiveUnmodifiableMap<V> extends CaseInsensitiveMap<V> {
+public class CaseInsensitiveImmutableMap<V> extends CaseInsensitiveMap<V> {
 
-	public CaseInsensitiveUnmodifiableMap(Map<String, V> map) {
+	public CaseInsensitiveImmutableMap(Map<String, V> map) {
 		for (Map.Entry<String, V> e: map.entrySet()) {
 			super.put(e.getKey().toUpperCase(), e.getValue());
 		}

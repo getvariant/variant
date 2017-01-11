@@ -4,9 +4,12 @@ import java.util.Map;
 import java.util.Set;
 
 import com.variant.client.Session;
+import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.VariantEvent;
+import com.variant.core.exception.CommonError;
+import com.variant.core.exception.CoreException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
@@ -49,7 +52,14 @@ public class StateRequestImpl implements StateRequest {
 
 	@Override
 	public Experience getLiveExperience(Test test) {
-		return coreRequest.getLiveExperience(test);
+		try {
+			return coreRequest.getLiveExperience(test);
+		}
+		catch (CoreException.User e) {
+			if (e.error.code == CommonError.STATE_NOT_INSTRUMENTED_BY_TEST.code)
+				throw new StateNotInstrumentedException(e);
+			else throw e;
+		}
 	}
 
 	@Override

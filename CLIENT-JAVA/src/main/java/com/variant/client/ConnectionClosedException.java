@@ -15,4 +15,8 @@ public class ConnectionClosedException extends ClientException.User {
 		super(ClientUserError.CONNECTION_CLOSED);
 	}
 
+	public ConnectionClosedException(ClientException.User e) {
+		super(ClientUserError.CONNECTION_CLOSED, e);
+	}
+
 }

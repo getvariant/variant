@@ -78,7 +78,7 @@ abstract public class Payload {
 		}
 		
 		public static Session fromResponse(com.variant.client.Connection conn, HttpResponse resp) {
-
+			System.out.println("***************\n" + resp.body);
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 				@SuppressWarnings("unchecked")

@@ -16,6 +16,7 @@ import com.variant.core.TestTargetingHook
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.exception.CommonError._
 import com.variant.server.ServerException
+import com.variant.core.schema.parser.ParserMessageImpl
 
 /**
  * TODO: Need to also test annotations.
@@ -41,7 +42,7 @@ class UserHookTest extends BaseSpecWithServer {
    		response.getMessages.size mustBe 5
    		for (msg <- response.getMessages) {
    			msg.getSeverity mustBe ERROR
-   			msg.getText mustBe (new ServerException.User(HOOK_LISTENER_ERROR, MESSAGE_TEXT_STATE).getMessage())
+   			msg.getText mustBe (new ParserMessageImpl(HOOK_LISTENER_ERROR, MESSAGE_TEXT_STATE).getText)
    			
    		}  
 	   }
@@ -60,7 +61,7 @@ class UserHookTest extends BaseSpecWithServer {
    		response.getMessages.size mustBe 6
    		for (msg <- response.getMessages) {
    			msg.getSeverity mustBe ERROR
-   			msg.getText mustBe (new ServerException.User(HOOK_LISTENER_ERROR, MESSAGE_TEXT_TEST).getMessage())
+   			msg.getText mustBe (new ParserMessageImpl(HOOK_LISTENER_ERROR, MESSAGE_TEXT_TEST).getText)
    			
    		}  
 	   }
@@ -81,7 +82,7 @@ class UserHookTest extends BaseSpecWithServer {
    		for (i <- 0 until response.getMessages.size) {
    		   val msg = response.getMessages.get(i)
    			msg.getSeverity mustBe ERROR
-      		msg.getText mustBe (new ServerException.User(HOOK_LISTENER_ERROR, (if (i < 5) MESSAGE_TEXT_STATE else MESSAGE_TEXT_TEST)).getMessage)
+      		msg.getText mustBe (new ParserMessageImpl(HOOK_LISTENER_ERROR, (if (i < 5) MESSAGE_TEXT_STATE else MESSAGE_TEXT_TEST)).getText)
    		}
 	   }
 	}

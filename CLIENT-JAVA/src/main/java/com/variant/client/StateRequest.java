@@ -29,7 +29,7 @@ public interface StateRequest {
 	public Session getSession();
 	
 	/**
-	 * The {@link State} of this request, which was passed to {@link VariantCoreSession#targetForState(State)}.
+	 * The target {@link State} of this request, which was passed to {@link VariantCoreSession#targetForState(State)}.
 	 * 
 	 * @return An object of type {@link State}
 	 * @since 0.6
@@ -74,15 +74,17 @@ public interface StateRequest {
 
 	/**
 	 * The live experience in a given test, if any. See {@link #getLiveExperiences()} for
-	 * definition of live experience.
+	 * definition of live experience. Throws the {@link StateNotInstrumentedException} if the
+	 * target state of this request, i.e. given by {@link #getState()}, is not instrumented 
+	 * by the given test. 
 	 * 
 	 * @param test {@link Test}
-	 * @return An object of type {@link Experience}. 
+	 * @return An object of type {@link Experience}.
 	 * 
 	 * @since 0.6
 	 */
 	Experience getLiveExperience(Test test);
-		
+
 	/** Pending state visited event. 
 	 *  This is useful if the caller wants to add parameters to this event before it is flushed to external storage.
 	 *  

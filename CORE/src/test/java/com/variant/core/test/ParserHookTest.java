@@ -16,6 +16,7 @@ import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateParsedHook;
 import com.variant.core.schema.TestParsedHook;
+import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.core.schema.parser.SchemaParser;
 
@@ -46,7 +47,7 @@ public class ParserHookTest extends BaseTestCore {
 		assertEquals(11, response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
 			assertEquals(Severity.ERROR, msg.getSeverity());
-			assertEquals(new CoreException.User(CommonError.HOOK_LISTENER_ERROR, MESSAGE_TEXT_STATE).getMessage(), msg.getText());			
+			assertEquals(new ParserMessageImpl(CommonError.HOOK_LISTENER_ERROR, MESSAGE_TEXT_STATE).getText(), msg.getText());			
 		}
 	}
 
@@ -67,8 +68,7 @@ public class ParserHookTest extends BaseTestCore {
 		assertEquals(3, response.getMessages().size());
 		for (ParserMessage msg: response.getMessages()) {
 			assertEquals(Severity.ERROR, msg.getSeverity());
-			assertEquals(new CoreException.User(CommonError.HOOK_LISTENER_ERROR, MESSAGE_TEXT_TEST).getMessage(), msg.getText());			
-			
+			assertEquals(new ParserMessageImpl(CommonError.HOOK_LISTENER_ERROR, MESSAGE_TEXT_TEST).getText(), msg.getText());			
 		}
 
 	}

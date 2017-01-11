@@ -51,9 +51,8 @@ public class CoreException extends VariantException {
 	
 	public static class User extends CoreException {
 
-		private static final long serialVersionUID = 1L;
-		private UserError error;
-		private Object[] args;
+		public final UserError error;
+		public final Object[] args;
 		
 		/**
 		 * 
@@ -92,7 +91,7 @@ public class CoreException extends VariantException {
 		 */
 		@Override
 		public String getMessage() {
-			return error.asMessage(args);
+			return "[" + error.code + "] " + error.asMessage(args);
 		}
 
 		/**

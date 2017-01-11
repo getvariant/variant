@@ -12,7 +12,6 @@ import com.variant.client.net.http.HttpResponse;
 import com.variant.core.VariantEvent;
 import com.variant.core.exception.ServerError;
 import com.variant.core.impl.VariantEventSupport;
-import com.variant.core.schema.State;
 import com.variant.core.session.CoreSession;
 
 /**
@@ -141,7 +140,7 @@ public class Server {
 				// The server has hung up on this connection.
 				destroy();
 				connection.close(Status.CLOSED_BY_SERVER);
-				throw new ConnectionClosedException();
+				throw new ConnectionClosedException(ce);
 			}
 		}
 	}

@@ -82,7 +82,7 @@ public class ServerException extends VariantException {
 		 */
 		@Override
 		public String getMessage() {
-			return error.asMessage((Object[])args);
+			return "[" + error.code + "] " + error.asMessage((Object[])args);
 		}
 
 		/**

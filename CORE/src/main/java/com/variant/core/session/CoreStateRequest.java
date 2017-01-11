@@ -27,6 +27,7 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.util.CaseInsensitiveMap;
+import com.variant.core.util.CaseInsensitiveImmutableMap;
 import com.variant.core.util.VariantCollectionsUtils;
 
 /**
@@ -126,7 +127,7 @@ public class CoreStateRequest implements Serializable {
 	 * @return
 	 */
 	public  Map<String,String> getResolvedParameters() {
-		return UnmodifiableMap.unmodifiableMap(resolvedParameterMap);
+		return new CaseInsensitiveImmutableMap<String>(resolvedParameterMap);
 	}
 	
 	public VariantEvent getStateVisitedEvent() {		
@@ -290,7 +291,7 @@ public class CoreStateRequest implements Serializable {
 
 		Object paramListObj = fields.get(FIELD_NAME_PARAMS);
 		if (paramListObj != null) {
-			Map<String,String> paramMap = new HashMap<String, String>();
+			Map<String,String> paramMap = new CaseInsensitiveMap<String>();
 			try {
 				List<?> paramListRaw = (List<?>) paramListObj; 
 				for (Object obj: paramListRaw) {

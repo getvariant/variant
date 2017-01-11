@@ -10,9 +10,6 @@ import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
 
 public class SessionTest extends BaseTestWithServer {
 
@@ -20,7 +17,7 @@ public class SessionTest extends BaseTestWithServer {
 	
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void noSessionIdInTrackerTest() throws Exception {
 		
 		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
@@ -57,7 +54,7 @@ public class SessionTest extends BaseTestWithServer {
 	
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void expirationTest() throws Exception {
 		
 		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
@@ -87,7 +84,7 @@ public class SessionTest extends BaseTestWithServer {
 	
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void attributesTest() throws Exception {
 		
 		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
@@ -110,32 +107,4 @@ public class SessionTest extends BaseTestWithServer {
 		assertNull(ssn.clearAttribute("foo"));
 	}
 
-	/**
-	 */
-	@org.junit.Test
-	public void targetingTest() throws Exception {
-		
-		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
-		assertNotNull(conn);
-		assertEquals(Status.OPEN, conn.getStatus());
-
-		// Via SID tracker, create.
-		String sid = newSid();
-		Session ssn = conn.getOrCreateSession(sid);
-		assertNotNull(ssn);
-		assertEquals(sid, ssn.getId());
-
-	   	Schema schema = conn.getSchema();
-	   	State state1 = schema.getState("state1");
-	   	Test test1 = schema.getTest("test1");
-	   	//Test test2 = schema.getTest("test2");
-	   	//Test test3 = schema.getTest("test3");
-	   	//Test test4 = schema.getTest("test4");
-	   	//Test test5 = schema.getTest("test5");
-	   	//Test test6 = schema.getTest("test6");
-
-	   	ssn.targetForState(state1);
-	   	
-		
-	}
 }

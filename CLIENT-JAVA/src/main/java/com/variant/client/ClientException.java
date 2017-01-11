@@ -104,7 +104,7 @@ public class ClientException extends VariantException {
 		 */
 		@Override
 		public String getMessage() {
-			return error.asMessage(args);
+			return "[" + error.code + "] " + error.asMessage(args);
 		}
 
 		/**
