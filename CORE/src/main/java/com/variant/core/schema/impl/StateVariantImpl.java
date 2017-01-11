@@ -101,7 +101,8 @@ public class StateVariantImpl implements StateVariant {
 		return params;
 	}
 	
-	public String toJson() {
+	@Override
+	public String toString() {
 		try {
 			StringWriter result = new StringWriter(2048);
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
