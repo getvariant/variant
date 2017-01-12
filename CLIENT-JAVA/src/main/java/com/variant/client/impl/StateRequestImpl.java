@@ -21,6 +21,10 @@ public class StateRequestImpl implements StateRequest {
 	private SessionImpl session;
 	private CoreStateRequest coreRequest;
 
+	private void checkState() {
+		session.checkState();
+	}
+	
 	public StateRequestImpl(CoreStateRequest coreStateRequest, SessionImpl clientSession) 
 	{	
 		this.coreRequest = (CoreStateRequest) coreStateRequest;
@@ -32,26 +36,31 @@ public class StateRequestImpl implements StateRequest {
 	//---------------------------------------------------------------------------------------------//
 	@Override
 	public State getState() {
+		checkState();
 		return coreRequest.getState();
 	}
 
 	@Override
 	public StateVariant getResolvedStateVariant() {
+		checkState();
 		return coreRequest.getResolvedStateVariant();
 	}
 
 	@Override
 	public Map<String,String> getResolvedParameters() {
+		checkState();
 		return coreRequest.getResolvedParameters();
 	}
 
 	@Override
 	public Set<Experience> getLiveExperiences() {
+		checkState();
 		return coreRequest.getLiveExperiences();
 	}
 
 	@Override
 	public Experience getLiveExperience(Test test) {
+		checkState();
 		try {
 			return coreRequest.getLiveExperience(test);
 		}
@@ -64,15 +73,15 @@ public class StateRequestImpl implements StateRequest {
 
 	@Override
 	public VariantEvent getStateVisitedEvent() {
+		checkState();
 		return coreRequest.getStateVisitedEvent();
 	}
 
 	@Override
 	public boolean commit(Object... userData) {
 		
+		checkState();
 		if (coreRequest.isCommitted()) return false;
-
-		session.checkState(); // Used to check for enclosing session's non-expiration.
 		
 		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 		session.getTargetingTracker().save(userData);

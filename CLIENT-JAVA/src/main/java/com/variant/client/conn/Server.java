@@ -104,7 +104,7 @@ public class Server {
 		checkState(ssn);
 		
 		// Remote
-		adapter.post(endpointUrl + "event/", ((VariantEventSupport)event).toJson(ssn.getId()));
+		adapter.post(endpointUrl + "event/", ((VariantEventSupport)event).toJson());
 		
 	}
 	

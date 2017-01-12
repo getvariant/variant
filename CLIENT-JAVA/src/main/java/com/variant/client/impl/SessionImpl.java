@@ -4,6 +4,7 @@ import static com.variant.client.impl.ClientUserError.ACTIVE_REQUEST;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -74,9 +75,9 @@ public class SessionImpl implements Session {
 	}
 	
 	/**
-	 * Make sure session has not expired.
+	 * Sill ok to use this object?
 	 */
-	public void checkState() {
+	void checkState() {
 		if (isExpired) {
 			if (conn.getStatus() != Connection.Status.OPEN)
 				throw new ConnectionClosedException();
@@ -157,9 +158,9 @@ public class SessionImpl implements Session {
 	}
 
 	@Override
-	public long creationTimestamp() {
+	public Date getCreateDate() {
 		checkState();
-		return coreSession.creationTimestamp();
+		return coreSession.createDate();
 	}
 
 	@Override

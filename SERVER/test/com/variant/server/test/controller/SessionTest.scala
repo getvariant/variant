@@ -238,7 +238,7 @@ class SessionTest extends BaseSpecWithServer {
          val ssnJson = connStore.get(connId).get.getSession(sid).get.json
          ssnJson mustBe body.expand("sid" -> sid, "ts" -> ts)
          val ssn = connStore.get(connId).get.getSession(sid).get
-         ssn.creationTimestamp mustBe ts
+         ssn.createDate.getTime mustBe ts
          ssn.getId mustBe sid
       
          Thread.sleep(2000);

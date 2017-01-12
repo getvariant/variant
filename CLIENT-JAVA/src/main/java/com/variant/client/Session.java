@@ -1,5 +1,6 @@
 package com.variant.client;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,7 +45,7 @@ public interface Session {
 	 *
 	 * @since 0.7
 	 */
-	public long creationTimestamp();
+	public Date getCreateDate();
 
 	/**
      * <p>Target session for a state. 

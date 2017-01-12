@@ -3,6 +3,7 @@ package com.variant.core.session;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -30,7 +31,7 @@ public class CoreSession implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String sid;
-	private long timestamp = System.currentTimeMillis();
+	private Date createDate = new Date();
 	private CoreStateRequest currentRequest = null;
 	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
 	private LinkedHashSet<Test> traversedTests = new LinkedHashSet<Test>();
@@ -106,7 +107,7 @@ CLEANUP */
 		if (!(tsObj instanceof Number)) 
 			throw new CoreException.Internal("Timestamp is not number");
 
-		result.timestamp = ((Number)tsObj).longValue();
+		result.createDate = new Date(((Long)tsObj).longValue());
 		
 		Object currentRequestObj = parsedJson.get(FIELD_NAME_CURRENT_REQUEST);
 		if (currentRequestObj != null) {
@@ -205,8 +206,8 @@ CLEANUP */
 		return schema;
 	}
 
-	public long creationTimestamp() {
-		return timestamp;
+	public Date createDate() {
+		return createDate;
 	}
 	
 	public CoreStateRequest getStateRequest() {
@@ -359,7 +360,7 @@ CLEANUP */
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 			jsonGen.writeStartObject();
 			jsonGen.writeStringField(FIELD_NAME_ID, sid);
-			jsonGen.writeNumberField(FIELD_NAME_TIMESTAMP, timestamp);
+			jsonGen.writeNumberField(FIELD_NAME_TIMESTAMP, createDate.getTime());
 			jsonGen.writeStringField(FIELD_NAME_SCHEMA_ID, schema.getId());
 			
 			if (currentRequest != null) {

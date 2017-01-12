@@ -39,7 +39,7 @@ class ServerSession (val json: String) {
   /*
    * Delegates to core methods
    */
-   def creationTimestamp = coreSession.creationTimestamp
+   def createDate = coreSession.createDate
    
    def getDisqualifiedTests = coreSession.getDisqualifiedTests
    
