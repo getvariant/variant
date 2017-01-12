@@ -41,13 +41,13 @@ public class FlushableEventImpl implements FlushableEvent, Serializable {
 	//---------------------------------------------------------------------------------------------//
 			
 	@Override
-	public String getEventName() {
-		return userEvent.getEventName();
+	public String getName() {
+		return userEvent.getName();
 	}
 
 	@Override
-	public String getEventValue() {
-		return userEvent.getEventValue();
+	public String getValue() {
+		return userEvent.getValue();
 	}
 
 	@Override
@@ -98,8 +98,8 @@ public class FlushableEventImpl implements FlushableEvent, Serializable {
 		.append('{')
 		.append("sessionid:'").append(session.getId()).append("', ")
 		.append("createdOn:'").append(getCreateDate()).append("', ")
-		.append("eventName:").append(getEventName()).append("', ")
-		.append("eventValue:").append(getEventValue()).append("', ")
+		.append("eventName:").append(getName()).append("', ")
+		.append("eventValue:").append(getValue()).append("', ")
 		.append("params:{");
 		boolean first = true;
 		for (Map.Entry<String, String> e: getParameterMap().entrySet()) {

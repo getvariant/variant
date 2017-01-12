@@ -343,7 +343,6 @@ CLEANUP */
 	private static final String FIELD_NAME_CURRENT_REQUEST = "request";
 	private static final String FIELD_NAME_TRAVERSED_STATES = "states";
 	private static final String FIELD_NAME_TRAVERSED_TESTS = "tests";
-//	private static final String FIELD_NAME_TEST = "test";
 	private static final String FIELD_NAME_DISQUAL_TESTS = "disqualTests";
 	private static final String FIELD_NAME_STATE = "state";
 	private static final String FIELD_NAME_COUNT = "count";

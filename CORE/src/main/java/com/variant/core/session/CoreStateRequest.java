@@ -5,13 +5,10 @@ import static com.variant.core.exception.CommonError.STATE_NOT_INSTRUMENTED_BY_T
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.collections4.map.UnmodifiableMap;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -26,8 +23,8 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
-import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.util.CaseInsensitiveImmutableMap;
+import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.util.VariantCollectionsUtils;
 
 /**
@@ -46,7 +43,7 @@ public class CoreStateRequest implements Serializable {
 	private StateImpl state;
 	private StateVariant resolvedStateVariant;
 	private Map<String,String> resolvedParameterMap;
-	private StateVisitedEvent event = null;
+	private StateVisitedEvent event  = null;
 	
 	// For transitional server side use only.
 	// private String stateName = null;
@@ -69,30 +66,14 @@ public class CoreStateRequest implements Serializable {
 		this.state = state;
 		session.setStateRequest(this);
 	}
-
-/**
-	 * Transitional server side constructor that has state name instead
-	 * of the fully instantiated State object, which we cannot instantiate
-	 * without a schema, which we don't yet have on server.
-	 * 
-	 * @param session
-	 *
-	CoreStateRequestImpl(CoreSessionImpl session, String stateName) {
-		this.session = session;
-		this.stateName = stateName;
-		session.setStateRequest(this);
-	}
-*/	
-	/**
-	 *  Crate state visited event when appropriate.
-	 */
-	public void createStateVisitedEvent() {
-		event = new StateVisitedEvent(state);
-	}
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
+
+	public void createStateVisitedEvent() {
+		event = new StateVisitedEvent(session, state);
+	}
 
 	public CoreSession getSession() {
 		return session;
@@ -219,20 +200,23 @@ public class CoreStateRequest implements Serializable {
 	private static final String FIELD_NAME_VARIANT = "variant";
 	private static final String FIELD_NAME_TEST = "test";
 	private static final String FIELD_NAME_OFFSET = "offset";
-	
+	private static final String FIELD_NAME_EVENT = "event";
+
 	/**
 	 * Serialize to JSON.
 	 * @return
 	 * @throws Exception
 	 */
 	public String toJson(Schema schema) throws Exception {
+		
 		StringWriter result = new StringWriter(2048);
 		JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 		jsonGen.writeStartObject();
 		jsonGen.writeStringField(FIELD_NAME_STATE, state.getName());
 		jsonGen.writeStringField(FIELD_NAME_STATUS, status.toString());
 		jsonGen.writeBooleanField(FILED_NAME_COMMITTED, committed);
-		if (resolvedParameterMap.size() > 0) {
+		
+		if (!resolvedParameterMap.isEmpty()) {
 			jsonGen.writeArrayFieldStart(FIELD_NAME_PARAMS);
 			for (Map.Entry<String,String> e: resolvedParameterMap.entrySet()) {
 				jsonGen.writeStartObject();
@@ -254,6 +238,12 @@ public class CoreStateRequest implements Serializable {
 			jsonGen.writeNumberField(FIELD_NAME_OFFSET, offset);
 			jsonGen.writeEndObject();			
 		}
+
+		if (event != null) {
+			jsonGen.writeFieldName(FIELD_NAME_EVENT);
+			jsonGen.writeRawValue(event.toJson());
+		}
+		
 		Collection<Experience> liveExperiences = getLiveExperiences();
 		if (liveExperiences.size() > 0) {
 			jsonGen.writeArrayFieldStart(FIELD_NAME_EXPERIENCES);
@@ -262,7 +252,7 @@ public class CoreStateRequest implements Serializable {
 			}
 			jsonGen.writeEndArray();
 		}
-
+		
 		jsonGen.writeEndObject();
 		jsonGen.flush();
 		return result.toString();
@@ -274,6 +264,7 @@ public class CoreStateRequest implements Serializable {
 	 * @param fields
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static CoreStateRequest fromJson(Schema schema, CoreSession session, Map<String,?> fields) {
 		
 		String stateName = (String) fields.get(FIELD_NAME_STATE);
@@ -321,6 +312,11 @@ public class CoreStateRequest implements Serializable {
 			result.resolvedParameterMap = paramMap;
 		}
 
+		Map<String,?> eventMap = (Map<String,?>) fields.get(FIELD_NAME_EVENT);
+		if (eventMap != null) {
+			result.event = StateVisitedEvent.fromJson(session, eventMap);
+		}
+		
 		Object experiencesListObj = fields.get(FIELD_NAME_EXPERIENCES);
 		if (experiencesListObj != null) {
 			result.liveExperiences = new HashSet<Experience>();

@@ -84,8 +84,8 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 					for (FlushableEvent event: events) {
 						stmt.setString(1, event.getSession().getId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
-						stmt.setString(3, event.getEventName());
-						stmt.setString(4, event.getEventValue());
+						stmt.setString(3, event.getName());
+						stmt.setString(4, event.getValue());
 
 						stmt.addBatch();
 					}

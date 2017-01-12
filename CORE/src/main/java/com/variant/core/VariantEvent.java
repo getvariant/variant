@@ -21,7 +21,7 @@ public interface VariantEvent {
 	 * @return Event name.
 	 * @since 0.5
 	 */
-	public String getEventName();
+	public String getName();
 
 	/**
 	 * The value of the event, such as "Login Page".
@@ -29,7 +29,7 @@ public interface VariantEvent {
 	 * @return Event value.
 	 * @since 0.5
 	 */
-	public String getEventValue();	
+	public String getValue();	
 
 	/**
 	 * Create timestamp.

@@ -1,43 +1,41 @@
 package com.variant.core.impl;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.Map;
 
+import com.variant.core.exception.CoreException;
 import com.variant.core.schema.State;
+import com.variant.core.session.CoreSession;
 
 
+@SuppressWarnings("serial")
 public class StateVisitedEvent extends VariantEventSupport implements Serializable {
 
-	/**
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public static final String EVENT_NAME = "STATE_VISIT";
-	
-	private State state;
-	private Date createDate = new Date();
+		
+	/**
+	 * Public instantiation
+	 */
+	public StateVisitedEvent(CoreSession session, State state) {
+		super(session, EVENT_NAME);
+		value = state.getName();
+	}
 	
 	/**
-	 * 
-	 * @param state
+	 * Private instantiation, for desearialization, when state is not yet known.
 	 */
-	public StateVisitedEvent(State state) {
-		this.state = state;
+	public StateVisitedEvent(CoreSession session) {
+		super(session, EVENT_NAME);
 	}
 	
-	@Override
-	public String getEventName() {
-		return EVENT_NAME;
-	}
+	public static StateVisitedEvent fromJson(CoreSession session, Map<String,?> mappedJson) {
+		
+		String sid = (String) mappedJson.get(FIELD_NAME_SID);
+		if (!sid.equals(session.getId()))
+			throw new CoreException.Internal(
+					String.format("Session id [%s] does not match payload SID [%s]", session.getId(), sid));
 
-	@Override
-	public String getEventValue() {
-		return state.getName();
-	}
+		return VariantEventSupport.fromJson(new StateVisitedEvent(session), mappedJson);
 
-	@Override
-	public Date getCreateDate() {
-		return createDate;
 	}
-
 }

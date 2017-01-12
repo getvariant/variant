@@ -37,8 +37,8 @@ public class EventFlusherAppLogger implements EventFlusher {
 			msg.append("EVENT:{")
 			.append("session_id:'").append(event.getSession().getId()).append("', ")
 			.append("created_on:'").append(event.getCreateDate()).append("', ")
-			.append("event_name:'").append(event.getEventName()).append("', ")
-			.append("event_value:'").append(event.getEventValue()).append("'")
+			.append("event_name:'").append(event.getName()).append("', ")
+			.append("event_value:'").append(event.getValue()).append("'")
 			.append("}");
 
 			LOG.info(msg.toString());
@@ -48,7 +48,7 @@ public class EventFlusherAppLogger implements EventFlusher {
 			for (Experience e: event.getLiveExperiences()) {
 				StringBuilder msg = new StringBuilder();
 				msg.append("EVENT_EXPERIENCES:{")
-				.append("event_name:'").append(event.getEventName()).append("', ")
+				.append("event_name:'").append(event.getName()).append("', ")
 				.append("test_name:'").append(e.getTest().getName()).append("', ")
 				.append("experience_name:'").append(e.getName()).append("', ")
 				.append("is_control:").append(e.isControl()).append("', ")
@@ -63,7 +63,7 @@ public class EventFlusherAppLogger implements EventFlusher {
 
 				StringBuilder msg = new StringBuilder();
 				msg.append("EVENT_PARAMS:{")
-				.append("event_name:'").append(event.getEventName()).append("', ")
+				.append("event_name:'").append(event.getName()).append("', ")
 				.append("key:'").append(param.getKey()).append("', ")
 				.append("value:'").append(param.getValue()).append("'")
 				.append("}");

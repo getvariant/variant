@@ -603,7 +603,7 @@ public class Runtime {
 			LOG.trace(sb.toString());
 		}   
 			
-		// Create the state serve event if there are any tests instrumented on this state.
+		// Create the state visited event if there are any tests instrumented on this state.
 		if (state.getInstrumentedTests().isEmpty()) {
 			
 			if (LOG.isTraceEnabled()) {

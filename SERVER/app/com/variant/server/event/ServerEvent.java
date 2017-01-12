@@ -32,12 +32,12 @@ public class ServerEvent implements VariantEvent {
 	}
 
 	@Override
-	public String getEventName() {
+	public String getName() {
 		return name;
 	}
 
 	@Override
-	public String getEventValue() {
+	public String getValue() {
 		return value;
 	}
 
