@@ -556,7 +556,7 @@ public class Runtime {
 		}
 		else {
 			Test highOrderTest = sortedList.get(sortedList.size() - 1).getTest();
-			TestOnStateImpl tos = (TestOnStateImpl) highOrderTest.getOnView(state);
+			TestOnStateImpl tos = (TestOnStateImpl) highOrderTest.getOnState(state);
 			if (tos != null) {
 				resolvedStateVariant = (StateVariantImpl) tos.variantSpace().get(sortedList);
 				resolvable = resolvedStateVariant != null;

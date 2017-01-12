@@ -78,7 +78,7 @@ public interface Test {
 	 * @return An object of type {@link OnState}, if exists, or null if given state is not instrumented by this test.
 	 * @since 0.5
 	 */
-	public OnState getOnView(State state);
+	public OnState getOnState(State state);
 		
 	/**
 	 * Get a list of tests covariant with this test, i.e. listed in this tests's covariant clause.

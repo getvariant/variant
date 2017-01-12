@@ -216,6 +216,9 @@ public class CoreStateRequest implements Serializable {
 	private static final String FIELD_NAME_KEY = "name";
 	private static final String FIELD_NAME_VALUE = "value";
 	private static final String FIELD_NAME_EXPERIENCES = "exps";
+	private static final String FIELD_NAME_VARIANT = "variant";
+	private static final String FIELD_NAME_TEST = "test";
+	private static final String FIELD_NAME_OFFSET = "offset";
 	
 	/**
 	 * Serialize to JSON.
@@ -239,7 +242,18 @@ public class CoreStateRequest implements Serializable {
 			}
 			jsonGen.writeEndArray();
 		}
-		
+
+		if (resolvedStateVariant != null) {
+			jsonGen.writeObjectFieldStart(FIELD_NAME_VARIANT);
+			jsonGen.writeStringField(FIELD_NAME_TEST, resolvedStateVariant.getTest().getName());
+			int offset = 0;
+			for (StateVariant var: resolvedStateVariant.getOnState().getVariants()) {
+				if (var == resolvedStateVariant) break;
+				offset++;
+			}
+			jsonGen.writeNumberField(FIELD_NAME_OFFSET, offset);
+			jsonGen.writeEndObject();			
+		}
 		Collection<Experience> liveExperiences = getLiveExperiences();
 		if (liveExperiences.size() > 0) {
 			jsonGen.writeArrayFieldStart(FIELD_NAME_EXPERIENCES);
@@ -262,7 +276,7 @@ public class CoreStateRequest implements Serializable {
 	 */
 	public static CoreStateRequest fromJson(Schema schema, CoreSession session, Map<String,?> fields) {
 		
-		Object stateName = fields.get(FIELD_NAME_STATE);
+		String stateName = (String) fields.get(FIELD_NAME_STATE);
 		if (stateName == null) 
 			throw new CoreException.Internal("Unable to deserialzie request: no state");
 		if (!(stateName instanceof String)) 
@@ -271,7 +285,7 @@ public class CoreStateRequest implements Serializable {
 		// If we're on the server, we don't have the schema => we can't instantiate a State object,
 		// but we need the state name to log events.
 		
-		CoreStateRequest result = new CoreStateRequest(session, (StateImpl) schema.getState((String)stateName));
+		CoreStateRequest result = new CoreStateRequest(session, (StateImpl) schema.getState(stateName));
 		
 		String statusStr = (String) fields.get(FIELD_NAME_STATUS);
 		if (statusStr == null) 
@@ -322,6 +336,13 @@ public class CoreStateRequest implements Serializable {
 			catch (Exception e) {
 				throw new CoreException.Internal("Unable to deserialzie request: bad experiences spec", e);
 			}
+		}
+
+		Map<?,?> variantObj = (Map<?,?>) fields.get(FIELD_NAME_VARIANT);
+		if (variantObj != null) {
+			String testName = (String) variantObj.get(FIELD_NAME_TEST);
+			int offset = (Integer) variantObj.get(FIELD_NAME_OFFSET);
+			result.resolvedStateVariant = schema.getTest(testName).getOnState(schema.getState(stateName)).getVariants().get(offset);
 		}
 
 		return result;

@@ -24,7 +24,7 @@ public class TestImpl implements Test {
 	private List<TestImpl> covariantTests;
 	private List<TestExperienceImpl> experiences;
 	private VariantSpace variantSpace;
-	private List<TestOnStateImpl> onViews;
+	private List<TestOnStateImpl> onStates;
 	
 	// Runtime will cache stuff in this instance.
 	private HashMap<String, Object> runtimeAttributes = new HashMap<String, Object>();
@@ -92,15 +92,15 @@ public class TestImpl implements Test {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<OnState> getOnStates() {
-		return (List<Test.OnState>) (List<?>) Collections.unmodifiableList(onViews);
+		return (List<Test.OnState>) (List<?>) Collections.unmodifiableList(onStates);
 	}
 
 	/**
 	 * 
 	 */
 	@Override
-	public OnState getOnView(State view) {
-		for (OnState tov: onViews) if (tov.getState().equals(view)) return tov;
+	public OnState getOnState(State view) {
+		for (OnState tov: onStates) if (tov.getState().equals(view)) return tov;
 		return null;
 	}
 
@@ -171,7 +171,7 @@ public class TestImpl implements Test {
 	 * @param onViews
 	 */
 	public void setOnViews(List<TestOnStateImpl> onViews) {
-		this.onViews = onViews;
+		this.onStates = onViews;
 	}
 	
 	/**
