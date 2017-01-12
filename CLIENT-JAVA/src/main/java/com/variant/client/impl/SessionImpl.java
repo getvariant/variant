@@ -10,7 +10,9 @@ import java.util.Set;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
+import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
+import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
@@ -21,6 +23,7 @@ import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.session.CoreSession;
+import com.variant.core.session.CoreStateRequest;
 import com.variant.core.session.SessionScopedTargetingStabile;
 
 /**
@@ -41,6 +44,7 @@ public class SessionImpl implements Session {
 	private SessionIdTracker sessionIdTracker;
 	private TargetingTracker targetingTracker;
 	private HashMap<String, String> attributeMap = new HashMap<String, String>();
+	private StateRequest stateRequest;
 	
 	/**
 	 * 
@@ -71,12 +75,14 @@ public class SessionImpl implements Session {
 	
 	/**
 	 * Make sure session has not expired.
-	 * We should not throw exception here. Perhaps OPTINAL
 	 */
 	public void checkState() {
-//		if (isExpired) {
-//			throw new VariantRuntimeUserErrorException(Error.RUN_SESSION_EXPIRED);
-//		}
+		if (isExpired) {
+			if (conn.getStatus() != Connection.Status.OPEN)
+				throw new ConnectionClosedException();
+			else
+				throw new SessionExpiredException();
+		}
 	}
 
 	// ---------------------------------------------------------------------------------------------//
@@ -113,8 +119,7 @@ public class SessionImpl implements Session {
 		Payload.Session payload = conn.getServer().target(getId(), state.getName());
 
 		// Server returns the new CoreSession object which reflects the targeted state.
-		coreSession = payload.session;
-		targetingTracker.set(fromTargetingStabile(coreSession.getTargetingStabile()));
+		replaceCoreSession(payload.session);
 		return new StateRequestImpl(coreSession.getStateRequest(), this);
 	}
 
@@ -193,14 +198,12 @@ public class SessionImpl implements Session {
 		return conn.getSessionTimeoutMillis();
 	}
 
-/*
+
 	@Override
-	public VariantStateRequest getStateRequest() {
+	public StateRequest getStateRequest() {
 		checkState();
-		VariantCoreStateRequest coreRequest = coreSession.getStateRequest();
-		return coreRequest == null ? null : new VariantStateRequestImpl(coreRequest, this);
+		return stateRequest;
 	}
-*/
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
@@ -231,6 +234,9 @@ public class SessionImpl implements Session {
 	 */
 	public void replaceCoreSession(CoreSession coreSession) {
 		this.coreSession = (CoreSession) coreSession;
+		targetingTracker.set(fromTargetingStabile(coreSession.getTargetingStabile()));
+		CoreStateRequest coreRequest = coreSession.getStateRequest();
+		this.stateRequest = coreRequest == null ? null : new StateRequestImpl(coreRequest, this);
 	}
 	
 	/**

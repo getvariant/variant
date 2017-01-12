@@ -159,7 +159,7 @@ public class Server {
 
 		String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", scid(sid), state);
 		
-		HttpResponse resp = adapter.post(endpointUrl + "target", body);
+		HttpResponse resp = adapter.post(endpointUrl + "target", body); 
 		return Payload.Session.fromResponse(connection, resp);
 	}
 

@@ -147,8 +147,8 @@ public class ConnectionImpl implements Connection {
 	private SessionImpl getSessionFromServer(String sid) {
 				
 		// Local cache first.
-		SessionImpl ssnFromCache = (SessionImpl) cache.get(sid);
-		if (ssnFromCache == null) return null;
+		SessionImpl clientSsn = (SessionImpl) cache.get(sid);
+		if (clientSsn == null) return null;
 		
 		// Local cache hit. Still have to hit the the server.
 		Payload.Session payload = server.get(sid);
@@ -159,13 +159,12 @@ public class ConnectionImpl implements Connection {
 			return null;			
 		}
 		
-		CoreSession ssnFromStore =  payload.session;			
+		CoreSession remoteSsn =  payload.session;			
 		// Local and remote hits. 
 		// Replace remote in local, as it may have been changed by another client,
 		// update local timeout, and return the existing local object.
-		ssnFromCache.replaceCoreSession(ssnFromStore);
-		cache.add(ssnFromCache);
-		return ssnFromCache;	
+		clientSsn.replaceCoreSession(remoteSsn);
+		return clientSsn;	
 	}
 
 

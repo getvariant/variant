@@ -8,8 +8,15 @@ import static org.junit.Assert.assertTrue;
 
 import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
+import com.variant.client.impl.ClientUserError;
+import com.variant.client.test.BaseTest.ClientUserExceptionInterceptor;
+import com.variant.client.ClientException;
 import com.variant.client.Session;
+import com.variant.client.SessionExpiredException;
+import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.VariantClient;
+import com.variant.core.exception.CommonError;
+import com.variant.core.schema.State;
 
 public class SessionTest extends BaseTestWithServer {
 
@@ -55,7 +62,7 @@ public class SessionTest extends BaseTestWithServer {
 	/**
 	 */
 	@org.junit.Test
-	public void expirationTest() throws Exception {
+	public void simpleExpirationTest() throws Exception {
 		
 		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
 		assertNotNull(conn);
@@ -76,10 +83,22 @@ public class SessionTest extends BaseTestWithServer {
 		// Let vacuum thread a chance to run.
 		Thread.sleep(2000);
 		
+		final State state2 = conn.getSchema().getState("state2");
 		for (int i = 0; i < sessions.length; i++) {
 			assertTrue(sessions[i].isExpired());
-		}
+			final Session ssn = sessions[i];
+			new ClientUserExceptionInterceptor() {
+				@Override public void toRun() {
+					ssn.targetForState(state2);
+				}
+				@Override public void onThrown(ClientException.User e) {
+					assertEquals(ClientUserError.SESSION_EXPIRED, e.getError());
+				}
+			}.assertThrown(SessionExpiredException.class);
 
+		}
+		
+		
 	}
 	
 	/**

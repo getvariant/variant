@@ -23,8 +23,11 @@ public class ClientUserError extends CommonError {
 	public static final ClientUserError CONNECTION_CLOSED =
 			new ClientUserError(334, "This connection has been closed");
 
+	public static final ClientUserError SESSION_EXPIRED =
+			new ClientUserError(335, "This session has expired");
+
 	public static final ClientUserError ACTIVE_REQUEST =
-			new ClientUserError(335, "Commit current state request first");
+			new ClientUserError(336, "Commit current state request first");
 
    /**
     * 

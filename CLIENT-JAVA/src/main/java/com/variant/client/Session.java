@@ -115,8 +115,8 @@ public interface Session {
 	 *         session.
 	 *  
 	 * @since 0.5
-	 *
-	public VariantStateRequest getStateRequest();
+	 */
+	public StateRequest getStateRequest();
 
 	/**
 	 * Trigger a custom event.
