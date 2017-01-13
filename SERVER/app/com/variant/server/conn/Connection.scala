@@ -41,8 +41,8 @@ class Connection(val schema: ServerSchema) {
    /**
     * Add session
     */
-   def addSession(sid: String, json: String) {
-      ssnStore.put(sid, json)
+   def addSession(ssn: ServerSession) {
+      ssnStore.put(ssn)
    }
    
    /**

@@ -14,6 +14,7 @@ import com.variant.core.session.CoreSession
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.session.ServerSession
 import com.variant.server.ServerException
+import com.variant.server.conn.Connection
 
 //@Singleton -- Is this for non-shared state controllers?
 class SessionController @Inject() (override val connStore: ConnectionStore, server: VariantServer) extends VariantController  {
@@ -23,28 +24,40 @@ class SessionController @Inject() (override val connStore: ConnectionStore, serv
    /**
     * PUT new session into the session store.
     * @param cid Connection ID
-    * test with:
-curl -v -H "Content-Type: text/plain; charset=utf-8" \
-     -X PUT \
-     -d '{"sid": "SID","ts": 1234567,"schid": "SCHID", 
-          "req": {"state": "state1","status": "OK","comm": true, 
-                  "params": [{"key": "KEY1", "val": "VAL1"},{"key": "KEY2", "val": "VAL2"}], 
-                  "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
-        "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
-        "tests": [{"test": "test1","qual": true},{"test": "test1","qual": true}]}' \
-     http://localhost:9000/variant/session/SID 
     */
-   def put(scid: String) = VariantAction { req =>
+   def save() = VariantAction { req =>
 
-      val (sid, cid) = parseScid(scid)
-      val conn = lookupConnection(scid)
-      req.body.asText match {
-         case Some(body) => {
-            conn.addSession(sid, body)
-            Ok
+      def parse(json: JsValue): (Connection, ServerSession) = {
+
+         val cid = (json \ "cid").asOpt[String]
+         val ssnJson = (json \ "ssn").asOpt[String]
+         
+         if (cid.isEmpty)
+            throw new ServerException.Remote(MissingProperty, "cid")
+   
+         if (ssnJson.isEmpty) 
+            throw new ServerException.Remote(MissingProperty, "ssn")
+
+         // Lookup connection
+         val conn = connStore.get(cid.get)      
+         if (!conn.isDefined) {
+            logger.debug(s"Not found connection [$cid]")      
+               throw new ServerException.Remote(UnknownConnection, cid.get)
          }
-         case None => ServerErrorRemote(EmptyBody).asResult()
+
+         logger.debug(s"Found connection [$cid]")      
+
+         (conn.get, ServerSession(ssnJson.get))
       }
+      
+      req.contentType match {
+         case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
+            val (conn, ssn) = parse(Json.parse(req.body.asText.get))
+            conn.addSession(ssn)
+            Ok
+         case _ => ServerErrorRemote(BadContentType).asResult()
+      }
+
    }
  
    /**
@@ -54,13 +67,14 @@ curl -v -X GET http://localhost:9000/variant/session/SID
     */
    def get(scid: String) = VariantAction {
       
-      val (sid,cid) = parseScid(scid)
+      val (cid, sid) = parseScid(scid)
       val result = lookupSession(scid)
       
       if (result.isDefined) {
+         val (conn, ssn) = result.get
          logger.debug(s"Found session [$sid]")
          val response = JsObject(Seq(
-            "session" -> JsString(result.get.json)
+            "session" -> JsString(ssn.toJson)
          ))
          Ok(response.toString)
       }

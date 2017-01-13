@@ -103,13 +103,17 @@ public class VariantStringUtils {
 	}
 	
 	/**
-	 * Drop the suffix, i.e. the last dot and what follows. Leave as is if no dot.
-	 * @param in
-	 * @return
-	 *
-	public static String baseName(String in) {
-		int i = in.lastIndexOf('.');
-		return i < 0 ? in : in.substring(0, i);
+	 * String digest is good for comparing strings that are the same except fragments are rearranged.
+	 * 
+	 */
+	public static long digest(String s) {
+		char[] arr = s.toCharArray();
+		long result = 0;
+		for (char l = '!'; l <= '~'; l++) {
+			int cnt = 0;
+			for (char c: arr) if (l == c) cnt++;
+			result += Character.getNumericValue(l) * cnt;
+		}
+		return result;
 	}
-	*/
 }

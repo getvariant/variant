@@ -10,9 +10,8 @@ import com.variant.server.session.ServerSession
  */
 object SessionStore {
    
-   class Entry (val json: String) {
+   class Entry (val session: ServerSession) {
       
-      lazy val session: ServerSession = ServerSession(json)
    	private var lastTouchTs = System.currentTimeMillis();
       
       /**
@@ -36,9 +35,8 @@ class SessionStore() {
 
    /**
 	 */
-	def put(sid: String, json: String) {
-	   val result = new Entry(json)
-	   cacheMap.put(sid, result)
+	def put(ssn: ServerSession) {
+	   cacheMap.put(ssn.getId, new Entry(ssn))
 	}
 	
 	/**
@@ -55,7 +53,7 @@ class SessionStore() {
 	def asJson(sid: String): Option[String] = {		
 		cacheMap.get(sid).map { e =>
 		   e.touch()
-		   e.json
+		   e.session.toJson
 		}
 	}
 

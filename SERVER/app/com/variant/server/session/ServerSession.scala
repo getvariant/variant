@@ -10,6 +10,7 @@ import com.variant.server.schema.ServerSchema
 import com.variant.core.schema.State
 import com.variant.core.schema.impl.StateImpl
 import com.variant.server.runtime.Runtime
+import com.variant.server.conn.Connection
 
 /**
  * Server session enriches core session with server side functionality.
@@ -52,6 +53,8 @@ class ServerSession (val json: String) {
    def getTraversedStates = coreSession.getTraversedStates
    
    def getTraversedTests = coreSession.getTraversedTests
+   
+   def toJson = coreSession.toJson()
    
    /*
     * Server only functionality

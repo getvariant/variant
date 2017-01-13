@@ -46,16 +46,20 @@ abstract class VariantController extends Controller {
    /**
     * Lookup session by SCID
     */
-   protected def lookupSession(scid: String): Option[ServerSession] = {
+   protected def lookupSession(scid: String): Option[(Connection, ServerSession)] = {
 
       val conn = lookupConnection(scid)      
       val (sid, cid) = parseScid(scid)
 
       val result = conn.getSession(sid)
-      if (result.isDefined) logger.debug(s"Found session [$sid]")
-      else logger.debug(s"Not found session [$sid]")
-      
-      result
+      if (result.isDefined) {
+         logger.debug(s"Found session [$sid]")
+         Some(conn, result.get)
+      }
+      else {
+         logger.debug(s"Not found session [$sid]")
+         None
+      }
    }
    
 }

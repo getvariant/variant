@@ -1,6 +1,5 @@
 package com.variant.server.test
 
-import scala.util.Random
 import scala.collection.JavaConversions._
 import org.scalatestplus.play._
 import play.api.test._
@@ -10,8 +9,25 @@ import java.util.Date
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.controller.SessionTest
 import com.variant.server.conn.Connection
+import com.variant.server.test.util.ParamString
+import play.api.libs.json.Json
+import scala.util.Random
 		
 class EventWriterTest extends BaseSpecWithServer {
+
+   val schemaId = server.schema.get.getId
+
+   val sessionJson = ParamString("""
+      {"sid":"${sid:SID}",
+       "ts": ${ts:%d}, 
+       "schid": "%s",
+       "request": {"state": "state1","status": "OK","committed": true, 
+                  "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}], 
+                  "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
+        "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
+        "tests": ["test1","test2"]
+      }
+   """.format(System.currentTimeMillis(), schemaId))
 
    val writer = server.eventWriter
    val reader = EventReader(writer)
@@ -40,10 +56,13 @@ class EventWriterTest extends BaseSpecWithServer {
       "flush an event after EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS" in {
          
          // PUT session.
-         val sid = Random.nextInt(100000).toString
+         val sid = newSid
          reader.read(e => e.getSessionId == sid).size mustBe 0 
-         val ssnBody = SessionTest.body.expand("sid" -> sid)
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session/" + scid(sid,connId)).withTextBody(ssnBody)).get
+         val ssnBody = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> sid)
+            ).toString
+         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withTextBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
          
@@ -83,10 +102,13 @@ class EventWriterTest extends BaseSpecWithServer {
 
       "not flush before EVENT_WRITER_MAX_DELAY if fewer than EVENT_WRITER_PERCENT_FULL" in {
          
-         val sid = Random.nextInt(100000).toString
+         val sid = newSid
          reader.read(e => e.getSessionId == sid).size mustBe 0 
-         val ssnBody = SessionTest.body.expand("sid" -> sid)
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session/" + scid(sid,connId)).withTextBody(ssnBody)).get
+         val ssnBody = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> sid)
+            ).toString
+         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withTextBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
 
@@ -118,10 +140,13 @@ class EventWriterTest extends BaseSpecWithServer {
 
       "flush before EVENT_WRITER_MAX_DELAY if EVENT_WRITER_PERCENT_FULL" in {
          
-         val sid = Random.nextInt(100000).toString
+         val sid = newSid
          reader.read(e => e.getSessionId == sid).size mustBe 0 
-         val ssnBody = SessionTest.body.expand("sid" -> sid)
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session/" + scid(sid,connId)).withTextBody(ssnBody)).get
+         val ssnBody = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> sid)
+            ).toString
+         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withTextBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
 

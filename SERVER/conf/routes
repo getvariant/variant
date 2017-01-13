@@ -19,6 +19,7 @@ DELETE  /connection/:cid         com.variant.server.controller.ConnectionControl
 POST    /event                   com.variant.server.controller.EventController.post()
 
 GET     /session/:id             com.variant.server.controller.SessionController.get(id: String)
-PUT     /session/:cid            com.variant.server.controller.SessionController.put(cid: String)
+PUT     /session                 com.variant.server.controller.SessionController.save()
 
-POST    /target                  com.variant.server.controller.TargetController.post()
+POST    /request                  com.variant.server.controller.RequestController.create()
+DELETE  /request                  com.variant.server.controller.RequestController.commit()

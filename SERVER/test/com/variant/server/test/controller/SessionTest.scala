@@ -8,50 +8,29 @@ import com.variant.server.test.util.ParamString
 import com.variant.server.ConfigKeys
 import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.exception.ServerError._
+import com.variant.core.util.VariantStringUtils
+import play.api.libs.json._
 
-/*
- * Reusable session JSON objects. 
- */
-object SessionTest {
-
-   val body = ParamString("""
-      {"sid": "${sid:SID}",
-       "ts": ${ts:%d},
-       "schid": "SCHID", 
-       "request": {"state": "state1","status": "OK","committed": true, 
-                  "params": [{"name": "Param One", "value": "Param One Value"},{"name": "Param Two", "value": "Param Two Value"}], 
-                  "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
-        "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
-        "tests": ["test1","test2"]}
-   """.format(System.currentTimeMillis()))
-
-   val b = ParamString("""
-      {
-         "sid":"ssn2",
-         "ts":1476926526963,
-         "schid":"BFFF42B28ED22C6D",
-         "req":{
-            "state":"state2",
-            "status":"OK",
-            "comm":true,
-            "params":[{"key":"PATH","val":"/path/to/state2/test2.C+test5.B"}],
-            "exps":["test1.A.true","test2.C.false","test3.A.true","test4.A.true","test5.B.false","test6.C.false"]
-         },
-         "states":[{"state":"state2","count":1}],
-         "tests":["test1","test2","test3","test4","test5","test6"],
-         "disqualTests":["test1","test2","test3","test4","test5","test6"],
-         "stabil":["test2.C.1476926526964","test3.A.1476926526964","test4.A.1476926526965","test5.B.1476926526965","test6.C.1476926526965","test1.A.1476926526966"]
-      }""")
-
-}
 
 /**
  * Session Controller Tests
  */
 class SessionTest extends BaseSpecWithServer {
    
-   import SessionTest._
    val endpoint = context + "/session"
+   val schemaId = server.schema.get.getId
+
+   val sessionJson = ParamString("""
+      {"sid":"${sid:SID}",
+       "ts": ${ts:%d}, 
+       "schid": "%s",
+       "request": {"state": "state1","status": "OK","committed": true, 
+                  "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}], 
+                  "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
+        "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
+        "tests": ["test1","test2"]
+      }
+   """.format(System.currentTimeMillis(), schemaId))
 
    "SessionController" should {
 
@@ -79,15 +58,18 @@ class SessionTest extends BaseSpecWithServer {
          val resp = route(app, FakeRequest(GET, endpoint + "/" + scid("foo",connId))).get
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
-         isInternal mustBe SessionExpired.isInternal() 
+         isInternal mustBe false 
          error mustBe SessionExpired
          args mustBe empty
       }
 
       "return OK on PUT non-existent session" in {
          
-         val textBody = body.expand("sid" -> "foo")
-         val resp = route(app, FakeRequest(PUT, endpoint + "/" + scid("foo",connId)).withTextBody(textBody)).get
+         val body = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> "foo")
+            ).toString
+         val resp = route(app, FakeRequest(PUT, endpoint).withTextBody(body)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
@@ -97,12 +79,18 @@ class SessionTest extends BaseSpecWithServer {
          val resp = route(app, FakeRequest(GET, endpoint + "/" + scid("foo",connId))).get
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
-         (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "foo")
+         VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
+            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo").toString())
       }
 
       "return OK and replace existing session on PUT" in {
        
-         val reqPut = FakeRequest(PUT, endpoint + "/" + scid("foo", connId)).withTextBody(body.expand("sid" -> "foo2"))
+         val body = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> "foo2")
+            ).toString
+
+         val reqPut = FakeRequest(PUT, endpoint).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
@@ -110,20 +98,26 @@ class SessionTest extends BaseSpecWithServer {
          val respGet = route(app, FakeRequest(GET, endpoint + "/" + scid("foo",connId))).get
          status(respGet) mustBe OK
          val respAsJson = contentAsJson(respGet)
-         (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "foo2")
+         VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
+            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo"))
       }
 
       "return OK and create session on PUT" in {
        
-         val reqPut = FakeRequest(PUT, endpoint + "/" + scid("bar",connId)).withTextBody(body.expand("sid" -> "bar1"))
+         val body = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> "bar1")
+            ).toString
+         val reqPut = FakeRequest(PUT, endpoint).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
          
-         val respGet = route(app, FakeRequest(GET, endpoint + "/" + scid("bar",connId))).get
+         val respGet = route(app, FakeRequest(GET, endpoint + "/" + scid("bar1", connId))).get
          status(respGet) mustBe OK
          val respAsJson = contentAsJson(respGet)
-         (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "bar1")
+         VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
+            VariantStringUtils.digest(sessionJson.expand("sid" -> "bar1"))
       }
 
      "not lose existing session with different key" in {
@@ -131,7 +125,8 @@ class SessionTest extends BaseSpecWithServer {
          val resp = route(app, FakeRequest(GET, endpoint + "/" + scid("foo",connId))).get
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
-         (respAsJson \ "session").as[String] mustBe body.expand("sid" -> "foo2")
+         VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
+            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo"))
       }
 
       "return SessionExpired on GET expired session" in {
@@ -156,7 +151,11 @@ class SessionTest extends BaseSpecWithServer {
 
          // Create a session
          val sid = newSid()
-         val reqPut = FakeRequest(PUT, endpoint + "/" + scid("sid",connId)).withTextBody(body.expand("sid" -> sid))
+         val body = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> sid)
+            ).toString
+         val reqPut = FakeRequest(PUT, endpoint).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
@@ -174,7 +173,11 @@ class SessionTest extends BaseSpecWithServer {
 
          // Create a session
          val sid = newSid()
-         val reqPut = FakeRequest(PUT, endpoint + "/" + scid("sid",connId)).withTextBody(body.expand("sid" -> sid))
+         val body = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> sid)
+            ).toString
+         val reqPut = FakeRequest(PUT, endpoint).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
@@ -208,7 +211,11 @@ class SessionTest extends BaseSpecWithServer {
          
          // Create a session on it
          val sid = newSid()
-         val reqPut = FakeRequest(PUT, endpoint + "/" + scid("bar",conn2Id)).withTextBody(body.expand("sid" -> sid))
+         val body = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> sid)
+            ).toString
+         val reqPut = FakeRequest(PUT, endpoint).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
@@ -231,12 +238,16 @@ class SessionTest extends BaseSpecWithServer {
        
          val sid = newSid()
          val ts = System.currentTimeMillis()
-         val reqPut = FakeRequest(PUT, endpoint + "/" + scid(sid, connId)).withTextBody(body.expand("sid" -> sid, "ts" -> ts))
+         val body = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> sid, "ts" -> ts)
+            ).toString
+         val reqPut = FakeRequest(PUT, endpoint).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
          val ssnJson = connStore.get(connId).get.getSession(sid).get.json
-         ssnJson mustBe body.expand("sid" -> sid, "ts" -> ts)
+         ssnJson mustBe sessionJson.expand("sid" -> sid, "ts" -> ts)
          val ssn = connStore.get(connId).get.getSession(sid).get
          ssn.createDate.getTime mustBe ts
          ssn.getId mustBe sid
