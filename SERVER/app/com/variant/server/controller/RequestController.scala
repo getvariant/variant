@@ -1,6 +1,7 @@
 package com.variant.server.controller
 
 import javax.inject.Inject
+import scala.collection.JavaConversions._
 import play.api.mvc.Controller
 import play.api.mvc.Request
 import com.variant.server.conn.SessionStore
@@ -17,6 +18,7 @@ import com.variant.server.ServerException
 import com.variant.core.schema.State
 import com.variant.server.session.ServerSession
 import com.variant.core.session.CoreStateRequest
+import play.api.mvc.AnyContent
 
 //@Singleton -- Is this for non-shared state controllers?
 class RequestController @Inject() (override val connStore: ConnectionStore) extends VariantController  {
@@ -76,41 +78,34 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     * Commit a state request.
     */
    def commit() = VariantAction { req =>
+      
+      def doit(req: Request[AnyContent]): Result = {
+            val (conn, ssn) = parse(req.body.asText.get)
+            val stateReq = ssn.getStateRequest
+		      val sve = stateReq.getStateVisitedEvent
 
-      def parse(json: JsValue): (ServerSession, State) = {
-         
-         val scid = (json \ "sid").asOpt[String]
-         val state = (json \ "state").asOpt[String]
-         
-         if (scid.isEmpty)
-            throw new ServerException.Remote(MissingProperty, "sid")
-   
-         if (state.isEmpty) 
-            throw new ServerException.Remote(MissingProperty, "state")
-
-         val (sid,cid) = parseScid(scid.get)
-         val ssn = lookupSession(scid.get).map(_._2)
-
-         if (!ssn.isDefined)
-            throw new ServerException.Remote(SessionExpired, "state")
-
-         (ssn.get, schema.getState(state.get))
+		      if (stateReq.isCommitted())
+		         throw new ServerException.Remote(StateRequestAlreadyCommitted)
+            
+      		// We won't have an event if nothing is instrumented on this state
+		      if (sve != null) {
+ 			      sve.getParameterMap().put("$REQ_STATUS", ssn.getStateRequest.getStatus.name);
+      			// log all resolved state params as event params.
+		      	for ((key, value) <- ssn.getStateRequest.getResolvedParameters()) {
+				      sve.getParameterMap().put(key, value);				
+			      }
+   	   		// Trigger state visited event
+	   	   	ssn.triggerEvent(sve);
+            }
+            stateReq.commit();
+            val response = JsObject(Seq(
+               "session" -> JsString(ssn.coreSession.toJson())
+            ))
+           Ok(response.toString)
       }
       
       req.contentType match {
-         case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
-            try {
-               val (ssn, state) = parse(Json.parse(req.body.asText.get))
-               var stateReq: CoreStateRequest = VariantServer.server.runtime.targetSessionForState(ssn.coreSession, state)
-               val response = JsObject(Seq(
-                  "session" -> JsString(ssn.coreSession.toJson())
-               ))
-              Ok(response.toString)
-            }
-            catch {
-               case e: ServerException => throw e
-               case t: Throwable => ServerErrorRemote(JsonParseError).asResult(t.getMessage)
-            }
+         case Some(ct) if ct.equalsIgnoreCase("text/plain") => doit(req)
          case _ => ServerErrorRemote(BadContentType).asResult()
       }
    }

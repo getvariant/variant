@@ -84,6 +84,7 @@ public class CoreStateRequest implements Serializable {
 	}
 
 	public void commit() {
+		event = null;
 		committed = true;
 	}
 
