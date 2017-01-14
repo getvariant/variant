@@ -65,6 +65,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
               Ok(response.toString)
             }
             catch {
+               case e: ServerException => throw e
                case t: Throwable => ServerErrorRemote(JsonParseError).asResult(t.getMessage)
             }
          case _ => ServerErrorRemote(BadContentType).asResult()
@@ -107,6 +108,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
               Ok(response.toString)
             }
             catch {
+               case e: ServerException => throw e
                case t: Throwable => ServerErrorRemote(JsonParseError).asResult(t.getMessage)
             }
          case _ => ServerErrorRemote(BadContentType).asResult()

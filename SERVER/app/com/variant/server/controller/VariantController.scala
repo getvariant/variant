@@ -2,6 +2,7 @@ package com.variant.server.controller
 
 import play.api.Logger
 import play.api.mvc.Controller
+import play.api.libs.json._
 import com.variant.server.ServerException
 import com.variant.core.exception.ServerError._
 import com.variant.server.conn.ConnectionStore
@@ -62,4 +63,38 @@ abstract class VariantController extends Controller {
       }
    }
    
+   /**
+    * Most calls will have the same body structure.
+    */
+   protected def parse(body: String): (Connection, ServerSession) = {
+
+      val json = {
+         try {
+            Json.parse(body)
+         }
+         catch {
+            case t: Throwable => throw new ServerException.Remote(JsonParseError, t.getMessage);
+         }
+      }
+      val cid = (json \ "cid").asOpt[String]
+      val ssnJson = (json \ "ssn").asOpt[String]
+         
+      if (cid.isEmpty)
+         throw new ServerException.Remote(MissingProperty, "cid")
+   
+      if (ssnJson.isEmpty) 
+         throw new ServerException.Remote(MissingProperty, "ssn")
+
+      // Lookup connection
+      val conn = connStore.get(cid.get)      
+      if (!conn.isDefined) {
+         logger.debug(s"Not found connection [${cid.get}]")      
+            throw new ServerException.Remote(UnknownConnection, cid.get)
+      }
+
+      logger.debug(s"Found connection [$cid]")      
+
+      (conn.get, ServerSession(ssnJson.get))
+   }
+
 }

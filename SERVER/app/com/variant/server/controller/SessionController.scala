@@ -15,6 +15,7 @@ import com.variant.server.conn.ConnectionStore
 import com.variant.server.session.ServerSession
 import com.variant.server.ServerException
 import com.variant.server.conn.Connection
+import play.api.mvc.MultipartFormData.ParseError
 
 //@Singleton -- Is this for non-shared state controllers?
 class SessionController @Inject() (override val connStore: ConnectionStore, server: VariantServer) extends VariantController  {
@@ -27,34 +28,13 @@ class SessionController @Inject() (override val connStore: ConnectionStore, serv
     */
    def save() = VariantAction { req =>
 
-      def parse(json: JsValue): (Connection, ServerSession) = {
-
-         val cid = (json \ "cid").asOpt[String]
-         val ssnJson = (json \ "ssn").asOpt[String]
-         
-         if (cid.isEmpty)
-            throw new ServerException.Remote(MissingProperty, "cid")
-   
-         if (ssnJson.isEmpty) 
-            throw new ServerException.Remote(MissingProperty, "ssn")
-
-         // Lookup connection
-         val conn = connStore.get(cid.get)      
-         if (!conn.isDefined) {
-            logger.debug(s"Not found connection [$cid]")      
-               throw new ServerException.Remote(UnknownConnection, cid.get)
-         }
-
-         logger.debug(s"Found connection [$cid]")      
-
-         (conn.get, ServerSession(ssnJson.get))
-      }
-      
       req.contentType match {
-         case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
-            val (conn, ssn) = parse(Json.parse(req.body.asText.get))
+         
+         case Some(ct) if ct.equalsIgnoreCase("text/plain") => 
+            val (conn, ssn) = parse(req.body.asText.get)
             conn.addSession(ssn)
             Ok
+         
          case _ => ServerErrorRemote(BadContentType).asResult()
       }
 

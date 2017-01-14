@@ -6,6 +6,7 @@ import com.variant.server.boot.VariantServer
 import play.api.Logger
 import com.variant.server.ServerException
 import com.variant.server.boot.ServerErrorRemote
+import com.variant.core.exception.ServerError
 
 /**
  * Common actions logic chains to concrete action.
@@ -36,6 +37,9 @@ object VariantAction extends ActionBuilder[Request] with Results {
          catch {
             case sre: ServerException.Remote => 
                Future.successful(ServerErrorRemote(sre.error).asResult(sre.args:_*))
+            case t: Throwable => 
+               logger.error("Unexpected Internal Error", t);
+               Future.successful(ServerErrorRemote(ServerError.InternalError).asResult(t.getMessage))
          }
       }
    }
