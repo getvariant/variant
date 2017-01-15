@@ -31,7 +31,7 @@ class SessionController @Inject() (override val connStore: ConnectionStore, serv
       req.contentType match {
          
          case Some(ct) if ct.equalsIgnoreCase("text/plain") => 
-            val (conn, ssn) = parse(req.body.asText.get)
+            val (conn, ssn) = parseBody(req.body.asText.get)
             conn.addSession(ssn)
             Ok
          

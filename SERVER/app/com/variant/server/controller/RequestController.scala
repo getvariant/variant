@@ -76,38 +76,33 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 
    /**
     * Commit a state request.
+    * We override the default parser because Play sets it to ignore for the DELETE operation.
+    * (More discussion: https://github.com/playframework/playframework/issues/4606)
     */
-   def commit() = VariantAction { req =>
-      
-      def doit(req: Request[AnyContent]): Result = {
-            val (conn, ssn) = parse(req.body.asText.get)
-            val stateReq = ssn.getStateRequest
-		      val sve = stateReq.getStateVisitedEvent
+   def commit() = VariantAction(parse.text(4896)) { req =>
 
-		      if (stateReq.isCommitted())
-		         throw new ServerException.Remote(StateRequestAlreadyCommitted)
-            
-      		// We won't have an event if nothing is instrumented on this state
-		      if (sve != null) {
- 			      sve.getParameterMap().put("$REQ_STATUS", ssn.getStateRequest.getStatus.name);
-      			// log all resolved state params as event params.
-		      	for ((key, value) <- ssn.getStateRequest.getResolvedParameters()) {
-				      sve.getParameterMap().put(key, value);				
-			      }
-   	   		// Trigger state visited event
-	   	   	ssn.triggerEvent(sve);
-            }
-            stateReq.commit();
-            val response = JsObject(Seq(
-               "session" -> JsString(ssn.coreSession.toJson())
-            ))
-           Ok(response.toString)
-      }
-      
-      req.contentType match {
-         case Some(ct) if ct.equalsIgnoreCase("text/plain") => doit(req)
-         case _ => ServerErrorRemote(BadContentType).asResult()
-      }
+         val (conn, ssn) = parseBody(req.body)
+         val stateReq = ssn.getStateRequest
+	      val sve = stateReq.getStateVisitedEvent
+
+	      if (stateReq.isCommitted())
+	         throw new ServerException.Remote(StateRequestAlreadyCommitted)
+         
+   		// We won't have an event if nothing is instrumented on this state
+	      if (sve != null) {
+		      sve.getParameterMap().put("$REQ_STATUS", ssn.getStateRequest.getStatus.name);
+   			// log all resolved state params as event params.
+	      	for ((key, value) <- ssn.getStateRequest.getResolvedParameters()) {
+			      sve.getParameterMap().put(key, value);				
+		      }
+	   		// Trigger state visited event
+   	   	ssn.triggerEvent(sve);
+         }
+         stateReq.commit();
+         val response = JsObject(Seq(
+            "session" -> JsString(ssn.coreSession.toJson())
+         )).toString()
+        Ok(response)
    }
 
 }

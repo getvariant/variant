@@ -11,7 +11,7 @@ import com.variant.core.session.CoreSession;
 @SuppressWarnings("serial")
 public class StateVisitedEvent extends VariantEventSupport implements Serializable {
 
-	public static final String EVENT_NAME = "STATE_VISIT";
+	public static final String EVENT_NAME = "$STATE_VISIT";
 		
 	/**
 	 * Public instantiation

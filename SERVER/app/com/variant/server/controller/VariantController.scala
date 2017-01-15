@@ -66,7 +66,7 @@ abstract class VariantController extends Controller {
    /**
     * Most calls will have the same body structure.
     */
-   protected def parse(body: String): (Connection, ServerSession) = {
+   protected def parseBody(body: String): (Connection, ServerSession) = {
 
       val json = {
          try {

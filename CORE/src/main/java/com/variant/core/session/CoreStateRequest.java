@@ -5,6 +5,7 @@ import static com.variant.core.exception.CommonError.STATE_NOT_INSTRUMENTED_BY_T
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +40,9 @@ public class CoreStateRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private CoreSession session;	
-	private StateImpl state;
+	private final CoreSession session;
+	private final Date createDate = new Date();
+	private final StateImpl state;
 	private StateVariant resolvedStateVariant;
 	private Map<String,String> resolvedParameterMap;
 	private StateVisitedEvent event  = null;
@@ -81,6 +83,10 @@ public class CoreStateRequest implements Serializable {
 
 	public State getState() {
 		return state;
+	}
+
+	public Date createDate() {
+		return createDate;
 	}
 
 	public void commit() {

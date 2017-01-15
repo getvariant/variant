@@ -162,6 +162,7 @@ class SessionTest extends BaseSpecWithServer {
          
          // Attempt to get the session a bad connection.
          val respGet = route(app, FakeRequest(GET, endpoint + "/" + scid(sid, "INVALID"))).get
+         status(respGet) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(respGet))
          isInternal mustBe UnknownConnection.isInternal() 
          error mustBe UnknownConnection
