@@ -17,6 +17,9 @@ import com.variant.core.session.SessionScopedTargetingStabile;
 
 public class TargetingStabileTest extends BaseTestCore {
 		
+	private Schema schema = null;
+	@Override protected Schema getSchema() {return schema;}
+	
 	/**
 	 * 
 	 */
@@ -27,7 +30,7 @@ public class TargetingStabileTest extends BaseTestCore {
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		Schema schema = response.getSchema();
+		schema = response.getSchema();
 		
 		CoreSession ssn = new CoreSession("SID", schema);
 		assertNull(ssn.getStateRequest());
@@ -61,18 +64,18 @@ public class TargetingStabileTest extends BaseTestCore {
 		setTargetingStabile(ssn, "test1.A", "test2.C", "test4.B");
 		stabile = ssn.getTargetingStabile();
 		assertEquals(3, stabile.getAll().size());
-		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test1.A", schema)));
-		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test2.C", schema)));
-		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test4.B", schema)));
+		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test1.A")));
+		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test2.C")));
+		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test4.B")));
 
 		assertNull(stabile.remove("junk"));
 		assertEquals(3, stabile.getAll().size());
 		
 		assertNotNull(stabile.remove("test2"));
 		assertEquals(2, stabile.getAll().size());
-		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test1.A", schema)));
-		assertFalse(stabile.getAllAsExperiences(schema).contains(experience("test2.C", schema)));
-		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test4.B", schema)));
+		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test1.A")));
+		assertFalse(stabile.getAllAsExperiences(schema).contains(experience("test2.C")));
+		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test4.B")));
 
 	}
 

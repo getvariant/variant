@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
+import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantClient;
@@ -96,7 +97,57 @@ public class SessionTest extends BaseTestWithServer {
 		}
 			
 	}
-	
+
+	/**
+	 */
+	@org.junit.Test
+	public void connectionClosedLocallyTest() throws Exception {
+		
+		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		assertNotNull(conn);
+		assertEquals(Status.OPEN, conn.getStatus());
+		
+		String sid = newSid();
+		final Session ssn = conn.getOrCreateSession(sid);
+		final State state2 = conn.getSchema().getState("state2");
+		conn.close();
+		assertEquals(Connection.Status.CLOSED_BY_CLIENT, conn.getStatus());
+		new ClientUserExceptionInterceptor() {
+			@Override public void toRun() {
+				ssn.targetForState(state2);
+			}
+		}.assertThrown(ConnectionClosedException.class);
+		
+	}
+
+	/**
+	 * Session expires too soon. See bug https://github.com/getvariant/variant/issues/67
+	 */
+	//@org.junit.Test
+	public void connectionClosedRemotelyTest() throws Exception {
+		
+		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		assertNotNull(conn);
+		assertEquals(Status.OPEN, conn.getStatus());
+		
+		String sid = newSid();
+		final Session ssn = conn.getOrCreateSession(sid);
+		final State state2 = conn.getSchema().getState("state2");
+
+		server.restart();
+
+		assertEquals(Status.OPEN, conn.getStatus());
+		/*
+		new ClientUserExceptionInterceptor() {
+			@Override public void toRun() {
+				ssn.targetForState(state2);
+			}
+		}.assertThrown(SessionExpiredException.class);
+		assertEquals(Status.CLOSED_BY_SERVER, conn.getStatus());
+		*/
+		ssn.targetForState(state2);
+	}
+
 	/**
 	 */
 	@org.junit.Test

@@ -47,13 +47,17 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          if (state.isEmpty) 
             throw new ServerException.Remote(MissingProperty, "state")
 
-         val (sid,cid) = parseScid(scid.get)
-         val ssn = lookupSession(scid.get).map(_._2)
+      val (cid, sid) = parseScid(scid.get)
+      val result = lookupSession(scid.get)
+      
+      if (result.isDefined) {
+         val (conn, ssn) = result.get
+         logger.debug(s"Found session [$sid]")
+         (result.get._2, schema.getState(state.get))
+      }
+      else
+         throw new ServerException.Remote(SessionExpired)
 
-         if (!ssn.isDefined)
-            throw new ServerException.Remote(SessionExpired, "state")
-
-         (ssn.get, schema.getState(state.get))
       }
       
       req.contentType match {

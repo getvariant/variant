@@ -14,6 +14,11 @@ import com.variant.core.test.VariantBaseTest;
  * Base class for all Core JUnit tests.
  */
 public abstract class BaseTest extends VariantBaseTest {
+	
+	@Override
+	protected Schema getSchema() {
+		throw new RuntimeException("No schema yet");
+	}
 
 	/**
 	 * Build up userData arguments for the *Simple trackers. 
@@ -26,15 +31,12 @@ public abstract class BaseTest extends VariantBaseTest {
 	 * @param experiences
 	 * @return
 	 */
-	protected Object[] userDataForSimpleIn(Schema schema, String sessionId, String...experiences) {
-		
-		if (experiences.length > 0 && schema == null) 
-			throw new ClientException.Internal("Schema cannot be null if experiences are given");
+	protected Object[] userDataForSimpleIn(String sessionId, String...experiences) {
 		
 		Object[] result = new Object[experiences.length + 1];
 		result[0] = sessionId;
 		for (int i = 0; i < experiences.length; i++) {
-			result[i+1] = new TargetingTrackerEntryImpl(experience(experiences[i], schema), System.currentTimeMillis());
+			result[i+1] = new TargetingTrackerEntryImpl(experience(experiences[i]), System.currentTimeMillis());
 		}
 		
 		return result;

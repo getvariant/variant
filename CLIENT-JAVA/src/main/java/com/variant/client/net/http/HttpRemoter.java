@@ -48,7 +48,9 @@ public class HttpRemoter {
 			case HttpStatus.SC_OK:
 				return result;
 			case HttpStatus.SC_BAD_REQUEST:
-				if (LOG.isDebugEnabled()) LOG.debug("Server status " + result.status + ": " + result.body);
+				if (LOG.isDebugEnabled()) {
+					LOG.debug("Server status " + result.status + ": " + result.body);
+				}
 				throw result.toClientException();
 			default:
 				throw new ClientException.Internal(
@@ -70,6 +72,8 @@ public class HttpRemoter {
 		}		
 	}
 	
+	/**
+	 */
 	interface Requestable {
 		HttpUriRequest requestOp() throws Exception;
 	}

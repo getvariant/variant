@@ -1,5 +1,6 @@
 package com.variant.client.impl;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,8 +33,13 @@ public class StateRequestImpl implements StateRequest {
 	}
 
 	//---------------------------------------------------------------------------------------------//
-	//                                     PUBLIC PASS-THRU                                        //
+	//                                            PUBLIC                                           //
 	//---------------------------------------------------------------------------------------------//
+	@Override
+	public Date createDate() {
+		return null;
+	}
+
 	@Override
 	public State getState() {
 		checkState();
@@ -86,26 +92,8 @@ public class StateRequestImpl implements StateRequest {
 		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 		session.getTargetingTracker().save(userData);
 		session.getSessionIdTracker().save(userData);
-		
-		
-		// Trigger state visited event
-		VariantEvent event = coreRequest.getStateVisitedEvent();
-
-		// We won't have an event if nothing is instrumented on this state
-		if (event != null) {
-			// The status of this request.
-			event.getParameterMap().put("$REQ_STATUS", coreRequest.getStatus().name());
-			// log all resolved state params as event params.
-			for (Map.Entry<String,String> e: coreRequest.getResolvedParameters().entrySet()) {
-				event.getParameterMap().put(e.getKey(), e.getValue());				
-			}
-			// Trigger state visited event
-			session.triggerEvent(event);
-			event = null;
-		}
-		
+				
 		coreRequest.commit();
-		session.save();
 		
 		return true;
 	}
@@ -125,9 +113,6 @@ public class StateRequestImpl implements StateRequest {
 		return coreRequest.getStatus();
 	}
 	
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC EXT                                         //
-	//---------------------------------------------------------------------------------------------//
 	/**
 	 * Override with a narrower return type to return the client session, instead of core.
 	 */

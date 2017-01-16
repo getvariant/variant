@@ -14,6 +14,7 @@ import com.variant.client.TargetingTracker;
 public class TargetingTrackerSimple extends TargetingTrackerString {
 
 	private String buffer = null;
+	private Connection conn;
 		
 	/**
 	 * Interpret userData as:
@@ -27,6 +28,7 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 			if (i > 0)	entries.add((Entry)userData[i]);
 		}
 		set(entries);
+		this.conn = conn;
 	}
 
 	@Override
@@ -46,8 +48,7 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 
 	@Override
 	Connection getConnection() {
-		// TODO Auto-generated method stub
-		return null;
+		return conn;
 	}
 
 		

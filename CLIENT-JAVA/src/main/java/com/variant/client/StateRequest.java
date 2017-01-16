@@ -1,5 +1,6 @@
 package com.variant.client;
 
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -126,4 +127,12 @@ public interface StateRequest {
 	 */
 	boolean isCommitted();
 
+	/**
+	 * Creation timestamp.
+     * 
+     *@return Creation timestamp of this state request object.
+	 * @since 0.7
+	 */
+	public Date createDate();
+	
 }

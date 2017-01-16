@@ -1,10 +1,15 @@
 package com.variant.client.conn;
 
+import java.io.StringWriter;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.client.ClientException;
 import com.variant.client.Connection.Status;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.impl.ClientUserError;
+import com.variant.client.impl.SessionImpl;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpRemoter;
@@ -39,6 +44,30 @@ public class Server {
 	
 	private void checkState(Session ssn) {
 		
+	}
+
+	private abstract class CommonExceptionHandler<T> {
+		
+		abstract T code() throws Exception;
+		
+		T run() {
+			try { return code(); }
+			
+			// Already properly packaged exception.
+			catch (ClientException ce) { 
+				throw ce;
+			}
+			// Something unexpected.
+			catch (Exception e) {
+				throw new ClientException.Internal("Unexpected Exception", e);
+			}
+		}
+	}
+
+	private abstract class CommonExceptionHandlerVoid extends CommonExceptionHandler<Object> {
+		
+		final Object code() throws Exception {codeVoid(); return null;}
+		abstract void codeVoid() throws Exception;
 	}
 
 	/**
@@ -99,7 +128,7 @@ public class Server {
 	//                                           /EVENT                                            //
 	//---------------------------------------------------------------------------------------------//
 
-	public void saveEvent(Session ssn, VariantEvent event) {
+	public void eventSave(Session ssn, VariantEvent event) {
 		
 		checkState(ssn);
 		
@@ -116,51 +145,99 @@ public class Server {
 	 * GET /session
 	 * Get or create session by ID.
 	 */
-	public Payload.Session get(String sid) {
+	public Payload.Session sessionGet(final String sid) {
 
 		checkState();
-
-		HttpResponse resp = adapter.get(endpointUrl + "session/" + scid(sid));
-		return Payload.Session.fromResponse(connection, resp);
+		return new CommonExceptionHandler<Payload.Session>() {
+			
+			@Override Payload.Session code() throws Exception {
+				HttpResponse resp = adapter.get(endpointUrl + "session/" + scid(sid));
+				return Payload.Session.fromResponse(connection, resp);
+			}
+		}.run();
 	}
 
 	/**
 	 * Save core session on the remote server.
 	 */
-	public void saveSession(CoreSession session) {
+	public void sessionSave(final Session session) {
 		
-		checkState();
+		checkState(session);
 
-		// Remote
-		try {
-			adapter.put(endpointUrl + "session/" + scid(session.getId()), session.toJson());
-		}
-		catch (ClientException.User ce) {
-			if (ce.getError() == ServerError.UnknownConnection) {
-				// The server has hung up on this connection.
-				destroy();
-				connection.close(Status.CLOSED_BY_SERVER);
-				throw new ConnectionClosedException(ce);
+		new CommonExceptionHandlerVoid() {
+			
+			@Override void codeVoid() throws Exception {
+				try {
+					StringWriter body = new StringWriter();
+					JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
+					jsonGen.writeStartObject();
+					jsonGen.writeStringField("cid", connection.getId());
+					jsonGen.writeStringField("ssn", ((SessionImpl)session).getCoreSession().toJson());
+					jsonGen.writeEndObject();
+					jsonGen.flush();
+					adapter.put(endpointUrl + "session", body.toString());
+				}
+				catch (ClientException.User ce) {
+					if (ce.getError() == ServerError.UnknownConnection) {
+						// The server has hung up on this connection.
+						destroy();
+						connection.close(Status.CLOSED_BY_SERVER);
+						throw new ConnectionClosedException(ce);
+					}
+					else throw ce;
+				}
 			}
-		}
+		}.run();
+		
 	}
 
 	//---------------------------------------------------------------------------------------------//
-	//                                          /TARGET                                            //
+	//                                         /REQUEST                                            //
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * POST /target.
-     * Target session for a state
+	 * POST /request.
+     * Create a state request by targeting session for a state
 	 */
-	public Payload.Session target(String sid, String state) {
+	public Payload.Session requestCreate(String sid, String state) {
 
 		checkState();
 
-		String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", scid(sid), state);
+		final String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", scid(sid), state);
 		
-		HttpResponse resp = adapter.post(endpointUrl + "target", body); 
-		return Payload.Session.fromResponse(connection, resp);
+		return new CommonExceptionHandler<Payload.Session>() {
+			
+			@Override Payload.Session code() throws Exception {
+				HttpResponse resp = adapter.post(endpointUrl + "request", body); 
+				return Payload.Session.fromResponse(connection, resp);
+			}
+		}.run();
+	}
+
+	/**
+	 * DELETE /request.
+	 * Commit a state request and trigger the state visited event.
+	 */
+	public void requestCommit(final CoreSession session) {
+		
+		checkState();
+
+		new CommonExceptionHandlerVoid() {
+			
+			@Override void codeVoid() throws Exception {
+				try {
+					adapter.put(endpointUrl + "request" + scid(session.getId()), session.toJson());
+				}
+				catch (ClientException.User ce) {
+					if (ce.getError() == ServerError.UnknownConnection) {
+						// The server has hung up on this connection.
+						destroy();
+						connection.close(Status.CLOSED_BY_SERVER);
+						throw new ConnectionClosedException(ce);
+					}
+				}
+			}
+		}.run();
 	}
 
 }

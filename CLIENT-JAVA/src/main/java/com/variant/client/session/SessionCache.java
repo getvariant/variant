@@ -146,8 +146,9 @@ public class SessionCache {
 	/**
 	 * Mark all sessions as expired and release underlying memory.
 	 */
-	public void shutdown() {
+	public void destroy() {
 		vacuumThread.interrupt();
+		for (Entry e: cache.values()) {e.session.expire();}
 		cache = null;
 	}
 	

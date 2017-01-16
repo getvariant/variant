@@ -1,6 +1,7 @@
 package com.variant.server.boot
 
 import scala.concurrent.Future
+import scala.collection.JavaConversions._
 import org.apache.commons.lang3.time.DurationFormatUtils
 import com.variant.server.event.EventWriter
 import javax.inject._
@@ -119,6 +120,10 @@ class VariantServerImpl @Inject() (
             SbtService.version,
             config.getString("play.http.context"),
    			DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")))
+   	
+     if (logger.isDebugEnabled) {
+        config.entrySet().filter(_.getKey().startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
+     }
 	}
 	
 	// Log startup messages

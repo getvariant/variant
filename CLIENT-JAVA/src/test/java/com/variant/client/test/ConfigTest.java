@@ -12,7 +12,7 @@ import com.variant.client.impl.ClientUserError;
 public class ConfigTest extends BaseTest {
 
 	@Test
-	public void test() throws Exception {
+	public void alternateConfigFileTest() throws Exception {
 				
 		// Regular startup: variant.conf overrides the defaults
 		Config config = VariantClient.Factory.getInstance().getConfig();
@@ -48,7 +48,15 @@ public class ConfigTest extends BaseTest {
 		//assertEquals(0, config.getObject(SESSION_ID_TRACKER_CLASS_INIT).entrySet().size());
 		assertEquals("no default", config.getString(TARGETING_TRACKER_CLASS_NAME));
 		//assertEquals(0, config.getObject(TARGETING_TRACKER_CLASS_INIT).entrySet().size());
-
 	}
 
+	// TODO: TICKET 
+	//@Test
+	public void propOnCommandLineOverrideTest() throws Exception {
+
+		System.setProperty("variant.targeting.stability.days", "456");
+		// Regular startup: variant.conf overrides the defaults
+		Config config = VariantClient.Factory.getInstance().getConfig();
+		assertEquals(456, config.getNumber(TARGETING_STABILITY_DAYS));
+	}
 }

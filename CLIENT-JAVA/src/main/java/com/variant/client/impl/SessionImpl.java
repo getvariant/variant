@@ -35,9 +35,6 @@ import com.variant.core.session.SessionScopedTargetingStabile;
  */
 public class SessionImpl implements Session {
 
-	@SuppressWarnings("unused")
-	private static final long serialVersionUID = 1L;
-
 	private boolean isExpired = false;
 	
 	private final ConnectionImpl conn;  // Connection which created this session.
@@ -109,15 +106,15 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public StateRequest targetForState(State state) {
-				
+
 		checkState();
-		
+
 		// Can't have two requests at one time
 		if (coreSession.getStateRequest() != null && !coreSession.getStateRequest().isCommitted()) {
 			throw new ClientException.User(ACTIVE_REQUEST);
 		}
 		
-		Payload.Session payload = conn.getServer().target(getId(), state.getName());
+		Payload.Session payload = conn.getServer().requestCreate(getId(), state.getName());
 
 		// Server returns the new CoreSession object which reflects the targeted state.
 		replaceCoreSession(payload.session);
@@ -191,7 +188,7 @@ public class SessionImpl implements Session {
 	@Override
 	public void triggerEvent(VariantEvent event) {
 		checkState();
-		conn.getServer().saveEvent(this, event);
+		conn.getServer().eventSave(this, event);
 	}
 	
 	@Override
@@ -210,7 +207,7 @@ public class SessionImpl implements Session {
 	// ---------------------------------------------------------------------------------------------//
 
 	public void save() {
-		conn.getServer().saveSession(coreSession);
+		conn.getServer().sessionSave(this);
 	}
 	
 	/**

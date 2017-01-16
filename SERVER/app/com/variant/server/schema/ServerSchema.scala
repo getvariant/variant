@@ -1,7 +1,6 @@
 package com.variant.server.schema
 
 import com.variant.core.schema.Schema
-import scala.collection.JavaConverters._
 import java.io.File
 import com.variant.core.schema.ParserResponse
 import com.variant.server.ServerException

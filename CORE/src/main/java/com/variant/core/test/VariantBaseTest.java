@@ -31,6 +31,8 @@ abstract public class VariantBaseTest {
 	
 	private final static Random rand = new Random(System.currentTimeMillis());
 	
+	abstract protected Schema getSchema();
+
 	/**
 	 * @param ssn The session which will receive this stabile.
 	 * @param experiences are expected as "test.exp" 
@@ -39,7 +41,7 @@ abstract public class VariantBaseTest {
     protected void setTargetingStabile(CoreSession ssn, String...experiences) {
 		SessionScopedTargetingStabile stabile = new SessionScopedTargetingStabile();
 		for (String e: experiences) {
-			Experience exp = experience(e, ssn.getSchema());
+			Experience exp = experience(e);
 			stabile.add(exp);
 			//((CoreSessionImpl)ssn).addTraversedTest(exp.getTest());
 		}
@@ -84,9 +86,9 @@ abstract public class VariantBaseTest {
 	 * @param name
 	 * @return
 	 */
-	protected Experience experience(String name, Schema schema) {
+	protected Experience experience(String name) {
 		String[] tokens = name.split("\\.");
-		return schema.getTest(tokens[0]).getExperience(tokens[1]);
+		return getSchema().getTest(tokens[0]).getExperience(tokens[1]);
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -231,11 +233,14 @@ abstract public class VariantBaseTest {
 				toRun();
 			}
 			catch (Exception x) {
+
 				if (getExceptionClass().isInstance(x)) {
 					result = getExceptionClass().cast(x);
 					onThrown(result);
 				}
-				else throw x;
+				else {
+					throw x;
+				}
 			}
 			if (result == null) onNotThrown();				
 			return result;

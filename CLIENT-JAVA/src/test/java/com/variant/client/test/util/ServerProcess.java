@@ -19,7 +19,7 @@ public class ServerProcess {
 	 */
 	 public ServerProcess() {}
 	
-	private ProcessThread svrProc = null;
+	private SbtThread svrProc = null;
 	private LogReaderThread logReader = null;
 	private InputStream sbtOut;
 	private InputStream sbtErr;
@@ -39,7 +39,7 @@ public class ServerProcess {
 	public void start(Map<String,String> config) throws Exception {
 		
 		if (svrProc != null && svrProc.isAlive()) throw new RuntimeException("Server thread is alive. Call stop() first");
-		svrProc = new ProcessThread();
+		svrProc = new SbtThread();
 		svrProc.start();
 
 		logReader = new LogReaderThread();
@@ -80,7 +80,7 @@ public class ServerProcess {
 	/**
 	 * Background thread which runs the process and blocks on IO from it.
 	 */
-	private class ProcessThread extends Thread {
+	private class SbtThread extends Thread {
 		
 		private Process sbt;
 		

@@ -7,6 +7,9 @@ import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTER
 
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
@@ -34,6 +37,8 @@ import com.variant.core.util.VariantStringUtils;
  */
 public class ConnectionImpl implements Connection {
 
+	final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
+	
 	/**
 	 * Is this connection still valid?
 	 * @return
@@ -131,8 +136,8 @@ public class ConnectionImpl implements Connection {
 		if (result == null && create) {
 			// Session expired locally, recreate OK.  Don't bother with the server.
 			CoreSession coreSession = new CoreSession(sessionId, schema);
-			server.saveSession(coreSession);
 			result = new SessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
+			server.sessionSave(result);
 			cache.add(result);
 		}
 
@@ -145,13 +150,20 @@ public class ConnectionImpl implements Connection {
 	 * @return
 	 */
 	private SessionImpl getSessionFromServer(String sid) {
-				
+
 		// Local cache first.
 		SessionImpl clientSsn = (SessionImpl) cache.get(sid);
-		if (clientSsn == null) return null;
+		if (clientSsn == null) {
+			if (LOG.isTraceEnabled()) {
+				LOG.trace(String.format("Local cache miss for SID [%s] in connection [%s]", sid, id));
+			}
+			return null;
+		}
 		
-		// Local cache hit. Still have to hit the the server.
-		Payload.Session payload = server.get(sid);
+		if (LOG.isTraceEnabled()) {
+			LOG.trace(String.format("Local cache hit for SID [%s] in connection [%s]", sid, id));
+		}
+		Payload.Session payload = server.sessionGet(sid);
 		
 		if (payload == null) {
 			// Session expired on server => expire it here too.
@@ -273,6 +285,7 @@ public class ConnectionImpl implements Connection {
 
 	public void close(Status status) {
 		if (this.status == Status.OPEN) {
+			cache.destroy();
 			server.disconnect(id);
 			this.status = status;
 		}		
@@ -285,16 +298,4 @@ public class ConnectionImpl implements Connection {
 		return server;
 	}
 	
-	/**
-	 * JSON deserialization.
-	 * @param parsedJson
-	 * @return
-	 *
-	public static Connection fromJson(Map<String,?> parsedJson) {
-		// Parse the schema.  We don't have user hooks on the client.
-	    ParserResponse pr = new SchemaParser(null).parse(payload.getContent());
-			val schema = ServerSchema(response)		
-			if (response.hasMessages(Severity.ERROR)) schema.state = State.Failed
-	}
-*/
 }

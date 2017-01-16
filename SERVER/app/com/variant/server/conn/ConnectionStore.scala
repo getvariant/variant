@@ -2,7 +2,6 @@ package com.variant.server.conn;
 
 import java.util.Map
 import java.util.Set
-import java.util.concurrent.ConcurrentHashMap
 import com.variant.server.ConfigKeys._
 import javax.inject.Inject
 import javax.inject.Singleton
