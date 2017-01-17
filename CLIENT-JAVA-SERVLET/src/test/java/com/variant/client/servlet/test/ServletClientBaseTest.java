@@ -13,44 +13,19 @@ import org.mockito.Answers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.variant.client.VariantClient;
-import com.variant.client.VariantTargetingTracker;
-import com.variant.client.impl.VariantClientImpl;
+import com.variant.client.TargetingTracker;
 import com.variant.client.mock.HttpServletRequestMock;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.mock.HttpSessionMock;
 import com.variant.client.servlet.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.TargetingTrackerHttpCookie;
-import com.variant.client.servlet.VariantServletClient;
-import com.variant.client.servlet.impl.ServletClientImpl;
-import com.variant.client.test.BareClientBaseTest;
-import com.variant.core.impl.VariantCore;
-import com.variant.core.util.inject.Injector;
+import com.variant.client.test.BaseTest;
 
 /**
  * Base class for all Core JUnit tests.
  */
-public abstract class ServletClientBaseTest extends BareClientBaseTest {
-	
-	private VariantCore core;
-	
-	@Override
-	protected VariantClient newBareClient() {
-		throw new UnsupportedOperationException("Servlet Adapter tests should call newAdapterClient() instead");
-	}
-
-	protected VariantServletClient newServletAdapterClient() {
-		Injector.setConfigNameAsResource("/variant/injector-servlet-adapter-local-test.json");
-		ServletClientImpl result = (ServletClientImpl) VariantServletClient.Factory.getInstance("/variant/servlet-adapter-test.props");
-		core = ((VariantClientImpl)result.getBareClient()).getCoreApi();
-		return result;
-	}
-
-	@Override
-	protected VariantCore getCoreApi() {
-		return core;
-	}
-
+public abstract class ServletClientBaseTest extends BaseTest {
+		
 	//---------------------------------------------------------------------------------------------//
 	//                                      Mockito Mocks                                          //
 	//---------------------------------------------------------------------------------------------//
@@ -76,7 +51,7 @@ public abstract class ServletClientBaseTest extends BareClientBaseTest {
 	 * @return
 	 */
 	protected HttpServletRequestMock mockHttpServletRequest(
-			String sessionId, Collection<VariantTargetingTracker.Entry> entries) { 
+			String sessionId, Collection<TargetingTracker.Entry> entries) { 
 		
 		String targetingTrackerVal = null;
 		if (entries != null && entries.size() > 0) {

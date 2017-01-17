@@ -14,8 +14,6 @@ import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.variant.client.VariantSession;
-import com.variant.client.VariantStateRequest;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.servlet.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.TargetingTrackerHttpCookie;
@@ -24,19 +22,17 @@ import com.variant.client.servlet.VariantServletSession;
 import com.variant.client.servlet.VariantServletStateRequest;
 import com.variant.client.servlet.impl.ServletSessionImpl;
 import com.variant.client.servlet.impl.ServletStateRequestImpl;
-import com.variant.core.event.impl.util.VariantCollectionsUtils;
-import com.variant.core.event.impl.util.VariantStringUtils;
-import com.variant.core.exception.VariantInternalException;
 import com.variant.core.schema.ParserResponse;
-import com.variant.core.xdm.Schema;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.impl.MessageTemplate;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
+import com.variant.core.util.VariantCollectionsUtils;
+import com.variant.core.util.VariantStringUtils;
 
 public class ServletSessionTest extends ServletClientBaseTest {
 
 	private static Random rand = new Random(System.currentTimeMillis());
-	private VariantServletClient servletClient = newServletAdapterClient();
+	private VariantServletClient servletClient = VariantServletClient.Factory.getInstance();
 	
 	/**
 	 * No Schema.
@@ -46,9 +42,10 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void noSchemaTest() throws Exception {
 
-		assertNull(servletClient.getSchema());
+		
 		final HttpServletRequest httpReq = mockHttpServletRequest("foo");  // no vssn.
 
+		VariantServletConnection conn = 
 		new VariantRuntimeExceptionInterceptor() {
 			@Override public void toRun() { servletClient.getOrCreateSession(httpReq); }
 		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);	

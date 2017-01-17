@@ -47,7 +47,7 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 	}
 
 	@Override
-	Connection getConnection() {
+	protected Connection getConnection() {
 		return conn;
 	}
 

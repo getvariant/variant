@@ -7,14 +7,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
 
+import com.variant.client.Connection;
+import com.variant.client.TargetingTracker;
 import com.variant.client.VariantClient;
-import com.variant.client.VariantInitParams;
-import com.variant.client.VariantTargetingTracker;
-import com.variant.client.VariantTargetingTracker.Entry;
 import com.variant.client.servlet.util.VariantCookie;
 import com.variant.client.session.TargetingTrackerString;
-import com.variant.core.VariantProperties;
-import com.variant.core.VariantCoreStateRequest;
 
 /**
  * Concrete implementation of the Variant targeting tracker based on HTTP cookie. 
@@ -25,7 +22,7 @@ import com.variant.core.VariantCoreStateRequest;
  * @author Igor Urisman
  * @since 0.5
  */
-public class TargetingTrackerHttpCookie extends TargetingTrackerString implements VariantTargetingTracker {
+public class TargetingTrackerHttpCookie extends TargetingTrackerString implements TargetingTracker {
 	
 	/**
 	 * The cookie which tracks the experiences
@@ -49,18 +46,18 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString implement
 		}
 	}
 
+	private Connection connection;	
 	private TargetingCookie cookie;
-	private VariantClient client;	
 	//private Logger LOG = LoggerFactory.getLogger(TargetingTrackerHttpCookie.class);
 
 	/**
 	 * Superclass needs properties but doesn't have them.
 	 */
 	@Override
-	protected VariantProperties getProperties() {
-		return client.getProperties();
+	protected Connection getConnection() {
+		return connection;
 	}
-
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -85,8 +82,8 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString implement
 	 * @since 0.6
 	 */
 	@Override
-	public void init(VariantInitParams initParams, Object...userData){
-		client = initParams.getVariantClient();
+	public void init(Connection conn, Object...userData){
+		this.connection = conn;
 		HttpServletRequest request =  (HttpServletRequest) userData[0];
 		cookie = new TargetingCookie(request);
 	}		
@@ -103,7 +100,7 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString implement
 	public Collection<Entry> get() {
 		String input = cookie.getValue();
 		// If the targeting cookie existed and returned a value, the superclass will parse it.
-		return input == null ? null : fromString(cookie.getValue(), client.getSchema());
+		return input == null ? null : fromString(cookie.getValue());
 	}
 
 	/**

@@ -1,4 +1,4 @@
-package com.variant.client.test.util;
+package com.variant.client.test;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

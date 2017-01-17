@@ -32,7 +32,7 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 	 * Concrete implementations will provided the connection.
 	 * @return
 	 */
-	abstract Connection getConnection();
+	abstract protected Connection getConnection();
 	
 	/**
 	 * Parse the content from an input string.

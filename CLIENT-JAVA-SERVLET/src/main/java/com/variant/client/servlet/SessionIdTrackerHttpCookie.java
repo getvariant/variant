@@ -3,11 +3,10 @@ package com.variant.client.servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.variant.client.Connection;
+import com.variant.client.SessionIdTracker;
 import com.variant.client.VariantClient;
-import com.variant.client.VariantInitParams;
-import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.servlet.util.VariantCookie;
-import com.variant.core.VariantCoreStateRequest;
 
 /**
  * Concrete implementation of Variant session ID tracker based on HTTP cookie. 
@@ -17,7 +16,7 @@ import com.variant.core.VariantCoreStateRequest;
  * @author Igor Urisman
  * @since 0.5
  */
-public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
+public class SessionIdTrackerHttpCookie implements SessionIdTracker {
 			
 	/**
 	 * Session ID tracking cookie.
@@ -57,18 +56,19 @@ public class SessionIdTrackerHttpCookie implements VariantSessionIdTracker {
 	public SessionIdTrackerHttpCookie() {}
 
 	/**
-	 * <p>Called by Variant to initialize a new instance, within the scope of the 
-	 * {@link VariantClient#getSession(Object...)} method. Use this to inject state from configuration.
+	 * <p>Called by Variant to initialize a newly instantiated concrete implementation. Called 
+	 * immediately following the instantiation, within the scope of the {@link VariantClient#getSession(Object...)} method.
+	 * Use this to inject state from configuration.
 	 * 
-	 * @param initParams An instance of type {@link VariantInitParams}, containing parsed JSON object, 
-	 *                   specified by the <code>session.id.tracker.class.init</code> system property.
-	 * @param userData   This implementation expects userData to be a one-element array whose single element
-	 *                   is the current {@link HttpServletRequest}.
-	 *
+	 * @param conn      The Variant server connection which is initializing this object.
+	 * @param userData  An array of zero or more opaque objects which {@link VariantClient#getSession(Object...)}  
+	 *                  or {@link VariantClient#getOrCreateSession(Object...)} method will pass here without 
+	 *                  interpretation.
+	 * 
 	 * @since 0.6
 	 */
 	@Override
-	public void init(VariantInitParams initParams, Object...userData) {		
+	public void init(Connection conn, Object...userData) {		
 		HttpServletRequest request = (HttpServletRequest) userData[0];
 		cookie = new SsnIdCookie(request);
 	}

@@ -1,8 +1,7 @@
 package com.variant.client.servlet;
 
-import com.variant.client.VariantSession;
-import com.variant.core.VariantCoreSession;
-import com.variant.core.xdm.State;
+import com.variant.client.Session;
+import com.variant.core.schema.State;
 
 /**
  * <p>Servlet-aware wrapper around bare client's {@link VariantCoreSession} which overrides
@@ -12,7 +11,7 @@ import com.variant.core.xdm.State;
  * @author Igor Urisman
  * @since 0.6
  */
-public interface VariantServletSession extends VariantSession {
+public interface VariantServletSession extends Session {
 
 	/**
 	 * Override the bare {@link VariantCoreSession#targetForState(State)} in order to

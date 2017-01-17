@@ -1,7 +1,6 @@
 package com.variant.client.servlet;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -16,14 +15,13 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.client.ConfigKeys;
 import com.variant.client.impl.StateSelectorByRequestPath;
 import com.variant.client.servlet.util.VariantWebUtils;
-import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.event.VariantEvent;
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserResponse;
-import com.variant.core.schema.ParserMessage.Severity;
-import com.variant.core.xdm.State;
+import com.variant.core.StateRequestStatus;
+import com.variant.core.VariantEvent;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.State;
 
 /**
  * <p>The preferred way of instrumenting Variant experiments for host applications written on top of the Java Servlet API.
@@ -124,6 +122,8 @@ public class VariantFilter implements Filter {
 	private static final Logger LOG = LoggerFactory.getLogger(VariantFilter.class);
 	
 	private VariantServletClient client;
+	private VariantServletConnection connection;
+	private Schema schema;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -137,35 +137,12 @@ public class VariantFilter implements Filter {
 	 */
 	@Override
 	public void init(FilterConfig config) throws ServletException {
-
-		String name = config.getInitParameter("propsResourceName");
-		client = name == null ? VariantServletClient.Factory.getInstance() : VariantServletClient.Factory.getInstance(name);
-			
-		name = config.getInitParameter("schemaResourceName");
-		
-		if (name == null) throw new ServletException("Init parameter 'schemaResourceName' must be supplied");
-		
-		InputStream is = getClass().getResourceAsStream(name);
-		if (is == null) {
-			throw new RuntimeException("Classpath resource by the name [" + name + "] does not exist.");
-		}
-						
-		ParserResponse resp = client.parseSchema(is);
-		Severity highSeverity = resp.highestMessageSeverity();
-		if (highSeverity != null && highSeverity.greaterOrEqualThan(Severity.ERROR)) {
-			LOG.error("Unable to parse Variant test schema due to following parser error(s):");
-			for (ParserMessage msg: resp.getMessages()) {
-				LOG.error(msg.toString());
-			}
-		}
-		else {
-			if (resp.hasMessages()) {
-				LOG.warn("Variant test schema parsed with following message(s):");
-				for (ParserMessage msg: resp.getMessages()) {
-					LOG.error(msg.toString());
-				}
-			}
-		}
+		client = VariantServletClient.Factory.getInstance();
+		String url = config.getInitParameter("serverUrl");
+		if (url == null) throw new ServletException("Init parameter 'serverUrl' must be supplied");
+		connection = client.getConnection(client.getConfig().getString(url));
+		schema = connection.getSchema();
+		LOG.info("Connected to Variant Server at [" + url + "]");
 	}
 
 	/**
@@ -191,23 +168,20 @@ public class VariantFilter implements Filter {
 
 			// Is this request's URI mapped in Variant?
 			String url = VariantWebUtils.requestUrl(httpRequest);
-			State state = StateSelectorByRequestPath.select(client.getSchema(), url);
+			State state = StateSelectorByRequestPath.select(schema, url);
 			
 			if (state == null) {
-
 				// Variant doesn't know about this path.
 				if (LOG.isTraceEnabled()) {
 					LOG.trace("Path [" + url + "] is not instrumented");
 				}
-			
 			}
 			else {
-			
 				// This path is instrumented by Variant.
-				variantSsn = client.getOrCreateSession(httpRequest);
+				variantSsn = connection.getOrCreateSession(httpRequest);
 				variantRequest = variantSsn.targetForState(state);
 				httpRequest.setAttribute(VARIANT_REQUEST_ATTRIBUTE_NAME, variantRequest);
-				resolvedPath = variantRequest.getResolvedParameter("path");
+				resolvedPath = variantRequest.getResolvedParameters().get("path");
 				isForwarding = !resolvedPath.equals(state.getParameter("path"));
 				
 				if (LOG.isDebugEnabled()) {
@@ -229,7 +203,7 @@ public class VariantFilter implements Filter {
 			LOG.error("Unhandled exception in Variant for path [" + VariantWebUtils.requestUrl(httpRequest) + "]", t);
 			isForwarding = false;
 			if (variantRequest != null) {
-				variantRequest.setStatus(VariantCoreStateRequest.Status.FAIL);
+				variantRequest.setStatus(StateRequestStatus.FAIL);
 			}
 		}
 
@@ -244,7 +218,7 @@ public class VariantFilter implements Filter {
 			try {
 				// Add some extra info to the state visited event(s)
 				VariantEvent sve = variantRequest.getStateVisitedEvent();
-				if (sve != null) sve.getParameterMap().put("HTTP_STATUS", httpResponse.getStatus());
+				if (sve != null) sve.getParameterMap().put("HTTP_STATUS", Integer.toString(httpResponse.getStatus()));
 				variantRequest.commit(httpResponse);
 			}
 			catch (Throwable t) {
@@ -252,7 +226,7 @@ public class VariantFilter implements Filter {
 						VariantWebUtils.requestUrl(httpRequest) + 
 						"] and session [" + variantRequest.getSession().getId() + "]", t);
 				
-				variantRequest.setStatus(VariantCoreStateRequest.Status.FAIL);
+				variantRequest.setStatus(StateRequestStatus.FAIL);
 			}
 		}
 	}

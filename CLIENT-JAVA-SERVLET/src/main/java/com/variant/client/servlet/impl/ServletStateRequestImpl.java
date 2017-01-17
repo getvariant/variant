@@ -1,23 +1,21 @@
 package com.variant.client.servlet.impl;
 
-import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.variant.client.VariantStateRequest;
-import com.variant.client.impl.VariantStateRequestImpl;
+import com.variant.client.ClientException;
+import com.variant.client.StateRequest;
 import com.variant.client.servlet.VariantServletSession;
 import com.variant.client.servlet.VariantServletStateRequest;
-import com.variant.core.VariantCoreStateRequest;
-import com.variant.core.event.VariantEvent;
-import com.variant.core.exception.VariantInternalException;
-import com.variant.core.impl.CoreStateRequestImpl;
-import com.variant.core.xdm.State;
-import com.variant.core.xdm.StateVariant;
-import com.variant.core.xdm.Test;
-import com.variant.core.xdm.Test.Experience;
+import com.variant.core.StateRequestStatus;
+import com.variant.core.VariantEvent;
+import com.variant.core.schema.State;
+import com.variant.core.schema.StateVariant;
+import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 
 /**
  * <p>The implementation of {@link VariantServletStateRequest}.
@@ -30,43 +28,35 @@ import com.variant.core.xdm.Test.Experience;
 
 public class ServletStateRequestImpl implements VariantServletStateRequest {
 
-	private VariantStateRequest bareRequest;
-	private VariantServletSession servletSession;
+	private StateRequest bareRequest;
+	private VariantServletSession wrapSession;
 	
 	// ---------------------------------------------------------------------------------------------//
 	//                                      PUBLIC AUGMENTED                                        //
 	// ---------------------------------------------------------------------------------------------//
 
-	public ServletStateRequestImpl(VariantStateRequest bareRequest, VariantServletSession servletSession) {
-		if (bareRequest == null) throw new VariantInternalException("Bare state request cannot be null");
-		if (servletSession == null) throw new VariantInternalException("Servlet session cannot be null");
+	public ServletStateRequestImpl(VariantServletSession wrapSession, StateRequest bareRequest) {
+		
+		if (bareRequest == null) throw new ClientException.Internal("Bare state request cannot be null");
+		if (wrapSession == null) throw new ClientException.Internal("Servlet session cannot be null");
 		this.bareRequest = bareRequest;
-		this.servletSession = servletSession;
+		this.wrapSession = wrapSession;
 	}
 	
 	@Override
-	public void commit() {
-		bareRequest.commit();
+	public boolean commit(Object... userData) {
+		return commit((HttpServletResponse)userData[0]);
 	}
 
 	@Override
-	public void commit(Object... userData) {
-		bareRequest.commit(userData);
-	}
-
-	@Override
-	public void commit(HttpServletResponse response) {
-		bareRequest.commit(response);
+	public boolean commit(HttpServletResponse resp) {
+		return bareRequest.commit(resp);
 	}
 
 	@Override
 	public VariantServletSession getSession() {
-		return servletSession;
+		return wrapSession;
 	}
-
-	// ---------------------------------------------------------------------------------------------//
-	//                                      PUBLIC PASS-THRU                                        //
-	// ---------------------------------------------------------------------------------------------//
 
 	@Override
 	public State getState() {
@@ -78,18 +68,9 @@ public class ServletStateRequestImpl implements VariantServletStateRequest {
 		return bareRequest.getResolvedStateVariant();
 	}
 
-	@Override
-	public String getResolvedParameter(String name) {
-		return bareRequest.getResolvedParameter(name);
-	}
 
 	@Override
-	public Set<String> getResolvedParameterNames() {
-		return bareRequest.getResolvedParameterNames();
-	}
-
-	@Override
-	public Collection<Experience> getLiveExperiences() {
+	public Set<Experience> getLiveExperiences() {
 		return bareRequest.getLiveExperiences();
 	}
 
@@ -103,10 +84,6 @@ public class ServletStateRequestImpl implements VariantServletStateRequest {
 		return bareRequest.getStateVisitedEvent();
 	}
 
-	@Override
-	public void setStatus(Status status) {
-		bareRequest.setStatus(status);
-	}
 
 	@Override
 	public boolean isCommitted() {
@@ -114,16 +91,33 @@ public class ServletStateRequestImpl implements VariantServletStateRequest {
 	}
 
 	@Override
-	public Status getStatus() {
+	public Date createDate() {
+		return bareRequest.createDate();
+	}
+
+	@Override
+	public Map<String, String> getResolvedParameters() {
+		return bareRequest.getResolvedParameters();
+	}
+
+	@Override
+	public StateRequestStatus getStatus() {
 		return bareRequest.getStatus();
+	}
+
+	@Override
+	public void setStatus(StateRequestStatus arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	// ---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC EXT PASS-THRU                                      //
 	// ---------------------------------------------------------------------------------------------//
 
-	public CoreStateRequestImpl getCoreStateRequest () {
+	/*
+	public CoreStateRequestImpl getBareStateRequest () {
 		return ((VariantStateRequestImpl)bareRequest).getCoreStateRequest();
 	}
-
+	*/
 }

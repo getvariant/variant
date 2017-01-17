@@ -2,16 +2,11 @@ package com.variant.client.servlet;
 
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.variant.client.VariantClient;
-import com.variant.client.VariantSessionIdTracker;
 import com.variant.client.servlet.impl.ServletClientImpl;
-import com.variant.core.VariantCoreSession;
-import com.variant.core.exception.VariantSchemaModifiedException;
 
 /**
- * <p>Variant client servlet adapter. 
+ * <p>Variant Client Servlet adapter. 
  * Wraps the bare Java client ({@link VariantClient}) with the purpose of 1) adding environment-bound
  * methods to be used in place of bare client's environment dependent methods, e.g. 
  * {@link VariantClient#getSession(Object...)}; and 2) overriding return types of some methods with
@@ -26,43 +21,15 @@ import com.variant.core.exception.VariantSchemaModifiedException;
 public interface VariantServletClient extends VariantClient {
 	
 	/**
-	 * <p>Get or, if does not exist, create user's Variant session. 
-	 * Environment bound variant of {@link #getOrCreateSession(Object...)}. Use in conjunction with
-	 * the HTTP Cookie provided implementations of the session ID and targeting trackers, which both
-	 * expect the current {@link HttpServletRequest} as a sole argument.
-     *
-	 * <p>If the session ID exists in the underlying implementation 
-	 * of {@link VariantSessionIdTracker} and the session with this session ID has not expired on the server,
-	 * this session is returned. Otherwise, a new session is created. If the session has not expired but the 
-	 * schema has changed since it was created, this call will throw an unchecked 
-	 * {@link VariantSchemaModifiedException}.
+	 * Override VariantClient's method with the servlet-aware return type..
+	 * 	 *        
+	 * @return An instance of the {@link VariantServletConnection} type.
 	 * 
-	 * @param request Current HttpServletRequest.
-	 * @return An and instance of {@link VariantCoreSession}, enriched for the servlet environment.
-	 * 
-	 * @since 0.6
-	 * @see SessionIdTrackerHttpCookie
-	 * @see TargetingTrackerHttpCookie
-	 * 
+	 * @see VariantClient#getConnection(String)
+	 * @since 0.7
 	 */
-	public VariantServletSession getOrCreateSession(HttpServletRequest request);
-
-	/**
-	 * <p>Get user's Variant session. 
-	 * 
-	 * <p>If the session ID exists in the underlying implementation 
-	 * of {@link VariantSessionIdTracker} and the session with this session ID has not expired on the server,
-	 * this session is returned.  If the session has not expired but the schema has changed since it was created, 
-	 * this call will throw an unchecked {@link VariantSchemaModifiedException}.
-	 * 
-	 * @param request Current HttpServletRequest.
-	 * @return An and instance of {@link VariantCoreSession}, enriched for the servlet environment.
-	 * 
-	 * @since 0.6
-	 * @see SessionIdTrackerHttpCookie
-	 * @see TargetingTrackerHttpCookie
-	 */
-	public VariantServletSession getSession(HttpServletRequest request);
+	@Override
+	public VariantServletConnection getConnection(String url);
 
 	/**
 	 * Factory class: call <code>getInstance()</code> to obtain a new instance of {@link VariantServletClient}.
@@ -88,8 +55,8 @@ public interface VariantServletClient extends VariantClient {
 		 * @return Instance of the {@link VariantServletClient} type.
 		 * @since 0.6
 		 */		
-		public static VariantServletClient getInstance(String...resourceNames) {
-			return new ServletClientImpl(resourceNames);
+		public static VariantServletClient getInstance() {
+			return new ServletClientImpl();
 		}
 	}
 }

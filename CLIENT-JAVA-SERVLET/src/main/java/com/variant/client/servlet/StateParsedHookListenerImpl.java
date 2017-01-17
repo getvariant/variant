@@ -1,10 +1,9 @@
 package com.variant.client.servlet;
 
 
-import com.variant.core.hook.HookListener;
-import com.variant.core.hook.StateParsedHook;
-import com.variant.core.schema.ParserMessage.Severity;
-import com.variant.core.xdm.State;
+import com.variant.core.HookListener;
+import com.variant.core.schema.State;
+import com.variant.core.schema.StateParsedHook;
 
 /**
  * A user hook listener listening to the {@link StateParsedHook}.
@@ -38,9 +37,7 @@ public class StateParsedHookListenerImpl implements HookListener<StateParsedHook
 		State state = hook.getState();
 		String path = state.getParameter("path");
 		if (path != null && !path.startsWith("/")) {
-			hook.addMessage(
-					Severity.ERROR, 
-					"Path property [" + path + "] must start with a '/' in State [" + state.getName() + "]");
+			hook.addMessage("Path property [" + path + "] must start with a '/' in State [" + state.getName() + "]");
 		}
 	}	
 

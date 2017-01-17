@@ -2,8 +2,7 @@ package com.variant.client.servlet;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.variant.client.VariantStateRequest;
-import com.variant.core.VariantCoreStateRequest;
+import com.variant.client.StateRequest;
 
 /**
  * <p>Extends bare client's {@link VariantCoreStateRequest} to include
@@ -13,7 +12,7 @@ import com.variant.core.VariantCoreStateRequest;
  * @since 0.6
  */
 
-public interface VariantServletStateRequest extends VariantStateRequest {
+public interface VariantServletStateRequest extends StateRequest {
 	
 	/**
 	 * Environment bound version of of the bare client's {@link #commit(Object...)}.
@@ -21,5 +20,5 @@ public interface VariantServletStateRequest extends VariantStateRequest {
 	 * @param request Current {@link HttpServletResponse}.
 	 * @since 0.6
 	 */
-	void commit(HttpServletResponse response);
+	boolean commit(HttpServletResponse response);
 }
