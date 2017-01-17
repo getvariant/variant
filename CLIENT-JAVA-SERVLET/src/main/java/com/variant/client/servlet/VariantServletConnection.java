@@ -3,7 +3,7 @@ package com.variant.client.servlet;
 import javax.servlet.http.HttpServletRequest;
 
 import com.variant.client.Connection;
-import com.variant.client.Session;
+import com.variant.core.schema.State;
 
 /**
  * <p>Servlet-aware wrapper around bare client's implementation of{@link Connection}. 
@@ -16,8 +16,21 @@ import com.variant.client.Session;
 
 public interface VariantServletConnection extends Connection {
 	
-	public VariantServletSession getOrCreateSession(HttpServletRequest req);
+	// Narrow return type of inherited methods
+	@Override
+	VariantServletSession getOrCreateSession(Object... userData);
+
+	@Override
+	VariantServletSession getSession(Object... userData);
+
+	@Override
+	VariantServletSession getSessionById(String sessionId);
+
+	// New methods with servlet-aware signatures.
+	// Inherited methods will delegate to one of these.
+
+	VariantServletSession getOrCreateSession(HttpServletRequest req);
 	
-	public VariantServletSession getSession(HttpServletRequest req);
+	VariantServletSession getSession(HttpServletRequest req);
 	
 }

@@ -51,12 +51,14 @@ public class ServletConnectionImpl implements VariantServletConnection {
 	}
 
 	public VariantServletSession getSession(HttpServletRequest req) {
-		return new ServletSessionImpl(this, bareConnection.getSession(req));
+		Session bareSession = bareConnection.getSession(req);
+		return bareSession == null ? null : new ServletSessionImpl(this, bareSession);
 	}
 
 	@Override
 	public VariantServletSession getSessionById(String sid) {
-		return new ServletSessionImpl(this, bareConnection.getSessionById(sid));
+		Session bareSession = bareConnection.getSessionById(sid);
+		return bareSession == null ? null : new ServletSessionImpl(this, bareSession);
 	}
 
 	@Override
