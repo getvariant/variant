@@ -107,22 +107,24 @@ class VariantServerImpl @Inject() (
 	}
 	else if (!schema.isDefined) {
       logger.warn(
-            String.format("%s release %s. Bootstrapped on %s in %s with WARNINGS:",
+            String.format("%s release %s. Bootstrapped on :%s%s in %s with WARNINGS:",
             SbtService.name,
             SbtService.version,
+            config.getString("http.port"),
             config.getString("play.http.context"),
    			DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")))
 	}
 	else {
       logger.info(
-            String.format("%s release %s. Bootstrapped on %s in %s.",
+            String.format("%s release %s. Bootstrapped on :%s%s in %s.",
             SbtService.name,
             SbtService.version,
+            config.getString("http.port"),
             config.getString("play.http.context"),
    			DurationFormatUtils.formatDuration(System.currentTimeMillis() - now, "mm:ss.SSS")))
    	
      if (logger.isDebugEnabled) {
-        config.entrySet().filter(_.getKey().startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
+        config.entrySet().filter(x => x.getKey.startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
      }
 	}
 	

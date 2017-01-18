@@ -23,27 +23,27 @@ class ConnectionController @Inject() (store: ConnectionStore) extends Controller
 curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
     */
    def post(name: String) = VariantAction {
-         var result: Option[ServerSchema] = None
-         VariantServer.server.schema.foreach {s => if (s.getName().equals(name)) result = Some(s)}
-         result match {
-            case Some(schema) => {
-               logger.debug("Schema [%s] found".format(name))
-               val conn = Connection(schema)
-               
-               if (store.put(conn)) {
-                  logger.info("Opened connection [%s] to chema [%s]".format(conn.id, name))
-                  Ok(conn.asJson)
-               }
-               else {
-                  logger.info("Unable to open connection to chema [%s]: connection table is full".format(name))
-                  ServerErrorRemote(TooManyConnections).asResult()
-               }
+      var result: Option[ServerSchema] = None
+      VariantServer.server.schema.foreach {s => if (s.getName().equals(name)) result = Some(s)}
+      result match {
+         case Some(schema) => {
+            logger.debug("Schema [%s] found".format(name))
+            val conn = Connection(schema)
+            
+            if (store.put(conn)) {
+               logger.info("Opened connection [%s] to chema [%s]".format(conn.id, name))
+               Ok(conn.asJson)
             }
-            case None => {
-               logger.debug("Schema [%s] not found".format(name))
-               ServerErrorRemote(UnknownSchema).asResult(name)
+            else {
+               logger.info("Unable to open connection to chema [%s]: connection table is full".format(name))
+               ServerErrorRemote(TooManyConnections).asResult()
             }
          }
+         case None => {
+            logger.debug("Schema [%s] not found".format(name))
+            ServerErrorRemote(UnknownSchema).asResult(name)
+         }
+      }
    }
   
    /**
