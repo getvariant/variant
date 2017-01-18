@@ -9,12 +9,12 @@ import static org.junit.Assert.assertTrue;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
+import com.variant.client.ClientUserError;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
-import com.variant.client.impl.ClientUserError;
 import com.variant.core.VariantEvent;
 import com.variant.core.exception.CommonError;
 import com.variant.core.impl.StateVisitedEvent;
@@ -23,7 +23,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
-public class StateRequestTest extends BaseTestWithServer {
+public class StateRequestTest extends ClientBaseTestWithServer {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
 	private Schema schema;

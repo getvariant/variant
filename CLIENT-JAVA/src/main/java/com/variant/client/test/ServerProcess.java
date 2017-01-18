@@ -87,7 +87,7 @@ public class ServerProcess {
 		@Override
 		public void run() {
 			try {
-				sbt = Runtime.getRuntime().exec("bin/startServer.sh");
+				sbt = Runtime.getRuntime().exec("../CLIENT-JAVA/bin/startServer.sh");
 				sbtOut = sbt.getInputStream();
 				sbtErr = sbt.getErrorStream();
 			}

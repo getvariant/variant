@@ -6,7 +6,7 @@ import org.junit.BeforeClass;
 /**
  * Base class for all Core JUnit tests.
  */
-public abstract class BaseTestWithServer extends BaseTest {
+public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 		
 	protected static ServerProcess server;
 	

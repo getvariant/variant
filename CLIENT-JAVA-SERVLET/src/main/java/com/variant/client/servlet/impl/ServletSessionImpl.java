@@ -45,12 +45,12 @@ public class ServletSessionImpl implements VariantServletSession {
 	}
 
 	@Override
-	public String clearAttribute(String name) {
+	public Object clearAttribute(String name) {
 		return bareSession.clearAttribute(name);
 	}
 
 	@Override
-	public String getAttribute(String name) {
+	public Object getAttribute(String name) {
 		return bareSession.getAttribute(name);
 	}
 
@@ -100,7 +100,7 @@ public class ServletSessionImpl implements VariantServletSession {
 	}
 
 	@Override
-	public String setAttribute(String name, String value) {
+	public Object setAttribute(String name, Object value) {
 		return bareSession.setAttribute(name, value);
 	}
 

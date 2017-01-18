@@ -111,13 +111,4 @@ public class ServletStateRequestImpl implements VariantServletStateRequest {
 		
 	}
 
-	// ---------------------------------------------------------------------------------------------//
-	//                                    PUBLIC EXT PASS-THRU                                      //
-	// ---------------------------------------------------------------------------------------------//
-
-	/*
-	public CoreStateRequestImpl getBareStateRequest () {
-		return ((VariantStateRequestImpl)bareRequest).getCoreStateRequest();
-	}
-	*/
 }

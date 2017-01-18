@@ -9,14 +9,14 @@ import static org.junit.Assert.assertTrue;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
+import com.variant.client.ClientUserError;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantClient;
-import com.variant.client.impl.ClientUserError;
 import com.variant.core.schema.State;
 
-public class SessionTest extends BaseTestWithServer {
+public class SessionTest extends ClientBaseTestWithServer {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
 	

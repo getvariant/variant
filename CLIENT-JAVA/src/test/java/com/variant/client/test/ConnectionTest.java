@@ -5,14 +5,14 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import com.variant.client.ClientException;
+import com.variant.client.ClientUserError;
 import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
-import com.variant.client.impl.ClientUserError;
 import com.variant.core.exception.ServerError;
 
-public class ConnectionTest extends BaseTestWithServer {
+public class ConnectionTest extends ClientBaseTestWithServer {
 	
 	private VariantClient client = VariantClient.Factory.getInstance();
 

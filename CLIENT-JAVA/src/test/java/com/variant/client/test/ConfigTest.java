@@ -6,10 +6,10 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.typesafe.config.Config;
+import com.variant.client.ClientUserError;
 import com.variant.client.VariantClient;
-import com.variant.client.impl.ClientUserError;
 
-public class ConfigTest extends BaseTest {
+public class ConfigTest extends ClientBaseTest {
 
 	@Test
 	public void alternateConfigFileTest() throws Exception {

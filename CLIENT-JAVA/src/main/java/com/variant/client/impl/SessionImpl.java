@@ -1,6 +1,6 @@
 package com.variant.client.impl;
 
-import static com.variant.client.impl.ClientUserError.ACTIVE_REQUEST;
+import static com.variant.client.ClientUserError.ACTIVE_REQUEST;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,7 +41,8 @@ public class SessionImpl implements Session {
 	private CoreSession coreSession;
 	private SessionIdTracker sessionIdTracker;
 	private TargetingTracker targetingTracker;
-	private HashMap<String, String> attributeMap = new HashMap<String, String>();
+	// client-local attributes. They do not get replicated to the server.
+	private HashMap<String, Object> attributeMap = new HashMap<String, Object>();
 	private StateRequest stateRequest;
 	
 	/**
@@ -130,17 +131,17 @@ public class SessionImpl implements Session {
 	}
 	
 	@Override
-	public String setAttribute(String name, String value) {
+	public Object setAttribute(String name, Object value) {
 		return attributeMap.put(name, value);
 	}    
 
 	@Override
-	public String getAttribute(String name) {
+	public Object getAttribute(String name) {
 		return attributeMap.get(name);
 	}
 
 	@Override
-	public String clearAttribute(String name) {
+	public Object clearAttribute(String name) {
 		return attributeMap.remove(name);
 	}
 

@@ -13,7 +13,7 @@ import com.variant.core.test.VariantBaseTest;
 /**
  * Base class for all Core JUnit tests.
  */
-public abstract class BaseTest extends VariantBaseTest {
+public abstract class ClientBaseTest extends VariantBaseTest {
 	
 	@Override
 	protected Schema getSchema() {
@@ -47,7 +47,7 @@ public abstract class BaseTest extends VariantBaseTest {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 *
+	 * User error Intercepter
 	 */
 	protected static abstract class ClientUserExceptionInterceptor 
 		extends ExceptionInterceptor<ClientException.User> {
@@ -74,18 +74,6 @@ public abstract class BaseTest extends VariantBaseTest {
 			assertNotNull("Expected exception not thrown", result);
 			assertEquals(cls, result.getClass());
 		}
-		/**
-		 * 
-		 *
-		final public void assertThrown(int code, String message, String comment) throws Exception {
-			ClientException result = super.run();
-			assertNotNull("Expected exception not thrown", result);
-			assertEquals(code, result.getCode());
-			assertEquals(message, result.getMessage());
-			assertEquals(comment, result.getComment());
-		}
-		*/
-		
 	}
 
 }

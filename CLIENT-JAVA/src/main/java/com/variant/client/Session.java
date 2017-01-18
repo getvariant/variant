@@ -139,27 +139,30 @@ public interface Session {
 	public boolean isExpired();
 
 	/**
-	 * <p>Set a session-scoped attribute.
+	 * <p>Set a session-scoped attribute. Session-scoped attributes are client-local and are not
+	 * replicated to the server. Consequently, another client will not see these attributes.
 	 * 
 	 * @return The string, previously associated with this attribute, or null if none.
 	 * @since 0.6
 	 */
-	public String setAttribute(String name, String value);
+	public Object setAttribute(String name, Object value);
 	
 	/**
-	 * <p>Retrieve a session-scoped attribute.
+	 * <p>Retrieve a session-scoped attribute. Session-scoped attributes are client-local and are not
+	 * replicated to the server. Consequently, another client will not see these attributes.
 	 * 
-	 * @return The string associated with this attribute.
+	 * @return The object associated with this attribute.
 	 * @since 0.6
 	 */
-	public String getAttribute(String name);
+	public Object getAttribute(String name);
 
 	/**
-	 * <p>Remove a session-scoped attribute.
+	 * <p>Remove a session-scoped attribute. Session-scoped attributes are client-local and are not
+	 * replicated to the server. Consequently, another client will not see these attributes.
 	 * 
 	 * @return The string, previously associated with this attribute, or null if none.
 	 * @since 0.7
 	 */
-	public String clearAttribute(String name);
+	public Object clearAttribute(String name);
 
 }

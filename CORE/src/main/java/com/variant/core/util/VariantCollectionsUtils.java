@@ -1,6 +1,7 @@
 package com.variant.core.util;
 
 import java.util.*;
+
 import static com.variant.core.util.Tuples.*;
 
 
@@ -92,9 +93,6 @@ public class VariantCollectionsUtils {
 	/**
 	 * Convert a map to a collection of Pairs whose first elem is the key and the second -
 	 * the corresponding value.
-	 * 
-	 * @param map
-	 * @return
 	 */
 	public static <K,V> Collection<Pair<K,V>> mapToPairs(Map<K,V> map) {
 		LinkedList<Pair<K,V>> result = new LinkedList<Pair<K,V>>();
@@ -103,5 +101,17 @@ public class VariantCollectionsUtils {
 		}
 		return result;
 	}
-	
+
+	/**
+	 * Convert a collection of Pairs to a Map.
+	 */
+	@SafeVarargs
+	public static <K,V> Map<K,V> pairsToMap(Pair<K,V>...pairs) {
+		Map<K,V> result = new HashMap<K,V>();
+		for (Pair<K,V> p: pairs) {
+			result.put(p._1(), p._2());
+		}
+		return result;
+	}
+
 }

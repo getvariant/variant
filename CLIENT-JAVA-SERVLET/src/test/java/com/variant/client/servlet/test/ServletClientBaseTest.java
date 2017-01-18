@@ -1,5 +1,7 @@
 package com.variant.client.servlet.test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -13,19 +15,43 @@ import org.mockito.Answers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import com.variant.client.ClientException;
 import com.variant.client.TargetingTracker;
 import com.variant.client.mock.HttpServletRequestMock;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.mock.HttpSessionMock;
+import com.variant.client.servlet.ServletClientException;
 import com.variant.client.servlet.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.TargetingTrackerHttpCookie;
-import com.variant.client.test.BaseTest;
+import com.variant.client.test.ClientBaseTestWithServer;
 
 /**
  * Base class for all Core JUnit tests.
  */
-public abstract class ServletClientBaseTest extends BaseTest {
+public abstract class ServletClientBaseTest extends ClientBaseTestWithServer {
 		
+	//---------------------------------------------------------------------------------------------//
+	//                                 Exception Intercepter                                       //
+	//---------------------------------------------------------------------------------------------//
+
+	protected static abstract class ServletClientExceptionIntercepter 
+		extends ExceptionInterceptor<ClientException> {
+		
+		@Override
+		final public Class<ClientException> getExceptionClass() {
+			return ClientException.class;
+		}
+		
+		/**
+		 * Server side errors: We don't have access to them at comp time
+		 */
+		final public void assertThrown(Class<? extends ClientException> cls) throws Exception {
+			ClientException result = super.run();
+			assertNotNull("Expected exception not thrown", result);
+			assertEquals(cls, result.getClass());
+		}		
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                      Mockito Mocks                                          //
 	//---------------------------------------------------------------------------------------------//
