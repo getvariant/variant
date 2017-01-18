@@ -32,20 +32,13 @@ PetClinic :: a Spring Framework demonstration
     <%-- Variant Demo addition start --%>
     <script src="http://getvariant.com/js/variant-0.7.0.js"></script>
 
-    <%@ page import="com.variant.client.VariantStateRequest" %>
-    <%@ page import="com.variant.client.VariantSession" %>
-    <%@ page import="com.variant.client.VariantClient" %>
-    <%@ page import="com.variant.client.VariantClientPropertyKeys" %>
-    <%@ page import="com.variant.core.VariantProperties" %>
+    <%@ page import="com.variant.client.StateRequest" %>
     <%@ page import="com.variant.client.servlet.VariantFilter" %>
     <%
         // If we're on an instrumented page VariantFilter has put the current state request in http request.
-        VariantStateRequest varRequest = (VariantStateRequest)request.getAttribute(VariantFilter.VARIANT_REQUEST_ATTRIBUTE_NAME);
+        StateRequest varRequest = (StateRequest)request.getAttribute(VariantFilter.VARIANT_REQUEST_ATTRIBUTE_NAME);
         if (varRequest != null) {
-	        VariantSession varSession = varRequest.getSession();
-   		 	VariantClient varClient = varSession.getClient();
-    		VariantProperties varProps = varClient.getProperties();
-    		String varSvrEndpointUrl = varProps.get(VariantClientPropertyKeys.SERVER_ENDPOINT_URL);
+           String varSvrEndpointUrl = varRequest.getSession().get
     %>
 
 	    <script>

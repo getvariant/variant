@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.client.ClientException;
+import com.variant.client.ConfigKeys;
 import com.variant.client.Connection.Status;
 import com.variant.client.ClientUserError;
 import com.variant.client.ConnectionClosedException;
@@ -27,7 +28,7 @@ import com.variant.core.session.CoreSession;
  */
 public class Server {
 
-	private final String endpointUrl;
+	private final String serverUrl;
 	private final String schemaName;
 	private HttpRemoter remoter = new HttpRemoter();
 	private final HttpAdapter adapter = new HttpAdapter(remoter);
@@ -92,13 +93,11 @@ public class Server {
 	 * Bootstrapping 
 	 * Package visibility as we only want ConnectionImpl to call this.
 	 */
-	Server(ConnectionImpl connection, String url) {
+	Server(ConnectionImpl connection, String schemaName) {
 		this.connection = connection;
-		int lastColonIx = url.lastIndexOf(':');
-		if (lastColonIx < 0) throw new ClientException.User(ClientUserError.BAD_CONN_URL, url);
-		String ep = url.substring(0, lastColonIx);
-		endpointUrl = ep.endsWith("/") ? ep : ep + "/";
-		schemaName = url.substring(lastColonIx + 1);
+		String url = connection.getClient().getConfig().getString(ConfigKeys.SERVER_URL);
+		this.serverUrl =  url.endsWith("/") ? url : url + "/";
+		this.schemaName = schemaName;
 	}
 	
 	/**
@@ -109,7 +108,7 @@ public class Server {
 		
 		if (isConnected) throw new ClientException.Internal("Already connected");
 
-		HttpResponse resp = adapter.post(endpointUrl + "connection/" + schemaName);
+		HttpResponse resp = adapter.post(serverUrl + "connection/" + schemaName);
 		isConnected = true;
 		return Payload.Connection.fromResponse(resp);
 	}
@@ -119,7 +118,7 @@ public class Server {
 	 */
 	void disconnect(String id) {
 		if (isConnected) {
-			adapter.delete(endpointUrl + "connection/" + id);
+			adapter.delete(serverUrl + "connection/" + id);
 			destroy();
 		}
 	}
@@ -133,7 +132,7 @@ public class Server {
 		checkState(ssn);
 		
 		// Remote
-		adapter.post(endpointUrl + "event/", ((VariantEventSupport)event).toJson());
+		adapter.post(serverUrl + "event/", ((VariantEventSupport)event).toJson());
 		
 	}
 	
@@ -151,7 +150,7 @@ public class Server {
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session code() throws Exception {
-				HttpResponse resp = adapter.get(endpointUrl + "session/" + scid(sid));
+				HttpResponse resp = adapter.get(serverUrl + "session/" + scid(sid));
 				return Payload.Session.fromResponse(connection, resp);
 			}
 		}.run();
@@ -175,7 +174,7 @@ public class Server {
 					jsonGen.writeStringField("ssn", ((SessionImpl)session).getCoreSession().toJson());
 					jsonGen.writeEndObject();
 					jsonGen.flush();
-					adapter.put(endpointUrl + "session", body.toString());
+					adapter.put(serverUrl + "session", body.toString());
 				}
 				catch (ClientException.User ce) {
 					if (ce.getError() == ServerError.UnknownConnection) {
@@ -208,7 +207,7 @@ public class Server {
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session code() throws Exception {
-				HttpResponse resp = adapter.post(endpointUrl + "request", body); 
+				HttpResponse resp = adapter.post(serverUrl + "request", body); 
 				return Payload.Session.fromResponse(connection, resp);
 			}
 		}.run();
@@ -226,7 +225,7 @@ public class Server {
 			
 			@Override void codeVoid() throws Exception {
 				try {
-					adapter.put(endpointUrl + "request" + scid(session.getId()), session.toJson());
+					adapter.put(serverUrl + "request" + scid(session.getId()), session.toJson());
 				}
 				catch (ClientException.User ce) {
 					if (ce.getError() == ServerError.UnknownConnection) {

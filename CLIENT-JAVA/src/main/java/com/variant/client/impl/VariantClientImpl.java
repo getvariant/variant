@@ -124,8 +124,8 @@ public class VariantClientImpl implements VariantClient {
 	/**
 	 */
 	@Override
-	public Connection getConnection(String url) {		
-		ConnectionImpl result = connFactory.connectTo(this, url);
+	public Connection getConnection(String schema) {		
+		ConnectionImpl result = connFactory.connectTo(this, schema);
 		return result;
 	}
 	

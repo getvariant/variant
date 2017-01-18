@@ -25,7 +25,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void noSessionIdInTrackerTest() throws Exception {
 		
-		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
 		assertEquals(Status.OPEN, conn.getStatus());
 		String sid = newSid();
@@ -62,7 +62,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sessionExpireTest() throws Exception {
 		
-		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
 		assertEquals(Status.OPEN, conn.getStatus());
 		
@@ -103,7 +103,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void connectionClosedLocallyTest() throws Exception {
 		
-		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
 		assertEquals(Status.OPEN, conn.getStatus());
 		
@@ -126,7 +126,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	//@org.junit.Test
 	public void connectionClosedRemotelyTest() throws Exception {
 		
-		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
 		assertEquals(Status.OPEN, conn.getStatus());
 		
@@ -153,7 +153,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void attributesTest() throws Exception {
 		
-		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
 		assertEquals(Status.OPEN, conn.getStatus());
 

@@ -37,7 +37,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void noStabilTest() throws Exception {
 		
-		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
 		assertEquals(Status.OPEN, conn.getStatus());
 
@@ -110,7 +110,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void deterministicTest1() throws Exception {
 		
-		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");
+		Connection conn = client.getConnection("big_covar_schema");
 		schema = conn.getSchema();
 		
 		assertNotNull(conn);
@@ -162,7 +162,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
-		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		Connection conn = client.getConnection("big_covar_schema");		
 
 		String sid = newSid();
 		final Session ssn = conn.getOrCreateSession(sid);
@@ -193,7 +193,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	//@org.junit.Test
 	public void connectionClosedLocallyTest() throws Exception {
 		
-		Connection conn = client.getConnection("http://localhost:9000/test:big_covar_schema");		
+		Connection conn = client.getConnection("big_covar_schema");		
 	   	schema = conn.getSchema();
 
 		String sid = newSid();

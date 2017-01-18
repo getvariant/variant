@@ -15,7 +15,6 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.ConfigKeys;
 import com.variant.client.impl.StateSelectorByRequestPath;
 import com.variant.client.servlet.util.VariantWebUtils;
 import com.variant.core.StateRequestStatus;
@@ -138,9 +137,8 @@ public class VariantFilter implements Filter {
 	@Override
 	public void init(FilterConfig config) throws ServletException {
 		client = VariantServletClient.Factory.getInstance();
-		String url = config.getInitParameter("serverUrl");
-		if (url == null) throw new ServletException("Init parameter 'serverUrl' must be supplied");
-		connection = client.getConnection(client.getConfig().getString(url));
+		String url = client.getConfig().getString("server.url");
+		connection = client.getConnection(url);
 		schema = connection.getSchema();
 		LOG.info("Connected to Variant Server at [" + url + "]");
 	}

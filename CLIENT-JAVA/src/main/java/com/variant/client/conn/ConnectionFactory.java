@@ -14,8 +14,8 @@ public class ConnectionFactory {
 	
 	/**
 	 */
-	public ConnectionImpl connectTo(VariantClient client, String url) {
-		ConnectionImpl conn = new ConnectionImpl(client, url);
+	public ConnectionImpl connectTo(VariantClient client, String schema) {
+		ConnectionImpl conn = new ConnectionImpl(client, schema);
 		return conn;
 	}
 	

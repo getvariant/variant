@@ -194,11 +194,11 @@ public class ConnectionImpl implements Connection {
 	/**
 	 * 
 	 */
-	ConnectionImpl(VariantClient client, String url) {
+	ConnectionImpl(VariantClient client, String schemaName) {
 		this.client = client;
 		
 		// This connection's server object.
-		this.server = new Server(this, url);
+		this.server = new Server(this, schemaName);
 		
 		// Get the schema from the server, if exists.
 		Payload.Connection payload = server.connect();

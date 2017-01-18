@@ -125,10 +125,6 @@ see here: http://static.springsource.org/spring/docs/current/spring-framework-re
      <filter>
         <filter-name>variantFilter</filter-name>
         <filter-class>com.variant.client.servlet.VariantFilter</filter-class> 
-        <init-param>
-           <param-name>serverUrl</param-name>
-           <param-value>http://localhost:9000/test:big_covar_schema</param-value>
-        </init-param>
      </filter>
      
      <filter-mapping>
