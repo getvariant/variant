@@ -1,5 +1,6 @@
-package com.variant.webnative;
+package com.variant.server.test.util;
 
+/* FIX THIS IN ORDER TO POPULATE IMMULLATION DATA 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
@@ -106,8 +107,9 @@ public class EventDataPopulator {
 	 * Next ran
 	 * @param probOfTruth - range from [0,1)
 	 * @return
-	 */
+	 *
 	private boolean nextBoolean(double probOfTruth) {
 		return rand.nextDouble() < probOfTruth;
 	}
 }
+*/
