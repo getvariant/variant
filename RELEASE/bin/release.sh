@@ -30,14 +30,26 @@ mkdir ${stage_dir} ${target_dir}
 #
 cd ${workspace_root_dir}/CORE
 mvn clean package -DskipTests
-cp $workspace_root_dir/CORE/target/variant-core*.jar ${stage_dir}
+#cp $workspace_root_dir/CORE/target/variant-core*.jar ${stage_dir}
 
 #
 # SERVER
 #
-cd ${workspace_root_dir}/SERVER-HTTP
-sbt clean package
-cp target/scala-2.11/variant-server*.war ${stage_dir}/variant-server-${version}.war
+cd ${workspace_root_dir}/SERVER
+sbt clean dist
+rm -rf tmp
+mkdir tmp
+cd tmp 
+unzip ../target/universal/variant-${version}.zip
+rm -rf variant-${version}/README variant-${version}/share
+mkdir variant-${version}/schemas 
+cp -r ../schemas variant-${version}
+cp ../conf/variant.sh variant-${version}/
+#cp variant-${version}/bin/variant variant-${version}
+#rm -rf variant-${version}/bin
+zip -r ../variant-${version}.zip variant-${version}/ 
+
+exit
 
 #
 # JAVA CLIENT

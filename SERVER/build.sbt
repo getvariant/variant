@@ -3,7 +3,7 @@
 //
 
 val coreVersion = "0.7.0"
-name := "Variant Experiment Server"
+name := "Variant"
 version := coreVersion
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
