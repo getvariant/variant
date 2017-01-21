@@ -98,7 +98,7 @@ class RequestTest extends BaseSpecWithServer {
             "cid" -> cid,
             "ssn" -> coreSsn2.toJson
             ).toString         
-         resp = route(app, FakeRequest(DELETE, context + "/request").withTextBody(reqBody2)).get
+         resp = route(app, FakeRequest(PUT, context + "/request").withTextBody(reqBody2)).get
          status(resp) mustBe OK
          respAsJson = contentAsJson(resp)
          val coreSsn3 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
@@ -122,21 +122,23 @@ class RequestTest extends BaseSpecWithServer {
                mustBe stateReq3.getLiveExperiences.toSet)
          }
          
-         // Try committing again...
+         // Try committing again... Should work because we don't actually check for this on the server.
+         // and trust that the client will check before sending the request and check again after receiving.
          val reqBody3 = Json.obj(
             "cid" -> cid,
             "ssn" -> coreSsn3.toJson
             ).toString         
-         resp = route(app, FakeRequest(DELETE, context + "/request").withTextBody(reqBody3)).get
-         status(resp) mustBe BAD_REQUEST
+         resp = route(app, FakeRequest(PUT, context + "/request").withTextBody(reqBody3)).get
+         status(resp) mustBe OK
+/*         
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe StateRequestAlreadyCommitted.isInternal() 
          error mustBe StateRequestAlreadyCommitted
          args mustBe (empty)
-
+*/
+         // should not have produced a new event, i.e. still 1.
          Thread.sleep(2000)
          reader.read(e => e.getSessionId == sid).size mustBe 1
-         
       }
 
    }

@@ -22,4 +22,4 @@ GET     /session/:id             com.variant.server.controller.SessionController
 PUT     /session                 com.variant.server.controller.SessionController.save()
 
 POST    /request                  com.variant.server.controller.RequestController.create()
-DELETE  /request                  com.variant.server.controller.RequestController.commit()
+PUT     /request                  com.variant.server.controller.RequestController.commit()

@@ -36,7 +36,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     */
    def create() = VariantAction { req =>
 
-      def parse(json: JsValue): (ServerSession, State) = {
+      def parse(json: JsValue): (Connection, ServerSession, State) = {
          
          val scid = (json \ "sid").asOpt[String]
          val state = (json \ "state").asOpt[String]
@@ -53,7 +53,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
       if (result.isDefined) {
          val (conn, ssn) = result.get
          logger.debug(s"Found session [$sid]")
-         (result.get._2, schema.getState(state.get))
+         (result.get._1, result.get._2, schema.getState(state.get))
       }
       else
          throw new ServerException.Remote(SessionExpired)
@@ -63,8 +63,9 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
       req.contentType match {
          case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
             try {
-               val (ssn, state) = parse(Json.parse(req.body.asText.get))
+               val (conn, ssn, state) = parse(Json.parse(req.body.asText.get))
                var stateReq: CoreStateRequest = VariantServer.server.runtime.targetSessionForState(ssn.coreSession, state)
+               conn.addSession(ssn)
                val response = JsObject(Seq(
                   "session" -> JsString(ssn.coreSession.toJson())
                ))
@@ -88,9 +89,6 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          val (conn, ssn) = parseBody(req.body)
          val stateReq = ssn.getStateRequest
 	      val sve = stateReq.getStateVisitedEvent
-
-	      if (stateReq.isCommitted())
-	         throw new ServerException.Remote(StateRequestAlreadyCommitted)
          
    		// We won't have an event if nothing is instrumented on this state
 	      if (sve != null) {
@@ -101,8 +99,9 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 		      }
 	   		// Trigger state visited event
    	   	ssn.triggerEvent(sve);
+   	   	stateReq.commit(); 
+   	   	conn.addSession(ssn)
          }
-         stateReq.commit();
          val response = JsObject(Seq(
             "session" -> JsString(ssn.coreSession.toJson())
          )).toString()
