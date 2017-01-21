@@ -10,6 +10,7 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.typesafe.config.Config;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
@@ -175,7 +176,7 @@ public class ConnectionImpl implements Connection {
 		// Local and remote hits. 
 		// Replace remote in local, as it may have been changed by another client,
 		// update local timeout, and return the existing local object.
-		clientSsn.replaceCoreSession(remoteSsn);
+		clientSsn.rewrap(remoteSsn);
 		return clientSsn;	
 	}
 
@@ -227,6 +228,12 @@ public class ConnectionImpl implements Connection {
 	public VariantClient getClient() {
 		preChecks();
 		return client;
+	}
+
+	@Override
+	public Config getConfig() {
+		preChecks();
+		return client.getConfig();
 	}
 
 	/**
@@ -296,6 +303,5 @@ public class ConnectionImpl implements Connection {
 	 */
 	public Server getServer() {
 		return server;
-	}
-	
+	}	
 }

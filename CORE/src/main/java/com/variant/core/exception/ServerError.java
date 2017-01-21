@@ -49,8 +49,8 @@ public class ServerError extends UserError {
 	public static final ServerError InvalidSCID = 
 			new ServerError(617, "Invalid SCID [%s]");
 
-	public static final ServerError StateRequestAlreadyCommitted = 
-			new ServerError(618, "State request already committed");
+//	public static final ServerError StateRequestAlreadyCommitted = 
+//			new ServerError(618, "State request already committed");
 
 	//
 	// 631-700 Internal, other internal errors.

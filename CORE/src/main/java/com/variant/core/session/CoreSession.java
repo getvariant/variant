@@ -226,40 +226,9 @@ CLEANUP */
 		return Collections.unmodifiableSet(disqualTests);
 	}
 
-
-	/**  
-	 * No notion of expiration in core.
-	 *
-	@Override
-	public boolean isExpired() {
-		throw new IllegalArgumentException();
-	}
-
-	//---------------------------------------------------------------------------------------------//
-	//                                    PUBLIC UNSUPPORTED                                       //
-	//---------------------------------------------------------------------------------------------//
-
-	@Override
-	public Object setAttribute(String name, Object value) {
-		throw new VariantExpectedRuntimeException(RUN_METHOD_UNSUPPORTED);
-	}
-
-	@Override
-	public Object getAttribute(String name) {
-		throw new VariantExpectedRuntimeException(RUN_METHOD_UNSUPPORTED);
-	}
-*/
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
-	//---------------------------------------------------------------------------------------------//
-	/**
-	 * 
-	 * @return
-	 *
-	public VariantCore getCoreApi() {
-		return core;
-	}
-	
+	//---------------------------------------------------------------------------------------------//	
 	/**
 	 * 
 	 * @param req

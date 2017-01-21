@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import com.typesafe.config.Config;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
@@ -24,11 +25,10 @@ import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.session.CoreSession;
-import com.variant.core.session.CoreStateRequest;
 import com.variant.core.session.SessionScopedTargetingStabile;
 
 /**
- * Variant session as visible to the client code. 
+ * Permanent wrapper around transient CoreSession, + client only session functionality. 
  * 
  * @author Igor
  *
@@ -43,7 +43,7 @@ public class SessionImpl implements Session {
 	private TargetingTracker targetingTracker;
 	// client-local attributes. They do not get replicated to the server.
 	private HashMap<String, Object> attributeMap = new HashMap<String, Object>();
-	private StateRequest stateRequest;
+	private StateRequestImpl stateRequest;
 	
 	/**
 	 * 
@@ -116,10 +116,10 @@ public class SessionImpl implements Session {
 		}
 		
 		Payload.Session payload = conn.getServer().requestCreate(getId(), state.getName());
-
-		// Server returns the new CoreSession object which reflects the targeted state.
-		replaceCoreSession(payload.session);
-		return new StateRequestImpl(coreSession.getStateRequest(), this);
+		rewrap(payload.session);
+		stateRequest = new StateRequestImpl(this);
+		
+		return stateRequest;
 	}
 
 	/**
@@ -165,6 +165,12 @@ public class SessionImpl implements Session {
 	public Connection getConnection() {
 		checkState();
 		return conn;
+	}
+
+	@Override
+	public Config getConfig() {
+		checkState();
+		return conn.getConfig();
 	}
 
 	@Override
@@ -226,16 +232,20 @@ public class SessionImpl implements Session {
 	/**
 	 */
 	public CoreSession getCoreSession() {
+		checkState();
 		return coreSession;
 	}
 
 	/**
 	 */
-	public void replaceCoreSession(CoreSession coreSession) {
+	public void rewrap(CoreSession coreSession) {
+		// The new core session which this object wraps.
 		this.coreSession = (CoreSession) coreSession;
+		
+		// Propagate to the state request wrapper object, if any.
+		if(stateRequest != null) stateRequest.rewrap(coreSession.getStateRequest());
+		
 		targetingTracker.set(fromTargetingStabile(coreSession.getTargetingStabile()));
-		CoreStateRequest coreRequest = coreSession.getStateRequest();
-		this.stateRequest = coreRequest == null ? null : new StateRequestImpl(coreRequest, this);
 	}
 	
 	/**

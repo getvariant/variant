@@ -2,12 +2,14 @@ package com.variant.client.conn;
 
 import java.io.StringWriter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.client.ClientException;
 import com.variant.client.ConfigKeys;
 import com.variant.client.Connection.Status;
-import com.variant.client.ClientUserError;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.impl.SessionImpl;
@@ -27,6 +29,8 @@ import com.variant.core.session.CoreSession;
  * @author Igor
  */
 public class Server {
+
+	private static final Logger LOG = LoggerFactory.getLogger(Server.class);
 
 	private final String serverUrl;
 	private final String schemaName;
@@ -52,13 +56,27 @@ public class Server {
 		abstract T code() throws Exception;
 		
 		T run() {
-			try { return code(); }
 			
-			// Already properly packaged exception.
-			catch (ClientException ce) { 
+			try { 
+				return code(); 
+			}
+			// Intercept certain user exceptions.
+			catch (ClientException.User ce) {
+				if (ce.getError() == ServerError.UnknownConnection) {
+					// The server has hung up on this connection.
+					destroy();
+					connection.close(Status.CLOSED_BY_SERVER);
+					throw new ConnectionClosedException(ce);
+				}
+				else throw ce;
+			}
+
+			// Pass through properly formatted internal exceptions
+			catch (ClientException.Internal ce) { 
 				throw ce;
 			}
-			// Something unexpected.
+
+			// Something unexpected - wrap as an Internal.
 			catch (Exception e) {
 				throw new ClientException.Internal("Unexpected Exception", e);
 			}
@@ -106,6 +124,8 @@ public class Server {
 	 */
 	Payload.Connection connect() {
 		
+		if (LOG.isTraceEnabled()) LOG.trace("connect()");
+
 		if (isConnected) throw new ClientException.Internal("Already connected");
 
 		HttpResponse resp = adapter.post(serverUrl + "connection/" + schemaName);
@@ -117,6 +137,9 @@ public class Server {
 	 * Close this server connection.
 	 */
 	void disconnect(String id) {
+		
+		if (LOG.isTraceEnabled()) LOG.trace("disconnect()");
+
 		if (isConnected) {
 			adapter.delete(serverUrl + "connection/" + id);
 			destroy();
@@ -129,6 +152,9 @@ public class Server {
 
 	public void eventSave(Session ssn, VariantEvent event) {
 		
+		if (LOG.isTraceEnabled()) LOG.trace(
+				String.format("eventSave(%s,%s)", ssn.getId(), event.getName()));
+
 		checkState(ssn);
 		
 		// Remote
@@ -146,6 +172,9 @@ public class Server {
 	 */
 	public Payload.Session sessionGet(final String sid) {
 
+		if (LOG.isTraceEnabled()) LOG.trace(
+				String.format("sessionGet(%s)", sid));
+
 		checkState();
 		return new CommonExceptionHandler<Payload.Session>() {
 			
@@ -159,32 +188,23 @@ public class Server {
 	/**
 	 * Save core session on the remote server.
 	 */
-	public void sessionSave(final Session session) {
+	public void sessionSave(final Session ssn) {
 		
-		checkState(session);
+		if (LOG.isTraceEnabled()) LOG.trace(
+				String.format("sessionSave(%s)", ssn.getId()));
+
+		checkState(ssn);
 
 		new CommonExceptionHandlerVoid() {
-			
 			@Override void codeVoid() throws Exception {
-				try {
-					StringWriter body = new StringWriter();
-					JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
-					jsonGen.writeStartObject();
-					jsonGen.writeStringField("cid", connection.getId());
-					jsonGen.writeStringField("ssn", ((SessionImpl)session).getCoreSession().toJson());
-					jsonGen.writeEndObject();
-					jsonGen.flush();
-					adapter.put(serverUrl + "session", body.toString());
-				}
-				catch (ClientException.User ce) {
-					if (ce.getError() == ServerError.UnknownConnection) {
-						// The server has hung up on this connection.
-						destroy();
-						connection.close(Status.CLOSED_BY_SERVER);
-						throw new ConnectionClosedException(ce);
-					}
-					else throw ce;
-				}
+				StringWriter body = new StringWriter();
+				JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
+				jsonGen.writeStartObject();
+				jsonGen.writeStringField("cid", connection.getId());
+				jsonGen.writeStringField("ssn", ((SessionImpl)ssn).getCoreSession().toJson());
+				jsonGen.writeEndObject();
+				jsonGen.flush();
+				adapter.put(serverUrl + "session", body.toString());
 			}
 		}.run();
 		
@@ -200,6 +220,9 @@ public class Server {
 	 */
 	public Payload.Session requestCreate(String sid, String state) {
 
+		if (LOG.isTraceEnabled()) LOG.trace(
+				String.format("requestCreate(%s,%s)", sid, state));
+
 		checkState();
 
 		final String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", scid(sid), state);
@@ -214,29 +237,30 @@ public class Server {
 	}
 
 	/**
-	 * DELETE /request.
+	 * PUT /request.
 	 * Commit a state request and trigger the state visited event.
 	 */
-	public void requestCommit(final CoreSession session) {
+	public Payload.Session requestCommit(final CoreSession ssn) {
 		
+		if (LOG.isTraceEnabled()) LOG.trace(
+				String.format("requestCommit(%s)", ssn.getId()));
+
 		checkState();
 
-		new CommonExceptionHandlerVoid() {
-			
-			@Override void codeVoid() throws Exception {
-				try {
-					adapter.put(serverUrl + "request" + scid(session.getId()), session.toJson());
-				}
-				catch (ClientException.User ce) {
-					if (ce.getError() == ServerError.UnknownConnection) {
-						// The server has hung up on this connection.
-						destroy();
-						connection.close(Status.CLOSED_BY_SERVER);
-						throw new ConnectionClosedException(ce);
-					}
-				}
+		return new CommonExceptionHandler<Payload.Session>() {
+			@Override Payload.Session code() throws Exception {
+				StringWriter body = new StringWriter();
+				JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
+				jsonGen.writeStartObject();
+				jsonGen.writeStringField("cid", connection.getId());
+				jsonGen.writeStringField("ssn", ssn.toJson());
+				jsonGen.writeEndObject();
+				jsonGen.flush();
+				HttpResponse resp = adapter.put(serverUrl + "request", body.toString());
+				return Payload.Session.fromResponse(connection, resp);
 			}
 		}.run();
+
 	}
 
 }

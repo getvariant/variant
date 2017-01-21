@@ -63,9 +63,8 @@ public class ClientException extends VariantException {
 	 */
 	public static class User extends ClientException {
 
-		private static final long serialVersionUID = 1L;
-		private UserError error;
-		private Object[] args;
+		private UserError error = null;
+		private Object[] args = null;
 		
 		/**
 		 * 
@@ -92,6 +91,14 @@ public class ClientException extends VariantException {
 
 		/**
 		 * 
+		 * @param msg
+		 */
+		public User(String msg) {
+			super(msg);
+		}
+
+		/**
+		 * 
 		 * @return
 		 */
 		public UserError getError() {
@@ -104,7 +111,8 @@ public class ClientException extends VariantException {
 		 */
 		@Override
 		public String getMessage() {
-			return "[" + error.code + "] " + error.asMessage(args);
+			return error == null ? super.getMessage() :
+				"[" + error.code + "] " + error.asMessage(args);
 		}
 
 		/**

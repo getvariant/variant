@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import com.typesafe.config.Config;
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -67,6 +68,16 @@ public interface Session {
 	 */	
 	public Connection getConnection();
 	
+	/**
+	 * Externally supplied configuration.
+	 * See https://github.com/typesafehub/config for details on Typesafe Config.
+	 * A shortcut for {@code getConnection().getClient().getConfig()}
+	 * @return An instance of the {@link Config} type.
+	 * 
+	 * @since 0.7
+	 */
+	public Config getConfig();
+
 	/**
      * <p>Session timeout interval, as set by the server. This session will be destroyed after it is inactive
      *    for this many milliseconds. 

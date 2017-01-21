@@ -18,7 +18,7 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void connectToNonExistentSchemaTest() throws Exception {
 		
 		new ClientUserExceptionInterceptor() {
@@ -59,7 +59,7 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 	 * This test will break if at its start there are any unclosed connections.
 	 * @throws Exception 
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void tooManyConnectionsTest() throws Exception {
 
 		Connection[] connections = new Connection[10];
@@ -129,7 +129,7 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 	/**
 	 * This does not work because the session expires while the server restarts. 
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void closedByServerTest() throws Exception {
 		
 		final Connection conn = client.getConnection("big_covar_schema");		

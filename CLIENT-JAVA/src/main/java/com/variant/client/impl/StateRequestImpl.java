@@ -7,6 +7,8 @@ import java.util.Set;
 import com.variant.client.Session;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
+import com.variant.client.conn.ConnectionImpl;
+import com.variant.client.net.Payload;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.VariantEvent;
 import com.variant.core.exception.CommonError;
@@ -17,19 +19,24 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreStateRequest;
 
+/**
+ * Permanent wrapper around transient CoreStateRequest + client only request functionality.
+ */
 public class StateRequestImpl implements StateRequest {
 
-	private SessionImpl session;
+	private final SessionImpl session;
+	private final ConnectionImpl conn;
 	private CoreStateRequest coreRequest;
-
+	
 	private void checkState() {
 		session.checkState();
 	}
 	
-	public StateRequestImpl(CoreStateRequest coreStateRequest, SessionImpl clientSession) 
+	public StateRequestImpl(SessionImpl session) 
 	{	
-		this.coreRequest = (CoreStateRequest) coreStateRequest;
-		this.session = (SessionImpl) clientSession;
+		this.session = session;
+		this.conn = (ConnectionImpl) session.getConnection();
+		this.coreRequest = session.getCoreSession().getStateRequest();
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -37,38 +44,38 @@ public class StateRequestImpl implements StateRequest {
 	//---------------------------------------------------------------------------------------------//
 	@Override
 	public Date createDate() {
-		return null;
+		return coreRequest.createDate();
 	}
 
 	@Override
 	public State getState() {
 		checkState();
-		return coreRequest.getState();
+		return session.getCoreSession().getStateRequest().getState();
 	}
 
 	@Override
 	public StateVariant getResolvedStateVariant() {
 		checkState();
-		return coreRequest.getResolvedStateVariant();
+		return session.getCoreSession().getStateRequest().getResolvedStateVariant();
 	}
 
 	@Override
 	public Map<String,String> getResolvedParameters() {
 		checkState();
-		return coreRequest.getResolvedParameters();
+		return session.getCoreSession().getStateRequest().getResolvedParameters();
 	}
 
 	@Override
 	public Set<Experience> getLiveExperiences() {
 		checkState();
-		return coreRequest.getLiveExperiences();
+		return session.getCoreSession().getStateRequest().getLiveExperiences();
 	}
 
 	@Override
 	public Experience getLiveExperience(Test test) {
 		checkState();
 		try {
-			return coreRequest.getLiveExperience(test);
+			return session.getCoreSession().getStateRequest().getLiveExperience(test);
 		}
 		catch (CoreException.User e) {
 			if (e.error.code == CommonError.STATE_NOT_INSTRUMENTED_BY_TEST.code)
@@ -80,37 +87,38 @@ public class StateRequestImpl implements StateRequest {
 	@Override
 	public VariantEvent getStateVisitedEvent() {
 		checkState();
-		return coreRequest.getStateVisitedEvent();
+		return session.getCoreSession().getStateRequest().getStateVisitedEvent();
 	}
 
 	@Override
 	public boolean commit(Object... userData) {
 		
 		checkState();
-		if (coreRequest.isCommitted()) return false;
+		if (isCommitted()) return false;
 		
 		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 		session.getTargetingTracker().save(userData);
 		session.getSessionIdTracker().save(userData);
-				
-		coreRequest.commit();
 		
+		Payload.Session payload = conn.getServer().requestCommit(session.getCoreSession());
+		session.rewrap(payload.session);
+		rewrap(payload.session.getStateRequest());
 		return true;
 	}
 
 	@Override
 	public boolean isCommitted() {
-		return coreRequest.isCommitted();
+		return session.getCoreSession().getStateRequest().isCommitted();
 	}
 
 	@Override
 	public void setStatus(StateRequestStatus status) {
-		coreRequest.setStatus(status);
+		session.getCoreSession().getStateRequest().setStatus(status);
 	}
 
 	@Override
 	public StateRequestStatus getStatus() {
-		return coreRequest.getStatus();
+		return session.getCoreSession().getStateRequest().getStatus();
 	}
 	
 	/**
@@ -121,9 +129,11 @@ public class StateRequestImpl implements StateRequest {
 		return session;
 	}
 
-	/*
-	public CoreStateRequest getCoreStateRequest () {
-		return coreRequest;
+	// ---------------------------------------------------------------------------------------------//
+	//                                           PUBLIC EXT                                         //
+	// ---------------------------------------------------------------------------------------------//
+	
+	public void rewrap(CoreStateRequest coreRequest) {
+		this.coreRequest = coreRequest;
 	}
-*/
 }

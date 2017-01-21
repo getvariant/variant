@@ -1,5 +1,6 @@
 package com.variant.client;
 
+import com.typesafe.config.Config;
 import com.variant.core.schema.Schema;
 
 
@@ -87,6 +88,16 @@ public interface Connection {
 	 */
 	Status getStatus();
 	
+	/**
+	 * Externally supplied configuration.
+	 * See https://github.com/typesafehub/config for details on Typesafe Config.
+	 * A shortcut for {@code getClient().getConfig()}
+	 * @return An instance of the {@link Config} type.
+	 * 
+	 * @since 0.7
+	 */
+	public Config getConfig();
+
 	/**
 	 * Close this connection. No-op if this connection has already been closed.
 	 * 

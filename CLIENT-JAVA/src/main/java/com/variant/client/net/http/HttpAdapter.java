@@ -73,7 +73,7 @@ public class HttpAdapter {
 	}
 
 	/**
-	 * Send a PUT.
+	 * Send a PUT with a body.
 	 * @param url
 	 * @param body
 	 * @return
@@ -106,6 +106,5 @@ public class HttpAdapter {
 				}
 		);
 	}
-
 	
 }

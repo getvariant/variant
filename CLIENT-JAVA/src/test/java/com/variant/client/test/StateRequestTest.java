@@ -7,9 +7,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.variant.client.ClientException;
+import com.variant.client.ClientUserError;
 import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
-import com.variant.client.ClientUserError;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.StateNotInstrumentedException;
@@ -99,16 +99,24 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertTrue(req.commit());
 		assertTrue(req.isCommitted());
 		assertNull(req.getStateVisitedEvent());		
+		
 		// No-op.
 		assertFalse(req.commit());
 		
+		// Reget the session -- should not change anything.
+		Session ssn2 = conn.getSession(sid);
+		assertEquals(ssn, ssn2);
+		StateRequest req2 = ssn2.getStateRequest();
+		assertEquals(req, req2);
+		assertTrue(req2.isCommitted());
+
 		conn.close();
 	}
 	
 	/**
 	 */
 	@org.junit.Test
-	public void deterministicTest1() throws Exception {
+	public void deterministicTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");
 		schema = conn.getSchema();
@@ -152,9 +160,59 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		// No-op.
 		assertFalse(req.commit());
 		
-		conn.close();
+		conn.close();		
+	}
 
+	/**
+	 */
+	@org.junit.Test
+	public void commitTest() throws Exception {
 		
+		Connection conn = client.getConnection("big_covar_schema");
+		schema = conn.getSchema();
+		
+		assertNotNull(conn);
+		assertEquals(Status.OPEN, conn.getStatus());
+
+		// Via SID tracker, create.
+		String sid = newSid();
+		Object[] userData = userDataForSimpleIn(sid, "test4.C", "test5.C");
+		Session ssn1 = conn.getOrCreateSession(userData);
+		assertNotNull(ssn1);
+		assertEquals(sid, ssn1.getId());
+
+	   	schema = conn.getSchema();
+	   	final State state2 = schema.getState("state2");
+	   	final State state3 = schema.getState("state3");
+	   	
+	   	final StateRequest req1 = ssn1.targetForState(state2);
+		
+		assertTrue(req1.commit());
+		assertTrue(req1.isCommitted());
+
+		// Reget the session and try targeting again -- should not work.
+		final Session ssn2 = conn.getOrCreateSession(userData);
+		assertNotNull(ssn2);
+		assertEquals(ssn1, ssn2);
+		final StateRequest req2 = ssn2.getStateRequest();
+		assertEquals(req1, req2);
+		assertFalse(req1.commit());
+		assertTrue(req1.isCommitted());
+		assertFalse(req2.commit());
+		assertTrue(req2.isCommitted());
+		
+		assertNotNull(ssn1.targetForState(state3));
+		
+		new ClientUserExceptionInterceptor() {
+			@Override public void toRun() {
+			   	ssn2.targetForState(state3);
+			}
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
+			}
+		}.assertThrown(ClientUserError.ACTIVE_REQUEST);
+
+		conn.close();		
 	}
 
 	/**

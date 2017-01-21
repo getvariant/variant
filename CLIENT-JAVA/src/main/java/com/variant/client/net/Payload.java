@@ -16,7 +16,7 @@ import com.variant.core.session.CoreSession;
  * Each paylad type must have a static parse method, called by the payload reader.
  */
 abstract public class Payload {
-	
+		
 	/**
 	 */
 	public static class Connection extends Payload {
