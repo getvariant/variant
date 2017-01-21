@@ -29,7 +29,10 @@ PetClinic :: a Spring Framework demonstration
     <spring:url value="/webjars/jquery-ui/1.10.3/themes/base/jquery-ui.css" var="jQueryUiCss"/>
     <link href="${jQueryUiCss}" rel="stylesheet"></link>
     
-    <%-- Variant Demo addition start --%>
+    <%-- --------------------------------------------------------------------------- --%>
+    <%--                             Variant Demo start                              --%>
+    <%-- --------------------------------------------------------------------------- --%>
+    
     <script src="http://getvariant.com/js/variant-0.7.0.js"></script>
 
     <%@ page import="com.variant.client.StateRequest" %>
@@ -38,7 +41,7 @@ PetClinic :: a Spring Framework demonstration
         // If we're on an instrumented page VariantFilter has put the current state request in http request.
         StateRequest varRequest = (StateRequest)request.getAttribute(VariantFilter.VARIANT_REQUEST_ATTRIBUTE_NAME);
         if (varRequest != null) {
-           String varSvrEndpointUrl = varRequest.getSession().get
+           String varSvrEndpointUrl = varRequest.getSession().getConfig().getString("server.url");
     %>
 
 	    <script>
@@ -55,8 +58,11 @@ PetClinic :: a Spring Framework demonstration
 		});
 	    </script>
 
-	<% } %>    
-    <%-- Variant Demo addition end --%>
+    <% } %>    
+
+    <%-- --------------------------------------------------------------------------- --%>
+    <%--                              Variant Demo end                               --%>
+    <%-- --------------------------------------------------------------------------- --%>
      
 </head>
 

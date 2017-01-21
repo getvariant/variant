@@ -84,7 +84,6 @@ public class ServletStateRequestImpl implements VariantServletStateRequest {
 		return bareRequest.getStateVisitedEvent();
 	}
 
-
 	@Override
 	public boolean isCommitted() {
 		return bareRequest.isCommitted();
@@ -106,9 +105,12 @@ public class ServletStateRequestImpl implements VariantServletStateRequest {
 	}
 
 	@Override
-	public void setStatus(StateRequestStatus arg0) {
-		// TODO Auto-generated method stub
-		
+	public void setStatus(StateRequestStatus status) {
+		bareRequest.setStatus(status);
 	}
+
+	// ---------------------------------------------------------------------------------------------//
+	//                                         PUBLIC EXT                                           //
+	// ---------------------------------------------------------------------------------------------//
 
 }

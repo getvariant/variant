@@ -15,6 +15,7 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.client.ClientException;
 import com.variant.client.impl.StateSelectorByRequestPath;
 import com.variant.client.servlet.util.VariantWebUtils;
 import com.variant.core.StateRequestStatus;
@@ -137,10 +138,12 @@ public class VariantFilter implements Filter {
 	@Override
 	public void init(FilterConfig config) throws ServletException {
 		client = VariantServletClient.Factory.getInstance();
-		String url = client.getConfig().getString("server.url");
-		connection = client.getConnection(url);
+		String schemaName = config.getInitParameter("schema");
+		if (schemaName == null) 
+			throw new ClientException.User("Filter init parameter [schema] must be specified");
+		connection = client.getConnection(schemaName);
 		schema = connection.getSchema();
-		LOG.info("Connected to Variant Server at [" + url + "]");
+		LOG.info("Connected to schema [" + schemaName + "]");
 	}
 
 	/**
@@ -155,7 +158,7 @@ public class VariantFilter implements Filter {
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
 		VariantServletSession variantSsn = null; 
-		VariantServletStateRequest variantRequest = null;
+		VariantServletStateRequest stateRequest = null;
 		
 		long start = System.currentTimeMillis();
 
@@ -177,9 +180,9 @@ public class VariantFilter implements Filter {
 			else {
 				// This path is instrumented by Variant.
 				variantSsn = connection.getOrCreateSession(httpRequest);
-				variantRequest = variantSsn.targetForState(state);
-				httpRequest.setAttribute(VARIANT_REQUEST_ATTRIBUTE_NAME, variantRequest);
-				resolvedPath = variantRequest.getResolvedParameters().get("path");
+				stateRequest = variantSsn.targetForState(state);
+				httpRequest.setAttribute(VARIANT_REQUEST_ATTRIBUTE_NAME, stateRequest);
+				resolvedPath = stateRequest.getResolvedParameters().get("path");
 				isForwarding = !resolvedPath.equals(state.getParameter("path"));
 				
 				if (LOG.isDebugEnabled()) {
@@ -200,11 +203,10 @@ public class VariantFilter implements Filter {
 		catch (Throwable t) {
 			LOG.error("Unhandled exception in Variant for path [" + VariantWebUtils.requestUrl(httpRequest) + "]", t);
 			isForwarding = false;
-			if (variantRequest != null) {
-				variantRequest.setStatus(StateRequestStatus.FAIL);
+			if (stateRequest != null) {
+				stateRequest.setStatus(StateRequestStatus.FAIL);
 			}
 		}
-
 		if (isForwarding) {
 			request.getRequestDispatcher(resolvedPath).forward(request, response);
 		}				
@@ -212,19 +214,21 @@ public class VariantFilter implements Filter {
 			chain.doFilter(request, response);							
 		}
 							
-		if (variantRequest != null) {
+		if (stateRequest != null) {
 			try {
 				// Add some extra info to the state visited event(s)
-				VariantEvent sve = variantRequest.getStateVisitedEvent();
+				VariantEvent sve = stateRequest.getStateVisitedEvent();
 				if (sve != null) sve.getParameterMap().put("HTTP_STATUS", Integer.toString(httpResponse.getStatus()));
-				variantRequest.commit(httpResponse);
 			}
 			catch (Throwable t) {
 				LOG.error("Unhandled exception in Variant for path [" + 
 						VariantWebUtils.requestUrl(httpRequest) + 
-						"] and session [" + variantRequest.getSession().getId() + "]", t);
+						"] and session [" + stateRequest.getSession().getId() + "]", t);
 				
-				variantRequest.setStatus(StateRequestStatus.FAIL);
+				stateRequest.setStatus(StateRequestStatus.FAIL);
+			}
+			finally {
+				stateRequest.commit(httpResponse);
 			}
 		}
 	}
@@ -235,7 +239,10 @@ public class VariantFilter implements Filter {
 	 */
 	@Override
 	public void destroy() {
-		// nothing.
+		try {
+			connection.close();
+		}
+		catch (Throwable e) {}
 	}
 
 }

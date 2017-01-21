@@ -2,6 +2,7 @@ package com.variant.client.servlet.impl;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.typesafe.config.Config;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
@@ -59,6 +60,11 @@ public class ServletConnectionImpl implements VariantServletConnection {
 	}
 
 	@Override
+	public Config getConfig() {
+		return wrapClient.getConfig();
+	}
+
+	@Override
 	public VariantServletSession getOrCreateSession(Object... userData) {
 		if (userData.length != 1 || !(userData[0] instanceof HttpServletRequest)) 
 			throw new ServletClientException("User data must have one element of type HttpServletRequest");
@@ -94,6 +100,5 @@ public class ServletConnectionImpl implements VariantServletConnection {
 	public Status getStatus() {
 		return bareConnection.getStatus();
 	}
-
 	
 }

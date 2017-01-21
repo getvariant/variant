@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import com.typesafe.config.Config;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
@@ -57,6 +58,11 @@ public class ServletSessionImpl implements VariantServletSession {
 	@Override
 	public Connection getConnection() {
 		return wrapConnection;
+	}
+
+	@Override
+	public Config getConfig() {
+		return bareSession.getConfig();
 	}
 
 	@Override

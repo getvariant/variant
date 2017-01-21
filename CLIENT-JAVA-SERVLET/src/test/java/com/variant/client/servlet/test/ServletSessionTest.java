@@ -33,10 +33,6 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 	//private static Random rand = new Random(System.currentTimeMillis());
 	private static final VariantServletClient servletClient = VariantServletClient.Factory.getInstance();
-	private static final String serverUrl = servletClient.getConfig().getString("server.url");
-	static {
-		assertNotNull(serverUrl);	
-	}
 	
 	/**
 	 * Test bare and servlet signatures of getSession()
@@ -47,7 +43,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void getSessionNoTrackerTest() throws Exception {
 		
-		final VariantServletConnection conn = servletClient.getConnection(serverUrl);
+		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
 		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
 		
 		// Servlet signatures
@@ -98,7 +94,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void getSessionWithTrackerTest() throws Exception {
 
-		final VariantServletConnection conn = servletClient.getConnection(serverUrl);
+		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
 		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
 
 		// Servlet signatures
@@ -157,7 +153,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void fullStateRequestNoIdTracker() throws Exception {
 		
-		final VariantServletConnection conn = servletClient.getConnection(serverUrl);
+		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
 		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
 		
 		Schema schema = conn.getSchema();
@@ -180,7 +176,6 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		
 		State state1 = schema.getState("state1");		
 		VariantServletStateRequest varReq = ssn2.targetForState(state1);
-		//System.out.println(((VariantServletSessionImpl)ssn2).toJson());
 		assertEquals(state1, varReq.getState());
 		assertEquals(varReq, ssn2.getStateRequest());
 		assertEqualAsSets(
@@ -197,10 +192,12 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
 
 		assertTrue(varReq.commit(httpResp));
+		assertTrue(varReq.isCommitted());
 
 		// commit() has added the targeting tracker cookie.
 		assertEquals(2, httpResp.getCookies().length);
 		assertEquals(ssn2, varReq.getSession());
+		assertEquals(varReq, ssn2.getStateRequest());
 		assertEquals(ssn2.getId(), httpResp.getCookie(SessionIdTrackerHttpCookie.COOKIE_NAME).getValue());
 		for (Test test: expectedTests)
 			assertMatches(".*\\." + test.getName() + "\\..*", httpResp.getCookie(TargetingTrackerHttpCookie.COOKIE_NAME).getValue());
@@ -215,6 +212,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		// Commit should have saved the session.
 		httpReq = mockHttpServletRequest(httpResp);
 		VariantServletSession ssn3 = conn.getSession(httpReq);
+		assertTrue(varReq.isCommitted());
 		assertEquals(ssn3, ssn2);
 		assertEqualAsSets(
 				VariantCollectionsUtils.pairsToMap(new Pair<State,Integer>(state1, 1)), 
@@ -237,7 +235,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void fullStateRequestWithIdTracker() throws Exception {
 		
-		final VariantServletConnection conn = servletClient.getConnection(serverUrl);
+		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
 		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
 		
 		Schema schema = conn.getSchema();
@@ -299,7 +297,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void cookieForgedTest() throws Exception {
 		
-		final VariantServletConnection conn = servletClient.getConnection(serverUrl);
+		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
 		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
 		
 		Schema schema = conn.getSchema();
@@ -347,7 +345,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void connClosedTest() throws Exception {
 		
-		final VariantServletConnection conn = servletClient.getConnection(serverUrl);
+		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
 		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
 
 		Schema schema = conn.getSchema();
@@ -381,8 +379,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 			@Override public void toRun() { 
 				ssn2.targetForState(state2);
 			}
-		}.assertThrown(ConnectionClosedException.class);
-				
+		}.assertThrown(ConnectionClosedException.class);		
 	}
 
 }
