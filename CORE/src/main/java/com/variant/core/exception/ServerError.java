@@ -84,7 +84,7 @@ public class ServerError extends UserError {
 	// 741-760 User, Event
 	//
 	public static final ServerError UnknownState = 
-			new ServerError(741, "No recent state request in session");
+			new ServerError(741, "No state request in session", "Target this session for a state first");
 
 
 	/**
