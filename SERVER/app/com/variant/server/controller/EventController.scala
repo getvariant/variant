@@ -15,9 +15,14 @@ import play.api.http.HeaderNames
 import scala.collection.mutable.Map
 import com.variant.server.event.ServerEvent
 import com.variant.server.boot.ServerErrorRemote
+import com.variant.server.conn.ConnectionStore
+import com.variant.server.boot.VariantServer
+import com.variant.server.ServerException
+import com.variant.server.conn.Connection
+import com.variant.server.session.ServerSession
 
 //@Singleton -- Is this for non-shared state controllers?
-class EventController @Inject() (store: SessionStore) extends Controller  {
+class EventController @Inject() (override val connStore: ConnectionStore, server: VariantServer) extends VariantController  {
    
    private val logger = Logger(this.getClass)	
  
@@ -33,55 +38,54 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 
       def parse(json: JsValue): Result = {
          
-         val sid = (json \ "sid").asOpt[String]
+         val scid = (json \ "sid").asOpt[String]
          val name = (json \ "name").asOpt[String]
          val value = (json \ "value").asOpt[String]
          val timestamp = (json \ "ts").asOpt[Long]
-         val params = (json \ "params").asOpt[JsArray]
-
-         val parsedParams = Map[String,String]()
-         params.map((x:JsArray) => {
-            x.as[Array[JsValue]].foreach(p => {
-               val name = (p \ "name").asOpt[String] 
-               if (name.isEmpty) return ServerErrorRemote(MissingParamName).asResult()
-               val value = (p \ "value").asOpt[String]
-               parsedParams(name.get) = value.getOrElse(null)                            
-            })
-         })
+         val params = (json \ "params").asOpt[List[JsObject]]
 
          // 400 if no required fields 
-         if (sid.isEmpty)  {
-            ServerErrorRemote(MissingProperty).asResult("sid")
+         if (scid.isEmpty)
+            throw new ServerException.Remote(MissingProperty, "sid")   
+
+         if (name.isEmpty)
+            throw new ServerException.Remote(MissingProperty, "name")
+         
+         if (value.isEmpty)
+            throw new ServerException.Remote(MissingProperty, "value")
+
+         val (cid, sid) = parseScid(scid.get)
+         val (conn, ssn) = lookupSession(scid.get).getOrElse {
+            throw new ServerException.Remote(SessionExpired)
          }
-         else if (name.isEmpty)  {
-            ServerErrorRemote(MissingProperty).asResult("name")
-         }
-         else {    
-            val ssn = store.asSession(sid.get)
-            if (ssn.isEmpty) {
-               ServerErrorRemote(SessionExpired).asResult()
-            }
-            else {
-               if (ssn.get.getStateRequest == null) {
-                  ServerErrorRemote(UnknownState).asResult()   
+         
+         if (ssn.getStateRequest == null)
+            throw new ServerException.Remote(UnknownState)   
+
+         val event = new ServerEvent(name.get, value.get, new Date(timestamp.getOrElse(System.currentTimeMillis())));  
+         
+         if (params.isDefined) {
+            params.get.foreach(p => {
+               val name = (p \ "name").asOpt[String].getOrElse {
+                  throw new ServerException.Remote(MissingParamName)
                }
-               else {
-                  val event = new ServerEvent(name.get, value.get, new Date(timestamp.getOrElse(System.currentTimeMillis())));   
-                  parsedParams.foreach(e => event.setParameter(e._1, e._2))
-                  ssn.get.triggerEvent(event)            
-                  Ok
-               }
-            }
-         }
+               val value = (p \ "value").asOpt[String].getOrElse("")
+               event.setParameter(name, value)
+            })
+         }            
+         ssn.triggerEvent(event)            
+         Ok
       }
-      
+            
       req.contentType match {
          case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
-            try {
-               parse(Json.parse(req.body.asText.get))
-            }
-            catch {
-               case t: Throwable => ServerErrorRemote(JsonParseError).asResult(t.getMessage)
+            parse {
+               try {
+                  Json.parse(req.body.asText.get)
+               }
+               catch {
+                  case t: Throwable => throw new ServerException.Remote(JsonParseError, t.getMessage)
+               }
             }
          case _ => ServerErrorRemote(BadContentType).asResult()
       }

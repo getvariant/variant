@@ -15,12 +15,8 @@ import play.api.libs.json._
 /**
  * Session Controller Tests
  */
-class SessionTest extends BaseSpecWithServer {
-   
-   val endpoint = context + "/session"
-   val schemaId = server.schema.get.getId
-
-   val sessionJson = ParamString("""
+object SessionTest {
+   val sessionJsonProto = """
       {"sid":"${sid:SID}",
        "ts": ${ts:%d}, 
        "schid": "%s",
@@ -30,7 +26,16 @@ class SessionTest extends BaseSpecWithServer {
         "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
         "tests": ["test1","test2"]
       }
-   """.format(System.currentTimeMillis(), schemaId))
+   """
+}
+
+class SessionTest extends BaseSpecWithServer {
+   
+   import SessionTest._
+   
+   val endpoint = context + "/session"
+   val schemaId = server.schema.get.getId
+   val sessionJson = ParamString(sessionJsonProto.format(System.currentTimeMillis(), schemaId))
 
    "SessionController" should {
 
