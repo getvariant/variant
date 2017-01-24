@@ -55,7 +55,6 @@
 					var cnt = 0;
 					while (queueAsArray.length > 0) {
 						var event = queueAsArray.pop();
-						console.log(variant.url + 'event');
 						$.ajax({
 							url: variant.url + 'event',
 							method: "post",
@@ -87,11 +86,11 @@
 			variant.url = props.url;
 			if (!variant.url.endsWith('/')) variant.url += "/";
 
-                        if (!props.sid)	throw Error("Property 'sid' not	set")
-                        variant.sid = props.sid;
+			if (!props.sid)	throw Error("Property 'sid' not	set")
+			variant.sid = props.sid;
                         
 			if (!props.cid)	throw Error("Property 'cid' not	set")
-                        variant.cid = props.cid;
+			variant.cid = props.cid;
 
 			variant.success = props.success || variant.success;
 			variant.error = props.error || variant.error;
@@ -114,8 +113,8 @@
 	  
 		this.name = name;
 		this.value = value;
-                this.sid = variant.sid + "." + variant.cid;
-                this.ts = Date.now;
+		this.sid = variant.sid + "." + variant.cid;
+		this.ts = Date.now;
 		this.params = params;
 	}
 

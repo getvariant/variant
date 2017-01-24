@@ -37,19 +37,17 @@ mvn clean package -DskipTests
 #
 cd ${workspace_root_dir}/SERVER
 sbt clean dist
-rm -rf tmp
-mkdir tmp
-cd tmp 
-unzip ../target/universal/variant-${version}.zip
-rm -rf variant-${version}/README variant-${version}/share
-mkdir variant-${version}/schemas 
-cp -r ../schemas variant-${version}
-cp ../conf/variant.sh variant-${version}/
-#cp variant-${version}/bin/variant variant-${version}
-#rm -rf variant-${version}/bin
-zip -r ../variant-${version}.zip variant-${version}/ 
-
-exit
+mv target/universal/variant-${version}.zip ${stage_dir}
+cd ${stage_dir}
+unzip variant-${version}.zip
+rm variant-${version}.zip
+cd variant-${version}
+rm -rf README share
+cp -r ${workspace_root_dir}/SERVER/schemas .
+cp ${workspace_root_dir}/SERVER/conf/variant.sh .
+cd ..
+zip -r variant-${version}.zip variant-${version}/
+rm -rf variant-${version}
 
 #
 # JAVA CLIENT
@@ -82,17 +80,17 @@ cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql ${stage_dir
 # PACKAGE
 #
 cd ${stage_dir}
-tar -cvf ${target_dir}/variant-${version}-all.tar * #./*.jar ./*.war ./*.tar
+zip ${target_dir}/variant-${version}-all.zip * #./*.jar ./*.war ./*.zip
 
 #
 # SERVLET DEMO
 # Separate file because WP doesn't take files > 50M
-# Tar up the demo WAR because WP doesn't take WAR files. 
+# Zip up the demo WAR because WP doesn't take WAR files. 
 #
 cd ${workspace_root_dir}/CLIENT-JAVA-SERVLET-DEMO
 mvn clean package -DskipTests
 cd target
-tar -cvf ${target_dir}/variant-${version}-java-servlet-demo.tar petclinic.war
+zip ${target_dir}/variant-${version}-java-servlet-demo.zip petclinic.war
 
 #
 # Javadoc
