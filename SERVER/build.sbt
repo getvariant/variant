@@ -13,6 +13,8 @@ scalaVersion := "2.11.7"
 resolvers += Resolver.mavenLocal
 
 libraryDependencies ++= Seq(
+  
+  // Required by Play!
   jdbc,
   cache,
   ws,
@@ -23,7 +25,10 @@ libraryDependencies ++= Seq(
   // Postgres 9.1 JDBC driver in test
   "postgresql" % "postgresql" % "9.1-901-1.jdbc4" % Test,
   // H2 In mem DB in test 
-  "com.h2database" % "h2"   % "1.4.191"         % Test
+  "com.h2database" % "h2"   % "1.4.191"         % Test,
+  
+  // Need to install CORS filter
+  filters
 )
 
 // Test scoped classpath directory - need this for tests that deploy schema from classpath.

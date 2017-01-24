@@ -18,16 +18,10 @@ import filters.ExampleFilter
  * @param exampleFilter A demonstration filter that adds a header to
  * each response.
  */
-@Singleton
-class Filters @Inject() (
-  env: Environment,
-  exampleFilter: ExampleFilter) extends HttpFilters {
+import javax.inject.Inject
 
-  override val filters = {
-    // Use the example filter if we're running development mode. If
-    // we're running in production or test mode then don't use any
-    // filters at all.
-    if (env.mode == Mode.Dev) Seq(exampleFilter) else Seq.empty
-  }
+import play.api.http.DefaultHttpFilters
+import play.filters.cors.CORSFilter
 
-}
+class Filters @Inject() (corsFilter: CORSFilter)
+  extends DefaultHttpFilters(corsFilter)
