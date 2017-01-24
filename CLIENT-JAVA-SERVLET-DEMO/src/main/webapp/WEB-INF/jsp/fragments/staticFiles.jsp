@@ -36,17 +36,20 @@ PetClinic :: a Spring Framework demonstration
     <script src="http://getvariant.com/js/variant-0.7.0.js"></script>
 
     <%@ page import="com.variant.client.StateRequest" %>
+    <%@ page import="com.variant.client.Session" %>
     <%@ page import="com.variant.client.servlet.VariantFilter" %>
     <%
         // If we're on an instrumented page VariantFilter has put the current state request in http request.
         StateRequest varRequest = (StateRequest)request.getAttribute(VariantFilter.VARIANT_REQUEST_ATTRIBUTE_NAME);
         if (varRequest != null) {
-           String varSvrEndpointUrl = varRequest.getSession().getConfig().getString("server.url");
+           Session varSession = varRequest.getSession();
     %>
 
 	    <script>
 	 		variant.boot({
-	   			url:"<%=varSvrEndpointUrl%>",
+	   			url:"<%=varSession.getConfig().getString("server.url")%>",
+	   			sid:"<%=varSession.getId()%>",
+               cid:"<%=varSession.getConnection().getId()%>",
 	   			success: function(data, textStatus) {
 	   				console.log("POST returned status '" + textStatus + "' and body '" + data + "'");}
 			});

@@ -24,6 +24,15 @@ public interface Connection {
 	VariantClient getClient();
 
 	/**
+     * <p>This connection's unique ID. 
+     *  
+	 * @return Connection ID.
+	 *
+	 * @since 0.7
+	 */
+	String getId();
+
+	/**
 	 * Get or create caller's current Variant session. If the session ID exists in the underlying implementation 
 	 * of {@link SessionIdTracker} and the session with this session ID has not expired on the server,
 	 * this session is returned. Otherwise, a new session is created. If the session has not expired but the 

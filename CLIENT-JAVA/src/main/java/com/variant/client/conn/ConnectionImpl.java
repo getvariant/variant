@@ -225,6 +225,13 @@ public class ConnectionImpl implements Connection {
 	/**
 	 */
 	@Override
+	public String getId() {
+		return id;
+	}
+
+	/**
+	 */
+	@Override
 	public VariantClient getClient() {
 		preChecks();
 		return client;
@@ -277,12 +284,6 @@ public class ConnectionImpl implements Connection {
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
-
-	/**
-	 */
-	public String getId() {
-		return id;
-	}
 
 	/**
 	 */

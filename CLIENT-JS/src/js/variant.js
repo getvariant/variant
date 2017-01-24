@@ -7,6 +7,8 @@
 	if (typeof window.variant === "undefined") {
 		window.variant = {
 			url: null,
+			sid: null,
+			cid: null,
 			success: function() {},
 			error: function(jqXHR) {
 				throw Error(
@@ -53,11 +55,12 @@
 					var cnt = 0;
 					while (queueAsArray.length > 0) {
 						var event = queueAsArray.pop();
+						console.log(variant.url + 'event');
 						$.ajax({
-							url: variant.url + '/event',
+							url: variant.url + 'event',
 							method: "post",
 							data: JSON.stringify(event),
-							contentType: "application/json; charset=utf-8",
+							contentType: "text/plain",
 							success: variant.success,
 							error: variant.error
 						});
@@ -76,12 +79,20 @@
 	 */
 	variant.boot = function(props) {
 		
-		if (booted) throw Error("Variant.js is already booted.");
+		if (booted) throw Error("Variant.JS is already booted.");
 		
 		if (arguments.length != 0) {
 			
-			variant.url = props.url || variant.url;
+			if (!props.url) throw Error("Property 'url' not set") 
+			variant.url = props.url;
 			if (!variant.url.endsWith('/')) variant.url += "/";
+
+                        if (!props.sid)	throw Error("Property 'sid' not	set")
+                        variant.sid = props.sid;
+                        
+			if (!props.cid)	throw Error("Property 'cid' not	set")
+                        variant.cid = props.cid;
+
 			variant.success = props.success || variant.success;
 			variant.error = props.error || variant.error;
 		}
@@ -103,11 +114,9 @@
 	  
 		this.name = name;
 		this.value = value;
+                this.sid = variant.sid + "." + variant.cid;
+                this.ts = Date.now;
 		this.params = params;
-		this.sid = (function() { 
-			var i = document.cookie.indexOf("variant-ssnid");
-			return i < 0 ? null : document.cookie.substring(i+14,i+30);
-		})();
 	}
 
 	/**
@@ -115,7 +124,7 @@
 	 */
 	variant.Event.prototype.send = function() {
 		if (!webStorage) return;
-		if (!booted) throw Error("Variant.js is not booted.  Call variant.boot() first.")
+		if (!booted) throw Error("Variant.JS is not booted.  Call variant.boot() first.")
 		eventQueue.push(this);
 	}
 

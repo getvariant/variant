@@ -50,6 +50,11 @@ public class ServletConnectionImpl implements VariantServletConnection {
 	}
 	
 	@Override
+	public String getId() {
+		return bareConnection.getId();
+	}
+
+	@Override
 	public void close() {
 		bareConnection.close();
 	}
