@@ -9,25 +9,25 @@ import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
-import com.variant.client.servlet.VariantServletSession;
-import com.variant.client.servlet.VariantServletStateRequest;
+import com.variant.client.servlet.ServletSession;
+import com.variant.client.servlet.ServletStateRequest;
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
 /**
- * <p>The implementation of {@link VariantServletSession}.
+ * <p>The implementation of {@link ServletSession}.
  * Replaces bare client's {@link VariantCoreSession#targetForState(com.variant.core.xdm.State)} 
  * method with one, which returns the servlet-aware implementation of {@link VariantCoreStateRequest}. 
  * 
  * @author Igor Urisman
  * @since 0.6
  */
-public class ServletSessionImpl implements VariantServletSession {
+public class ServletSessionImpl implements ServletSession {
 
 	private final Connection wrapConnection;
 	private final Session bareSession;
-	private VariantServletStateRequest wrapStateRequest;
+	private ServletStateRequest wrapStateRequest;
 
 	/**
 	 * 
@@ -40,7 +40,7 @@ public class ServletSessionImpl implements VariantServletSession {
 	}
 
 	@Override
-	public VariantServletStateRequest targetForState(State state) {
+	public ServletStateRequest targetForState(State state) {
 		wrapStateRequest = new ServletStateRequestImpl(this, bareSession.targetForState(state));
 		return wrapStateRequest;
 	}

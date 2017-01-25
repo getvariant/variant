@@ -93,10 +93,10 @@ import com.variant.core.schema.State;
  * 
  * <p>If the requested path corresponds to an instrumented state, the session (obtained from 
  * Variant client servlet adapter by calling {@link VariantServletClient#getOrCreateSession(HttpServletRequest)}) 
- * is targeted for this state with {@link VariantServletSession#targetForState(State)}. The resulting
- * {@link VariantServletStateRequest} object contains information about the outcome of the targeting
+ * is targeted for this state with {@link ServletSession#targetForState(State)}. The resulting
+ * {@link ServletStateRequest} object contains information about the outcome of the targeting
  * operation, including the resulting variant and the resolved state parameters. This 
- * {@link VariantServletStateRequest} object is added to the current {@link HttpServletRequest} as
+ * {@link ServletStateRequest} object is added to the current {@link HttpServletRequest} as
  * an attribute named {@link #VARIANT_REQUEST_ATTRIBUTE_NAME}, should the downstream application code 
  * wish to extend the semantics, e.g. trigger a custom {@link VariantEvent}.  
  * 
@@ -122,7 +122,7 @@ public class VariantFilter implements Filter {
 	private static final Logger LOG = LoggerFactory.getLogger(VariantFilter.class);
 	
 	private VariantServletClient client;
-	private VariantServletConnection connection;
+	private ServletConnection connection;
 	private Schema schema;
 	
 	//---------------------------------------------------------------------------------------------//
@@ -157,8 +157,8 @@ public class VariantFilter implements Filter {
 		
 		HttpServletRequest httpRequest = (HttpServletRequest) request;
 		HttpServletResponse httpResponse = (HttpServletResponse) response;
-		VariantServletSession variantSsn = null; 
-		VariantServletStateRequest stateRequest = null;
+		ServletSession variantSsn = null; 
+		ServletStateRequest stateRequest = null;
 		
 		long start = System.currentTimeMillis();
 

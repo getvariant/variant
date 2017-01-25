@@ -23,13 +23,13 @@ public interface VariantServletClient extends VariantClient {
 	/**
 	 * Override VariantClient's method with the servlet-aware return type..
 	 * 	 *        
-	 * @return An instance of the {@link VariantServletConnection} type.
+	 * @return An instance of the {@link ServletConnection} type.
 	 * 
 	 * @see VariantClient#getConnection(String)
 	 * @since 0.7
 	 */
 	@Override
-	public VariantServletConnection getConnection(String url);
+	public ServletConnection getConnection(String url);
 
 	/**
 	 * Factory class: call <code>getInstance()</code> to obtain a new instance of {@link VariantServletClient}.

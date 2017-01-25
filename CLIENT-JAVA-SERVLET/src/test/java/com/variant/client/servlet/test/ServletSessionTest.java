@@ -20,9 +20,9 @@ import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.servlet.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.TargetingTrackerHttpCookie;
 import com.variant.client.servlet.VariantServletClient;
-import com.variant.client.servlet.VariantServletConnection;
-import com.variant.client.servlet.VariantServletSession;
-import com.variant.client.servlet.VariantServletStateRequest;
+import com.variant.client.servlet.ServletConnection;
+import com.variant.client.servlet.ServletSession;
+import com.variant.client.servlet.ServletStateRequest;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -43,19 +43,19 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void getSessionNoTrackerTest() throws Exception {
 		
-		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
+		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
+		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
 		
 		// Servlet signatures
 		final HttpServletRequest httpReq = mockHttpServletRequest();
 		
-		VariantServletSession ssn1 = conn.getSession(httpReq);
+		ServletSession ssn1 = conn.getSession(httpReq);
 		assertNull(ssn1);
 		
 		ssn1 = conn.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 
-		VariantServletSession ssn2 = conn.getSession(httpReq);
+		ServletSession ssn2 = conn.getSession(httpReq);
 		assertNull(ssn2);
 		
 		ssn2 = conn.getOrCreateSession(httpReq);
@@ -94,8 +94,8 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void getSessionWithTrackerTest() throws Exception {
 
-		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
+		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
+		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
 
 		// Servlet signatures
 		String sid = newSid();
@@ -107,7 +107,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		ssn1 = conn.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 
-		VariantServletSession ssn2 = conn.getSession(httpReq);
+		ServletSession ssn2 = conn.getSession(httpReq);
 		assertNotNull(ssn2);  // ID in tracker => session already created by previous call.
 		
 		ssn2 = conn.getOrCreateSession(httpReq);
@@ -153,8 +153,8 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void fullStateRequestNoIdTracker() throws Exception {
 		
-		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
+		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
+		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
 		
 		Schema schema = conn.getSchema();
 		assertNotNull(schema);
@@ -162,7 +162,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		HttpServletRequest httpReq = mockHttpServletRequest();
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		VariantServletSession ssn1 = conn.getOrCreateSession(httpReq);
+		ServletSession ssn1 = conn.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 		assertNotNull(ssn1.getId());
 		assertEquals(conn, ssn1.getConnection());
@@ -171,11 +171,11 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		assertEquals(0, ssn1.getTraversedTests().size());
 		assertEquals(0, httpResp.getCookies().length);
 		
-		VariantServletSession ssn2 = conn.getOrCreateSession(httpReq);
+		ServletSession ssn2 = conn.getOrCreateSession(httpReq);
 		assertNotEquals(ssn1, ssn2);  // getSession is not idempotent, until committed.  
 		
 		State state1 = schema.getState("state1");		
-		VariantServletStateRequest varReq = ssn2.targetForState(state1);
+		ServletStateRequest varReq = ssn2.targetForState(state1);
 		assertEquals(state1, varReq.getState());
 		assertEquals(varReq, ssn2.getStateRequest());
 		assertEqualAsSets(
@@ -211,7 +211,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 		// Commit should have saved the session.
 		httpReq = mockHttpServletRequest(httpResp);
-		VariantServletSession ssn3 = conn.getSession(httpReq);
+		ServletSession ssn3 = conn.getSession(httpReq);
 		assertTrue(varReq.isCommitted());
 		assertEquals(ssn3, ssn2);
 		assertEqualAsSets(
@@ -235,8 +235,8 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void fullStateRequestWithIdTracker() throws Exception {
 		
-		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
+		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
+		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
 		
 		Schema schema = conn.getSchema();
 		assertNotNull(schema);
@@ -245,7 +245,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		HttpServletRequest httpReq = mockHttpServletRequest(sid);
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		VariantServletSession ssn1 = conn.getSession(httpReq);
+		ServletSession ssn1 = conn.getSession(httpReq);
 		assertNull(ssn1);
 
 		ssn1 = conn.getOrCreateSession(httpReq);
@@ -277,7 +277,7 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		
 		// Create a new HTTP request with the same VRNT-SSNID cookie.  Should fetch the same bare session.
 		HttpServletRequest httpReq2 = mockHttpServletRequest(sid);
-		VariantServletSession ssn2 = conn.getSession(httpReq2);
+		ServletSession ssn2 = conn.getSession(httpReq2);
 		assertEquals(ssn2, varReq.getSession());
 		assertEquals(ssn2.getStateRequest(), varReq);
 		assertEqualAsSets(
@@ -297,8 +297,8 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void cookieForgedTest() throws Exception {
 		
-		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
+		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
+		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
 		
 		Schema schema = conn.getSchema();
 		assertNotNull(schema);
@@ -308,16 +308,16 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		
 		// Request 1: new session.
 		HttpServletRequest httpReq = mockHttpServletRequest();
-		VariantServletSession ssn1 = conn.getOrCreateSession(httpReq);
+		ServletSession ssn1 = conn.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 		String sid1 = ssn1.getId();
-		VariantServletStateRequest req = ssn1.targetForState(state3);
+		ServletStateRequest req = ssn1.targetForState(state3);
 		HttpServletResponseMock resp = mockHttpServletResponse();
 		req.commit(resp);
 		
 		// Request 2: Same SID from cookie.
 		httpReq = mockHttpServletRequest(resp);
-		VariantServletSession ssn2 = conn.getSession(httpReq);
+		ServletSession ssn2 = conn.getSession(httpReq);
 		assertEquals(ssn1, ssn2);
 		assertEquals(sid1, ssn2.getId());
 		
@@ -345,8 +345,8 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void connClosedTest() throws Exception {
 		
-		final VariantServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(VariantServletConnection.Status.OPEN, conn.getStatus());
+		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
+		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
 
 		Schema schema = conn.getSchema();
 		assertNotNull(schema);
@@ -356,14 +356,14 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 		String sid1 = newSid();
 		HttpServletRequest httpReq1 = mockHttpServletRequest(sid1);
-		VariantServletSession ssn1 = conn.getOrCreateSession(httpReq1);
+		ServletSession ssn1 = conn.getOrCreateSession(httpReq1);
 		assertNotNull(ssn1);
-		final VariantServletStateRequest varReq1 = ssn1.targetForState(state2);
+		final ServletStateRequest varReq1 = ssn1.targetForState(state2);
 		final HttpServletResponseMock resp1 = mockHttpServletResponse();
 		
 		String sid2 = newSid();
 		HttpServletRequest httpReq2 = mockHttpServletRequest(sid2);
-		final VariantServletSession ssn2 = conn.getOrCreateSession(httpReq2);
+		final ServletSession ssn2 = conn.getOrCreateSession(httpReq2);
 		assertNotNull(ssn2);
 
 		conn.close();

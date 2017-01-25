@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.variant.client.ClientException;
 import com.variant.client.StateRequest;
-import com.variant.client.servlet.VariantServletSession;
-import com.variant.client.servlet.VariantServletStateRequest;
+import com.variant.client.servlet.ServletSession;
+import com.variant.client.servlet.ServletStateRequest;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
@@ -18,7 +18,7 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * <p>The implementation of {@link VariantServletStateRequest}.
+ * <p>The implementation of {@link ServletStateRequest}.
  * Replaces bare client's {@link VariantCoreStateRequest#commit(Object...)} with the
  * servlet-aware signature {@link #commit(HttpServletResponse)}. 
  * 
@@ -26,16 +26,16 @@ import com.variant.core.schema.Test.Experience;
  * @since 0.6
  */
 
-public class ServletStateRequestImpl implements VariantServletStateRequest {
+public class ServletStateRequestImpl implements ServletStateRequest {
 
 	private StateRequest bareRequest;
-	private VariantServletSession wrapSession;
+	private ServletSession wrapSession;
 	
 	// ---------------------------------------------------------------------------------------------//
 	//                                      PUBLIC AUGMENTED                                        //
 	// ---------------------------------------------------------------------------------------------//
 
-	public ServletStateRequestImpl(VariantServletSession wrapSession, StateRequest bareRequest) {
+	public ServletStateRequestImpl(ServletSession wrapSession, StateRequest bareRequest) {
 		
 		if (bareRequest == null) throw new ClientException.Internal("Bare state request cannot be null");
 		if (wrapSession == null) throw new ClientException.Internal("Servlet session cannot be null");
@@ -54,7 +54,7 @@ public class ServletStateRequestImpl implements VariantServletStateRequest {
 	}
 
 	@Override
-	public VariantServletSession getSession() {
+	public ServletSession getSession() {
 		return wrapSession;
 	}
 

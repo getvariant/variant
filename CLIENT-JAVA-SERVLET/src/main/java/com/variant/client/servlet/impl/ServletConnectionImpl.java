@@ -8,11 +8,11 @@ import com.variant.client.Session;
 import com.variant.client.VariantClient;
 import com.variant.client.servlet.ServletClientException;
 import com.variant.client.servlet.VariantServletClient;
-import com.variant.client.servlet.VariantServletConnection;
-import com.variant.client.servlet.VariantServletSession;
+import com.variant.client.servlet.ServletConnection;
+import com.variant.client.servlet.ServletSession;
 import com.variant.core.schema.Schema;
 
-public class ServletConnectionImpl implements VariantServletConnection {
+public class ServletConnectionImpl implements ServletConnection {
 
 	private static final String ATTR_NAME = "variant-wrap-session";
 	private final VariantServletClient wrapClient;
@@ -70,13 +70,13 @@ public class ServletConnectionImpl implements VariantServletConnection {
 	}
 
 	@Override
-	public VariantServletSession getOrCreateSession(Object... userData) {
+	public ServletSession getOrCreateSession(Object... userData) {
 		if (userData.length != 1 || !(userData[0] instanceof HttpServletRequest)) 
 			throw new ServletClientException("User data must have one element of type HttpServletRequest");
 		return getOrCreateSession((HttpServletRequest) userData[0]);
 	}
 
-	public VariantServletSession getOrCreateSession(HttpServletRequest req) {
+	public ServletSession getOrCreateSession(HttpServletRequest req) {
 		return wrap(bareConnection.getOrCreateSession(req));
 	}
 
@@ -86,18 +86,18 @@ public class ServletConnectionImpl implements VariantServletConnection {
 	}
 
 	@Override
-	public VariantServletSession getSession(Object... userData) {
+	public ServletSession getSession(Object... userData) {
 		if (userData.length != 1 || !(userData[0] instanceof HttpServletRequest)) 
 			throw new ServletClientException("User data must have one element of type HttpServletRequest");
 		return getSession((HttpServletRequest) userData[0]);
 	}
 
-	public VariantServletSession getSession(HttpServletRequest req) {
+	public ServletSession getSession(HttpServletRequest req) {
 		return wrap(bareConnection.getSession(req));
 	}
 
 	@Override
-	public VariantServletSession getSessionById(String sid) {
+	public ServletSession getSessionById(String sid) {
 		return wrap(bareConnection.getSessionById(sid));
 	}
 

@@ -8,29 +8,29 @@ import com.variant.core.schema.State;
 /**
  * <p>Servlet-aware wrapper around bare client's implementation of{@link Connection}. 
  * Overrides the {@link VariantCoreSession#targetForState(State)} method to return the servlet-aware
- * state request {@link VariantServletStateRequest}. 
+ * state request {@link ServletStateRequest}. 
  * 
  * @author Igor Urisman
  * @since 0.7
  */
 
-public interface VariantServletConnection extends Connection {
+public interface ServletConnection extends Connection {
 	
 	// Narrow return type of inherited methods
 	@Override
-	VariantServletSession getOrCreateSession(Object... userData);
+	ServletSession getOrCreateSession(Object... userData);
 
 	@Override
-	VariantServletSession getSession(Object... userData);
+	ServletSession getSession(Object... userData);
 
 	@Override
-	VariantServletSession getSessionById(String sessionId);
+	ServletSession getSessionById(String sessionId);
 
 	// New methods with servlet-aware signatures.
 	// Inherited methods will delegate to one of these.
 
-	VariantServletSession getOrCreateSession(HttpServletRequest req);
+	ServletSession getOrCreateSession(HttpServletRequest req);
 	
-	VariantServletSession getSession(HttpServletRequest req);
+	ServletSession getSession(HttpServletRequest req);
 	
 }

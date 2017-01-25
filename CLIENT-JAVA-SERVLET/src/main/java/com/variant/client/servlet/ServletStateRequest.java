@@ -12,7 +12,7 @@ import com.variant.client.StateRequest;
  * @since 0.6
  */
 
-public interface VariantServletStateRequest extends StateRequest {
+public interface ServletStateRequest extends StateRequest {
 	
 	/**
 	 * Environment bound version of of the bare client's {@link #commit(Object...)}.
