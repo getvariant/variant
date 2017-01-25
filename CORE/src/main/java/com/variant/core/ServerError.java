@@ -1,8 +1,7 @@
-package com.variant.core.exception;
+package com.variant.core;
 
 import java.lang.reflect.Field;
 
-import com.variant.core.UserError;
 import com.variant.core.util.VariantReflectUtils;
 
 

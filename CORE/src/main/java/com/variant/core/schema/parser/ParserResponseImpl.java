@@ -6,9 +6,9 @@ import java.util.List;
 
 import static com.variant.core.schema.parser.ParserError.*;
 
+import com.variant.core.CommonError;
 import com.variant.core.UserError;
 import com.variant.core.UserError.Severity;
-import com.variant.core.exception.CommonError;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;

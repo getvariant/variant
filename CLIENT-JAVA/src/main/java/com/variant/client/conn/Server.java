@@ -17,8 +17,8 @@ import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpRemoter;
 import com.variant.client.net.http.HttpResponse;
+import com.variant.core.ServerError;
 import com.variant.core.VariantEvent;
-import com.variant.core.exception.ServerError;
 import com.variant.core.impl.VariantEventSupport;
 import com.variant.core.session.CoreSession;
 

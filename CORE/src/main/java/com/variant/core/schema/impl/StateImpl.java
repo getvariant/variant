@@ -1,13 +1,13 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.exception.CommonError.STATE_NOT_INSTRUMENTED_BY_TEST;
+import static com.variant.core.CommonError.STATE_NOT_INSTRUMENTED_BY_TEST;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.exception.CoreException;
+import com.variant.core.CoreException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;

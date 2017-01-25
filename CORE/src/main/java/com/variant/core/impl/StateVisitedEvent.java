@@ -3,7 +3,7 @@ package com.variant.core.impl;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.variant.core.exception.CoreException;
+import com.variant.core.CoreException;
 import com.variant.core.schema.State;
 import com.variant.core.session.CoreSession;
 

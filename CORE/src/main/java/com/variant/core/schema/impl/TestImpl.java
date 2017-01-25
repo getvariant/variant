@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import com.variant.core.exception.CoreException;
+import com.variant.core.CoreException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;

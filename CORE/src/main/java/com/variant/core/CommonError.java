@@ -1,6 +1,5 @@
-package com.variant.core.exception;
+package com.variant.core;
 
-import com.variant.core.UserError;
 
 
 /**

@@ -47,7 +47,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.variant.core.exception.CoreException;
+import com.variant.core.CoreException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;

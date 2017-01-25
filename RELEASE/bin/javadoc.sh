@@ -23,7 +23,6 @@ javadoc -d ${javadoc_dir}  \
    -header "<a onclick=\"window.top.location.href='http://getvariant.com/docs';\" href=\"#\"><img src=\"http://getvariant.com/wp-content/uploads/2016/05/VariantLogoSmall.png\"/></a>" \
    -bottom "Release $version. Updated $(date +"%d %b %y").<br/> Copyright &copy; 2017 Variant" \
    com.variant.core                   \
-   com.variant.core.exception         \
    com.variant.core.schema            \
    com.variant.client                 \
    com.variant.client.servlet         \

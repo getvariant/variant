@@ -8,8 +8,8 @@ import static com.variant.core.schema.parser.ParserError.META_UNSUPPORTED_PROPER
 
 import java.util.Map;
 
+import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
-import com.variant.core.exception.CoreException;
 import com.variant.core.schema.impl.SchemaImpl;
 
 /**

@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import com.variant.core.exception.CommonError;
-import com.variant.core.exception.CoreException;
+import com.variant.core.CommonError;
+import com.variant.core.CoreException;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;

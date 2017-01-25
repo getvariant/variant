@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.client.ClientException;
 import com.variant.client.impl.ClientInternalError;
-import com.variant.core.exception.ServerError;
+import com.variant.core.ServerError;
 
 public class HttpResponse {
 

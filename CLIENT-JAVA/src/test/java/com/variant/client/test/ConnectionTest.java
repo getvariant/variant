@@ -10,7 +10,7 @@ import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
-import com.variant.core.exception.ServerError;
+import com.variant.core.ServerError;
 
 public class ConnectionTest extends ClientBaseTestWithServer {
 	

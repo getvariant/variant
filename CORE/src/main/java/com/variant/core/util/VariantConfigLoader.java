@@ -1,8 +1,8 @@
 package com.variant.core.util;
 
-import static com.variant.core.exception.CommonError.CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
-import static com.variant.core.exception.CommonError.CONFIG_FILE_NOT_FOUND;
-import static com.variant.core.exception.CommonError.CONFIG_RESOURCE_NOT_FOUND;
+import static com.variant.core.CommonError.CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
+import static com.variant.core.CommonError.CONFIG_FILE_NOT_FOUND;
+import static com.variant.core.CommonError.CONFIG_RESOURCE_NOT_FOUND;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.variant.core.exception.CoreException;
+import com.variant.core.CoreException;
 import com.variant.core.util.Tuples.Pair;
 
 /**

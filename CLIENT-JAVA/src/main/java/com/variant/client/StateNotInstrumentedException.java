@@ -1,7 +1,7 @@
 package com.variant.client;
 
-import com.variant.core.exception.CommonError;
-import com.variant.core.exception.CoreException;
+import com.variant.core.CommonError;
+import com.variant.core.CoreException;
 
 /**
  * Thrown when the underlying connection has been closed.

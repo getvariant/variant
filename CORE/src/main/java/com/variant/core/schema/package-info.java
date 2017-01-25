@@ -1,5 +1,5 @@
 /**
- * <p>Classes representing objects in Variant Experiment Schema.
+ * <p>Publicly accessible classes modeling the Variant XDM Schema.
  *
  * @since 0.5
  */
