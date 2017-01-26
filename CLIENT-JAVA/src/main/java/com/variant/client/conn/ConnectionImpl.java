@@ -1,9 +1,9 @@
 package com.variant.client.conn;
 
-import static com.variant.client.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
-import static com.variant.client.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
 import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
+import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
+import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
 
 import java.util.Random;
 

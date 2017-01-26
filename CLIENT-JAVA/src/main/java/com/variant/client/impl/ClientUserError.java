@@ -1,9 +1,16 @@
-package com.variant.client;
+package com.variant.client.impl;
 
 import com.variant.core.CommonError;
+import com.variant.core.ServerError;
 
 /**
- * Variant exceptions, emitted by the client code in response to a user error.
+ * <p>User error emitted by the client and originating on the client. 
+ * 
+ * @see CommonError
+ * @see ServerError
+ * 
+ * @author Igor Urisman
+ * @since 0.7
  */
 public class ClientUserError extends CommonError {
 	

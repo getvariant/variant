@@ -4,7 +4,7 @@ import com.variant.core.CommonError;
 import com.variant.core.CoreException;
 
 /**
- * Thrown when the underlying connection has been closed.
+ * Thrown when a user operation requests an unavailable combination of state and test.
  * 
  * @author Igor Urisman
  * @since 0.7

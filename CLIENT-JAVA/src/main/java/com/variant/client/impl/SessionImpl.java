@@ -1,6 +1,6 @@
 package com.variant.client.impl;
 
-import static com.variant.client.ClientUserError.ACTIVE_REQUEST;
+import static com.variant.client.impl.ClientUserError.ACTIVE_REQUEST;
 
 import java.util.ArrayList;
 import java.util.Collection;

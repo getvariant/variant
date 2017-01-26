@@ -30,8 +30,7 @@ public class ClientException extends VariantException {
 	}
 	
 	/**
-	 * Client internal exceptions. 
-	 * These are not the result of an invalid user action, but an internal bug.
+	 * Variant client internal exception, caused by internal problem, most likely a bug.
 	 * 
 	 * @since 0.7
 	 */
@@ -56,8 +55,7 @@ public class ClientException extends VariantException {
 	}
 	
 	/**
-	 * Client User exceptions. 
-	 * These are the result of an invalid user action.
+	 * Variant client user exceptions, thrown in response to an invalid user action.
 	 * 
 	 * @since 0.7
 	 */

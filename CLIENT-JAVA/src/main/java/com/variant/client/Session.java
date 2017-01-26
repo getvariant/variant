@@ -10,28 +10,38 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
 /**
- * <p>Represents a Variant user session. Variant has its own notion of user session, 
- *    independent from that of the host application's. Variant session provides a way to 
- *    identify the user across multiple state requests and contains session-scoped application 
- *    state that must be preserved between state requests. Variant server acts as the session 
- *    store by maintaining a map of user session objects keyed by session ID.
- *    Variant maintains its own session, rather than relying on the host application's, 
- *    because it is frequently desirable for Variant session to survive the destruction 
- *    of the host application's session.
+ * <p>Represents a Variant user session. Provides a way to 
+ * identify a user across multiple state requests and contains session-scoped application 
+ * state that must be preserved between state requests. Variant server acts as the session 
+ * store by maintaining a map of user session objects keyed by session ID.
  * 
+ * <p>Variant maintains its own session, instead of 
+ * relying on the host application's native session, because 1) some host environments 
+ * won't have the notion of a native session; and 2) it is frequently 
+ * desirable for a Variant session to survive the destruction of the host application's session. 
+ * For example, if the host application is a Web application, 
+ * it natively relies on the HTTP session, provided to it by a Web container, like Tomcat. 
+ * If a Variant experiment starts on a public page and continues past the login page, 
+ * it is possible (in fact, quite likely) that the host application will recreate the 
+ * underlying HTTP session upon login. If Variant session were somehow bound to the HTTP session, 
+ * it would not be able to span states on the opposite side of the login page. 
+ * But because Variant manages its own session, the fate of the host application's HTTP session 
+ * is irrelevant, enabling Variant to instrument experiments that start by an unknown 
+ * user and end by an authenticated one or vice versa.
+ *    
  * <p> Variant session expires when either a configurable session timeout period of inactivity,
- *     or after a schema redeployment. Once the session represented by this object has expired,
+ *     or after a schema re-deployment. Once the session represented a Session object has expired,
  *     all subsequent operations on it, apart from {@code getId()} and {@code isExpired()} will throw 
- *     {@link VariantRuntimeUserErrorException}.
+ *     a {@link SessionExpiredException}.
  *
  * @author Igor Urisman
- * @since 0.6
+ * @since 0.5
  *
  */
 public interface Session {
 
 	/**
-     * <p>Session ID. 
+     * <p>This session's ID. 
      *  
 	 * @return Session ID.  
 	 *
@@ -40,7 +50,7 @@ public interface Session {
 	String getId();
 
 	/**
-     * <p>This session's creation timestamp as the Epoch time. 
+     * <p>This session's creation date. 
      *  
 	 * @return Creation timestamp.
 	 *
@@ -49,7 +59,7 @@ public interface Session {
 	public Date getCreateDate();
 
 	/**
-     * <p>Target session for a state. 
+     * <p>Target this session for a state. 
      *  
 	 * @return An instance of the {@link StateRequest} object, which
 	 *         may be further examined for more information about the outcome of this operation.  
@@ -69,9 +79,9 @@ public interface Session {
 	public Connection getConnection();
 	
 	/**
-	 * Externally supplied configuration.
+	 * Externally supplied configuration. A shortcut for {@code getConnection().getClient().getConfig()}
 	 * See https://github.com/typesafehub/config for details on Typesafe Config.
-	 * A shortcut for {@code getConnection().getClient().getConfig()}
+	 * 
 	 * @return An instance of the {@link Config} type.
 	 * 
 	 * @since 0.7
@@ -90,10 +100,10 @@ public interface Session {
 
 	/**
 	 * <p> The collection of states, traversed by this session so far, and their respective visit counts. 
-	 *     For each state S, the traversal count in incremented by one whenever all of the following conditions are met: 
+	 *     For each state S, the visit count in incremented by one whenever all of the following conditions are met: 
      * <ul> 
      * <li>The session is targeted for the state S</li>
-     * <li>There exists a test T, which a) instruments state S, b) is not OFF, and c) this session qualified for.</li>
+     * <li>There exists a test T, which a) is instrumented on state S, b) is not OFF, and c) this session qualified for.</li>
      * </ul>
 
 	 * 
@@ -121,7 +131,7 @@ public interface Session {
 	public Set<Test> getDisqualifiedTests();
 		
 	/**
-	 * <p>Get most recent state request, which may be still in progress or already committed.
+	 * <p>The most recent state request, which may be still in progress or already committed.
 	 * 
 	 * @return An object of type {@link VariantCoreStateRequest}, or null, if none yet for this
 	 *         session.
@@ -133,16 +143,16 @@ public interface Session {
 	/**
 	 * Trigger a custom event.
 	 * 
-	 * @param An implementation of {@link VariantEvent} which represents the custom event to be triggered.
+	 * @param An implementation of {@link VariantEvent}, which represents the custom event to be triggered.
 	 * @since 0.7
 	 */
 	public void triggerEvent(VariantEvent event);
 		
 	/**
-	 * <p>Indicates whether this session has expired. A session expires either after it has
-	 * been inactive for the period of time configured by the {@code session.timeout.secs}
-	 * system property, or after the schema which was in effect during its creation, has 
-	 * been undeployed.
+	 * <p>Indicates whether this session has expired. A session is expired by the server
+	 * either after it has
+	 * been inactive for the period of time configured by the {@code session.timeout}
+	 * config key, or after the underlying {@link Connection} is closed.
 	 * 
 	 * @return true if this session has expired or false otherwise.
 	 * @since 0.6
@@ -153,7 +163,7 @@ public interface Session {
 	 * <p>Set a session-scoped attribute. Session-scoped attributes are client-local and are not
 	 * replicated to the server. Consequently, another client will not see these attributes.
 	 * 
-	 * @return The string, previously associated with this attribute, or null if none.
+	 * @return The object previously associated with this attribute, or null if none.
 	 * @since 0.6
 	 */
 	public Object setAttribute(String name, Object value);

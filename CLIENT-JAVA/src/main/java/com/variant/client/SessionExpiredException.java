@@ -1,8 +1,10 @@
 package com.variant.client;
 
+import com.variant.client.impl.ClientUserError;
+
 
 /**
- * Thrown when the underlying session has expired, but not the connection.
+ * Thrown when the underlying Variant session has expired, but the connection which opened this session is still usable.
  * 
  * @author Igor Urisman
  * @since 0.7

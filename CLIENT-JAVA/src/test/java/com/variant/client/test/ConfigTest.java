@@ -6,8 +6,8 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.typesafe.config.Config;
-import com.variant.client.ClientUserError;
 import com.variant.client.VariantClient;
+import com.variant.client.impl.ClientUserError;
 
 public class ConfigTest extends ClientBaseTest {
 

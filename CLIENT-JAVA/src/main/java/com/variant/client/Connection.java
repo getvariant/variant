@@ -5,8 +5,11 @@ import com.variant.core.schema.Schema;
 
 
 /**
- * A connection to the server. 
- * Not thread safe, avoid sharing a connection object between threads.
+ * <p>A connection to Variant server. The first operation a new Variant client instance must
+ * do is to connect to a particular schema on a Variant server, whose URL is provided by the
+ * {@link ConfigKeys#SERVER_URL} config key.
+ * 
+ * <p>Not thread safe, avoid sharing a connection object between threads.
  * 
  * @author Igor Urisman
  * @since 0.7
@@ -14,10 +17,10 @@ import com.variant.core.schema.Schema;
 public interface Connection {
 	
 	/**
-     * <p>The Variant client instance that created this connection. 
+     * <p>The Variant client instance, which created this connection. 
      *  
 	 * @return An instance of the {@link VariantClient} object, which originally created this object
-	 *         via {@link VariantClient#getSession(Object...)}.
+	 *         via one of the {@code getSession()} calls.
 	 *
 	 * @since 0.7
 	 */
@@ -35,34 +38,33 @@ public interface Connection {
 	/**
 	 * Get or create caller's current Variant session. If the session ID exists in the underlying implementation 
 	 * of {@link SessionIdTracker} and the session with this session ID has not expired on the server,
-	 * this session is returned. Otherwise, a new session is created. If the session has not expired but the 
-	 * schema has changed since it was created, this call will throw an unchecked 
-	 * {@link VariantSchemaModifiedException}.
+	 * this session is returned. Otherwise, a new session is created.
 	 * 
 	 * 
-	 * @param userData An array of zero or more opaque objects which will be passed without interpretation
-	 *                 to the implementations of {@link SessionIdTracker#init(VariantInitParams, Object...)}
-	 *                 and {@link TargetingTracker#init(VariantInitParams, Object...)}.
+	 * @param userData An array of zero or more opaque objects which will be passed, without interpretation,
+	 *                 to the implementations of {@link SessionIdTracker#init(Connection, Object...)}
+	 *                 and {@link TargetingTracker#init(Connection, Object...)}.
      *
 	 * @since 0.7
-	 * @return An object of type {@link Session}. This call is guaranteed to be idempotent, i.e. a subsequent
+	 * @return An object of type {@link Session}. This method is guaranteed to be idempotent, i.e. a subsequent
 	 *         invocation with the same arguments will return the same object, unless the session expired between the
 	 *         invocations, in which case a new object will be returned. Never returns <code>null</code>.
 	 */
 	Session getOrCreateSession(Object... userData);
 
 	/**
-	 * Get caller's current Variant session by . If the session ID exists in the underlying implementation 
+	 * Get caller's current Variant session. If the session ID exists in the underlying implementation 
 	 * of {@link SessionIdTracker} and the session with this session ID has not expired on the server,
 	 * this session is returned.
 	 * 
 	 * 
 	 * @param userData An array of zero or more opaque objects which will be passed without interpretation
-	 *                 to the implementations of {@link SessionIdTracker#init(Object...)} in order to obtain
-	 *                 the session ID of the session we're trying to retrieve.
+	 *                 to the implementations of {@link SessionIdTracker#init(Connection, Object...)}
+	 *                 and {@link TargetingTracker#init(Connection, Object...)}.
      *
 	 * @since 0.7
-	 * @return An object of type {@link Session}. This call is guaranteed to be idempotent, i.e. a subsequent
+	 * @return An object of type {@link Session}, or <code>null</code>.
+	 *         This method is guaranteed to be idempotent, i.e. a subsequent
 	 *         invocation with the same arguments will return the same object or <code>null</code>.
 	 */
 	Session getSession(Object... userData);
@@ -81,7 +83,7 @@ public interface Connection {
 	Session getSessionById(String sessionId);
 
 	/**
-	 * <p>Get the XDM schema associated with this connection.
+	 * <p>Get the XDM schema, associated with this connection.
 	 * 
 	 * @return An object of type {@link Schema}
 	 * 
@@ -115,7 +117,7 @@ public interface Connection {
 	void close();
 	
 	/**
-	 * Possible status of a Variant connection.
+	 * Status of a Variant {@link Connection}.
 	 * 
 	 * @since 0.7
 	 */
