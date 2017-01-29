@@ -1,5 +1,6 @@
 package com.variant.client.session;
 
+import com.variant.client.Session;
 import com.variant.client.TargetingTracker;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test;
@@ -8,6 +9,7 @@ import com.variant.core.session.SessionScopedTargetingStabile;
 
 public class TargetingTrackerEntryImpl implements TargetingTracker.Entry {
 		
+	private Session session;
 	private String testName, experienceName;
 	private long timestamp;
 	
@@ -16,27 +18,29 @@ public class TargetingTrackerEntryImpl implements TargetingTracker.Entry {
 	 * @param experience
 	 * @param timestamp
 	 */
-	public TargetingTrackerEntryImpl(Experience experience, long timestamp) { 
+	public TargetingTrackerEntryImpl(Experience experience, long timestamp, Session session) { 
 		this.testName = experience.getTest().getName();
 		this.experienceName = experience.getName();
 		this.timestamp = timestamp;
+		this.session = session;
 	}
 	
 	/**
 	 * 
 	 * @param stabileEntry
 	 */
-	public TargetingTrackerEntryImpl(SessionScopedTargetingStabile.Entry stabileEntry) { 
+	public TargetingTrackerEntryImpl(SessionScopedTargetingStabile.Entry stabileEntry, Session session) { 
 		this.testName = stabileEntry.getTestName();
 		this.experienceName = stabileEntry.getExperienceName();
 		this.timestamp = stabileEntry.getTimestamp();
+		this.session = session;
 	}
 
 	/**
 	 */
 	@Override
-	public Experience getAsExperience(Schema schema) {
-		Test test = schema.getTest(testName);
+	public Experience getAsExperience() {
+		Test test = session.getConnection().getSchema().getTest(testName);
 		return test == null ? null : test.getExperience(experienceName);
 	}
 	

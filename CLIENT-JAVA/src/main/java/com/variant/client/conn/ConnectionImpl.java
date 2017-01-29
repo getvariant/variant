@@ -1,9 +1,7 @@
 package com.variant.client.conn;
 
 import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
-import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
-import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
 
 import java.util.Random;
 
@@ -16,7 +14,6 @@ import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionIdTracker;
-import com.variant.client.TargetingTracker;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.SessionImpl;
 import com.variant.client.net.Payload;
@@ -82,34 +79,7 @@ public class ConnectionImpl implements Connection {
 		}
 
 	}
-		
-	/**
-	 * Instantiate targeting tracker.
-	 * 
-	 * @param userData
-	 * @return
-	 */
-	private TargetingTracker initTargetingTracker(Object...userData) {
-		
-		// Instantiate targeting tracker.
-		String className = client.getConfig().getString(TARGETING_TRACKER_CLASS_NAME);
-		
-		try {
-			Object object = Class.forName(className).newInstance();
-			if (object instanceof TargetingTracker) {
-				TargetingTracker result = (TargetingTracker) object;
-				result.init(this, userData);
-				return result;
-			}
-			else {
-				throw new ClientException.User(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
-			}
-		}
-		catch (Exception e) {
-			throw new ClientException.Internal("Unable to instantiate targeting tracker class [" + className +"]", e);
-		}
-	}
-	
+			
 	/**
 	 * 
 	 * @param create
@@ -137,7 +107,7 @@ public class ConnectionImpl implements Connection {
 		if (result == null && create) {
 			// Session expired locally, recreate OK.  Don't bother with the server.
 			CoreSession coreSession = new CoreSession(sessionId, schema);
-			result = new SessionImpl(this, coreSession, sidTracker, initTargetingTracker(userData));
+			result = new SessionImpl(this, coreSession, sidTracker, userData);
 			server.sessionSave(result);
 			cache.add(result);
 		}

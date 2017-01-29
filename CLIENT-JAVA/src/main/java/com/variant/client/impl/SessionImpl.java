@@ -1,6 +1,8 @@
 package com.variant.client.impl;
 
+import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 import static com.variant.client.impl.ClientUserError.ACTIVE_REQUEST;
+import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -56,7 +58,7 @@ public class SessionImpl implements Session {
 		Collection<TargetingTracker.Entry> entries = tt.get();
 		if (entries != null)
 			for (TargetingTracker.Entry e : entries)
-				result.add(e.getAsExperience(coreSession.getSchema()), e.getTimestamp());
+				result.add(e.getAsExperience(), e.getTimestamp());
 		return result;
 	}
 
@@ -68,10 +70,37 @@ public class SessionImpl implements Session {
 	private Collection<TargetingTracker.Entry> fromTargetingStabile(SessionScopedTargetingStabile stabile) {
 		ArrayList<TargetingTracker.Entry> result = new ArrayList<TargetingTracker.Entry>(stabile.size());
 		for (SessionScopedTargetingStabile.Entry stabileEntry: stabile.getAll()) 
-			result.add(new TargetingTrackerEntryImpl(stabileEntry));
+			result.add(new TargetingTrackerEntryImpl(stabileEntry, this));
 		return result;
 	}
 	
+	/**
+	 * Instantiate targeting tracker.
+	 * 
+	 * @param userData
+	 * @return
+	 */
+	private TargetingTracker initTargetingTracker(Object...userData) {
+		
+		// Instantiate targeting tracker.
+		String className = getConfig().getString(TARGETING_TRACKER_CLASS_NAME);
+		
+		try {
+			Object object = Class.forName(className).newInstance();
+			if (object instanceof TargetingTracker) {
+				TargetingTracker result = (TargetingTracker) object;
+				result.init(this, userData);
+				return result;
+			}
+			else {
+				throw new ClientException.User(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
+			}
+		}
+		catch (Exception e) {
+			throw new ClientException.Internal("Unable to instantiate targeting tracker class [" + className +"]", e);
+		}
+	}
+
 	/**
 	 * Sill ok to use this object?
 	 */
@@ -93,13 +122,13 @@ public class SessionImpl implements Session {
 	public SessionImpl(Connection conn,
 			CoreSession coreSession,
 			SessionIdTracker sessionIdTracker,
-			TargetingTracker targetingTracker) {
+			Object...userData) {
 		
 		this.conn = (ConnectionImpl) conn;
 		this.coreSession = coreSession;
-		this.coreSession.setTargetingStabile(toTargetingStabile(targetingTracker));
 		this.sessionIdTracker = sessionIdTracker;
-		this.targetingTracker = targetingTracker;
+		this.targetingTracker = initTargetingTracker(userData);
+		this.coreSession.setTargetingStabile(toTargetingStabile(targetingTracker));
 	}
 
 	/**

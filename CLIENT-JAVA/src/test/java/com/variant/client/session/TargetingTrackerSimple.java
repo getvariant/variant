@@ -3,8 +3,8 @@ package com.variant.client.session;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.variant.client.Connection;
-import com.variant.client.TargetingTracker;
+import com.variant.client.Session;
+import com.variant.core.schema.Test.Experience;
 
 /**
  *** Suitable for tests only. ***
@@ -14,21 +14,21 @@ import com.variant.client.TargetingTracker;
 public class TargetingTrackerSimple extends TargetingTrackerString {
 
 	private String buffer = null;
-	private Connection conn;
+	private Session session;
 		
 	/**
 	 * Interpret userData as:
 	 * 0    - session ID - String
-	 * 1... - {@link TargetingTracker.Entry} objects, if any
+	 * 1... - Test.Experience objects, if any
 	 */
 	@Override
-	public void init(Connection conn, Object...userData) {
+	public void init(Session session, Object...userData) {
 		Collection<Entry> entries = new ArrayList<Entry>(userData.length);
 		for (int i = 0; i < userData.length; i++) {
-			if (i > 0)	entries.add((Entry)userData[i]);
+			if (i > 0)	entries.add(new TargetingTrackerEntryImpl((Experience)userData[i], System.currentTimeMillis(), session));
 		}
 		set(entries);
-		this.conn = conn;
+		this.session = session;
 	}
 
 	@Override
@@ -47,8 +47,8 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 	}
 
 	@Override
-	protected Connection getConnection() {
-		return conn;
+	protected Session getSession() {
+		return session;
 	}
 
 		

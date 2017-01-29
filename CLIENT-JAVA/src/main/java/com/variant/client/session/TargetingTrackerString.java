@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.ConfigKeys;
-import com.variant.client.Connection;
+import com.variant.client.Session;
 import com.variant.client.TargetingTracker;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -32,7 +32,7 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 	 * Concrete implementations will provided the connection.
 	 * @return
 	 */
-	abstract protected Connection getConnection();
+	abstract protected Session getSession();
 	
 	/**
 	 * Parse the content from an input string.
@@ -55,7 +55,7 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 				String[] tokens = entry.split("\\.");
 				if (tokens.length == 3) {
 					try {
-						Test test = getConnection().getSchema().getTest(tokens[1]);
+						Test test = getSession().getConnection().getSchema().getTest(tokens[1]);
 						if (test == null) {
 							if (LOG.isDebugEnabled()) {
 								LOG.debug("Ignored non-existent test [" + tokens[1] + "]");
@@ -73,7 +73,7 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 						long timestamp = Long.parseLong(tokens[0]);
 						// ignore if user hasn't seen this experience for TEST_MAX_IDLE_DAYS_TO_TARGET days,
 						// unless it is set to 0, which means we honor it for life of experiment. 
-						int idleDaysToTarget = getConnection().getClient().getConfig().getInt(ConfigKeys.TARGETING_STABILITY_DAYS);
+						int idleDaysToTarget = getSession().getConfig().getInt(ConfigKeys.TARGETING_STABILITY_DAYS);
 						if (idleDaysToTarget > 0 && System.currentTimeMillis() - timestamp > idleDaysToTarget * DateUtils.MILLIS_PER_DAY) {
 							if (LOG.isDebugEnabled()) {
 								LOG.debug("Ignored idle experience [" + tokens[1] + "." + tokens[2] + "]");
@@ -81,7 +81,7 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 							continue;
 						}
 						
-						result.add(new TargetingTrackerEntryImpl(experience, timestamp));
+						result.add(new TargetingTrackerEntryImpl(experience, timestamp, getSession()));
 					}
 					catch (Exception e) {
 						// any parsing error is due to end user's mucking with the string...

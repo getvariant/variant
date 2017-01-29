@@ -43,7 +43,7 @@ public class StateRequestImpl implements StateRequest {
 	//                                            PUBLIC                                           //
 	//---------------------------------------------------------------------------------------------//
 	@Override
-	public Date createDate() {
+	public Date getCreateDate() {
 		return coreRequest.createDate();
 	}
 

@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.variant.client.ClientException;
-import com.variant.client.TargetingTracker;
-import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.UserError;
 import com.variant.core.schema.Schema;
 import com.variant.core.test.VariantBaseTest;
@@ -25,7 +23,7 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 	 * They expect user data as follows:
 	 * 	 * Interpret userData as:
 	 * 0    - session ID - String
-	 * 1... - {@link TargetingTracker.Entry} objects, if any
+	 * 1... - Test.Experience objects, if any
 	 *  
 	 * @param sessionId
 	 * @param experiences
@@ -36,7 +34,7 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 		Object[] result = new Object[experiences.length + 1];
 		result[0] = sessionId;
 		for (int i = 0; i < experiences.length; i++) {
-			result[i+1] = new TargetingTrackerEntryImpl(experience(experiences[i]), System.currentTimeMillis());
+			result[i+1] = experience(experiences[i]);
 		}
 		
 		return result;

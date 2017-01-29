@@ -2,7 +2,6 @@ package com.variant.client;
 
 import java.util.Collection;
 
-import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
 
 /**
@@ -23,18 +22,16 @@ import com.variant.core.schema.Test.Experience;
 public interface TargetingTracker {
 	
 	/**
-	 * <p>Called by Variant to initialize a newly instantiated concrete implementation. Variant client calls this method 
-	 * immediately following the instantiation within the scope of the {@link VariantClient#getSession(Object...)} method.
-	 * Use this to inject state from configuration.
+	 * <p>Called by Variant to initialize a newly instantiated concrete implementation 
+	 * immediately following the instantiation. Called within the scope of the {@code Connection.getSession()} methods.
 	 * 
 	 * @param conn      The Variant server connection which is initializing this object.
-	 * @param userData  An array of zero or more opaque objects which {@link VariantClient#getSession(Object...)}  
-	 *                  or {@link VariantClient#getOrCreateSession(Object...)} method will pass here without 
-	 *                  interpretation.
+	 * @param userData  An array of zero or more opaque objects, which the enclosing call to {@link Connection#getSession(Object...) }
+	 *                  or {@link Connection#getOrCreateSession(Object...)} will pass here without interpretation. 
 	 * 
 	 * @since 0.6
 	 */
-	public void init(Connection connection, Object...userData);
+	public void init(Session connection, Object...userData);
 
 	
 	/**
@@ -80,14 +77,12 @@ public interface TargetingTracker {
 		/**
 		 * Get test experience trakced by this entry as an instance {@link Experience} with respect to an experiment schema.
 		 * 
-		 * @param schema Variant {@link Schema} (presumably current) where the experience will be looked for.
-		 * 
 		 * @return Test experience from the given schema whose name and test name match the content
 		 *         of this entry, or null if current schema does not have such an experience.
 		 *         
     	 * @since 0.6
 		 */
-		public Experience getAsExperience(Schema schema);
+		public Experience getAsExperience();
 		
 		/**
 		 * Get the test name, tracked by this entry.
