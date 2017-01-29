@@ -4,7 +4,7 @@ import play.api.Logger
 import play.api.mvc.Controller
 import play.api.libs.json._
 import com.variant.server.ServerException
-import com.variant.core.exception.ServerError._
+import com.variant.core.ServerError._
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.session.ServerSession
 import com.variant.server.conn.Connection

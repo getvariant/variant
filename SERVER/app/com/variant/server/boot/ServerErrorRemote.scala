@@ -6,7 +6,7 @@ import play.api.mvc.ResponseHeader
 import play.api.http.HttpEntity
 import play.api.libs.json._
 import akka.util.ByteString
-import com.variant.core.exception.ServerError
+import com.variant.core.ServerError
 import com.variant.server.ServerException
 
 /**

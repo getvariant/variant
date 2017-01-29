@@ -26,7 +26,7 @@ import org.scalatest.junit.JUnitRunner
 import play.api.Configuration
 import com.variant.server.conn.ConnectionStore
 import play.api.libs.json.JsValue
-import com.variant.core.exception.ServerError
+import com.variant.core.ServerError
 
 /**
  * Common to all tests.

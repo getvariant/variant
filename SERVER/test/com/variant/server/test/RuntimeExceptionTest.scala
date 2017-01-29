@@ -1,13 +1,13 @@
 package com.variant.server.test
 
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.exception.CommonError._
+import com.variant.core.CommonError._
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.session.ServerSession
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerSuite
 import com.variant.server.ServerException
-import com.variant.core.exception.CoreException
+import com.variant.core.CoreException
 
 class RuntimeExceptionTest extends BaseSpecWithServer {
 

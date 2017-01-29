@@ -7,7 +7,7 @@ import scala.collection.JavaConversions._
 import com.variant.server.test.util.ParamString
 import com.variant.server.ConfigKeys
 import com.variant.server.test.BaseSpecWithServer
-import com.variant.core.exception.ServerError._
+import com.variant.core.ServerError._
 import com.variant.core.util.VariantStringUtils
 import play.api.libs.json._
 

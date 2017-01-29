@@ -6,7 +6,7 @@ import com.variant.server.boot.VariantServer
 import play.api.Logger
 import com.variant.server.ServerException
 import com.variant.server.boot.ServerErrorRemote
-import com.variant.core.exception.ServerError
+import com.variant.core.ServerError
 
 /**
  * Common actions logic chains to concrete action.

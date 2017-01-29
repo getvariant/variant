@@ -5,7 +5,7 @@ import play.api.mvc.Controller
 import play.api.mvc.Request
 import com.variant.server.conn.SessionStore
 import play.api.Logger
-import com.variant.core.exception.ServerError._
+import com.variant.core.ServerError._
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerSchema

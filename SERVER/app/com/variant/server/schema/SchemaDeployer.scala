@@ -4,7 +4,7 @@ import java.io.File
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.io.Source
 import com.variant.core.UserError.Severity
-import com.variant.core.exception.CommonError._
+import com.variant.core.CommonError._
 import com.variant.core.schema.ParserMessage
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.boot.ServerErrorLocal._

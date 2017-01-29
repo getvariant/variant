@@ -14,7 +14,6 @@ import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
 import com.variant.core.TestTargetingHook
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.exception.CommonError._
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerSuite
 import com.variant.server.runtime.Runtime

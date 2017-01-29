@@ -3,7 +3,7 @@ package com.variant.server;
 import com.variant.core.UserError;
 import com.variant.core.VariantException;
 import com.variant.core.UserError.Severity;
-import com.variant.core.exception.ServerError;
+import com.variant.core.ServerError;
 
 /**
  * The super-type for all Variant server exception. 
