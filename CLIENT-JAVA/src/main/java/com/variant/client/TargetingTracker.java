@@ -5,15 +5,21 @@ import java.util.Collection;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * <p>An environment dependent implementation will use external mechanisms to obtain and to store
+ * <p>An environment dependent implementation will use some external mechanism to obtain and to store
  * customer's targeting information between Variant sessions, thus providing experiment scoped
  * targeting stability. In a web application environment, this may be tracked in an HTTP cookie,
- * which would provide "weak" targeting stability (the cookie could be deleted between sessions), 
- * or, more likely, in the operational database, which could support "strong" stability across
- * different devices.
+ * which would provide "weak" targeting stability, i.e. ensure that the return user sees the same
+ * experiences, so long as he's using the same Web browser and that cookies have not been removed
+ * since the last visit. 
+ * 
+ * <p>Stronger experience stability could be provided via the operational database, 
+ * which won't depend on the user's environment, so long as the user can be reliably identified.
  * 
  * <p>By contract, an implementation must provide a no-argument constructor, which Variant will use
- * to instantiate it. To inject state, call {@link #init(VariantInitParams, Object...)}.
+ * to instantiate it. To inject state, call {@link #init(Session, Object...)}. An implementation
+ * object will remain in effect for the duration of a Variant session. But since its state may change
+ * by a state request, Variant asks it to save itself to external storage by calling 
+ * {@link #save(Object...)}, within the scope of the {@link StateRequest#commit(Object...)} method.
  * 
  * @author Igor Urisman
  * @since 0.6
@@ -46,7 +52,8 @@ public interface TargetingTracker {
 	public Collection<Entry> get();
 		
 	/**
-	 * Set the value of all currently tracked test experiences.
+	 * Sets the test experiences tracked by this object. . Call {@link #save(Object...)} to persist between
+	 * state request.
 	 * 
 	 * @param entries Collection of objects of type {@link Entry}. The caller must guarantee 
 	 *                consistency of this collection, i.e. that all entries are pairwise independent,
@@ -57,9 +64,10 @@ public interface TargetingTracker {
 	public void set(Collection<Entry> entries);
 
 	/**
-	 * Called by Variant to save the state of this object to the underlying persistence mechanism.
+	 * Saves the state of this object to the underlying persistence mechanism, making it durable between
+	 * Variant sessions. Called by Variant within the scope of the {@link StateRequest#commit(Object...)} method. 
 	 * 
-	 * @param userData An array of zero or more opaque objects which {@link VariantCoreStateRequest#commit(Object...)}
+	 * @param userData An array of zero or more opaque objects which {@link StateRequest#commit(Object...)}
 	 *                 will pass here without interpretation.
 	 *                 
 	 * @since 0.6
@@ -75,9 +83,9 @@ public interface TargetingTracker {
 	public static interface Entry {
 				
 		/**
-		 * Get test experience trakced by this entry as an instance {@link Experience} with respect to an experiment schema.
+		 * Get test experience tracked by this entry as an instance {@link Experience}.
 		 * 
-		 * @return Test experience from the given schema whose name and test name match the content
+		 * @return Test experience from the underlying connection's schema, whose name and test name match the content
 		 *         of this entry, or null if current schema does not have such an experience.
 		 *         
     	 * @since 0.6
