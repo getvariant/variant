@@ -1,9 +1,10 @@
 /**
- * <p>Entry point into the Servlet Adapter for Variant Java Client.
+ * <p>Servlet Adapter for the "bare" Variant Java Client, providing greatly simplified integration
+ * for host applications written on top of the Java Servlet API.
  * 
- * <p>This Servlet Adapter is a wrapper API around the bare Java Client, adding environment-bound
- * signatures to be used in place of their generic counterparts. For example, 
- * it provides {@link com.variant.client.servlet.ServletConnection#getSession(javax.servlet.http.HttpServletRequest)}
+ * <p>A wrapper API around the "bare" Java Client. Replaces the environment-dependent method signatures
+ * with their environment-aware counterparts, e.g. 
+ * {@link com.variant.client.servlet.ServletConnection#getSession(javax.servlet.http.HttpServletRequest)}
  * in place of the bare {@link com.variant.client.Connection#getSession(Object...)}.
  * 
  * @since 0.6

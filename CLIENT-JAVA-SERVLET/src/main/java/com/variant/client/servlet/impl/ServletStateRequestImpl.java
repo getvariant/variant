@@ -90,8 +90,8 @@ public class ServletStateRequestImpl implements ServletStateRequest {
 	}
 
 	@Override
-	public Date createDate() {
-		return bareRequest.createDate();
+	public Date getCreateDate() {
+		return bareRequest.getCreateDate();
 	}
 
 	@Override

@@ -7,17 +7,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.time.DateUtils;
 
-import com.variant.client.Connection;
+import com.variant.client.Session;
 import com.variant.client.TargetingTracker;
-import com.variant.client.VariantClient;
 import com.variant.client.servlet.util.VariantCookie;
 import com.variant.client.session.TargetingTrackerString;
 
 /**
  * Concrete implementation of the Variant targeting tracker based on HTTP cookie. 
- * Targeting information is saved in a persistent
- * cookie between Variant sessions. As such, provides weak experience stability: a returning user
- * will see familiar experiences, but only so long as he is using the same browser.
+ * Targeting information is saved between sessions in a persistent cookie. 
+ * As such, provides "weak" experience stability, i.e. a return user sees the same
+ * experiences, so long as he's using the same Web browser and that cookies have not 
+ * been removed since the last visit. 
  * 
  * @author Igor Urisman
  * @since 0.5
@@ -46,16 +46,17 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString implement
 		}
 	}
 
-	private Connection connection;	
+	private Session session;	
 	private TargetingCookie cookie;
-	//private Logger LOG = LoggerFactory.getLogger(TargetingTrackerHttpCookie.class);
 
 	/**
-	 * Superclass needs properties but doesn't have them.
+	 * The session which created this object.
+	 * 
+	 * @since 0.7
 	 */
 	@Override
-	protected Connection getConnection() {
-		return connection;
+	protected Session getSession() {
+		return session;
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -65,37 +66,19 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString implement
 	public static final String COOKIE_NAME = "variant-target";
 
 	/**
-	 * No-argument constructor must be provided by contract. Called by Variant client within the scope
-	 * of the {@link VariantClient#getSession(Object...)} call.
+	 * No-argument constructor must be provided by contract. 
 	 */
 	public TargetingTrackerHttpCookie() {}
 
-	/**
-	 * <p>Called by Variant to initialize a new instance, within the scope of the 
-	 * {@link VariantClient#getSession(Object...)} method. Use this to inject state from configuration.
-	 * 
-	 * @param initParams An instance of type {@link VariantInitParams}, containing parsed JSON object, 
-	 *                   specified by the <code>targeting.tracker.class.init</code> system property.
-	 * @param userData   This implementation expects userData to be a one-element array whose single element
-	 *                   is the current {@link HttpServletRequest}.
-	 *
-	 * @since 0.6
-	 */
+	// @since 0.6
 	@Override
-	public void init(Connection conn, Object...userData){
-		this.connection = conn;
+	public void init(Session session, Object...userData){
+		this.session = session;
 		HttpServletRequest request =  (HttpServletRequest) userData[0];
 		cookie = new TargetingCookie(request);
 	}		
 
-	/**
-	 * <p>Retrieve the current value of the session ID from this tracker. 
-	 * This value may have been set by {@link #init(VariantInitParams, Object...)} or by {@link #set(Collection)}.
-	 * 
-	 * @return Collection of zero or more of objects of type {@link Entry} each corresponding to
-	 *         a test experience currently tracked by this object.
-	 * @since 0.6
-	 */
+	// @since 0.6
 	@Override
 	public Collection<Entry> get() {
 		String input = cookie.getValue();
@@ -103,29 +86,13 @@ public class TargetingTrackerHttpCookie extends TargetingTrackerString implement
 		return input == null ? null : fromString(cookie.getValue());
 	}
 
-	/**
-	 * Set the value of all currently tracked test experiences.
-	 * 
-	 * @param entries Collection of objects of type {@link Entry}. The caller must guarantee 
-	 *                consistency of this collection, i.e. that all entries are pairwise independent,
-	 *                which is to say that there be no two entries which refer to the same test.
-	 * 
-	 * @since 0.6
-	 */
+	// @since 0.6
 	@Override
 	public void set(Collection<Entry> entries) {
 		cookie.setValue(toString(entries));
 	}
 
-	/**
-	 * <p>Called by Variant to save the currently tracked experiences to the underlying persistence mechanism. 
-	 * Variant client calls this method within the scope of the {@link VariantCoreStateRequest#commit(Object...)} method.
-	 * 
-	 * @param userData This implementation expects userData to be a one-element array whose single element
-	 *                   is the current {@link HttpServletResponse}.
-	 *                 
-	 * @since 0.6
-	 */
+	// @since 0.6
 	@Override
 	public void save(Object...userData) {
 		HttpServletResponse response = (HttpServletResponse) userData[0];

@@ -19,7 +19,7 @@ import com.variant.client.StateRequest;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.servlet.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.TargetingTrackerHttpCookie;
-import com.variant.client.servlet.VariantServletClient;
+import com.variant.client.servlet.ServletVariantClient;
 import com.variant.client.servlet.ServletConnection;
 import com.variant.client.servlet.ServletSession;
 import com.variant.client.servlet.ServletStateRequest;
@@ -32,7 +32,7 @@ import com.variant.core.util.VariantCollectionsUtils;
 public class ServletSessionTest extends ServletClientBaseTest {
 
 	//private static Random rand = new Random(System.currentTimeMillis());
-	private static final VariantServletClient servletClient = VariantServletClient.Factory.getInstance();
+	private static final ServletVariantClient servletClient = ServletVariantClient.Factory.getInstance();
 	
 	/**
 	 * Test bare and servlet signatures of getSession()

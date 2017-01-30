@@ -92,7 +92,7 @@ import com.variant.core.schema.State;
  * is forwarded down the filter chain by calling {@code chain.doFilter(ServletRequest, ServletResponse)}.
  * 
  * <p>If the requested path corresponds to an instrumented state, the session (obtained from 
- * Variant client servlet adapter by calling {@link VariantServletClient#getOrCreateSession(HttpServletRequest)}) 
+ * Variant client servlet adapter by calling {@link ServletVariantClient#getOrCreateSession(HttpServletRequest)}) 
  * is targeted for this state with {@link ServletSession#targetForState(State)}. The resulting
  * {@link ServletStateRequest} object contains information about the outcome of the targeting
  * operation, including the resulting variant and the resolved state parameters. This 
@@ -121,7 +121,7 @@ public class VariantFilter implements Filter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantFilter.class);
 	
-	private VariantServletClient client;
+	private ServletVariantClient client;
 	private ServletConnection connection;
 	private Schema schema;
 	
@@ -137,7 +137,7 @@ public class VariantFilter implements Filter {
 	 */
 	@Override
 	public void init(FilterConfig config) throws ServletException {
-		client = VariantServletClient.Factory.getInstance();
+		client = ServletVariantClient.Factory.getInstance();
 		String schemaName = config.getInitParameter("schema");
 		if (schemaName == null) 
 			throw new ClientException.User("Filter init parameter [schema] must be specified");

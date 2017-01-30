@@ -3,12 +3,11 @@ package com.variant.client.servlet;
 import javax.servlet.http.HttpServletRequest;
 
 import com.variant.client.Connection;
-import com.variant.core.schema.State;
 
 /**
- * <p>Servlet-aware wrapper around bare client's implementation of{@link Connection}. 
- * Overrides the {@link VariantCoreSession#targetForState(State)} method to return the servlet-aware
- * state request {@link ServletStateRequest}. 
+ * <p>Servlet-aware wrapper around bare client's implementation of {@link Connection}.
+ * Replaces bare client's session creation methods with ones which take an instance
+ * of {@link HttpServletRequest} and return the narrower, servlet-aware {@link ServletSession}
  * 
  * @author Igor Urisman
  * @since 0.7
@@ -16,10 +15,15 @@ import com.variant.core.schema.State;
 
 public interface ServletConnection extends Connection {
 	
-	// Narrow return type of inherited methods
+	/**
+	 * Equivalent to {@code getOrCreateSession((HttpServletRequest)userData[0])}.
+	 */
 	@Override
 	ServletSession getOrCreateSession(Object... userData);
 
+	/**
+	 * Equivalent to {@code getSession((HttpServletRequest)userData[0])}.
+	 */
 	@Override
 	ServletSession getSession(Object... userData);
 

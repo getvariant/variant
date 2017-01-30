@@ -3,19 +3,19 @@ package com.variant.client.servlet.impl;
 import javax.servlet.http.HttpServletRequest;
 
 import com.typesafe.config.Config;
+import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
-import com.variant.client.servlet.ServletClientException;
-import com.variant.client.servlet.VariantServletClient;
 import com.variant.client.servlet.ServletConnection;
 import com.variant.client.servlet.ServletSession;
+import com.variant.client.servlet.ServletVariantClient;
 import com.variant.core.schema.Schema;
 
 public class ServletConnectionImpl implements ServletConnection {
 
 	private static final String ATTR_NAME = "variant-wrap-session";
-	private final VariantServletClient wrapClient;
+	private final ServletVariantClient wrapClient;
 	private final Connection bareConnection;
 	
 	/**
@@ -44,7 +44,7 @@ public class ServletConnectionImpl implements ServletConnection {
 	
 	/**
 	 */
-	public ServletConnectionImpl(VariantServletClient wrapClient, Connection bareConnection) {
+	public ServletConnectionImpl(ServletVariantClient wrapClient, Connection bareConnection) {
 		this.wrapClient = wrapClient;
 		this.bareConnection = bareConnection;
 	}
@@ -72,7 +72,7 @@ public class ServletConnectionImpl implements ServletConnection {
 	@Override
 	public ServletSession getOrCreateSession(Object... userData) {
 		if (userData.length != 1 || !(userData[0] instanceof HttpServletRequest)) 
-			throw new ServletClientException("User data must have one element of type HttpServletRequest");
+			throw new ClientException.User("User data must have one element of type HttpServletRequest");
 		return getOrCreateSession((HttpServletRequest) userData[0]);
 	}
 
@@ -88,7 +88,7 @@ public class ServletConnectionImpl implements ServletConnection {
 	@Override
 	public ServletSession getSession(Object... userData) {
 		if (userData.length != 1 || !(userData[0] instanceof HttpServletRequest)) 
-			throw new ServletClientException("User data must have one element of type HttpServletRequest");
+			throw new ClientException.User("User data must have one element of type HttpServletRequest");
 		return getSession((HttpServletRequest) userData[0]);
 	}
 

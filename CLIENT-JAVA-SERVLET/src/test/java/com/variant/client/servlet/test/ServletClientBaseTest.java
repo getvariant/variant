@@ -20,7 +20,6 @@ import com.variant.client.TargetingTracker;
 import com.variant.client.mock.HttpServletRequestMock;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.mock.HttpSessionMock;
-import com.variant.client.servlet.ServletClientException;
 import com.variant.client.servlet.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.TargetingTrackerHttpCookie;
 import com.variant.client.test.ClientBaseTestWithServer;

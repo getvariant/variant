@@ -31,13 +31,13 @@ public interface TargetingTracker {
 	 * <p>Called by Variant to initialize a newly instantiated concrete implementation 
 	 * immediately following the instantiation. Called within the scope of the {@code Connection.getSession()} methods.
 	 * 
-	 * @param conn      The Variant server connection which is initializing this object.
+	 * @param session   The Variant server which is initializing this object.
 	 * @param userData  An array of zero or more opaque objects, which the enclosing call to {@link Connection#getSession(Object...) }
 	 *                  or {@link Connection#getOrCreateSession(Object...)} will pass here without interpretation. 
 	 * 
 	 * @since 0.6
 	 */
-	public void init(Session connection, Object...userData);
+	public void init(Session session, Object...userData);
 
 	
 	/**

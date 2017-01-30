@@ -2,16 +2,16 @@ package com.variant.client.servlet.impl;
 
 import com.typesafe.config.Config;
 import com.variant.client.VariantClient;
-import com.variant.client.servlet.VariantServletClient;
+import com.variant.client.servlet.ServletVariantClient;
 import com.variant.client.servlet.ServletConnection;
 
 /**
- * The implementation of {@link VariantServletClient}.
+ * The implementation of {@link ServletVariantClient}.
  * 
  * @author Igor Urisman
  * @since 0.6
  */
-public class ServletClientImpl implements VariantServletClient {
+public class ServletClientImpl implements ServletVariantClient {
 
 	private VariantClient bareClient;
 	

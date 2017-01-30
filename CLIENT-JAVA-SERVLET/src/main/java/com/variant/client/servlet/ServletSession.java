@@ -4,23 +4,18 @@ import com.variant.client.Session;
 import com.variant.core.schema.State;
 
 /**
- * <p>Servlet-aware wrapper around bare client's {@link VariantCoreSession} which overrides
- * the {@link VariantCoreSession#targetForState(State)} method to return the servlet-aware
- * state request {@link ServletStateRequest}. 
+ * <p>Servlet-aware wrapper around bare client's implementation of {@link Session}.
+ * Overrides the {@link Session#targetForState(State)} method to return the narrower,
+ * Servlet-aware state request object {@link ServletStateRequest}. 
  * 
  * @author Igor Urisman
  * @since 0.6
  */
 public interface ServletSession extends Session {
 
-	/**
-	 * Override the bare {@link VariantCoreSession#targetForState(State)} in order to
-	 * return the servlet-aware state request {@link ServletStateRequest}
-	 * 
-	 * @param state Variant {@link State} for which this session is to be targeted.
-	 * 
-	 * @since 0.6
-	 */
+	// Override the bare {@link VariantCoreSession#targetForState(State)} in order to
+	// return the servlet-aware state request {@link ServletStateRequest}
+	// @since 0.6
 	public ServletStateRequest targetForState(State state);
 
 }

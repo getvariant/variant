@@ -5,14 +5,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.variant.client.Connection;
 import com.variant.client.SessionIdTracker;
-import com.variant.client.VariantClient;
 import com.variant.client.servlet.util.VariantCookie;
 
 /**
  * Concrete implementation of Variant session ID tracker based on HTTP cookie. 
- * Session ID is saved in a browser session-scoped
- * cookie between state requests.
+ * Session ID is saved between state request in a browser's session-scoped cookie.
  * 
+ * @see SessionIdTracker
  * @author Igor Urisman
  * @since 0.5
  */
@@ -50,61 +49,30 @@ public class SessionIdTrackerHttpCookie implements SessionIdTracker {
 	public static final String COOKIE_NAME = "variant-ssnid";
 
 	/**
-	 * No-argument constructor must be provided by contract. Called by Variant client within the scope
-	 * of the {@link VariantClient#getSession(Object...)} call.
+	 * No-argument constructor must be provided by contract.
 	 */
 	public SessionIdTrackerHttpCookie() {}
 
-	/**
-	 * <p>Called by Variant to initialize a newly instantiated concrete implementation. Called 
-	 * immediately following the instantiation, within the scope of the {@link VariantClient#getSession(Object...)} method.
-	 * Use this to inject state from configuration.
-	 * 
-	 * @param conn      The Variant server connection which is initializing this object.
-	 * @param userData  An array of zero or more opaque objects which {@link VariantClient#getSession(Object...)}  
-	 *                  or {@link VariantClient#getOrCreateSession(Object...)} method will pass here without 
-	 *                  interpretation.
-	 * 
-	 * @since 0.6
-	 */
+	// Since 0.6
 	@Override
 	public void init(Connection conn, Object...userData) {		
 		HttpServletRequest request = (HttpServletRequest) userData[0];
 		cookie = new SsnIdCookie(request);
 	}
 	
-	/**
-	 * <p>Retrieve the current value of the session ID from this tracker. 
-	 * This value may have been set by {@link #init(VariantInitParams, Object...)} or by {@link #set(String)}.
-	 * 
-	 * @return Session ID, if present in the tracker or null otherwise.
-	 * @since 0.6
-	 */
+	// @since 0.6
 	@Override
 	public String get() {
 		return cookie == null ? null : cookie.getValue();
 	}
 
-	/**
-	 * <p>Set the value of session ID. Use to start tracking a new session.
-	 * 
-	 * @param sessionId Session ID to set.
-	 * @since 0.6
-	 */
+	// @since 0.6
 	@Override
 	public void set(String sessionId) {
 		cookie.setValue(sessionId);
 	}
 
-	/**
-	 * <p>Called by Variant to save the current value of session ID to the underlying persistence mechanism. 
-	 * Variant client calls this method within the scope of the {@link VariantCoreStateRequest#commit(Object...)} method.
-	 * 
-	 * @param userData This implementation expects userData to be a one-element array whose single element
-	 *                   is the current {@link HttpServletResponse}.
-	 *                 
-	 * @since 0.6
-	 */
+	// @since 0.6
 	@Override
 	public void save(Object... userData) {
 		HttpServletResponse response = (HttpServletResponse) userData[0];
