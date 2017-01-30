@@ -1,4 +1,4 @@
-package com.variant.client.servlet;
+package com.variant.server.hook;
 
 
 import com.variant.core.HookListener;
@@ -6,7 +6,8 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.StateParsedHook;
 
 /**
- * A user hook listener listening to the {@link StateParsedHook}.
+ * A user hook listener subscribed to the {@link StateParsedHook}, which is posted
+ * during schema deployment 
  * Performs semantical checks on the parsed {@link State}, applicable for the
  * servlet environment and intended to be used in conjunction with
  * {@link VariantFilter}.
