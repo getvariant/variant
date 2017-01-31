@@ -142,13 +142,15 @@ class EventWriter (config: Config) {
    				// and the keep flushing until under pctEmpty.
    				do {
    					flush();
-   				} while (bufferQueue.size() >= pctEmptySize);
+   				} while (!isInterrupted() && bufferQueue.size() >= pctEmptySize);
    									
    				// Block until the queue is over pctFull again, but with timeout.
-   				bufferQueue.synchronized {
-   					bufferQueue.wait(maxDelayMillis);
+   				if (!isInterrupted()) {
+      				bufferQueue.synchronized {
+      					bufferQueue.wait(maxDelayMillis);
+      				}
    				}
-   			}
+      		}
    			catch {
    			   case _ : InterruptedException => interruptedExceptionThrown = true
    			   case t : Throwable => logger.error("Ignoring unexpected exception in event writer.", t)
@@ -172,7 +174,7 @@ class EventWriter (config: Config) {
    	def flush() {
    
    		var events = new LinkedList[FlushableEvent]();
-   		while(!bufferQueue.isEmpty()) events.add(bufferQueue.poll());
+   		while(bufferQueue != null && !bufferQueue.isEmpty()) events.add(bufferQueue.poll());
 
    		if (!events.isEmpty()) {
       		var now = System.currentTimeMillis();
