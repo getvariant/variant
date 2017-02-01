@@ -23,7 +23,7 @@ stage_dir=${release_dir}/stage
 target_dir=${release_dir}/target
 
 rm -rf ${stage_dir} ${target_dir}
-mkdir ${stage_dir} ${target_dir}
+mkdir ${stage_dir} ${target_dir} ${stage_dir}/server ${stage_dir}/java
 
 #
 # CORE
@@ -37,50 +37,37 @@ mvn clean package -DskipTests
 #
 cd ${workspace_root_dir}/SERVER
 sbt clean dist
-mv target/universal/variant-${version}.zip ${stage_dir}
-cd ${stage_dir}
+mv target/universal/variant-${version}.zip ${stage_dir}/server
+cd ${stage_dir}/server
 unzip variant-${version}.zip
 rm variant-${version}.zip
 cd variant-${version}
 rm -rf README share
 cp -r ${workspace_root_dir}/SERVER/schemas .
 cp ${workspace_root_dir}/SERVER/conf/variant.sh .
+mkdir -p db/postgres db/h2
+cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql db/postgres
+cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql db/h2
 cd ..
-zip -r variant-${version}.zip variant-${version}/
-rm -rf variant-${version}
+zip -r ${target_dir}/variant-server-${version}.zip variant-${version}/
+cd ..
+rm -rf server
 
 #
-# JAVA CLIENT
+# JAVA CLIENT & SERVLET ADAPTER
 #
 cd ${workspace_root_dir}/CLIENT-JAVA
 mvn clean package -DskipTests
-cp target/variant-java-client*.jar ${stage_dir}
+cp target/variant-java-client*.jar ${stage_dir}/java
 
-#
-# JAVA SERVLET ADAPTER
-#
 cd ${workspace_root_dir}/CLIENT-JAVA-SERVLET
 mvn clean package -DskipTests
-cp target/variant-java-client-servlet-adapter*.jar ${stage_dir}
+cp target/variant-java-client-servlet-adapter*.jar ${stage_dir}/java
 
-#
-# JAVASCRIPT CLIENT
-#
-${workspace_root_dir}/CLIENT-JS/bin/package.sh
-cp ${workspace_root_dir}/CLIENT-JS/target/variant*.js ${target_dir}
-
-#
-# DB
-#
-mkdir -p ${stage_dir}/db/postgres ${stage_dir}/db/h2
-cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql ${stage_dir}/db/postgres
-cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql ${stage_dir}/db/h2
-
-#
-# PACKAGE
-#
-cd ${stage_dir}
-zip ${target_dir}/variant-${version}-all.zip * #./*.jar ./*.war ./*.zip
+cd ${stage_dir}/java
+zip ${target_dir}/variant-${version}-java.zip *.jar
+cd ..
+rm -rf java
 
 #
 # SERVLET DEMO
@@ -93,6 +80,12 @@ cd target
 zip ${target_dir}/variant-${version}-java-servlet-demo.zip petclinic.war
 
 #
+# JAVASCRIPT CLIENT
+#
+${workspace_root_dir}/CLIENT-JS/bin/package.sh
+cp ${workspace_root_dir}/CLIENT-JS/target/variant*.js ${target_dir}
+
+#
 # Javadoc
 #
-${release_dir}/bin/javadoc.sh
+#${release_dir}/bin/javadoc.sh
