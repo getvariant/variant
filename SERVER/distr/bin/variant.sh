@@ -1,11 +1,11 @@
 #!/bin/bash
 
 vrnt_dir=$(dirname $0)
-cd $vrnt_dir
+cd $vrnt_dir/..
 
 case "$1" in
 start)
-   ./bin/variant -Dhttp.port=5377 &
+   ./bin/playapp -Dhttp.port=5377
    ;;
 
 stop)

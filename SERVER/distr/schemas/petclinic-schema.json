@@ -9,7 +9,7 @@
 {
    'meta':{
       'name':'petclinic',
-      'comment':'Experiment schema for the Pet Clinic application'
+      'comment':'Experiment schema for the Pet Clinic demo application'
    },
    'states':[                                                
      { 
