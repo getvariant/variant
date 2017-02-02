@@ -89,7 +89,7 @@ class VacuumThread(connMap: TrieMap[String, Connection], config: Config) extends
 
 	override def run() {
 
-      logger.info(s"Vacuum thread $getName started")		
+      logger.debug(s"Vacuum thread $getName started")		
 		var interrupted = false
 		
 		while (true) {			
@@ -121,7 +121,7 @@ class VacuumThread(connMap: TrieMap[String, Connection], config: Config) extends
 			}
 			
 			if (interrupted || isInterrupted()) {
-				logger.info("Vacuum thread " + Thread.currentThread().getName() + " interrupted and exited.");
+				logger.debug("Vacuum thread " + Thread.currentThread().getName() + " interrupted and exited.");
 				connMap.clear()
 				return;
 			}
