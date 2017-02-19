@@ -28,10 +28,11 @@ public interface HookListener <H extends UserHook> {
 	public Class<H> getHookClass();
 	
 	/**
-	 * Variant server calls this to post this listener with a concrete hook.
+	 * The callback method called by the server when a hook of type assignable to that returned
+	 * by {@link #getHookClass()} is reached. 
 	 * 
-	 * @param hook A concrete user hook that is of the type returned by {@link #getHookClass()}
-	 *                   or its sub-type.
+	 * @param hook The posting hook. May be further examined for details of the posting hook or to 
+	 *             set state to be returned to Variant server.
      * @since 0.5
 	 */
 	public void post(H hook);

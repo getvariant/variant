@@ -7,9 +7,9 @@ import static org.junit.Assert.assertNull;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
-import com.variant.client.impl.ClientUserError;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
+import com.variant.client.impl.ClientUserError;
 import com.variant.core.ServerError;
 
 public class ConnectionTest extends ClientBaseTestWithServer {
@@ -54,6 +54,7 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 		conn.close();
 		assertEquals(Status.CLOSED_BY_CLIENT, conn.getStatus());		
 	}	
+
 
 	/**
 	 * This test will break if at its start there are any unclosed connections.

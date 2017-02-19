@@ -1,6 +1,5 @@
 package com.variant.server.hook;
 
-
 import com.variant.core.HookListener;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateParsedHook;

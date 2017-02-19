@@ -20,7 +20,7 @@ javadoc -d ${javadoc_dir}  \
    -sourcepath ${core_src_dir}:${client_src_dir}:${client_servlet_src_dir}:${server_src_dir} \
    -windowtitle "Variant ${version}" \
    -doctitle "Variant Experiment Server Release ${version}" \
-   -header "<a onclick=\"window.top.location.href='http://getvariant.com/docs';\" href=\"#\"><img style=\"margin-bottom:5px;\" src=\"http://getvariant.com/wp-content/uploads/2016/05/VariantLogoSmall.png\"/></a>" \
+   -header "<a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\"><img style=\"margin-bottom:5px;\" src=\"http://getvariant.com/wp-content/uploads/2016/05/VariantLogoSmall.png\"/></a>" \
    -bottom "Release $version. Updated $(date +"%d %b %y").<br/> Copyright &copy; 2017 Variant" \
    com.variant.core                   \
    com.variant.core.schema            \

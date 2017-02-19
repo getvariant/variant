@@ -8,8 +8,8 @@ package com.variant.core.schema.parser;
 class SemanticChecks {
 
 	/**
-	 * Check that a string is a proper Test/State/Experience name.
-	 * SQL name rule: letter (Unicode), digit and underscore, does not start with number.
+	 * Check that a string is a proper name:
+	 * SQL name rule: letter (Unicode), digit and underscore, does not start with number. Case sensitive.
 	 * @param string
 	 * @return
 	 */

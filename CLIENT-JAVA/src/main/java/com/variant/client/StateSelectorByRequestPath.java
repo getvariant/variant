@@ -1,8 +1,7 @@
-package com.variant.client.impl;
+package com.variant.client;
 
 import java.util.regex.Pattern;
 
-import com.variant.client.ClientException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 

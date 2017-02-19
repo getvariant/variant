@@ -1,7 +1,5 @@
 package com.variant.client.servlet;
 
-import java.util.Properties;
-
 import com.variant.client.VariantClient;
 import com.variant.client.servlet.impl.ServletClientImpl;
 

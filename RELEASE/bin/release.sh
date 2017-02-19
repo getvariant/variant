@@ -6,7 +6,7 @@
 #!/bin/bash
 
 export version=0.7.0
-export version2="-RC3"
+export version2=""
 
 function usage() {
     echo "$(basename $0) email"
@@ -31,7 +31,7 @@ mkdir ${stage_dir} ${target_dir} ${stage_dir}/server ${stage_dir}/java
 #
 cd ${workspace_root_dir}/CORE
 mvn clean package -DskipTests
-#cp $workspace_root_dir/CORE/target/variant-core*.jar ${stage_dir}
+cp $workspace_root_dir/CORE/target/variant-core*.jar ${stage_dir}/java
 
 #
 # SERVER
@@ -62,13 +62,14 @@ rm -rf server
 cd ${workspace_root_dir}/CLIENT-JAVA
 mvn clean package -DskipTests
 cp target/variant-java-client*.jar ${stage_dir}/java
+cp distr/variant.conf ${stage_dir}/java
 
 cd ${workspace_root_dir}/CLIENT-JAVA-SERVLET
 mvn clean package -DskipTests
 cp target/variant-java-client-servlet-adapter*.jar ${stage_dir}/java
 
 cd ${stage_dir}/java
-zip ${target_dir}/variant-${version}${version2}-java.zip *.jar
+zip ${target_dir}/variant-${version}${version2}-java.zip *
 cd ..
 rm -rf java
 
@@ -91,4 +92,4 @@ cp ${workspace_root_dir}/CLIENT-JS/target/variant*.js ${target_dir}/variant-${ve
 #
 # Javadoc
 #
-#${release_dir}/bin/javadoc.sh
+${release_dir}/bin/javadoc.sh

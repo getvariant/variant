@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.ClientException;
-import com.variant.client.impl.StateSelectorByRequestPath;
+import com.variant.client.StateSelectorByRequestPath;
 import com.variant.client.servlet.util.VariantWebUtils;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.VariantEvent;
