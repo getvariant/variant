@@ -9,22 +9,27 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Start server process in a subprocess.
+ * 
+ * @author Igor
+ */
 public class ServerProcess {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ServerProcess.class);
 	private static final long STARTUP_TIMEOUT_MILLIS = 25000; // give up if server didn't startup in 25 secs;
-	
-	/**
-	 * Static singleton.
-	 */
-	 public ServerProcess() {}
-	
+		
+	private final String pathToStartServerExec;
 	private SbtThread svrProc = null;
 	private LogReaderThread logReader = null;
 	private InputStream sbtOut;
 	private InputStream sbtErr;
 	private boolean serverUp = false;
 	
+	public ServerProcess(String pathToServerProject) {
+		pathToStartServerExec = pathToServerProject + "/bin/startServer.sh";
+	}
+
 	/**
 	 * Start the server in the background. If there's already a process in the background,
 	 * throw an exception.
@@ -87,7 +92,7 @@ public class ServerProcess {
 		@Override
 		public void run() {
 			try {
-				sbt = Runtime.getRuntime().exec("../CLIENT-JAVA/bin/startServer.sh");
+				sbt = Runtime.getRuntime().exec(pathToStartServerExec);
 				sbtOut = sbt.getInputStream();
 				sbtErr = sbt.getErrorStream();
 			}

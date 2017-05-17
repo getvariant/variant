@@ -16,7 +16,7 @@ public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 	 */
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		server = new ServerProcess();
+		server = new ServerProcess("../SERVER");
 		server.start();
 	}
 
