@@ -20,7 +20,15 @@ javadoc -d ${javadoc_dir}  \
    -sourcepath ${core_src_dir}:${client_src_dir}:${client_servlet_src_dir}:${server_src_dir} \
    -windowtitle "Variant ${version}" \
    -doctitle "Variant Experiment Server Release ${version}" \
-   -header "<a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\"><img style=\"margin-bottom:5px;\" src=\"http://getvariant.com/wp-content/uploads/2016/05/VariantLogoSmall.png\"/></a>" \
+   -header "<a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\"> <img style=\"margin-bottom:5px;\" src=\"http://getvariant.com/wp-content/uploads/2016/05/VariantLogoSmall.png\"/> \</a> \
+   <script> \
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){       \
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),     \
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)    \
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga'); \
+    ga('create', 'UA-40337670-3', 'auto');                                             \
+    ga('send', 'pageview');                                                            \
+  </script>" \
    -bottom "Release $version. Updated $(date +"%d %b %y").<br/> Copyright &copy; 2017 Variant" \
    com.variant.core                   \
    com.variant.core.schema            \
