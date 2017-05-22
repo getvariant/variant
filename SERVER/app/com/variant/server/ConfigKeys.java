@@ -7,7 +7,7 @@ package com.variant.server;
   */
 public interface ConfigKeys {
 	
-	public static final String SCHEMAS_DIR =                   "variant.schemas.dir";	
+	public static final String SCHEMATA_DIR =                  "variant.schemata.dir";	
 	public static final String MAX_CONCURRENT_CONNECTIONS =    "variant.max.concurrent.connections";
 	public static final String SESSION_TIMEOUT =               "variant.session.timeout";
 	public static final String SESSION_STORE_VACUUM_INTERVAL = "variant.session.store.vacuum.interval";

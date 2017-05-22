@@ -116,41 +116,41 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
 }
 
 /**
- * Deploy schemas from a directory on the file system.
+ * Deploy schemata from a directory on the file system.
  * Multiple schema files in directory are not yet supported,
  * user error will be thrown if number of files in
- * ServerPropertiesKey.SCHEMAS_DIR is other than 1.
+ * ServerPropertiesKey.SCHEMATA_DIR is other than 1.
  */
 class SchemaDeployerFromFS() extends AbstractSchemaDeployer {
 	         
    private val logger = Logger(this.getClass)
    
    /**
-    * Read content of schemas dir and deploy.
+    * Read content of schemata dir and deploy.
     */
    override def deploy() = {
 
-      var dirName = sys.props.get(SCHEMAS_DIR)
+      var dirName = sys.props.get(SCHEMATA_DIR)
 
       if (dirName.isEmpty) {
-         if (!server.config.hasPath(SCHEMAS_DIR))
-            throw new ServerException.User(CONFIG_PROPERTY_NOT_SET, SCHEMAS_DIR);
-         dirName = Option(server.config.getString(SCHEMAS_DIR))
+         if (!server.config.hasPath(SCHEMATA_DIR))
+            throw new ServerException.User(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
+         dirName = Option(server.config.getString(SCHEMATA_DIR))
       }
       
       val dir = new File(dirName.get)
       if (!dir.exists) 
-         throw new ServerException.User(SCHEMAS_DIR_MISSING, dirName.get)
+         throw new ServerException.User(SCHEMATA_DIR_MISSING, dirName.get)
       if (!dir.isDirectory) 
-         throw new ServerException.User(SCHEMAS_DIR_NOT_DIR, dirName.get)            
+         throw new ServerException.User(SCHEMATA_DIR_NOT_DIR, dirName.get)            
    
       val schemaFiles = dir.listFiles()
       
       if (schemaFiles.length == 0) {
-         logger.info("No schemas detected")
+         logger.info("No schemata detected")
       }
       else if (schemaFiles.length > 1)  
-         throw new ServerException.User(MULTIPLE_SCHEMAS_NOT_SUPPORTED, dirName.get)
+         throw new ServerException.User(MULTIPLE_SCHEMATA_NOT_SUPPORTED, dirName.get)
    
       val schemaFile = schemaFiles.head
       parseAndDeploy(Source.fromFile(schemaFile).mkString)

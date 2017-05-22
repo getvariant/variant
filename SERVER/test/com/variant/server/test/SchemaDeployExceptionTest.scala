@@ -29,22 +29,22 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
 
       if (testData.name.contains("CONFIG_PROPERTY_NOT_SET")) 
          new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.schemas.dir")))
+            .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.schemata.dir")))
             .build()
-      else if (testData.name.contains("SCHEMAS_DIR_MISSING")) 
+      else if (testData.name.contains("SCHEMATA_DIR_MISSING")) 
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
-            .configure(Map("variant.schemas.dir" -> "non-existent"))
+            .configure(Map("variant.schemata.dir" -> "non-existent"))
             .build()
-      else if (testData.name.contains("SCHEMAS_DIR_NOT_DIR")) 
+      else if (testData.name.contains("SCHEMATA_DIR_NOT_DIR")) 
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
-            .configure(Map("variant.schemas.dir" -> "test-schemas-file"))
+            .configure(Map("variant.schemata.dir" -> "test-schemata-file"))
             .build()
-      else if (testData.name.contains("MULTIPLE_SCHEMAS_NOT_SUPPORTED")) 
+      else if (testData.name.contains("MULTIPLE_SCHEMATA_NOT_SUPPORTED")) 
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
-            .configure(Map("variant.schemas.dir" -> "test-schemas-multi"))
+            .configure(Map("variant.schemata.dir" -> "test-schemata-multi"))
             .build()
       else 
          new GuiceApplicationBuilder()
@@ -53,7 +53,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
    }
 
    
-   "Missing variant.schemas.dir property" should {
+   "Missing variant.schemata.dir property" should {
       "throw CONFIG_PROPERTY_NOT_SET" in {
          val server = app.injector.instanceOf[VariantServer]
          server.isUp mustBe false
@@ -62,23 +62,23 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual FATAL
          ex.getMessage mustEqual 
-            new ServerException.User(CONFIG_PROPERTY_NOT_SET, ConfigKeys.SCHEMAS_DIR).getMessage
+            new ServerException.User(CONFIG_PROPERTY_NOT_SET, ConfigKeys.SCHEMATA_DIR).getMessage
       }
    }
 
-   "Missing schemas dir" should {
+   "Missing schemata dir" should {
       
-      "cause server to throw SCHEMAS_DIR_MISSING" in {
+      "cause server to throw SCHEMATA_DIR_MISSING" in {
          val server = app.injector.instanceOf[VariantServer]
          server.isUp mustBe false
          server.schema.isDefined mustBe false
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual FATAL
-         ex.getMessage mustEqual new ServerException.User(SCHEMAS_DIR_MISSING, "non-existent").getMessage
+         ex.getMessage mustEqual new ServerException.User(SCHEMATA_DIR_MISSING, "non-existent").getMessage
       }
       
-      "return 503 in every http request after SCHEMAS_DIR_MISSING" in {
+      "return 503 in every http request after SCHEMATA_DIR_MISSING" in {
          val context = app.configuration.getString("play.http.context").get
          val server = app.injector.instanceOf[VariantServer]
          server.isUp mustBe false
@@ -88,9 +88,9 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
       }
    }
    
-   "Schemas dir which is not a dir" should {
+   "Schemata dir which is not a dir" should {
       
-      "cause server to throw SCHEMAS_DIR_NOT_DIR" in {
+      "cause server to throw SCHEMATA_DIR_NOT_DIR" in {
          val server = app.injector.instanceOf[VariantServer]
          server.schema.isDefined mustBe false
          server.isUp mustBe false
@@ -98,10 +98,10 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual FATAL
-         ex.getMessage mustEqual new ServerException.User(SCHEMAS_DIR_NOT_DIR, "test-schemas-file").getMessage
+         ex.getMessage mustEqual new ServerException.User(SCHEMATA_DIR_NOT_DIR, "test-schemata-file").getMessage
       }
       
-      "return 503 in every http request after SCHEMAS_DIR_NOT_DIR" in {
+      "return 503 in every http request after SCHEMATA_DIR_NOT_DIR" in {
          val context = app.configuration.getString("play.http.context").get
          val server = app.injector.instanceOf[VariantServer]
          server.isUp mustBe false
@@ -111,9 +111,9 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
       }
    }
    
-   "Schemas dir with multiple files" should {
+   "Schemata dir with multiple files" should {
 
-      "cause server to throw MULTIPLE_SCHEMAS_NOT_SUPPORTED" in {
+      "cause server to throw MULTIPLE_SCHEMATA_NOT_SUPPORTED" in {
          val server = app.injector.instanceOf[VariantServer]
          server.schema.isDefined mustBe false
          server.isUp mustBe false
@@ -121,10 +121,10 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual FATAL
-         ex.getMessage mustEqual new ServerException.User(MULTIPLE_SCHEMAS_NOT_SUPPORTED, "test-schemas-multi").getMessage
+         ex.getMessage mustEqual new ServerException.User(MULTIPLE_SCHEMATA_NOT_SUPPORTED, "test-schemata-multi").getMessage
       }
 
-      "return 503 in every http request after MULTIPLE_SCHEMAS_NOT_SUPPORTED" in {
+      "return 503 in every http request after MULTIPLE_SCHEMATA_NOT_SUPPORTED" in {
          val context = app.configuration.getString("play.http.context").get
          val server = app.injector.instanceOf[VariantServer]
          server.isUp mustBe false

@@ -31,11 +31,11 @@ curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
             val conn = Connection(schema)
             
             if (store.put(conn)) {
-               logger.info("Opened connection [%s] to chema [%s]".format(conn.id, name))
+               logger.info("Opened connection [%s] to schema [%s]".format(conn.id, name))
                Ok(conn.asJson)
             }
             else {
-               logger.info("Unable to open connection to chema [%s]: connection table is full".format(name))
+               logger.info("Unable to open connection to schema [%s]: connection table is full".format(name))
                ServerErrorRemote(TooManyConnections).asResult()
             }
          }

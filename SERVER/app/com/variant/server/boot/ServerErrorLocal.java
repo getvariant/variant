@@ -11,11 +11,11 @@ public class ServerErrorLocal extends CommonError {
 	//
 	// 401-420 Server bootstrap
 	//
-	public final static ServerErrorLocal SCHEMAS_DIR_MISSING = 
-			new ServerErrorLocal(401, Severity.FATAL, "Schema deploy directory [%s] does not exist");
+	public final static ServerErrorLocal SCHEMATA_DIR_MISSING = 
+			new ServerErrorLocal(401, Severity.FATAL, "Schemata deploy directory [%s] does not exist");
 
-	public final static ServerErrorLocal SCHEMAS_DIR_NOT_DIR = 
-			new ServerErrorLocal(402, Severity.FATAL, "Schema deploy directory file [%s] exists but is not a directory");
+	public final static ServerErrorLocal SCHEMATA_DIR_NOT_DIR = 
+			new ServerErrorLocal(402, Severity.FATAL, "Schemata deploy directory file [%s] exists but is not a directory");
 	
 	public final static ServerErrorLocal EVENT_FLUSHER_NO_INTERFACE =
 			new ServerErrorLocal(403, Severity.FATAL, "Event flusher class [%s] must implement interface [%s]"); 
@@ -23,8 +23,8 @@ public class ServerErrorLocal extends CommonError {
 	//
 	// 421-440 Schema deployment
 	//
-	public final static ServerErrorLocal MULTIPLE_SCHEMAS_NOT_SUPPORTED = 
-			new ServerErrorLocal(421, Severity.FATAL, "Schema deploy directory [%s] cannot contain multiple files");
+	public final static ServerErrorLocal MULTIPLE_SCHEMATA_NOT_SUPPORTED = 
+			new ServerErrorLocal(421, Severity.FATAL, "Schemata directory [%s] cannot contain multiple files");
 
 	//
 	// 461-480 Other server runtime
