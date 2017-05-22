@@ -5,7 +5,7 @@
 
 #!/bin/bash
 
-export version=0.7.0
+export version=0.7.1
 export version2=""
 
 function usage() {
@@ -36,25 +36,8 @@ cp $workspace_root_dir/CORE/target/variant-core*.jar ${stage_dir}/java
 #
 # SERVER
 #
-cd ${workspace_root_dir}/SERVER
-sbt clean dist
-mv target/universal/variant-${version}.zip ${stage_dir}/server
-cd ${stage_dir}/server
-unzip variant-${version}.zip
-rm variant-${version}.zip
-cd variant-${version}
-rm -rf README share
-cp -r ${workspace_root_dir}/SERVER/distr/schemas .
-mv bin/variant bin/playapp
-mv bin/variant.bat bin/playapp.bat
-cp ${workspace_root_dir}/SERVER/distr/bin/variant.sh bin
-mkdir -p db/postgres db/h2
-cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql db/postgres
-cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql db/h2
-cd ..
-zip -r ${target_dir}/variant-${version}${version2}-server.zip variant-${version}/
-cd ..
-rm -rf server
+${workspace_root_dir}/SERVER/bin/release.sh
+mv .... ${target_dir}/variant-${version}${version2}-server.zip variant-${version}/
 
 #
 # JAVA CLIENT & SERVLET ADAPTER
