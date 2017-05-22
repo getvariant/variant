@@ -15,11 +15,11 @@
 		<jackson.version>2.5.3</jackson.version>
     </properties>
 
-    <artifactId>variant-core</artifactId>
-    <name>Variant core lib</name>
+    <artifactId>core</artifactId>
+    <name>Variant core library</name>
     <packaging>jar</packaging>
     <groupId>com.variant</groupId>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
     
     <dependencies>
         

@@ -13,19 +13,19 @@
     	
     </properties>
 
-    <artifactId>variant-java-client</artifactId>
+    <artifactId>java-client</artifactId>
     <name>Variant Java Client</name>
     <packaging>jar</packaging>
     <groupId>com.variant</groupId>
-    <version>0.7.0</version>
+    <version>0.7.1</version>
     
     <dependencies>
         
         <!-- Variant Core -->        
         <dependency>
 			<groupId>com.variant</groupId>
-			<artifactId>variant-core</artifactId>
-			<version>0.7.0</version>
+			<artifactId>core</artifactId>
+			<version>0.7.1</version>
 		</dependency>
         
         <!-- Apache Commons -->        
