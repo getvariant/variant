@@ -32,6 +32,8 @@ trait VariantServer {
    val config: Config // Do not expose Play's Configuration
    val startupErrorLog: List[ServerException.User]
    val eventWriter: EventWriter
+   val productName = "Variant Experiment Server release %s".format(SbtService.version)
+   val startTs = System.currentTimeMillis
    def schema: Option[ServerSchema]
    def hooker: UserHooker
    def installSchemaDeployer(newDeployer: SchemaDeployer): Option[ParserResponse]
@@ -42,8 +44,6 @@ trait VariantServer {
  * 
  */
 object VariantServer {
-   private [boot] val productName = "Variant Experiment Server"
-   private [boot] val startTs = System.currentTimeMillis
    private [boot] var _instance: VariantServer = null
    def server = _instance
 }
@@ -102,25 +102,18 @@ class VariantServerImpl @Inject() (
 	startupErrorLog.foreach {e => if (e.getSeverity.greaterOrEqual(ERROR)) _isUp = false}
 
 	if (!isUp) {
-		   logger.error(
-            String.format("%s release %s failed to bootstrap due to following ERRORS:",
-            productName,
-            SbtService.version))
+		   logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
 	}
 	else if (!schema.isDefined) {
-      logger.warn(
-            String.format("%s release %s bootstrapped on :%s%s in %s with WARNINGS:",
+      logger.warn("%s bootstrapped on :%s%s in %s with WARNINGS:".format(
             productName,
-            SbtService.version,
             config.getString("http.port"),
             config.getString("play.http.context"),
    			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))
 	}
 	else {
-      logger.info(
-            String.format("%s release %s bootstrapped on :%s%s in %s.",
+      logger.info("%s bootstrapped on :%s%s in %s.".format(
             productName,
-            SbtService.version,
             config.getString("http.port"),
             config.getString("play.http.context"),
    			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))
@@ -148,10 +141,8 @@ class VariantServerImpl @Inject() (
     */
    def shutdown() {
       eventWriter.shutdown()
-      logger.info(
-            String.format("%s release %s shutdown on :%s%s. Uptime %s.",
+      logger.info("%s shutdown on :%s%s. Uptime %s.".format(
             productName,
-            SbtService.version,
             config.getString("http.port"),
             config.getString("play.http.context"),
    			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))

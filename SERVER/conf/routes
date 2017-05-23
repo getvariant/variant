@@ -13,7 +13,7 @@
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 # Variant Controllers
-POST    /connection/:schema     com.variant.server.controller.ConnectionController.post(schema: String)
+POST    /connection/:schema      com.variant.server.controller.ConnectionController.post(schema: String)
 DELETE  /connection/:cid         com.variant.server.controller.ConnectionController.delete(cid: String)
 
 POST    /event                   com.variant.server.controller.EventController.post()
@@ -21,5 +21,7 @@ POST    /event                   com.variant.server.controller.EventController.p
 GET     /session/:id             com.variant.server.controller.SessionController.get(id: String)
 PUT     /session                 com.variant.server.controller.SessionController.save()
 
-POST    /request                  com.variant.server.controller.RequestController.create()
-PUT     /request                  com.variant.server.controller.RequestController.commit()
+POST    /request                 com.variant.server.controller.RequestController.create()
+PUT     /request                 com.variant.server.controller.RequestController.commit()
+
+GET     /                        com.variant.server.controller.RootController.splash()
