@@ -145,7 +145,7 @@ class VariantServerImpl @Inject() (
             productName,
             config.getString("http.port"),
             config.getString("play.http.context"),
-   			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))
+   			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "HH:mm:ss")))
    }
    
    // When the application starts, register a stop hook with the
