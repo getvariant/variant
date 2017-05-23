@@ -29,15 +29,14 @@ mkdir ${stage_dir} ${target_dir} ${stage_dir}/server ${stage_dir}/java
 #
 # CORE
 #
-cd ${workspace_root_dir}/CORE
-mvn clean package -DskipTests
+${workspace_root_dir}/CORE/bin/release.sh
 cp $workspace_root_dir/CORE/target/variant-core*.jar ${stage_dir}/java
 
 #
 # SERVER
 #
 ${workspace_root_dir}/SERVER/bin/release.sh
-mv .... ${target_dir}/variant-${version}${version2}-server.zip variant-${version}/
+cp .... ${target_dir}/variant-${version}${version2}-server.zip variant-${version}/
 
 #
 # JAVA CLIENT & SERVLET ADAPTER
