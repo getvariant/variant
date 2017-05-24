@@ -1,65 +1,49 @@
 package com.variant.core.impl;
 
-import java.util.ArrayList;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.variant.core.HookListener;
 import com.variant.core.UserHook;
 
 /**
- * User Hook processor
+ * User Hook processor.
  * 
  * @author
  *
  */
-public class UserHooker {
-
-	private static final Logger LOG = LoggerFactory.getLogger(UserHooker.class);
-
-	private ArrayList<HookListener<? extends UserHook>> listeners = 
-			new ArrayList<HookListener<? extends UserHook>>();
+public interface UserHooker {
 
 	/**
-	 * Package instantiation only.
+	 * Add a single custom hook listener to this hooker.
 	 */
-	public UserHooker() {}
+	void addListener(@SuppressWarnings("unchecked") HookListener<? extends UserHook>... listener);
 	
 	/**
-	 * 
-	 * @param listener
+	 * Remove all custom hook listeners. 
 	 */
-	@SuppressWarnings("unchecked") 
-	public void addListener(HookListener<? extends UserHook>... listeners) {
-		for (int i = 0; i < listeners.length; i++)
-			this.listeners.add(listeners[i]);
-	}
-	
-	/**
-	 * 
-	 */
-	public void clear() {
-		listeners.clear();
-	}
+	void clear();
 
 	/**
-	 * Post all listeners listening on a particular hook.
-	 * @param listenerClass
+	 * Post all listeners for a particular hook type.
 	 * @param hook
 	 * @return the hook passed in as argument.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public UserHook post(UserHook hook) {
-		for (HookListener listener: listeners) {
-			if (listener.getHookClass().isInstance(hook)) {
-				listener.post(hook);
-				if (LOG.isTraceEnabled())
-					LOG.trace("Posted user hook [" + hook.getClass().getName() + "]");
-			}
-		}
-		return hook;
-	}
+	public UserHook post(UserHook hook);
 
+	/**
+	 * Null Hooker which does nothing whatsoever.
+	 * Good enough for core tests and for the client side (there are no hooks on the client).
+	 * @author Igor
+	 *
+	 */
+	public static class Null implements UserHooker {
+		
+		@Override
+		public void addListener(@SuppressWarnings("unchecked") HookListener<? extends UserHook>... listener) {}
+		
+		@Override
+		public void clear() {}
+
+		@Override
+		public UserHook post(UserHook hook) {return hook;}
+	}
 }
 

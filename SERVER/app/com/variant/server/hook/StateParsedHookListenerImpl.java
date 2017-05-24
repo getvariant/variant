@@ -1,5 +1,5 @@
 package com.variant.server.hook;
-
+/*
 import com.variant.core.HookListener;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateParsedHook;
@@ -15,12 +15,12 @@ import com.variant.core.schema.StateParsedHook;
  * 
  * @since 0.5
  * @see HookListener
- */
+ *
 public class StateParsedHookListenerImpl implements HookListener<StateParsedHook> {
 
 	/**
 	 * The hook type we want to be posted on.
-	 */
+	 *
 	@Override
 	public Class<StateParsedHook> getHookClass() {
 		return StateParsedHook.class;
@@ -31,7 +31,7 @@ public class StateParsedHookListenerImpl implements HookListener<StateParsedHook
 	 * We check this in order to avoid relative path references.
      *
 	 * @see HookListener#post(com.variant.core.hook.UserHook)
-	 */
+	 *
 	@Override
 	public void post(StateParsedHook hook) {
 		State state = hook.getState();
@@ -42,3 +42,4 @@ public class StateParsedHookListenerImpl implements HookListener<StateParsedHook
 	}	
 
 }
+*/

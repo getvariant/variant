@@ -1,11 +1,12 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import com.variant.core.UserError.Severity;
-import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.parser.ParserError;
@@ -71,7 +72,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -98,7 +99,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  }                                                            \n" +
 			    "}                                                              \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -158,7 +159,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -219,7 +220,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -291,7 +292,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 		
 		assertTrue(response.hasMessages());
@@ -362,7 +363,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -429,7 +430,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -495,7 +496,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -532,7 +533,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 		
 		assertTrue(response.hasMessages());
@@ -570,7 +571,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 		
 		assertTrue(response.hasMessages());
@@ -638,7 +639,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 				"  'invalid clause': 'throw an error'                          \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -710,7 +711,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -780,7 +781,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -879,7 +880,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 		
 		assertTrue(response.hasMessages());
@@ -951,7 +952,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 	
 		assertTrue(response.hasMessages());
@@ -1012,7 +1013,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1075,7 +1076,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1148,7 +1149,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1238,7 +1239,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1312,7 +1313,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 	
 		assertTrue(response.hasMessages());
@@ -1383,7 +1384,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1455,7 +1456,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 	
 		assertTrue(response.hasMessages());
@@ -1526,7 +1527,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 	
 		assertTrue(response.hasMessages());
@@ -1585,7 +1586,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 	
 		assertTrue(response.hasMessages());
@@ -1644,7 +1645,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 	
 		assertTrue(response.hasMessages());
@@ -1715,7 +1716,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 	
 		assertTrue(response.hasMessages());
@@ -1785,7 +1786,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1867,7 +1868,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1939,7 +1940,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2011,7 +2012,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2083,7 +2084,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2149,7 +2150,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2221,7 +2222,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2293,7 +2294,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2356,7 +2357,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2420,7 +2421,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2497,7 +2498,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2577,7 +2578,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2648,7 +2649,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2728,7 +2729,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2797,7 +2798,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2872,7 +2873,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2951,7 +2952,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -3032,7 +3033,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -3110,7 +3111,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -3181,7 +3182,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
@@ -3352,7 +3353,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
@@ -3410,7 +3411,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 		
 		assertFalse(response.hasMessages(Severity.FATAL));
@@ -3465,7 +3466,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
@@ -3523,7 +3524,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
@@ -3581,7 +3582,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
@@ -3639,7 +3640,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
@@ -3697,7 +3698,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
@@ -3756,7 +3757,7 @@ public class ParserSerialErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
 		assertFalse(response.hasMessages(Severity.FATAL));

@@ -9,14 +9,14 @@ import com.variant.core.UserError.Severity._
 import com.variant.server.schema.SchemaDeployer
 import com.variant.core.schema.TestParsedHook
 import com.variant.core.schema.Test
-import com.variant.core.TestQualificationHook
 import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
-import com.variant.core.TestTargetingHook
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.CommonError._
 import com.variant.server.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
+import com.variant.server.TestQualificationHook
+import com.variant.server.TestTargetingHook
 
 /**
  * TODO: Need to also test annotations.

@@ -12,7 +12,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.variant.core.UserError.Severity;
-import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.parser.ParserMessageImpl;
@@ -194,7 +193,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(SCHEMA);
 
 		assertTrue(response.hasMessages());
@@ -329,7 +328,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(SCHEMA);
 
 		assertTrue(response.hasMessages());
@@ -478,7 +477,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(SCHEMA);
 
 		assertTrue(response.hasMessages());
@@ -629,7 +628,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(SCHEMA);
 
 		assertTrue(response.hasMessages());
@@ -826,7 +825,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(SCHEMA);
 
 		assertTrue(response.hasMessages());
@@ -1144,7 +1143,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(SCHEMA);
 		assertFalse(response.hasMessages());
 	}

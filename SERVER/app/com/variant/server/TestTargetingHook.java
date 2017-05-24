@@ -1,4 +1,4 @@
-package com.variant.core;
+package com.variant.server;
 
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;

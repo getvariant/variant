@@ -26,7 +26,12 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.util.VariantStringUtils;
 
-public class SchemaParser implements Keywords {
+/**
+ * Client side schema parser does not need a hooker because there are hook listeners on the client.
+ * @author Igor
+ *
+ */
+public abstract class SchemaParser implements Keywords {
 	
 	//private static final Logger LOG = LoggerFactory.getLogger(SchemaParser.class);
 	
@@ -53,8 +58,6 @@ public class SchemaParser implements Keywords {
 		response.addMessage(JSON_PARSE, line, column, message.toString(), rawInput);
 
 	}
-
-	private UserHooker hooker;
 	
 	/**
 	 * Schema pre-parser.
@@ -90,13 +93,11 @@ public class SchemaParser implements Keywords {
 		return result.toString();
 	}
 	
+	protected abstract UserHooker getHooker();
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-	
-	public SchemaParser(UserHooker hooker) {
-		this.hooker = hooker;
-	}
 	
 	/**
 	 * Parse schema from input stream. 
@@ -188,7 +189,7 @@ public class SchemaParser implements Keywords {
 			// Post user hook listeners.
 			for (State state: response.getSchema().getStates()) {
 				try {
-					hooker.post(new StateParsedHookImpl(state, response));
+					getHooker().post(new StateParsedHookImpl(state, response));
 				}
 				catch (VariantException e) {
 					response.addMessage(CommonError.HOOK_LISTENER_EXCEPTION, StateParsedHookImpl.class.getName(), e.getMessage());
@@ -213,7 +214,7 @@ public class SchemaParser implements Keywords {
 			// Post user hook listeners.
 			for (Test test: response.getSchema().getTests()) {
 				try {
-					hooker.post(new TestParsedHookImpl(test, response));
+					getHooker().post(new TestParsedHookImpl(test, response));
 				}
 				catch (VariantException e) {
 					response.addMessage(CommonError.HOOK_LISTENER_EXCEPTION, TestParsedHookImpl.class.getName(), e.getMessage());

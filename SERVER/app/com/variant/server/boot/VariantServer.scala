@@ -35,7 +35,7 @@ trait VariantServer {
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
    def schema: Option[ServerSchema]
-   def hooker: UserHooker
+   def hooker: ServerHooker
    def installSchemaDeployer(newDeployer: SchemaDeployer): Option[ParserResponse]
    def runtime: Runtime
 }
@@ -58,7 +58,7 @@ class VariantServerImpl @Inject() (
       //router: Provider[Router] DI craps out with circular dependency
       ) extends VariantServer {
    
-	private val logger = Logger(this.getClass)
+	private[this] val logger = Logger(this.getClass)
    
 	import VariantServer._
 	
@@ -66,7 +66,7 @@ class VariantServerImpl @Inject() (
 
 	override val config = playConfig.underlying
    override val eventWriter = new EventWriter(config)      
-   override val hooker = new UserHooker()
+   override val hooker = new ServerHooker()
    override val runtime = new Runtime(this) // THIS? 
 
 	private var _isUp = true

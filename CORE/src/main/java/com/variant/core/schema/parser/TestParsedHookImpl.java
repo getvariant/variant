@@ -1,6 +1,5 @@
 package com.variant.core.schema.parser;
 
-import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.TestParsedHook;

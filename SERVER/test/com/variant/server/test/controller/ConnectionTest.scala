@@ -13,6 +13,7 @@ import com.variant.server.ConfigKeys._
 import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.core.impl.UserHooker
+import com.variant.server.schema.ServerSchemaParser
 
 /*
  * Reusable event JSON objects. 
@@ -93,7 +94,7 @@ class ConnectionTest extends BaseSpecWithServer {
          (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
          (json \ "ts").asOpt[Long].isDefined mustBe true
          val schemaSrc = (json \ "schema").as[String]
-         val parser = new SchemaParser(new UserHooker())
+         val parser = ServerSchemaParser(server.hooker)
          val parserResp = parser.parse(schemaSrc)
          parserResp.hasMessages() mustBe false
    		parserResp.getSchema() mustNot be (null)
@@ -130,7 +131,7 @@ class ConnectionTest extends BaseSpecWithServer {
             (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
             (json \ "ts").asOpt[Long].isDefined mustBe true
             val schemaSrc = (json \ "schema").as[String]
-            val parser = new SchemaParser(new UserHooker())
+            val parser = ServerSchemaParser(server.hooker)
             val parserResp = parser.parse(schemaSrc)
             parserResp.hasMessages() mustBe false
       		parserResp.getSchema() mustNot be (null)
@@ -163,7 +164,7 @@ class ConnectionTest extends BaseSpecWithServer {
          (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
          (json \ "ts").asOpt[Long].isDefined mustBe true
          val schemaSrc = (json \ "schema").as[String]
-         val parser = new SchemaParser(new UserHooker())
+         val parser = ServerSchemaParser(server.hooker)
          val parserResp = parser.parse(schemaSrc)
          parserResp.hasMessages() mustBe false
    		parserResp.getSchema() mustNot be (null)

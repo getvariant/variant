@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.CoreStateRequest;
 import com.variant.core.util.VariantStringUtils;
-import com.variant.core.TestQualificationHook;
-import com.variant.core.TestTargetingHook;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.schema.State;
@@ -28,6 +26,8 @@ import com.variant.core.schema.impl.TestOnStateImpl;
 import static com.variant.server.boot.ServerErrorLocal.*;
 
 import com.variant.server.ServerException;
+import com.variant.server.TestQualificationHook;
+import com.variant.server.TestTargetingHook;
 import com.variant.server.boot.VariantServer;
 import com.variant.server.schema.ServerSchema;
 

@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
@@ -121,7 +120,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
@@ -257,7 +256,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
@@ -390,7 +389,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
@@ -603,7 +602,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 	@org.junit.Test
 	public void happyPathTest() throws Exception {
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());

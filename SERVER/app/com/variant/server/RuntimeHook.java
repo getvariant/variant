@@ -1,5 +1,6 @@
-package com.variant.core;
+package com.variant.server;
 
+import com.variant.core.UserHook;
 import com.variant.core.session.CoreSession;
 
 

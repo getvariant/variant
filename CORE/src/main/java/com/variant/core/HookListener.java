@@ -15,7 +15,7 @@ package com.variant.core;
  *
  */
 
-public interface HookListener <H extends UserHook> {
+public interface HookListener<H extends UserHook> {
 
 	/**
 	 * Implementation must tell the server what user hook type(s) it wants to be posted on.
