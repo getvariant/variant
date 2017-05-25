@@ -20,11 +20,9 @@ import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
 import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
-import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.parser.SchemaParser;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.VariantStringUtils;
 
@@ -179,7 +177,7 @@ public class ConnectionImpl implements Connection {
 		sessionTimeoutMillis = payload.sessionTimeout * 1000;
 		cache = new SessionCache(sessionTimeoutMillis);
 		
-		ParserResponse resp = new SchemaParser(new UserHooker()).parse(payload.schemaSrc);
+		ParserResponse resp = new ClientSchemaParser().parse(payload.schemaSrc);
 		if (resp.hasMessages(Severity.ERROR)) {
 			StringBuilder buff = new StringBuilder("Unable to parse schema:\n");
 			for (ParserMessage msg: resp.getMessages()) buff.append("    ").append(msg.toString()).append("\n");
