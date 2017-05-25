@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.HookListener;
+import com.variant.core.LifecycleEvent;
 import com.variant.core.UserHook;
 import com.variant.core.impl.UserHooker;
 
@@ -19,8 +19,7 @@ public class ServerHooker  implements UserHooker {
 
 	private static final Logger LOG = LoggerFactory.getLogger(UserHooker.class);
 
-	private ArrayList<HookListener<? extends UserHook>> listeners = 
-			new ArrayList<HookListener<? extends UserHook>>();
+	private ArrayList<UserHook<? extends LifecycleEvent>> hooks = new ArrayList<UserHook<? extends LifecycleEvent>>();
 
 	/**
 	 * Package instantiation only.
@@ -28,37 +27,41 @@ public class ServerHooker  implements UserHooker {
 	ServerHooker() {}
 	
 	/**
+	 * Add one or more user hooks.
 	 * 
-	 * @param listener
+	 * @param hooks
 	 */
-	public void addListener(@SuppressWarnings("unchecked") HookListener<? extends UserHook>... listeners) {
-		for (int i = 0; i < listeners.length; i++)
-			this.listeners.add(listeners[i]);
+	@Override
+	public void addHook(@SuppressWarnings("unchecked") UserHook<? extends LifecycleEvent>... hooks) {
+		for (int i = 0; i < hooks.length; i++)
+			this.hooks.add(hooks[i]);
 	}
 	
 	/**
 	 * 
 	 */
+	@Override
 	public void clear() {
-		listeners.clear();
+		hooks.clear();
 	}
 
 	/**
-	 * Post all listeners listening on a particular hook.
+	 * Post all hooks listening on a particular LSE.
 	 * @param listenerClass
 	 * @param hook
 	 * @return the hook passed in as argument.
 	 */
+	@Override
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public UserHook post(UserHook hook) {
-		for (HookListener listener: listeners) {
-			if (listener.getHookClass().isInstance(hook)) {
-				listener.post(hook);
+	public LifecycleEvent post(LifecycleEvent event) {
+		for (UserHook hook: hooks) {
+			if (hook.getLifecycleEventClass().isInstance(event)) {
+				hook.post(event);
 				if (LOG.isTraceEnabled())
 					LOG.trace("Posted user hook [" + hook.getClass().getName() + "]");
 			}
 		}
-		return hook;
+		return event;
 	}
 
 }

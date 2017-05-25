@@ -1,13 +1,13 @@
 package com.variant.server.test;
 
-import com.variant.core.HookListener
-import com.variant.core.schema.StateParsedHook
+import com.variant.core.UserHook
+import com.variant.core.schema.StateParsedLifecycleEvent
 import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
 import com.variant.server.schema.SchemaDeployer
-import com.variant.core.schema.TestParsedHook
+import com.variant.core.schema.TestParsedLifecycleEvent
 import com.variant.core.schema.Test
 import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
@@ -15,8 +15,9 @@ import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.CommonError._
 import com.variant.server.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.server.TestQualificationHook
-import com.variant.server.TestTargetingHook
+import com.variant.server.TestQualificationLifecycleEvent
+import com.variant.server.TestTargetingLifecycleEvent
+import com.variant.core.LifecycleEvent
 
 /**
  * TODO: Need to also test annotations.
@@ -33,8 +34,8 @@ class UserHookTest extends BaseSpecWithServer {
 	"StateParsedHook listener" should {
 	   "be posted when state is parsed" in {
 	      
-   		val listener = new StateParsedHookListener
-   		server.hooker.addListener(listener)
+   		val listener = new StateParsedHook
+   		server.hooker.addHook(listener)
    		val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR) mustNot be (empty)
@@ -52,8 +53,8 @@ class UserHookTest extends BaseSpecWithServer {
 	   "be posted when test is parsed" in {
 	      
    	   server.hooker.clear()
-   	   val listener = new TestParsedHookListener
-   	   server.hooker.addListener(listener)
+   	   val listener = new TestParsedHook
+   	   server.hooker.addHook(listener)
          val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR) mustNot be (empty)
@@ -71,9 +72,9 @@ class UserHookTest extends BaseSpecWithServer {
 	   "both be posted, states first, then tests" in {
 	      
    	   server.hooker.clear()
-   	   val stateListener = new StateParsedHookListener
-   	   val testListener = new TestParsedHookListener
-   	   server.hooker.addListener(testListener, stateListener)
+   	   val stateListener = new StateParsedHook
+   	   val testListener = new TestParsedHook
+   	   server.hooker.addHook(testListener, stateListener)
          val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR) mustNot be (empty)
@@ -89,14 +90,14 @@ class UserHookTest extends BaseSpecWithServer {
 
 	"TestQualificationHook" should {
 	   
-   	val nullListener = new TestQualificationHookListenerNil
+   	val nullListener = new TestQualificationHookNil
 	   var ssn = ServerSession.empty(newSid())
 
       "be posted for tests instrumented on state1" in {
 
          server.hooker.clear()
          
-    		server.hooker.addListener(nullListener);
+    		server.hooker.addHook(nullListener);
          val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
    	   response.hasMessages() mustBe false		
    		nullListener.testList mustBe empty
@@ -171,12 +172,12 @@ class UserHookTest extends BaseSpecWithServer {
    	   val test6 = schema.getTest("test6")
 
    	   server.hooker.clear()
-   	   val dl1 = new TestQualificationHookListenerDisqual(false, test1)
-   	   val dl2 = new TestQualificationHookListenerDisqual(false, test2)
-   	   val dl6 = new TestQualificationHookListenerDisqual(false, test6)
-		   server.hooker.addListener(dl1)
-		   server.hooker.addListener(dl2)
-		   server.hooker.addListener(dl6)
+   	   val dl1 = new TestQualificationHookDisqual(false, test1)
+   	   val dl2 = new TestQualificationHookDisqual(false, test2)
+   	   val dl6 = new TestQualificationHookDisqual(false, test6)
+		   server.hooker.addHook(dl1)
+		   server.hooker.addHook(dl2)
+		   server.hooker.addHook(dl6)
 
 		   ssn = ServerSession.empty(newSid())
 		   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
@@ -210,8 +211,8 @@ class UserHookTest extends BaseSpecWithServer {
    	   val test6 = schema.getTest("test6")
 
    	   // second test1 listener, in addition to one added in previous test.
-   	   val dl1 = new TestQualificationHookListenerDisqual(true, test1)
-		   server.hooker.addListener(dl1)
+   	   val dl1 = new TestQualificationHookDisqual(true, test1)
+		   server.hooker.addHook(dl1)
 
 		   val req = ssn.targetForState(state2);
 		   ssn.getTraversedStates.toSet mustEqual Set((state1,1), (state2,1))
@@ -275,14 +276,14 @@ class UserHookTest extends BaseSpecWithServer {
    	   val test6 = schema.getTest("test6")
 		
 	   	// ON - should be posted.
-		   val l1 = new TargetingHookListener(test1, test1.getExperience("B"));
+		   val l1 = new TargetingHook(test1, test1.getExperience("B"));
 
 	   	// OFF - should not be posted.
-	   	val l2 = new TargetingHookListener(test2, test2.getExperience("C"))
+	   	val l2 = new TargetingHook(test2, test2.getExperience("C"))
 
 
    	   server.hooker.clear()
-   		server.hooker.addListener(l1, l2)
+   		server.hooker.addHook(l1, l2)
    		
    		// New session.
          ssn = ServerSession.empty(newSid())
@@ -324,8 +325,8 @@ class UserHookTest extends BaseSpecWithServer {
    	   val test6 = schema.getTest("test6")
 		   
 
-		   val l = new TargetingHookListener(test1, test3.getControlExperience())
-		   server.hooker.addListener(l)
+		   val l = new TargetingHook(test1, test3.getControlExperience())
+		   server.hooker.addHook(l)
 	
 		   var ssn = ServerSession.empty(newSid())
          ssn.targetForState(state1)   // Ok - state1 is not instrumented by test1
@@ -350,56 +351,56 @@ class UserHookTest extends BaseSpecWithServer {
 	/**
 	 * 
 	 */
-	class StateParsedHookListener extends HookListener[StateParsedHook] {
+	class StateParsedHook extends UserHook[StateParsedLifecycleEvent] {
 	   val stateList = ListBuffer[State]()
-		override def getHookClass() = classOf[StateParsedHook]
-      override def post(hook: StateParsedHook) {
-	      stateList += hook.getState()
-			hook.addMessage(MESSAGE_TEXT_STATE)
+		override def getLifecycleEventClass() = classOf[StateParsedLifecycleEvent]
+      override def post(event: StateParsedLifecycleEvent) {
+	      stateList += event.getState()
+			event.addMessage(MESSAGE_TEXT_STATE)
       }
    }
 
 	/**
 	 * 
 	 */
-	class TestParsedHookListener extends HookListener[TestParsedHook] {
+	class TestParsedHook extends UserHook[TestParsedLifecycleEvent] {
 	   val testList = ListBuffer[Test]()
-		override def getHookClass() = classOf[TestParsedHook]
-      override def post(hook: TestParsedHook) {
-	      testList += hook.getTest()
-			hook.addMessage(MESSAGE_TEXT_TEST)
+		override def getLifecycleEventClass() = classOf[TestParsedLifecycleEvent]
+      override def post(event: TestParsedLifecycleEvent) {
+	      testList += event.getTest()
+			event.addMessage(MESSAGE_TEXT_TEST)
       }
    }
 
 	/**
 	 * Do nothing. Tests should be qualified by default.
 	 */
-	class TestQualificationHookListenerNil extends HookListener[TestQualificationHook] {
+	class TestQualificationHookNil extends UserHook[TestQualificationLifecycleEvent] {
 		val testList = ListBuffer[Test]()
-		override def getHookClass() = classOf[TestQualificationHook]
-		override def post(hook: TestQualificationHook) {
-			testList += hook.getTest()
+		override def getLifecycleEventClass() = classOf[TestQualificationLifecycleEvent]
+		override def post(event: TestQualificationLifecycleEvent) {
+			testList += event.getTest()
 		}		
 	}
 
 	/**
 	 * Disqualify passed tests and optionally remove their entries from targeting stabile
 	 */
-	class TestQualificationHookListenerDisqual(removeFromStabile: Boolean, testsToDisqualify:Test*) 
-	extends HookListener[TestQualificationHook] {
+	class TestQualificationHookDisqual(removeFromStabile: Boolean, testsToDisqualify:Test*) 
+	extends UserHook[TestQualificationLifecycleEvent] {
 
 		val testList = ListBuffer[Test]()
 
-		override def getHookClass() = classOf[TestQualificationHook]
+		override def getLifecycleEventClass() = classOf[TestQualificationLifecycleEvent]
 		
-		override def post(hook: TestQualificationHook) {
-			assert(hook.getSession() != null, "No session passed")
-			assert(hook.getTest() != null, "No test passed")
-			val test = testsToDisqualify.find { t => t.equals(hook.getTest()) }			
+		override def post(event: TestQualificationLifecycleEvent) {
+			assert(event.getSession() != null, "No session passed")
+			assert(event.getTest() != null, "No test passed")
+			val test = testsToDisqualify.find { t => t.equals(event.getTest()) }			
 			if (test.isDefined) {
-				testList.add(hook.getTest());
-				hook.setQualified(false);
-				hook.setRemoveFromTargetingTracker(removeFromStabile);
+				testList.add(event.getTest());
+				event.setQualified(false);
+				event.setRemoveFromTargetingTracker(removeFromStabile);
 			}
 		}		
 	}
@@ -407,21 +408,21 @@ class UserHookTest extends BaseSpecWithServer {
 	/**
 	 * 
 	 */
-	class TargetingHookListener(forTest: Test, targetExperience: Test.Experience) 
-	extends HookListener[TestTargetingHook] {
+	class TargetingHook(forTest: Test, targetExperience: Test.Experience) 
+	extends UserHook[TestTargetingLifecycleEvent] {
 
 		var count = 0
 		
-		override def getHookClass() = classOf[TestTargetingHook]
+		override def getLifecycleEventClass() = classOf[TestTargetingLifecycleEvent]
 
 		@Override
-		override def post(hook: TestTargetingHook) {
-			assert(hook.getSession() != null, "No session passed")
-			assert(hook.getTest() != null, "No test passed")
-			assert(hook.getState() != null, "No state passed")
-			if (hook.getTest().equals(forTest)) {
+		override def post(event: TestTargetingLifecycleEvent) {
+			assert(event.getSession() != null, "No session passed")
+			assert(event.getTest() != null, "No test passed")
+			assert(event.getState() != null, "No state passed")
+			if (event.getTest().equals(forTest)) {
 				count += 1
-				hook.setTargetedExperience(targetExperience);
+				event.setTargetedExperience(targetExperience);
 			}
 		}
 	}

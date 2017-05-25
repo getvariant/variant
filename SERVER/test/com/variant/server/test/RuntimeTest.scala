@@ -1,13 +1,10 @@
 package com.variant.server.test;
 
-import com.variant.core.HookListener
-import com.variant.core.schema.StateParsedHook
 import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
 import com.variant.server.schema.SchemaDeployer
-import com.variant.core.schema.TestParsedHook
 import com.variant.core.schema.Test
 import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._

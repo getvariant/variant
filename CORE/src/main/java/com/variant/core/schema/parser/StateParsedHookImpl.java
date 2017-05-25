@@ -2,14 +2,14 @@ package com.variant.core.schema.parser;
 
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.State;
-import com.variant.core.schema.StateParsedHook;
+import com.variant.core.schema.StateParsedLifecycleEvent;
 
 /**
  * 
  * @author Igor
  *
  */
-class StateParsedHookImpl implements StateParsedHook {
+class StateParsedHookImpl implements StateParsedLifecycleEvent {
 
 	private State state;
 	private ParserResponse response;

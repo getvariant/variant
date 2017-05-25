@@ -20,7 +20,7 @@ import com.variant.core.schema.Test.Experience;
  * @since 0.5
  *
  */
-public interface TestTargetingHook extends RuntimeHook {
+public interface TestTargetingLifecycleEvent extends RuntimeLifecycleEvent {
 
 	/**
 	 * The Test for which this user hook is posting.

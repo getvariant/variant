@@ -1,18 +1,39 @@
 package com.variant.core;
 
 /**
- * Marker, ultimate super-interface for all user hook types. Concrete implementations
- * are made available to host code via the {@link HookListener#post(UserHook)} callback.
- * Any concrete user hook class will implement some sub-interface of this.
- *
- * User hooks provide a consistent way of extending the functionality of Variant server 
- * with custom semantics. They are predefined points in the execution path, to which the 
- * application developer may attach a callback method to be invoked by the server whenever 
- * that point is reached. To attach a custom callback method to a user hook, application 
- * programmer must register a hook listener by passing it to <code>VariantClient.addHookListener(HookListener)</code>.
- *  
- * @author Igor Urisman.
+ * <p>The interface to be implemented by a user hook, which wants to be posted by a life cycle event.
+ * Whenever Variant server reaches the execution point corresponding to the life cycle event
+ * type assignable to the class returned by {@link #getLifecycleEventClass()}, this listener is posted by 
+ * Variant server via the {@link #post(LifecycleEvent)} method.
+ * 
+ * <p>It is permissible to register multiple listeners for the same hook type.
+ * In this case, Variant server will call them in the order of registration until {@link #post(LifecycleEvent)}
+ * returns a value other than null.
+ * 
+ * @author Igor Urisman
  * @since 0.5
+ *
  */
 
-public interface UserHook {}
+public interface UserHook<E extends LifecycleEvent> {
+
+	/**
+	 * Implementation must tell the server what life cycle event type(s) it wants to be posted on.
+	 * If this method returns a super-type, this hook will be posted for all descendant 
+	 * event types.
+	 * 
+	 * @return A {@link java.lang.Class} object associated with the life cycle event type(s) of interest.
+     * @since 0.5
+	 */
+	public Class<E> getLifecycleEventClass();
+	
+	/**
+	 * The callback method called by the server when a life cycle event of type assignable to that returned
+	 * by {@link #getLifecycleEventClass()} is reached.
+	 * 
+	 * @param event The posting event. May be further examined for details of the posting life cycle event.
+     * @since 0.5
+	 */
+	public void post(E event);
+
+}

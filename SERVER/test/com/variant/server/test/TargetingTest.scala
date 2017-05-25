@@ -7,9 +7,9 @@ import com.variant.server.session.ServerSession
 import com.variant.core.session.CoreStateRequest
 import com.variant.core.util.VariantStringUtils
 import scala.collection.JavaConverters
-import com.variant.core.HookListener
 import scala.util.Random
-import com.variant.server.TestTargetingHook
+import com.variant.server.TestTargetingLifecycleEvent
+import com.variant.core.UserHook
 
 class TargetingTest extends BaseSpecWithServer {
 
@@ -113,9 +113,9 @@ class TargetingTest extends BaseSpecWithServer {
        
    	"target according to weights with null targeting listener" in {
 
-   		val nullListener = new NullTargetingHookListener()
+   		val nullListener = new NullTargetingHook
    	   nullListener.postCount mustBe 0
-   		server.hooker.addListener(nullListener)
+   		server.hooker.addHook(nullListener)
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
    			val ssn = ServerSession.empty("sid" + i)
@@ -134,10 +134,10 @@ class TargetingTest extends BaseSpecWithServer {
       "target according to weights with two null targeting listeners" in {
 
          server.hooker.clear()
-         val nullListener1 = new NullTargetingHookListener()
-         val nullListener2 = new NullTargetingHookListener()
-   		server.hooker.addListener(nullListener1)
-   		server.hooker.addListener(nullListener2)
+         val nullListener1 = new NullTargetingHook
+         val nullListener2 = new NullTargetingHook
+   		server.hooker.addHook(nullListener1)
+   		server.hooker.addHook(nullListener2)
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
    			val ssn = ServerSession.empty("sid" + 1)
@@ -157,10 +157,10 @@ class TargetingTest extends BaseSpecWithServer {
       "target at 1/1/0 with the null listener and the A/B listener" in {
 
          server.hooker.clear()
-         val nullListener = new NullTargetingHookListener()
-   		val abListener = new ABTargetingHookListener()
-   		server.hooker.addListener(nullListener)
-   		server.hooker.addListener(abListener)
+         val nullListener = new NullTargetingHook
+   		val abListener = new ABTargetingHook
+   		server.hooker.addHook(nullListener)
+   		server.hooker.addHook(abListener)
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
    			val ssn = ServerSession.empty("sid" + 1)
@@ -180,10 +180,10 @@ class TargetingTest extends BaseSpecWithServer {
 		"still target at 1/0/1 with the null listener and the AC listener" in {
          
          server.hooker.clear()
-         val nullListener = new NullTargetingHookListener()
-   		val acListener = new ACTargetingHookListener()
-   		server.hooker.addListener(nullListener)
-   		server.hooker.addListener(acListener)
+         val nullListener = new NullTargetingHook
+   		val acListener = new ACTargetingHook
+   		server.hooker.addHook(nullListener)
+   		server.hooker.addHook(acListener)
          val counts = Array(0,0,0)
    		for (i <- 1 to trials) {
    			val ssn = ServerSession.empty("sid" + 1)
@@ -203,10 +203,10 @@ class TargetingTest extends BaseSpecWithServer {
 		"trarget at 2/1/1 with the a/b and a/c listeners" in {
 
 		   server.hooker.clear()
-   		val abNullListener = new ABNullTargetingHookListener()
-		   val acListener = new ACTargetingHookListener()
-   		server.hooker.addListener(abNullListener)
-   		server.hooker.addListener(acListener)
+   		val abNullListener = new ABNullTargetingHook
+		   val acListener = new ACTargetingHook
+   		server.hooker.addHook(abNullListener)
+   		server.hooker.addHook(acListener)
          val counts = Array(0,0,0)
    		for (i <- 1 to trials) {
    			val ssn = ServerSession.empty("sid" + 1)
@@ -255,13 +255,13 @@ class TargetingTest extends BaseSpecWithServer {
 /**
  * targeting listener does nothing, except increments the post counter.
  */
-class NullTargetingHookListener extends HookListener[TestTargetingHook] {
+class NullTargetingHook extends UserHook[TestTargetingLifecycleEvent] {
 	
 	var postCount = 0;
 	
-	override def getHookClass() = classOf[TestTargetingHook]
+	override def getLifecycleEventClass() = classOf[TestTargetingLifecycleEvent]
 	
-	override def post(hook: TestTargetingHook) { 
+	override def post(event: TestTargetingLifecycleEvent) { 
 	   postCount += 1 
 	}
 
@@ -269,37 +269,37 @@ class NullTargetingHookListener extends HookListener[TestTargetingHook] {
 /**
  * Targeting listener returns A or B with equal probability.
  */
-class ABTargetingHookListener extends HookListener[TestTargetingHook] {
+class ABTargetingHook extends UserHook[TestTargetingLifecycleEvent] {
 
 	var postCount = 0;
    val rand = new Random(System.currentTimeMillis())
    
-	override def getHookClass() = classOf[TestTargetingHook]
+	override def getLifecycleEventClass() = classOf[TestTargetingLifecycleEvent]
 	
-	override def post(hook: TestTargetingHook) {
+	override def post(event: TestTargetingLifecycleEvent) {
 		postCount += 1
-		val test = hook.getTest()
+		val test = event.getTest()
 		val experience = if (rand.nextBoolean()) test.getExperience("A") else test.getExperience("B")
-		hook.setTargetedExperience(experience)
+		event.setTargetedExperience(experience)
 	}
 }
 
 /**
  * returns A or C in equal probabilities.
  */
-class ACTargetingHookListener extends HookListener[TestTargetingHook] {
+class ACTargetingHook extends UserHook[TestTargetingLifecycleEvent] {
 	
 	var postCount = 0;
 	val rand = new Random(System.currentTimeMillis());
 	
-	override def getHookClass() = classOf[TestTargetingHook]
+	override def getLifecycleEventClass() = classOf[TestTargetingLifecycleEvent]
 	
-	override def post(hook: TestTargetingHook) {
+	override def post(event: TestTargetingLifecycleEvent) {
 		postCount += 1
-		val test = hook.getTest()
-		if (test.getName().equals("test1") && hook.getTargetedExperience() == null) {
+		val test = event.getTest()
+		if (test.getName().equals("test1") && event.getTargetedExperience() == null) {
 			val experience = if (rand.nextBoolean()) test.getExperience("A") else test.getExperience("C")
-			hook.setTargetedExperience(experience);
+			event.setTargetedExperience(experience);
 		}
 	}
 }
@@ -307,19 +307,19 @@ class ACTargetingHookListener extends HookListener[TestTargetingHook] {
 /**
  * returns A 25% of the time, B 25% of the time and null 50% of the time..
  */
-class ABNullTargetingHookListener extends HookListener[TestTargetingHook] {
+class ABNullTargetingHook extends UserHook[TestTargetingLifecycleEvent] {
 	
 	var postCount = 0
 	val rand = new Random(System.currentTimeMillis())
 	
-	override def getHookClass() = classOf[TestTargetingHook]
+	override def getLifecycleEventClass() = classOf[TestTargetingLifecycleEvent]
 	
-	override def post(hook: TestTargetingHook) {
+	override def post(event: TestTargetingLifecycleEvent) {
 		postCount += 1
-		var test = hook.getTest()
-		if (test.getName().equals("test1") && hook.getTargetedExperience() == null) {
+		var test = event.getTest()
+		if (test.getName().equals("test1") && event.getTargetedExperience() == null) {
 			val experience = if (rand.nextBoolean()) (if (rand.nextBoolean()) test.getExperience("A") else test.getExperience("B")) else null
-			hook.setTargetedExperience(experience);
+			event.setTargetedExperience(experience);
 		}
 	}
 

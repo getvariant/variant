@@ -26,8 +26,8 @@ import com.variant.core.schema.impl.TestOnStateImpl;
 import static com.variant.server.boot.ServerErrorLocal.*;
 
 import com.variant.server.ServerException;
-import com.variant.server.TestQualificationHook;
-import com.variant.server.TestTargetingHook;
+import com.variant.server.TestQualificationLifecycleEvent;
+import com.variant.server.TestTargetingLifecycleEvent;
 import com.variant.server.boot.VariantServer;
 import com.variant.server.schema.ServerSchema;
 
@@ -46,7 +46,7 @@ public class Runtime {
 	/**
 	 * 
 	 */
-	private class TestTargetingHookImpl implements TestTargetingHook {
+	private class TestTargetingHookImpl implements TestTargetingLifecycleEvent {
 
 		private CoreSession session;
 		private Test test;
@@ -315,7 +315,7 @@ public class Runtime {
 		/**
 		 * 
 		 */
-		class TestQualificationHookImpl implements TestQualificationHook {
+		class TestQualificationHookImpl implements TestQualificationLifecycleEvent {
 			
 			private CoreSession ssn;
 			private Test test;

@@ -1,15 +1,15 @@
 package com.variant.core.schema;
 
 /**
- * <p>Parse time hook. Posts its listeners whenever the schema parser completes parsing of a test. 
+ * <p>Parse time life cycle event. Posts its hooks whenever the schema parser successfully completes parsing of a test. 
  * Will not post for a test if parse errors were encountered. Use this hook to enforce application 
- * semantics that is external to XDM, e.g. that a certain state parameter was supplied.
+ * semantics that is external to XDM.
  * 
  * @author Igor Urisman.
  * @since 0.5
  *
  */
-public interface TestParsedHook extends ParserHook {
+public interface TestParsedLifecycleEvent extends ParseTimeLifecycleEvent {
 
 	/**
 	 * The test for which this hook is posting. It is safe to assume that no errors were

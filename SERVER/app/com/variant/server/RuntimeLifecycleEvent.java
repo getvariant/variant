@@ -1,18 +1,17 @@
 package com.variant.server;
 
-import com.variant.core.UserHook;
+import com.variant.core.LifecycleEvent;
 import com.variant.core.session.CoreSession;
 
 
 /**
- * <p>Super-interface for all user hook types that post their listeners 
- * at run time.
+ * <p>Super-interface for all life cycle event types that post their hooks at run time.
  * 
  * @author Igor.
  * @since 0.5
  *
  */
-public interface RuntimeHook extends UserHook {
+public interface RuntimeLifecycleEvent extends LifecycleEvent {
 
 	/**
 	 * Host code can obtain the current Variant session.

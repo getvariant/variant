@@ -2,14 +2,14 @@ package com.variant.core.schema.parser;
 
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.TestParsedHook;
+import com.variant.core.schema.TestParsedLifecycleEvent;
 
 /**
  * 
  * @author Igor
  *
  */
-class TestParsedHookImpl implements TestParsedHook {
+class TestParsedHookImpl implements TestParsedLifecycleEvent {
 
 	private Test test;
 	private ParserResponse response;

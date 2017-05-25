@@ -15,7 +15,7 @@ import com.variant.core.schema.Test;
  * @since 0.5
  *
  */
-public interface TestQualificationHook extends RuntimeHook {
+public interface TestQualificationLifecycleEvent extends RuntimeLifecycleEvent {
 
 	/**
 	 * The test for which this user hook is posting.

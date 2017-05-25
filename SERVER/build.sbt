@@ -28,7 +28,7 @@ libraryDependencies ++= Seq(
   "com.h2database"         % "h2"          % "1.4.191"           % Test,
 
   // Reflections class path scanner. As of May '17 provided with the WTFPL license.
-  "org.reflections"        % "reflections" % "0.9.11",
+  // "org.reflections"        % "reflections" % "0.9.11",
 
   // Need to install CORS filter
   filters

@@ -1,7 +1,7 @@
 package com.variant.core.impl;
 
-import com.variant.core.HookListener;
 import com.variant.core.UserHook;
+import com.variant.core.LifecycleEvent;
 
 /**
  * User Hook processor.
@@ -12,38 +12,39 @@ import com.variant.core.UserHook;
 public interface UserHooker {
 
 	/**
-	 * Add a single custom hook listener to this hooker.
+	 * Add user hooks to this hooker.
 	 */
-	void addListener(@SuppressWarnings("unchecked") HookListener<? extends UserHook>... listener);
+	void addHook(@SuppressWarnings("unchecked") UserHook<? extends LifecycleEvent>... hooks);
 	
 	/**
-	 * Remove all custom hook listeners. 
+	 * Remove all user hooks. 
 	 */
 	void clear();
 
 	/**
-	 * Post all listeners for a particular hook type.
-	 * @param hook
-	 * @return the hook passed in as argument.
+	 * Post all hooks for a particular LCE type.
+	 * @param event
+	 * @return the event passed in as argument.
 	 */
-	public UserHook post(UserHook hook);
+	public LifecycleEvent post(LifecycleEvent event);
 
 	/**
-	 * Null Hooker which does nothing whatsoever.
+	 * Null hooker, which does nothing whatsoever.
 	 * Good enough for core tests and for the client side (there are no hooks on the client).
+	 * 
 	 * @author Igor
 	 *
 	 */
 	public static class Null implements UserHooker {
 		
 		@Override
-		public void addListener(@SuppressWarnings("unchecked") HookListener<? extends UserHook>... listener) {}
+		public void addHook(@SuppressWarnings("unchecked") UserHook<? extends LifecycleEvent>... listener) {}
 		
 		@Override
 		public void clear() {}
 
 		@Override
-		public UserHook post(UserHook hook) {return hook;}
+		public LifecycleEvent post(LifecycleEvent hook) {return hook;}
 	}
 }
 

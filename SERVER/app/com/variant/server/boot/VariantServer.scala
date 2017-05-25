@@ -67,14 +67,14 @@ class VariantServerImpl @Inject() (
 	override val config = playConfig.underlying
    override val eventWriter = new EventWriter(config)      
    override val hooker = new ServerHooker()
-   override val runtime = new Runtime(this) // THIS? 
+   override val runtime = new Runtime(this) // THIS?
 
 	private var _isUp = true
 	override lazy val isUp = _isUp
 	
 	private var _startupErrorLog = List[ServerException.User]()
 	override lazy val startupErrorLog = _startupErrorLog
-	
+		
 	// Default schema deployer is from file system.
    private var _schemaDeployer: SchemaDeployer = null
    installSchemaDeployer(SchemaDeployer.fromFileSystem())
@@ -101,6 +101,8 @@ class VariantServerImpl @Inject() (
 	// Flip isUp to false if we had errors.
 	startupErrorLog.foreach {e => if (e.getSeverity.greaterOrEqual(ERROR)) _isUp = false}
 
+	//if (isUp) _lifecycler = Some(new Lifecycler())
+	
 	if (!isUp) {
 		   logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
 	}
