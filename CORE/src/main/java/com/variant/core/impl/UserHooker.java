@@ -35,16 +35,16 @@ public interface UserHooker {
 	 * @author Igor
 	 *
 	 */
-	public static class Null implements UserHooker {
+	public static final UserHooker NULL = new UserHooker() {
 		
 		@Override
-		public void addHook(@SuppressWarnings("unchecked") UserHook<? extends LifecycleEvent>... listener) {}
+		public void addHook(@SuppressWarnings("unchecked") UserHook<? extends LifecycleEvent>... hooks) {}
 		
 		@Override
 		public void clear() {}
 
 		@Override
 		public LifecycleEvent post(LifecycleEvent hook) {return hook;}
-	}
+	};
 }
 

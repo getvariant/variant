@@ -26,7 +26,7 @@ public class BaseTestCore extends VariantBaseTest {
 		return new SchemaParser() {
 			@Override
 			protected UserHooker getHooker() {
-				return new UserHooker.Null();
+				return UserHooker.NULL;
 			}
 		};
 	}
