@@ -27,7 +27,10 @@ import com.variant.core.schema.Test;
 import com.variant.core.util.VariantStringUtils;
 
 /**
- * Client side schema parser does not need a hooker because there are hook listeners on the client.
+ * Client and Server side parsers will extend this. The principal difference is that 
+ * there are no hooks on the client, but for generality here we post them via an 
+ * abstract hooker.
+ * 
  * @author Igor
  *
  */
@@ -93,6 +96,10 @@ public abstract class SchemaParser implements Keywords {
 		return result.toString();
 	}
 	
+	/**
+	 * Concrete implementations will supply a hooker.
+	 * @return
+	 */
 	protected abstract UserHooker getHooker();
 
 	//---------------------------------------------------------------------------------------------//

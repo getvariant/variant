@@ -25,29 +25,56 @@ public class ParserError extends UserError {
 	public static final ParserError META_UNSUPPORTED_PROPERTY =
 			new ParserError(6, Severity.WARN,  "Unsupported property 'meta/%s'"); 
 
+	public static final ParserError META_HOOK_NAME_INVALID =
+			new ParserError(7, Severity.ERROR, "Hook name must be a string, containing letters, digits and _, and cannot start with a digit"); 
+
+	public static final ParserError META_CLASS_NAME_INVALID =
+			new ParserError(8, Severity.ERROR, "Class name must be a string"); 
+	
+	public static final ParserError META_HOOK_UNSUPPORTED_PROPERTY =
+			new ParserError(9, Severity.WARN,  "Unsupported hook property [%s]"); 
+
+	public static final ParserError META_HOOK_NAME_MISSING =
+			new ParserError(10, Severity.ERROR, "Hook name missing"); 
+
+	public static final ParserError META_HOOK_CLASS_NAME_MISSING =
+			new ParserError(11, Severity.ERROR, "Hook class name missing for hook [%s]"); 
+
+	public static final ParserError META_HOOK_NAME_DUPE =
+			new ParserError(12, Severity.ERROR, "Duplicate hook name [%s]"); 
+
+	public static final ParserError META_HOOKS_NOT_LIST = 
+			new ParserError(13, Severity.ERROR, "'/meta/hooks' property must be a list"); 
+
+	public static final ParserError META_HOOKS_NOT_OBJECT =
+			new ParserError(14, Severity.ERROR, "'meta/hooks' property element must be an object"); 
+
 	// 
 	// 021-050 Schema parser, State
 	//
 	public static final ParserError NO_STATES_CLAUSE =
 			new ParserError(21, Severity.INFO,  "'/states' clause is missing");
 	
-	public static final ParserError NO_STATES = 
-			new ParserError(22, Severity.INFO, "No states found"); 
+	public static final ParserError STATES_CLAUSE_NOT_LIST = 
+			new ParserError(22, Severity.ERROR, "'/states' must be a list"); 
 	
+	public static final ParserError NO_STATES = 
+			new ParserError(23, Severity.INFO, "No states found"); 
+
 	public static final ParserError STATE_NAME_MISSING =
-			new ParserError(23, Severity.ERROR, "State name is missing"); 
+			new ParserError(24, Severity.ERROR, "State name is missing"); 
 	
 	public static final ParserError STATE_NAME_INVALID =
-			new ParserError(24, Severity.ERROR, "State name must be a string, containing letters, digits and _, and cannot start with a digit"); 
+			new ParserError(25, Severity.ERROR, "State name must be a string, containing letters, digits and _, and cannot start with a digit"); 
 	
 	public static final ParserError STATE_NAME_DUPE =
-			new ParserError(25, Severity.ERROR, "Duplicate state name [%s]"); 
+			new ParserError(26, Severity.ERROR, "Duplicate state name [%s]"); 
 	
 	public static final ParserError STATE_PARAMS_NOT_OBJECT =
-			new ParserError(26, Severity.ERROR, "'states/parameters' property must be an object (State [%s])"); 
+			new ParserError(27, Severity.ERROR, "'states/parameters' property element must be an object (State [%s])"); 
 	
 	public static final ParserError STATE_UNSUPPORTED_PROPERTY =
-			new ParserError(27, Severity.WARN,  "Unsupported property 'state/%s' (State [%s])"); 
+			new ParserError(28, Severity.WARN,  "Unsupported property 'state/%s' (State [%s])"); 
 	
 	// 
 	// 051-150 Schema parser, Test
