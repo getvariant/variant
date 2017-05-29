@@ -1,7 +1,7 @@
 package com.variant.core.impl;
 
-import com.variant.core.UserHook;
 import com.variant.core.LifecycleEvent;
+import com.variant.core.schema.Hook;
 
 /**
  * User Hook processor.
@@ -12,17 +12,24 @@ import com.variant.core.LifecycleEvent;
 public interface UserHooker {
 
 	/**
-	 * Add user hooks to this hooker.
+	 * Add an unbound user hook to this hooker.
 	 */
-	void addHook(@SuppressWarnings("unchecked") UserHook<? extends LifecycleEvent>... hooks);
+	void initHook(Hook hook);
 	
+	/**
+	 * Add a test-bound user hook to this hooker.
+	 *
+	void addHook(UserHook<? extends LifecycleEvent> hook, Test test);
+
 	/**
 	 * Remove all user hooks. 
 	 */
 	void clear();
 
 	/**
-	 * Post all hooks for a particular LCE type.
+	 * Post all hooks for a particular LCE type. This triggers post of all event types
+	 * assignable to the passed type, i.e. all of its subtypes.
+	 * 
 	 * @param event
 	 * @return the event passed in as argument.
 	 */
@@ -38,8 +45,11 @@ public interface UserHooker {
 	public static final UserHooker NULL = new UserHooker() {
 		
 		@Override
-		public void addHook(@SuppressWarnings("unchecked") UserHook<? extends LifecycleEvent>... hooks) {}
+		public void initHook(Hook hook) {}
 		
+		//@Override
+		//public void addHook(UserHook<? extends LifecycleEvent> hook, Test test) {}
+
 		@Override
 		public void clear() {}
 

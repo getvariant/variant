@@ -28,6 +28,14 @@ public interface Schema {
 	 * @since 0.7
 	 */
 	public String getComment();
+	
+	/**
+	 * <p>This schema's user hooks.
+	 * 
+	 * @return Schema comment, as provided in the meta clause.
+	 * @since 0.7
+	 */
+	public List<Hook> getUserHooks();
 
 	/**
 	 * <p>This schema's ID.

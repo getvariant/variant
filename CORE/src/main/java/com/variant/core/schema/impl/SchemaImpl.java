@@ -9,7 +9,7 @@ import java.util.Random;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.UserHook;
+import com.variant.core.schema.Hook;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -22,7 +22,7 @@ public class SchemaImpl implements Schema {
 	// Meta
 	private String name = null;
 	private String comment = null;
-	private LinkedHashSet<UserHook> hooks = new LinkedHashSet<UserHook>();
+	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
 	
 	// Views are keyed by name
 	private LinkedHashSet<State> states = new LinkedHashSet<State>();
@@ -47,6 +47,13 @@ public class SchemaImpl implements Schema {
 	@Override
 	public String getComment() {
 		return comment;
+	}
+
+	@Override
+	public List<Hook> getUserHooks() {
+		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
+		result.addAll(hooks);
+		return Collections.unmodifiableList(result);
 	}
 
 	@Override
@@ -139,7 +146,7 @@ public class SchemaImpl implements Schema {
 	 * @param hook
 	 * @return true if hook didn't exist, false if did.
 	 */
-	public boolean addHook(UserHook hook) {
+	public boolean addHook(Hook hook) {
 		return hooks.add(hook);
 	}
 

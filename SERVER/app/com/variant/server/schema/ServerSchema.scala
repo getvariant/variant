@@ -1,9 +1,13 @@
 package com.variant.server.schema
 
+import scala.collection.JavaConversions._
 import com.variant.core.schema.Schema
 import java.io.File
 import com.variant.core.schema.ParserResponse
 import com.variant.server.ServerException
+import com.variant.core.UserError.Severity
+import com.variant.core.schema.Hook
+import com.variant.server.boot.VariantServer
 
 /**
  * 
@@ -23,6 +27,18 @@ class ServerSchema (val response: ParserResponse) extends Schema {
    
    private var coreSchema =  response.getSchema
    
+   if (response.hasMessages(Severity.ERROR)) {
+      // Schema did not actually parse.
+	   state = State.Failed
+   }
+	else {
+	   // Instantiate user hooks.
+	   coreSchema.getUserHooks.foreach { hook => VariantServer.server.hooker.initHook(hook) }
+	}
+      
+   /**
+    * 
+    */
    private def checkState {
       if (state != Deployed)
          throw new ServerException.Internal(
@@ -39,6 +55,11 @@ class ServerSchema (val response: ParserResponse) extends Schema {
    override def getComment = {
 	   checkState
 	   coreSchema.getComment
+	}
+
+   override def getUserHooks = {
+	   checkState
+	   coreSchema.getUserHooks
 	}
 
    override def getId = {

@@ -39,18 +39,20 @@ Range   Base         Major Area               Minor Area
 481-500              Other server runtime
 501-600              --Available
 
-601-800 Server API
+601-800 Server
 601-700              Internal
 601-610                                       Payload syntax error
 611-630                                       Payload parse error
 631-700                                       Other internal errors
-701-800              User
+701-800              User, Client API
 701-720                                       Connection
 721-740                                       Session
 741-760                                       Event
-761-800                                       --Available
+761-800                                       --Unused
 
-801-999 --Reserved
+801-999              User, Server API
+801-850                                       Hook processing.
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 

@@ -13,6 +13,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.core.schema.parser.SchemaParser;
 
@@ -29,8 +30,16 @@ public class ParserSerialOkayTest extends BaseTestCore {
 
 				"{                                                                                 \n" +
 					    "  'meta':{                                                                \n" +		    	    
-					    "      'name':'allTestsOffTest',                                           \n" +
-					    "      'comment':'!@#$%^&*'                                                \n" +
+					    "     'name':'allTestsOffTest',                                            \n" +
+					    "     'comment':'!@#$%^&*',                                                \n" +
+					    "     'hooks':[                                                            \n" +
+					    "        {'name':'one', 'className':'c.v.s.one'},                          \n" +
+					    "        {'name':'two', 'className':'c.v.s.two'},                          \n" +
+					    "        {'name':'anotherOne', 'className':'c.v.s.one'},                   \n" +
+					    "        {'name':'three', 'className':'c.v.s.three'},                      \n" +
+					    "        {'name':'four', 'className':'c.v.s.four'},                        \n" +
+					    "        {'name':'anotherFour', 'className':'c.v.s.four'}                  \n" +
+					    "      ]                                                                   \n" +
 					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	   
@@ -141,6 +150,26 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertFalse(test1.isCovariantWith(test2));
 		assertFalse(test2.isCovariantWith(test1));
 
+		List<Hook> hooks = schema.getUserHooks();
+		assertEquals(6, hooks.size());
+		Hook hook = hooks.get(0);
+		assertEquals("one", hook.getName());
+		assertEquals("c.v.s.one", hook.getClassName());
+		hook = hooks.get(1);
+		assertEquals("two", hook.getName());
+		assertEquals("c.v.s.two", hook.getClassName());
+		hook = hooks.get(2);
+		assertEquals("anotherOne", hook.getName());
+		assertEquals("c.v.s.one", hook.getClassName());
+		hook = hooks.get(3);
+		assertEquals("three", hook.getName());
+		assertEquals("c.v.s.three", hook.getClassName());
+		hook = hooks.get(4);
+		assertEquals("four", hook.getName());
+		assertEquals("c.v.s.four", hook.getClassName());
+		hook = hooks.get(5);
+		assertEquals("anotherFour", hook.getName());
+		assertEquals("c.v.s.four", hook.getClassName());
 	}
 
 	/**
@@ -414,7 +443,15 @@ public class ParserSerialOkayTest extends BaseTestCore {
 
 	"{                                                                                 \n" +
 		    "  'meta':{                                                                \n" +
-		    "      'name':'happy_path_schema'                                          \n" +
+		    "      'name':'happy_path_schema',                                         \n" +
+		    "     'hooks':[                                                            \n" +
+		    "        {'name':'one', 'className':'c.v.s.one'},                          \n" +
+		    "        {'name':'two', 'className':'c.v.s.two'},                          \n" +
+		    "        {'name':'anotherOne', 'className':'c.v.s.one'},                   \n" +
+		    "        {'name':'three', 'className':'c.v.s.three'},                      \n" +
+		    "        {'name':'four', 'className':'c.v.s.four'},                        \n" +
+		    "        {'name':'anotherFour', 'className':'c.v.s.four'}                  \n" +
+		    "      ]                                                                   \n" +
 		    "  },                                                                      \n" +
     	    //==========================================================================//
     	   
@@ -611,9 +648,33 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals("happy_path_schema", schema.getName());
 		assertNull(schema.getComment());
 
+		//
+		// Hooks
+		//
+		
+		List<Hook> hooks = schema.getUserHooks();
+		assertEquals(6, hooks.size());
+		Hook hook = hooks.get(0);
+		assertEquals("one", hook.getName());
+		assertEquals("c.v.s.one", hook.getClassName());
+		hook = hooks.get(1);
+		assertEquals("two", hook.getName());
+		assertEquals("c.v.s.two", hook.getClassName());
+		hook = hooks.get(2);
+		assertEquals("anotherOne", hook.getName());
+		assertEquals("c.v.s.one", hook.getClassName());
+		hook = hooks.get(3);
+		assertEquals("three", hook.getName());
+		assertEquals("c.v.s.three", hook.getClassName());
+		hook = hooks.get(4);
+		assertEquals("four", hook.getName());
+		assertEquals("c.v.s.four", hook.getClassName());
+		hook = hooks.get(5);
+		assertEquals("anotherFour", hook.getName());
+		assertEquals("c.v.s.four", hook.getClassName());
 
 		//
-		// Views.
+		// States.
 		//
 		
 		String[][] expectedStates = {
@@ -631,7 +692,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 						
 		};
 		
-		// Verify views returned as a list.
+		// Verify states returned as a list.
 		List<State> actualStates = schema.getStates();
 		assertEquals(expectedStates.length, actualStates.size());
 		verifyState(expectedStates[0], actualStates.get(0));
@@ -646,7 +707,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		verifyState(expectedStates[9], actualStates.get(9));
 		verifyState(expectedStates[10], actualStates.get(10));
 		
-		// Verify views returned individually by name.
+		// Verify states returned individually by name.
 		for (String[] expectedView: expectedStates) {	
 			verifyState(expectedView, schema.getState(expectedView[0]));
 		}

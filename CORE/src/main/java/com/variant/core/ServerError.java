@@ -86,6 +86,13 @@ public class ServerError extends UserError {
 			new ServerError(741, "No state request in session", "Target this session for a state first");
 
 
+	//
+	// 801-850 Server API User errors
+	//
+	public static final ServerError HookClassNoInterface = 
+			new ServerError(801, "Hook class [%s] must implement interface %s");
+
+	
 	/**
 	 * Get the error by its code.
 	 * 

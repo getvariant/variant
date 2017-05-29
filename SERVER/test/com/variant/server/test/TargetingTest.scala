@@ -30,7 +30,13 @@ class TargetingTest extends BaseSpecWithServer {
    val schemaJson = """
 {
    'meta':{
-      'name':'TargetingTest'
+      'name':'TargetingTest',
+      'hooks': [
+          {
+             'name':'nullHook', 
+             'className':'com.variant.server.test.NullTargetingHook'
+          }
+      ]
    },
    'states':[
       {
@@ -110,7 +116,7 @@ class TargetingTest extends BaseSpecWithServer {
    		} 
    		verifyCounts(counts, Array(1f, 2f, 97f))
       }
-       
+/*       
    	"target according to weights with null targeting listener" in {
 
    		val nullListener = new NullTargetingHook
@@ -222,6 +228,8 @@ class TargetingTest extends BaseSpecWithServer {
    		acListener.postCount mustBe trials
    		verifyCounts(counts, Array(50, 25, 25))
 		}
+		* 
+		*/
 	}
 	
 	/**

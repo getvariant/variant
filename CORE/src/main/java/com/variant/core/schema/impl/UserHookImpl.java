@@ -1,13 +1,13 @@
 package com.variant.core.schema.impl;
 
-import com.variant.core.schema.UserHook;
+import com.variant.core.schema.Hook;
 
 /**
  * 
  * @author Igor
  *
  */
-public class UserHookImpl implements UserHook {
+public class UserHookImpl implements Hook {
 
 	private final String name;
 	private final String className;
@@ -23,7 +23,7 @@ public class UserHookImpl implements UserHook {
 	}
 
 	@Override
-	public String getClsName() {
+	public String getClassName() {
 		return className;
 	}
 

@@ -57,10 +57,9 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
             
       val parser = ServerSchemaParser(server.hooker)
       val response = parser.parse(schemaSrc)
-		val schema = ServerSchema(response)		
-		if (response.hasMessages(Severity.ERROR)) schema.state = State.Failed
-      
-		if (response.hasMessages(Severity.ERROR)) {
+		val schema = ServerSchema(response)
+		
+		if (schema.state == State.Failed) {
 			logger.error("Schema was not deployed due to parser error(s):")
 			response.getMessages(Severity.ERROR).foreach {log(_)}
 		}

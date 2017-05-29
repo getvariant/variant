@@ -7,7 +7,7 @@ package com.variant.core.schema;
  * @since 0.7
  */
 
-public interface UserHook {
+public interface Hook {
 	
 	/**
 	 * The name of this user hook.
@@ -23,6 +23,6 @@ public interface UserHook {
 	 * @return The value of a state parameter, if declared by this state, null otherwise.
 	 * @since 0.7
 	 */
-	public String getClsName();
+	public String getClassName();
 
 }

@@ -30,7 +30,7 @@ class UserHookTest extends BaseSpecWithServer {
 	val MESSAGE_TEXT_TEST = "Info-Message-Test"
 	
 	var schemaId = None
-   
+/*   
 	"StateParsedHook listener" should {
 	   "be posted when state is parsed" in {
 	      
@@ -426,5 +426,5 @@ class UserHookTest extends BaseSpecWithServer {
 			}
 		}
 	}
-	
+	*/
 }

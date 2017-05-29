@@ -11,5 +11,7 @@ object ServerSchemaParser {
 }
 
 class ServerSchemaParser(val hooker: UserHooker) extends SchemaParser {
+   
    override def getHooker(): UserHooker = hooker
+   
 }

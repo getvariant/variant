@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
-import com.variant.core.schema.UserHook;
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.UserHookImpl;
 
@@ -70,7 +70,7 @@ public class MetaParser implements Keywords {
 						List<?> rawHooks = (List<?>) entry.getValue();
 												
 						for (Object rawHook: rawHooks) {
-							UserHook hook = parseHook(rawHook, response);
+							Hook hook = parseHook(rawHook, response);
 							
 							if (hook != null && !((SchemaImpl) response.getSchema()).addHook(hook)) {
 								response.addMessage(META_HOOK_NAME_DUPE, hook.getName());
@@ -112,7 +112,7 @@ public class MetaParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static UserHook parseHook(Object rawHook, final ParserResponseImpl response) {
+	private static Hook parseHook(Object rawHook, final ParserResponseImpl response) {
 		String name = null;
 		String className = null;
 		
