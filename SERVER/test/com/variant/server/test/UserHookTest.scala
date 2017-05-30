@@ -1,6 +1,6 @@
 package com.variant.server.test;
 
-import com.variant.core.UserHook
+import com.variant.core.LifecycleEvent
 import com.variant.core.schema.StateParsedLifecycleEvent
 import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
@@ -17,7 +17,7 @@ import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
 import com.variant.server.api.TestQualificationLifecycleEvent
 import com.variant.server.api.TestTargetingLifecycleEvent
-import com.variant.core.LifecycleEvent
+import com.variant.server.api.UserHook
 
 /**
  * TODO: Need to also test annotations.

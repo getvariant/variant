@@ -9,10 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.LifecycleEvent;
 import com.variant.core.ServerError;
-import com.variant.core.UserHook;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Hook;
 import com.variant.server.api.ServerException;
+import com.variant.server.api.UserHook;
 
 /**
  * User Hook processor

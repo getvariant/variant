@@ -9,7 +9,7 @@ import com.variant.core.util.VariantStringUtils
 import scala.collection.JavaConverters
 import scala.util.Random
 import com.variant.server.api.TestTargetingLifecycleEvent
-import com.variant.core.UserHook
+import com.variant.server.api.UserHook
 
 class TargetingTest extends BaseSpecWithServer {
 
