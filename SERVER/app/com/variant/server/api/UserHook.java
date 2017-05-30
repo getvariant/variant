@@ -1,4 +1,6 @@
-package com.variant.core;
+package com.variant.server.api;
+
+import com.variant.core.LifecycleEvent;
 
 /**
  * <p>The interface to be implemented by a user hook, which wants to be posted by a life cycle event.

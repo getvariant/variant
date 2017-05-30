@@ -2,7 +2,7 @@ package com.variant.core;
 
 /**
  * Marker, ultimate super-interface for all life cycle event types. Concrete implementations
- * are made available to client code via the {@link UserHook#post(LifeCycleEvent)} callback.
+ * are made available to client code via the {@code UserHook.post(LifecycleEvent)} callback.
  * Any concrete life cycle event class will provide the default hook, which will be posted
  * if no user hooks were defined or none returned a value.
  *
