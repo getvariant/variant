@@ -654,7 +654,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name',                                  \n" +
 			    "      'comment':'a comment *&^',                              \n" +
-			    "      'hooks':[{'nameE':'foo', 'className':'bar'}]            \n" +
+			    "      'hooks':[{'nameE':'foo', 'class':'bar'}]                \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
@@ -776,7 +776,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name',                                  \n" +
 			    "      'comment':'a comment *&^',                              \n" +
-			    "      'hooks':[{'name':'bar', 'className':'c.v.s', 'foo':true}]          \n" +
+			    "      'hooks':[{'name':'bar', 'class':'c.v.s', 'foo':true}]   \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
@@ -836,8 +836,8 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "     'name':'_schema_name',                                   \n" +
 			    "     'comment':'a comment *&^',                               \n" +
 			    "     'hooks':[                                                \n" +
-			    "        {'name':'bar', 'className':'c.v.s'},                  \n" +
-			    "        {'name':'bar', 'className':'c.v.s.two'}               \n" +
+			    "        {'name':'bar', 'class':'c.v.s'},                      \n" +
+			    "        {'name':'bar', 'class':'c.v.s.two'}                   \n" +
 			    "      ]                                                       \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +

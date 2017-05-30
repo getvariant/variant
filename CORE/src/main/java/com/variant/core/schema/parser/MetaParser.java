@@ -159,7 +159,7 @@ public class MetaParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
 				continue;
 			} 
-			else if (entry.getKey().equalsIgnoreCase(KEYWORD_CLASS_NAME)) {
+			else if (entry.getKey().equalsIgnoreCase(KEYWORD_CLASS)) {
 				Object classNameObject = entry.getValue();
 				if (! (classNameObject instanceof String)) {
 					response.addMessage(META_CLASS_NAME_INVALID);

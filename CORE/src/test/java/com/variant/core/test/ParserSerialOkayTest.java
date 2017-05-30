@@ -33,12 +33,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 					    "     'name':'allTestsOffTest',                                            \n" +
 					    "     'comment':'!@#$%^&*',                                                \n" +
 					    "     'hooks':[                                                            \n" +
-					    "        {'name':'one', 'className':'c.v.s.one'},                          \n" +
-					    "        {'name':'two', 'className':'c.v.s.two'},                          \n" +
-					    "        {'name':'anotherOne', 'className':'c.v.s.one'},                   \n" +
-					    "        {'name':'three', 'className':'c.v.s.three'},                      \n" +
-					    "        {'name':'four', 'className':'c.v.s.four'},                        \n" +
-					    "        {'name':'anotherFour', 'className':'c.v.s.four'}                  \n" +
+					    "        {'name':'one', 'class':'c.v.s.one'},                              \n" +
+					    "        {'name':'two', 'class':'c.v.s.two'},                              \n" +
+					    "        {'name':'anotherOne', 'class':'c.v.s.one'},                       \n" +
+					    "        {'name':'three', 'class':'c.v.s.three'},                          \n" +
+					    "        {'name':'four', 'class':'c.v.s.four'},                            \n" +
+					    "        {'name':'anotherFour', 'class':'c.v.s.four'}                      \n" +
 					    "      ]                                                                   \n" +
 					    "  },                                                                      \n" +
 			    	    //==========================================================================//
@@ -445,12 +445,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		    "  'meta':{                                                                \n" +
 		    "      'name':'happy_path_schema',                                         \n" +
 		    "     'hooks':[                                                            \n" +
-		    "        {'name':'one', 'className':'c.v.s.one'},                          \n" +
-		    "        {'name':'two', 'className':'c.v.s.two'},                          \n" +
-		    "        {'name':'anotherOne', 'className':'c.v.s.one'},                   \n" +
-		    "        {'name':'three', 'className':'c.v.s.three'},                      \n" +
-		    "        {'name':'four', 'className':'c.v.s.four'},                        \n" +
-		    "        {'name':'anotherFour', 'className':'c.v.s.four'}                  \n" +
+		    "        {'name':'one', 'class':'c.v.s.one'},                              \n" +
+		    "        {'name':'two', 'class':'c.v.s.two'},                              \n" +
+		    "        {'name':'anotherOne', 'class':'c.v.s.one'},                       \n" +
+		    "        {'name':'three', 'class':'c.v.s.three'},                          \n" +
+		    "        {'name':'four', 'class':'c.v.s.four'},                            \n" +
+		    "        {'name':'anotherFour', 'class':'c.v.s.four'}                      \n" +
 		    "      ]                                                                   \n" +
 		    "  },                                                                      \n" +
     	    //==========================================================================//
