@@ -17,7 +17,7 @@ import com.variant.server.event.ServerEvent
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.boot.VariantServer
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
 import com.variant.server.conn.Connection
 import com.variant.server.session.ServerSession
 

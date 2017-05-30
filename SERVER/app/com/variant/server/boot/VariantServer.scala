@@ -21,7 +21,7 @@ import com.variant.core.schema.ParserResponse
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.variant.core.UserError.Severity._
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
 
 /**
  * Need a trait to make DI to work.

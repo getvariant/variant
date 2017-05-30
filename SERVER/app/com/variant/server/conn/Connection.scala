@@ -4,7 +4,7 @@ import com.variant.server.schema.ServerSchema
 import com.variant.core.util.VariantStringUtils
 import play.api.libs.json._
 import com.variant.server.boot.VariantServer
-import com.variant.server.ConfigKeys
+import com.variant.server.api.ConfigKeys
 import scala.math.BigDecimal.int2bigDecimal
 import scala.math.BigDecimal.long2bigDecimal
 import com.variant.server.session.ServerSession

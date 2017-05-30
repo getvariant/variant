@@ -13,10 +13,10 @@ import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.CommonError._
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.server.TestQualificationLifecycleEvent
-import com.variant.server.TestTargetingLifecycleEvent
+import com.variant.server.api.TestQualificationLifecycleEvent
+import com.variant.server.api.TestTargetingLifecycleEvent
 import com.variant.core.LifecycleEvent
 
 /**

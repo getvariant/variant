@@ -9,7 +9,7 @@ import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.impl.SchemaImpl;
-import com.variant.core.schema.impl.UserHookImpl;
+import com.variant.core.schema.impl.HookImpl;
 
 /**
  * Parse the META clause.
@@ -178,7 +178,7 @@ public class MetaParser implements Keywords {
 			return null;
 		}
 		else {
-			return new UserHookImpl(name, className);
+			return new HookImpl(name, className);
 		}
 	}
 }

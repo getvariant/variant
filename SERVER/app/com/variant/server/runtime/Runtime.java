@@ -25,9 +25,9 @@ import com.variant.core.schema.impl.TestOnStateImpl;
 
 import static com.variant.server.boot.ServerErrorLocal.*;
 
-import com.variant.server.ServerException;
-import com.variant.server.TestQualificationLifecycleEvent;
-import com.variant.server.TestTargetingLifecycleEvent;
+import com.variant.server.api.ServerException;
+import com.variant.server.api.TestQualificationLifecycleEvent;
+import com.variant.server.api.TestTargetingLifecycleEvent;
 import com.variant.server.boot.VariantServer;
 import com.variant.server.schema.ServerSchema;
 

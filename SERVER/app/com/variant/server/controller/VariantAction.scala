@@ -4,7 +4,7 @@ import play.api.mvc._
 import scala.concurrent.Future
 import com.variant.server.boot.VariantServer
 import play.api.Logger
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.core.ServerError
 

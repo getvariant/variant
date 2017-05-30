@@ -7,12 +7,12 @@ import com.variant.core.schema.Hook;
  * @author Igor
  *
  */
-public class UserHookImpl implements Hook {
+public class HookImpl implements Hook {
 
 	private final String name;
 	private final String className;
 	
-	public UserHookImpl(String name, String className) {
+	public HookImpl(String name, String className) {
 		this.name = name;
 		this.className = className;
 	}
@@ -29,7 +29,7 @@ public class UserHookImpl implements Hook {
 
 	@Override
 	public boolean equals(Object other) {
-		return (other instanceof UserHookImpl) && ((UserHookImpl)other).name.equals(this.name);
+		return (other instanceof HookImpl) && ((HookImpl)other).name.equals(this.name);
 	}
 	
 	@Override

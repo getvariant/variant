@@ -1,8 +1,10 @@
 package com.variant.server.conn
 
-import com.variant.server.ConfigKeys._
+import com.variant.server.api.ConfigKeys._
+
 import play.api.Logger
 import scala.collection.concurrent.TrieMap
+
 import com.variant.server.session.ServerSession
 
 /**
@@ -27,7 +29,8 @@ object SessionStore {
 
 class SessionStore() {
 
-   import SessionStore._
+
+import SessionStore._
    
    private val logger = Logger(this.getClass)	
 	private val cacheMap = new TrieMap[String, Entry]();

@@ -1,19 +1,25 @@
 package com.variant.server.schema;
 
 import java.io.File
+
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.io.Source
+
 import com.variant.core.UserError.Severity
 import com.variant.core.CommonError._
 import com.variant.core.schema.ParserMessage
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.server.ConfigKeys._
+import com.variant.server.api.ConfigKeys._
+import com.variant.server.api.ServerException
 import com.variant.server.boot.VariantServer.server
+
 import play.api.Logger
+
 import com.variant.core.schema.ParserResponse
+
 import org.apache.commons.io.IOUtils
-import com.variant.server.ServerException
+
 
 trait SchemaDeployer {
  

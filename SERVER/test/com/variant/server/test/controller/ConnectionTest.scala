@@ -1,15 +1,18 @@
 package com.variant.server.test.controller
 
 import scala.util.Random
+
 import org.scalatestplus.play._
+
 import play.api.test._
 import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.collection.JavaConversions._
+
 import com.variant.core.ServerError._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
-import com.variant.server.ConfigKeys._
+import com.variant.server.api.ConfigKeys._
 import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.core.impl.UserHooker
@@ -47,7 +50,8 @@ object ConnectionTest {
  */
 class ConnectionTest extends BaseSpecWithServer {
    
-   import EventTest._
+
+import EventTest._
    
    val endpoint = context + "/connection"
 

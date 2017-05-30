@@ -9,7 +9,7 @@ import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
 import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
-import com.variant.server.ConfigKeys
+import com.variant.server.api.ConfigKeys
 import com.variant.server.conn.SessionStore
 import com.variant.server.boot.VariantServer
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -18,7 +18,7 @@ import play.api.Configuration
 import com.variant.server.boot.VariantApplicationLoader
 import com.variant.core.CommonError._
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
 
 /**
  * Test various schema deployment error scenarios

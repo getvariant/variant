@@ -1,7 +1,7 @@
 package com.variant.server.event;
 
+import static com.variant.server.api.ConfigKeys.EVENT_FLUSHER_CLASS_INIT;
 import static com.variant.server.boot.ServerErrorLocal.*;
-import static com.variant.server.ConfigKeys.EVENT_FLUSHER_CLASS_INIT;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -9,8 +9,8 @@ import java.util.Properties;
 
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
-import com.variant.server.EventFlusher;
-import com.variant.server.ServerException;
+import com.variant.server.api.EventFlusher;
+import com.variant.server.api.ServerException;
 import com.variant.server.jdbc.EventFlusherJdbc;
 import com.variant.server.jdbc.JdbcService.Vendor;
 

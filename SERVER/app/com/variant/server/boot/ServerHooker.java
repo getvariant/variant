@@ -12,7 +12,7 @@ import com.variant.core.ServerError;
 import com.variant.core.UserHook;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Hook;
-import com.variant.server.ServerException;
+import com.variant.server.api.ServerException;
 
 /**
  * User Hook processor

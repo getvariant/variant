@@ -6,7 +6,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
-import com.variant.server.ServerException;
+import com.variant.server.api.ServerException;
 import com.variant.server.boot.ServerErrorLocal;
 
 class TestTargeterDefault {

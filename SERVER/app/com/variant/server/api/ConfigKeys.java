@@ -1,4 +1,4 @@
-package com.variant.server;
+package com.variant.server.api;
 
 /**
   * Known configuration keys.

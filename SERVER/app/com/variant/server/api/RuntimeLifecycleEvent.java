@@ -1,4 +1,4 @@
-package com.variant.server;
+package com.variant.server.api;
 
 import com.variant.core.LifecycleEvent;
 import com.variant.core.session.CoreSession;

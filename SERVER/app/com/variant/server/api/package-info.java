@@ -3,4 +3,4 @@
  *
  * @since 0.7
  */
-package com.variant.server;
+package com.variant.server.api;

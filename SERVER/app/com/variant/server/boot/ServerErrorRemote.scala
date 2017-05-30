@@ -7,7 +7,7 @@ import play.api.http.HttpEntity
 import play.api.libs.json._
 import akka.util.ByteString
 import com.variant.core.ServerError
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
 
 /**
  * Wrap the core ServerError type with some server side semantics.

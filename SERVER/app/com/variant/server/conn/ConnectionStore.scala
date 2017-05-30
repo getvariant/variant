@@ -2,12 +2,18 @@ package com.variant.server.conn;
 
 import java.util.Map
 import java.util.Set
-import com.variant.server.ConfigKeys._
+
+import com.variant.server.api.ConfigKeys._
+
 import javax.inject.Inject
 import javax.inject.Singleton
+
 import play.api.Logger
+
 import com.variant.server.boot.VariantServer
+
 import scala.collection.concurrent.TrieMap
+
 import com.typesafe.config.Config
 
 /**

@@ -3,14 +3,14 @@ package com.variant.server.event;
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
 import org.apache.commons.lang3.time.DurationFormatUtils
+import com.variant.server.api.ConfigKeys._
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.server.ConfigKeys._
-import com.variant.server.EventFlusher
-import com.variant.server.FlushableEvent
 import play.api.Logger
 import com.typesafe.config.Config
 import com.variant.core.VariantException
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
+import com.variant.server.api.FlushableEvent
+import com.variant.server.api.EventFlusher
 
 class EventWriter (config: Config) {
 	
