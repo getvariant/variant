@@ -31,10 +31,6 @@ class ServerSchema (val response: ParserResponse) extends Schema {
       // Schema did not actually parse.
 	   state = State.Failed
    }
-	else {
-	   // Instantiate user hooks.
-	   coreSchema.getUserHooks.foreach { hook => VariantServer.server.hooker.initHook(hook) }
-	}
       
    /**
     * 

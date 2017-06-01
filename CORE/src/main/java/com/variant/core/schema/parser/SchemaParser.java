@@ -12,15 +12,18 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.UserError.Severity;
 import com.variant.core.CommonError;
 import com.variant.core.CoreException;
+import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
 import com.variant.core.impl.UserHooker;
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -36,7 +39,7 @@ import com.variant.core.util.VariantStringUtils;
  */
 public abstract class SchemaParser implements Keywords {
 	
-	//private static final Logger LOG = LoggerFactory.getLogger(SchemaParser.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SchemaParser.class);
 	
 	/**
 	 * Convert JsonParseException to ParserError.
@@ -182,6 +185,8 @@ public abstract class SchemaParser implements Keywords {
 		else {			
 			// Parse meta info
 			MetaParser.parse(meta, response);
+			// Init all hooks.
+			for (Hook hook: response.getSchema().getUserHooks()) getHooker().initHook(hook);
 		}
 
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());
@@ -193,13 +198,14 @@ public abstract class SchemaParser implements Keywords {
 			// Parse all states
 			StatesParser.parse(states, response);
 			
-			// Post user hook listeners.
+			// Post user hooks.
 			for (State state: response.getSchema().getStates()) {
 				try {
-					getHooker().post(new StateParsedHookImpl(state, response));
+					getHooker().post(new StateParsedLifecycleEventImpl(state, response));
 				}
 				catch (VariantException e) {
-					response.addMessage(CommonError.HOOK_LISTENER_EXCEPTION, StateParsedHookImpl.class.getName(), e.getMessage());
+					response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
+					throw e;
 				}
 			}
 		}
@@ -218,13 +224,13 @@ public abstract class SchemaParser implements Keywords {
 			// Parse all tests
 			TestsParser.parse(tests, response);
 			
-			// Post user hook listeners.
+			// Post user hooks.
 			for (Test test: response.getSchema().getTests()) {
 				try {
-					getHooker().post(new TestParsedHookImpl(test, response));
+					getHooker().post(new TestParsedLifecycleEventImpl(test, response));
 				}
 				catch (VariantException e) {
-					response.addMessage(CommonError.HOOK_LISTENER_EXCEPTION, TestParsedHookImpl.class.getName(), e.getMessage());
+					response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, TestParsedLifecycleEventImpl.class.getName(), e.getMessage());
 				}
 			}
 		}

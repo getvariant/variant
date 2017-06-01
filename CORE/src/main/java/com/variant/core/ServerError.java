@@ -6,7 +6,7 @@ import com.variant.core.util.VariantReflectUtils;
 
 
 /**
- * User errors that are signaled by the server to be sent across the network to the client.
+ * User errors that are emitted by the server to be sent across the network to the client.
  * 
  * @author Igor
  */
@@ -58,7 +58,7 @@ public class ServerError extends UserError {
 	/**
 	 */
 	public boolean isInternal() {
-		return code <= 700;
+		return getCode() <= 700;
 	}
 
 	//
@@ -86,12 +86,6 @@ public class ServerError extends UserError {
 			new ServerError(741, "No state request in session", "Target this session for a state first");
 
 
-	//
-	// 801-850 Server API User errors
-	//
-	public static final ServerError HookClassNoInterface = 
-			new ServerError(801, "Hook class [%s] must implement interface %s");
-
 	
 	/**
 	 * Get the error by its code.
@@ -103,7 +97,7 @@ public class ServerError extends UserError {
 		try {
 			for (Field f: VariantReflectUtils.getStaticFields(ServerError.class, ServerError.class)) {
 				ServerError e = (ServerError) f.get(null);
-				if (e.code == code) return e;
+				if (e.getCode() == code) return e;
 			}
 		}
 		catch (Exception e) { 

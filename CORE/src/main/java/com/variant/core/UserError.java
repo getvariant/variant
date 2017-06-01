@@ -23,7 +23,7 @@ Range   Base         Major Area               Minor Area
 151-170                                       --Unused
 171-200                                       Other
 201-220              Configuration
-241-250              Parse time user hooks
+241-250              --Available
 251-270              Other common runtime
 271-300              --Available
 
@@ -35,9 +35,9 @@ Range   Base         Major Area               Minor Area
 401-420              Server bootstrap
 421-440              Schema deployment
 441-460              Event writing
-461-480              Run time user hooks
+461-480              User                     Server API
 481-500              Other server runtime
-501-600              --Available
+501-600              -- Available
 
 601-800 Server
 601-700              Internal
@@ -50,8 +50,7 @@ Range   Base         Major Area               Minor Area
 741-760                                       Event
 761-800                                       --Unused
 
-801-999              User, Server API
-801-850                                       Hook processing.
+801-999              Reserved
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -59,9 +58,9 @@ Range   Base         Major Area               Minor Area
 abstract public class UserError {
 		
 	private final String msgFormat;
-	public final int code;
-	public final Severity severity;
-	public final String comment;
+	private int code;
+	private Severity severity;
+	private String comment;
 	
 	protected UserError(int code, Severity severity, String msgFormat, String comment) {
 		this.code = code;
@@ -74,6 +73,18 @@ abstract public class UserError {
 		this(code, severity, msgFormat, null);
 	}
 
+	public int getCode() {
+		return code;
+	}
+	
+	public Severity getSeverity() {
+		return severity;
+	}
+	
+	public String getComment() {
+		return comment;
+	}
+	
 	/**
 	 * Runtime message
 	 * @param args

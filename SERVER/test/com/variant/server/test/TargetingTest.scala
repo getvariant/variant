@@ -34,7 +34,7 @@ class TargetingTest extends BaseSpecWithServer {
       'hooks': [
           {
              'name':'nullHook', 
-             'className':'com.variant.server.test.NullTargetingHook'
+             'class':'com.variant.server.test.hooks.NullTargetingHook'
           }
       ]
    },
@@ -260,20 +260,6 @@ class TargetingTest extends BaseSpecWithServer {
 	}
 }
 
-/**
- * targeting listener does nothing, except increments the post counter.
- */
-class NullTargetingHook extends UserHook[TestTargetingLifecycleEvent] {
-	
-	var postCount = 0;
-	
-	override def getLifecycleEventClass() = classOf[TestTargetingLifecycleEvent]
-	
-	override def post(event: TestTargetingLifecycleEvent) { 
-	   postCount += 1 
-	}
-
-}
 /**
  * Targeting listener returns A or B with equal probability.
  */

@@ -25,9 +25,9 @@ public class ParserMessageImpl implements ParserMessage {
 	 * @since 0.5
 	 */
 	 public ParserMessageImpl(UserError error, String...args) {
-		severity = error.severity;
+		severity = error.getSeverity();
 		message = error.asMessage((Object[])args);
-		code = error.code;
+		code = error.getCode();
 	}
 
 	/**

@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.CommonError;
 import com.variant.core.LifecycleEvent;
 import com.variant.core.ServerError;
 import com.variant.core.impl.UserHooker;
@@ -60,7 +61,7 @@ public class ServerHooker implements UserHooker {
 			Class<?> userHookClass = Class.forName(hook.getClassName());
 			Object userHookObject = userHookClass.newInstance();
 			if (! (userHookObject instanceof UserHook)) {
-				throw new ServerException.User(ServerError.HookClassNoInterface, UserHook.class.getName());
+				throw new ServerException.User(CommonError.HOOK_CLASS_NO_INTERFACE, UserHook.class.getName());
 			}
 			UserHook<? extends LifecycleEvent> userHook = (UserHook<LifecycleEvent>) userHookObject;
 			HookMapEntry hme = new HookMapEntry((Class<UserHook<LifecycleEvent>>) userHookClass, userHook.getLifecycleEventClass());
@@ -97,7 +98,7 @@ public class ServerHooker implements UserHooker {
 					hook = hme.hookClass.newInstance();
 					hook.post(event);
 				} catch (Exception e) {
-					throw new ServerException.Internal("Unhandled exception in user hook [" + name + "]");
+					throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName());
 				}
 				if (LOG.isTraceEnabled())
 					LOG.trace("Posted user hook [" + name + "]");

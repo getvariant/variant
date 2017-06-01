@@ -1,6 +1,7 @@
 package com.variant.server.boot;
 
 import com.variant.core.CommonError;
+import com.variant.core.ServerError;
 
 /**
  * Local Server Errors, i.e. ones thrown to the server log and not sent back to client.
@@ -27,7 +28,7 @@ public class ServerErrorLocal extends CommonError {
 			new ServerErrorLocal(421, Severity.FATAL, "Schemata directory [%s] cannot contain multiple files");
 
 	//
-	// 461-480 Other server runtime
+	// 461-480 Server API
 	//
 
 	public final static ServerErrorLocal HOOK_TARGETING_BAD_EXPERIENCE = 
@@ -41,6 +42,7 @@ public class ServerErrorLocal extends CommonError {
 
 	public static final ServerErrorLocal EXPERIENCE_WEIGHT_MISSING = 
 			new ServerErrorLocal(482, Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found");
+
 	
    /**
     * 

@@ -1,6 +1,12 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.ParserError.*;
+import static com.variant.core.schema.parser.ParserError.NO_STATES;
+import static com.variant.core.schema.parser.ParserError.STATES_CLAUSE_NOT_LIST;
+import static com.variant.core.schema.parser.ParserError.STATE_NAME_DUPE;
+import static com.variant.core.schema.parser.ParserError.STATE_NAME_INVALID;
+import static com.variant.core.schema.parser.ParserError.STATE_NAME_MISSING;
+import static com.variant.core.schema.parser.ParserError.STATE_PARAMS_NOT_OBJECT;
+import static com.variant.core.schema.parser.ParserError.STATE_UNSUPPORTED_PROPERTY;
 
 import java.util.HashMap;
 import java.util.List;
@@ -50,9 +56,7 @@ public class StatesParser implements Keywords {
 	}
 	
 	/**
-	 * 
-	 * @param view
-	 * @param response
+	 * Parse a state
 	 */
 	private static State parseState(Map<String, ?> rawState, final ParserResponseImpl response) {
 		

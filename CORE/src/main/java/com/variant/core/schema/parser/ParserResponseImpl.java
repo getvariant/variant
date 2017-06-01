@@ -1,12 +1,11 @@
 package com.variant.core.schema.parser;
 
+import static com.variant.core.schema.parser.ParserError.JSON_PARSE;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.variant.core.schema.parser.ParserError.*;
-
-import com.variant.core.CommonError;
 import com.variant.core.UserError;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
@@ -73,8 +72,8 @@ public class ParserResponseImpl implements ParserResponse {
 	/**
 	 * Add externally generated message.
 	 */
-    public void addMessage(String message) {
-		ParserMessage result = new ParserMessageImpl(CommonError.HOOK_LISTENER_ERROR, message);
+    public void addMessage(Severity severity, String message) {
+		ParserMessage result = new ParserMessageImpl(new ParserHookError(severity, message));
 		messages.add(result);
 	}
 

@@ -75,20 +75,20 @@ public class ServerException extends VariantException {
 		/**
 		 */
 		public Severity getSeverity() {
-			return error.severity;
+			return error.getSeverity();
 		}
 		
 		/**
 		 */
 		@Override
 		public String getMessage() {
-			return "[" + error.code + "] " + error.asMessage((Object[])args);
+			return "[" + error.getCode() + "] " + error.asMessage((Object[])args);
 		}
 
 		/**
 		 */
 		public String getComment() {
-			return error.comment;
+			return error.getComment();
 		}
 	}
 	

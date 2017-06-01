@@ -70,7 +70,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe JsonParseError.isInternal() 
-         (respJson \ "code").as[Int] mustBe JsonParseError.code 
+         (respJson \ "code").as[Int] mustBe JsonParseError.getCode 
          val args = (respJson \ "args").as[Seq[String]]
          args(0) must startWith ("No content to map due to end-of-input")
 
@@ -82,7 +82,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe JsonParseError.isInternal() 
-         (respJson \ "code").as[Int] mustBe JsonParseError.code 
+         (respJson \ "code").as[Int] mustBe JsonParseError.getCode 
          val args = (respJson \ "args").as[Seq[String]]
          args(0) must startWith ("Unrecognized token 'bad'")
      }
@@ -93,7 +93,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe MissingProperty.isInternal() 
-         (respJson \ "code").as[Int] mustBe MissingProperty.code 
+         (respJson \ "code").as[Int] mustBe MissingProperty.getCode 
          (respJson \ "args").as[Seq[String]] mustBe Seq("sid") 
       }
 
@@ -103,7 +103,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe MissingProperty.isInternal() 
-         (respJson \ "code").as[Int] mustBe MissingProperty.code 
+         (respJson \ "code").as[Int] mustBe MissingProperty.getCode 
          (respJson \ "args").as[Seq[String]] mustBe Seq("name") 
       }
 
@@ -142,7 +142,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe SessionExpired.isInternal() 
-         (respJson \ "code").as[Int] mustBe SessionExpired.code 
+         (respJson \ "code").as[Int] mustBe SessionExpired.getCode 
          (respJson \ "args").as[Seq[String]] mustBe empty 
       }
 
@@ -154,7 +154,7 @@ class EventTest extends BaseSpecWithServer {
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe MissingParamName.isInternal() 
-         (respJson \ "code").as[Int] mustBe MissingParamName.code 
+         (respJson \ "code").as[Int] mustBe MissingParamName.getCode 
          (respJson \ "args").as[Seq[String]] mustBe empty 
       }
 
