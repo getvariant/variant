@@ -2,6 +2,7 @@ package com.variant.core.impl;
 
 import com.variant.core.LifecycleEvent;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.parser.ParserResponseImpl;
 
 /**
  * User Hook processor.
@@ -14,7 +15,7 @@ public interface UserHooker {
 	/**
 	 * Add an unbound user hook to this hooker.
 	 */
-	void initHook(Hook hook);
+	void initHook(Hook hook, ParserResponseImpl parserResponse);
 	
 	/**
 	 * Add a test-bound user hook to this hooker.
@@ -45,7 +46,7 @@ public interface UserHooker {
 	public static final UserHooker NULL = new UserHooker() {
 		
 		@Override
-		public void initHook(Hook hook) {}
+		public void initHook(Hook hook, ParserResponseImpl parserResponse) {}
 		
 		//@Override
 		//public void addHook(UserHook<? extends LifecycleEvent> hook, Test test) {}

@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.CommonError;
 import com.variant.core.LifecycleEvent;
-import com.variant.core.ServerError;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.UserHook;
 
@@ -55,20 +55,21 @@ public class ServerHooker implements UserHooker {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initHook(Hook hook) {
+	public void initHook(Hook hook, ParserResponseImpl parserResponse) {
 		
 		try {
 			Class<?> userHookClass = Class.forName(hook.getClassName());
 			Object userHookObject = userHookClass.newInstance();
 			if (! (userHookObject instanceof UserHook)) {
-				throw new ServerException.User(CommonError.HOOK_CLASS_NO_INTERFACE, UserHook.class.getName());
+				parserResponse.addMessage(ServerErrorLocal.HOOK_CLASS_NO_INTERFACE, UserHook.class.getName());
 			}
 			UserHook<? extends LifecycleEvent> userHook = (UserHook<LifecycleEvent>) userHookObject;
 			HookMapEntry hme = new HookMapEntry((Class<UserHook<LifecycleEvent>>) userHookClass, userHook.getLifecycleEventClass());
 			hookMap.put(hook.getName(), hme);
 		}
 		catch (Exception e) {
-			throw new ServerException.Internal("Unable to instantiate hook class [" + hook.getClassName() + "]", e);
+			LOG.error(ServerErrorLocal.HOOK_INSTANTIATION_ERROR.asMessage(hook.getClassName(), e.getClass().getName()), e);
+			parserResponse.addMessage(ServerErrorLocal.HOOK_INSTANTIATION_ERROR, hook.getClassName(), e.getClass().getName());
 		}
 
 	}

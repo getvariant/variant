@@ -186,7 +186,7 @@ public abstract class SchemaParser implements Keywords {
 			// Parse meta info
 			MetaParser.parse(meta, response);
 			// Init all hooks.
-			for (Hook hook: response.getSchema().getUserHooks()) getHooker().initHook(hook);
+			for (Hook hook: response.getSchema().getUserHooks()) getHooker().initHook(hook, response);
 		}
 
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());

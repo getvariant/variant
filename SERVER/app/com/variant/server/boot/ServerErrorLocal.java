@@ -1,7 +1,6 @@
 package com.variant.server.boot;
 
 import com.variant.core.CommonError;
-import com.variant.core.ServerError;
 
 /**
  * Local Server Errors, i.e. ones thrown to the server log and not sent back to client.
@@ -31,8 +30,14 @@ public class ServerErrorLocal extends CommonError {
 	// 461-480 Server API
 	//
 
+	public final static ServerErrorLocal HOOK_CLASS_NO_INTERFACE = 
+			new ServerErrorLocal(461, Severity.ERROR, "Hook class [%s] must implement interface [%s]");
+
+	public final static ServerErrorLocal HOOK_INSTANTIATION_ERROR = 
+			new ServerErrorLocal(462, Severity.ERROR, "Unable to instantiate hook class [%s] due to error [%s]. See log for details.");
+
 	public final static ServerErrorLocal HOOK_TARGETING_BAD_EXPERIENCE = 
-			new ServerErrorLocal(461, Severity.ERROR, "Targeting hook listener [%s] for test [%s] cannot set experience [%s]");
+			new ServerErrorLocal(463, Severity.ERROR, "Targeting hook listener [%s] for test [%s] cannot set experience [%s]");
 
 	//
 	// 481-500 Other server runtime

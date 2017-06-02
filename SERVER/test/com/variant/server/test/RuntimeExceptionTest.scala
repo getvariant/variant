@@ -139,7 +139,7 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
    		try {
    		   ssn.targetForState(schema.getState("state1"))
 			   fail("Expected exception not thrown")
-   			}
+   		}
          catch {
             case uex: ServerException.User =>  uex.getMessage() mustEqual
       			new ServerException.User(EXPERIENCE_WEIGHT_MISSING, "test1", "A").getMessage()

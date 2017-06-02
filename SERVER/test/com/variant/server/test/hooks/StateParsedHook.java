@@ -14,7 +14,7 @@ public class StateParsedHook implements UserHook<StateParsedLifecycleEvent> {
 	public static final String ERROR_MESSAGE = "Error Message State ";
 
 	private ArrayList<State> stateList = new ArrayList<State>();
-	
+		
 	@Override
     public Class<StateParsedLifecycleEvent> getLifecycleEventClass() {
 		return StateParsedLifecycleEvent.class;

@@ -34,17 +34,15 @@ public class CommonError extends UserError {
 	//
 	// 241-250  Available
 	//
-	public static final CommonError  HOOK_UNHANDLED_EXCEPTION =
-			new CommonError(241, Severity.ERROR, "User hook class [%s] threw an exception [%s]. See logs for details.");
-
+	
 	//
 	// 251-270              Common runtime, including common hook errors.
 	//
 	public static final CommonError STATE_NOT_INSTRUMENTED_BY_TEST =
 			new CommonError(251, Severity.ERROR, "State [%s] is not instrumented by test [%s]");
 
-	public final static CommonError HOOK_CLASS_NO_INTERFACE = 
-			new CommonError(462, Severity.ERROR, "Hook class [%s] must implement interface %s");
+	public static final CommonError  HOOK_UNHANDLED_EXCEPTION =
+			new CommonError(252, Severity.ERROR, "User hook class [%s] threw an exception [%s]. See logs for details.");
 
 	/**
 	 * 
