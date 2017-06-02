@@ -27,6 +27,9 @@ public class HookImpl implements Hook {
 		return className;
 	}
 
+	/**
+	 * Hook names are unique within a schema. 
+	 */
 	@Override
 	public boolean equals(Object other) {
 		return (other instanceof HookImpl) && ((HookImpl)other).name.equals(this.name);

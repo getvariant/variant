@@ -27,21 +27,22 @@ public class ServerHooker implements UserHooker {
 	private static final Logger LOG = LoggerFactory.getLogger(UserHooker.class);
 
 	/*
-	 *  Initialized hooks are stored in a linked map, keyed by the hook name, sorted in ordinal order,
-	 *  i.e. in the order they were declared in the meta section.
-	 *  The map entry contains the hooks class, which will be used to span new instances quckly and the
-	 *  LCE class for which this hook listens.
+	 *  Initialized hooks are stored in a linked map, keyed by the schema hook, sorted in ordinal order,
+	 *  i.e. in the order they were declared in the meta section. Note that schema hook impl overrides equal()
+	 *  to compare hook names.
+	 *  The map entry contains the hooks class, which will be used to spawn new instances quickly and the
+	 *  LCE event.
 	 */
 	
 	private static class HookMapEntry {
 		private Class<UserHook<LifecycleEvent>> hookClass;
-		private Class<? extends LifecycleEvent> eventClass;
-		private HookMapEntry(Class<UserHook<LifecycleEvent>> hookClass, Class<? extends LifecycleEvent> eventClass) {
+		private Class<? extends LifecycleEvent> lceClass;
+		private HookMapEntry(Class<UserHook<LifecycleEvent>> hookClass, Class<? extends LifecycleEvent> lceClass) {
 			this.hookClass = hookClass;
-			this.eventClass = eventClass;
+			this.lceClass = lceClass;
 		}
 	}
-	private LinkedHashMap<String, HookMapEntry> hookMap = new LinkedHashMap<String, HookMapEntry>();
+	private LinkedHashMap<Hook, HookMapEntry> hookMap = new LinkedHashMap<Hook, HookMapEntry>();
 
 	
 	/**
@@ -66,7 +67,7 @@ public class ServerHooker implements UserHooker {
 			}
 			UserHook<? extends LifecycleEvent> userHook = (UserHook<LifecycleEvent>) userHookObject;
 			HookMapEntry hme = new HookMapEntry((Class<UserHook<LifecycleEvent>>) userHookClass, userHook.getLifecycleEventClass());
-			hookMap.put(hook.getName(), hme);
+			hookMap.put(hook, hme);
 		}
 		catch (Exception e) {
 			LOG.error(ServerErrorLocal.HOOK_INSTANTIATION_ERROR.asMessage(hook.getClassName(), e.getClass().getName()), e);
@@ -91,19 +92,19 @@ public class ServerHooker implements UserHooker {
 	 */
 	@Override
 	public LifecycleEvent post(LifecycleEvent event) {
-		for (Map.Entry<String, HookMapEntry> entry : hookMap.entrySet()) {
-			String name = entry.getKey();
+		for (Map.Entry<Hook, HookMapEntry> entry : hookMap.entrySet()) {
+			Hook schemaHook = entry.getKey();
 			HookMapEntry hme = entry.getValue();
-			if (hme.eventClass.isAssignableFrom(event.getClass())) {
+			if (hme.lceClass.isAssignableFrom(event.getClass())) {
 				UserHook<LifecycleEvent> hook;
 				try {
 					hook = hme.hookClass.newInstance();
-					hook.post(event);
+					hook.post(event, schemaHook);
 				} catch (Exception e) {
 					throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName());
 				}
 				if (LOG.isTraceEnabled())
-					LOG.trace("Posted user hook [" + name + "]");
+					LOG.trace("Posted user hook [" + schemaHook.getName() + "]");
 			}
 		}
 		return event;

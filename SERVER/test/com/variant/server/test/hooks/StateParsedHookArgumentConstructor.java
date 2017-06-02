@@ -1,5 +1,6 @@
 package com.variant.server.test.hooks;
 
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.StateParsedLifecycleEvent;
 import com.variant.server.api.UserHook;
 
@@ -14,5 +15,5 @@ public class StateParsedHookArgumentConstructor implements UserHook<StateParsedL
     }
    
 	@Override
-	public void post(StateParsedLifecycleEvent event) {}
+	public void post(StateParsedLifecycleEvent event, Hook hook) {}
 }

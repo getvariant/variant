@@ -10,6 +10,7 @@ import scala.collection.JavaConverters
 import scala.util.Random
 import com.variant.server.api.TestTargetingLifecycleEvent
 import com.variant.server.api.UserHook
+import com.variant.core.schema.Hook
 
 class TargetingTest extends BaseSpecWithServer {
 
@@ -270,7 +271,7 @@ class ABTargetingHook extends UserHook[TestTargetingLifecycleEvent] {
    
 	override def getLifecycleEventClass() = classOf[TestTargetingLifecycleEvent]
 	
-	override def post(event: TestTargetingLifecycleEvent) {
+	override def post(event: TestTargetingLifecycleEvent, hook: Hook) {
 		postCount += 1
 		val test = event.getTest()
 		val experience = if (rand.nextBoolean()) test.getExperience("A") else test.getExperience("B")
@@ -288,7 +289,7 @@ class ACTargetingHook extends UserHook[TestTargetingLifecycleEvent] {
 	
 	override def getLifecycleEventClass() = classOf[TestTargetingLifecycleEvent]
 	
-	override def post(event: TestTargetingLifecycleEvent) {
+	override def post(event: TestTargetingLifecycleEvent, hook: Hook) {
 		postCount += 1
 		val test = event.getTest()
 		if (test.getName().equals("test1") && event.getTargetedExperience() == null) {
@@ -308,7 +309,7 @@ class ABNullTargetingHook extends UserHook[TestTargetingLifecycleEvent] {
 	
 	override def getLifecycleEventClass() = classOf[TestTargetingLifecycleEvent]
 	
-	override def post(event: TestTargetingLifecycleEvent) {
+	override def post(event: TestTargetingLifecycleEvent, hook: Hook) {
 		postCount += 1
 		var test = event.getTest()
 		if (test.getName().equals("test1") && event.getTargetedExperience() == null) {

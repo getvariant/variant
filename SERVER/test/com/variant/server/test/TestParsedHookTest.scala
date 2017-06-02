@@ -90,33 +90,6 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		response.getMessages(ERROR).size() mustBe 3
    		response.getMessages(WARN).size() mustBe 6
    		response.getMessages(INFO).size() mustBe 9
-   		var msg = response.getMessages.get(0)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, StateParsedHook.INFO_MESSAGE + "state1"))
-   		msg = response.getMessages.get(1)
-   		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, StateParsedHook.WARN_MESSAGE + "state1"))
-   		msg = response.getMessages.get(2)
-   		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, StateParsedHook.ERROR_MESSAGE + "state1"))
-   		msg = response.getMessages.get(3)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, StateParsedHook.INFO_MESSAGE + "state2"))
-   		msg = response.getMessages.get(4)
-   		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, StateParsedHook.WARN_MESSAGE + "state2"))
-   		msg = response.getMessages.get(5)
-   		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, StateParsedHook.ERROR_MESSAGE + "state2"))
-   		msg = response.getMessages.get(6)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, StateParsedHook.INFO_MESSAGE + "state3"))
-   		msg = response.getMessages.get(7)
-   		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, StateParsedHook.WARN_MESSAGE + "state3"))
-   		msg = response.getMessages.get(8)
-   		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, StateParsedHook.ERROR_MESSAGE + "state3"))
 
    		server.schema.isDefined mustBe false
 	   }
