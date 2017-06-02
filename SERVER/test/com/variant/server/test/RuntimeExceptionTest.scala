@@ -130,7 +130,6 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
 
       "throw WEIGHT_MISSING" in {
 
-         server.hooker.clear()
          server.installSchemaDeployer(SchemaDeployer.fromString(schemaJson))
          server.schema.isDefined mustBe true
          val schema = server.schema.get

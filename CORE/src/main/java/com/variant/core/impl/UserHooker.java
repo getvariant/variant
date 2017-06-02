@@ -24,7 +24,7 @@ public interface UserHooker {
 
 	/**
 	 * Remove all user hooks. 
-	 */
+	 *
 	void clear();
 
 	/**
@@ -51,8 +51,8 @@ public interface UserHooker {
 		//@Override
 		//public void addHook(UserHook<? extends LifecycleEvent> hook, Test test) {}
 
-		@Override
-		public void clear() {}
+		//@Override
+		//public void clear() {}
 
 		@Override
 		public LifecycleEvent post(LifecycleEvent hook) {return hook;}

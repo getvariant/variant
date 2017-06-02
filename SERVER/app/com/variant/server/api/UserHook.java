@@ -1,6 +1,7 @@
 package com.variant.server.api;
 
 import com.variant.core.LifecycleEvent;
+import com.variant.core.schema.Hook;
 
 /**
  * <p>The interface to be implemented by a user hook, which wants to be posted by a life cycle event.
@@ -34,8 +35,11 @@ public interface UserHook<E extends LifecycleEvent> {
 	 * by {@link #getLifecycleEventClass()} is reached.
 	 * 
 	 * @param event The posting event. May be further examined for details of the posting life cycle event.
-     * @since 0.5
+	 * @param hook The schema hook corresponding to this object. This may be useful when multiple hooks are posted
+	 *             with the same life cycle event.
+	 * 
+     * @since 0.7
 	 */
-	public void post(E event);
+	public void post(E event, Hook hook);
 
 }

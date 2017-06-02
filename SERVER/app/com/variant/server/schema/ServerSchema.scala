@@ -13,13 +13,13 @@ import com.variant.server.boot.VariantServer
  * 
  */
 object ServerSchema {
-   def apply(response: ParserResponse) = new ServerSchema(response)
+   def apply(response: ParserResponse, hooker: ServerHooker) = new ServerSchema(response, hooker)
 }
 
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (val response: ParserResponse) extends Schema {
+class ServerSchema (val response: ParserResponse, val hooker: ServerHooker) extends Schema {
   
    import State._
    

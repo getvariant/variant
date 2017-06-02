@@ -263,7 +263,7 @@ public class Runtime {
 			if (isTargetable(ft, state, vector)) {
 				// Target this test. First post targeting hooks.
 				TestTargetingHookImpl hook = new TestTargetingHookImpl(session, ft, state);
-				server.hooker().post(hook);
+				schema.hooker().post(hook);
 				Experience targetedExperience = hook.targetedExperience;
 				
 				String source = "default";
@@ -311,7 +311,7 @@ public class Runtime {
 	 * @param test
 	 */
 	private boolean qualifyTest(Test test, CoreSession session) {
-
+		
 		/**
 		 * 
 		 */
@@ -359,8 +359,10 @@ public class Runtime {
 
 		};
 
+		ServerSchema schema = server.schema().get();
+
 		TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
-		server.hooker().post(hook);
+		schema.hooker().post(hook);
 
 		if (!hook.qualified) {
 			session.addDisqualifiedTest(test);

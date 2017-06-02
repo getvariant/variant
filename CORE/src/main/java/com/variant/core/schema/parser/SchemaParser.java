@@ -12,8 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -38,9 +36,7 @@ import com.variant.core.util.VariantStringUtils;
  *
  */
 public abstract class SchemaParser implements Keywords {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(SchemaParser.class);
-	
+		
 	/**
 	 * Convert JsonParseException to ParserError.
 	 * @param parseException

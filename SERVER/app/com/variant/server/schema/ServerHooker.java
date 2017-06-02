@@ -1,4 +1,4 @@
-package com.variant.server.boot;
+package com.variant.server.schema;
 
 
 import java.util.LinkedHashMap;
@@ -14,6 +14,7 @@ import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.UserHook;
+import com.variant.server.boot.ServerErrorLocal;
 
 /**
  * User Hook processor
@@ -76,7 +77,7 @@ public class ServerHooker implements UserHooker {
 	
 	/**
 	 * 
-	 */
+	 *
 	@Override
 	public void clear() {
 		hookMap.clear();

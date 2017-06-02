@@ -98,7 +98,7 @@ import EventTest._
          (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
          (json \ "ts").asOpt[Long].isDefined mustBe true
          val schemaSrc = (json \ "schema").as[String]
-         val parser = ServerSchemaParser(server.hooker)
+         val parser = ServerSchemaParser()
          val parserResp = parser.parse(schemaSrc)
          parserResp.hasMessages() mustBe false
    		parserResp.getSchema() mustNot be (null)
@@ -135,7 +135,7 @@ import EventTest._
             (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
             (json \ "ts").asOpt[Long].isDefined mustBe true
             val schemaSrc = (json \ "schema").as[String]
-            val parser = ServerSchemaParser(server.hooker)
+            val parser = ServerSchemaParser()
             val parserResp = parser.parse(schemaSrc)
             parserResp.hasMessages() mustBe false
       		parserResp.getSchema() mustNot be (null)
@@ -168,7 +168,7 @@ import EventTest._
          (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
          (json \ "ts").asOpt[Long].isDefined mustBe true
          val schemaSrc = (json \ "schema").as[String]
-         val parser = ServerSchemaParser(server.hooker)
+         val parser = ServerSchemaParser()
          val parserResp = parser.parse(schemaSrc)
          parserResp.hasMessages() mustBe false
    		parserResp.getSchema() mustNot be (null)

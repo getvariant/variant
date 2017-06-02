@@ -30,25 +30,8 @@ class UserHookTest extends BaseSpecWithServer {
 	val MESSAGE_TEXT_TEST = "Info-Message-Test"
 	
 	var schemaId = None
-/*   
-	"StateParsedHook listener" should {
-	   "be posted when state is parsed" in {
-	      
-   		val listener = new StateParsedHook
-   		server.hooker.addHook(listener)
-   		val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTest.json")).get
-   		response.getMessages(FATAL) mustBe empty
-   		response.getMessages(ERROR) mustNot be (empty)
-   		server.schema.isDefined mustBe false
-   		response.getMessages.size mustBe 5
-   		for (msg <- response.getMessages) {
-   			msg.getSeverity mustBe ERROR
-   			msg.getText mustBe (new ParserMessageImpl(HOOK_LISTENER_ERROR, MESSAGE_TEXT_STATE).getText)
-   			
-   		}  
-	   }
-   }
-	   
+
+	/*
 	"TestParsedHook listener" should {
 	   "be posted when test is parsed" in {
 	      

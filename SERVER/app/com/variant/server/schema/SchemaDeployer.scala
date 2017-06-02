@@ -61,9 +61,9 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
 	 */
 	protected def parseAndDeploy(schemaSrc: String): ParserResponse = {
             
-      val parser = ServerSchemaParser(server.hooker)
+      val parser = ServerSchemaParser()
       val response = parser.parse(schemaSrc)
-		val schema = ServerSchema(response)
+		val schema = ServerSchema(response, parser.hooker)
 		
 		if (schema.state == State.Failed) {
 			logger.error("Schema was not deployed due to parser error(s):")

@@ -7,10 +7,12 @@ import com.variant.core.impl.UserHooker
  * Server side schema parser uses real hooker.
  */
 object ServerSchemaParser {   
-   def apply(hooker: UserHooker) = new ServerSchemaParser(hooker)
+   def apply() = new ServerSchemaParser()
 }
 
-class ServerSchemaParser(val hooker: UserHooker) extends SchemaParser {
+class ServerSchemaParser() extends SchemaParser {
+   
+   private[schema] val hooker = new ServerHooker()
    
    override def getHooker(): UserHooker = hooker
    

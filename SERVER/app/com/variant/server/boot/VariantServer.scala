@@ -13,7 +13,6 @@ import play.api.routing.Router
 import com.variant.core.schema.Schema
 import com.variant.server.schema.ServerSchema
 import play.api.Application
-import com.variant.core.impl.UserHooker
 import com.variant.server.schema.SchemaDeployerFromFS
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.runtime.Runtime
@@ -35,7 +34,6 @@ trait VariantServer {
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
    def schema: Option[ServerSchema]
-   def hooker: ServerHooker
    def installSchemaDeployer(newDeployer: SchemaDeployer): Option[ParserResponse]
    def runtime: Runtime
 }
@@ -65,8 +63,7 @@ class VariantServerImpl @Inject() (
 	_instance = this
 
 	override val config = playConfig.underlying
-   override val eventWriter = new EventWriter(config)      
-   override val hooker = new ServerHooker()
+   override val eventWriter = new EventWriter(config)
    override val runtime = new Runtime(this) // THIS?
 
 	private var _isUp = true
@@ -100,8 +97,6 @@ class VariantServerImpl @Inject() (
 
 	// Flip isUp to false if we had errors.
 	startupErrorLog.foreach {e => if (e.getSeverity.greaterOrEqual(ERROR)) _isUp = false}
-
-	//if (isUp) _lifecycler = Some(new Lifecycler())
 	
 	if (!isUp) {
 		   logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
