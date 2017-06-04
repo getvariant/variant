@@ -9,7 +9,7 @@ import java.util.Date
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.controller.SessionTest
 import com.variant.server.conn.Connection
-import com.variant.server.test.util.ParamString
+import com.variant.server.test.util.ParameterizedString
 import play.api.libs.json.Json
 import scala.util.Random
 		
@@ -17,7 +17,7 @@ class EventWriterTest extends BaseSpecWithServer {
 
    val schemaId = server.schema.get.getId
 
-   val sessionJson = ParamString("""
+   val sessionJson = ParameterizedString("""
       {"sid":"${sid:SID}",
        "ts": ${ts:%d}, 
        "schid": "%s",

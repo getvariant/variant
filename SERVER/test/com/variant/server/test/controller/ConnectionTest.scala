@@ -10,7 +10,7 @@ import play.api.libs.json._
 import scala.collection.JavaConversions._
 
 import com.variant.core.ServerError._
-import com.variant.server.test.util.ParamString
+import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.EventReader
 import com.variant.server.api.ConfigKeys._
 import com.variant.server.test.BaseSpecWithServer
@@ -23,7 +23,7 @@ import com.variant.server.schema.ServerSchemaParser
  */
 object ConnectionTest {
 
-   val body = ParamString("""
+   val body = ParameterizedString("""
       {"sid":"${sid:SID}",
        "name":"${name:NAME}",
        "value":"${value:VALUE}",
@@ -34,7 +34,7 @@ object ConnectionTest {
       
    val bodyNoSid = """{"name":"NAME","value":"VALUE"}"""
    val bodyNoName = """{"sid":"SID","value":"VALUE"}"""
-   val bodyNoParamName = ParamString("""
+   val bodyNoParamName = ParameterizedString("""
       {"sid":"${sid:SID}",
        "name":"NAME",
        "value":"VALUE",

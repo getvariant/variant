@@ -4,7 +4,7 @@ import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
 import scala.collection.JavaConversions._
-import com.variant.server.test.util.ParamString
+import com.variant.server.test.util.ParameterizedString
 import com.variant.server.api.ConfigKeys
 import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.ServerError._
@@ -35,7 +35,7 @@ class SessionTest extends BaseSpecWithServer {
    
    val endpoint = context + "/session"
    val schemaId = server.schema.get.getId
-   val sessionJson = ParamString(sessionJsonProto.format(System.currentTimeMillis(), schemaId))
+   val sessionJson = ParameterizedString(sessionJsonProto.format(System.currentTimeMillis(), schemaId))
 
    "SessionController" should {
 

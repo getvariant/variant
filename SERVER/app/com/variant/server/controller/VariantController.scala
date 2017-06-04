@@ -6,8 +6,8 @@ import play.api.libs.json._
 import com.variant.server.api.ServerException
 import com.variant.core.ServerError._
 import com.variant.server.conn.ConnectionStore
-import com.variant.server.session.ServerSession
 import com.variant.server.conn.Connection
+import com.variant.server.impl.SessionImpl
 
 
 abstract class VariantController extends Controller {
@@ -47,7 +47,7 @@ abstract class VariantController extends Controller {
    /**
     * Lookup session by SCID
     */
-   protected def lookupSession(scid: String): Option[(Connection, ServerSession)] = {
+   protected def lookupSession(scid: String): Option[(Connection, SessionImpl)] = {
 
       val conn = lookupConnection(scid)      
       val (sid, cid) = parseScid(scid)
@@ -55,7 +55,7 @@ abstract class VariantController extends Controller {
       val result = conn.getSession(sid)
       if (result.isDefined) {
          logger.debug(s"Found session [$sid]")
-         Some(conn, result.get)
+         Some(conn, result.get.asInstanceOf[SessionImpl])
       }
       else {
          logger.debug(s"Not found session [$sid]")
@@ -66,7 +66,7 @@ abstract class VariantController extends Controller {
    /**
     * Most calls will have the same body structure.
     */
-   protected def parseBody(body: String): (Connection, ServerSession) = {
+   protected def parseBody(body: String): (Connection, SessionImpl) = {
 
       val json = {
          try {
@@ -94,7 +94,7 @@ abstract class VariantController extends Controller {
 
       logger.debug(s"Found connection [$cid]")      
 
-      (conn.get, ServerSession(ssnJson.get))
+      (conn.get, SessionImpl(ssnJson.get))
    }
 
 }

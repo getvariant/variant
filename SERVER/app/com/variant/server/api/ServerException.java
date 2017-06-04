@@ -53,8 +53,8 @@ public class ServerException extends VariantException {
 	 */
 	public static class User extends ServerException {
 
-		private UserError error;
-		private String[] args;
+		public final UserError error;
+		public final String[] args;
 		
 		/**
 		 */

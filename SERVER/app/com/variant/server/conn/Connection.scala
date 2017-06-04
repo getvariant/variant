@@ -7,7 +7,7 @@ import com.variant.server.boot.VariantServer
 import com.variant.server.api.ConfigKeys
 import scala.math.BigDecimal.int2bigDecimal
 import scala.math.BigDecimal.long2bigDecimal
-import com.variant.server.session.ServerSession
+import com.variant.server.api.Session
 
 /**
  * Represents client connection
@@ -41,14 +41,14 @@ class Connection(val schema: ServerSchema) {
    /**
     * Add session
     */
-   def addSession(ssn: ServerSession) {
+   def addSession(ssn: Session) {
       ssnStore.put(ssn)
    }
    
    /**
     * Lookup session.
     */
-   def getSession(sid: String): Option[ServerSession] = ssnStore.asSession(sid)
+   def getSession(sid: String): Option[Session] = ssnStore.asSession(sid)
 
    /**
     * Lookup session as JSON string.

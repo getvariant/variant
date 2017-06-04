@@ -6,7 +6,7 @@ import com.variant.core.UserError.Severity;
 /**
  * <p>Super-interface for all life cycle event types that post their hooks at schema parse time.
  * 
- * @author Igor.
+ * @author Igor Urisman.
  * @since 0.5
  *
  */

@@ -14,10 +14,12 @@
 // T1, T2, T3(T2), T4(T1), T5(T2,T4), T6(T1,T2,T4,T5)
  
  
-{                                                                                
+{
    'meta':{
       'name':'parser_covariant_okay_big_test',
-      'comment':'Based on Parser Covariant Okay Bit Test Schema in Core.'
+      'comment':'Based on Parser Covariant Okay Bit Test Schema in Core.',
+      'hooks':[${hooks:}]
+      
    },
    'states':[                                                             
      {  'name':'state1',                                                  

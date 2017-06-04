@@ -96,11 +96,6 @@ public class CoreSession implements Serializable {
 		if (!(schidObj instanceof String)) 
 			throw new CoreException.Internal("Schema id not string");
 
-/* If schema has changed, we may not be able to deserialize it. Remember that we don't yet have a schema on server.
-		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER && !core.getSchema().getId().equals(schidObj)) {
-			throw new VariantSchemaModifiedException(core.getSchema().getId(), (String)schidObj);
-		}
-CLEANUP */									
 		Object tsObj = parsedJson.get(FIELD_NAME_TIMESTAMP);
 		if (tsObj == null) 
 			throw new CoreException.Internal("No timestamp");
@@ -136,10 +131,6 @@ CLEANUP */
 		}
 		result.setTargetingStabile(targetingStabile);
 
-		// If server, don't deserialize traversed tests and states because we don't have the schema.
-		/* Have schema now on both sides.
-		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER) {
-		*/
 		Object statesObj = parsedJson.get(FIELD_NAME_TRAVERSED_STATES);
 		if (statesObj != null) {
 			HashMap<State,Integer> statesMap = new HashMap<State, Integer>();
@@ -192,6 +183,9 @@ CLEANUP */
 		return result;
 	}
 
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//	
 	/**
 	 * 
 	 */

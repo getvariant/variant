@@ -7,7 +7,7 @@ import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.collection.JavaConversions._
 import com.variant.core.ServerError._
-import com.variant.server.test.util.ParamString
+import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.BaseSpecWithServer
 import com.variant.server.conn.ConnectionStore
@@ -17,7 +17,7 @@ import com.variant.server.session.ServerSession
 
 object EventTest {
    
-   val body = ParamString("""
+   val body = ParameterizedString("""
       {"sid":"${sid:SID}",
        "name":"${name:NAME}",
        "value":"${value:VALUE}",
@@ -28,7 +28,7 @@ object EventTest {
       
    val bodyNoSid = """{"name":"NAME","value":"VALUE"}"""
    val bodyNoName = """{"sid":"SID","value":"VALUE"}"""
-   val bodyNoParamName = ParamString("""
+   val bodyNoParamName = ParameterizedString("""
       {"sid":"${sid:SID}",
        "name":"NAME",
        "value":"VALUE",
@@ -123,7 +123,7 @@ class EventTest extends BaseSpecWithServer {
       "obtain a session" in {
          val sid = newSid()
          // PUT session.
-         val sessionJson = ParamString(SessionTest.sessionJsonProto.format(System.currentTimeMillis(), schemaId)).expand("sid" -> sid)
+         val sessionJson = ParameterizedString(SessionTest.sessionJsonProto.format(System.currentTimeMillis(), schemaId)).expand("sid" -> sid)
          val ssnBody = Json.obj(
             "cid" -> connId,
             "ssn" -> sessionJson

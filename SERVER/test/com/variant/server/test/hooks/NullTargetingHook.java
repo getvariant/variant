@@ -9,7 +9,7 @@ import com.variant.server.api.UserHook;
  */
 public class NullTargetingHook implements UserHook<TestTargetingLifecycleEvent> {
 
-	public int postCount = 0;
+	public static int postCount = 0;
 
 	@Override
     public Class<TestTargetingLifecycleEvent> getLifecycleEventClass() {

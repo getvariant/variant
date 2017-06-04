@@ -16,7 +16,6 @@ import play.api.mvc.Result
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.api.ServerException
 import com.variant.core.schema.State
-import com.variant.server.session.ServerSession
 import com.variant.core.session.CoreStateRequest
 import play.api.mvc.AnyContent
 

@@ -39,6 +39,14 @@ public interface StateRequest {
 	State getState();
 	
 	/**
+	 * Creation timestamp.
+     * 
+     *@return Creation timestamp of this state request object.
+	 * @since 0.7
+	 */
+	public Date getCreateDate();
+
+	/**
 	 * The state variant to which this state request resolved at run time. A state request can 
 	 * have either trivial resolution, or resolve to a {@link StateVariant}. Trivial resolution means that all live
 	 * experiences are control experiences, and the user session will be targeted for the base state. If at least one
@@ -107,6 +115,7 @@ public interface StateRequest {
 	 * Current status of this request.
 	 * 
 	 * @return Status of this request.
+	 * @since 0.6
 	 */
 	StateRequestStatus getStatus();
 	
@@ -127,13 +136,5 @@ public interface StateRequest {
 	 * @since 0.6
 	 */
 	boolean isCommitted();
-
-	/**
-	 * Creation timestamp.
-     * 
-     *@return Creation timestamp of this state request object.
-	 * @since 0.7
-	 */
-	public Date getCreateDate();
 	
 }

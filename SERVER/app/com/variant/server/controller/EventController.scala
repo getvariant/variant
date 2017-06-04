@@ -19,7 +19,8 @@ import com.variant.server.conn.ConnectionStore
 import com.variant.server.boot.VariantServer
 import com.variant.server.api.ServerException
 import com.variant.server.conn.Connection
-import com.variant.server.session.ServerSession
+import com.variant.server.api.Session
+import com.variant.server.impl.SessionImpl
 
 //@Singleton -- Is this for non-shared state controllers?
 class EventController @Inject() (override val connStore: ConnectionStore, server: VariantServer) extends VariantController  {
@@ -73,7 +74,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
                event.setParameter(name, value)
             })
          }            
-         ssn.triggerEvent(event)            
+         ssn.asInstanceOf[SessionImpl].triggerEvent(event)            
          Ok
       }
             

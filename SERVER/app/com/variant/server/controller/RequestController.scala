@@ -16,9 +16,11 @@ import play.api.mvc.Result
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.api.ServerException
 import com.variant.core.schema.State
-import com.variant.server.session.ServerSession
+import com.variant.server.api.Session
 import com.variant.core.session.CoreStateRequest
 import play.api.mvc.AnyContent
+import com.variant.server.impl.SessionImpl
+import com.variant.server.impl.StateRequestImpl
 
 //@Singleton -- Is this for non-shared state controllers?
 class RequestController @Inject() (override val connStore: ConnectionStore) extends VariantController  {
@@ -36,7 +38,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     */
    def create() = VariantAction { req =>
 
-      def parse(json: JsValue): (Connection, ServerSession, State) = {
+      def parse(json: JsValue): (Connection, Session, State) = {
          
          val scid = (json \ "sid").asOpt[String]
          val state = (json \ "state").asOpt[String]
@@ -64,10 +66,10 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
             try {
                val (conn, ssn, state) = parse(Json.parse(req.body.asText.get))
-               var stateReq: CoreStateRequest = VariantServer.server.runtime.targetSessionForState(ssn.coreSession, state)
+               var stateReq: CoreStateRequest = VariantServer.server.runtime.targetSessionForState(ssn.asInstanceOf[SessionImpl].coreSession, state)
                conn.addSession(ssn)
                val response = JsObject(Seq(
-                  "session" -> JsString(ssn.coreSession.toJson())
+                  "session" -> JsString(ssn.asInstanceOf[SessionImpl].coreSession.toJson())
                ))
               Ok(response.toString)
             }
@@ -99,7 +101,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 		      }
 	   		// Trigger state visited event
    	   	ssn.triggerEvent(sve);
-   	   	stateReq.commit(); 
+   	   	stateReq.asInstanceOf[StateRequestImpl].commit(); 
    	   	conn.addSession(ssn)
          }
          val response = JsObject(Seq(

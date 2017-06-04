@@ -7,7 +7,29 @@ import scala.collection.mutable.HashSet
  * 
  * @author Igor Urisman
  */
-class ParamString (private val prototype: String) {
+
+/**
+ * Comp object
+ */
+object ParameterizedString {
+   
+   /**
+    */
+   def apply(prototype:String) = new ParameterizedString(prototype)
+   
+   /**
+    * Tesging...
+    */
+   def main(args: Array[String]): Unit = {
+      val ps = new ParameterizedString(
+      """
+         oh ${la} l$a}{${si:bar}
+      """)
+      println(ps.expand("la" -> "foo", "si" -> "puke").trim)
+  }
+}
+
+class ParameterizedString (private val prototype: String) {
      
    def expand(bindings: (String, Any)*): String = {
       var index = 0;
@@ -63,7 +85,7 @@ class ParamString (private val prototype: String) {
             }
          }
       }
-      // Ensure that all input bindings were actually used. We essentially want to catch thecase when the call
+      // Ensure that all input bindings were actually used. We essentially want to catch the case when the call
       // to expand() contains a binding (name->value) where name is mistyped and does not match any variables
       // in the body.
       bindings.foreach((b: (String,Any)) => {
@@ -72,25 +94,4 @@ class ParamString (private val prototype: String) {
       })
       result.toString()
    }
-}
-
-/**
- * Testing
- */
-object ParamString {
-   
-   /**
-    */
-   def apply(prototype:String) = new ParamString(prototype)
-   
-   /**
-    * Tesging...
-    */
-   def main(args: Array[String]): Unit = {
-      val ps = new ParamString(
-      """
-         oh ${la} l$a}{${si:bar}
-      """)
-      println(ps.expand("la" -> "foo", "si" -> "puke").trim)
-  }
 }
