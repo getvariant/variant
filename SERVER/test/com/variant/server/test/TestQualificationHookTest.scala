@@ -3,7 +3,7 @@ package com.variant.server.test
 import org.apache.commons.io.IOUtils
 
 import scala.collection.JavaConversions._
-import com.variant.server.session.ServerSession
+import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.util.ParameterizedString
 
@@ -26,7 +26,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
   	"TestQualificationHook" should {
 	   
 //   	val nullListener = new TestQualificationHookNil
-	   var ssn = ServerSession.empty(newSid())
+	   var ssn = SessionImpl.empty(newSid())
 
       "be posted for tests instrumented on state1" in {
 
@@ -35,7 +35,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 //    		server.hooker.addHook(nullListener);
          val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
    	   response.hasMessages() mustBe false
-   		NullTargetingHook.testList mustBe empty  // using class field is silly. Instead, we should use session params to return state from the hook.
+//   		NullTargetingHook.testList mustBe empty  // using class field is silly. Instead, we should use session params to return state from the hook.
    		server.schema.isDefined mustBe true
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")

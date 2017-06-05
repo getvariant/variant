@@ -4,7 +4,7 @@ import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
 import com.variant.core.session.CoreSession
-import com.variant.server.session.ServerSession
+import com.variant.server.impl.SessionImpl
 
 /**
  * Add your spec here.
@@ -17,7 +17,7 @@ class ServerSessionTest extends BaseSpecWithServer {
 
     "should serialize and deserialize" in  {
 	
-       val coreSsn1 = ServerSession.empty(newSid).coreSession
+       val coreSsn1 = SessionImpl.empty(newSid).coreSession
        val schema = server.schema.get
        val state1 = schema.getState("state1")
        state1 mustNot be (null)

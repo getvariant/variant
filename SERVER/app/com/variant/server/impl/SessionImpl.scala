@@ -49,6 +49,8 @@ class SessionImpl(val json: String) extends Session {
    override def getDisqualifiedTests = coreSession.getDisqualifiedTests
    
    override def getId = coreSession.getId
+   
+   override def getSchema  = coreSession.getSchema
       
    override def getStateRequest = StateRequestImpl(coreSession.getStateRequest)
    
@@ -65,9 +67,6 @@ class SessionImpl(val json: String) extends Session {
    /*----------------------------------------------------------------------------------------*/
    /*                                     PUBLIC EXT                                         */
    /*----------------------------------------------------------------------------------------*/
-   
-   def getSchema  = coreSession.getSchema
-
    
    def toJson = coreSession.toJson()
 

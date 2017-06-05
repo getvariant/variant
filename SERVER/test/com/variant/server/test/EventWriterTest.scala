@@ -12,6 +12,7 @@ import com.variant.server.conn.Connection
 import com.variant.server.test.util.ParameterizedString
 import play.api.libs.json.Json
 import scala.util.Random
+import com.variant.server.impl.SessionImpl
 		
 class EventWriterTest extends BaseSpecWithServer {
 
@@ -69,7 +70,7 @@ class EventWriterTest extends BaseSpecWithServer {
          val ssn = connStore.get(connId).get.getSession(sid).get
          val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
          val se = new ServerEvent(name, value, new Date(timestamp));
-         ssn.triggerEvent(se);
+         ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          
          // Read events back from the db, but must wait for the asych flusher.
          Thread.sleep(server.eventWriter.maxDelayMillis * 2)
@@ -122,7 +123,7 @@ class EventWriterTest extends BaseSpecWithServer {
          for (i <- 1 to writer.pctFullSize) { 
             val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
             val se = new ServerEvent(name, value, new Date(timestamp));
-            ssn.triggerEvent(se);
+            ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
          
          val writeTook = System.currentTimeMillis() - startOfWrite
@@ -157,7 +158,7 @@ class EventWriterTest extends BaseSpecWithServer {
          for (i <- 1 to writer.pctFullSize + 1) { 
             val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
             val se = new ServerEvent(name, value, new Date(timestamp));
-            ssn.triggerEvent(se);
+            ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
          
          val writeTook = System.currentTimeMillis() - startOfWrite

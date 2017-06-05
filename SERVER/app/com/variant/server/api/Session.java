@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
@@ -50,6 +51,15 @@ public interface Session {
 	 *         that state.
 	 */
 	public Map<State, Integer> getTraversedStates(); 
+
+	/**
+	 * <p>Get the XDM schema, associated with this session.
+	 * 
+	 * @return An object of type {@link Schema}
+	 * 
+	 * @since 0.7
+	 */
+	public Schema getSchema();
 
 	/**
 	 * <p> The set of tests traversed by this session so far. A test T is traversed by

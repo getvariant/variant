@@ -13,7 +13,7 @@ import com.variant.server.test.BaseSpecWithServer
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.ConnectionStore
 import javax.inject.Inject
-import com.variant.server.session.ServerSession
+import com.variant.server.api.Session
 
 object EventTest {
    
@@ -119,7 +119,7 @@ class EventTest extends BaseSpecWithServer {
          connId mustNot be (null)
       }
 
-      var ssn: ServerSession = null;
+      var ssn: Session = null;
       "obtain a session" in {
          val sid = newSid()
          // PUT session.

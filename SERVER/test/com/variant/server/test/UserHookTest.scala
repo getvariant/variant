@@ -9,7 +9,7 @@ import com.variant.core.UserError.Severity._
 import com.variant.server.schema.SchemaDeployer
 import com.variant.core.schema.TestParsedLifecycleEvent
 import com.variant.core.schema.Test
-import com.variant.server.session.ServerSession
+import com.variant.server.api.Session
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.CommonError._

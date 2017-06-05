@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class CoreSession implements Serializable {
 	private String sid;
 	private Date createDate = new Date();
 	private CoreStateRequest currentRequest = null;
-	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
+	private LinkedHashMap<State, Integer> traversedStates = new LinkedHashMap<State, Integer>();
 	private LinkedHashSet<Test> traversedTests = new LinkedHashSet<Test>();
 	private LinkedHashSet<Test> disqualTests = new LinkedHashSet<Test>();
 	private Schema schema;
@@ -133,7 +133,7 @@ public class CoreSession implements Serializable {
 
 		Object statesObj = parsedJson.get(FIELD_NAME_TRAVERSED_STATES);
 		if (statesObj != null) {
-			HashMap<State,Integer> statesMap = new HashMap<State, Integer>();
+			LinkedHashMap<State,Integer> statesMap = new LinkedHashMap<State, Integer>();
 			try {
 				List<?> statesListRaw = (List<?>) statesObj; 
 				for (Object obj: statesListRaw) {

@@ -3,11 +3,12 @@ package com.variant.server.test
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.CommonError._
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.session.ServerSession
+import com.variant.server.api.Session
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerSuite
 import com.variant.server.api.ServerException
 import com.variant.core.CoreException
+import com.variant.server.impl.SessionImpl
 
 class RuntimeExceptionTest extends BaseSpecWithServer {
 
@@ -133,7 +134,7 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
          server.installSchemaDeployer(SchemaDeployer.fromString(schemaJson))
          server.schema.isDefined mustBe true
          val schema = server.schema.get
-         val ssn = ServerSession.empty("sid")
+         val ssn = SessionImpl.empty("sid")
    
    		try {
    		   ssn.targetForState(schema.getState("state1"))

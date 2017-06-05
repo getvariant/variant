@@ -6,7 +6,6 @@ import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
 import com.variant.server.schema.SchemaDeployer
 import com.variant.core.schema.Test
-import com.variant.server.session.ServerSession
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
 import org.scalatestplus.play.PlaySpec

@@ -7,6 +7,7 @@ import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -131,7 +132,7 @@ public class CoreStateRequest implements Serializable {
 		if (liveExperiences == null) {
 
 			SessionScopedTargetingStabile stabile = session.getTargetingStabile();
-			HashSet<Experience> result = new HashSet<Experience>();
+			HashSet<Experience> result = new LinkedHashSet<Experience>();
 
 			for (Test test: state.getInstrumentedTests()) {
 				if (!test.isOn() || session.getDisqualifiedTests().contains(test)) continue;
@@ -326,7 +327,7 @@ public class CoreStateRequest implements Serializable {
 		
 		Object experiencesListObj = fields.get(FIELD_NAME_EXPERIENCES);
 		if (experiencesListObj != null) {
-			result.liveExperiences = new HashSet<Experience>();
+			result.liveExperiences = new LinkedHashSet<Experience>();
 			try {
 				List<?> experiencesListRaw = (List<?>) experiencesListObj; 
 				for (Object obj: experiencesListRaw) {

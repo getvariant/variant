@@ -9,7 +9,7 @@ import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.ServerError._
 import com.variant.core.util.VariantStringUtils
 import play.api.libs.json._
-import com.variant.server.session.ServerSession
+import com.variant.server.impl.SessionImpl
 import com.variant.core.session.CoreSession
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.util.EventExperienceFromDatabase
@@ -55,7 +55,7 @@ class RequestTest extends BaseSpecWithServer {
          
          val reqBody = Json.obj(
             "cid" -> cid,
-            "ssn" -> ServerSession.empty(sid).toJson
+            "ssn" -> SessionImpl.empty(sid).toJson
             ).toString
          val resp = route(app, FakeRequest(PUT, context + "/session").withTextBody(reqBody)).get
          status(resp) mustBe OK

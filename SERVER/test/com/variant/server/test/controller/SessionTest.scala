@@ -10,6 +10,7 @@ import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.ServerError._
 import com.variant.core.util.VariantStringUtils
 import play.api.libs.json._
+import com.variant.server.impl.SessionImpl
 
 
 /**
@@ -252,10 +253,11 @@ class SessionTest extends BaseSpecWithServer {
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
-         val ssnJson = connStore.get(connId).get.getSession(sid).get.json
-         ssnJson mustBe sessionJson.expand("sid" -> sid, "ts" -> ts)
+         val ssnJson = connStore.get(connId).get.getSession(sid).get.asInstanceOf[SessionImpl].toJson
+         
+         ssnJson mustBe normalJson(sessionJson.expand("sid" -> sid, "ts" -> ts))
          val ssn = connStore.get(connId).get.getSession(sid).get
-         ssn.createDate.getTime mustBe ts
+         ssn.getCreateDate.getTime mustBe ts
          ssn.getId mustBe sid
       
          Thread.sleep(2000);

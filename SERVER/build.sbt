@@ -58,7 +58,9 @@ fork := true  // without this JVM options won't take place
 unmanagedClasspath in Test += baseDirectory.value / "conf-test"
 unmanagedClasspath in Runtime += baseDirectory.value / "conf-test"
 
-// Config overrides for run and test
+// Config overrides for run and test.
 javaOptions in Test += "-Dvariant.config.file=conf-test/variant.conf"
-javaOptions in Test ++= Seq("-Xdebug",  "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000")
 javaOptions in Runtime += "-Dvariant.config.file=conf-test/variant.conf"
+
+// If you want to debug, uncomment and connect with eclipse after the VM is suspended.
+//javaOptions in Test ++= Seq("-Xdebug",  "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000")

@@ -3,7 +3,7 @@ package com.variant.server.test
 import scala.collection.JavaConverters
 import com.variant.server.schema.SchemaDeployer
 import com.variant.core.schema.State
-import com.variant.server.session.ServerSession
+import com.variant.server.impl.SessionImpl
 import com.variant.core.session.CoreStateRequest
 import com.variant.core.util.VariantStringUtils
 import scala.collection.JavaConverters
@@ -106,7 +106,7 @@ class TargetingTest extends BaseSpecWithServer {
 				
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = ServerSession.empty("sid")
+   			val ssn = SessionImpl.empty("sid")
    			val req = ssn.targetForState(state)
    			val expName = req.getLiveExperience(test).getName()
    			expName match {

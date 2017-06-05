@@ -3,6 +3,7 @@ package com.variant.server.test
 import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
+import play.api.libs.json._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.Application
 import javax.inject.Inject
@@ -12,7 +13,7 @@ import com.variant.server.jdbc.JdbcService
 import com.variant.server.event.EventWriter
 import com.variant.server.event.EventWriter
 import com.variant.server.boot.VariantServer
-import com.variant.server.session.ServerSession
+import com.variant.server.api.Session
 import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.core.schema.Schema
 import java.util.Random
@@ -27,6 +28,7 @@ import play.api.Configuration
 import com.variant.server.conn.ConnectionStore
 import play.api.libs.json.JsValue
 import com.variant.core.ServerError
+import com.variant.server.impl.SessionImpl
 
 /**
  * Common to all tests.
@@ -47,6 +49,26 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
          .configure(new Configuration(VariantApplicationLoader.config))
          .build()
    }
+
+   /**
+	 * @throws Exception 
+	 * 
+	 */
+	private def recreateSchema() {
+		
+		val jdbc = new JdbcService(server.eventWriter);
+		
+		try {			
+			jdbc.getVendor() match {
+   			case JdbcService.Vendor.POSTGRES => jdbc.recreateSchema()
+	   		case JdbcService.Vendor.H2 => jdbc.createSchema()  // Fresh in-memory DB.
+		   }
+		}
+		catch {
+		   case _: ClassCastException => 
+		   case e: Throwable => throw e		
+		}
+	}
 
    protected val context = app.configuration.getString("play.http.context").get
    protected val connStore = app.injector.instanceOf[ConnectionStore]
@@ -91,10 +113,10 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
    /**
     * Create and add a targeting stabile to a session.
     */
-   protected def setTargetingStabile(ssn: ServerSession, experiences: String*) {
+   protected def setTargetingStabile(ssn: Session, experiences: String*) {
 		val stabile = new SessionScopedTargetingStabile()
 		experiences.foreach {e => stabile.add(experience(e, ssn.getSchema))}
-		ssn.coreSession.setTargetingStabile(stabile);
+		ssn.asInstanceOf[SessionImpl].coreSession.setTargetingStabile(stabile);
 	}
 
    /**
@@ -113,23 +135,8 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
       VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()))
    
    /**
-	 * @throws Exception 
-	 * 
-	 */
-	private def recreateSchema() {
-		
-		val jdbc = new JdbcService(server.eventWriter);
-		
-		try {			
-			jdbc.getVendor() match {
-   			case JdbcService.Vendor.POSTGRES => jdbc.recreateSchema()
-	   		case JdbcService.Vendor.H2 => jdbc.createSchema()  // Fresh in-memory DB.
-		   }
-		}
-		catch {
-		   case _: ClassCastException => 
-		   case e: Throwable => throw e		
-		}
-	}
-
+    * Normalize a JSON string by removing any white space.
+    */
+   protected def normalJson(jsonIn: String):String = Json.stringify(Json.parse(jsonIn))
+   
 }
