@@ -98,16 +98,6 @@ class UserHookTest extends BaseSpecWithServer {
       }
    }
 
-	/**
-	 * Do nothing. Tests should be qualified by default.
-	 */
-	class TestQualificationHookNil extends UserHook[TestQualificationLifecycleEvent] {
-		val testList = ListBuffer[Test]()
-		override def getLifecycleEventClass() = classOf[TestQualificationLifecycleEvent]
-		override def post(event: TestQualificationLifecycleEvent) {
-			testList += event.getTest()
-		}		
-	}
 
 	/**
 	 * Disqualify passed tests and optionally remove their entries from targeting stabile

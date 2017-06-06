@@ -1,24 +1,24 @@
 package com.variant.server.test
 
 import org.apache.commons.io.IOUtils
-
 import scala.collection.JavaConversions._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.util.ParameterizedString
+import com.variant.server.api.TestQualificationLifecycleEvent
+import com.variant.server.test.hooks.TestQualificationHookNil
 
 class TestQualificationHookTest extends BaseSpecWithServer {
    
    private[this] def generateSchema(hooks: (String,String)*):String = {
       
       /**
-       * Inject hooks into the schema.
+       * Inject hooks, passed as parameters, into the schema.
        */
       val hookList = hooks.foldLeft("") ((s, h) => 
          s + ",{'name':'%s','class':'%s'}".format(h._1,h._2)
       ).substring(1) // lose leading comma
       
-      println(hookList)
       val stream = getClass.getResourceAsStream("/ParserCovariantOkayBigTest.json")
       ParameterizedString(IOUtils.toString(stream)).expand("hooks"->hookList)
    }
@@ -30,12 +30,9 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
       "be posted for tests instrumented on state1" in {
 
-         val schemaSrc = generateSchema("nullTargetingHook" -> "com.variant.server.test.hooks.NullTargetingHook")
-         //println(schemaSrc)
-//    		server.hooker.addHook(nullListener);
+         val schemaSrc = generateSchema("nullQualificationHook" -> "com.variant.server.test.hooks.TestQualificationHookNil")
          val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
    	   response.hasMessages() mustBe false
-//   		NullTargetingHook.testList mustBe empty  // using class field is silly. Instead, we should use session params to return state from the hook.
    		server.schema.isDefined mustBe true
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")
@@ -45,6 +42,8 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test4 = schema.getTest("test4")
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
+
+   	   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
    	   
    		val req = ssn.targetForState(state1);
 		   ssn.getTraversedStates.size() mustEqual 1
@@ -59,7 +58,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 		   stabile.get("test4") mustNot be (null)
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
-//		   nullListener.testList.toSeq mustEqual Seq(test3, test4, test5, test6)
+		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test3 test4 test5 test6"
 
 	   }
 	   
@@ -74,7 +73,8 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test4 = schema.getTest("test4")
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
-//   	   nullListener.testList.clear()
+   	   ssn.clearAttribute(TestQualificationHookNil.ATTR_KEY)
+   	   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
    	   
 	      val req = ssn.targetForState(state2);
 		   ssn.getTraversedStates.size() mustEqual 2
@@ -90,7 +90,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 		   stabile.get("test4") mustNot be (null)
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
-//		   nullListener.testList.toSeq mustEqual Seq(test1)
+		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
 
 	   }
 /*	   

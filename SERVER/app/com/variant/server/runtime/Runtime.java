@@ -27,8 +27,10 @@ import static com.variant.server.boot.ServerErrorLocal.*;
 
 import com.variant.server.api.ServerException;
 import com.variant.server.api.TestQualificationLifecycleEvent;
-import com.variant.server.api.TestTargetingLifecycleEvent;
 import com.variant.server.boot.VariantServer;
+import com.variant.server.impl.SessionImpl;
+import com.variant.server.impl.TestQualificationLifecycleEventImpl;
+import com.variant.server.impl.TestTargetingLifecycleEventImpl;
 import com.variant.server.schema.ServerSchema;
 
 /**
@@ -42,72 +44,6 @@ public class Runtime {
 	private static final Logger LOG = LoggerFactory.getLogger(Runtime.class);
 	
 	final private VariantServer server;
-
-	/**
-	 * 
-	 */
-	private class TestTargetingHookImpl implements TestTargetingLifecycleEvent {
-
-		private CoreSession session;
-		private Test test;
-		private State state;
-		private Experience targetedExperience = null;
-		
-		private TestTargetingHookImpl(CoreSession session, Test test, State state) {
-			this.session = session;
-			this.test = test;
-			this.state = state;
-		}
-		
-		@Override
-		public CoreSession getSession() {
-			return session;
-		}
-
-		@Override
-		public Experience getTargetedExperience() {
-			return targetedExperience;
-		}
-
-		@Override
-		public Test getTest() {
-			return test;
-		}
-
-		@Override
-		public State getState() {
-			return state;
-		}
-		
-		@Override
-		public void setTargetedExperience(Experience e) {
-			
-			if (e == null) {
-				targetedExperience = null;
-				return;
-			}
-			
-			for (Experience te: test.getExperiences()) {
-				if (e.equals(te)) {
-					if (!e.isDefinedOn(state)) {
-						StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-						throw new ServerException.User(
-								HOOK_TARGETING_BAD_EXPERIENCE, 
-								caller.getClassName(), test.getName(), e.toString(), test.getName());
-					}
-					targetedExperience = e;
-					return;
-				}
-			}
-			// If we're here, the experience is not from the test we're listening for.
-			// Figure out the caller class and throw an exception.
-			StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-			throw new ServerException.User(
-					HOOK_TARGETING_BAD_EXPERIENCE, 
-					caller.getClassName(), test.getName(), e.toString());
-		}
-
-	}		
 	
 	/**
 	 * Target this session for all active tests.
@@ -152,12 +88,13 @@ public class Runtime {
 	 * TODO: IP.
 	 * 
 	 */
-	private void targetSessionForState(CoreStateRequest req) {
+	private void targetSessionForState(SessionImpl session) {
 
 		ServerSchema schema = server.schema().get();
-		CoreSession session = req.getSession();
-		SessionScopedTargetingStabile targetingStabile = session.getTargetingStabile();
-		State state = req.getState();
+		CoreSession coreSession = session.coreSession();
+		CoreStateRequest coreReq = coreSession.getStateRequest();
+		State state = coreReq.getState();
+		SessionScopedTargetingStabile targetingStabile = coreSession.getTargetingStabile();
 		
 		// State must be in current schema.
 		State schemaState = schema.getState(state.getName());
@@ -224,7 +161,7 @@ public class Runtime {
 					}
 				}
 				
-				session.addTraversedTest(test);
+				coreSession.addTraversedTest(test);
 			}
 		}
 				
@@ -262,14 +199,14 @@ public class Runtime {
 
 			if (isTargetable(ft, state, vector)) {
 				// Target this test. First post targeting hooks.
-				TestTargetingHookImpl hook = new TestTargetingHookImpl(session, ft, state);
-				schema.hooker().post(hook);
-				Experience targetedExperience = hook.targetedExperience;
+				TestTargetingLifecycleEventImpl event = new TestTargetingLifecycleEventImpl(session, ft, state);
+				schema.hooker().post(event);
+				Experience targetedExperience = null; //event.targetedExperience;  This needs to change.
 				
 				String source = "default";
 				// If no listeners or no action by client code, do the random default.
 				if (targetedExperience == null) {
-					targetedExperience = new TestTargeterDefault().target(session, ft, state);
+					targetedExperience = new TestTargeterDefault().target(coreSession, ft, state);
 				}
 				else
 					source = "user hook listener";
@@ -300,7 +237,7 @@ public class Runtime {
 		if (!resolution._1()) throw new ServerException.Internal(
 				"Vector [" + VariantStringUtils.toString(vector, ",") + "] is unresolvable");
 		
-		req.setResolvedStateVariant(resolution._2());
+		coreReq.setResolvedStateVariant(resolution._2());
 	}
 
 	/**
@@ -310,66 +247,23 @@ public class Runtime {
 	 * @param session
 	 * @param test
 	 */
-	private boolean qualifyTest(Test test, CoreSession session) {
+	private boolean qualifyTest(Test test, SessionImpl session) {
 		
 		/**
 		 * 
 		 */
-		class TestQualificationHookImpl implements TestQualificationLifecycleEvent {
-			
-			private CoreSession ssn;
-			private Test test;
-			private boolean qualified = true;
-			private boolean removeFromTT = false;
-			
-			private TestQualificationHookImpl(CoreSession ssn, Test test) {
-				this.ssn = ssn;
-				this.test = test;
-			}
-			
-			@Override
-			public Test getTest() {
-				return test;
-			}
-
-			@Override
-			public boolean isQualified() {
-				return qualified;
-			}
-			
-			@Override
-			public boolean isRemoveFromTargetingTracker() {
-				return removeFromTT;
-			}
-			
-			@Override
-			public CoreSession getSession() {
-				return ssn;
-			}
-
-			@Override
-			public void setQualified(boolean qualified) {
-				this.qualified = qualified;
-			}
-
-			@Override
-			public void setRemoveFromTargetingTracker(boolean remove) {
-				removeFromTT = remove;
-			}
-
-		};
 
 		ServerSchema schema = server.schema().get();
 
-		TestQualificationHookImpl hook = new TestQualificationHookImpl(session, test);
-		schema.hooker().post(hook);
+		TestQualificationLifecycleEvent event = new TestQualificationLifecycleEventImpl(session, test);
+		schema.hooker().post(event);
 
-		if (!hook.qualified) {
-			session.addDisqualifiedTest(test);
-			if (hook.removeFromTT) session.getTargetingStabile().remove(test.getName());
+		if (!event.isQualified()) {
+			session.coreSession().addDisqualifiedTest(test);
+			if (event.isRemoveFromTargetingTracker()) session.coreSession().getTargetingStabile().remove(test.getName());
 		}				
 		
-		return hook.qualified;
+		return event.isQualified();
 	}
 	
 	/**
@@ -582,21 +476,21 @@ public class Runtime {
 	 * @param view
 	 * @return
 	 */
-	public CoreStateRequest targetSessionForState(CoreSession ssn, State state) {
+	public void targetSessionForState(SessionImpl ssn, State state) {
 
+		// The constructor hooks the new core state request to the core session
+		CoreStateRequest stateRequest = new CoreStateRequest(ssn.coreSession(), (StateImpl)state);		
 		// Resolve the path and get all tests instrumented on the state.
-		CoreStateRequest result = new CoreStateRequest(ssn, (StateImpl)state);
-		
-		targetSessionForState(result);		
+		targetSessionForState(ssn);		
 		
 		// Targeting stabile contains targeted experiences.
-		SessionScopedTargetingStabile targetingStabile = ssn.getTargetingStabile();
+		SessionScopedTargetingStabile targetingStabile = ssn.targetingStabile();
 		
 		if (LOG.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Session [").append(ssn.getId()).append("] resolved state [").append(state.getName()).append("] as [");
 			boolean first = true;
-			for (Map.Entry<String,String> e: result.getResolvedParameters().entrySet()) {
+			for (Map.Entry<String,String> e: stateRequest.getResolvedParameters().entrySet()) {
 				if (first) first = false;
 				else sb.append(",");
 				sb.append(e.getValue());
@@ -614,7 +508,7 @@ public class Runtime {
 						state.getName() +"] that does not have any instrumented tests.");
 			}   
 		}
-		else if (result.getLiveExperiences().isEmpty()) {
+		else if (stateRequest.getLiveExperiences().isEmpty()) {
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(
 						"Session [" + ssn.getId() + "] requested state [" + 
@@ -624,11 +518,9 @@ public class Runtime {
 		else {
 			// Real state hit.
 			ssn.addTraversedState(state);
-			result.createStateVisitedEvent();
+			stateRequest.createStateVisitedEvent();
 		}
 	
-		return result;
-
 	}
 	
 }

@@ -13,19 +13,19 @@ import com.variant.server.impl.SessionImpl
  */
 class ServerSessionTest extends BaseSpecWithServer {
 
-  "Core session" should {
+  "Server session" should {
 
     "should serialize and deserialize" in  {
 	
-       val coreSsn1 = SessionImpl.empty(newSid).coreSession
+       val ssn1 = SessionImpl.empty(newSid)
        val schema = server.schema.get
        val state1 = schema.getState("state1")
        state1 mustNot be (null)
-       val stateReq = server.runtime.targetSessionForState(coreSsn1, state1)
-       stateReq mustNot be (null)
+       server.runtime.targetSessionForState(ssn1, state1)
+       ssn1.coreSession.getStateRequest mustNot be (null)
        
-       val coreSsn2 = CoreSession.fromJson(coreSsn1.toJson, schema);
-       coreSsn2.toJson mustBe coreSsn1.toJson
+       val coreSsn2 = CoreSession.fromJson(ssn1.toJson, schema);
+       coreSsn2.toJson mustBe ssn1.coreSession.toJson
        
     }
   }

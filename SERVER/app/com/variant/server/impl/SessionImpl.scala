@@ -22,22 +22,32 @@ import com.variant.server.api.Session
 object SessionImpl {
     
    /**
+    * Server session from core session.
+    */
+   def apply(coreSession: CoreSession) = new SessionImpl(coreSession)
+
+   /**
     * Server session deserialized from core session's JSON.
     */
    def apply(json: String) = new SessionImpl(json)
-   
+
    /**
     * New server session with nothing in it, but the SID - good for tests.
     */
-   def empty(sid: String) = new SessionImpl(new CoreSession(sid, VariantServer.server.schema.get).toJson())
+   def empty(sid: String) = new SessionImpl(new CoreSession(sid, VariantServer.server.schema.get))
 }
 
 /**
  * Construct from session ID.
  */
-class SessionImpl(val json: String) extends Session {
+//class SessionImpl(val json: String) extends Session {
+class SessionImpl(val coreSession: CoreSession) extends Session {
    
-   val coreSession = CoreSession.fromJson(json, VariantServer.server.schema.get)
+   def this(json: String) {
+      this(CoreSession.fromJson(json, VariantServer.server.schema.get))
+   }
+   
+   //val coreSession = CoreSession.fromJson(json, VariantServer.server.schema.get)
    val paramMap = mutable.HashMap[java.lang.String, java.lang.String]()
    
    /*----------------------------------------------------------------------------------------*/
@@ -70,19 +80,22 @@ class SessionImpl(val json: String) extends Session {
    
    def toJson = coreSession.toJson()
 
+   def addTraversedState(state: State): Unit = coreSession.addTraversedState(state)
+  
    /*
-    * Server only functionality
     */
    def targetForState(state: State) = {
-      VariantServer.server.runtime.targetSessionForState(coreSession, state.asInstanceOf[StateImpl])   
+      VariantServer.server.runtime.targetSessionForState(this, state.asInstanceOf[StateImpl])   
    }
-   
+
+   /**
+    * 
+    */
 	def triggerEvent(event: VariantEvent) {
 		VariantServer.server.eventWriter.write(new FlushableEventImpl(event, coreSession));
 	}
 	
 	/*
-	 * Expose targeting stabile for tests.
 	 */
 	def targetingStabile = coreSession.getTargetingStabile
 }

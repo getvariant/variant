@@ -107,8 +107,8 @@ class TargetingTest extends BaseSpecWithServer {
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
    			val ssn = SessionImpl.empty("sid")
-   			val req = ssn.targetForState(state)
-   			val expName = req.getLiveExperience(test).getName()
+   			ssn.targetForState(state)
+   			val expName = ssn.coreSession.getStateRequest.getLiveExperience(test).getName()
    			expName match {
    			   case "A" => counts(0) += 1
       			case "B" => counts(1) += 1

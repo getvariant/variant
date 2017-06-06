@@ -1,7 +1,6 @@
 package com.variant.server.api;
 
 import com.variant.core.LifecycleEvent;
-import com.variant.core.session.CoreSession;
 
 
 /**
@@ -19,6 +18,6 @@ public interface RuntimeLifecycleEvent extends LifecycleEvent {
 	 * @return An object of type {@link com.variant.core.session.CoreSession}.
      * @since 0.5
 	 */
-	public CoreSession getSession() ;
+	public Session getSession();
 	
 }

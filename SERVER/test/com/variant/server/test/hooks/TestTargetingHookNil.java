@@ -7,10 +7,10 @@ import com.variant.server.api.UserHook;
 /**
  * targeting listener does nothing, except increments the post counter.
  */
-public class NullTargetingHook implements UserHook<TestTargetingLifecycleEvent> {
+public class TestTargetingHookNil implements UserHook<TestTargetingLifecycleEvent> {
 
-	public static int postCount = 0;
-
+	public static String ATTR_KEY = "current-list";
+	
 	@Override
     public Class<TestTargetingLifecycleEvent> getLifecycleEventClass() {
 		return TestTargetingLifecycleEvent.class;
@@ -18,7 +18,9 @@ public class NullTargetingHook implements UserHook<TestTargetingLifecycleEvent> 
    
 	@Override
 	public void post(TestTargetingLifecycleEvent event, Hook hook) {
-		   postCount += 1;
+		String curVal = event.getSession().getAttribute(ATTR_KEY);
+		if (curVal == null) curVal = "";
+		event.getSession().setAttribute(ATTR_KEY,  curVal + " " + event.getTest().getName());
 	}
 
 }
