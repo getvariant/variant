@@ -12,17 +12,25 @@ public interface Hook {
 	/**
 	 * The name of this user hook.
 	 * 
-	 * @return The name of this test.
+	 * @return The name of this hook. Never null.
 	 * @since 0.7
 	 */
 	public String getName();	
 	
 	/**
-	 * The name of the class implementing this hook.
+	 * The canonical name of the class implementing this hook.
 	 * 
-	 * @return The value of a state parameter, if declared by this state, null otherwise.
+	 * @return The string value of the "class" property. Never null.
 	 * @since 0.7
 	 */
 	public String getClassName();
+
+	/**
+	 * The initialization string.
+	 * 
+	 * @return The string value of the "init" property. Null, if omitted.
+	 * @since 0.7
+	 */
+	public String getInit();
 
 }

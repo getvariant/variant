@@ -40,29 +40,32 @@ public class ParserError extends UserError {
 	public static final ParserError META_UNSUPPORTED_PROPERTY =
 			new ParserError(6, Severity.WARN,  "Unsupported property 'meta/%s'"); 
 
-	public static final ParserError META_HOOK_NAME_INVALID =
+	public static final ParserError HOOK_NAME_INVALID =
 			new ParserError(7, Severity.ERROR, "Hook name must be a string, containing letters, digits and _, and cannot start with a digit"); 
 
-	public static final ParserError META_CLASS_NAME_INVALID =
-			new ParserError(8, Severity.ERROR, "Class name must be a string"); 
+	public static final ParserError HOOK_CLASS_NAME_INVALID =
+			new ParserError(8, Severity.ERROR, "Hook class name must be a string (hook [%s]"); 
 	
-	public static final ParserError META_HOOK_UNSUPPORTED_PROPERTY =
-			new ParserError(9, Severity.WARN,  "Unsupported hook property [%s]"); 
+	public static final ParserError HOOK_UNSUPPORTED_PROPERTY =
+			new ParserError(9, Severity.WARN,  "Unsupported hook property [%s] (hook [%s])"); 
 
-	public static final ParserError META_HOOK_NAME_MISSING =
+	public static final ParserError HOOK_NAME_MISSING =
 			new ParserError(10, Severity.ERROR, "Hook name missing"); 
 
-	public static final ParserError META_HOOK_CLASS_NAME_MISSING =
+	public static final ParserError HOOK_CLASS_NAME_MISSING =
 			new ParserError(11, Severity.ERROR, "Hook class name missing for hook [%s]"); 
 
-	public static final ParserError META_HOOK_NAME_DUPE =
+	public static final ParserError HOOK_NAME_DUPE =
 			new ParserError(12, Severity.ERROR, "Duplicate hook name [%s]"); 
 
-	public static final ParserError META_HOOKS_NOT_LIST = 
+	public static final ParserError HOOKS_NOT_LIST = 
 			new ParserError(13, Severity.ERROR, "'/meta/hooks' property must be a list"); 
 
-	public static final ParserError META_HOOKS_NOT_OBJECT =
+	public static final ParserError HOOKS_NOT_OBJECT =
 			new ParserError(14, Severity.ERROR, "'meta/hooks' property element must be an object"); 
+
+	public static final ParserError HOOK_INIT_INVALID =
+			new ParserError(8, Severity.ERROR, "Hook init proerty must be a string (hook [%s]"); 
 
 	// 
 	// 021-050 Schema parser, State

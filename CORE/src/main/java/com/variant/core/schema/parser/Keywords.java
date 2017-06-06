@@ -12,7 +12,7 @@ interface Keywords {
 	static String KEYWORD_EXPERIENCES               = "experiences";
 	static String KEYWORD_EXPERIENCE_REF            = "experienceRef";
 	static String KEYWORD_HOOKS                     = "hooks";
-	static String KEYWORD_HOOK_REFS                 = "hookRefs";
+	static String KEYWORD_INIT                      = "init";
 	//static String KEYWORD_IDLE_DAYS_TO_LIVE         = "idleDaysToLive";
 	static String KEYWORD_IS_CONTROL                = "isControl";
 	static String KEYWORD_IS_DEFINED                = "isDefined";
