@@ -59,7 +59,7 @@ public class ParserError extends UserError {
 			new ParserError(12, Severity.ERROR, "Duplicate hook name [%s]"); 
 
 	public static final ParserError HOOKS_NOT_LIST = 
-			new ParserError(13, Severity.ERROR, "'/meta/hooks' property must be a list"); 
+			new ParserError(13, Severity.ERROR, "'hooks' property must be a list"); 
 
 	public static final ParserError HOOKS_NOT_OBJECT =
 			new ParserError(14, Severity.ERROR, "'meta/hooks' property element must be an object"); 
@@ -92,7 +92,7 @@ public class ParserError extends UserError {
 			new ParserError(27, Severity.ERROR, "'states/parameters' property element must be an object (State [%s])"); 
 	
 	public static final ParserError STATE_UNSUPPORTED_PROPERTY =
-			new ParserError(28, Severity.WARN,  "Unsupported property 'state/%s' (State [%s])"); 
+			new ParserError(28, Severity.WARN,  "Unsupported state property [%s] (State [%s])"); 
 	
 	// 
 	// 051-150 Schema parser, Test

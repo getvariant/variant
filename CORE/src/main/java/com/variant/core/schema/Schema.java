@@ -30,9 +30,9 @@ public interface Schema {
 	public String getComment();
 	
 	/**
-	 * <p>This schema's user hooks.
+	 * <p>List of user hooks with the schema domain.
 	 * 
-	 * @return Schema comment, as provided in the meta clause.
+	 * @return A list of {@link Hook} objects in the ordinal order.
 	 * @since 0.7
 	 */
 	public List<Hook> getUserHooks();

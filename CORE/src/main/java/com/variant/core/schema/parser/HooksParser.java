@@ -9,6 +9,7 @@ import com.variant.core.CoreException;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.impl.HookImpl;
 import com.variant.core.schema.impl.SchemaImpl;
+import com.variant.core.schema.impl.TestImpl;
 
 /**
  * Hooks parser
@@ -18,7 +19,8 @@ import com.variant.core.schema.impl.SchemaImpl;
 public class HooksParser implements Keywords {
 
 	/**
-	 * Parse hooks list
+	 * Parse hooks list with the schema domain. 
+	 * Schema is available on the response object. 
 	 * @param hooksObject
 	 * @param response
 	 */
@@ -42,6 +44,31 @@ public class HooksParser implements Keywords {
 		}
 	}
 	
+	/**
+	 * Parse hooks list with the test domain. 
+	 * @param hooksObject
+	 * @param response
+	 */
+	static void parse(Object hooksObject, TestImpl test, ParserResponseImpl response) {		
+		try {
+			List<?> rawHooks = (List<?>) hooksObject;
+									
+			for (Object rawHook: rawHooks) {
+				Hook hook = parseHook(rawHook, response);
+				
+				if (hook != null && !test.addHook(hook)) {
+					response.addMessage(HOOK_NAME_DUPE, hook.getName());
+				}
+			}
+		}
+		catch (ClassCastException e) {
+			response.addMessage(HOOKS_NOT_LIST);
+		}
+		catch (Exception e) {
+			throw new CoreException.Internal(e);
+		}
+	}
+
 	/**
 	 * Parse an individual user hook definition
 	 * @param rawHook

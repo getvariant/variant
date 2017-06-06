@@ -22,6 +22,8 @@ public class SchemaImpl implements Schema {
 	// Meta
 	private String name = null;
 	private String comment = null;
+	
+	// Hooks are keyed by name.
 	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
 	
 	// Views are keyed by name

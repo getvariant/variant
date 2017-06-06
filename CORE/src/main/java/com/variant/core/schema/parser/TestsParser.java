@@ -195,7 +195,7 @@ public class TestsParser implements Keywords {
 		result.setExperiences(experiences);
 		
 		
-		// Pass 3: Parse covariantTestRefs, isOn.
+		// Pass 3: Parse covariantTestRefs, isOn, hooks.
 		List<TestImpl> covarTests = null;
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
@@ -235,22 +235,10 @@ public class TestsParser implements Keywords {
 					response.addMessage(TEST_ISON_NOT_BOOLEAN, name);					
 				}
 			}
-			/* idleDaysToLive is out for now (0.6.1)
-			else if (entry.getKey().equalsIgnoreCase(KEYWORD_IDLE_DAYS_TO_LIVE)) {
-				try {
-					Integer days = (Integer) entry.getValue();
-					if (days < 0) {
-						response.addMessage(PARSER_TEST_IDLE_DAYS_TO_LIVE_NEGATIVE, name);
-					}
-					else {
-						result.setIdleDaysToLive(days);
-					}
-				}
-				catch (Exception e)  {
-					response.addMessage(PARSER_TEST_IDLE_DAYS_TO_LIVE_NOT_INT, name);					
-				}
+			else if (entry.getKey().equalsIgnoreCase(KEYWORD_HOOKS)) {
+				HooksParser.parse(entry.getValue(), result, response);
 			}
-			*/
+
 		}
 		
 		// Resort covariant tests in ordinal order before adding to the result.
@@ -266,7 +254,8 @@ public class TestsParser implements Keywords {
 		// Pass 4: Parse onViews.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
-			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS, KEYWORD_IS_ON)) continue;
+			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), 
+					KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS, KEYWORD_IS_ON, KEYWORD_HOOKS)) continue;
 
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_STATES)) {
 				Object onViewsObject = entry.getValue();
