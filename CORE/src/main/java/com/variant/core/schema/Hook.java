@@ -1,18 +1,14 @@
 package com.variant.core.schema;
 
 /**
- * Representation of Hook meta XDM element.
+ * Representation of Hook XDM element.
  * 
  * @author Igor Urisman
  * @since 0.7
  */
 
 public interface Hook {
-	
-	public enum Domain {
-		SCHEMA, TEST
-	}
-	
+		
 	/**
 	 * The name of this user hook.
 	 * 
@@ -37,13 +33,28 @@ public interface Hook {
 	 */
 	public String getInit();
 	
+	
 	/**
-	 * The domain of this hook.
-	 * 
-	 * @return An element of the {@link Domain} enumeration.
-	 * 
+	 * A hook element defined at the meta (schema) level.
+	 * @author Igor
 	 * @since 0.7
 	 */
-	public Domain getDomain();
-
+	public interface Schema extends Hook {}
+	
+	/**
+	 * A hook element defined at the test level.
+	 * @author Igor
+	 * @since 0.7
+	 */
+	public interface Test extends Hook {
+		
+		/**
+		 * The test domain of this hook.
+		 * 
+		 * @return An object of type {@link com.variant.core.schema.Test}
+		 * @since 0.7
+		 */
+		public com.variant.core.schema.Test getTest();
+		
+	}
 }

@@ -14,4 +14,14 @@ package com.variant.core;
  * @since 0.5
  */
 
-public interface LifecycleEvent {}
+public interface LifecycleEvent {
+	
+	/**
+	 * Possible domains of Variant life cycle events.
+	 *
+	 */
+	public enum Domain {
+		SCHEMA, TEST
+	}
+
+}

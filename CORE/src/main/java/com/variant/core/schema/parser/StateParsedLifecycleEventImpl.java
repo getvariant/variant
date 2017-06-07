@@ -34,4 +34,5 @@ class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent {
     public void addMessage(Severity severity, String message) {
     	((ParserResponseImpl) response).addMessage(severity, message);
     }
+
 }

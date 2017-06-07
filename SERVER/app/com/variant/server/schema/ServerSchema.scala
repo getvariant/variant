@@ -53,9 +53,9 @@ class ServerSchema (val response: ParserResponse, val hooker: ServerHooker) exte
 	   coreSchema.getComment
 	}
 
-   override def getUserHooks = {
+   override def getHooks = {
 	   checkState
-	   coreSchema.getUserHooks
+	   coreSchema.getHooks
 	}
 
    override def getId = {

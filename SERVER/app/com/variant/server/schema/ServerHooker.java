@@ -1,6 +1,5 @@
 package com.variant.server.schema;
 
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -9,7 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.CommonError;
 import com.variant.core.LifecycleEvent;
+import com.variant.core.LifecycleEvent.Domain;
 import com.variant.core.impl.UserHooker;
+import com.variant.core.schema.EventDomain;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.server.api.ServerException;
@@ -51,23 +52,45 @@ public class ServerHooker implements UserHooker {
 	ServerHooker() {}
 	
 	/**
-	 * Add one or more user hooks.
-	 * 
-	 * @param hooks
+	 * Initialize a schema hook
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initHook(Hook hook, ParserResponseImpl parserResponse) {
-		
+				
 		try {
+			// Create the Class object for the supplied UserHook implementation.
 			Class<?> userHookClass = Class.forName(hook.getClassName());
 			Object userHookObject = userHookClass.newInstance();
+			
+			// It must implement the right interface.
 			if (! (userHookObject instanceof UserHook)) {
 				parserResponse.addMessage(ServerErrorLocal.HOOK_CLASS_NO_INTERFACE, UserHook.class.getName());
 			}
 			UserHook<? extends LifecycleEvent> userHook = (UserHook<LifecycleEvent>) userHookObject;
-			HookMapEntry hme = new HookMapEntry((Class<UserHook<LifecycleEvent>>) userHookClass, userHook.getLifecycleEventClass());
-			hookMap.put(hook, hme);
+			
+			// The implementation's domian must match that of the definition. In other words, a test domain hook
+			// cannot be defined at the schema level, and vice versa.
+			EventDomain eventDomain = userHook.getLifecycleEventClass().getAnnotation(EventDomain.class);
+			System.out.println("*** " + eventDomain.value() + " " + hook.getClassName());
+			if (hook instanceof Hook.Test) {
+				if (eventDomain.value() == Domain.SCHEMA) {
+					Hook.Test testHook = (Hook.Test) hook;
+					parserResponse.addMessage(
+							ServerErrorLocal.HOOK_SCHEMA_DOMAIN_DEFINED_AT_TEST, 
+							hook.getClassName(), userHook.getLifecycleEventClass().getName(), testHook.getTest().getName());
+				}
+			}
+			else if (hook instanceof Hook.Schema) {
+				if (eventDomain.value() == Domain.TEST) {
+					parserResponse.addMessage(ServerErrorLocal.HOOK_TEST_DOMAIN_DEFINED_AT_SCHEMA, hook.getClassName(), userHook.getLifecycleEventClass().getName());
+				}
+			}
+			else {
+				throw new ServerException.Internal(String.format("Unexpected hook class [%s]", hook.getClassName()));
+			}
+			hookMap.put(hook, new HookMapEntry((Class<UserHook<LifecycleEvent>>) userHookClass, userHook.getLifecycleEventClass()));
+
 		}
 		catch (Exception e) {
 			LOG.error(ServerErrorLocal.HOOK_INSTANTIATION_ERROR.asMessage(hook.getClassName(), e.getClass().getName()), e);
@@ -76,14 +99,6 @@ public class ServerHooker implements UserHooker {
 
 	}
 	
-	/**
-	 * 
-	 *
-	@Override
-	public void clear() {
-		hookMap.clear();
-	}
-
 	/**
 	 * Post all hooks listening on a particular LSE.
 	 * @param listenerClass

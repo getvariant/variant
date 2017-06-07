@@ -6,10 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.variant.core.CoreException;
+import com.variant.core.LifecycleEvent.Domain;
 import com.variant.core.schema.Hook;
-import com.variant.core.schema.Hook.Domain;
-import com.variant.core.schema.impl.HookImpl;
+import com.variant.core.schema.impl.SchemaHookImpl;
 import com.variant.core.schema.impl.SchemaImpl;
+import com.variant.core.schema.impl.TestHookImpl;
 import com.variant.core.schema.impl.TestImpl;
 
 /**
@@ -55,11 +56,17 @@ public class HooksParser implements Keywords {
 			List<?> rawHooks = (List<?>) hooksObject;
 									
 			for (Object rawHook: rawHooks) {
+				
 				Hook hook = parseHook(rawHook, Domain.SCHEMA, response);
 				
-				if (hook != null && !test.addHook(hook)) {
-					response.addMessage(HOOK_NAME_DUPE, hook.getName());
-				}
+				if (hook != null) {
+					// The method above created a schema level hook, but in this case we need a test
+					// domian hook.
+					hook = new TestHookImpl(hook.getName(), hook.getClassName(), hook.getInit(), test);
+					if (!test.addHook(hook)) {
+						response.addMessage(HOOK_NAME_DUPE, hook.getName());
+					}
+				}	
 			}
 		}
 		catch (ClassCastException e) {
@@ -153,7 +160,7 @@ public class HooksParser implements Keywords {
 			return null;
 		}
 		else {
-			return new HookImpl(domain, name, className, init);
+			return new SchemaHookImpl(name, className, init);
 		}
 	}
 }

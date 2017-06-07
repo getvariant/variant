@@ -15,7 +15,7 @@ import java.util.Map;
  *
  */
 public interface VariantEvent {
-				
+
 	/**
 	 * The name of the event, such as "STATE_VISIT".
 	 * @return Event name.

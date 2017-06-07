@@ -1,5 +1,7 @@
 package com.variant.server.api;
 
+import com.variant.core.LifecycleEvent.Domain;
+import com.variant.core.schema.EventDomain;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -20,6 +22,7 @@ import com.variant.core.schema.Test.Experience;
  * @since 0.5
  *
  */
+@EventDomain(Domain.TEST)
 public interface TestTargetingLifecycleEvent extends RuntimeLifecycleEvent {
 
 	/**
