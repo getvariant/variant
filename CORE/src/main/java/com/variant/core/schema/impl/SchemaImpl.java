@@ -52,7 +52,7 @@ public class SchemaImpl implements Schema {
 	}
 
 	@Override
-	public List<Hook> getUserHooks() {
+	public List<Hook> getHooks() {
 		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
 		result.addAll(hooks);
 		return Collections.unmodifiableList(result);

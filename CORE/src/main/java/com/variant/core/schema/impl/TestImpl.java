@@ -149,6 +149,13 @@ public class TestImpl implements Test {
 	}
 
 	@Override
+	public List<Hook> getHooks() {
+		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
+		result.addAll(hooks);
+		return Collections.unmodifiableList(result);
+	}
+
+	@Override
 	public boolean isConcurrentWith(Test other) {
 		return !isSerialWith(other);
 	}
@@ -188,13 +195,6 @@ public class TestImpl implements Test {
 		this.isOn = isOn;
 	}
 		
-	@Override
-	public List<Hook> getUserHooks() {
-		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
-		result.addAll(hooks);
-		return Collections.unmodifiableList(result);
-	}
-
 	/**
 	 * Caller must ensure that the covarTests are sorted in ordinal order.
 	 * @param tests

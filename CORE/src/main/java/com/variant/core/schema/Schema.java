@@ -35,7 +35,7 @@ public interface Schema {
 	 * @return A list of {@link Hook} objects in the ordinal order.
 	 * @since 0.7
 	 */
-	public List<Hook> getUserHooks();
+	public List<Hook> getHooks();
 
 	/**
 	 * <p>This schema's ID.

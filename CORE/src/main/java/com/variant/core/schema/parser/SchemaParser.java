@@ -181,8 +181,8 @@ public abstract class SchemaParser implements Keywords {
 		else {			
 			// Parse meta info
 			MetaParser.parse(meta, response);
-			// Init all hooks.
-			for (Hook hook: response.getSchema().getUserHooks()) getHooker().initHook(hook, response);
+			// Init all schema domain hooks.
+			for (Hook hook: response.getSchema().getHooks()) getHooker().initHook(hook, response);
 		}
 
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());
@@ -220,7 +220,12 @@ public abstract class SchemaParser implements Keywords {
 			// Parse all tests
 			TestsParser.parse(tests, response);
 			
-			// Post user hooks.
+			// Init all test domain hooks.
+			for (Test test: response.getSchema().getTests()) {
+				for (Hook hook: test.getHooks()) getHooker().initHook(hook, response);
+			}
+			
+			// Post comp time user hooks.
 			for (Test test: response.getSchema().getTests()) {
 				try {
 					getHooker().post(new TestParsedLifecycleEventImpl(test, response));

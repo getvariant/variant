@@ -9,6 +9,10 @@ package com.variant.core.schema;
 
 public interface Hook {
 	
+	public enum Domain {
+		SCHEMA, TEST
+	}
+	
 	/**
 	 * The name of this user hook.
 	 * 
@@ -32,5 +36,14 @@ public interface Hook {
 	 * @since 0.7
 	 */
 	public String getInit();
+	
+	/**
+	 * The domain of this hook.
+	 * 
+	 * @return An element of the {@link Domain} enumeration.
+	 * 
+	 * @since 0.7
+	 */
+	public Domain getDomain();
 
 }

@@ -150,7 +150,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertFalse(test1.isCovariantWith(test2));
 		assertFalse(test2.isCovariantWith(test1));
 
-		List<Hook> hooks = schema.getUserHooks();
+		List<Hook> hooks = schema.getHooks();
 		assertEquals(6, hooks.size());
 		Hook hook = hooks.get(0);
 		assertEquals("one", hook.getName());
@@ -652,7 +652,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		// Hooks
 		//
 		
-		List<Hook> hooks = schema.getUserHooks();
+		List<Hook> hooks = schema.getHooks();
 		assertEquals(6, hooks.size());
 		Hook hook = hooks.get(0);
 		assertEquals("one", hook.getName());

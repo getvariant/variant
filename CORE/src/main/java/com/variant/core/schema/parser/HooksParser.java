@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.variant.core.CoreException;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.Hook.Domain;
 import com.variant.core.schema.impl.HookImpl;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.TestImpl;
@@ -29,7 +30,7 @@ public class HooksParser implements Keywords {
 			List<?> rawHooks = (List<?>) hooksObject;
 									
 			for (Object rawHook: rawHooks) {
-				Hook hook = parseHook(rawHook, response);
+				Hook hook = parseHook(rawHook, Domain.SCHEMA, response);
 				
 				if (hook != null && !((SchemaImpl) response.getSchema()).addHook(hook)) {
 					response.addMessage(HOOK_NAME_DUPE, hook.getName());
@@ -54,7 +55,7 @@ public class HooksParser implements Keywords {
 			List<?> rawHooks = (List<?>) hooksObject;
 									
 			for (Object rawHook: rawHooks) {
-				Hook hook = parseHook(rawHook, response);
+				Hook hook = parseHook(rawHook, Domain.SCHEMA, response);
 				
 				if (hook != null && !test.addHook(hook)) {
 					response.addMessage(HOOK_NAME_DUPE, hook.getName());
@@ -76,7 +77,7 @@ public class HooksParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static Hook parseHook(Object rawHook, final ParserResponseImpl response) {
+	private static Hook parseHook(Object rawHook, Domain domain, ParserResponseImpl response) {
 		String name = null;
 		String className = null;
 		String init = null;
@@ -152,7 +153,7 @@ public class HooksParser implements Keywords {
 			return null;
 		}
 		else {
-			return new HookImpl(name, className, init);
+			return new HookImpl(domain, name, className, init);
 		}
 	}
 }

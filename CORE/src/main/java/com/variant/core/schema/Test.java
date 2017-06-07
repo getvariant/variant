@@ -70,7 +70,7 @@ public interface Test {
 	 * @return A list of {@link Hook} object in the ordinal order.
 	 * @since 0.7
 	 */
-	public List<Hook> getUserHooks();
+	public List<Hook> getHooks();
 
 	/**
 	 * List of all state instrumentations for this test, in the order they were defined.
