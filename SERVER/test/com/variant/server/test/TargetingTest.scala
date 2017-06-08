@@ -31,13 +31,7 @@ class TargetingTest extends BaseSpecWithServer {
    val schemaJson = """
 {
    'meta':{
-      'name':'TargetingTest',
-      'hooks': [
-          {
-             'name':'nullHook', 
-             'class':'com.variant.server.test.hooks.NullTargetingHook'
-          }
-      ]
+      'name':'TargetingTest'
    },
    'states':[
       {
@@ -70,6 +64,12 @@ class TargetingTest extends BaseSpecWithServer {
                'name':'C',
                'weight':97 
             }
+         ],
+         'hooks': [
+             {
+                'name':'nullHook', 
+                'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+             }
          ],
          'onStates':[ 
             { 

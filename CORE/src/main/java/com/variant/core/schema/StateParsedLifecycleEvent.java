@@ -1,5 +1,7 @@
 package com.variant.core.schema;
 
+import com.variant.core.LifecycleEvent.Domain;
+
 /**
  * <p>Parse time life cycle event. Posts its hooks whenever the schema parser 
  * successfully completes parsing of a state. Will not post for a state if parse errors were encountered. 
@@ -10,6 +12,7 @@ package com.variant.core.schema;
  * @since 0.5
  *
  */
+@EventDomain(Domain.SCHEMA)
 public interface StateParsedLifecycleEvent extends ParseTimeLifecycleEvent {
 
 	/**

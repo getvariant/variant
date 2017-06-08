@@ -40,7 +40,7 @@ class ParameterizedString (private val prototype: String) {
       val iter = prototype.iterator
       while (iter.hasNext) {
          index += 1
-         var c = iter.next 
+         var c = iter.next()
          c match {
             case '$' => {
                // If next char is {, treat as variable expansion.
@@ -55,7 +55,7 @@ class ParameterizedString (private val prototype: String) {
                if (inBraces) {
                   // end of variable expansion.
                   inBraces = false
-                  var tokens = variable.toString().split(':')
+                  var tokens = variable.toString.split("\\:", -1)
                   val varName = tokens(0)
                   val varValue = {
                      var symbol = bindings.filter(_._1 == varName)
@@ -75,7 +75,7 @@ class ParameterizedString (private val prototype: String) {
                   variable.clear()
                }
                else {
-                  // Not a variable expansion
+                  // Not in variable expansion
                   result.append(c)
                }
             }

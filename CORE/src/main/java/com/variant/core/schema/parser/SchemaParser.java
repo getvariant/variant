@@ -194,7 +194,7 @@ public abstract class SchemaParser implements Keywords {
 			// Parse all states
 			StatesParser.parse(states, response);
 			
-			// Post user hooks.
+			// Post comp time user hooks.
 			for (State state: response.getSchema().getStates()) {
 				try {
 					getHooker().post(new StateParsedLifecycleEventImpl(state, response));
@@ -219,12 +219,7 @@ public abstract class SchemaParser implements Keywords {
 			
 			// Parse all tests
 			TestsParser.parse(tests, response);
-			
-			// Init all test domain hooks.
-			for (Test test: response.getSchema().getTests()) {
-				for (Hook hook: test.getHooks()) getHooker().initHook(hook, response);
-			}
-			
+						
 			// Post comp time user hooks.
 			for (Test test: response.getSchema().getTests()) {
 				try {
@@ -234,6 +229,12 @@ public abstract class SchemaParser implements Keywords {
 					response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, TestParsedLifecycleEventImpl.class.getName(), e.getMessage());
 				}
 			}
+			
+			// Init all test domain hooks.
+			for (Test test: response.getSchema().getTests()) {
+				for (Hook hook: test.getHooks()) getHooker().initHook(hook, response);
+			}
+
 		}
 		
 		if (response.hasMessages(Severity.ERROR)) response.clearSchema();

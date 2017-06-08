@@ -10,17 +10,32 @@ import com.variant.server.test.hooks.TestQualificationHookNil
 
 class TestQualificationHookTest extends BaseSpecWithServer {
    
-   private[this] def generateSchema(hooks: (String,String)*):String = {
+   /**
+    * invocation example: 
+    */
+   private[this] def generateSchema(hooks: Map[String, List[(String,String)]]):String = {
       
       /**
        * Inject hooks, passed as parameters, into the schema.
        */
-      val hookList = hooks.foldLeft("") ((s, h) => 
-         s + ",{'name':'%s','class':'%s'}".format(h._1,h._2)
-      ).substring(1) // lose leading comma
+      val schemaHooksList = {
+         if (hooks.contains("schema-hooks"))
+            hooks("schema-hooks").foldLeft("") ((s, h) => 
+               s + ",{'name':'%s','class':'%s'}".format(h._1,h._2)
+               ).substring(1) // lose leading comma
+          else ""
+      }
       
+      val test1HooksList = {
+         if (hooks.contains("test1-hooks"))
+            hooks("test1-hooks").foldLeft("") ((s, h) => 
+               s + ",{'name':'%s','class':'%s'}".format(h._1,h._2)
+               ).substring(1) // lose leading comma
+          else ""
+      }
+
       val stream = getClass.getResourceAsStream("/ParserCovariantOkayBigTest.json")
-      ParameterizedString(IOUtils.toString(stream)).expand("hooks"->hookList)
+      ParameterizedString(IOUtils.toString(stream)).expand("schema-hooks"->schemaHooksList, "test1-hooks"->test1HooksList)
    }
    
   	"TestQualificationHook" should {
@@ -30,8 +45,9 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
       "be posted for tests instrumented on state1" in {
 
-         val schemaSrc = generateSchema("nullQualificationHook" -> "com.variant.server.test.hooks.TestQualificationHookNil")
+         val schemaSrc = generateSchema(Map("test1-hooks" -> List("nullQualificationHook" -> "com.variant.server.test.hooks.TestQualificationHookNil")))
          val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
+         response.getMessages.foreach(println(_))
    	   response.hasMessages() mustBe false
    		server.schema.isDefined mustBe true
    	   val schema = server.schema.get

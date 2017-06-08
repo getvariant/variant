@@ -1,5 +1,7 @@
 package com.variant.core.schema;
 
+import com.variant.core.LifecycleEvent.Domain;
+
 /**
  * <p>Parse time life cycle event. Posts its hooks whenever the schema parser successfully completes parsing of a test. 
  * Will not post for a test if parse errors were encountered. Use this hook to enforce application 
@@ -9,6 +11,7 @@ package com.variant.core.schema;
  * @since 0.5
  *
  */
+@EventDomain(Domain.SCHEMA)
 public interface TestParsedLifecycleEvent extends ParseTimeLifecycleEvent {
 
 	/**

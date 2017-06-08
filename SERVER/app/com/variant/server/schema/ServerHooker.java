@@ -72,18 +72,17 @@ public class ServerHooker implements UserHooker {
 			// The implementation's domian must match that of the definition. In other words, a test domain hook
 			// cannot be defined at the schema level, and vice versa.
 			EventDomain eventDomain = userHook.getLifecycleEventClass().getAnnotation(EventDomain.class);
-			System.out.println("*** " + eventDomain.value() + " " + hook.getClassName());
 			if (hook instanceof Hook.Test) {
 				if (eventDomain.value() == Domain.SCHEMA) {
 					Hook.Test testHook = (Hook.Test) hook;
 					parserResponse.addMessage(
 							ServerErrorLocal.HOOK_SCHEMA_DOMAIN_DEFINED_AT_TEST, 
-							hook.getClassName(), userHook.getLifecycleEventClass().getName(), testHook.getTest().getName());
+							hook.getName(), userHook.getLifecycleEventClass().getName(), testHook.getTest().getName());
 				}
 			}
 			else if (hook instanceof Hook.Schema) {
 				if (eventDomain.value() == Domain.TEST) {
-					parserResponse.addMessage(ServerErrorLocal.HOOK_TEST_DOMAIN_DEFINED_AT_SCHEMA, hook.getClassName(), userHook.getLifecycleEventClass().getName());
+					parserResponse.addMessage(ServerErrorLocal.HOOK_TEST_DOMAIN_DEFINED_AT_SCHEMA, hook.getName(), userHook.getLifecycleEventClass().getName());
 				}
 			}
 			else {

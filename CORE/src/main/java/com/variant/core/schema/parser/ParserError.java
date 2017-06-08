@@ -65,7 +65,7 @@ public class ParserError extends UserError {
 			new ParserError(14, Severity.ERROR, "'meta/hooks' property element must be an object"); 
 
 	public static final ParserError HOOK_INIT_INVALID =
-			new ParserError(8, Severity.ERROR, "Hook init proerty must be a string (hook [%s]"); 
+			new ParserError(15, Severity.ERROR, "Hook init proerty must be a string (hook [%s]"); 
 
 	// 
 	// 021-050 Schema parser, State
