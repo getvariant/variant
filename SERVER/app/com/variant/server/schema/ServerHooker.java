@@ -6,6 +6,10 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValue;
 import com.variant.core.CommonError;
 import com.variant.core.LifecycleEvent;
 import com.variant.core.LifecycleEvent.Domain;
@@ -38,9 +42,11 @@ public class ServerHooker implements UserHooker {
 	private static class HookMapEntry {
 		private Class<UserHook<LifecycleEvent>> hookClass;
 		private Class<? extends LifecycleEvent> lceClass;
-		private HookMapEntry(Class<UserHook<LifecycleEvent>> hookClass, Class<? extends LifecycleEvent> lceClass) {
+		private ConfigValue config;
+		private HookMapEntry(Class<UserHook<LifecycleEvent>> hookClass, Class<? extends LifecycleEvent> lceClass, ConfigValue config) {
 			this.hookClass = hookClass;
 			this.lceClass = lceClass;
+			this.config = config;
 		}
 	}
 	private LinkedHashMap<Hook, HookMapEntry> hookMap = new LinkedHashMap<Hook, HookMapEntry>();
@@ -88,8 +94,19 @@ public class ServerHooker implements UserHooker {
 			else {
 				throw new ServerException.Internal(String.format("Unexpected hook class [%s]", hook.getClassName()));
 			}
-			hookMap.put(hook, new HookMapEntry((Class<UserHook<LifecycleEvent>>) userHookClass, userHook.getLifecycleEventClass()));
+			
+			// Parse init JSON string
+			ConfigValue config = null;
+			if (hook.getInit() != null) {
+				config = ConfigFactory.parseString("{init:"  + hook.getInit() + "}").getValue("init"); 
+			}
 
+			// AOK. Save in hook map.
+			hookMap.put(hook, new HookMapEntry((Class<UserHook<LifecycleEvent>>) userHookClass, userHook.getLifecycleEventClass(), config));
+
+		}
+		catch (ConfigException.Parse e) {
+			parserResponse.addMessage(ServerErrorLocal.HOOK_INSTANTIATION_ERROR, hook.getClassName(), e.getClass().getName());
 		}
 		catch (Exception e) {
 			LOG.error(ServerErrorLocal.HOOK_INSTANTIATION_ERROR.asMessage(hook.getClassName(), e.getClass().getName()), e);
@@ -113,6 +130,7 @@ public class ServerHooker implements UserHooker {
 				UserHook<LifecycleEvent> hook;
 				try {
 					hook = hme.hookClass.newInstance();
+					hook.init(hme.config);
 					hook.post(event, schemaHook);
 				} catch (Exception e) {
 					throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName());

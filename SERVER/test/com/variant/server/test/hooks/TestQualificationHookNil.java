@@ -1,5 +1,6 @@
 package com.variant.server.test.hooks;
 
+import com.typesafe.config.ConfigValue;
 import com.variant.core.schema.Hook;
 import com.variant.server.api.TestQualificationLifecycleEvent;
 import com.variant.server.api.UserHook;
@@ -11,6 +12,9 @@ public class TestQualificationHookNil implements UserHook<TestQualificationLifec
 
 	public static String ATTR_KEY = "current-list";
 	
+	@Override
+	public void init(ConfigValue init) {}
+
 	@Override
     public Class<TestQualificationLifecycleEvent> getLifecycleEventClass() {
 		return TestQualificationLifecycleEvent.class;

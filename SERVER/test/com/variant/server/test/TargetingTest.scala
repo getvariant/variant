@@ -261,6 +261,7 @@ class TargetingTest extends BaseSpecWithServer {
 	}
 }
 
+/*
 /**
  * Targeting listener returns A or B with equal probability.
  */
@@ -268,7 +269,7 @@ class ABTargetingHook extends UserHook[TestTargetingLifecycleEvent] {
 
 	var postCount = 0;
    val rand = new Random(System.currentTimeMillis())
-   
+
 	override def getLifecycleEventClass() = classOf[TestTargetingLifecycleEvent]
 	
 	override def post(event: TestTargetingLifecycleEvent, hook: Hook) {
@@ -317,5 +318,5 @@ class ABNullTargetingHook extends UserHook[TestTargetingLifecycleEvent] {
 			event.setTargetedExperience(experience);
 		}
 	}
-
 }
+*/

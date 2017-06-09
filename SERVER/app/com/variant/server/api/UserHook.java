@@ -1,5 +1,7 @@
 package com.variant.server.api;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigValue;
 import com.variant.core.LifecycleEvent;
 import com.variant.core.schema.Hook;
 
@@ -38,8 +40,20 @@ public interface UserHook<E extends LifecycleEvent> {
 	 * @param hook The schema hook corresponding to this object. This may be useful when multiple hooks are posted
 	 *             with the same life cycle event.
 	 * 
+     * @since 0.5
+	 */
+	public void post(E event, Hook hook) throws Exception;
+
+	/**
+	 * Object initializer. By contract, an implementation must provide a no-argument constructor, which Variant server
+	 * will use to instantiate it. However, user may pass initialization data into an newly instantiated object by
+	 * providing the <code>init</code> parameter to the schema definition of the hook. Its value must be a JSON string
+	 * which will be parsed and passed to this method.
+	 * 
+	 * @param config The configuration data as instance of {@link ConfigValue} type.
+	 * 
      * @since 0.7
 	 */
-	public void post(E event, Hook hook);
+	public void init(ConfigValue init) throws Exception;
 
 }

@@ -25,4 +25,19 @@ public class TestHookImpl extends SchemaHookImpl implements Hook.Test {
 		return test;
 	}
 
+	/**
+	 * Hook names are unique within a domain. 
+	 */
+	@Override
+	public boolean equals(Object other) {
+		return (other instanceof TestHookImpl) && 
+				((TestHookImpl)other).getName().equals(this.getName()) &&
+				((TestHookImpl)other).getTest().equals(this.getTest());
+	}
+	
+	@Override
+	public int hashCode() {
+		return super.hashCode() + test.hashCode();
+	}
+
 }

@@ -5,6 +5,8 @@ import static com.variant.core.schema.parser.ParserError.*;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.CoreException;
 import com.variant.core.LifecycleEvent.Domain;
 import com.variant.core.schema.Hook;
@@ -142,12 +144,18 @@ public class HooksParser implements Keywords {
 				}
 			}
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_INIT)) {
-				Object initObject = entry.getValue();
-				if (! (initObject instanceof String)) {
-					response.addMessage(HOOK_INIT_INVALID, name);
+				// Init is an arbitrary json object. Simply convert it to string
+				// and let server repackage it as typesafe config.
+				ObjectMapper mapper = new ObjectMapper();
+				mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+
+				try {
+					init = mapper.writeValueAsString(entry.getValue());
+					//String jsonToReparse = "{'init':" + init + "}";
+					//mapper.readValue(jsonToReparse, Map.class); // attempt to re-parse.
 				}
-				else {
-					init = (String) initObject;
+	 			catch (Exception e) {
+	 				throw new CoreException.Internal("Unable to re-serialize hook init [" + entry.getValue().toString() + "]", e);
 				}
 			}
 			else {

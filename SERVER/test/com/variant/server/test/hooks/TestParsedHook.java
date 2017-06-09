@@ -1,5 +1,6 @@
 package com.variant.server.test.hooks;
 
+import com.typesafe.config.ConfigValue;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.TestParsedLifecycleEvent;
@@ -11,6 +12,9 @@ public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
 	public static final String WARN_MESSAGE_FORMAT = "Warn-Message-Test %s %s";
 	public static final String ERROR_MESSAGE_FORMAT = "Error Message Test %s %s";
 		
+	@Override
+	public void init(ConfigValue init) {}
+
 	@Override
     public Class<TestParsedLifecycleEvent> getLifecycleEventClass() {
 		return TestParsedLifecycleEvent.class;

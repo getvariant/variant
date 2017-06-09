@@ -1,5 +1,6 @@
 package com.variant.server.test.hooks;
 
+import com.typesafe.config.ConfigValue;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.StateParsedLifecycleEvent;
 import com.variant.server.api.UserHook;
@@ -9,6 +10,9 @@ public class StateParsedHookArgumentConstructor implements UserHook<StateParsedL
 	// ServerHooker won't be able to instantiate
 	public StateParsedHookArgumentConstructor(String badArgument) {}
 	
+	@Override
+	public void init(ConfigValue init) {}
+
 	@Override
     public Class<StateParsedLifecycleEvent> getLifecycleEventClass() {
 		return StateParsedLifecycleEvent.class;

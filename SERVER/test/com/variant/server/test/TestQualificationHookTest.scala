@@ -11,31 +11,30 @@ import com.variant.server.test.hooks.TestQualificationHookNil
 class TestQualificationHookTest extends BaseSpecWithServer {
    
    /**
-    * invocation example: 
+    * Inject all the hooks.
     */
-   private[this] def generateSchema(hooks: Map[String, List[(String,String)]]):String = {
+   private[this] def generateSchema(hooks: Map[String, String]):String = {
       
       /**
        * Inject hooks, passed as parameters, into the schema.
        */
-      val schemaHooksList = {
-         if (hooks.contains("schema-hooks"))
-            hooks("schema-hooks").foldLeft("") ((s, h) => 
-               s + ",{'name':'%s','class':'%s'}".format(h._1,h._2)
-               ).substring(1) // lose leading comma
-          else ""
-      }
+      val schemaHooksList = hooks.getOrElse("schema-hooks","")      
+      val test1HooksList = hooks.getOrElse("test1-hooks","")
+      val test2HooksList = hooks.getOrElse("test2-hooks","")
+      val test3HooksList = hooks.getOrElse("test3-hooks","")
+      val test4HooksList = hooks.getOrElse("test4-hooks","")
+      val test5HooksList = hooks.getOrElse("test5-hooks","")
+      val test6HooksList = hooks.getOrElse("test6-hooks","")
       
-      val test1HooksList = {
-         if (hooks.contains("test1-hooks"))
-            hooks("test1-hooks").foldLeft("") ((s, h) => 
-               s + ",{'name':'%s','class':'%s'}".format(h._1,h._2)
-               ).substring(1) // lose leading comma
-          else ""
-      }
-
       val stream = getClass.getResourceAsStream("/ParserCovariantOkayBigTest.json")
-      ParameterizedString(IOUtils.toString(stream)).expand("schema-hooks"->schemaHooksList, "test1-hooks"->test1HooksList)
+      ParameterizedString(IOUtils.toString(stream)).expand(
+            "schema-hooks"-> schemaHooksList,
+            "test1-hooks"->test1HooksList,
+            "test2-hooks"->test2HooksList,
+            "test3-hooks"->test3HooksList,
+            "test4-hooks"->test4HooksList,
+            "test5-hooks"->test5HooksList,
+            "test6-hooks"->test6HooksList)
    }
    
   	"TestQualificationHook" should {
@@ -45,9 +44,18 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
       "be posted for tests instrumented on state1" in {
 
-         val schemaSrc = generateSchema(Map("test1-hooks" -> List("nullQualificationHook" -> "com.variant.server.test.hooks.TestQualificationHookNil")))
+         val schemaSrc = generateSchema(
+            Map("test1-hooks" -> """
+    {
+      'name' :'nullQualificationHook',
+      'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+    }"""
+            )
+         )
+         
+         println(schemaSrc)
          val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
-         response.getMessages.foreach(println(_))
+
    	   response.hasMessages() mustBe false
    		server.schema.isDefined mustBe true
    	   val schema = server.schema.get
@@ -59,6 +67,17 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
 
+   	   test1.getHooks.size mustBe 1
+   	   val hook = test1.getHooks.get(0)
+   	   hook.getName mustBe "nullQualificationHook"
+   	   hook.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookNil"
+   	   hook.getInit mustBe null
+   	   test2.getHooks.size mustBe 0
+   	   test3.getHooks.size mustBe 0
+   	   test4.getHooks.size mustBe 0
+   	   test5.getHooks.size mustBe 0
+   	   test6.getHooks.size mustBe 0
+   	   
    	   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
    	   
    		val req = ssn.targetForState(state1);
@@ -109,6 +128,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
 
 	   }
+	   
 /*	   
 	   "disqual test2, test6; not disqual test1, and keep all in targeting stabile" in {
 
