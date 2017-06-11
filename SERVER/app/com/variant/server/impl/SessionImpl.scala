@@ -62,7 +62,8 @@ class SessionImpl(val coreSession: CoreSession) extends Session {
    
    override def getSchema  = coreSession.getSchema
       
-   override def getStateRequest = StateRequestImpl(coreSession.getStateRequest)
+   private[this] lazy val _stateRequest = StateRequestImpl(this, coreSession.getStateRequest)
+   override def getStateRequest = _stateRequest
    
    override def getTraversedStates = coreSession.getTraversedStates
    
@@ -86,6 +87,7 @@ class SessionImpl(val coreSession: CoreSession) extends Session {
     */
    def targetForState(state: State) = {
       VariantServer.server.runtime.targetSessionForState(this, state.asInstanceOf[StateImpl])   
+      this.getStateRequest()
    }
 
    /**

@@ -40,10 +40,10 @@ public class ServerErrorLocal extends CommonError {
 			new ServerErrorLocal(463, Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s]");
 
 	public final static ServerErrorLocal HOOK_SCHEMA_DOMAIN_DEFINED_AT_TEST = 
-			new ServerErrorLocal(464, Severity.ERROR, "User hook [%s], which listens to the Schema domain event [%s], cannot be defined at test level. (Test [%s]");
+			new ServerErrorLocal(464, Severity.ERROR, "User hook [%s], which listens to the schema-scoped life cycle event [%s], cannot be defined at test level. (Test [%s]");
 	
 	public final static ServerErrorLocal HOOK_TEST_DOMAIN_DEFINED_AT_SCHEMA = 
-			new ServerErrorLocal(465, Severity.ERROR, "User hook [%s], which listens to the Test domain event [%s], cannot be defined at schema level");
+			new ServerErrorLocal(465, Severity.ERROR, "User hook [%s], which listens to the test-scoped life cycle event [%s], cannot be defined at schema level");
 
 	//
 	// 481-500 Other server runtime

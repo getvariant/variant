@@ -39,7 +39,7 @@ public class SchemaHookImpl implements Hook.Schema {
 	}
 
 	/**
-	 * Hook names are unique within a domain. 
+	 * Hook names are unique within a scope. 
 	 */
 	@Override
 	public boolean equals(Object other) {

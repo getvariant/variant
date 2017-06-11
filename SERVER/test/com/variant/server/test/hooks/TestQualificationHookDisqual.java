@@ -1,7 +1,9 @@
 package com.variant.server.test.hooks;
 
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.Test;
 import com.variant.server.api.TestQualificationLifecycleEvent;
 import com.variant.server.api.UserHook;
 
@@ -9,8 +11,13 @@ public class TestQualificationHookDisqual implements UserHook<TestQualificationL
 
 	public static String ATTR_KEY = "current-list";
 	
+	private boolean removeFromTargetingTracker = false;
+	
 	@Override
-	public void init(ConfigValue init) {}
+	public void init(ConfigValue init) {
+		Config config = init.atKey("init");
+		removeFromTargetingTracker = config.getBoolean("init.removeFromTargetingTracker");
+	}
 
 	@Override
     public Class<TestQualificationLifecycleEvent> getLifecycleEventClass() {
@@ -19,31 +26,12 @@ public class TestQualificationHookDisqual implements UserHook<TestQualificationL
    
 	@Override
 	public void post(TestQualificationLifecycleEvent event, Hook hook) {
-		String curVal = event.getSession().getAttribute(ATTR_KEY);
-		if (curVal == null) curVal = ""; else curVal += " ";
-		event.getSession().setAttribute(ATTR_KEY,  curVal + event.getTest().getName());
+		//event.getSession() != null, "No session passed"
+		//event.getTest() != null, "No test passed"
+		Test test = event.getTest();
+		event.getStateRequest().getSession().setAttribute(ATTR_KEY, test.getName());
+		event.setQualified(false);
+		event.setRemoveFromTargetingTracker(removeFromTargetingTracker);
 	}
 	
 }
-/**
- * Disqualify passed tests and optionally remove their entries from targeting stabile
- *
-class TestQualificationHookDisqual(removeFromStabile: Boolean, testsToDisqualify:Test*) 
-extends UserHook[TestQualificationLifecycleEvent] {
-
-	val testList = ListBuffer[Test]()
-
-	override def getLifecycleEventClass() = classOf[TestQualificationLifecycleEvent]
-	
-	override def post(event: TestQualificationLifecycleEvent) {
-		assert(event.getSession() != null, "No session passed")
-		assert(event.getTest() != null, "No test passed")
-		val test = testsToDisqualify.find { t => t.equals(event.getTest()) }			
-		if (test.isDefined) {
-			testList.add(event.getTest());
-			event.setQualified(false);
-			event.setRemoveFromTargetingTracker(removeFromStabile);
-		}
-	}		
-}
-*/

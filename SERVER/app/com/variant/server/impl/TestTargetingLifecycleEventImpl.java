@@ -7,6 +7,7 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
+import com.variant.server.api.StateRequest;
 import com.variant.server.api.TestTargetingLifecycleEvent;
 
 /**
@@ -26,8 +27,8 @@ public class TestTargetingLifecycleEventImpl implements TestTargetingLifecycleEv
 	}
 	
 	@Override
-	public Session getSession() {
-		return session;
+	public StateRequest getStateRequest() {
+		return session.getStateRequest();
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.variant.server.impl;
 
 import com.variant.core.schema.Test;
 import com.variant.server.api.Session;
+import com.variant.server.api.StateRequest;
 import com.variant.server.api.TestQualificationLifecycleEvent;
 
 public class TestQualificationLifecycleEventImpl  implements TestQualificationLifecycleEvent {
@@ -32,8 +33,8 @@ public class TestQualificationLifecycleEventImpl  implements TestQualificationLi
 	}
 	
 	@Override
-	public Session getSession() {
-		return session;
+	public StateRequest getStateRequest() {
+		return session.getStateRequest();
 	}
 
 	@Override

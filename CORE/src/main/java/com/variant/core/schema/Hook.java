@@ -49,7 +49,7 @@ public interface Hook {
 	public interface Test extends Hook {
 		
 		/**
-		 * The test domain of this hook.
+		 * The test , in shoe scope this hook is defined.
 		 * 
 		 * @return An object of type {@link com.variant.core.schema.Test}
 		 * @since 0.7

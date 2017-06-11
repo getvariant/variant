@@ -14,7 +14,7 @@ import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.SchemaParser;
 
 /**
- * Parse time exceptions related to hooks with schema domain.
+ * Parse time exceptions related to hooks with schema scope.
  * @author Igor
  *
  */

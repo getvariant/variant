@@ -5,8 +5,8 @@ import java.util.Random;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.CoreSession;
 import com.variant.server.api.ServerException;
+import com.variant.server.api.Session;
 import com.variant.server.boot.ServerErrorLocal;
 
 class TestTargeterDefault {
@@ -23,7 +23,7 @@ class TestTargeterDefault {
 	 * 
 	 * @return
 	 */
-	Experience target(CoreSession session, Test test, State state) {
+	Experience target(Session session, Test test, State state) {
 
 		double weightSum = 0;
 		for (Experience e: test.getExperiences()) {

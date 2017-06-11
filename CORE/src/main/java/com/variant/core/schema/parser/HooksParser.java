@@ -8,7 +8,6 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.CoreException;
-import com.variant.core.LifecycleEvent.Domain;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.impl.SchemaHookImpl;
 import com.variant.core.schema.impl.SchemaImpl;
@@ -23,7 +22,7 @@ import com.variant.core.schema.impl.TestImpl;
 public class HooksParser implements Keywords {
 
 	/**
-	 * Parse hooks list with the schema domain. 
+	 * Parse hooks list with the schema scope. 
 	 * Schema is available on the response object. 
 	 * @param hooksObject
 	 * @param response
@@ -33,7 +32,7 @@ public class HooksParser implements Keywords {
 			List<?> rawHooks = (List<?>) hooksObject;
 									
 			for (Object rawHook: rawHooks) {
-				Hook hook = parseHook(rawHook, Domain.SCHEMA, response);
+				Hook hook = parseHook(rawHook, response);
 				
 				if (hook != null && !((SchemaImpl) response.getSchema()).addHook(hook)) {
 					response.addMessage(HOOK_NAME_DUPE, hook.getName());
@@ -49,7 +48,7 @@ public class HooksParser implements Keywords {
 	}
 	
 	/**
-	 * Parse hooks list with the test domain. 
+	 * Parse hooks list with the test scope. 
 	 * @param hooksObject
 	 * @param response
 	 */
@@ -59,7 +58,7 @@ public class HooksParser implements Keywords {
 									
 			for (Object rawHook: rawHooks) {
 				
-				Hook hook = parseHook(rawHook, Domain.SCHEMA, response);
+				Hook hook = parseHook(rawHook, response);
 				
 				if (hook != null) {
 					// The method above created a schema level hook, but in this case we need a test
@@ -86,7 +85,7 @@ public class HooksParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static Hook parseHook(Object rawHook, Domain domain, ParserResponseImpl response) {
+	private static Hook parseHook(Object rawHook, ParserResponseImpl response) {
 		String name = null;
 		String className = null;
 		String init = null;

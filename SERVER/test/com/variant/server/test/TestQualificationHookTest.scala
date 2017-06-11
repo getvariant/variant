@@ -39,7 +39,6 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    
   	"TestQualificationHook" should {
 	   
-//   	val nullListener = new TestQualificationHookNil
 	   var ssn = SessionImpl.empty(newSid())
 
       "be posted for tests instrumented on state1" in {
@@ -53,7 +52,6 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             )
          )
          
-         println(schemaSrc)
          val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
 
    	   response.hasMessages() mustBe false
@@ -128,11 +126,40 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
 
 	   }
-	   
-/*	   
+	      
 	   "disqual test2, test6; not disqual test1, and keep all in targeting stabile" in {
 
 	      // New session. Disqualify, but keep in TT.
+         val schemaSrc = generateSchema(
+            Map(
+                  "test1-hooks" ->
+"""               {
+                     'name' :'disqualHook',
+                     'class':'com.variant.server.test.hooks.TestQualificationHookDisqual',
+                     'init':{'removeFromTargetingTracker':false}
+                  }
+""",
+                  "test2-hooks" ->
+"""               {
+                     'name' :'disqualHook',
+                     'class':'com.variant.server.test.hooks.TestQualificationHookDisqual',
+                     'init':{'removeFromTargetingTracker':false}
+                  }
+""",
+                  "test6-hooks" ->
+"""               {
+                     'name' :'disqualHook',
+                     'class':'com.variant.server.test.hooks.TestQualificationHookDisqual',
+                     'init':{'removeFromTargetingTracker':false}
+                  }
+"""
+            )
+         )
+         
+         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
+
+   	   response.hasMessages() mustBe false
+   		server.schema.isDefined mustBe true
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")
    	   val test1 = schema.getTest("test1")
@@ -143,16 +170,17 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test6 = schema.getTest("test6")
 
 //   	   server.hooker.clear()
-   	   val dl1 = new TestQualificationHookDisqual(false, test1)
-   	   val dl2 = new TestQualificationHookDisqual(false, test2)
-   	   val dl6 = new TestQualificationHookDisqual(false, test6)
-		   server.hooker.addHook(dl1)
-		   server.hooker.addHook(dl2)
-		   server.hooker.addHook(dl6)
+//   	   val dl1 = new TestQualificationHookDisqual(false, test1)
+//   	   val dl2 = new TestQualificationHookDisqual(false, test2)
+//   	   val dl6 = new TestQualificationHookDisqual(false, test6)
+//		   server.hooker.addHook(dl1)
+//		   server.hooker.addHook(dl2)
+//		   server.hooker.addHook(dl6)
 
-		   ssn = ServerSession.empty(newSid())
+		   ssn = SessionImpl.empty(newSid())
 		   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
 		   val req = ssn.targetForState(state1);
+         println(ssn.getTraversedStates())
 		   ssn.getTraversedStates.toSet mustEqual Set((state1, 1))
 		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5)
 		   ssn.getDisqualifiedTests.toSet mustEqual Set(test6)
@@ -168,7 +196,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 		   req.getResolvedParameters().get("path") must startWith ("/path/to/state1")
 
 	   }
-
+/*
 	   "disqual test1, and drop tfrom targeting stabile" in {
 
    	   val schema = server.schema.get

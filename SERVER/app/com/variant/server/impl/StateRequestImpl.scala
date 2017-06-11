@@ -9,25 +9,31 @@ import com.variant.core.schema.Test.Experience
 import com.variant.core.schema.Test
 import com.variant.core.schema.StateVariant
 import com.variant.core.VariantEvent
+import com.variant.core.schema.impl.StateVariantImpl
+import com.variant.server.api.Session
 
 /**
  * 
  */
 object StateRequestImpl {
    
-   def apply(coreReq:CoreStateRequest) = new StateRequestImpl(coreReq)
+   def apply(session: Session, coreReq:CoreStateRequest) = new StateRequestImpl(session, coreReq)
 }
 
 /**
  * 
  */
-class StateRequestImpl(private val coreReq:CoreStateRequest) extends StateRequest {
+class StateRequestImpl(private val session: Session, private val coreReq:CoreStateRequest) extends StateRequest {
   
    /*----------------------------------------------------------------------------------------*/
    /*                                        PUBLIC                                          */
    /*----------------------------------------------------------------------------------------*/
 
    /**
+	 */
+	override def getSession(): Session = session
+
+	/**
 	 */
 	override def getState(): State = coreReq.getState
 
@@ -68,6 +74,8 @@ class StateRequestImpl(private val coreReq:CoreStateRequest) extends StateReques
    /*                                     PUBLIC EXT                                         */
    /*----------------------------------------------------------------------------------------*/
 
+   def setResolvedStateVariant(variant: StateVariantImpl): Unit = coreReq.setResolvedStateVariant(variant)
+   
    def commit(): Unit = coreReq.commit()
 
 }

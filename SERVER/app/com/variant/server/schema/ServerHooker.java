@@ -12,12 +12,13 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValue;
 import com.variant.core.CommonError;
 import com.variant.core.LifecycleEvent;
-import com.variant.core.LifecycleEvent.Domain;
 import com.variant.core.impl.UserHooker;
-import com.variant.core.schema.EventDomain;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.ParseTimeLifecycleEvent;
+import com.variant.core.schema.impl.SchemaHookImpl;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.server.api.ServerException;
+import com.variant.server.api.TestScopedLifecycleEvent;
 import com.variant.server.api.UserHook;
 import com.variant.server.boot.ServerErrorLocal;
 
@@ -40,8 +41,8 @@ public class ServerHooker implements UserHooker {
 	 */
 	
 	private static class HookMapEntry {
-		private Class<UserHook<LifecycleEvent>> hookClass;
-		private Class<? extends LifecycleEvent> lceClass;
+		private Class<UserHook<LifecycleEvent>> hookClass;  // Span a new instance for each post()
+		private Class<? extends LifecycleEvent> lceClass;   // post() for any subclass 
 		private ConfigValue config;
 		private HookMapEntry(Class<UserHook<LifecycleEvent>> hookClass, Class<? extends LifecycleEvent> lceClass, ConfigValue config) {
 			this.hookClass = hookClass;
@@ -63,7 +64,7 @@ public class ServerHooker implements UserHooker {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initHook(Hook hook, ParserResponseImpl parserResponse) {
-				
+
 		try {
 			// Create the Class object for the supplied UserHook implementation.
 			Class<?> userHookClass = Class.forName(hook.getClassName());
@@ -75,11 +76,10 @@ public class ServerHooker implements UserHooker {
 			}
 			UserHook<? extends LifecycleEvent> userHook = (UserHook<LifecycleEvent>) userHookObject;
 			
-			// The implementation's domian must match that of the definition. In other words, a test domain hook
+			// The implementation's scope must match that of the definition. In other words, a test scoped hook
 			// cannot be defined at the schema level, and vice versa.
-			EventDomain eventDomain = userHook.getLifecycleEventClass().getAnnotation(EventDomain.class);
 			if (hook instanceof Hook.Test) {
-				if (eventDomain.value() == Domain.SCHEMA) {
+				if (ParseTimeLifecycleEvent.class.isAssignableFrom(userHook.getLifecycleEventClass())) {
 					Hook.Test testHook = (Hook.Test) hook;
 					parserResponse.addMessage(
 							ServerErrorLocal.HOOK_SCHEMA_DOMAIN_DEFINED_AT_TEST, 
@@ -87,7 +87,7 @@ public class ServerHooker implements UserHooker {
 				}
 			}
 			else if (hook instanceof Hook.Schema) {
-				if (eventDomain.value() == Domain.TEST) {
+				if (TestScopedLifecycleEvent.class.isAssignableFrom(userHook.getLifecycleEventClass())) {
 					parserResponse.addMessage(ServerErrorLocal.HOOK_TEST_DOMAIN_DEFINED_AT_SCHEMA, hook.getName(), userHook.getLifecycleEventClass().getName());
 				}
 			}
@@ -104,6 +104,7 @@ public class ServerHooker implements UserHooker {
 			// AOK. Save in hook map.
 			hookMap.put(hook, new HookMapEntry((Class<UserHook<LifecycleEvent>>) userHookClass, userHook.getLifecycleEventClass(), config));
 
+			LOG.debug("Init'ed Hook [" + hook.getName() + "]");
 		}
 		catch (ConfigException.Parse e) {
 			parserResponse.addMessage(ServerErrorLocal.HOOK_INSTANTIATION_ERROR, hook.getClassName(), e.getClass().getName());
@@ -127,16 +128,17 @@ public class ServerHooker implements UserHooker {
 			Hook schemaHook = entry.getKey();
 			HookMapEntry hme = entry.getValue();
 			if (hme.lceClass.isAssignableFrom(event.getClass())) {
-				UserHook<LifecycleEvent> hook;
 				try {
-					hook = hme.hookClass.newInstance();
+					UserHook<LifecycleEvent> hook = hme.hookClass.newInstance();
 					hook.init(hme.config);
 					hook.post(event, schemaHook);
 				} catch (Exception e) {
 					throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName());
 				}
+
 				if (LOG.isTraceEnabled())
-					LOG.trace("Posted user hook [" + schemaHook.getName() + "]");
+					LOG.trace("Posted user hook [" + schemaHook.getName() + "] with [" + event + "]");
+				
 			}
 		}
 		return event;

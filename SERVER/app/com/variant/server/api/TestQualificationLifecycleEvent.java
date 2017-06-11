@@ -1,8 +1,5 @@
 package com.variant.server.api;
 
-import com.variant.core.LifecycleEvent.Domain;
-import com.variant.core.schema.EventDomain;
-import com.variant.core.schema.Test;
 
 /**
  * <p>Run time hook. Posts its listeners whenever the session targeter is about to target a user session. 
@@ -17,16 +14,7 @@ import com.variant.core.schema.Test;
  * @since 0.5
  *
  */
-@EventDomain(Domain.TEST)
-public interface TestQualificationLifecycleEvent extends RuntimeLifecycleEvent {
-
-	/**
-	 * The test for which this user hook is posting.
-	 * .
-	 * @return An object of type {@link com.variant.core.schema.Test}.
-	 * @since 0.5
-	 */
-	public Test getTest();
+public interface TestQualificationLifecycleEvent extends StateRequestAwareLifecycleEvent, TestScopedLifecycleEvent {
 			
 	/**
 	 * Host code calls this to inform Variant server whether the current session

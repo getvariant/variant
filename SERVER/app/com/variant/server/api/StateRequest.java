@@ -24,6 +24,14 @@ import com.variant.core.schema.Test.Experience;
 public interface StateRequest {
 
 	/**
+	 * Foreground session to which this state request belongs.
+	 * 
+	 * @return An object of type {@link Session}.
+	 * @since 0.7
+	 */
+	Session getSession();
+
+	/**
 	 * The target of this state request.
 	 * 
 	 * @return An object of type {@link State}.

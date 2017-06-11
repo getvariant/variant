@@ -26,7 +26,7 @@ public class TestHookImpl extends SchemaHookImpl implements Hook.Test {
 	}
 
 	/**
-	 * Hook names are unique within a domain. 
+	 * Hook names are unique within a scope. 
 	 */
 	@Override
 	public boolean equals(Object other) {

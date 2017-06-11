@@ -2,6 +2,7 @@ package com.variant.server.test.hooks;
 
 import com.typesafe.config.ConfigValue;
 import com.variant.core.schema.Hook;
+import com.variant.server.api.Session;
 import com.variant.server.api.TestQualificationLifecycleEvent;
 import com.variant.server.api.UserHook;
 
@@ -22,8 +23,9 @@ public class TestQualificationHookNil implements UserHook<TestQualificationLifec
    
 	@Override
 	public void post(TestQualificationLifecycleEvent event, Hook hook) {
-		String curVal = event.getSession().getAttribute(ATTR_KEY);
+		Session ssn = event.getStateRequest().getSession();
+		String curVal = ssn.getAttribute(ATTR_KEY);
 		if (curVal == null) curVal = ""; else curVal += " ";
-		event.getSession().setAttribute(ATTR_KEY,  curVal + event.getTest().getName());
+		ssn.setAttribute(ATTR_KEY,  curVal + event.getTest().getName());
 	}
 }

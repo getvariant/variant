@@ -26,9 +26,11 @@ import com.variant.core.schema.impl.TestOnStateImpl;
 import static com.variant.server.boot.ServerErrorLocal.*;
 
 import com.variant.server.api.ServerException;
+import com.variant.server.api.StateRequest;
 import com.variant.server.api.TestQualificationLifecycleEvent;
 import com.variant.server.boot.VariantServer;
 import com.variant.server.impl.SessionImpl;
+import com.variant.server.impl.StateRequestImpl;
 import com.variant.server.impl.TestQualificationLifecycleEventImpl;
 import com.variant.server.impl.TestTargetingLifecycleEventImpl;
 import com.variant.server.schema.ServerSchema;
@@ -91,10 +93,10 @@ public class Runtime {
 	private void targetSessionForState(SessionImpl session) {
 
 		ServerSchema schema = server.schema().get();
-		CoreSession coreSession = session.coreSession();
-		CoreStateRequest coreReq = coreSession.getStateRequest();
-		State state = coreReq.getState();
-		SessionScopedTargetingStabile targetingStabile = coreSession.getTargetingStabile();
+		//CoreSession coreSession = session.coreSession();
+		StateRequestImpl req = session.getStateRequest();
+		State state = req.getState();
+		SessionScopedTargetingStabile targetingStabile = session.targetingStabile();
 		
 		// State must be in current schema.
 		State schemaState = schema.getState(state.getName());
@@ -161,7 +163,7 @@ public class Runtime {
 					}
 				}
 				
-				coreSession.addTraversedTest(test);
+				session.coreSession().addTraversedTest(test);
 			}
 		}
 				
@@ -206,7 +208,7 @@ public class Runtime {
 				String source = "default";
 				// If no listeners or no action by client code, do the random default.
 				if (targetedExperience == null) {
-					targetedExperience = new TestTargeterDefault().target(coreSession, ft, state);
+					targetedExperience = new TestTargeterDefault().target(session, ft, state);
 				}
 				else
 					source = "user hook listener";
@@ -237,7 +239,7 @@ public class Runtime {
 		if (!resolution._1()) throw new ServerException.Internal(
 				"Vector [" + VariantStringUtils.toString(vector, ",") + "] is unresolvable");
 		
-		coreReq.setResolvedStateVariant(resolution._2());
+		req.setResolvedStateVariant(resolution._2());
 	}
 
 	/**
@@ -516,7 +518,7 @@ public class Runtime {
 			}   			
 		}
 		else {
-			// Real state hit.
+			LOG.trace("Session [" + ssn.getId() + "] touched state [" + state.getName() +"]");
 			ssn.addTraversedState(state);
 			stateRequest.createStateVisitedEvent();
 		}
