@@ -44,11 +44,25 @@ class TestQualificationHookTest extends BaseSpecWithServer {
       "be posted for tests instrumented on state1" in {
 
          val schemaSrc = generateSchema(
-            Map("test1-hooks" -> """
-    {
-      'name' :'nullQualificationHook',
-      'class':'com.variant.server.test.hooks.TestQualificationHookNil'
-    }"""
+            Map(
+               "test1-hooks" -> 
+               """ {
+                     'name' :'nullQualificationHook',
+                     'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+                   }
+               """,
+               "test2-hooks" -> 
+               """ {
+                     'name' :'nullQualificationHook',
+                     'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+                   }
+               """,
+               "test3-hooks" -> 
+               """ {
+                     'name' :'nullQualificationHook',
+                     'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+                   }
+               """
             )
          )
          
@@ -66,17 +80,26 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test6 = schema.getTest("test6")
 
    	   test1.getHooks.size mustBe 1
-   	   val hook = test1.getHooks.get(0)
-   	   hook.getName mustBe "nullQualificationHook"
-   	   hook.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookNil"
-   	   hook.getInit mustBe null
-   	   test2.getHooks.size mustBe 0
-   	   test3.getHooks.size mustBe 0
+   	   val h1 = test1.getHooks.get(0)
+   	   h1.getName mustBe "nullQualificationHook"
+   	   h1.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookNil"
+   	   h1.getInit mustBe null
+   	   test2.getHooks.size mustBe 1
+   	   val h2 = test1.getHooks.get(0)
+   	   h2.getName mustBe "nullQualificationHook"
+   	   h2.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookNil"
+   	   h2.getInit mustBe null
+   	   test3.getHooks.size mustBe 1
+   	   val h3 = test1.getHooks.get(0)
+   	   h3.getName mustBe "nullQualificationHook"
+   	   h3.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookNil"
+   	   h3.getInit mustBe null
    	   test4.getHooks.size mustBe 0
    	   test5.getHooks.size mustBe 0
    	   test6.getHooks.size mustBe 0
    	   
-   	   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
+   	   // qualification hooks will not be called before targeting.
+   	   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null 
    	   
    		val req = ssn.targetForState(state1);
 		   ssn.getTraversedStates.size() mustEqual 1
@@ -91,7 +114,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 		   stabile.get("test4") mustNot be (null)
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
-		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test3 test4 test5 test6"
+		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test3"
 
 	   }
 	   
@@ -109,7 +132,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   ssn.clearAttribute(TestQualificationHookNil.ATTR_KEY)
    	   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
    	   
-	      val req = ssn.targetForState(state2);
+	      val req = ssn.targetForState(state2)
 		   ssn.getTraversedStates.size() mustEqual 2
 		   ssn.getTraversedStates.get(state1) mustEqual 1
 		   ssn.getTraversedStates.get(state2) mustEqual 1
@@ -126,7 +149,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
 
 	   }
-	      
+
 	   "disqual test2, test6; not disqual test1, and keep all in targeting stabile" in {
 
 	      // New session. Disqualify, but keep in TT.
@@ -177,10 +200,10 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 //		   server.hooker.addHook(dl2)
 //		   server.hooker.addHook(dl6)
 
+   	   // New Session.
 		   ssn = SessionImpl.empty(newSid())
 		   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
 		   val req = ssn.targetForState(state1);
-         println(ssn.getTraversedStates())
 		   ssn.getTraversedStates.toSet mustEqual Set((state1, 1))
 		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5)
 		   ssn.getDisqualifiedTests.toSet mustEqual Set(test6)

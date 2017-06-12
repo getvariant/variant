@@ -21,7 +21,7 @@ class ServerSessionTest extends BaseSpecWithServer {
        val schema = server.schema.get
        val state1 = schema.getState("state1")
        state1 mustNot be (null)
-       server.runtime.targetSessionForState(ssn1, state1)
+       server.runtime.targetForState(ssn1, state1)
        ssn1.coreSession.getStateRequest mustNot be (null)
        
        val coreSsn2 = CoreSession.fromJson(ssn1.toJson, schema);

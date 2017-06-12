@@ -66,7 +66,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
             try {
                val (conn, ssn, state) = parse(Json.parse(req.body.asText.get))
-               VariantServer.server.runtime.targetSessionForState(ssn.asInstanceOf[SessionImpl], state)
+               VariantServer.server.runtime.targetForState(ssn, state)
                conn.addSession(ssn)
                val response = JsObject(Seq(
                   "session" -> JsString(ssn.asInstanceOf[SessionImpl].coreSession.toJson())

@@ -13,6 +13,11 @@ import com.variant.core.schema.impl.StateImpl
 import com.variant.server.runtime.Runtime
 import com.variant.server.conn.Connection
 import com.variant.server.api.Session
+import com.variant.core.schema.Test
+import com.variant.core.session.SessionScopedTargetingStabile
+import com.variant.server.api.StateRequest
+import com.variant.core.session.CoreStateRequest
+import com.variant.core.schema.impl.TestImpl
 
 /**
  * Server session enriches core session with server side functionality.
@@ -47,8 +52,9 @@ class SessionImpl(val coreSession: CoreSession) extends Session {
       this(CoreSession.fromJson(json, VariantServer.server.schema.get))
    }
    
-   //val coreSession = CoreSession.fromJson(json, VariantServer.server.schema.get)
-   val paramMap = mutable.HashMap[java.lang.String, java.lang.String]()
+   private[this] val attrMap = mutable.HashMap[java.lang.String, java.lang.String]()
+
+   private[this] var coreStateRequest = null;
    
    /*----------------------------------------------------------------------------------------*/
    /*                                        PUBLIC                                          */
@@ -62,18 +68,17 @@ class SessionImpl(val coreSession: CoreSession) extends Session {
    
    override def getSchema  = coreSession.getSchema
       
-   private[this] lazy val _stateRequest = StateRequestImpl(this, coreSession.getStateRequest)
-   override def getStateRequest = _stateRequest
+   override def getStateRequest = StateRequestImpl(this, coreSession.getStateRequest)
    
    override def getTraversedStates = coreSession.getTraversedStates
    
    override def getTraversedTests = coreSession.getTraversedTests
       
-   override def clearAttribute(name: java.lang.String): java.lang.String = paramMap.remove(name).getOrElse(null)
+   override def clearAttribute(name: java.lang.String): java.lang.String = attrMap.remove(name).getOrElse(null)
 
-   override def getAttribute(name: java.lang.String): java.lang.String = paramMap.get(name).getOrElse(null)
+   override def getAttribute(name: java.lang.String): java.lang.String = attrMap.get(name).getOrElse(null)
 
-   override def setAttribute(name: java.lang.String, value: java.lang.String): java.lang.String = paramMap.put(name, value).getOrElse(null)
+   override def setAttribute(name: java.lang.String, value: java.lang.String): java.lang.String = attrMap.put(name, value).getOrElse(null)
    
    /*----------------------------------------------------------------------------------------*/
    /*                                     PUBLIC EXT                                         */
@@ -81,12 +86,21 @@ class SessionImpl(val coreSession: CoreSession) extends Session {
    
    def toJson = coreSession.toJson()
 
-   def addTraversedState(state: State): Unit = coreSession.addTraversedState(state)
+   def addTraversedState(state: StateImpl): Unit = coreSession.addTraversedState(state)
   
+   def addDisqualifiedTest(test: TestImpl): Unit = coreSession.addDisqualifiedTest(test)
+
+   def getTargetingStabile(): SessionScopedTargetingStabile = coreSession.getTargetingStabile()
+     
+   def newStateRequest(state: StateImpl): StateRequestImpl = {
+      coreSession.setStateRequest(new CoreStateRequest(coreSession, state))
+      getStateRequest
+   }
+   
    /*
     */
-   def targetForState(state: State) = {
-      VariantServer.server.runtime.targetSessionForState(this, state.asInstanceOf[StateImpl])   
+   def targetForState(state: State): StateRequest = {
+      VariantServer.server.runtime.targetForState(this, state) 
       this.getStateRequest()
    }
 

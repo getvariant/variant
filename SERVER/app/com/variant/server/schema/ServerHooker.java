@@ -127,7 +127,14 @@ public class ServerHooker implements UserHooker {
 		for (Map.Entry<Hook, HookMapEntry> entry : hookMap.entrySet()) {
 			Hook schemaHook = entry.getKey();
 			HookMapEntry hme = entry.getValue();
+			
+			// Only post subscribers to the event type.
 			if (hme.lceClass.isAssignableFrom(event.getClass())) {
+				
+				// Test scoped events only post for hooks defined within the scope of the respective test.
+				if (event instanceof TestScopedLifecycleEvent &&
+					!((TestScopedLifecycleEvent) event).getTest().equals(((Hook.Test)schemaHook).getTest())) continue;
+				
 				try {
 					UserHook<LifecycleEvent> hook = hme.hookClass.newInstance();
 					hook.init(hme.config);

@@ -21,11 +21,13 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.Test.OnState;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
+import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
 
 import static com.variant.server.boot.ServerErrorLocal.*;
 
 import com.variant.server.api.ServerException;
+import com.variant.server.api.Session;
 import com.variant.server.api.StateRequest;
 import com.variant.server.api.TestQualificationLifecycleEvent;
 import com.variant.server.boot.VariantServer;
@@ -90,13 +92,11 @@ public class Runtime {
 	 * TODO: IP.
 	 * 
 	 */
-	private void targetSessionForState(SessionImpl session) {
+	private void target(SessionImpl session, StateImpl state) {
 
 		ServerSchema schema = server.schema().get();
-		//CoreSession coreSession = session.coreSession();
-		StateRequestImpl req = session.getStateRequest();
-		State state = req.getState();
-		SessionScopedTargetingStabile targetingStabile = session.targetingStabile();
+		
+		StateRequestImpl newReq = session.newStateRequest(state);
 		
 		// State must be in current schema.
 		State schemaState = schema.getState(state.getName());
@@ -111,7 +111,7 @@ public class Runtime {
 
 		// 2. Remove from ATL those already disqualified, qualify others and remove if disqualified.
 		for (Iterator<Test> iter = activeTestList.iterator(); iter.hasNext();) {
-			Test test = iter.next();
+			TestImpl test = (TestImpl) iter.next();
 			if (session.getDisqualifiedTests().contains(test)) {
 				iter.remove();
 			}
@@ -130,7 +130,7 @@ public class Runtime {
 			if (session.getTraversedTests().contains(test)) {
 				
 				// Already traversed, hence must be already targeted.
-				Experience exp = targetingStabile.getAsExperience(test.getName(), schema);
+				Experience exp = session.getTargetingStabile().getAsExperience(test.getName(), schema);
 				if (exp == null)
 					throw new ServerException.Internal(
 							"Active traversed test [" + test.getName() + "] not in targeting stabile");
@@ -145,7 +145,7 @@ public class Runtime {
 			else  {
 				// Not yet traversed. Add to the pre-targeted experience list, if in TT. If not in TT,
 				// it's a free test that will be targeted after the pre-targets.
-				Experience exp = targetingStabile.getAsExperience(test.getName(), schema);
+				Experience exp = session.getTargetingStabile().getAsExperience(test.getName(), schema);
 				
 				if (exp == null) {
 					free.add(test); 
@@ -158,7 +158,7 @@ public class Runtime {
 						preTargeted.add(exp);						
 					}
 					else {
-						targetingStabile.remove(test.getName());
+						session.getTargetingStabile().remove(test.getName());
 						free.add(test);
 					}
 				}
@@ -181,7 +181,7 @@ public class Runtime {
 			else {
 				// 5. Replace the unresolvable experiences from TT with control.
 				for (Experience e: minUnresolvableSubvector) {
-					targetingStabile.add(e.getTest().getControlExperience());
+					session.getTargetingStabile().add(e.getTest().getControlExperience());
 				}
 				LOG.info(
 						"Targeting tracker not resolvable for session [" + session.getId() + "]. " +
@@ -220,12 +220,12 @@ public class Runtime {
 				}
 
 				vector.add(targetedExperience);
-				targetingStabile.add(targetedExperience);				
+				session.getTargetingStabile().add(targetedExperience);				
 
 			}
 			else {
 				Experience e = ft.getControlExperience();
-				targetingStabile.add(e);
+				session.getTargetingStabile().add(e);
 				if (LOG.isTraceEnabled()) {
 					LOG.trace(
 							"Session [" + session.getId() + "] targeted for untargetable test [" + 
@@ -239,7 +239,7 @@ public class Runtime {
 		if (!resolution._1()) throw new ServerException.Internal(
 				"Vector [" + VariantStringUtils.toString(vector, ",") + "] is unresolvable");
 		
-		req.setResolvedStateVariant(resolution._2());
+		newReq.setResolvedStateVariant(resolution._2());
 	}
 
 	/**
@@ -249,7 +249,7 @@ public class Runtime {
 	 * @param session
 	 * @param test
 	 */
-	private boolean qualifyTest(Test test, SessionImpl session) {
+	private boolean qualifyTest(TestImpl test, SessionImpl session) {
 		
 		/**
 		 * 
@@ -261,8 +261,8 @@ public class Runtime {
 		schema.hooker().post(event);
 
 		if (!event.isQualified()) {
-			session.coreSession().addDisqualifiedTest(test);
-			if (event.isRemoveFromTargetingTracker()) session.coreSession().getTargetingStabile().remove(test.getName());
+			session.addDisqualifiedTest(test);
+			if (event.isRemoveFromTargetingTracker()) session.getTargetingStabile().remove(test.getName());
 		}				
 		
 		return event.isQualified();
@@ -478,21 +478,22 @@ public class Runtime {
 	 * @param view
 	 * @return
 	 */
-	public void targetSessionForState(SessionImpl ssn, State state) {
-
-		// The constructor hooks the new core state request to the core session
-		CoreStateRequest stateRequest = new CoreStateRequest(ssn.coreSession(), (StateImpl)state);		
-		// Resolve the path and get all tests instrumented on the state.
-		targetSessionForState(ssn);		
+	public void targetForState(Session session, State state) {
+		
+		SessionImpl ssnImpl = (SessionImpl) session;
+		StateImpl stateImpl = (StateImpl) state;
+		
+		// All the heavy lifting happens here.
+		target((SessionImpl)session, (StateImpl)state);		
 		
 		// Targeting stabile contains targeted experiences.
-		SessionScopedTargetingStabile targetingStabile = ssn.targetingStabile();
+		SessionScopedTargetingStabile targetingStabile = ssnImpl.getTargetingStabile();
 		
 		if (LOG.isTraceEnabled()) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("Session [").append(ssn.getId()).append("] resolved state [").append(state.getName()).append("] as [");
+			sb.append("Session [").append(session.getId()).append("] resolved state [").append(state.getName()).append("] as [");
 			boolean first = true;
-			for (Map.Entry<String,String> e: stateRequest.getResolvedParameters().entrySet()) {
+			for (Map.Entry<String,String> e: session.getStateRequest().getResolvedParameters().entrySet()) {
 				if (first) first = false;
 				else sb.append(",");
 				sb.append(e.getValue());
@@ -506,23 +507,22 @@ public class Runtime {
 			
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(
-						"Session [" + ssn.getId() + "] requested state [" + 
+						"Session [" + session.getId() + "] requested state [" + 
 						state.getName() +"] that does not have any instrumented tests.");
 			}   
 		}
-		else if (stateRequest.getLiveExperiences().isEmpty()) {
+		else if (session.getStateRequest().getLiveExperiences().isEmpty()) {
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(
-						"Session [" + ssn.getId() + "] requested state [" + 
+						"Session [" + session.getId() + "] requested state [" + 
 						state.getName() +"] that does not have live tests.");
 			}   			
 		}
 		else {
-			LOG.trace("Session [" + ssn.getId() + "] touched state [" + state.getName() +"]");
-			ssn.addTraversedState(state);
-			stateRequest.createStateVisitedEvent();
-		}
-	
+			LOG.trace("Session [" + session.getId() + "] touched state [" + state.getName() +"]");
+			ssnImpl.addTraversedState(stateImpl);
+			((StateRequestImpl)session.getStateRequest()).createStateVisitedEvent();
+		}		
 	}
 	
 }
