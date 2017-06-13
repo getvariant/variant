@@ -1,6 +1,6 @@
 package com.variant.server.test.hooks;
 
-import com.typesafe.config.ConfigValue;
+import com.typesafe.config.Config;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.StateParsedLifecycleEvent;
 import com.variant.server.api.UserHook;
@@ -11,7 +11,7 @@ public class StateParsedHookPrivateConstructor implements UserHook<StateParsedLi
 	private StateParsedHookPrivateConstructor() {}
 	
 	@Override
-	public void init(ConfigValue init) {}
+	public void init(Config config) {}
 
 	@Override
     public Class<StateParsedLifecycleEvent> getLifecycleEventClass() {

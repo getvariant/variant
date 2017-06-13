@@ -89,6 +89,7 @@ class VariantServerImpl @Inject() (
 	   }
 	   catch {
 	      case e: ServerException.User => {
+	         logger.error("Failed to install schema deployer", e)
 	         _startupErrorLog :+= e
 	         None
 	      }

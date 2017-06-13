@@ -1,7 +1,6 @@
 package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigValue;
 import com.variant.core.schema.Hook;
 import com.variant.server.api.TestQualificationLifecycleEvent;
 import com.variant.server.api.UserHook;
@@ -11,8 +10,7 @@ public class TestQualificationHookDisqual implements UserHook<TestQualificationL
 	private boolean removeFromTargetingTracker = false;
 
 	@Override
-	public void init(ConfigValue init) {
-		Config config = init.atKey("init");
+	public void init(Config config) {
 		removeFromTargetingTracker = config.getBoolean("init.removeFromTargetingTracker");
 	}
 

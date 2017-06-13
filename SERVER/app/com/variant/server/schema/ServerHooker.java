@@ -15,7 +15,6 @@ import com.variant.core.LifecycleEvent;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParseTimeLifecycleEvent;
-import com.variant.core.schema.impl.SchemaHookImpl;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.TestScopedLifecycleEvent;
@@ -137,10 +136,12 @@ public class ServerHooker implements UserHooker {
 				
 				try {
 					UserHook<LifecycleEvent> hook = hme.hookClass.newInstance();
-					hook.init(hme.config);
+					Config config = hme.config == null ? null : hme.config.atKey("init");
+					hook.init(config);
 					hook.post(event, schemaHook);
 				} catch (Exception e) {
-					throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName());
+					LOG.error(CommonError.HOOK_UNHANDLED_EXCEPTION.asMessage(UserHook.class.getName(), e.getMessage()), e);
+					throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
 				}
 
 				if (LOG.isTraceEnabled())

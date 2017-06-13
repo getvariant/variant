@@ -93,7 +93,7 @@ class TestParsedHookTest extends BaseSpecWithServer {
 			   {                                                          
 				   'stateRef':'state1',                                     
 				   'variants':[                                            
-				      {'experienceRef':'B'}
+				      {'experienceRef':'B'}  
 			      ]                                                       
 	         }                                                          
 	      ]                                                             
