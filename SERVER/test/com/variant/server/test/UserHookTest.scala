@@ -31,6 +31,7 @@ class UserHookTest extends BaseSpecWithServer {
 	
 	var schemaId = None
 
+	
 	/*
 
 

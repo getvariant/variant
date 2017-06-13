@@ -7,6 +7,7 @@ import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.api.TestQualificationLifecycleEvent
 import com.variant.server.test.hooks.TestQualificationHookNil
+import com.variant.core.schema.Hook
 
 class TestQualificationHookTest extends BaseSpecWithServer {
    
@@ -79,6 +80,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
 
+   	   schema.getHooks() mustBe empty
    	   test1.getHooks.size mustBe 1
    	   val h1 = test1.getHooks.get(0)
    	   h1.getName mustBe "nullQualificationHook"
@@ -185,6 +187,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    		server.schema.isDefined mustBe true
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")
+   		val state2 = schema.getState("state2")
    	   val test1 = schema.getTest("test1")
    	   val test2 = schema.getTest("test2")
    	   val test3 = schema.getTest("test3")
@@ -192,13 +195,25 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
 
-//   	   server.hooker.clear()
-//   	   val dl1 = new TestQualificationHookDisqual(false, test1)
-//   	   val dl2 = new TestQualificationHookDisqual(false, test2)
-//   	   val dl6 = new TestQualificationHookDisqual(false, test6)
-//		   server.hooker.addHook(dl1)
-//		   server.hooker.addHook(dl2)
-//		   server.hooker.addHook(dl6)
+   	   schema.getHooks() mustBe empty
+   	   test1.getHooks.size mustBe 1
+   	   val h1 = test1.getHooks.get(0)
+   	   h1.getName mustBe "disqualHook"
+   	   h1.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookDisqual"
+   	   h1.getInit mustBe "{\"removeFromTargetingTracker\":false}"
+   	   test2.getHooks.size mustBe 1
+   	   val h2 = test2.getHooks.get(0)
+   	   h2.getName mustBe "disqualHook"
+   	   h2.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookDisqual"
+   	   h2.getInit mustBe "{\"removeFromTargetingTracker\":false}"
+   	   test3.getHooks.size mustBe 0
+   	   test4.getHooks.size mustBe 0
+   	   test5.getHooks.size mustBe 0
+   	   test6.getHooks.size mustBe 1
+   	   val h6 = test6.getHooks.get(0)
+   	   h6.getName mustBe "disqualHook"
+   	   h6.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookDisqual"
+   	   h6.getInit mustBe "{\"removeFromTargetingTracker\":false}"
 
    	   // New Session.
 		   ssn = SessionImpl.empty(newSid())
@@ -219,8 +234,31 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 		   req.getResolvedParameters().get("path") must startWith ("/path/to/state1")
 
 	   }
-/*
-	   "disqual test1, and drop tfrom targeting stabile" in {
+
+	   "disqual test1, and drop it from targeting stabile" in {
+
+	      // second test1 listener, in addition to one added in previous test.
+   	   //val dl1 = new TestQualificationHookDisqual(true, test1)
+		   //server.hooker.addHook(dl1)
+
+	      // New session. Disqualify, but keep in TT.
+	      
+	      // Same schema as before, but remove from TT on test1.
+         val schemaSrc = generateSchema(
+            Map(
+                  "test1-hooks" ->
+"""               {
+                     'name' :'disqualHook',
+                     'class':'com.variant.server.test.hooks.TestQualificationHookDisqual',
+                     'init':{'removeFromTargetingTracker':true}
+                  }
+"""
+            )
+         )
+
+         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
+   	   response.hasMessages() mustBe false
+   		server.schema.isDefined mustBe true
 
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")
@@ -232,10 +270,8 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
 
-   	   // second test1 listener, in addition to one added in previous test.
-   	   val dl1 = new TestQualificationHookDisqual(true, test1)
-		   server.hooker.addHook(dl1)
-
+   	   // Note that reusing session after schema reaload is an error. Still works, until
+   	   // reloadable schema is implement, and schema reload will invalidate current sessions.
 		   val req = ssn.targetForState(state2);
 		   ssn.getTraversedStates.toSet mustEqual Set((state1,1), (state2,1))
 		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5)
@@ -285,50 +321,30 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
 	   "not be posted for an OFF test" in {
 
+	      // Same schema as before, but remove from TT on test1.
+         val schemaSrc = generateSchema(
+            Map(
+               "test2-hooks" -> 
+               """ {
+                     'name' :'nullQualificationHook',
+                     'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+                   }
+               """
+            )
+         )
+
+         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
+   	   response.hasMessages() mustBe false
+   		server.schema.isDefined mustBe true
+
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")
-   		val state2 = schema.getState("state2")
-   		val state3 = schema.getState("state3")
-   		val state4 = schema.getState("state4")
-   	   val test1 = schema.getTest("test1")
-   	   val test2 = schema.getTest("test2")
-   	   val test3 = schema.getTest("test3")
-   	   val test4 = schema.getTest("test4")
-   	   val test5 = schema.getTest("test5")
-   	   val test6 = schema.getTest("test6")
 		
-	   	// ON - should be posted.
-		   val l1 = new TargetingHook(test1, test1.getExperience("B"));
-
-	   	// OFF - should not be posted.
-	   	val l2 = new TargetingHook(test2, test2.getExperience("C"))
-
-
-   	   server.hooker.clear()
-   		server.hooker.addHook(l1, l2)
-   		
    		// New session.
-         ssn = ServerSession.empty(newSid())
+         ssn = SessionImpl.empty(newSid())
 		   ssn.targetForState(state1)
-   		l1.count mustBe 0  // Not instrumented
-   		l2.count mustBe 0  // Off
-
-   		ssn.targetForState(state2)
-   		l1.count mustBe 0 // Instrumented, but unresolvable => didn't post.
-   		l2.count mustBe 0 // Off
-
-   		// New session
-   		ssn = ServerSession.empty(newSid())
-		   ssn.targetForState(state4)
-   		l1.count mustBe 1 
-   		l2.count mustBe 0  // Off
-
-   		ssn.targetForState(state4)
-   		l1.count mustBe 1
-   		l2.count mustBe 0 // Off
+		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
 	   }
-	   * 
-	   */
 	}
 	
 }

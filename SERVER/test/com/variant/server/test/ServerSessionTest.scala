@@ -5,6 +5,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import com.variant.core.session.CoreSession
 import com.variant.server.impl.SessionImpl
+import com.variant.server.schema.SchemaDeployer
 
 /**
  * Add your spec here.
@@ -13,20 +14,33 @@ import com.variant.server.impl.SessionImpl
  */
 class ServerSessionTest extends BaseSpecWithServer {
 
-  "Server session" should {
+   "Server session" should {
 
-    "should serialize and deserialize" in  {
+      "should serialize and deserialize" in  {
 	
-       val ssn1 = SessionImpl.empty(newSid)
-       val schema = server.schema.get
-       val state1 = schema.getState("state1")
-       state1 mustNot be (null)
-       server.runtime.targetForState(ssn1, state1)
-       ssn1.coreSession.getStateRequest mustNot be (null)
+         val schema = server.schema.get
+         val state1 = schema.getState("state1")
+         state1 mustNot be (null)
        
-       val coreSsn2 = CoreSession.fromJson(ssn1.toJson, schema);
-       coreSsn2.toJson mustBe ssn1.coreSession.toJson
+         val ssn = SessionImpl.empty(newSid())
        
-    }
-  }
+         ssn.targetForState(state1)
+         ssn.getStateRequest mustNot be (null)
+       
+         val coreSsn2 = CoreSession.fromJson(ssn.toJson, schema);
+         coreSsn2.toJson mustBe ssn.coreSession.toJson 
+      }
+      
+      /* This will only apply when schema is hot-deployable.
+      "should invalidate session when schema changes" in  {
+	
+         val ssn = SessionImpl.empty(newSid())
+         val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTestNoHooks.json")).get
+   	   response.hasMessages() mustBe false
+   		server.schema.isDefined mustBe true
+         val state1 = server.schema.get.getState("state1")
+   		ssn.targetForState(state1);
+      }
+      */
+   }
 }
