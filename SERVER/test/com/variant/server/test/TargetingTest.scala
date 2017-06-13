@@ -11,21 +11,15 @@ import scala.util.Random
 import com.variant.server.api.TestTargetingLifecycleEvent
 import com.variant.server.api.UserHook
 import com.variant.core.schema.Hook
+import com.variant.server.test.util.ParameterizedString
+import com.variant.server.test.hooks.TestTargetingHookNil
+import com.variant.server.test.hooks.TestTargetingHookAB
 
 class TargetingTest extends BaseSpecWithServer {
 
 	val trials = 500000
 	val deltaAsFraction = .05f
 
-	/**
-	 * Use the null event flusher and null session store, 
-	 * because the test will be generating lots sessions and events.
-	 *
-	static {
-		// Do nothing to save sessions to speed things up. We won't need them.
-		injectorConfigAsResourceName = "/com/variant/core/conf/injector-session-store-null.json";
-	}
-	*/
 		
 
    val schemaJson = """
@@ -50,6 +44,7 @@ class TargetingTest extends BaseSpecWithServer {
    'tests':[
       {
          'name':'test1',
+         'hooks':[${hooks:}], // Defaults to null list
          'experiences':[ 
             {
                'name':'A', 
@@ -64,12 +59,6 @@ class TargetingTest extends BaseSpecWithServer {
                'name':'C',
                'weight':97 
             }
-         ],
-         'hooks': [
-             {
-                'name':'nullHook', 
-                'class':'com.variant.server.test.hooks.TestTargetingHookNil'
-             }
          ],
          'onStates':[ 
             { 
@@ -94,17 +83,19 @@ class TargetingTest extends BaseSpecWithServer {
    ]
 }"""
 
-   server.installSchemaDeployer(SchemaDeployer.fromString(schemaJson))
-   server.schema.isDefined mustBe true
-   val schema = server.schema.get
-   val state = schema.getState("state1")
-   val test = schema.getTest("test1")
-
 	"Runtime" should {
+/*
+      "target according to weights with no targeting hooks" in {
 
-      "target according to weights if no targeting hooks" in {
-				
-   		val counts = Array(0, 0, 0)
+         val schemaSrc = ParameterizedString(schemaJson).expand()
+         
+         server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc))
+         server.schema.isDefined mustBe true
+         val schema = server.schema.get
+         val state = schema.getState("state1")
+         val test = schema.getTest("test1")
+   		
+         val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
    			val ssn = SessionImpl.empty("sid")
    			ssn.targetForState(state)
@@ -117,38 +108,30 @@ class TargetingTest extends BaseSpecWithServer {
    		} 
    		verifyCounts(counts, Array(1f, 2f, 97f))
       }
-/*       
-   	"target according to weights with null targeting listener" in {
-
-   		val nullListener = new NullTargetingHook
-   	   nullListener.postCount mustBe 0
-   		server.hooker.addHook(nullListener)
-   		val counts = Array(0, 0, 0)
-   		for (i <- 1 to trials) {
-   			val ssn = ServerSession.empty("sid" + i)
-   			val req = ssn.targetForState(state)
-   			val expName = req.getLiveExperience(test).getName()
-   			expName match {
-   			   case "A" => counts(0) += 1
-      			case "B" => counts(1) += 1
-      			case "C" => counts(2) += 1
-   			}
-   		} 
-   		verifyCounts(counts, Array(1f, 2f, 97f))
-   		nullListener.postCount mustEqual trials
-      }
       
-      "target according to weights with two null targeting listeners" in {
+   	"target according to weights with null targeting hook" in {
 
-         server.hooker.clear()
-         val nullListener1 = new NullTargetingHook
-         val nullListener2 = new NullTargetingHook
-   		server.hooker.addHook(nullListener1)
-   		server.hooker.addHook(nullListener2)
+   	   val schemaSrc = ParameterizedString(schemaJson).expand(         
+               "hooks" -> 
+               """ {
+                     'name' :'nullTargetingHook',
+                     'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+                   }
+               """)
+               
+         server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc))
+
+         server.schema.isDefined mustBe true
+         val schema = server.schema.get
+         val state = schema.getState("state1")
+         val test = schema.getTest("test1")
+
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = ServerSession.empty("sid" + 1)
+   			val ssn = SessionImpl.empty("sid" + i)
+   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
    			val req = ssn.targetForState(state)
+   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
    			val expName = req.getLiveExperience(test).getName()
    			expName match {
    			   case "A" => counts(0) += 1
@@ -157,21 +140,75 @@ class TargetingTest extends BaseSpecWithServer {
    			}
    		} 
    		verifyCounts(counts, Array(1f, 2f, 97f))
-   		nullListener1.postCount mustEqual trials
-   		nullListener2.postCount mustEqual trials
       }
+     
+      "target according to weights with two null targeting hooks" in {
 
-      "target at 1/1/0 with the null listener and the A/B listener" in {
+         val schemaSrc = ParameterizedString(schemaJson).expand(         
+               "hooks" -> 
+               """ {
+                     'name' :'nullTargetingHook1',
+                     'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+                   },
+                   {
+                     'name' :'nullTargetingHook2',
+                     'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+                   }
+               """)
+               
+         server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc))
 
-         server.hooker.clear()
-         val nullListener = new NullTargetingHook
-   		val abListener = new ABTargetingHook
-   		server.hooker.addHook(nullListener)
-   		server.hooker.addHook(abListener)
+         server.schema.isDefined mustBe true
+         val schema = server.schema.get
+         val state = schema.getState("state1")
+         val test = schema.getTest("test1")
+
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = ServerSession.empty("sid" + 1)
+   			val ssn = SessionImpl.empty("sid" + i)
+   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
    			val req = ssn.targetForState(state)
+   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test1"
+   			val expName = req.getLiveExperience(test).getName()
+   			expName match {
+   			   case "A" => counts(0) += 1
+      			case "B" => counts(1) += 1
+      			case "C" => counts(2) += 1
+   			}
+   		} 
+   		verifyCounts(counts, Array(1f, 2f, 97f))
+      }
+*/
+      "target at 1/1/0 with the null hook and the A/B listener" in {
+
+         
+         val schemaSrc = ParameterizedString(schemaJson).expand(         
+               "hooks" -> 
+               """ {
+                     'name' :'nullHook',
+                     'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+                   },
+                   {
+                     'name' :'A_B_Hook',
+                     'class':'com.variant.server.test.hooks.TestTargetingHookAB'
+                   }
+               """)
+               
+         server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc))
+
+         server.schema.isDefined mustBe true
+         val schema = server.schema.get
+         val state = schema.getState("state1")
+         val test = schema.getTest("test1")
+
+   		val counts = Array(0, 0, 0)
+   		for (i <- 1 to trials) {
+   			val ssn = SessionImpl.empty("sid" + i)
+   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
+   			ssn.getAttribute(TestTargetingHookAB.ATTR_KEY) mustBe null
+   			val req = ssn.targetForState(state)
+   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+   			ssn.getAttribute(TestTargetingHookAB.ATTR_KEY) mustBe "test1"
    			val expName = req.getLiveExperience(test).getName()
    			expName match {
    			   case "A" => counts(0) += 1
@@ -180,10 +217,8 @@ class TargetingTest extends BaseSpecWithServer {
    			}
    		} 
    		verifyCounts(counts, Array(1f, 1f, 0f))
-   		nullListener.postCount mustEqual trials
-   		abListener.postCount mustEqual trials
       }
-      
+/*      
 		"still target at 1/0/1 with the null listener and the AC listener" in {
          
          server.hooker.clear()
@@ -239,8 +274,8 @@ class TargetingTest extends BaseSpecWithServer {
 	 * @param weights
 	 */
 	private def verifyCounts(counts: Array[Int], weights: Array[Float]) {
-	   //println(counts.mkString(","))
-	   //println(weights.mkString(","))
+	   println(counts.mkString(","))
+	   println(weights.mkString(","))
 		var sumCounts = 0
 		var sumWeights = 0f
 		for (i <- 0 until counts.length) {
@@ -262,23 +297,6 @@ class TargetingTest extends BaseSpecWithServer {
 }
 
 /*
-/**
- * Targeting listener returns A or B with equal probability.
- */
-class ABTargetingHook extends UserHook[TestTargetingLifecycleEvent] {
-
-	var postCount = 0;
-   val rand = new Random(System.currentTimeMillis())
-
-	override def getLifecycleEventClass() = classOf[TestTargetingLifecycleEvent]
-	
-	override def post(event: TestTargetingLifecycleEvent, hook: Hook) {
-		postCount += 1
-		val test = event.getTest()
-		val experience = if (rand.nextBoolean()) test.getExperience("A") else test.getExperience("B")
-		event.setTargetedExperience(experience)
-	}
-}
 
 /**
  * returns A or C in equal probabilities.

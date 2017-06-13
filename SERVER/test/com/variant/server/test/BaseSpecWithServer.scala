@@ -29,6 +29,8 @@ import com.variant.server.conn.ConnectionStore
 import play.api.libs.json.JsValue
 import com.variant.core.ServerError
 import com.variant.server.impl.SessionImpl
+import com.variant.server.test.util.ParameterizedString
+import org.apache.commons.io.IOUtils
 
 /**
  * Common to all tests.

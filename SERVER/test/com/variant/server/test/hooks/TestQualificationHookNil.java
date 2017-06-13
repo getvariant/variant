@@ -11,7 +11,7 @@ import com.variant.server.api.UserHook;
  */
 public class TestQualificationHookNil implements UserHook<TestQualificationLifecycleEvent> {
 
-	public static String ATTR_KEY = "current-list";
+	public static String ATTR_KEY = TestQualificationHookNil.class.getName();;
 	
 	@Override
 	public void init(Config config) {}

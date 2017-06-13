@@ -203,7 +203,7 @@ public class Runtime {
 				// Target this test. First post targeting hooks.
 				TestTargetingLifecycleEventImpl event = new TestTargetingLifecycleEventImpl(session, ft, state);
 				schema.hooker().post(event);
-				Experience targetedExperience = null; //event.targetedExperience;  This needs to change.
+				Experience targetedExperience = event.getTargetedExperience();  //This needs to change.
 				
 				String source = "default";
 				// If no listeners or no action by client code, do the random default.

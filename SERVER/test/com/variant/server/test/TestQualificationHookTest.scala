@@ -10,9 +10,9 @@ import com.variant.server.test.hooks.TestQualificationHookNil
 import com.variant.core.schema.Hook
 
 class TestQualificationHookTest extends BaseSpecWithServer {
-   
+      
    /**
-    * Inject all the hooks.
+    * Inject all the hooks into the schema in /ParserCovariantOkayBigTest.json
     */
    private[this] def generateSchema(hooks: Map[String, String]):String = {
       
@@ -37,7 +37,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             "test5-hooks"->test5HooksList,
             "test6-hooks"->test6HooksList)
    }
-   
+
   	"TestQualificationHook" should {
 	   
 	   var ssn = SessionImpl.empty(newSid())
