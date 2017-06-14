@@ -19,5 +19,5 @@ public interface StateRequestAwareLifecycleEvent extends RunTimeLifecycleEvent {
      * @since 0.7
 	 */
 	public StateRequest getStateRequest();
-	
+
 }

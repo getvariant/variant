@@ -139,6 +139,10 @@ public class ServerHooker implements UserHooker {
 					Config config = hme.config == null ? null : hme.config.atKey("init");
 					hook.init(config);
 					hook.post(event, schemaHook);
+				
+				} catch (ServerException.User e) {
+					throw e;
+				
 				} catch (Exception e) {
 					LOG.error(CommonError.HOOK_UNHANDLED_EXCEPTION.asMessage(UserHook.class.getName(), e.getMessage()), e);
 					throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());

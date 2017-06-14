@@ -15,7 +15,7 @@ package com.variant.server.api;
  *
  */
 public interface TestQualificationLifecycleEvent extends StateRequestAwareLifecycleEvent, TestScopedLifecycleEvent {
-			
+
 	/**
 	 * Host code calls this to inform Variant server whether the current session
 	 * (as returned by {@link #getSession()}) is qualified for the test (as returned by {@link #getTest()}).
