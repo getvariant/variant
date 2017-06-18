@@ -10,7 +10,7 @@ public class TestQualificationHookDisqual implements UserHook<TestQualificationL
 	private boolean removeFromTargetingTracker = false;
 
 	@Override
-	public void init(Config config) {
+	public void init(Config config, Hook hook) {
 		removeFromTargetingTracker = config.getBoolean("init.removeFromTargetingTracker");
 	}
 
@@ -20,7 +20,7 @@ public class TestQualificationHookDisqual implements UserHook<TestQualificationL
     }
    
 	@Override
-	public void post(TestQualificationLifecycleEvent event, Hook hook) {		
+	public void post(TestQualificationLifecycleEvent event) {		
 		event.setQualified(false);
 		event.setRemoveFromTargetingTracker(removeFromTargetingTracker);
 	}

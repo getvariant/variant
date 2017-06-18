@@ -22,6 +22,19 @@ import com.variant.core.schema.Hook;
 public interface UserHook<E extends LifecycleEvent> {
 
 	/**
+	 * Object initializer. By contract, an implementation must provide a no-argument constructor, which Variant server
+	 * will use to instantiate it. However, user may wish to pass initialization data into this newly instantiated object by
+	 * providing the <code>init</code> parameter to the schema definition of the hook. Its value can be an arbitrary JSON literal
+	 * which will be parsed and passed to this method in the form of an Typesafe Config object, rootet at the key <code>init</init>.
+	 * 
+	 * @param config The configuration data as instance of {@link Config} type.
+	 * @param hook The schema hook corresponding to this object. This may be useful when multiple hooks are posted
+	 *             with the same life cycle event.
+     * @since 0.7
+	 */
+	public void init(Config config, Hook hook) throws Exception;
+		
+	/**
 	 * Implementation must tell the server what life cycle event type(s) it wants to be posted on.
 	 * If this method returns a super-type, this hook will be posted for all descendant 
 	 * event types.
@@ -36,23 +49,9 @@ public interface UserHook<E extends LifecycleEvent> {
 	 * by {@link #getLifecycleEventClass()} is reached.
 	 * 
 	 * @param event The posting event. May be further examined for details of the posting life cycle event.
-	 * @param hook The schema hook corresponding to this object. This may be useful when multiple hooks are posted
-	 *             with the same life cycle event.
 	 * 
      * @since 0.5
 	 */
-	public void post(E event, Hook hook) throws Exception;
-
-	/**
-	 * Object initializer. By contract, an implementation must provide a no-argument constructor, which Variant server
-	 * will use to instantiate it. However, user may wish to pass initialization data into this newly instantiated object by
-	 * providing the <code>init</code> parameter to the schema definition of the hook. Its value can be an arbitrary JSON literal
-	 * which will be parsed and passed to this method in the form of an Typesafe Config object, rootet at the key <code>init</init>.
-	 * 
-	 * @param config The configuration data as instance of {@link Config} type.
-	 * 
-     * @since 0.7
-	 */
-	public void init(Config config) throws Exception;
+	public void post(E event) throws Exception;
 
 }

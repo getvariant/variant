@@ -26,7 +26,7 @@ public class TestTargetingHook implements UserHook<TestTargetingLifecycleEvent> 
 	private String experienceToReturn;
 	
 	@Override
-	public void init(Config config) {
+	public void init(Config config, Hook hook) {
 
 		if (config.hasPath("init.weights")) {
 			List<Double> weightsConfig = config.getDoubleList("init.weights");
@@ -46,7 +46,7 @@ public class TestTargetingHook implements UserHook<TestTargetingLifecycleEvent> 
     }
    
 	@Override
-	public void post(TestTargetingLifecycleEvent event, Hook hook) {
+	public void post(TestTargetingLifecycleEvent event) {
 
 		Session ssn = event.getStateRequest().getSession();
 		

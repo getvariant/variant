@@ -6,12 +6,12 @@ import com.variant.core.schema.StateParsedLifecycleEvent;
 import com.variant.server.api.UserHook;
 
 public class StateParsedHookArgumentConstructor implements UserHook<StateParsedLifecycleEvent> {
-		
+	
 	// ServerHooker won't be able to instantiate
 	public StateParsedHookArgumentConstructor(String badArgument) {}
 	
 	@Override
-	public void init(Config config) {}
+	public void init(Config config, Hook hook) {}
 
 	@Override
     public Class<StateParsedLifecycleEvent> getLifecycleEventClass() {
@@ -19,5 +19,5 @@ public class StateParsedHookArgumentConstructor implements UserHook<StateParsedL
     }
    
 	@Override
-	public void post(StateParsedLifecycleEvent event, Hook hook) {}
+	public void post(StateParsedLifecycleEvent event) {}
 }

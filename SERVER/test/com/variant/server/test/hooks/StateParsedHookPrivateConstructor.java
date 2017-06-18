@@ -11,7 +11,7 @@ public class StateParsedHookPrivateConstructor implements UserHook<StateParsedLi
 	private StateParsedHookPrivateConstructor() {}
 	
 	@Override
-	public void init(Config config) {}
+	public void init(Config config, Hook hook) {}
 
 	@Override
     public Class<StateParsedLifecycleEvent> getLifecycleEventClass() {
@@ -19,5 +19,5 @@ public class StateParsedHookPrivateConstructor implements UserHook<StateParsedLi
     }
    
 	@Override
-	public void post(StateParsedLifecycleEvent event, Hook hook) {}
+	public void post(StateParsedLifecycleEvent event) {}
 }

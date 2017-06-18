@@ -14,7 +14,7 @@ public class TestTargetingHookNil implements UserHook<TestTargetingLifecycleEven
 	public static String ATTR_KEY = "current-list";
 	
 	@Override
-	public void init(Config config) {}
+	public void init(Config config, Hook hook) {}
 
 	@Override
     public Class<TestTargetingLifecycleEvent> getLifecycleEventClass() {
@@ -22,7 +22,7 @@ public class TestTargetingHookNil implements UserHook<TestTargetingLifecycleEven
     }
    
 	@Override
-	public void post(TestTargetingLifecycleEvent event, Hook hook) {
+	public void post(TestTargetingLifecycleEvent event) {
 		Session ssn = event.getStateRequest().getSession();
 		String curVal = ssn.getAttribute(ATTR_KEY);
 		if (curVal == null) curVal = ""; else curVal += " ";

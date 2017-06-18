@@ -14,7 +14,7 @@ public class TestQualificationHookNil implements UserHook<TestQualificationLifec
 	public static String ATTR_KEY = TestQualificationHookNil.class.getName();;
 	
 	@Override
-	public void init(Config config) {}
+	public void init(Config config, Hook hook) {}
 
 	@Override
     public Class<TestQualificationLifecycleEvent> getLifecycleEventClass() {
@@ -22,7 +22,7 @@ public class TestQualificationHookNil implements UserHook<TestQualificationLifec
     }
    
 	@Override
-	public void post(TestQualificationLifecycleEvent event, Hook hook) {
+	public void post(TestQualificationLifecycleEvent event) {
 		Session ssn = event.getStateRequest().getSession();
 		String curVal = ssn.getAttribute(ATTR_KEY);
 		if (curVal == null) curVal = ""; else curVal += " ";

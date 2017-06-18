@@ -123,6 +123,7 @@ public class ServerHooker implements UserHooker {
 	 */
 	@Override
 	public LifecycleEvent post(LifecycleEvent event) {
+		
 		for (Map.Entry<Hook, HookMapEntry> entry : hookMap.entrySet()) {
 			Hook schemaHook = entry.getKey();
 			HookMapEntry hme = entry.getValue();
@@ -137,8 +138,8 @@ public class ServerHooker implements UserHooker {
 				try {
 					UserHook<LifecycleEvent> hook = hme.hookClass.newInstance();
 					Config config = hme.config == null ? null : hme.config.atKey("init");
-					hook.init(config);
-					hook.post(event, schemaHook);
+					hook.init(config, schemaHook);
+					hook.post(event);
 				
 				} catch (ServerException.User e) {
 					throw e;
