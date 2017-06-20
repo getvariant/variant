@@ -333,7 +333,7 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    		response.getMessages(ERROR).size() mustBe 1
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText mustBe ServerErrorLocal.HOOK_TEST_DOMAIN_DEFINED_AT_SCHEMA.asMessage("testTargeting", "com.variant.server.api.TestTargetingLifecycleEvent")
+   		msg.getText mustBe ServerErrorLocal.HOOK_TEST_DOMAIN_DEFINED_AT_SCHEMA.asMessage("testTargeting", classOf[TestTargetingLifecycleEvent].getName)
       }
    }
 

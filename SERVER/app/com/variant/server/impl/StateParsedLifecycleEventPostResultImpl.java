@@ -3,9 +3,9 @@ package com.variant.server.impl;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.StateParsedLifecycleEvent;
+import com.variant.core.schema.StateParsedLifecycleEventPostResult;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.core.schema.parser.StateParsedLifecycleEventImpl;
-import com.variant.server.api.hook.StateParsedLifecycleEventPostResult;
 
 public class StateParsedLifecycleEventPostResultImpl implements StateParsedLifecycleEventPostResult {
 

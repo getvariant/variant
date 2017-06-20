@@ -5,8 +5,8 @@ import com.variant.core.UserHook;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.StateParsedLifecycleEvent;
+import com.variant.core.schema.StateParsedLifecycleEventPostResult;
 import com.variant.server.api.hook.PostResultFactory;
-import com.variant.server.api.hook.StateParsedLifecycleEventPostResult;
 
 public class StateParsedHook implements UserHook<StateParsedLifecycleEvent> {
 	
@@ -15,9 +15,12 @@ public class StateParsedHook implements UserHook<StateParsedLifecycleEvent> {
 	public static final String ERROR_MESSAGE_FORMAT = "Error Message State %s %s";
 		
 	private Hook hook;
+	private boolean clipChain = false;
+	
 	@Override
 	public void init(Config config, Hook hook) {
 		this.hook = hook;
+		if (config != null) clipChain = config.getBoolean("init.clipChain");
 	}
 	
 	@Override
@@ -31,6 +34,6 @@ public class StateParsedHook implements UserHook<StateParsedLifecycleEvent> {
 		result.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hook.getName(), event.getState().getName()));
 		result.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hook.getName(), event.getState().getName()));
 		result.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hook.getName(), event.getState().getName()));
-		return result;
+		return clipChain ? result : null;
 	}
 }

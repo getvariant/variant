@@ -1,9 +1,13 @@
 package com.variant.core.schema.parser;
 
+import com.typesafe.config.Config;
 import com.variant.core.UserHook;
+import com.variant.core.UserError.Severity;
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateParsedLifecycleEvent;
+import com.variant.core.schema.StateParsedLifecycleEventPostResult;
 
 /**
  * 
@@ -31,7 +35,27 @@ public class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent 
 	
 	@Override
 	public UserHook<StateParsedLifecycleEvent> getDefaultHook() {
-		return null;
+		
+		return new UserHook<StateParsedLifecycleEvent>() {
+
+			@Override
+			public void init(Config config, Hook hook) throws Exception {}
+
+			@Override
+			public Class<StateParsedLifecycleEvent> getLifecycleEventClass() {
+				return StateParsedLifecycleEvent.class;
+			}
+
+			@Override
+			public UserHook.PostResult post(StateParsedLifecycleEvent event) {
+					
+				return new StateParsedLifecycleEventPostResult() {	
+					@Override
+					public void addMessage(Severity severity, String message) {}
+				};
+				
+			}	
+		};
 	}
 
 	//---------------------------------------------------------------------------------------------//

@@ -101,8 +101,8 @@ class TestParsedHookTest extends BaseSpecWithServer {
 }"""
 
    		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
-   		response.getMessages.size mustBe 9
    		//response.getMessages.foreach(println(_))
+   		response.getMessages.size mustBe 9
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 3
    		response.getMessages(WARN).size() mustBe 6

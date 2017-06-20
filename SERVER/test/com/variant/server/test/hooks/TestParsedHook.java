@@ -4,10 +4,10 @@ import com.typesafe.config.Config;
 import com.variant.core.UserHook;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.StateParsedLifecycleEventPostResult;
 import com.variant.core.schema.TestParsedLifecycleEvent;
+import com.variant.core.schema.TestParsedLifecycleEventPostResult;
 import com.variant.server.api.hook.PostResultFactory;
-import com.variant.server.api.hook.StateParsedLifecycleEventPostResult;
-import com.variant.server.api.hook.TestParsedLifecycleEventPostResult;
 
 public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
 	
