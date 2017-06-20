@@ -10,7 +10,6 @@ import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerSchema
 import com.variant.core.schema.State
 import com.variant.core.schema.impl.StateImpl
-import com.variant.server.runtime.Runtime
 import com.variant.server.conn.Connection
 import com.variant.server.api.Session
 import com.variant.core.schema.Test

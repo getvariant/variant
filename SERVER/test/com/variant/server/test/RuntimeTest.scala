@@ -10,8 +10,7 @@ import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerSuite
-import com.variant.server.runtime.Runtime
-import com.variant.server.runtime.RuntimeTestFacade
+import com.variant.server.boot.RuntimeTestFacade
 import com.variant.server.api.ServerException
 import scala.collection.mutable.ArrayBuffer
 

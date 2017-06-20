@@ -1,14 +1,19 @@
-package com.variant.server.runtime
+package com.variant.server.boot
 
 import scala.collection.JavaConversions._
+
 import com.variant.core.schema.State
 import com.variant.core.schema.Test.Experience
-import com.variant.server.boot.VariantServer
+
 import java.util.Collection
+
 import com.variant.core.schema.impl.StateVariantImpl
+
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.ListBuffer
+
 import java.util.ArrayList
+
 import com.variant.core.schema.Test
 
 /**

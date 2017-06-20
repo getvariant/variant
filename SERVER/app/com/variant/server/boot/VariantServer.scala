@@ -15,7 +15,6 @@ import com.variant.server.schema.ServerSchema
 import play.api.Application
 import com.variant.server.schema.SchemaDeployerFromFS
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.runtime.Runtime
 import com.variant.core.schema.ParserResponse
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
