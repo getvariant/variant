@@ -19,5 +19,5 @@ public class StateParsedHookPrivateConstructor implements UserHook<StateParsedLi
     }
    
 	@Override
-	public void post(StateParsedLifecycleEvent event) {}
+	public PostResult post(StateParsedLifecycleEvent event) {return null;}
 }

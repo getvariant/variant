@@ -22,11 +22,12 @@ public class TestTargetingHookNil implements UserHook<TestTargetingLifecycleEven
     }
    
 	@Override
-	public void post(TestTargetingLifecycleEvent event) {
+	public PostResult post(TestTargetingLifecycleEvent event) {
 		Session ssn = event.getStateRequest().getSession();
 		String curVal = ssn.getAttribute(ATTR_KEY);
 		if (curVal == null) curVal = ""; else curVal += " ";
 		ssn.setAttribute(ATTR_KEY,  curVal + event.getTest().getName());
+		return null;
 	}
 
 }

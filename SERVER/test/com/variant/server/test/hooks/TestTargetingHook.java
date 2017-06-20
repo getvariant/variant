@@ -11,7 +11,9 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
+import com.variant.server.api.hook.PostResultFactory;
 import com.variant.server.api.hook.TestTargetingLifecycleEvent;
+import com.variant.server.api.hook.TestTargetingLifecycleEventPostResult;
 
 /**
  * Target according to weights passed in the init property weights.
@@ -46,15 +48,16 @@ public class TestTargetingHook implements UserHook<TestTargetingLifecycleEvent> 
     }
    
 	@Override
-	public void post(TestTargetingLifecycleEvent event) {
+	public PostResult post(TestTargetingLifecycleEvent event) {
 
 		Session ssn = event.getStateRequest().getSession();
+		TestTargetingLifecycleEventPostResult result = PostResultFactory.mkPostResult(event);
 		
 		if (experienceToReturn != null) {
 			String[] tokens = experienceToReturn.split("\\.");
-			Experience result = event.getStateRequest().getSession().getSchema().getTest(tokens[0]).getExperience(tokens[1]);
-			event.setTargetedExperience(result);
-			return;
+			Experience exp = event.getStateRequest().getSession().getSchema().getTest(tokens[0]).getExperience(tokens[1]);			
+			result.setTargetedExperience(exp);
+			return result;
 		} 
 		
 		Test test = event.getTest();
@@ -90,8 +93,8 @@ public class TestTargetingHook implements UserHook<TestTargetingLifecycleEvent> 
 			//lastExperience = e;
 			weightSum += weights[i];
 			if (randVal < weightSum) {
-				event.setTargetedExperience(e);
-				return;
+				result.setTargetedExperience(e);
+				return result;
 			}
 		}
 		// Should never happen.

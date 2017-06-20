@@ -5,6 +5,9 @@ import com.variant.core.UserHook;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.TestParsedLifecycleEvent;
+import com.variant.server.api.hook.PostResultFactory;
+import com.variant.server.api.hook.StateParsedLifecycleEventPostResult;
+import com.variant.server.api.hook.TestParsedLifecycleEventPostResult;
 
 public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
 	
@@ -25,9 +28,11 @@ public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
     }
    
 	@Override
-	public void post(TestParsedLifecycleEvent event) {
-		event.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hook.getName(), event.getTest().getName()));
-		event.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hook.getName(), event.getTest().getName()));
-		event.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hook.getName(), event.getTest().getName()));
+	public PostResult post(TestParsedLifecycleEvent event) {
+		TestParsedLifecycleEventPostResult result = PostResultFactory.mkPostResult(event);
+		result.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hook.getName(), event.getTest().getName()));
+		result.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hook.getName(), event.getTest().getName()));
+		result.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hook.getName(), event.getTest().getName()));
+		return result;
 	}
 }

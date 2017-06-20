@@ -3,7 +3,9 @@ package com.variant.server.test.hooks;
 import com.typesafe.config.Config;
 import com.variant.core.UserHook;
 import com.variant.core.schema.Hook;
+import com.variant.server.api.hook.PostResultFactory;
 import com.variant.server.api.hook.TestQualificationLifecycleEvent;
+import com.variant.server.api.hook.TestQualificationLifecycleEventPostResult;
 
 public class TestQualificationHookDisqual implements UserHook<TestQualificationLifecycleEvent>{
 
@@ -20,9 +22,11 @@ public class TestQualificationHookDisqual implements UserHook<TestQualificationL
     }
    
 	@Override
-	public void post(TestQualificationLifecycleEvent event) {		
-		event.setQualified(false);
-		event.setRemoveFromTargetingTracker(removeFromTargetingTracker);
+	public PostResult post(TestQualificationLifecycleEvent event) {
+		TestQualificationLifecycleEventPostResult result = PostResultFactory.mkPostResult(event);
+		result.setQualified(false);
+		result.setRemoveFromTargetingTracker(removeFromTargetingTracker);
+		return result;
 	}
 	
 }

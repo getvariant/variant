@@ -5,7 +5,7 @@ import scala.collection.JavaConversions._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.util.ParameterizedString
-import com.variant.server.api.TestQualificationLifecycleEvent
+import com.variant.server.api.hook.TestQualificationLifecycleEvent
 import com.variant.server.test.hooks.TestQualificationHookNil
 import com.variant.core.schema.Hook
 

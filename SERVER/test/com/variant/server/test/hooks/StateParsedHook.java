@@ -5,6 +5,8 @@ import com.variant.core.UserHook;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.StateParsedLifecycleEvent;
+import com.variant.server.api.hook.PostResultFactory;
+import com.variant.server.api.hook.StateParsedLifecycleEventPostResult;
 
 public class StateParsedHook implements UserHook<StateParsedLifecycleEvent> {
 	
@@ -25,8 +27,10 @@ public class StateParsedHook implements UserHook<StateParsedLifecycleEvent> {
    
 	@Override
 	public PostResult post(StateParsedLifecycleEvent event) {
-		event.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hook.getName(), event.getState().getName()));
-		event.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hook.getName(), event.getState().getName()));
-		event.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hook.getName(), event.getState().getName()));
+		StateParsedLifecycleEventPostResult result = PostResultFactory.mkPostResult(event);
+		result.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hook.getName(), event.getState().getName()));
+		result.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hook.getName(), event.getState().getName()));
+		result.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hook.getName(), event.getState().getName()));
+		return result;
 	}
 }

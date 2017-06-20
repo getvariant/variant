@@ -14,9 +14,8 @@ import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.CommonError._
 import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.server.api.TestQualificationLifecycleEvent
-import com.variant.server.api.TestTargetingLifecycleEvent
-import com.variant.server.api.UserHook
+import com.variant.server.api.hook.TestQualificationLifecycleEvent
+import com.variant.server.api.hook.TestTargetingLifecycleEvent
 import com.variant.core.schema.parser.ParserError
 import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal

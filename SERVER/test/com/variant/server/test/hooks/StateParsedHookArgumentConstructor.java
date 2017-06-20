@@ -19,5 +19,5 @@ public class StateParsedHookArgumentConstructor implements UserHook<StateParsedL
     }
    
 	@Override
-	public void post(StateParsedLifecycleEvent event) {}
+	public PostResult post(StateParsedLifecycleEvent event) {return null;}
 }

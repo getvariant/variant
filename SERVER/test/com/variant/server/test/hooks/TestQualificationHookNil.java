@@ -22,10 +22,11 @@ public class TestQualificationHookNil implements UserHook<TestQualificationLifec
     }
    
 	@Override
-	public void post(TestQualificationLifecycleEvent event) {
+	public PostResult post(TestQualificationLifecycleEvent event) {
 		Session ssn = event.getStateRequest().getSession();
 		String curVal = ssn.getAttribute(ATTR_KEY);
 		if (curVal == null) curVal = ""; else curVal += " ";
 		ssn.setAttribute(ATTR_KEY,  curVal + event.getTest().getName());
+		return null;
 	}
 }
