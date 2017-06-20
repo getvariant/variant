@@ -1,6 +1,7 @@
 package com.variant.core.impl;
 
 import com.variant.core.LifecycleEvent;
+import com.variant.core.UserHook;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.ParserResponseImpl;
 
@@ -34,7 +35,7 @@ public interface UserHooker {
 	 * @param event
 	 * @return the event passed in as argument.
 	 */
-	public LifecycleEvent post(LifecycleEvent event);
+	public UserHook.PostResult post(LifecycleEvent event);
 
 	/**
 	 * Null hooker, which does nothing whatsoever.
@@ -48,14 +49,8 @@ public interface UserHooker {
 		@Override
 		public void initHook(Hook hook, ParserResponseImpl parserResponse) {}
 		
-		//@Override
-		//public void addHook(UserHook<? extends LifecycleEvent> hook, Test test) {}
-
-		//@Override
-		//public void clear() {}
-
 		@Override
-		public LifecycleEvent post(LifecycleEvent hook) {return hook;}
+		public UserHook.PostResult post(LifecycleEvent hook) {return null;}
 	};
 }
 

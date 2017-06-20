@@ -29,12 +29,15 @@ import static com.variant.server.boot.ServerErrorLocal.*;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
 import com.variant.server.api.StateRequest;
-import com.variant.server.api.TestQualificationLifecycleEvent;
+import com.variant.server.api.hook.TestQualificationLifecycleEvent;
+import com.variant.server.api.hook.TestTargetingLifecycleEventPostResult;
 import com.variant.server.boot.VariantServer;
 import com.variant.server.impl.SessionImpl;
 import com.variant.server.impl.StateRequestImpl;
 import com.variant.server.impl.TestQualificationLifecycleEventImpl;
+import com.variant.server.impl.TestQualificationLifecycleEventPostResultImpl;
 import com.variant.server.impl.TestTargetingLifecycleEventImpl;
+import com.variant.server.impl.TestTargetingLifecycleEventPostResultImpl;
 import com.variant.server.schema.ServerSchema;
 
 /**
@@ -202,20 +205,12 @@ public class Runtime {
 			if (isTargetable(ft, state, vector)) {
 				// Target this test. First post targeting hooks.
 				TestTargetingLifecycleEventImpl event = new TestTargetingLifecycleEventImpl(session, ft, state);
-				schema.hooker().post(event);
-				Experience targetedExperience = event.getTargetedExperience();  //This needs to change.
+				TestTargetingLifecycleEventPostResultImpl hookResult = (TestTargetingLifecycleEventPostResultImpl) schema.hooker().post(event);
+				Experience targetedExperience = hookResult.getTargetedExperience();
 
-				String source = "default";
-				// If no listeners or no action by client code, do the random default.
-				if (targetedExperience == null) {
-					targetedExperience = new TestTargeterDefault().target(session, ft, state);
-				}
-				else
-					source = "user hook listener";
-					
 				if (LOG.isTraceEnabled()) {
 					LOG.trace(
-							"Session [" + session.getId() + "] targeted (" + source + ") for test [" + 
+							"Session [" + session.getId() + "] targeted for test [" + 
 							ft.getName() +"] with experience [" + targetedExperience.getName() + "]");
 				}
 
@@ -258,14 +253,14 @@ public class Runtime {
 		ServerSchema schema = server.schema().get();
 
 		TestQualificationLifecycleEvent event = new TestQualificationLifecycleEventImpl(session, test);
-		schema.hooker().post(event);
+		TestQualificationLifecycleEventPostResultImpl hookResult = (TestQualificationLifecycleEventPostResultImpl) schema.hooker().post(event);
 
-		if (!event.isQualified()) {
+		if (!hookResult.isQualified()) {
 			session.addDisqualifiedTest(test);
-			if (event.isRemoveFromTargetingTracker()) session.getTargetingStabile().remove(test.getName());
+			if (hookResult.isRemoveFromTT()) session.getTargetingStabile().remove(test.getName());
 		}				
 		
-		return event.isQualified();
+		return hookResult.isQualified();
 	}
 	
 	/**

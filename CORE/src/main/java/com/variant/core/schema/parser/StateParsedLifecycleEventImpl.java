@@ -1,6 +1,6 @@
 package com.variant.core.schema.parser;
 
-import com.variant.core.UserError.Severity;
+import com.variant.core.UserHook;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateParsedLifecycleEvent;
@@ -10,7 +10,7 @@ import com.variant.core.schema.StateParsedLifecycleEvent;
  * @author Igor
  *
  */
-class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent {
+public class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent {
 
 	private State state;
 	private ParserResponse response;
@@ -19,20 +19,27 @@ class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent {
 		this.state = state;
 		this.response = response;
 	}
-	
+
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
 	@Override
 	public State getState() {
 		return state;
 	}
-
-	@Override
-	public ParserResponse getParserResponse() {
-		return response;
-	}
 	
 	@Override
-    public void addMessage(Severity severity, String message) {
-    	((ParserResponseImpl) response).addMessage(severity, message);
+	public UserHook<StateParsedLifecycleEvent> getDefaultHook() {
+		return null;
+	}
+
+	//---------------------------------------------------------------------------------------------//
+	//                                        PUBLIC EXT                                           //
+	//---------------------------------------------------------------------------------------------//
+
+	public ParserResponse getParserResponse() {
+    	return response;
     }
 
 }

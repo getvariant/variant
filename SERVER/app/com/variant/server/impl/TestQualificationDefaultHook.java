@@ -1,15 +1,18 @@
 package com.variant.server.impl;
-/*
-import java.util.Random;
 
 import com.typesafe.config.Config;
 import com.variant.core.UserHook;
 import com.variant.core.schema.Hook;
-import com.variant.server.api.TestQualificationLifecycleEvent;
+import com.variant.server.api.hook.PostResultFactory;
+import com.variant.server.api.hook.TestQualificationLifecycleEvent;
+import com.variant.server.api.hook.TestQualificationLifecycleEventPostResult;
 
 class TestQualificationDefaultHook implements UserHook<TestQualificationLifecycleEvent> {
-
-	private static Random rand = new Random(System.currentTimeMillis());
+	
+	/**
+	 * Package visibility
+	 */
+	TestQualificationDefaultHook() {}
 	
 	@Override
 	public Class<TestQualificationLifecycleEvent> getLifecycleEventClass() {
@@ -17,13 +20,7 @@ class TestQualificationDefaultHook implements UserHook<TestQualificationLifecycl
 	}
 
 	@Override
-	public Hook getSchemaHook() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void init(Config arg0) throws Exception {}
+	public void init(Config config, Hook hook) throws Exception {}
 
 	/**
 	 * Default test qualifier. Qualify all.
@@ -32,25 +29,13 @@ class TestQualificationDefaultHook implements UserHook<TestQualificationLifecycl
 	 * @param test
 	 * @param state
 	 * 
-	 *
+	 */
 	@Override
 	public UserHook.PostResult post(TestQualificationLifecycleEvent event) throws Exception {
 		
-		TestQualificationLifestyleEvent. resp = chain.mkResponse(TestQualificationLifecycleEvent.class);				
-		resp.setQualified(true);
-		
-	}
-
-	@Override
-	public void post(Chain<TestQualificationLifecycleEvent> chain) throws Exception {
-		
-		if (!(chain instanceof TestQualificationLifecycleEvent.Chain)) {
-			throw new RuntimeException("Wrong argument type");
-		}
-		
-		
-		
+		TestQualificationLifecycleEventPostResult result = PostResultFactory.mkPostResult(event);				
+		result.setQualified(true);
+		return result;
 	}
 
 }
-*/

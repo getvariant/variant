@@ -1,4 +1,6 @@
-package com.variant.server.api;
+package com.variant.server.api.hook;
+
+import com.variant.server.api.StateRequest;
 
 
 

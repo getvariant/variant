@@ -1,10 +1,10 @@
 package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
+import com.variant.core.UserHook;
 import com.variant.core.schema.Hook;
 import com.variant.server.api.Session;
-import com.variant.server.api.TestQualificationLifecycleEvent;
-import com.variant.server.api.UserHook;
+import com.variant.server.api.hook.TestQualificationLifecycleEvent;
 
 /**
  * Do nothing. Tests should be qualified by default.

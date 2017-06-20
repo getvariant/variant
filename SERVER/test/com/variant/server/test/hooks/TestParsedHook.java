@@ -1,10 +1,10 @@
 package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
+import com.variant.core.UserHook;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.TestParsedLifecycleEvent;
-import com.variant.server.api.UserHook;
 
 public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
 	

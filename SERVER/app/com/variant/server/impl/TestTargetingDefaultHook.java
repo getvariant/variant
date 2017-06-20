@@ -1,29 +1,49 @@
-package com.variant.server.runtime;
-/*
+package com.variant.server.impl;
+
 import java.util.Random;
 
+import com.typesafe.config.Config;
+import com.variant.core.UserHook;
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.ServerException;
-import com.variant.server.api.Session;
+import com.variant.server.api.hook.PostResultFactory;
+import com.variant.server.api.hook.TestTargetingLifecycleEvent;
+import com.variant.server.api.hook.TestTargetingLifecycleEventPostResult;
 import com.variant.server.boot.ServerErrorLocal;
 
-class TestTargeterDefault {
-
-	private static Random rand = new Random(System.currentTimeMillis());
+class TestTargetingDefaultHook implements UserHook<TestTargetingLifecycleEvent> {
 	
+	private static Random rand = new Random(System.currentTimeMillis());
+
 	/**
-	 * Default random targeter. Ignore experiences undefined on this state.
-	 * There should be no state where there are no defined experiences - parse error.
+	 * Package visibility
+	 */
+	TestTargetingDefaultHook() {}
+	
+	@Override
+	public Class<TestTargetingLifecycleEvent> getLifecycleEventClass() {
+		return TestTargetingLifecycleEvent.class;
+	}
+
+	@Override
+	public void init(Config config, Hook hook) throws Exception {}
+
+	/**
+	 * Default test qualifier. Qualify all.
 	 * 
 	 * @param session
 	 * @param test
 	 * @param state
 	 * 
-	 * @return
-	 *
-	Experience target(Session session, Test test, State state) {
+	 */
+	@Override
+	public TestTargetingLifecycleEventPostResult post(TestTargetingLifecycleEvent event) throws Exception {
+		
+		Test test = event.getTest();
+		State state = event.getState();
 
 		double weightSum = 0;
 		for (Experience e: test.getExperiences()) {
@@ -43,16 +63,19 @@ class TestTargeterDefault {
 		
 		double randVal = rand.nextDouble() * weightSum;
 		weightSum = 0;
-		Experience lastExperience = null;
 		for (Experience e: test.getExperiences()) {
 			if (!e.isDefinedOn(state)) continue;
-			lastExperience = e;
 			weightSum += e.getWeight().doubleValue();
-			if (randVal < weightSum) return e;
+			if (randVal < weightSum) {
+				TestTargetingLifecycleEventPostResult result = PostResultFactory.mkPostResult(event);
+				result.setTargetedExperience(e);
+				return result;
+			}
 		}
-		// Should never happen.
-		return lastExperience;
+		
+		// Should never happen.						
+		throw new ServerException.Internal("Error in default targeter.");
 	}
 
 }
-*/
+

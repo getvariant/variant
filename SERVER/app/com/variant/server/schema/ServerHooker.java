@@ -12,13 +12,14 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValue;
 import com.variant.core.CommonError;
 import com.variant.core.LifecycleEvent;
+import com.variant.core.UserHook;
 import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParseTimeLifecycleEvent;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.server.api.ServerException;
-import com.variant.server.api.TestScopedLifecycleEvent;
-import com.variant.server.api.UserHook;
+import com.variant.server.api.hook.PostResultFactory;
+import com.variant.server.api.hook.TestScopedLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
 
 /**
@@ -122,39 +123,48 @@ public class ServerHooker implements UserHooker {
 	 * @return the hook passed in as argument.
 	 */
 	@Override
-	public LifecycleEvent post(LifecycleEvent event) {
+	public UserHook.PostResult post(LifecycleEvent event) {
 		
-		for (Map.Entry<Hook, HookMapEntry> entry : hookMap.entrySet()) {
-			Hook schemaHook = entry.getKey();
-			HookMapEntry hme = entry.getValue();
-			
-			// Only post subscribers to the event type.
-			if (hme.lceClass.isAssignableFrom(event.getClass())) {
+		try {
+
+			for (Map.Entry<Hook, HookMapEntry> entry : hookMap.entrySet()) {
+				Hook schemaHook = entry.getKey();
+				HookMapEntry hme = entry.getValue();
 				
+				// Only post subscribers to the event type.
+				if (hme.lceClass.isAssignableFrom(event.getClass())) {
+					
 				// Test scoped events only post for hooks defined within the scope of the respective test.
 				if (event instanceof TestScopedLifecycleEvent &&
 					!((TestScopedLifecycleEvent) event).getTest().equals(((Hook.Test)schemaHook).getTest())) continue;
 				
-				try {
 					UserHook<LifecycleEvent> hook = hme.hookClass.newInstance();
 					Config config = hme.config == null ? null : hme.config.atKey("init");
 					hook.init(config, schemaHook);
-					hook.post(event);
+					UserHook.PostResult result = hook.post(event);
 				
-				} catch (ServerException.User e) {
-					throw e;
-				
-				} catch (Exception e) {
-					LOG.error(CommonError.HOOK_UNHANDLED_EXCEPTION.asMessage(UserHook.class.getName(), e.getMessage()), e);
-					throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
-				}
-
-				if (LOG.isTraceEnabled())
-					LOG.trace("Posted user hook [" + schemaHook.getName() + "] with [" + event + "]");
-				
+					if (LOG.isTraceEnabled())
+						LOG.trace("Posted user hook [" + schemaHook.getName() + "] with [" + event + "]. Result: [" + result + "]");
+					
+					// If user hook returned a result, clip the chain.
+					if (result != null) return result;
+	
+				}	
+	
 			}
-		}
-		return event;
+			
+			// Either no hooks listening for this event, or none cared to return a result.
+			// Post default hook.
+			return event.getDefaultHook().post(event);
+
+		} catch (ServerException.User e) {
+			throw e;
+		
+		} catch (Exception e) {
+			LOG.error(CommonError.HOOK_UNHANDLED_EXCEPTION.asMessage(UserHook.class.getName(), e.getMessage()), e);
+			throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
+		}				
+
 	}
 
 }

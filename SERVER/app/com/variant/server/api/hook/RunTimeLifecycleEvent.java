@@ -1,4 +1,4 @@
-package com.variant.server.api;
+package com.variant.server.api.hook;
 
 import com.variant.core.LifecycleEvent;
 import com.variant.core.schema.Schema;

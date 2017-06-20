@@ -1,7 +1,6 @@
-package com.variant.server.api;
+package com.variant.core;
 
 import com.typesafe.config.Config;
-import com.variant.core.LifecycleEvent;
 import com.variant.core.schema.Hook;
 
 /**
@@ -50,8 +49,11 @@ public interface UserHook<E extends LifecycleEvent> {
 	 * 
 	 * @param event The posting event. May be further examined for details of the posting life cycle event.
 	 * 
-     * @since 0.5
+     * @since 0.7
 	 */
-	public void post(E event) throws Exception;
+	public PostResult post(E event) throws Exception;
 
+	
+	///TODO
+	public interface PostResult {}
 }

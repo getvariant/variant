@@ -1,16 +1,15 @@
 package com.variant.server.impl;
 
+import com.variant.core.UserHook;
 import com.variant.core.schema.Test;
 import com.variant.server.api.Session;
 import com.variant.server.api.StateRequest;
-import com.variant.server.api.TestQualificationLifecycleEvent;
+import com.variant.server.api.hook.TestQualificationLifecycleEvent;
 
 public class TestQualificationLifecycleEventImpl  implements TestQualificationLifecycleEvent {
 	
 	private Session session;
 	private Test test;
-	private boolean qualified = true;
-	private boolean removeFromTT = false;
 	
 	public TestQualificationLifecycleEventImpl(Session session, Test test) {
 		this.session = session;
@@ -21,16 +20,6 @@ public class TestQualificationLifecycleEventImpl  implements TestQualificationLi
 	public Test getTest() {
 		return test;
 	}
-
-	@Override
-	public boolean isQualified() {
-		return qualified;
-	}
-	
-	@Override
-	public boolean isRemoveFromTargetingTracker() {
-		return removeFromTT;
-	}
 	
 	@Override
 	public StateRequest getStateRequest() {
@@ -38,13 +27,8 @@ public class TestQualificationLifecycleEventImpl  implements TestQualificationLi
 	}
 
 	@Override
-	public void setQualified(boolean qualified) {
-		this.qualified = qualified;
-	}
-
-	@Override
-	public void setRemoveFromTargetingTracker(boolean remove) {
-		removeFromTT = remove;
+	public UserHook<TestQualificationLifecycleEvent> getDefaultHook() {
+		return new TestQualificationDefaultHook();
 	}
 
 }

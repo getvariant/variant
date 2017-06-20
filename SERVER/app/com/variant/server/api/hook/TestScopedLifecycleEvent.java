@@ -1,6 +1,7 @@
-package com.variant.server.api;
+package com.variant.server.api.hook;
 
 import com.variant.core.schema.Test;
+import com.variant.server.api.StateRequest;
 
 /**
  * <p>Super-interface for all run time life cycle event types .

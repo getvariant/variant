@@ -14,4 +14,8 @@ package com.variant.core;
  * @since 0.5
  */
 
-public interface LifecycleEvent {}
+public interface LifecycleEvent {
+	
+	///TODO
+	public UserHook getDefaultHook();
+}
