@@ -8,32 +8,32 @@ import com.variant.core.ServerError._
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.Connection
 import com.variant.server.impl.SessionImpl
+import com.variant.server.boot.VariantServer
+import com.variant.server.conn.SessionStore
 
 
 abstract class VariantController extends Controller {
 
    val connStore: ConnectionStore
+   val ssnStore: SessionStore
    
    private val logger = Logger(this.getClass)	
 
    /**
     * Parse SCID
     * SCID is Session id, followed by Conn ID, separated by :
-    */
+    *
    protected def parseScid(sid:String) : (String,String) = {
       val tokens = sid.split("\\.")
       if (tokens.length != 2) throw new ServerException.Remote(InvalidSCID, sid)
       (tokens(0),tokens(1))
    }
+   */
    
    /**
     * Lookup connection by SCID. Return user error if none.
     */
-   protected def lookupConnection(scid: String): Connection = {
-
-      val (sid, cid) = parseScid(scid)
-
-      // Lookup connection
+   protected def lookupConnection(cid: String): Connection = {
       val result = connStore.get(cid)      
       if (!result.isDefined) {
          logger.debug(s"Not found connection [$cid]")      
@@ -47,26 +47,22 @@ abstract class VariantController extends Controller {
    /**
     * Lookup session by SCID
     */
-   protected def lookupSession(scid: String): Option[(Connection, SessionImpl)] = {
+   protected def lookupSession(sid: String): Option[SessionImpl] = {
 
-      val conn = lookupConnection(scid)      
-      val (sid, cid) = parseScid(scid)
-
-      val result = conn.getSession(sid)
+      val result = ssnStore.get(sid)
       if (result.isDefined) {
          logger.debug(s"Found session [$sid]")
-         Some(conn, result.get.asInstanceOf[SessionImpl])
       }
       else {
          logger.debug(s"Not found session [$sid]")
-         None
       }
+      result
    }
    
    /**
     * Most calls will have the same body structure.
     */
-   protected def parseBody(body: String): (Connection, SessionImpl) = {
+   protected def parseBody(body: String): (SessionImpl) = {
 
       val json = {
          try {
@@ -94,7 +90,7 @@ abstract class VariantController extends Controller {
 
       logger.debug(s"Found connection [$cid]")      
 
-      (conn.get, SessionImpl(ssnJson.get))
+      SessionImpl(ssnJson.get, conn.get)
    }
 
 }

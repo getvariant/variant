@@ -17,7 +17,7 @@ import com.variant.server.conn.Connection
 import play.api.mvc.MultipartFormData.ParseError
 
 //@Singleton -- Is this for non-shared state controllers?
-class SessionController @Inject() (override val connStore: ConnectionStore, server: VariantServer) extends VariantController  {
+class SessionController @Inject() (override val connStore: ConnectionStore, override val ssnStore: SessionStore,server: VariantServer) extends VariantController  {
    
       private val logger = Logger(this.getClass)	
        
@@ -30,8 +30,8 @@ class SessionController @Inject() (override val connStore: ConnectionStore, serv
       req.contentType match {
          
          case Some(ct) if ct.equalsIgnoreCase("text/plain") => 
-            val (conn, ssn) = parseBody(req.body.asText.get)
-            conn.addSession(ssn)
+            val ssn = parseBody(req.body.asText.get)
+            ssnStore.put(ssn)
             Ok
          
          case _ => ServerErrorRemote(BadContentType).asResult()
@@ -44,13 +44,12 @@ class SessionController @Inject() (override val connStore: ConnectionStore, serv
     * test with:
 curl -v -X GET http://localhost:9000/variant/session/SID
     */
-   def get(scid: String) = VariantAction {
+   def get(sid: String) = VariantAction {
       
-      val (cid, sid) = parseScid(scid)
-      val result = lookupSession(scid)
+      val result = lookupSession(sid)
       
       if (result.isDefined) {
-         val (conn, ssn) = result.get
+         val ssn = result.get
          logger.debug(s"Found session [$sid]")
          val response = JsObject(Seq(
             "session" -> JsString(ssn.toJson)

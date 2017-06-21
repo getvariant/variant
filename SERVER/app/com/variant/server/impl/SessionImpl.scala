@@ -28,27 +28,29 @@ object SessionImpl {
    /**
     * Server session from core session.
     */
-   def apply(coreSession: CoreSession) = new SessionImpl(coreSession)
+   def apply(coreSession: CoreSession, conn: Connection) = new SessionImpl(coreSession, conn)
 
    /**
     * Server session deserialized from core session's JSON.
     */
-   def apply(json: String) = new SessionImpl(json)
+   def apply(json: String, connection: Connection) = new SessionImpl(json, connection)
 
    /**
     * New server session with nothing in it, but the SID - good for tests.
     */
-   def empty(sid: String) = new SessionImpl(new CoreSession(sid, VariantServer.server.schema.get))
+   def empty(sid: String, conn: Connection) = {
+      new SessionImpl(new CoreSession(sid, VariantServer.server.schema.get), conn)
+   }
 }
 
 /**
  * Construct from session ID.
  */
 //class SessionImpl(val json: String) extends Session {
-class SessionImpl(val coreSession: CoreSession) extends Session {
+class SessionImpl(val coreSession: CoreSession, val connection: Connection) extends Session {
    
-   def this(json: String) {
-      this(CoreSession.fromJson(json, VariantServer.server.schema.get))
+   def this(json: String, connection: Connection) {
+      this(CoreSession.fromJson(json, VariantServer.server.schema.get), connection)
    }
    
    private[this] val attrMap = mutable.HashMap[java.lang.String, java.lang.String]()

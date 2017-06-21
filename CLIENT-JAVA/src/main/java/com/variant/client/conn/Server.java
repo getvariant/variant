@@ -186,7 +186,7 @@ public class Server {
 	}
 
 	/**
-	 * Save core session on the remote server.
+	 * Save foreground session on server.
 	 */
 	public void sessionSave(final Session ssn) {
 		

@@ -23,7 +23,7 @@ import com.variant.server.api.Session
 import com.variant.server.impl.SessionImpl
 
 //@Singleton -- Is this for non-shared state controllers?
-class EventController @Inject() (override val connStore: ConnectionStore, server: VariantServer) extends VariantController  {
+class EventController @Inject() (override val connStore: ConnectionStore, override val ssnStore: SessionStore) extends VariantController  {
    
    private val logger = Logger(this.getClass)	
  
@@ -39,14 +39,13 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 
       def parse(json: JsValue): Result = {
          
-         val scid = (json \ "sid").asOpt[String]
+         val sid = (json \ "sid").asOpt[String]
          val name = (json \ "name").asOpt[String]
          val value = (json \ "value").asOpt[String]
          val timestamp = (json \ "ts").asOpt[Long]
          val params = (json \ "params").asOpt[List[JsObject]]
 
-         // 400 if no required fields 
-         if (scid.isEmpty)
+         if (sid.isEmpty)
             throw new ServerException.Remote(MissingProperty, "sid")   
 
          if (name.isEmpty)
@@ -55,8 +54,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          if (value.isEmpty)
             throw new ServerException.Remote(MissingProperty, "value")
 
-         val (cid, sid) = parseScid(scid.get)
-         val (conn, ssn) = lookupSession(scid.get).getOrElse {
+         val ssn = lookupSession(sid.get).getOrElse {
             throw new ServerException.Remote(SessionExpired)
          }
          

@@ -23,7 +23,7 @@ import com.variant.server.impl.SessionImpl
 import com.variant.server.impl.StateRequestImpl
 
 //@Singleton -- Is this for non-shared state controllers?
-class RequestController @Inject() (override val connStore: ConnectionStore) extends VariantController  {
+class RequestController @Inject() (override val connStore: ConnectionStore, override val ssnStore: SessionStore) extends VariantController  {
    
    private val logger = Logger(this.getClass)	
    private lazy val schema = VariantServer.server.schema.get
@@ -38,36 +38,33 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     */
    def create() = VariantAction { req =>
 
-      def parse(json: JsValue): (Connection, Session, State) = {
+      def parsePayload(json: JsValue): (Session, State) = {
          
-         val scid = (json \ "sid").asOpt[String]
+         val sid = (json \ "sid").asOpt[String]
          val state = (json \ "state").asOpt[String]
          
-         if (scid.isEmpty)
+         if (sid.isEmpty)
             throw new ServerException.Remote(MissingProperty, "sid")
    
          if (state.isEmpty) 
             throw new ServerException.Remote(MissingProperty, "state")
 
-      val (cid, sid) = parseScid(scid.get)
-      val result = lookupSession(scid.get)
+         val result = lookupSession(sid.get)
       
-      if (result.isDefined) {
-         val (conn, ssn) = result.get
-         logger.debug(s"Found session [$sid]")
-         (result.get._1, result.get._2, schema.getState(state.get))
-      }
-      else
-         throw new ServerException.Remote(SessionExpired)
-
+         if (result.isDefined) {
+            val ssn = result.get
+            logger.debug(s"Found session [$sid]")
+            (ssn, schema.getState(state.get))
+         }
+         else
+            throw new ServerException.Remote(SessionExpired)
       }
       
       req.contentType match {
          case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
             try {
-               val (conn, ssn, state) = parse(Json.parse(req.body.asText.get))
+               val (ssn, state) = parsePayload(Json.parse(req.body.asText.get))
                VariantServer.server.runtime.targetForState(ssn, state)
-               conn.addSession(ssn)
                val response = JsObject(Seq(
                   "session" -> JsString(ssn.asInstanceOf[SessionImpl].coreSession.toJson())
                ))
@@ -88,7 +85,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     */
    def commit() = VariantAction(parse.text(4896)) { req =>
 
-         val (conn, ssn) = parseBody(req.body)
+         val ssn = parseBody(req.body)
          val stateReq = ssn.getStateRequest
 	      val sve = stateReq.getStateVisitedEvent
          
@@ -102,7 +99,6 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 	   		// Trigger state visited event
    	   	ssn.triggerEvent(sve);
    	   	stateReq.asInstanceOf[StateRequestImpl].commit(); 
-   	   	conn.addSession(ssn)
          }
          val response = JsObject(Seq(
             "session" -> JsString(ssn.coreSession.toJson())
