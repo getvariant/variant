@@ -23,7 +23,10 @@ import com.variant.server.impl.SessionImpl
 import com.variant.server.impl.StateRequestImpl
 
 //@Singleton -- Is this for non-shared state controllers?
-class RequestController @Inject() (override val connStore: ConnectionStore, override val ssnStore: SessionStore) extends VariantController  {
+class RequestController @Inject() (
+      override val connStore: ConnectionStore, 
+      override val ssnStore: SessionStore, 
+      server: VariantServer) extends VariantController  {
    
    private val logger = Logger(this.getClass)	
    private lazy val schema = VariantServer.server.schema.get
@@ -38,44 +41,27 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     */
    def create() = VariantAction { req =>
 
-      def parsePayload(json: JsValue): (Session, State) = {
-         
-         val sid = (json \ "sid").asOpt[String]
-         val state = (json \ "state").asOpt[String]
-         
-         if (sid.isEmpty)
-            throw new ServerException.Remote(MissingProperty, "sid")
-   
-         if (state.isEmpty) 
-            throw new ServerException.Remote(MissingProperty, "state")
+      val bodyJson = req.body.asJson.getOrElse {
+         throw new ServerException.Remote(EmptyBody)
+      }      
+      
+      val sid = (bodyJson \ "sid").asOpt[String]
+      val state = (bodyJson).asOpt[String]
+      
+      if (sid.isEmpty)
+         throw new ServerException.Remote(MissingProperty, "sid")
 
-         val result = lookupSession(sid.get)
-      
-         if (result.isDefined) {
-            val ssn = result.get
-            logger.debug(s"Found session [$sid]")
-            (ssn, schema.getState(state.get))
-         }
-         else
-            throw new ServerException.Remote(SessionExpired)
-      }
-      
-      req.contentType match {
-         case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
-            try {
-               val (ssn, state) = parsePayload(Json.parse(req.body.asText.get))
-               VariantServer.server.runtime.targetForState(ssn, state)
-               val response = JsObject(Seq(
-                  "session" -> JsString(ssn.asInstanceOf[SessionImpl].coreSession.toJson())
-               ))
-              Ok(response.toString)
-            }
-            catch {
-               case e: ServerException => throw e
-               case t: Throwable => ServerErrorRemote(JsonParseError).asResult(t.getMessage)
-            }
-         case _ => ServerErrorRemote(BadContentType).asResult()
-      }
+      if (state.isEmpty) 
+         throw new ServerException.Remote(MissingProperty, "state")
+
+      val ssn = ssnStore.getOrBust(sid.get)
+
+      VariantServer.server.runtime.targetForState(ssn, server.schema.get.getState(state.get))
+
+      val response = JsObject(Seq(
+         "session" -> JsString(ssn.asInstanceOf[SessionImpl].coreSession.toJson())
+      ))
+      Ok(response.toString)
    }
 
    /**
@@ -83,27 +69,38 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     * We override the default parser because Play sets it to ignore for the DELETE operation.
     * (More discussion: https://github.com/playframework/playframework/issues/4606)
     */
-   def commit() = VariantAction(parse.text(4896)) { req =>
+   def commit() = VariantAction { req =>
 
-         val ssn = parseBody(req.body)
-         val stateReq = ssn.getStateRequest
-	      val sve = stateReq.getStateVisitedEvent
-         
-   		// We won't have an event if nothing is instrumented on this state
-	      if (sve != null) {
-		      sve.getParameterMap().put("$REQ_STATUS", ssn.getStateRequest.getStatus.name);
-   			// log all resolved state params as event params.
-	      	for ((key, value) <- ssn.getStateRequest.getResolvedParameters()) {
-			      sve.getParameterMap().put(key, value);				
-		      }
-	   		// Trigger state visited event
-   	   	ssn.triggerEvent(sve);
-   	   	stateReq.asInstanceOf[StateRequestImpl].commit(); 
-         }
-         val response = JsObject(Seq(
-            "session" -> JsString(ssn.coreSession.toJson())
-         )).toString()
-        Ok(response)
+      val bodyJson = req.body.asJson.getOrElse {
+         throw new ServerException.Remote(EmptyBody)
+      }
+
+      val ssnJson = (bodyJson \ "ssn").asOpt[String]
+               
+      if (ssnJson.isEmpty) 
+         throw new ServerException.Remote(MissingProperty, "ssn")
+   
+      val sid = (bodyJson \ "ssn" \ "sid").asOpt[String]
+      val ssn = ssnStore.getOrBust(sid.get)
+      val stateReq = ssn.getStateRequest
+      val sve = stateReq.getStateVisitedEvent
+      
+		// We won't have an event if nothing is instrumented on this state
+      if (sve != null) {
+	      sve.getParameterMap().put("$REQ_STATUS", ssn.getStateRequest.getStatus.name);
+			// log all resolved state params as event params.
+      	for ((key, value) <- ssn.getStateRequest.getResolvedParameters()) {
+		      sve.getParameterMap().put(key, value);				
+	      }
+   		// Trigger state visited event
+	   	ssn.triggerEvent(sve);
+	   	stateReq.asInstanceOf[StateRequestImpl].commit(); 
+      }
+      val response = JsObject(Seq(
+         "session" -> JsString(ssn.coreSession.toJson)
+      )).toString()
+   
+      Ok(response)
    }
 
 }

@@ -10,87 +10,17 @@ import com.variant.server.conn.Connection
 import com.variant.server.impl.SessionImpl
 import com.variant.server.boot.VariantServer
 import com.variant.server.conn.SessionStore
+import play.api.mvc.Request
+import play.api.mvc.AnyContent
+import com.variant.server.boot.ServerErrorRemote
 
-
+/**
+ * All Variant controllers inherit from this.
+ */
 abstract class VariantController extends Controller {
 
    val connStore: ConnectionStore
    val ssnStore: SessionStore
    
-   private val logger = Logger(this.getClass)	
-
-   /**
-    * Parse SCID
-    * SCID is Session id, followed by Conn ID, separated by :
-    *
-   protected def parseScid(sid:String) : (String,String) = {
-      val tokens = sid.split("\\.")
-      if (tokens.length != 2) throw new ServerException.Remote(InvalidSCID, sid)
-      (tokens(0),tokens(1))
-   }
-   */
-   
-   /**
-    * Lookup connection by SCID. Return user error if none.
-    */
-   protected def lookupConnection(cid: String): Connection = {
-      val result = connStore.get(cid)      
-      if (!result.isDefined) {
-         logger.debug(s"Not found connection [$cid]")      
-         throw new ServerException.Remote(UnknownConnection, cid)
-      }
-
-      logger.debug(s"Found connection [$cid]")      
-      result.get
-   }
-
-   /**
-    * Lookup session by SCID
-    */
-   protected def lookupSession(sid: String): Option[SessionImpl] = {
-
-      val result = ssnStore.get(sid)
-      if (result.isDefined) {
-         logger.debug(s"Found session [$sid]")
-      }
-      else {
-         logger.debug(s"Not found session [$sid]")
-      }
-      result
-   }
-   
-   /**
-    * Most calls will have the same body structure.
-    */
-   protected def parseBody(body: String): (SessionImpl) = {
-
-      val json = {
-         try {
-            Json.parse(body)
-         }
-         catch {
-            case t: Throwable => throw new ServerException.Remote(JsonParseError, t.getMessage);
-         }
-      }
-      val cid = (json \ "cid").asOpt[String]
-      val ssnJson = (json \ "ssn").asOpt[String]
-         
-      if (cid.isEmpty)
-         throw new ServerException.Remote(MissingProperty, "cid")
-   
-      if (ssnJson.isEmpty) 
-         throw new ServerException.Remote(MissingProperty, "ssn")
-
-      // Lookup connection
-      val conn = connStore.get(cid.get)      
-      if (!conn.isDefined) {
-         logger.debug(s"Not found connection [${cid.get}]")      
-            throw new ServerException.Remote(UnknownConnection, cid.get)
-      }
-
-      logger.debug(s"Found connection [$cid]")      
-
-      SessionImpl(ssnJson.get, conn.get)
-   }
-
+   // Anything?
 }

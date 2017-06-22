@@ -66,7 +66,7 @@ class RequestTest extends BaseSpecWithServer {
       "create and commit new state request" in {
 
          // Get the session.
-         var resp = route(app, FakeRequest(GET, context + "/session/" + scid(sid, cid))).get
+         var resp = route(app, FakeRequest(GET, context + "/session/" + sid)).get
          status(resp) mustBe OK
          var respAsJson = contentAsJson(resp)
          val coreSsn1 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
@@ -75,7 +75,7 @@ class RequestTest extends BaseSpecWithServer {
          
          // Create state request object.
          val reqBody1 = Json.obj(
-            "sid" -> scid(sid, cid),
+            "sid" -> sid,
             "state" -> "state2"
             ).toString
 

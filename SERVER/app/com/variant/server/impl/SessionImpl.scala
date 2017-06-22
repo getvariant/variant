@@ -38,7 +38,8 @@ object SessionImpl {
    /**
     * New server session with nothing in it, but the SID - good for tests.
     */
-   def empty(sid: String, conn: Connection) = {
+   def empty(sid: String) = {
+      val conn = new Connection(VariantServer.server.schema.get)
       new SessionImpl(new CoreSession(sid, VariantServer.server.schema.get), conn)
    }
 }
@@ -46,8 +47,7 @@ object SessionImpl {
 /**
  * Construct from session ID.
  */
-//class SessionImpl(val json: String) extends Session {
-class SessionImpl(val coreSession: CoreSession, val connection: Connection) extends Session {
+class SessionImpl(var coreSession: CoreSession, val connection: Connection) extends Session {
    
    def this(json: String, connection: Connection) {
       this(CoreSession.fromJson(json, VariantServer.server.schema.get), connection)
@@ -55,8 +55,6 @@ class SessionImpl(val coreSession: CoreSession, val connection: Connection) exte
    
    private[this] val attrMap = mutable.HashMap[java.lang.String, java.lang.String]()
 
-   private[this] var coreStateRequest = null;
-   
    /*----------------------------------------------------------------------------------------*/
    /*                                        PUBLIC                                          */
    /*----------------------------------------------------------------------------------------*/

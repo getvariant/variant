@@ -21,7 +21,6 @@ class ServerTest extends BaseSpecWithServer {
       }
     
       "send splash on a root request" in  {
-         println(context)
          val resp = route(app, FakeRequest(GET, context)).get
          status(resp) mustBe OK
          println(contentAsString(resp))

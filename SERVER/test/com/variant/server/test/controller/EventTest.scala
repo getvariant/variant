@@ -120,6 +120,7 @@ class EventTest extends BaseSpecWithServer {
       }
 
       var ssn: Session = null;
+      
       "obtain a session" in {
          val sid = newSid()
          // PUT session.
@@ -131,12 +132,12 @@ class EventTest extends BaseSpecWithServer {
          val ssnResp = route(app, FakeRequest(PUT, context + "/session").withTextBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
-         ssn = connStore.get(connId).get.getSession(sid).get
+         ssn = ssnStore.get(sid).get
       }
       
       "return  400 and error on POST with non-existent session" in {
          
-         val eventBody = body.expand("sid" -> scid("foo", connId))
+         val eventBody = body.expand("sid" -> "foo")
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
@@ -148,7 +149,7 @@ class EventTest extends BaseSpecWithServer {
 
       "return 400 and error on POST with missing param name" in {
 
-         val eventBody = bodyNoParamName.expand("sid" -> scid(ssn.getId, connId))
+         val eventBody = bodyNoParamName.expand("sid" -> ssn.getId)
          val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
          status(resp)mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
@@ -163,7 +164,7 @@ class EventTest extends BaseSpecWithServer {
          val timestamp = System.currentTimeMillis()
          val eventName = Random.nextString(5)
          val eventValue = Random.nextString(5)
-         val eventBody = body.expand("sid" -> scid(ssn.getId, connId), "ts" -> timestamp, "name" -> eventName, "value" -> eventValue)
+         val eventBody = body.expand("sid" -> ssn, "ts" -> timestamp, "name" -> eventName, "value" -> eventValue)
          val eventResp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          status(eventResp) mustBe OK

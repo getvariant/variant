@@ -2,19 +2,15 @@ package com.variant.server.conn;
 
 import java.util.Map
 import java.util.Set
-
 import com.variant.server.api.ConfigKeys._
-
 import javax.inject.Inject
 import javax.inject.Singleton
-
 import play.api.Logger
-
 import com.variant.server.boot.VariantServer
-
 import scala.collection.concurrent.TrieMap
-
 import com.typesafe.config.Config
+import com.variant.server.api.ServerException
+import com.variant.core.ServerError
 
 /**
  * Connection Store.
@@ -37,12 +33,11 @@ trait ConnectionStore {
 	 * Retrieve a connection from this store by its ID.
 	 */
 	def get(id: String) : Option[Connection]
-	
+		
 	/**
-	 * Close a connection and remove it from this store by its ID.
+	 * Retrieve a connection thsi this store or throw an exception if it doesn't exist.
 	 */
-	def close(id: String): Option[Connection]
-	
+	def getOrBust(cid: String): Connection
 }
 
 @Singleton
@@ -66,14 +61,19 @@ class ConnectionStoreImpl @Inject() (server: VariantServer) extends ConnectionSt
 	
 	/**
 	 */
-   override def get(id: String): Option[Connection] = {
-      connMap.get(id)
-	}
+   override def get(cid: String): Option[Connection] = {
+      connMap.get(cid)
+   }
    
    /**
-    */
-   override def close(id: String): Option[Connection] = {
-      connMap.remove(id).map { x => x.close(); x }
-   }
+	 */
+	override def getOrBust(cid: String): Connection = {
+      val result	= get(cid).getOrElse {
+         logger.debug(s"Not found connection [${cid}]")      
+         throw new ServerException.Remote(ServerError.UnknownConnection, cid)
+      }
+      logger.debug(s"Not found connection [${cid}]")            
+      result
+	}
 
 }

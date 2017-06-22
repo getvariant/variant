@@ -7,6 +7,9 @@ import com.variant.server.api.Session
 import com.variant.server.impl.SessionImpl
 import javax.inject.Singleton
 import com.variant.server.boot.VariantServer
+import com.variant.core.session.CoreSession
+import com.variant.server.api.ServerException
+import com.variant.core.ServerError
 
 /**
  * 
@@ -14,16 +17,23 @@ import com.variant.server.boot.VariantServer
 trait SessionStore {
 
    /**
-    * Add or replace a session.
+    * Add or replace a session. If a server session with this session ID exists,
+    * its core session component is replaced. Otherwise, a new server session is
+    * created with this core session.
 	 */
-	def put(ssn: SessionImpl);
+	def put(coreSession: CoreSession, connection: Connection);
 	
 	/**
-	 * Get session by session ID
+	 * Get session by session ID, if exists
 	 */
 	def get(sid: String): Option[SessionImpl]
 
-  /**
+	/**
+	 * Get session by session ID or throw session expired user error
+	 */
+	def getOrBust(sid: String): SessionImpl
+
+	/**
    * Delete every sessions if predicate p applied to entry, is true.
 	*/
    def deleteIf(p: (Entry) => Boolean): Unit
@@ -74,8 +84,14 @@ import SessionStoreImpl._
 
    /**
 	 */
-	override def put(ssn: SessionImpl) {
-	   sessionMap.put(ssn.getId, new Entry(ssn))
+	override def put(coreSession: CoreSession, connection: Connection) {
+      val existingSession = sessionMap.get(coreSession.getId)
+      if (existingSession.isDefined) {
+         existingSession.get.session.coreSession = coreSession
+      }
+      else {
+   	   sessionMap.put(coreSession.getId, new Entry(SessionImpl(coreSession, connection)))
+      }
 	}
 	
 	/**
@@ -92,6 +108,17 @@ import SessionStoreImpl._
 		}
 	}
 
+	/**
+	 */
+	override def getOrBust(sid: String): SessionImpl = {
+      val result	= get(sid).getOrElse {
+         logger.debug(s"Not found session [${sid}]")      
+         throw new ServerException.Remote(ServerError.SessionExpired, sid)
+      }
+      logger.debug(s"Not found session [${sid}]")            
+      result
+	}
+	
   /**
 	*/
    def deleteIf(f: (Entry) => Boolean) {

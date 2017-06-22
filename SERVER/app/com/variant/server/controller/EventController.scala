@@ -54,9 +54,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          if (value.isEmpty)
             throw new ServerException.Remote(MissingProperty, "value")
 
-         val ssn = lookupSession(sid.get).getOrElse {
-            throw new ServerException.Remote(SessionExpired)
-         }
+         val ssn = ssnStore.getOrBust(sid.get)
          
          if (ssn.getStateRequest == null)
             throw new ServerException.Remote(UnknownState)   

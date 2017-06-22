@@ -39,7 +39,7 @@ object VariantAction extends ActionBuilder[Request] with Results {
                Future.successful(ServerErrorRemote(sre.error).asResult(sre.args:_*))
             case t: Throwable => 
                logger.error("Unexpected Internal Error", t);
-               Future.successful(ServerErrorRemote(ServerError.InternalError).asResult(t.getMessage))
+               Future.successful(ServerErrorRemote(ServerError.InternalError).asResult(t.getMessage))            
          }
       }
    }

@@ -52,14 +52,9 @@ curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
 curl -v -X DELETE http://localhost:9000/variant/connection/CID
     */
    def delete(cid: String) = VariantAction {
-      val conn = connStore.close(cid)
-      if (conn.isDefined) {
-         logger.info("Closed connection [%s] to schema [%s]".format(cid, conn.get.schema.getName()))
-         Ok
-      }
-      else {
-         logger.debug("Unable to close connection: schema ID [%s] does not exist".format(cid)) 
-         ServerErrorRemote(UnknownConnection).asResult(cid)
-      }
+      val conn = connStore.getOrBust(cid)
+      conn.close()
+      logger.info("Closed connection [%s] to schema [%s]".format(cid, conn.schema.getName))
+      Ok
    }
 }

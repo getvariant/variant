@@ -73,8 +73,9 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
 	}
 
    protected val context = app.configuration.getString("play.http.context").get
-   protected val connStore = app.injector.instanceOf[ConnectionStore]
    protected val server = app.injector.instanceOf[VariantServer]
+   protected val connStore = app.injector.instanceOf[ConnectionStore]
+   protected val ssnStore = app.injector.instanceOf[SessionStore]
  
    "Server must come up with a valid schema" in {
       server.schema.isDefined mustBe true 
@@ -96,12 +97,7 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
 			}
 		}
 	}
-   
-   /**
-    * 
-    */
-   protected def scid(sid: String, cid: String) = sid + "." + cid
-   
+      
    /**
     * Parse an 400 error body
     */
