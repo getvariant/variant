@@ -35,9 +35,15 @@ trait ConnectionStore {
 	def get(id: String) : Option[Connection]
 		
 	/**
-	 * Retrieve a connection thsi this store or throw an exception if it doesn't exist.
+	 * Retrieve a connection from this store or throw an exception if it doesn't exist.
 	 */
 	def getOrBust(cid: String): Connection
+	
+   /**
+	 * Delete a connection from this store or throw an exception if it doesn't exist.
+	 */
+	def deleteOrBust(cid: String): Connection
+
 }
 
 @Singleton
@@ -72,8 +78,20 @@ class ConnectionStoreImpl @Inject() (server: VariantServer) extends ConnectionSt
          logger.debug(s"Not found connection [${cid}]")      
          throw new ServerException.Remote(ServerError.UnknownConnection, cid)
       }
-      logger.debug(s"Not found connection [${cid}]")            
+      logger.debug(s"Found connection [${cid}]")            
       result
+	}
+
+   /**
+	 */
+	override def deleteOrBust(cid: String): Connection = {
+      val conn = connMap.remove(cid).getOrElse {
+         logger.debug(s"Not found connection [${cid}]")      
+         throw new ServerException.Remote(ServerError.UnknownConnection, cid)
+      }
+      conn.close()
+      logger.debug(s"Found connection [${cid}]")           
+      conn
 	}
 
 }

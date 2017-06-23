@@ -85,9 +85,16 @@ import SessionStoreImpl._
    /**
 	 */
 	override def put(coreSession: CoreSession, connection: Connection) {
-      val existingSession = sessionMap.get(coreSession.getId)
+      
+      val existingSession = get(coreSession.getId)
+      
       if (existingSession.isDefined) {
-         existingSession.get.session.coreSession = coreSession
+         // if session already exists, make sure the connection on which we're saving it
+         // matches the connection on which it was originally created.
+         if (!existingSession.get.connection.equals(connection))
+            throw new ServerException.Remote(ServerError.SessionExpired, coreSession.getId)
+         
+         existingSession.get.coreSession = coreSession
       }
       else {
    	   sessionMap.put(coreSession.getId, new Entry(SessionImpl(coreSession, connection)))

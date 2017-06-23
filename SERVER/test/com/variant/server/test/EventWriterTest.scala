@@ -62,8 +62,8 @@ class EventWriterTest extends BaseSpecWithServer {
          val ssnBody = Json.obj(
             "cid" -> connId,
             "ssn" -> sessionJson.expand("sid" -> sid)
-            ).toString
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withTextBody(ssnBody)).get
+            )
+         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
          
@@ -109,8 +109,8 @@ class EventWriterTest extends BaseSpecWithServer {
          val ssnBody = Json.obj(
             "cid" -> connId,
             "ssn" -> sessionJson.expand("sid" -> sid)
-            ).toString
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withTextBody(ssnBody)).get
+            )
+         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
 
@@ -147,8 +147,8 @@ class EventWriterTest extends BaseSpecWithServer {
          val ssnBody = Json.obj(
             "cid" -> connId,
             "ssn" -> sessionJson.expand("sid" -> sid)
-            ).toString
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withTextBody(ssnBody)).get
+            )
+         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
 
