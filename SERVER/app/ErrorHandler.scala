@@ -6,11 +6,13 @@ import play.api.mvc.Results._
 import play.api.routing.Router
 import scala.concurrent._
 import play.api.http.HttpErrorHandler
+import com.variant.core.ServerError
+import com.variant.server.boot.ServerErrorRemote
 
 /**
  * Custom error handler
  */
-
+/*
 @Singleton
 class ErrorHandler @Inject() (
     env: Environment,
@@ -51,8 +53,8 @@ class ErrorHandler @Inject() (
    }
 
 }
+*/
 
-/*
 @Singleton
 class ErrorHandler extends HttpErrorHandler {
 
@@ -61,17 +63,17 @@ class ErrorHandler extends HttpErrorHandler {
    def onClientError(request: RequestHeader, statusCode: Int, message: String) = {
       //logger.debug("Returning error to client: [%d] [%s]".format(statusCode, message))
       Future.successful({
-         println("******************************** client " + statusCode)
-         Status(statusCode)(message)
+         if (message.startsWith("Invalid Json"))
+            ServerErrorRemote(ServerError.JsonParseError).asResult(message.substring(0,message.indexOf('\n')))
+         else
+            Status(statusCode)(message)
       })
    }
 
    def onServerError(request: RequestHeader, exception: Throwable) = {
       //logger.error("Unhandled Server Error", exception)
       Future.successful({
-         println("******************************** server " + exception.getMessage)
          InternalServerError("A server error occurred: " + exception.getMessage)
       })
    }
 }
-*/

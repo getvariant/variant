@@ -30,7 +30,7 @@ object VariantAction extends ActionBuilder[Request] with Results {
       }
       else {
          // Delegate to the actual action
-         logger.trace("Delegated to concrete action");
+         logger.trace("Delegated request [%s %s]".format(request.method, request.path))
          try {
             block(request)
          }

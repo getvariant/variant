@@ -19,7 +19,7 @@ trait SessionStore {
    /**
     * Add or replace a session. If a server session with this session ID exists,
     * its core session component is replaced. Otherwise, a new server session is
-    * created with this core session.
+    * created with this core session on the supplied connection. 
 	 */
 	def put(coreSession: CoreSession, connection: Connection);
 	

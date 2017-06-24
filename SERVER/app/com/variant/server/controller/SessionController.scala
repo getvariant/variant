@@ -25,7 +25,10 @@ class SessionController @Inject() (
       private val logger = Logger(this.getClass)	
        
    /**
-    * PUT new session into the session store.
+    * Save a new session in the store. If the session exists, the supplied connection
+    * ID must match that with which it was created. Otherwise, the new session will be
+    * created in the supplied connection, so long as it's active. An expired session
+    * is the same as non-existent. 
     * @param cid Connection ID
     */
    def save() = VariantAction { req =>
@@ -33,22 +36,21 @@ class SessionController @Inject() (
       val bodyJson = req.body.asJson.getOrElse {
          throw new ServerException.Remote(EmptyBody)
       }
+            
+      val cid = (bodyJson \ "cid").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "cid")         
+      }
       
-      val cid = (bodyJson \ "cid").asOpt[String]
-      val ssnJson = (bodyJson \ "ssn").asOpt[String]
-         
-      if (cid.isEmpty)
-         throw new ServerException.Remote(MissingProperty, "cid")
-   
-      if (ssnJson.isEmpty) 
+      val ssnJson = (bodyJson \ "ssn").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "ssn")
-
+      }
+      
       // Lookup connection
-      val conn = connStore.getOrBust(cid.get)
+      val conn = connStore.getOrBust(cid)
 
       logger.debug(s"Found connection [$cid]")      
 
-      val coreSession = CoreSession.fromJson(ssnJson.get, server.schema.get);
+      val coreSession = CoreSession.fromJson(ssnJson, server.schema.get);
       ssnStore.put(coreSession, conn)
       Ok
    }

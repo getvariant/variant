@@ -22,7 +22,7 @@ public class ServerError extends UserError {
 			new ServerError(602, "JSON parsing error: '%s'");
 	
 	public static final ServerError BadContentType = 
-			new ServerError(603, "Unsupported content type", "Use 'application/json' or 'text/plain'.");
+			new ServerError(603, "Unsupported content type", "Use 'application/json'");
 	   
 	//
 	// 611-630 Internal, Payload parse error

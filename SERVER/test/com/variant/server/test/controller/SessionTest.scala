@@ -153,7 +153,7 @@ class SessionTest extends BaseSpecWithServer {
          }  
       }
 
-      "return SessionExpired on GET session on a wrong connection" in {
+      "return SessionExpired on PUT session on a wrong connection" in {
 
          // Create a session
          val sid = newSid()
@@ -174,25 +174,34 @@ class SessionTest extends BaseSpecWithServer {
          val conn2Id = (json \ "id").as[String]
          conn2Id mustNot be (null)
          
-         // Attempt to get the session on the new connection should fail.
+         // Attempt to get the session should still be okay.
          val respGet = route(app, FakeRequest(GET, endpoint + "/" + sid)).get
-         status(respGet) mustBe BAD_REQUEST
-         val (isInternal, error, args) = parseError(contentAsJson(respGet))
+         status(respGet) mustBe OK
+
+         // Attempt to resave the session on the new connection should fail.
+         val body2 = Json.obj(
+            "cid" -> conn2Id,
+            "ssn" -> sessionJson.expand("sid" -> sid)
+         )
+         val reqPut2 = FakeRequest(PUT, endpoint).withJsonBody(body2)
+         val respPut2 = route(app, reqPut2).get
+         status(respPut2) mustBe BAD_REQUEST
+         val (isInternal, error, args) = parseError(contentAsJson(respPut2))
          isInternal mustBe false 
          error mustBe SessionExpired
-         args mustBe empty
-                  
+         args mustBe Seq(sid)
+
       }
-/*
-      "return UnknownConnection on GET session after connection close" in {
+
+      "return SessionExpired on GET session after connection close" in {
 
          // Obtain a new connection.
          val connResp = route(app, FakeRequest(POST, context + "/connection/big_covar_schema")).get
          status(connResp) mustBe OK
          val json = contentAsJson(connResp) 
          json mustNot be (null)
-         val conn2Id = (json \ "id").as[String]
-         conn2Id mustNot be (null)
+         val connId = (json \ "id").as[String]
+         connId mustNot be (null)
          
          // Create a session on it
          val sid = newSid()
@@ -206,7 +215,7 @@ class SessionTest extends BaseSpecWithServer {
          contentAsString(respPut) mustBe empty
 
          // Close the connection
-         val respDel = route(app, FakeRequest(DELETE, context + "/connection/" + conn2Id).withHeaders("Content-Type" -> "text/plain")).get
+         val respDel = route(app, FakeRequest(DELETE, context + "/connection/" + connId).withHeaders("Content-Type" -> "text/plain")).get
          status(respDel) mustBe OK
          contentAsString(respDel) mustBe empty
 
@@ -214,9 +223,9 @@ class SessionTest extends BaseSpecWithServer {
          val respGet = route(app, FakeRequest(GET, endpoint + "/" + sid)).get
          status(respGet) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(respGet))
-         isInternal mustBe UnknownConnection.isInternal() 
-         error mustBe UnknownConnection
-         args mustBe Seq(conn2Id)
+         isInternal mustBe false 
+         error mustBe SessionExpired
+         args mustBe Seq(sid)
                   
       }
 
@@ -243,7 +252,5 @@ class SessionTest extends BaseSpecWithServer {
          ssnStore.get(sid) mustBe empty
          
       }
-      * 
-      */
    }
 }

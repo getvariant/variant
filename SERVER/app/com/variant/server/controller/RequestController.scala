@@ -46,7 +46,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
       }      
       
       val sid = (bodyJson \ "sid").asOpt[String]
-      val state = (bodyJson).asOpt[String]
+      val state = (bodyJson \ "state").asOpt[String]
       
       if (sid.isEmpty)
          throw new ServerException.Remote(MissingProperty, "sid")
@@ -74,14 +74,12 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
       val bodyJson = req.body.asJson.getOrElse {
          throw new ServerException.Remote(EmptyBody)
       }
-
-      val ssnJson = (bodyJson \ "ssn").asOpt[String]
-               
-      if (ssnJson.isEmpty) 
-         throw new ServerException.Remote(MissingProperty, "ssn")
    
-      val sid = (bodyJson \ "ssn" \ "sid").asOpt[String]
-      val ssn = ssnStore.getOrBust(sid.get)
+      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "sid")         
+      }
+      
+      val ssn = ssnStore.getOrBust(sid)
       val stateReq = ssn.getStateRequest
       val sve = stateReq.getStateVisitedEvent
       
