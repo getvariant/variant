@@ -87,7 +87,7 @@ import EventTest._
 
       var connId: String = null
       
-      "open connection on POST with valid schema name" in {
+      "open connection on POST with valid schema name and ID" in {
          val resp = route(app, FakeRequest(POST, endpoint + "/big_covar_schema").withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe OK
          val body = contentAsString(resp)
@@ -97,7 +97,10 @@ import EventTest._
          connId = (json \ "id").as[String]
          (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
          (json \ "ts").asOpt[Long].isDefined mustBe true
-         val schemaSrc = (json \ "schema").as[String]
+         val schemaSrc = (json \ "schema" \ "src").as[String]
+         val schemaId = (json \ "schema" \ "id").as[String]
+         schemaSrc mustBe server.schema.get.source
+         schemaId mustBe server.schema.get.getId
          val parser = ServerSchemaParser()
          val parserResp = parser.parse(schemaSrc)
          parserResp.hasMessages() mustBe false
@@ -134,7 +137,10 @@ import EventTest._
             connId = (json \ "id").as[String]
             (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
             (json \ "ts").asOpt[Long].isDefined mustBe true
-            val schemaSrc = (json \ "schema").as[String]
+            val schemaSrc = (json \ "schema" \ "src").as[String]
+            val schemaId = (json \ "schema" \ "id").as[String]
+            schemaSrc mustBe server.schema.get.source
+            schemaId mustBe server.schema.get.getId
             val parser = ServerSchemaParser()
             val parserResp = parser.parse(schemaSrc)
             parserResp.hasMessages() mustBe false
@@ -167,7 +173,10 @@ import EventTest._
          connId = (json \ "id").as[String]
          (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
          (json \ "ts").asOpt[Long].isDefined mustBe true
-         val schemaSrc = (json \ "schema").as[String]
+         val schemaSrc = (json \ "schema" \ "src").as[String]
+         val schemaId = (json \ "schema" \ "id").as[String]
+         schemaSrc mustBe server.schema.get.source
+         schemaId mustBe server.schema.get.getId
          val parser = ServerSchemaParser()
          val parserResp = parser.parse(schemaSrc)
          parserResp.hasMessages() mustBe false

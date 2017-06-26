@@ -58,7 +58,10 @@ class Connection(val schema: ServerSchema) {
          "id" -> JsString(id),
          "ssnto" -> JsNumber(VariantServer.server.config.getInt(ConfigKeys.SESSION_TIMEOUT)),
          "ts" -> JsNumber(timestamp),
-         "schema" -> JsString(schema.source)
+         "schema" -> JsObject(Seq(
+               "id" -> JsString(schema.getId()),
+               "src" -> JsString(schema.source)
+         ))
       )).toString  
    }
 }
