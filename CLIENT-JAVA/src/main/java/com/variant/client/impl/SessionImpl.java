@@ -7,6 +7,7 @@ import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTER
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,6 +45,9 @@ public class SessionImpl implements Session {
 	private TargetingTracker targetingTracker;
 	private StateRequestImpl stateRequest;
 	
+	// Hidden client local attributes that can be objects.
+	private HashMap<String, Object> localAttributes = new HashMap<String, Object>();
+
 	/**
 	 * 
 	 * @param tt
@@ -219,11 +223,12 @@ public class SessionImpl implements Session {
 		checkState();
 		return stateRequest;
 	}
+
 	@Override
 	public String setAttribute(String name, String value) {
 		checkState();
 		String result = coreSession.setAttribute(name, value);
-		conn.getServer().sessionSave(this);
+		save();
 		return result;
 	}    
 
@@ -236,12 +241,28 @@ public class SessionImpl implements Session {
 	@Override
 	public String clearAttribute(String name) {
 		checkState();
+		save();
 		return coreSession.clearAttribute(name);
 	}
 
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
+
+	public Object setLocalAttribute(String name, Object value) {
+		checkState();
+		return localAttributes.put(name, value);
+	}    
+
+	public Object getLocalAttribute(String name) {
+		checkState();
+		return localAttributes.get(name);
+	}
+
+	public Object clearLocalAttribute(String name) {
+		checkState();
+		return localAttributes.remove(name);
+	}
 
 	public void save() {
 		conn.getServer().sessionSave(this);

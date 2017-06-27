@@ -174,7 +174,6 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertEquals(attr, ssn.getAttribute("foo"));
 		assertEquals(attr, ssn.clearAttribute("foo"));
 		assertNull(ssn.getAttribute("foo"));
-		assertNull(ssn.clearAttribute("foo"));
 		
 		// roundtrip to server.
 	   	State state1 = conn.getSchema().getState("state1");

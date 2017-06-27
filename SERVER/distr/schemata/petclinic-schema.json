@@ -73,7 +73,7 @@
          'hooks':[
             {
                'name':'FirefoxDisqualifier',
-               'class':'com.variant.client.servlet.demo.server.FirefoxDisqualHook'
+               'class':'com.variant.client.servlet.demo.server.SafariDisqualHook'
             }
          ]
       }                                                     

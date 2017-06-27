@@ -52,8 +52,6 @@ class SessionImpl(var coreSession: CoreSession, val connection: Connection) exte
    def this(json: String, connection: Connection) {
       this(CoreSession.fromJson(json, VariantServer.server.schema.get), connection)
    }
-   
-   private[this] val attrMap = mutable.HashMap[java.lang.String, java.lang.String]()
 
    /*----------------------------------------------------------------------------------------*/
    /*                                        PUBLIC                                          */
@@ -73,11 +71,11 @@ class SessionImpl(var coreSession: CoreSession, val connection: Connection) exte
    
    override def getTraversedTests = coreSession.getTraversedTests
       
-   override def clearAttribute(name: java.lang.String): java.lang.String = attrMap.remove(name).getOrElse(null)
+   override def clearAttribute(name: java.lang.String) = coreSession.clearAttribute(name)
 
-   override def getAttribute(name: java.lang.String): java.lang.String = attrMap.get(name).getOrElse(null)
+   override def getAttribute(name: java.lang.String) = coreSession.getAttribute(name)
 
-   override def setAttribute(name: java.lang.String, value: java.lang.String): java.lang.String = attrMap.put(name, value).getOrElse(null)
+   override def setAttribute(name: java.lang.String, value: java.lang.String) = coreSession.setAttribute(name, value)
    
    /*----------------------------------------------------------------------------------------*/
    /*                                     PUBLIC EXT                                         */
