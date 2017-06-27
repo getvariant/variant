@@ -60,7 +60,7 @@ class VariantServerImpl @Inject() (
 	import VariantServer._
 	
 	_instance = this
-
+	
 	override val config = playConfig.underlying
    override val eventWriter = new EventWriter(config)
    override val runtime = new Runtime(this) // THIS?

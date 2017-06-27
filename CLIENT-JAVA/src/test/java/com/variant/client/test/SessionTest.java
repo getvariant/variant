@@ -13,8 +13,10 @@ import com.variant.client.impl.ClientUserError;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
+import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.core.schema.State;
+import com.variant.core.schema.Test;
 
 public class SessionTest extends ClientBaseTestWithServer {
 
@@ -59,7 +61,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void sessionExpireTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -100,7 +102,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void connectionClosedLocallyTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -122,6 +124,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 
 	/**
 	 * Session expires too soon. See bug https://github.com/getvariant/variant/issues/67
+	 * + bug 82, probablu a dupe.
 	 */
 	//@org.junit.Test
 	public void connectionClosedRemotelyTest() throws Exception {
@@ -137,20 +140,20 @@ public class SessionTest extends ClientBaseTestWithServer {
 		server.restart();
 
 		assertEquals(Status.OPEN, conn.getStatus());
-		/*
+		
 		new ClientUserExceptionInterceptor() {
 			@Override public void toRun() {
 				ssn.targetForState(state2);
 			}
 		}.assertThrown(SessionExpiredException.class);
 		assertEquals(Status.CLOSED_BY_SERVER, conn.getStatus());
-		*/
-		ssn.targetForState(state2);
+		
+		//ssn.targetForState(state2);
 	}
 
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void attributesTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -163,6 +166,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn);
 		assertEquals(sid, ssn.getId());
 		
+		// Local checks.
 		assertNull(ssn.getAttribute("foo"));
 		assertNull(ssn.clearAttribute("foo"));
 		String attr = "VALUE";
@@ -171,6 +175,16 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertEquals(attr, ssn.clearAttribute("foo"));
 		assertNull(ssn.getAttribute("foo"));
 		assertNull(ssn.clearAttribute("foo"));
+		
+		// roundtrip to server.
+	   	State state1 = conn.getSchema().getState("state1");
+	   	StateRequest req = ssn.targetForState(state1);
+	   	assertNotNull(req);
+		assertEquals(attr, ssn.getAttribute("foo"));
+		assertEquals(attr, ssn.clearAttribute("foo"));
+		assertNull(ssn.getAttribute("foo"));
+		assertNull(ssn.clearAttribute("foo"));
+
 	}
 
 }

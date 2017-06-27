@@ -49,7 +49,7 @@
          ],                                                  
          'onStates':[                                         
             {                                                
-               'stateRef':'newOwner',                            
+               'stateRef':'newOwner',                    
                'variants':[                                  
                   {                                          
                      'experienceRef': 'tosCheckbox',                   
@@ -69,8 +69,13 @@
                'stateRef':'ownerDetail',                            
                'isNonvariant': true
             }                                                
-            
-         ]                                                   
+         ],
+         'hooks':[
+            {
+               'name':'FirefoxDisqualifier',
+               'class':'com.variant.client.servlet.demo.server.FirefoxDisqualHook'
+            }
+         ]
       }                                                     
    ]                                                         
 }                         

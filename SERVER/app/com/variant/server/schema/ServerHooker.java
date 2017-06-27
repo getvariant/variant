@@ -18,7 +18,6 @@ import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParseTimeLifecycleEvent;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.server.api.ServerException;
-import com.variant.server.api.hook.PostResultFactory;
 import com.variant.server.api.hook.TestScopedLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
 
@@ -67,7 +66,7 @@ public class ServerHooker implements UserHooker {
 
 		try {
 			// Create the Class object for the supplied UserHook implementation.
-			Class<?> userHookClass = Class.forName(hook.getClassName());
+			Class<?> userHookClass = Thread.currentThread().getContextClassLoader().loadClass(hook.getClassName());
 			Object userHookObject = userHookClass.newInstance();
 			
 			// It must implement the right interface.

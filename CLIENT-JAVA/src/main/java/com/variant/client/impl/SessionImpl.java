@@ -7,7 +7,6 @@ import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTER
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,8 +42,6 @@ public class SessionImpl implements Session {
 	private CoreSession coreSession;
 	private SessionIdTracker sessionIdTracker;
 	private TargetingTracker targetingTracker;
-	// client-local attributes. They do not get replicated to the server.
-	private HashMap<String, Object> attributeMap = new HashMap<String, Object>();
 	private StateRequestImpl stateRequest;
 	
 	/**
@@ -159,21 +156,6 @@ public class SessionImpl implements Session {
 		return isExpired;
 	}
 	
-	@Override
-	public Object setAttribute(String name, Object value) {
-		return attributeMap.put(name, value);
-	}    
-
-	@Override
-	public Object getAttribute(String name) {
-		return attributeMap.get(name);
-	}
-
-	@Override
-	public Object clearAttribute(String name) {
-		return attributeMap.remove(name);
-	}
-
 	// ---------------------------------------------------------------------------------------------//
 	//                                      PUBLIC PASS-THRU                                        //
 	// ---------------------------------------------------------------------------------------------//
@@ -232,12 +214,31 @@ public class SessionImpl implements Session {
 		return conn.getSessionTimeoutMillis();
 	}
 
-
 	@Override
 	public StateRequest getStateRequest() {
 		checkState();
 		return stateRequest;
 	}
+	@Override
+	public String setAttribute(String name, String value) {
+		checkState();
+		String result = coreSession.setAttribute(name, value);
+		conn.getServer().sessionSave(this);
+		return result;
+	}    
+
+	@Override
+	public String getAttribute(String name) {
+		checkState();
+		return coreSession.getAttribute(name);
+	}
+
+	@Override
+	public String clearAttribute(String name) {
+		checkState();
+		return coreSession.clearAttribute(name);
+	}
+
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//

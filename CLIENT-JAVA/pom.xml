@@ -13,10 +13,10 @@
     	
     </properties>
 
+    <groupId>com.variant</groupId>
     <artifactId>java-client</artifactId>
     <name>Variant Java Client</name>
     <packaging>jar</packaging>
-    <groupId>com.variant</groupId>
     <version>0.7.1</version>
     
     <dependencies>
