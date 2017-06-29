@@ -36,7 +36,7 @@ cp $workspace_root_dir/CORE/target/core*.jar ${stage_dir}/java
 # SERVER
 #
 ${workspace_root_dir}/SERVER/bin/release.sh
-cp $workspace_root_dir/SERVER/target/universal/variant-${version}-server.zip ${stage_dir}/server/variant-${version}${version2}-server.zip
+cp $workspace_root_dir/SERVER/target/universal/variant-server-${version}.zip ${stage_dir}/server/variant-server-${version}${version2}.zip
 
 #
 # JAVA CLIENT
@@ -51,7 +51,7 @@ cp distr/variant.conf ${stage_dir}/java
 #
 
 cd ${stage_dir}/java
-zip ${target_dir}/variant-${version}${version2}-java.zip *
+zip ${target_dir}/variant-java-${version}${version2}.zip *
 cd ..
 rm -rf java
 mv ${stage_dir}/server/* ${target_dir}
@@ -67,18 +67,3 @@ cp ${workspace_root_dir}/CLIENT-JS/target/variant*.js ${target_dir}/variant-${ve
 #
 #${release_dir}/bin/javadoc.sh
 
-exit
-
-#
-# !!!!! SERVLET ADAPTER AND DEMO MOVED TO SEPARATE REPO !!!!
-# Separate file because WP doesn't take files > 50M
-# Zip up the demo WAR because WP doesn't take WAR files. 
-#
-cd ${workspace_root_dir}/CLIENT-JAVA-SERVLET
-mvn clean package -DskipTests
-cp target/variant-java-client-servlet-adapter*.jar ${stage_dir}/java
-
-cd ${workspace_root_dir}/CLIENT-JAVA-SERVLET-DEMO
-mvn clean package -DskipTests
-cd target
-zip ${target_dir}/variant-${version}${version2}-java-servlet-demo.zip petclinic.war
