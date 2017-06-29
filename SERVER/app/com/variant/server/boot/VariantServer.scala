@@ -54,11 +54,10 @@ object VariantServer {
 @Singleton
 class VariantServerImpl @Inject() (
       playConfig: Configuration, 
-      appLifecycle: ApplicationLifecycle,
+      appLifecycle: ApplicationLifecycle
       // We ask for the provider instead of the application, because application itself won't be available until
       // all eager singletons are constructed, including this class.
       //appProvider: Provider[Application] 
-      context: ApplicationLoader.Context
    ) extends VariantServer {
    
 
