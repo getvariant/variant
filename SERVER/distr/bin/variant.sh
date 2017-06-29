@@ -1,7 +1,6 @@
 #!/bin/bash
 
 vrnt_dir=$(dirname $0)
-cd $vrnt_dir/..
 
 case "$1" in
 start)
