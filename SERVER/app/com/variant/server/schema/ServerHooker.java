@@ -20,6 +20,7 @@ import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.hook.TestScopedLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
+import com.variant.server.boot.VariantServer$;
 
 /**
  * User Hook processor
@@ -64,9 +65,11 @@ public class ServerHooker implements UserHooker {
 	@Override
 	public void initHook(Hook hook, ParserResponseImpl parserResponse) {
 
+		//VariantServer$ server = VariantServer$.MODULE$;
+		
 		try {
 			// Create the Class object for the supplied UserHook implementation.
-			Class<?> userHookClass = Thread.currentThread().getContextClassLoader().loadClass(hook.getClassName());
+			Class<?> userHookClass = this.getClass().getClassLoader().loadClass(hook.getClassName());
 			Object userHookObject = userHookClass.newInstance();
 			
 			// It must implement the right interface.

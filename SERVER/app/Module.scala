@@ -34,6 +34,9 @@ class Module (environment: Environment, config: Configuration) extends AbstractM
       // Session Store
       bind(classOf[SessionStore]).to(classOf[SessionStoreImpl]).asEagerSingleton
 
+      // Application injector
+      //bind(classOf[ApplicationInjector]).to(classOf[PlayApplicationInjector]).asEagerSingleton
+
   }
 
 }

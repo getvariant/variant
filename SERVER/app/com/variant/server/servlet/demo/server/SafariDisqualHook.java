@@ -1,4 +1,4 @@
-package com.variant.client.servlet.demo.server;
+package com.variant.server.servlet.demo.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

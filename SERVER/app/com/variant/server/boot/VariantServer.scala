@@ -20,6 +20,8 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.variant.core.UserError.Severity._
 import com.variant.server.api.ServerException
+import play.api.ApplicationLoader
+
 
 /**
  * Need a trait to make DI to work.
@@ -43,22 +45,27 @@ trait VariantServer {
 object VariantServer {
    private [boot] var _instance: VariantServer = null
    def server = _instance
+   //def classLoader = PlayApplicationInjector.playApp.classloader
 }
 
 /**
- * Instantiated once by 
+ * Instantiated once by Play
  */
 @Singleton
 class VariantServerImpl @Inject() (
       playConfig: Configuration, 
-      appLifecycle: ApplicationLifecycle
-      //router: Provider[Router] DI craps out with circular dependency
-      ) extends VariantServer {
+      appLifecycle: ApplicationLifecycle,
+      // We ask for the provider instead of the application, because application itself won't be available until
+      // all eager singletons are constructed, including this class.
+      //appProvider: Provider[Application] 
+      context: ApplicationLoader.Context
+   ) extends VariantServer {
    
+
 	private[this] val logger = Logger(this.getClass)
    
 	import VariantServer._
-	
+
 	_instance = this
 	
 	override val config = playConfig.underlying
@@ -70,7 +77,7 @@ class VariantServerImpl @Inject() (
 	
 	private var _startupErrorLog = List[ServerException.User]()
 	override lazy val startupErrorLog = _startupErrorLog
-		
+	
 	// Default schema deployer is from file system.
    private var _schemaDeployer: SchemaDeployer = null
    installSchemaDeployer(SchemaDeployer.fromFileSystem())
