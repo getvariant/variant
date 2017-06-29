@@ -20,7 +20,7 @@ import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.hook.TestScopedLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
-import com.variant.server.boot.VariantServer$;
+import com.variant.server.boot.VariantApplicationLoader$;
 
 /**
  * User Hook processor
@@ -65,17 +65,22 @@ public class ServerHooker implements UserHooker {
 	@Override
 	public void initHook(Hook hook, ParserResponseImpl parserResponse) {
 
-		//VariantServer$ server = VariantServer$.MODULE$;
+		//VariantApplicationLoader$ appLoader = VariantApplicationLoader$.MODULE$;
 		
 		try {
 			// Create the Class object for the supplied UserHook implementation.
-			Class<?> userHookClass = this.getClass().getClassLoader().loadClass(hook.getClassName());
+			//Class<?> userHookClass = this.getClass().getClassLoader().loadClass(hook.getClassName());
+			//Class<?> userHookClass = appLoader.classLoader().loadClass(hook.getClassName());
+			//Object userHookObject = userHookClass.newInstance();
+			Class<?> userHookClass = Class.forName(hook.getClassName());
 			Object userHookObject = userHookClass.newInstance();
-			
+					
 			// It must implement the right interface.
 			if (! (userHookObject instanceof UserHook)) {
-				parserResponse.addMessage(ServerErrorLocal.HOOK_CLASS_NO_INTERFACE, UserHook.class.getName());
+				parserResponse.addMessage(ServerErrorLocal.HOOK_CLASS_NO_INTERFACE, userHookClass.getName(), UserHook.class.getName());
+				return;
 			}
+			
 			UserHook<? extends LifecycleEvent> userHook = (UserHook<LifecycleEvent>) userHookObject;
 			
 			// The implementation's scope must match that of the definition. In other words, a test scoped hook

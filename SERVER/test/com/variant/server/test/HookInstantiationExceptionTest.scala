@@ -30,6 +30,60 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    /**
     * 
     */
+	"Any hook" should {
+	   
+	   ////////////////////
+	   "emit HOOK_CLASS_NO_INTERFACE if class doesn't implement UserHook" in {
+	      
+   	    val schema = """
+{                                                                              
+   'meta':{                                                             		    	    
+      'name':'allTestsOffTest',
+      'hooks':[                                                         
+         {                                                              
+   		     'name':'stateParsed',                                       
+   			   'class':'com.variant.server.test.hooks.HookNoInterface'     
+   	     }                                                              
+      ]                                                                
+   },                                                                   
+	'states':[{'name':'state1'}],                                                                   
+	'tests':[                                                           
+	   {                                                                
+		   'name':'test1',
+	      'experiences':[                                               
+            {                                                          
+				   'name':'A',                                             
+				   'weight':10,                                            
+				   'isControl':true                                        
+	         },                                                         
+		      {                                                          
+		         'name':'B',                                             
+				   'weight':20                                             
+				}                                                          
+	      ],                                                            
+			'onStates':[                                                   
+			   {                                                          
+				   'stateRef':'state1',                                     
+				   'variants':[{'experienceRef':'B'} ]                                                       
+	         }                                                          
+	      ]                                                             
+	   }                                                               
+   ]                                                                   
+}"""
+
+         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
+         response.getMessages.size mustBe 1
+     		 response.getMessages(FATAL) mustBe empty
+     		 response.getMessages(ERROR).size() mustBe 1
+     		 var msg = response.getMessages.get(0)
+     	   msg.getSeverity mustBe ERROR
+     	   msg.getText mustBe ServerErrorLocal.HOOK_CLASS_NO_INTERFACE.asMessage("com.variant.server.test.hooks.HookNoInterface", "com.variant.core.UserHook")
+      }
+   }
+	
+	/**
+    * 
+    */
 	"StateParsedHook" should {
 	   
 	   ////////////////////
@@ -71,14 +125,14 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
-         response.getMessages.size mustBe 1
+      val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
+      response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
    		msg.getText mustBe ServerErrorLocal.HOOK_INSTANTIATION_ERROR.asMessage("com.foo.bar", "java.lang.ClassNotFoundException")
-      }
+   }
 
 	   ////////////////////
 	   "emit HOOK_INSTANTIATION_ERROR for an existing hook class with non-public constructor" in {
@@ -119,8 +173,8 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
-         response.getMessages.size mustBe 1
+      val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
+      response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
    		var msg = response.getMessages.get(0)
@@ -167,8 +221,8 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
-         response.getMessages.size mustBe 1
+      val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
+      response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
    		var msg = response.getMessages.get(0)
@@ -215,8 +269,8 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
-         response.getMessages.size mustBe 1
+      val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
+      response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
    		var msg = response.getMessages.get(0)
@@ -270,9 +324,9 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get 
+      val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get 
 
-         response.getMessages.size mustBe 1
+      response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
    		var msg = response.getMessages.get(0)
@@ -329,11 +383,11 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
 
          val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
          response.getMessages.size mustBe 1
-   		response.getMessages(FATAL) mustBe empty
-   		response.getMessages(ERROR).size() mustBe 1
-   		var msg = response.getMessages.get(0)
-   		msg.getSeverity mustBe ERROR
-   		msg.getText mustBe ServerErrorLocal.HOOK_TEST_DOMAIN_DEFINED_AT_SCHEMA.asMessage("testTargeting", classOf[TestTargetingLifecycleEvent].getName)
+     		 response.getMessages(FATAL) mustBe empty
+     		 response.getMessages(ERROR).size() mustBe 1
+     		 var msg = response.getMessages.get(0)
+     		 msg.getSeverity mustBe ERROR
+     	   msg.getText mustBe ServerErrorLocal.HOOK_TEST_DOMAIN_DEFINED_AT_SCHEMA.asMessage("testTargeting", classOf[TestTargetingLifecycleEvent].getName)
       }
    }
 
