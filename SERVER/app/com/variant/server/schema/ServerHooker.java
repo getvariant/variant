@@ -21,6 +21,7 @@ import com.variant.server.api.ServerException;
 import com.variant.server.api.hook.TestScopedLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.VariantApplicationLoader$;
+import com.variant.server.boot.VariantClassLoader;
 
 /**
  * User Hook processor
@@ -30,7 +31,7 @@ import com.variant.server.boot.VariantApplicationLoader$;
  */
 public class ServerHooker implements UserHooker {
 
-	private static final Logger LOG = LoggerFactory.getLogger(UserHooker.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ServerHooker.class);
 
 	/*
 	 *  Initialized hooks are stored in a linked map, keyed by the schema hook, sorted in ordinal order,
@@ -68,11 +69,10 @@ public class ServerHooker implements UserHooker {
 		//VariantApplicationLoader$ appLoader = VariantApplicationLoader$.MODULE$;
 		
 		try {
-			// Create the Class object for the supplied UserHook implementation.
+			ClassLoader cl = VariantClassLoader.newInstance();
+		   // Create the Class object for the supplied UserHook implementation.
 			//Class<?> userHookClass = this.getClass().getClassLoader().loadClass(hook.getClassName());
-			//Class<?> userHookClass = appLoader.classLoader().loadClass(hook.getClassName());
-			//Object userHookObject = userHookClass.newInstance();
-			Class<?> userHookClass = Class.forName(hook.getClassName());
+			Class<?> userHookClass = cl.loadClass(hook.getClassName());
 			Object userHookObject = userHookClass.newInstance();
 					
 			// It must implement the right interface.

@@ -60,7 +60,6 @@ class VariantServerImpl @Inject() (
       //appProvider: Provider[Application] 
    ) extends VariantServer {
    
-
 	private[this] val logger = Logger(this.getClass)
    
 	import VariantServer._

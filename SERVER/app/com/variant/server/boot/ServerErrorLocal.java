@@ -20,7 +20,7 @@ public class ServerErrorLocal extends CommonError {
 	public final static ServerErrorLocal EVENT_FLUSHER_NO_INTERFACE =
 			new ServerErrorLocal(403, Severity.FATAL, "Event flusher class [%s] must implement interface [%s]"); 
 
-	//
+   //
 	// 421-440 Schema deployment
 	//
 	public final static ServerErrorLocal MULTIPLE_SCHEMATA_NOT_SUPPORTED = 

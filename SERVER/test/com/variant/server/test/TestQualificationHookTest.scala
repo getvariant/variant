@@ -70,6 +70,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
          val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
 
    	   response.hasMessages() mustBe false
+   	   response.getMessages.foreach(println(_))
    		server.schema.isDefined mustBe true
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")
