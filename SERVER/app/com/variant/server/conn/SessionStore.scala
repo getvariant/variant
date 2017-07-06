@@ -122,7 +122,7 @@ import SessionStoreImpl._
          logger.debug(s"Not found session [${sid}]")      
          throw new ServerException.Remote(ServerError.SessionExpired, sid)
       }
-      logger.debug(s"Not found session [${sid}]")            
+      logger.debug(s"Found session [${sid}]")            
       result
 	}
 	
