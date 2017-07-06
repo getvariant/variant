@@ -73,7 +73,11 @@
          'hooks':[
             {
                'name':'FirefoxDisqualifier',
-               'class':'com.variant.client.servlet.demo.server.SafariDisqualHook'
+               'class':'com.variant.server.ext.demo.FirefoxDisqualHook'
+            },
+            {
+               'name':'ChromeTargeter',
+               'class':'com.variant.server.ext.demo.ChromeTargetingHook'
             }
          ]
       }                                                     
