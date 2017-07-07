@@ -132,11 +132,13 @@ public class ServerHooker implements UserHooker {
 	@Override
 	public UserHook.PostResult post(LifecycleEvent event) {
 		
+	   HookMapEntry hme = null;
+	   
 		try {
 
 			for (Map.Entry<Hook, HookMapEntry> entry : hookMap.entrySet()) {
 				Hook schemaHook = entry.getKey();
-				HookMapEntry hme = entry.getValue();
+				hme = entry.getValue();
 				
 				// Only post subscribers to the event type.
 				if (hme.lceClass.isAssignableFrom(event.getClass())) {
@@ -168,7 +170,7 @@ public class ServerHooker implements UserHooker {
 			throw e;
 		
 		} catch (Exception e) {
-			LOG.error(CommonError.HOOK_UNHANDLED_EXCEPTION.asMessage(UserHook.class.getName(), e.getMessage()), e);
+			LOG.error(CommonError.HOOK_UNHANDLED_EXCEPTION.asMessage(hme.hookClass.getName(), e.getMessage()), e);
 			throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
 		}				
 
