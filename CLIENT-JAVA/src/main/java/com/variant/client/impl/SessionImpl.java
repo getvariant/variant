@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,10 +45,7 @@ public class SessionImpl implements Session {
 	private SessionIdTracker sessionIdTracker;
 	private TargetingTracker targetingTracker;
 	private StateRequestImpl stateRequest;
-	
-	// Hidden client local attributes that can be objects.
-	private HashMap<String, Object> localAttributes = new HashMap<String, Object>();
-
+	private LinkedHashSet<ExpirationListener> expirationListeners = new LinkedHashSet<ExpirationListener>();
 	/**
 	 * 
 	 * @param tt
@@ -166,7 +164,7 @@ public class SessionImpl implements Session {
 
 	@Override
 	public String getId() {
-		checkState();
+		checkState(); 
 		return coreSession.getId();
 	}
 
@@ -245,25 +243,15 @@ public class SessionImpl implements Session {
 		return coreSession.clearAttribute(name);
 	}
 
+   @Override
+   public void addExpirationListener(ExpirationListener listener) {
+      checkState();
+      expirationListeners.add(listener);
+   }
+
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
-
-	public Object setLocalAttribute(String name, Object value) {
-		checkState();
-		return localAttributes.put(name, value);
-	}    
-
-	public Object getLocalAttribute(String name) {
-		checkState();
-		return localAttributes.get(name);
-	}
-
-	public Object clearLocalAttribute(String name) {
-		checkState();
-		return localAttributes.remove(name);
-	}
-
 	public void save() {
 		conn.getServer().sessionSave(this);
 	}
@@ -303,7 +291,10 @@ public class SessionImpl implements Session {
 	 * Expire this session object.
 	 */
 	public void expire() {
+	   // Run listeners first, before expiring the session.
+      for (ExpirationListener el: expirationListeners) el.exec();
 		isExpired = true;
+		expirationListeners = null;
 		coreSession = null;
 		sessionIdTracker = null;
 		targetingTracker = null;

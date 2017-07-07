@@ -159,6 +159,8 @@ public interface Session {
 	 */
 	public boolean isExpired();
 
+	public void addExpirationListener(ExpirationListener listener);
+	
 	/**
 	 * <p>Set a session-scoped attribute.
 	 * 
@@ -183,4 +185,14 @@ public interface Session {
 	 */
 	public String clearAttribute(String name);
 
+	/**
+	 * 
+	 *
+	 */
+	public interface ExpirationListener {
+	   /**
+	    * 
+	    */
+	   public void exec();
+	}
 }
