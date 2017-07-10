@@ -7,7 +7,6 @@ import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTER
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
