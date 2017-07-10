@@ -13,7 +13,6 @@ import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
 import com.variant.server.api.hook.PostResultFactory;
 import com.variant.server.api.hook.TestTargetingLifecycleEvent;
-import com.variant.server.api.hook.TestTargetingLifecycleEventPostResult;
 
 /**
  * Target according to weights passed in the init property weights.
@@ -51,7 +50,7 @@ public class TestTargetingHook implements UserHook<TestTargetingLifecycleEvent> 
 	public PostResult post(TestTargetingLifecycleEvent event) {
 
 		Session ssn = event.getStateRequest().getSession();
-		TestTargetingLifecycleEventPostResult result = PostResultFactory.mkPostResult(event);
+		TestTargetingLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);
 		
 		if (experienceToReturn != null) {
 			String[] tokens = experienceToReturn.split("\\.");

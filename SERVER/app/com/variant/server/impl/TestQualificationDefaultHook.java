@@ -5,7 +5,6 @@ import com.variant.core.UserHook;
 import com.variant.core.schema.Hook;
 import com.variant.server.api.hook.PostResultFactory;
 import com.variant.server.api.hook.TestQualificationLifecycleEvent;
-import com.variant.server.api.hook.TestQualificationLifecycleEventPostResult;
 
 class TestQualificationDefaultHook implements UserHook<TestQualificationLifecycleEvent> {
 	
@@ -33,7 +32,7 @@ class TestQualificationDefaultHook implements UserHook<TestQualificationLifecycl
 	@Override
 	public UserHook.PostResult post(TestQualificationLifecycleEvent event) throws Exception {
 		
-		TestQualificationLifecycleEventPostResult result = PostResultFactory.mkPostResult(event);				
+		TestQualificationLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);				
 		result.setQualified(true);
 		return result;
 	}

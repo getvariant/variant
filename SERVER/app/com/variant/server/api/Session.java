@@ -10,9 +10,8 @@ import com.variant.core.schema.Test;
 
 /**
  * The server side of a Variant user session. Contains session-scoped application 
- * state that must be preserved between state requests. Session related methods of the
- * Variant server side API have read-only access to the session object. The only exception
- * are the session attributes, which can be set on either the client or the server side.
+ * state that must be preserved between state requests. With the exception of the
+ * session attributes, this object is not directly mutable by the client code.
  *
  * @author Igor Urisman
  * @since 0.7
@@ -49,6 +48,8 @@ public interface Session {
 	 * 
 	 * @return A map, whose entries are keyed by {@link State} and values are Integer visit counts in
 	 *         that state.
+	 *         
+    * @since 0.7
 	 */
 	public Map<State, Integer> getTraversedStates(); 
 
@@ -67,6 +68,8 @@ public interface Session {
 	 * b) T is not OFF, and c) this session qualified for T.
 	 * 
 	 * @return A set of object of type {@link Test}.
+	 * 
+    * @since 0.7
 	 */
 	public Set<Test> getTraversedTests(); 
 	
@@ -76,6 +79,8 @@ public interface Session {
 	 * that disqualified it may no longer hold.
 	 * 
 	 * @return A set of {@link Test}s which this session is disqualified for. 
+	 * 
+    * @since 0.7
 	 */
 	public Set<Test> getDisqualifiedTests();
 		
@@ -85,7 +90,7 @@ public interface Session {
 	 * @return An object of type {@link VariantCoreStateRequest}, or null, if none yet for this
 	 *         session.
 	 *  
-	 * @since 0.5
+	 * @since 0.7
 	 */
 	public StateRequest getStateRequest();
 
@@ -94,7 +99,7 @@ public interface Session {
 	 * replicated to the server. Consequently, another client will not see these attributes.
 	 * 
 	 * @return The object previously associated with this attribute, or null if none.
-	 * @since 0.6
+	 * @since 0.7
 	 */
 	public String setAttribute(String name, String value);
 	
@@ -103,7 +108,7 @@ public interface Session {
 	 * replicated to the server. Consequently, another client will not see these attributes.
 	 * 
 	 * @return The object associated with this attribute.
-	 * @since 0.6
+	 * @since 0.7
 	 */
 	public String getAttribute(String name);
 

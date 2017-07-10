@@ -11,7 +11,6 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.hook.PostResultFactory;
 import com.variant.server.api.hook.TestTargetingLifecycleEvent;
-import com.variant.server.api.hook.TestTargetingLifecycleEventPostResult;
 import com.variant.server.boot.ServerErrorLocal;
 
 class TestTargetingDefaultHook implements UserHook<TestTargetingLifecycleEvent> {
@@ -40,7 +39,7 @@ class TestTargetingDefaultHook implements UserHook<TestTargetingLifecycleEvent> 
 	 * 
 	 */
 	@Override
-	public TestTargetingLifecycleEventPostResult post(TestTargetingLifecycleEvent event) throws Exception {
+	public TestTargetingLifecycleEvent.PostResult post(TestTargetingLifecycleEvent event) throws Exception {
 		
 		Test test = event.getTest();
 		State state = event.getState();
@@ -67,7 +66,7 @@ class TestTargetingDefaultHook implements UserHook<TestTargetingLifecycleEvent> 
 			if (!e.isDefinedOn(state)) continue;
 			weightSum += e.getWeight().doubleValue();
 			if (randVal < weightSum) {
-				TestTargetingLifecycleEventPostResult result = PostResultFactory.mkPostResult(event);
+				TestTargetingLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);
 				result.setTargetedExperience(e);
 				return result;
 			}

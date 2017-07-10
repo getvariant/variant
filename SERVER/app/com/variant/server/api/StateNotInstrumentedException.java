@@ -1,10 +1,10 @@
 package com.variant.server.api;
 
 import com.variant.core.CommonError;
-import com.variant.core.CoreException;
 
 /**
- * Thrown when a user operation requests an unavailable combination of state and test.
+ * Thrown when a user operation requests a combination of state and test that is not
+ * defined in the schema.
  * 
  * @author Igor Urisman
  * @since 0.7

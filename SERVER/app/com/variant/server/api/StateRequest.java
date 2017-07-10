@@ -13,8 +13,7 @@ import com.variant.core.schema.Test.Experience;
 
 /**
  * The server side of a Variant state request. Contains state request-scoped application 
- * state. Session related methods of the Variant server side API have read-only access to 
- * this object.
+ * state. Not directly mutable by the client code, i.e. all methods are read-only.
  *
  * @author Igor Urisman
  * @since 0.7

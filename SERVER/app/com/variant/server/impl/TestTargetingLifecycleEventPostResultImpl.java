@@ -7,9 +7,8 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.hook.TestTargetingLifecycleEvent;
-import com.variant.server.api.hook.TestTargetingLifecycleEventPostResult;
 
-public class TestTargetingLifecycleEventPostResultImpl implements TestTargetingLifecycleEventPostResult {
+public class TestTargetingLifecycleEventPostResultImpl implements TestTargetingLifecycleEvent.PostResult {
 
 	TestTargetingLifecycleEventImpl event;
 	private Experience experience = null;

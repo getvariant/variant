@@ -1,9 +1,8 @@
 package com.variant.server.impl;
 
 import com.variant.server.api.hook.TestQualificationLifecycleEvent;
-import com.variant.server.api.hook.TestQualificationLifecycleEventPostResult;
 
-public class TestQualificationLifecycleEventPostResultImpl implements TestQualificationLifecycleEventPostResult {
+public class TestQualificationLifecycleEventPostResultImpl implements TestQualificationLifecycleEvent.PostResult {
 
 	private boolean qualified = false;
 	private boolean removeFromTT = false;

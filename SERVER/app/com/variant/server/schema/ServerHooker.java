@@ -129,7 +129,8 @@ public class ServerHooker implements UserHooker {
 	 * @param hook
 	 * @return the hook passed in as argument.
 	 */
-	@Override
+   @SuppressWarnings("unchecked")
+   @Override
 	public UserHook.PostResult post(LifecycleEvent event) {
 		
 	   HookMapEntry hme = null;
@@ -164,7 +165,8 @@ public class ServerHooker implements UserHooker {
 			
 			// Either no hooks listening for this event, or none cared to return a result.
 			// Post default hook.
-			return event.getDefaultHook().post(event);
+			// (I don't understand the need form this cast)
+			return ((UserHook<LifecycleEvent>)event.getDefaultHook()).post(event);
 
 		} catch (ServerException.User e) {
 			throw e;

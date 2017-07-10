@@ -1,5 +1,8 @@
 package com.variant.core.schema;
 
+import com.variant.core.UserHook;
+import com.variant.core.UserError.Severity;
+
 
 /**
  * <p>Parse time life cycle event. Posts its hooks whenever the schema parser 
@@ -21,4 +24,12 @@ public interface StateParsedLifecycleEvent extends ParseTimeLifecycleEvent {
      * @since 0.5
 	 */
 	public State getState();
+	
+	///TODO
+	public interface PostResult extends UserHook.PostResult {
+	   
+	    public void addMessage(Severity severity, String message);
+
+	}
+
 }

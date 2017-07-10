@@ -1,12 +1,10 @@
 package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
-import com.variant.core.UserHook;
 import com.variant.core.UserError.Severity;
+import com.variant.core.UserHook;
 import com.variant.core.schema.Hook;
-import com.variant.core.schema.StateParsedLifecycleEventPostResult;
 import com.variant.core.schema.TestParsedLifecycleEvent;
-import com.variant.core.schema.TestParsedLifecycleEventPostResult;
 import com.variant.server.api.hook.PostResultFactory;
 
 public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
@@ -29,7 +27,7 @@ public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
    
 	@Override
 	public PostResult post(TestParsedLifecycleEvent event) {
-		TestParsedLifecycleEventPostResult result = PostResultFactory.mkPostResult(event);
+		TestParsedLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);
 		result.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hook.getName(), event.getTest().getName()));
 		result.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hook.getName(), event.getTest().getName()));
 		result.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hook.getName(), event.getTest().getName()));

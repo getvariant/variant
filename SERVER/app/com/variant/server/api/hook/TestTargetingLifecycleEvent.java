@@ -1,7 +1,9 @@
 package com.variant.server.api.hook;
 
+import com.variant.core.UserHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.Test.Experience;
 
 /**
  * <p>Run time hook. Posts its listeners whenever a user session is about to be targeted 
@@ -28,5 +30,24 @@ public interface TestTargetingLifecycleEvent extends StateRequestAwareLifecycleE
 	 * @since 0.6
 	 */
 	public State getState();
-	
+
+	///TODO
+	public interface PostResult extends UserHook.PostResult {
+	   
+	   /**
+	    * Host code calls this to inform Variant what experience should the session,
+	    * returned by {@link #getSession()}, be targeted for in the test returned by {@link #getTest()}.
+	    * If host code never calls this method, the initial value is null, which Variant server will
+	    * interpret by falling back on the default random targeting algorithm based on the probability
+	    * weights in the tests's definition.
+	    * .
+	    * @param experience Targeted experience.
+	    * @throws VariantRuntimeUserErrorException if experience is not that of the test returned by 
+	    *         {@link #getTest()}.
+	    * @since 0.7
+	    */
+	   public void setTargetedExperience(Experience experience);   
+
+	}
+
 }
