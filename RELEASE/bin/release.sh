@@ -17,9 +17,9 @@ if [[ x != "x$1" ]]; then
     exit 1
 fi
 
-workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
-
-release_dir=${workspace_root_dir}/RELEASE
+variant_root=$(cd $(dirname $0)/../..; pwd)
+server_ext_root=$(cd ${variant_root}/../variant-server-extensions; pwd)
+release_dir=${variant_root}/RELEASE
 stage_dir=${release_dir}/stage
 target_dir=${release_dir}/target
 
@@ -29,20 +29,21 @@ mkdir ${stage_dir} ${target_dir} ${stage_dir}/server ${stage_dir}/java
 #
 # CORE
 #
-${workspace_root_dir}/CORE/bin/release.sh
-cp $workspace_root_dir/CORE/target/core*.jar ${stage_dir}/java
+${variant_root}/CORE/bin/release.sh
+cp $variant_root/CORE/target/variant-core*.jar ${stage_dir}/java
+cp $variant_root/CORE/target/variant-core*.jar $server_ext_root/lib
 
 #
 # SERVER
 #
-${workspace_root_dir}/SERVER/bin/release.sh
-cp $workspace_root_dir/SERVER/target/universal/variant-server-${version}.zip ${stage_dir}/server/variant-server-${version}${version2}.zip
-cp $workspace_root_dir/SERVER/target/universal/server-api-0.7.1.jar ${stage_dir}/server
+${variant_root}/SERVER/bin/release.sh
+cp $variant_root/SERVER/target/universal/variant-server-${version}.zip ${stage_dir}/server/variant-server-${version}${version2}.zip
+cp $variant_root/SERVER/target/universal/variant-server-api-0.7.1.jar $server_ext_root/lib
 
 #
 # JAVA CLIENT
 #
-cd ${workspace_root_dir}/CLIENT-JAVA
+cd ${variant_root}/CLIENT-JAVA
 mvn clean package -DskipTests
 cp target/java-client*.jar ${stage_dir}/java
 cp distr/variant.conf ${stage_dir}/java
@@ -60,8 +61,8 @@ mv ${stage_dir}/server/* ${target_dir}
 #
 # JAVASCRIPT CLIENT
 #
-${workspace_root_dir}/CLIENT-JS/bin/package.sh
-cp ${workspace_root_dir}/CLIENT-JS/target/variant*.js ${target_dir}/variant-${version}${version2}.js
+${variant_root}/CLIENT-JS/bin/package.sh
+cp ${variant_root}/CLIENT-JS/target/variant*.js ${target_dir}/variant-${version}${version2}.js
 
 #
 # Javadoc
