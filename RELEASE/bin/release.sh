@@ -37,6 +37,7 @@ cp $workspace_root_dir/CORE/target/core*.jar ${stage_dir}/java
 #
 ${workspace_root_dir}/SERVER/bin/release.sh
 cp $workspace_root_dir/SERVER/target/universal/variant-server-${version}.zip ${stage_dir}/server/variant-server-${version}${version2}.zip
+cp $workspace_root_dir/SERVER/target/universal/server-api-0.7.1.jar ${stage_dir}/server
 
 #
 # JAVA CLIENT
