@@ -15,7 +15,7 @@
 		<jackson.version>2.5.3</jackson.version>
     </properties>
 
-    <artifactId>core</artifactId>
+    <artifactId>variant-core</artifactId>
     <name>Variant core library</name>
     <packaging>jar</packaging>
     <groupId>com.variant</groupId>
@@ -23,19 +23,14 @@
     
     <dependencies>
         
-      <!-- Apache Commons -->        
-      <dependency>
+      <!-- Apache Commons -->  
+  
+        <dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
-        
-      <dependency>
-	    	<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-			<version>3.5</version>
-		</dependency>
-        
+                
         <dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
