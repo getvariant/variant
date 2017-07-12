@@ -21,7 +21,7 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   
   // Variant Core
-  "com.variant"            % "core"        % coreVersion,  
+  "com.variant"            % "variant-core"        % coreVersion,  
   // Postgres 9.1 JDBC driver in test
   "postgresql"             % "postgresql"  % "9.1-901-1.jdbc4"   % Test,
   // H2 In mem DB in test 

@@ -24,7 +24,7 @@
         <!-- Variant Core -->        
         <dependency>
 			<groupId>com.variant</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>variant-core</artifactId>
 			<version>0.7.1</version>
 		</dependency>
         
