@@ -6,7 +6,7 @@ import com.variant.core.UserError.Severity;
 import com.variant.core.ServerError;
 
 /**
- * The super-type for all Variant server exception. 
+ * The super-type for of Variant server exception. 
  * 
  * @author Igor Urisman
  * @since 0.7
@@ -31,7 +31,7 @@ public class ServerException extends VariantException {
 	}
 	
 	/**
-	 * Server local internal exceptions. These are not the result of an invalid user action, but an internal bug.
+	 * Server internal exceptions. These are not the result of an invalid user action, but are due to an internal problem.
 	 * 
 	 * @since 0.7
 	 */
@@ -47,7 +47,7 @@ public class ServerException extends VariantException {
 	}
 	
 	/**
-	 * Server local User exceptions - result of an invalid user action, but an internal bug.
+	 * Server local user exceptions. These are the result of an invalid user action committed over the server extension API.
 	 * 
 	 * @since 0.7
 	 */
@@ -93,7 +93,7 @@ public class ServerException extends VariantException {
 	}
 	
 	/**
-	 * Server remote exceptions will be sent to client, i.e. needs to map to an remote server error.
+	 * Server remote user exceptions. These are the result of an invalid user action committed over a client API.
 	 * 
 	 * @since 0.7
 	 */

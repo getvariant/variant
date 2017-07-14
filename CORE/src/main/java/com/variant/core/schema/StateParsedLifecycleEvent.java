@@ -1,7 +1,8 @@
 package com.variant.core.schema;
 
-import com.variant.core.UserHook;
+import com.variant.core.LifecycleEvent;
 import com.variant.core.UserError.Severity;
+import com.variant.core.UserHook;
 
 
 /**
@@ -21,15 +22,24 @@ public interface StateParsedLifecycleEvent extends ParseTimeLifecycleEvent {
 	 * encountered during parsing of this state.
 	 * 
 	 * @return An object of type {@link com.variant.core.xdm.State}.
-     * @since 0.5
+    * @since 0.5
 	 */
 	public State getState();
 	
-	///TODO
+	/**
+    * A {@link com.variant.core.UserHook.PostResult} suitable as the return type of the {@link UserHook#post(LifecycleEvent)},
+    * invoked with the event type of {@link StateParsedLifecycleEvent}.
+    * 
+    * @since 0.7
+    */
 	public interface PostResult extends UserHook.PostResult {
 	   
+	   /**
+	    * Add a custom schema parser message.
+	    * 
+	    * @since 0.7
+	    */
 	    public void addMessage(Severity severity, String message);
 
 	}
-
 }

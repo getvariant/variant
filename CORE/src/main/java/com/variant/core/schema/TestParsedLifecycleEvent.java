@@ -1,5 +1,6 @@
 package com.variant.core.schema;
 
+import com.variant.core.LifecycleEvent;
 import com.variant.core.UserHook;
 import com.variant.core.UserError.Severity;
 
@@ -24,11 +25,21 @@ public interface TestParsedLifecycleEvent extends ParseTimeLifecycleEvent {
 	 */
 	public Test getTest();
 	
-	///TODO
-	public interface PostResult extends UserHook.PostResult {
-	   
-	    public void addMessage(Severity severity, String message);
+   /**
+    * A {@link com.variant.core.UserHook.PostResult} suitable as the return type of the {@link UserHook#post(LifecycleEvent)},
+    * invoked with the event type of {@link TestParsedLifecycleEvent}.
+    * 
+    * @since 0.7
+    */
+   public interface PostResult extends UserHook.PostResult {
+      
+      /**
+       * Add a custom schema parser message.
+       * 
+       * @since 0.7
+       */
+       public void addMessage(Severity severity, String message);
 
-	}
+   }
 
 }

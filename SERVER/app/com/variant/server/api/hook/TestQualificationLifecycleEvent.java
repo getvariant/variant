@@ -4,42 +4,50 @@ import com.variant.core.UserHook;
 
 
 /**
- * <p>Life cycle event triggered when Variant is about to target a user session for a test, but after the 
- * session has already been qualified for this test. If no hooks for this event are defined, Variant server 
- * treats all user sessions as qualifying for all tests. 
+ * <p>Life cycle event, triggered when Variant session first comes in contact with a live test. 
+ * If no user hooks for this event are defined in the experiment schema, Variant server uses
+ * the default hook, which blindly qualifies all user sessions for all live tests. If that's
+ * the desired behavior, no user hooks are needed.
  * 
- * <p>A user hook may explicitly (dis)qualify the session by calling the setQualified() method. The application 
- * programmer can also control targeting stability for those users who are disqualified. But default, 
- * disqualification does not affect experiment scoped targeting stability . However, application developer 
- * may direct the server to remove the entry for this test from this user's targeting tracker by calling 
- * {@link #setQualified(boolean)}.
+ * <p>If a user hook, subscribed to this event, wishes to (dis)qualify the associated test, its
+ * <code>post()</code> method must return an object of type {@link PostResult}. An empty post result 
+ * object is obtained by calling the {@link PostResultFactory#mkPostResult(TestQualificationLifecycleEvent)} 
+ * factory method.
  * 
  * @author Igor Urisman.
+ * @see UserHook
+ * @see PostResult
  * @since 0.5
  *
  */
 public interface TestQualificationLifecycleEvent extends StateRequestAwareLifecycleEvent, TestScopedLifecycleEvent {
-   
-   
-   ///TODO
+      
+   /**
+    * The return type of the {@link UserHook#post(com.variant.core.LifecycleEvent) UserHook.post(TestQualificationLifecycleEvent)} 
+    * method.
+    * 
+    * @since 0.7
+    */
    public interface PostResult extends UserHook.PostResult {
       
       /**
-       * Host code calls this to inform Variant server whether the current session
-       * (as returned by {@link #getSession()}) is qualified for the test (as returned by {@link #getTest()}).
+       * Set whether the session is qualified for the associated test.
         *
-       * @param qualified Whether or not the session qualifies for the test.
+       * @param qualified 
        * @since 0.7
        */
       public void setQualified(boolean qualified);
 
       /**
-       * Host code calls this to inform Variant server whether the entry for this test should
-       * be removed from this session's targeting tracker, iff it is disqualified. The server
-       * will ignore the value set with this method, if this test was not disqualified. Conversely,
-       * if this test was disqualified, but this method was never called, the default value is false,
-       * which is to say that targeting tracker entries for disqualified tests are not discarded,
-       * unless provided by this method.
+       * <p>The {@link UserHook#post(com.variant.core.LifecycleEvent) UserHook.post(TestQualificationLifecycleEvent)} method
+       * may call this to inform Variant server whether the entry for this test should
+       * be removed from this session's targeting tracker, in the case it is disqualified.
+       * If the associated session was disqualified for the associated test, and this method was passed <code>true</code>, 
+       * the entry for this test in the targeting tracker on the client will be discarded. Otherwise, existing entries for
+       * disqualified tests are left intact.
+       * 
+       * <p>Variant server will ignore the value set with this method, if the associated session was not disqualified for
+       * the associated test.
        * 
        * @param remove
        * @since 0.7

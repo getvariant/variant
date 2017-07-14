@@ -4,7 +4,7 @@ import com.variant.core.schema.Test;
 import com.variant.server.api.StateRequest;
 
 /**
- * <p>Super-interface for all run time life cycle event types .
+ * <p>p>Super-interface for all life cycle event types, whose scope is limited to a particular test.
  * 
  * @author Igor Urisman.
  * @since 0.7

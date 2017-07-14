@@ -5,8 +5,8 @@ import java.util.Collection;
 import com.typesafe.config.ConfigObject;
 
 /**
- * <p>An environment dependent implementation will use external mechanisms to flush a bunch
- * of pending Variant events to external storage. The implementation will be instantiated
+ * <p>Interface to be implemented by a user-supplied class, which handles writing
+ * Variant events to external storage. This implementation will be instantiated
  * by Variant and must be supplied in the {@code event.writer.class.name} system property.
  * By contract, the implementation must provide a no-argument constructor, which Variant will use
  * to instantiate it. Immedately followign instantiation, Variant will call {@link #init(VariantCoreInitParams)}
