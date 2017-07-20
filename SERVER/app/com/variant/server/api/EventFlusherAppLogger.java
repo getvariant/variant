@@ -1,4 +1,4 @@
-package com.variant.server.event;
+package com.variant.server.api;
 
 import java.util.Collection;
 import java.util.Map;
@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.ConfigObject;
 import com.variant.core.schema.Test.Experience;
-import com.variant.server.api.EventFlusher;
-import com.variant.server.api.FlushableEvent;
 
 /**
  * <p>An environment independent implementation of {@link EventFlusher}, which appends
