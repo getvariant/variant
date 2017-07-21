@@ -34,7 +34,7 @@ cp -r ${workspace_root_dir}/SERVER/distr/ext .
 cp -r ${workspace_root_dir}/SERVER/distr/db .
 cp ${workspace_root_dir}/SERVER/distr/bin/variant.sh bin
 mv bin/variant bin/playapp
-cp lib/variant.variant-${version}-sans-externalized.jar ../variant-server-api-${version}.jar
+cp lib/variant.variant-${version}-sans-externalized.jar ../variant-server-extapi-${version}.jar
 cd ..
 mv variant-${version} variant-server-${version}
 zip -r variant-server-${version}.zip variant-server-${version}/
