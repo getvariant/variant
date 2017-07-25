@@ -26,7 +26,7 @@ import com.variant.core.schema.Hook;
 public interface UserHook<E extends LifecycleEvent> {
 
 	/**
-	 * <p>Object initializer. By contract, an implementation must provide a puboic, no-argument constructor, which Variant server
+	 * <p>Object initializer. By contract, an implementation must provide a public, no-argument constructor, which Variant server
 	 * will use to instantiate it. However, user may wish to pass initialization data into this newly instantiated object by
 	 * providing the <code>init</code> parameter in the schema definition of the hook. Its value can be an arbitrary JSON literal
 	 * which will be parsed and passed to this method in the form of a <a href="https://typesafehub.github.io/config/latest/api/">
