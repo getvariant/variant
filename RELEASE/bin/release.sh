@@ -45,7 +45,7 @@ cp $variant_root/SERVER/target/universal/variant-server-api-0.7.1.jar $server_ex
 #
 cd ${variant_root}/CLIENT-JAVA
 mvn clean package -DskipTests
-cp target/java-client*.jar ${stage_dir}/java
+cp target/java-client*.jar ${stage_dir}/java/variant-java-client-${version}.jar
 cp distr/variant.conf ${stage_dir}/java
 
 #
