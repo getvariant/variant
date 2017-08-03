@@ -1,10 +1,10 @@
 //
 // Variant Java client + Servlet adapter demo application.
-// Demonstrates instrumentation of a basic Variant experiment on the
-// well known Petclinic application, available from the Spring project
-// at https://github.com/spring-projects/spring-petclinic.
+// Demonstrates instrumentation of a basic Variant experiment.
+// See https://github.com/getvariant/variant-java-servlet-adapter/tree/master/servlet-adapter-demo
+// for details.
 //
-// Copyright © 2015-2016 Variant, Inc. All Rights Reserved.
+// Copyright © 2015-2017 Variant, Inc. All Rights Reserved.
 
 {
    'meta':{
@@ -73,7 +73,11 @@
          'hooks':[
             {
                'name':'FirefoxDisqualifier',
-               'class':'com.variant.client.servlet.demo.server.SafariDisqualHook'
+               'class':'com.variant.server.ext.demo.FirefoxDisqualHook'
+            },
+            {
+               'name':'ChromeTargeter',
+               'class':'com.variant.server.ext.demo.ChromeTargetingHook'
             }
          ]
       }                                                     
