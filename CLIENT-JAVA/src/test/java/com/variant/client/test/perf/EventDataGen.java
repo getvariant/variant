@@ -101,7 +101,7 @@ public class EventDataGen extends ClientBaseTestWithServer {
 			if (ssnId % 100 == 0) System.out.println(ssnId + " sessins completed.");
 		}
 		
-		
+		System.out.println("Completed. Use /event-data-gen2csv.sh to convert to plottable .CSV file");
 		// Hang on a bit so that Junit doesn't kill the writer thread when this method is over.
 		Thread.sleep(10000);
 	}

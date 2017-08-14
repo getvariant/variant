@@ -38,7 +38,7 @@ CREATE SEQUENCE event_experiences_id_seq
   NO CYCLE;
 
 CREATE VIEW events_v AS
-  SELECT e.*, ev.test_name, ev.experience_name, ev.is_control,
+  SELECT e.id event_id, e.session_id, e.created_on, e.event_name, e.event_value, ev.test_name, ev.experience_name, ev.is_control,
          (SELECT string_agg('''' || key || '''=''' || value || '''', ',') FROM event_params where event_id = e.id) event_params
   FROM events e left outer join event_experiences ev ON e.id = ev.event_id
   ORDER BY event_id
