@@ -1,7 +1,6 @@
 package com.variant.client.test;
 
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
 
 /**
  * Base class for all Core JUnit tests.
@@ -14,19 +13,25 @@ public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 	// can't use an abstract method here since it must be static. This value will only
 	// work for the java client test because they are in the same directory.
 	// the java servlet project will have to override it.
-	protected static String defaultPathToServerProject = "../SERVER";
+	final private static String defaultPathToServerProject = "../SERVER";
+	
+	final private static String defaultServerConfig = "conf-test/variant-testProd.conf";
 	
 	/**
-	 * Start the server before each test case
+	 * Start the server once for test case
 	 * @throws Exception
 	 */
-	@BeforeClass
-	public static void beforeClass() throws Exception {
+	protected void startServer(String serverConfig) throws Exception {
 		String sysVar = System.getProperty("variant.server.project.dir");
-		server = new ServerProcess(sysVar == null ? defaultPathToServerProject : sysVar);
+		String exec = (sysVar == null ? defaultPathToServerProject : sysVar) + "/bin/startServer.sh";
+		String conf = serverConfig == null ? defaultServerConfig : serverConfig;
+		server = new ServerProcess(new String[] {exec, conf});
 		server.start();
 	}
 
+	protected void startServer() throws Exception {
+	   startServer(null);
+	}
 	
 	@AfterClass
 	public static void afterClass() throws Exception {

@@ -3,8 +3,6 @@ package com.variant.client.test;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,15 +17,17 @@ public class ServerProcess {
 	private static final Logger LOG = LoggerFactory.getLogger(ServerProcess.class);
 	private static final long STARTUP_TIMEOUT_MILLIS = 25000; // give up if server didn't startup in 25 secs;
 		
-	private final String pathToStartServerExec;
+	private final String[] execArgs;
 	private SbtThread svrProc = null;
 	private LogReaderThread logReader = null;
 	private InputStream sbtOut;
 	private InputStream sbtErr;
 	private boolean serverUp = false;
 	
-	public ServerProcess(String pathToServerProject) {
-		pathToStartServerExec = pathToServerProject + "/bin/startServer.sh";
+	// 1st argument must be absolute path to server process.
+	// The rest of arguments are args to that process.
+	public ServerProcess(String[] execArgs) {
+	   this.execArgs = execArgs; 
 	}
 
 	/**
@@ -37,13 +37,11 @@ public class ServerProcess {
 	 * @param config
 	 */
 	public void start() throws Exception {
-		
-		start(new HashMap<String,String>());
-	}
-	
-	public void start(Map<String,String> config) throws Exception {
-		
+				
 		if (svrProc != null && svrProc.isAlive()) throw new RuntimeException("Server thread is alive. Call stop() first");
+		
+		LOG.info(String.format("Starting local server [%s] [%s]", execArgs[0], execArgs[1]));
+
 		svrProc = new SbtThread();
 		svrProc.start();
 
@@ -64,6 +62,7 @@ public class ServerProcess {
 	 * Stop the server.
 	 */
 	public void stop() {
+	   LOG.info(String.format("Stopping local server [%s] [%s]", execArgs[0], execArgs[1]));
 		// a slight delay to let the log reader have a chance to run one more time and catch up.
 		try {Thread.sleep(100);} catch(Throwable t) {}
 		svrProc.destroyProc();
@@ -88,11 +87,11 @@ public class ServerProcess {
 	private class SbtThread extends Thread {
 		
 		private Process sbt;
-		
+				
 		@Override
 		public void run() {
 			try {
-				sbt = Runtime.getRuntime().exec(pathToStartServerExec);
+				sbt = Runtime.getRuntime().exec(execArgs);
 				sbtOut = sbt.getInputStream();
 				sbtErr = sbt.getErrorStream();
 			}
