@@ -1,78 +1,54 @@
 package com.variant.client.servlet.impl;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 
-import com.typesafe.config.Config;
-import com.variant.client.ClientException;
-import com.variant.client.Connection;
-import com.variant.client.Session;
-import com.variant.client.StateRequest;
-import com.variant.client.servlet.ServletSession;
-import com.variant.client.servlet.ServletStateRequest;
-import com.variant.core.VariantEvent;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.client.VariantClient;
+import com.variant.client.VariantSession;
+import com.variant.client.servlet.VariantServletSession;
+import com.variant.client.servlet.VariantServletStateRequest;
+import com.variant.core.VariantCoreSession;
+import com.variant.core.VariantCoreStateRequest;
+import com.variant.core.event.VariantEvent;
+import com.variant.core.exception.VariantInternalException;
+import com.variant.core.util.Tuples.Pair;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
 
 /**
- * <p>The implementation of {@link ServletSession}.
+ * <p>The implementation of {@link VariantServletSession}.
  * Replaces bare client's {@link VariantCoreSession#targetForState(com.variant.core.xdm.State)} 
  * method with one, which returns the servlet-aware implementation of {@link VariantCoreStateRequest}. 
  * 
  * @author Igor Urisman
  * @since 0.6
  */
-public class ServletSessionImpl implements ServletSession {
+public class ServletSessionImpl implements VariantServletSession {
 
-	private final Connection wrapConnection;
-	private final Session bareSession;
-	private ServletStateRequest wrapStateRequest;
+	private VariantSession bareSession;
+	private VariantServletStateRequest servletStateRequest;
+	
+	// ---------------------------------------------------------------------------------------------//
+	//                                      PUBLIC AUGMENTED                                        //
+	// ---------------------------------------------------------------------------------------------//
 
-	/**
-	 * 
-	 */
-	public ServletSessionImpl(ServletConnectionImpl wrapConnection, Session bareSession) {
-		if (wrapConnection == null) throw new ClientException.Internal("Servlet connection cannot be null");
-		if (bareSession == null) throw new ClientException.Internal("Bare session cannot be null");
-		this.wrapConnection = wrapConnection;
+	@Override
+	public VariantServletStateRequest targetForState(State state) {
+		servletStateRequest = new ServletStateRequestImpl(bareSession.targetForState(state), this);
+		return servletStateRequest;
+	}
+
+	@Override
+	public VariantCoreStateRequest getStateRequest() {
+		return servletStateRequest;
+	}
+
+	// ---------------------------------------------------------------------------------------------//
+	//                                      PUBLIC PASS-THRU                                        //
+	// ---------------------------------------------------------------------------------------------//
+
+	public ServletSessionImpl(VariantSession bareSession) {
+		if (bareSession == null) throw new VariantInternalException("Bare session cannot be null");
 		this.bareSession = bareSession;
-	}
-
-	@Override
-	public ServletStateRequest targetForState(State state) {
-		wrapStateRequest = new ServletStateRequestImpl(this, bareSession.targetForState(state));
-		return wrapStateRequest;
-	}
-
-	@Override
-	public Object clearAttribute(String name) {
-		return bareSession.clearAttribute(name);
-	}
-
-	@Override
-	public Object getAttribute(String name) {
-		return bareSession.getAttribute(name);
-	}
-
-	@Override
-	public Connection getConnection() {
-		return wrapConnection;
-	}
-
-	@Override
-	public Config getConfig() {
-		return bareSession.getConfig();
-	}
-
-	@Override
-	public Date getCreateDate() {
-		return bareSession.getCreateDate();
-	}
-
-	@Override
-	public Set<Test> getDisqualifiedTests() {
-		return bareSession.getDisqualifiedTests();
 	}
 
 	@Override
@@ -81,33 +57,28 @@ public class ServletSessionImpl implements ServletSession {
 	}
 
 	@Override
-	public StateRequest getStateRequest() {
-		return wrapStateRequest;
+	public long creationTimestamp() {
+		return bareSession.creationTimestamp();
 	}
 
 	@Override
-	public long getTimeoutMillis() {
-		return bareSession.getTimeoutMillis();
+	public String getSchemaId() {
+		return bareSession.getSchemaId();
 	}
 
 	@Override
-	public Map<State, Integer> getTraversedStates() {
+	public Collection<Pair<State, Integer>> getTraversedStates() {
 		return bareSession.getTraversedStates();
 	}
 
 	@Override
-	public Set<Test> getTraversedTests() {
+	public Collection<Test> getTraversedTests() {
 		return bareSession.getTraversedTests();
 	}
 
 	@Override
-	public boolean isExpired() {
-		return bareSession.isExpired();
-	}
-
-	@Override
-	public Object setAttribute(String name, Object value) {
-		return bareSession.setAttribute(name, value);
+	public Collection<Test> getDisqualifiedTests() {
+		return bareSession.getDisqualifiedTests();
 	}
 
 	@Override
@@ -115,5 +86,31 @@ public class ServletSessionImpl implements ServletSession {
 		bareSession.triggerEvent(event);
 	}
 
+	@Override
+	public boolean isExpired() {
+		return bareSession.isExpired();
+	}
+	
+	@Override
+	public Object setAttribute(String name, Object value) {
+		return bareSession.setAttribute(name, value);
+	}
+
+	@Override
+	public Object getAttribute(String name) {
+		return bareSession.getAttribute(name);
+	}
+
+	@Override
+	public VariantClient getClient() {
+		return bareSession.getClient();
+	}
+	// ---------------------------------------------------------------------------------------------//
+	//                                         PUBLIC EXT                                           //
+	// ---------------------------------------------------------------------------------------------//
+
+	public VariantCoreSession getBareSession() {
+		return bareSession;
+	}
 
 }

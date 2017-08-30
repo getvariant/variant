@@ -4,12 +4,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/**
- * Cookie class encapsulates everything common to all Variant HTTP cookies.
- * 
- * @author noneofyourbusiness
- *
- */
 public abstract class VariantCookie {
 
 	private String name = null;

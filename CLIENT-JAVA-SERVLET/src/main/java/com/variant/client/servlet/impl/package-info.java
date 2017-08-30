@@ -1,5 +1,5 @@
 /**
- * Private implementations of the interfaces in package {@code com.variant.client.server}
+ * "Private" implementations of "public" interfaces in {@link com.variant.client.servlet}.
  * 
  * @since 0.6
  */

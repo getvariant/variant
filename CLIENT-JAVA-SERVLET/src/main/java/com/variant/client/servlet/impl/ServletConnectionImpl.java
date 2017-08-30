@@ -2,58 +2,25 @@ package com.variant.client.servlet.impl;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.typesafe.config.Config;
-import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
-import com.variant.client.servlet.ServletConnection;
-import com.variant.client.servlet.ServletSession;
-import com.variant.client.servlet.ServletVariantClient;
+import com.variant.client.servlet.VariantServletClient;
+import com.variant.client.servlet.VariantServletConnection;
+import com.variant.client.servlet.VariantServletSession;
 import com.variant.core.schema.Schema;
 
-public class ServletConnectionImpl implements ServletConnection {
+public class ServletConnectionImpl implements VariantServletConnection {
 
-	private static final String ATTR_NAME = "variant-wrap-session";
-	private final ServletVariantClient wrapClient;
+	private final VariantServletClient wrapClient;
 	private final Connection bareConnection;
 	
-	/**
-	 * Wrap the bare session, but only if we haven't already. We do this
-	 * to preserve the bare API's idempotency of the getSession() calls, i.e.
-	 * we don't want to re-wrap the same bare session into distinct wrapper
-	 * sessions.
-	 * 
-	 * @param bareSsn
-	 * @return
-	 */
-	private ServletSessionImpl wrap(Session bareSsn) {
-		
-		if (bareSsn == null) return null;
-		
-		// If this bare session has already been wrapped, don't re-wrap.
-		ServletSessionImpl result = (ServletSessionImpl) bareSsn.getAttribute(ATTR_NAME);
-		if (result == null) {
-			// Not yet been wrapped.
-			result = new ServletSessionImpl(this, bareSsn);
-			bareSsn.setAttribute(ATTR_NAME, result);
-		}
-		return result;
-
-	}
-	
-	/**
-	 */
-	public ServletConnectionImpl(ServletVariantClient wrapClient, Connection bareConnection) {
+	public ServletConnectionImpl(VariantServletClient wrapClient, Connection bareConnection) {
 		this.wrapClient = wrapClient;
 		this.bareConnection = bareConnection;
 	}
 	
-	@Override
-	public String getId() {
-		return bareConnection.getId();
-	}
-
+	
 	@Override
 	public void close() {
 		bareConnection.close();
@@ -65,19 +32,12 @@ public class ServletConnectionImpl implements ServletConnection {
 	}
 
 	@Override
-	public Config getConfig() {
-		return wrapClient.getConfig();
-	}
-
-	@Override
-	public ServletSession getOrCreateSession(Object... userData) {
-		if (userData.length != 1 || !(userData[0] instanceof HttpServletRequest)) 
-			throw new ClientException.User("User data must have one element of type HttpServletRequest");
+	public VariantServletSession getOrCreateSession(Object... userData) {
 		return getOrCreateSession((HttpServletRequest) userData[0]);
 	}
 
-	public ServletSession getOrCreateSession(HttpServletRequest req) {
-		return wrap(bareConnection.getOrCreateSession(req));
+	public VariantServletSession getOrCreateSession(HttpServletRequest req) {
+		return new ServletSessionImpl(this, bareConnection.getOrCreateSession(req));
 	}
 
 	@Override
@@ -86,24 +46,25 @@ public class ServletConnectionImpl implements ServletConnection {
 	}
 
 	@Override
-	public ServletSession getSession(Object... userData) {
-		if (userData.length != 1 || !(userData[0] instanceof HttpServletRequest)) 
-			throw new ClientException.User("User data must have one element of type HttpServletRequest");
+	public VariantServletSession getSession(Object... userData) {
 		return getSession((HttpServletRequest) userData[0]);
 	}
 
-	public ServletSession getSession(HttpServletRequest req) {
-		return wrap(bareConnection.getSession(req));
+	public VariantServletSession getSession(HttpServletRequest req) {
+		Session bareSession = bareConnection.getSession(req);
+		return bareSession == null ? null : new ServletSessionImpl(this, bareSession);
 	}
 
 	@Override
-	public ServletSession getSessionById(String sid) {
-		return wrap(bareConnection.getSessionById(sid));
+	public VariantServletSession getSessionById(String sid) {
+		Session bareSession = bareConnection.getSessionById(sid);
+		return bareSession == null ? null : new ServletSessionImpl(this, bareSession);
 	}
 
 	@Override
 	public Status getStatus() {
 		return bareConnection.getStatus();
 	}
+
 	
 }

@@ -29,27 +29,28 @@ PetClinic :: a Spring Framework demonstration
     <spring:url value="/webjars/jquery-ui/1.10.3/themes/base/jquery-ui.css" var="jQueryUiCss"/>
     <link href="${jQueryUiCss}" rel="stylesheet"></link>
     
-    <%-- --------------------------------------------------------------------------- --%>
-    <%--                             Variant Demo start                              --%>
-    <%-- --------------------------------------------------------------------------- --%>
-    
-    <script src="http://getvariant.com/js/variant-0.7.0.js"></script>
+    <%-- Variant Demo addition start --%>
+    <script src="http://getvariant.com/js/variant-0.6.3.js"></script>
 
-    <%@ page import="com.variant.client.StateRequest" %>
-    <%@ page import="com.variant.client.Session" %>
+    <%@ page import="com.variant.client.VariantStateRequest" %>
+    <%@ page import="com.variant.client.VariantSession" %>
+    <%@ page import="com.variant.client.VariantClient" %>
+    <%@ page import="com.variant.client.VariantClientPropertyKeys" %>
+    <%@ page import="com.variant.core.VariantProperties" %>
     <%@ page import="com.variant.client.servlet.VariantFilter" %>
     <%
         // If we're on an instrumented page VariantFilter has put the current state request in http request.
-        StateRequest varRequest = (StateRequest)request.getAttribute(VariantFilter.VARIANT_REQUEST_ATTRIBUTE_NAME);
+        VariantStateRequest varRequest = (VariantStateRequest)request.getAttribute(VariantFilter.VARIANT_REQUEST_ATTRIBUTE_NAME);
         if (varRequest != null) {
-           Session varSession = varRequest.getSession();
+	        VariantSession varSession = varRequest.getSession();
+   		 	VariantClient varClient = varSession.getClient();
+    		VariantProperties varProps = varClient.getProperties();
+    		String varSvrEndpointUrl = varProps.get(VariantClientPropertyKeys.SERVER_ENDPOINT_URL);
     %>
 
 	    <script>
 	 		variant.boot({
-	   			url:"<%=varSession.getConfig().getString("server.url")%>",
-	   			sid:"<%=varSession.getId()%>",
-               cid:"<%=varSession.getConnection().getId()%>",
+	   			url:"<%=varSvrEndpointUrl%>",
 	   			success: function(data, textStatus) {
 	   				console.log("POST returned status '" + textStatus + "' and body '" + data + "'");}
 			});
@@ -61,11 +62,8 @@ PetClinic :: a Spring Framework demonstration
 		});
 	    </script>
 
-    <% } %>    
-
-    <%-- --------------------------------------------------------------------------- --%>
-    <%--                              Variant Demo end                               --%>
-    <%-- --------------------------------------------------------------------------- --%>
+	<% } %>    
+    <%-- Variant Demo addition end --%>
      
 </head>
 

@@ -8,31 +8,112 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.variant.client.Connection.Status;
-import com.variant.client.ConnectionClosedException;
-import com.variant.client.Session;
-import com.variant.client.StateRequest;
+import com.variant.client.VariantSession;
+import com.variant.client.VariantStateRequest;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.servlet.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.TargetingTrackerHttpCookie;
-import com.variant.client.servlet.ServletVariantClient;
-import com.variant.client.servlet.ServletConnection;
-import com.variant.client.servlet.ServletSession;
-import com.variant.client.servlet.ServletStateRequest;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.util.Tuples.Pair;
-import com.variant.core.util.VariantCollectionsUtils;
+import com.variant.client.servlet.VariantServletClient;
+import com.variant.client.servlet.VariantServletSession;
+import com.variant.client.servlet.VariantServletStateRequest;
+import com.variant.client.servlet.impl.ServletSessionImpl;
+import com.variant.client.servlet.impl.ServletStateRequestImpl;
+import com.variant.core.event.impl.util.VariantCollectionsUtils;
+import com.variant.core.event.impl.util.VariantStringUtils;
+import com.variant.core.exception.VariantInternalException;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.xdm.Schema;
+import com.variant.core.xdm.State;
+import com.variant.core.xdm.Test;
+import com.variant.core.xdm.impl.MessageTemplate;
 
 public class ServletSessionTest extends ServletClientBaseTest {
 
-	//private static Random rand = new Random(System.currentTimeMillis());
-	private static final ServletVariantClient servletClient = ServletVariantClient.Factory.getInstance();
+	private static Random rand = new Random(System.currentTimeMillis());
+	private VariantServletClient servletClient = newServletAdapterClient();
+	
+	/**
+	 * No Schema.
+	 *  
+	 * @throws Exception
+	 */
+	@org.junit.Test
+	public void noSchemaTest() throws Exception {
+
+		assertNull(servletClient.getSchema());
+		final HttpServletRequest httpReq = mockHttpServletRequest("foo");  // no vssn.
+
+		new VariantRuntimeExceptionInterceptor() {
+			@Override public void toRun() { servletClient.getOrCreateSession(httpReq); }
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_UNDEFINED);	
+	}
+
+	/**
+	 * Old Schema.
+	 *  
+	 * @throws Exception
+	 */
+	@org.junit.Test
+	public void oldSchemaTest() throws Exception {
+
+		ParserResponse response = servletClient.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertNull(response.highestMessageSeverity());
+		
+		final HttpServletRequest httpReq = mockHttpServletRequest("foo");
+		final Schema oldSchema = servletClient.getSchema();
+
+		final VariantServletSession ssn1 = servletClient.getOrCreateSession(httpReq);
+		assertNotNull(ssn1);
+		
+		// replace the schema and all ops on ssn1 should fail.
+		response = servletClient.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertNull(response.highestMessageSeverity());
+		final Schema newSchema = servletClient.getSchema();
+		
+		// Can't obtain state on an obsolete schema.
+		new VariantRuntimeExceptionInterceptor() {
+			@Override public void toRun() { 
+				 oldSchema.getState("state1");
+			}
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_OBSOLETE, oldSchema.getId());
+
+		// Can't target a session created with old schema.
+		new VariantRuntimeExceptionInterceptor() {
+			@Override public void toRun() { 
+				ssn1.targetForState(newSchema.getState("state1"));
+			}
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, servletClient.getSchema().getId(), oldSchema.getId());
+
+		// Get a new session, target it and replace schema again.
+		
+		VariantServletSession ssn2 = servletClient.getOrCreateSession(httpReq);
+		final VariantServletStateRequest req = ssn2.targetForState(newSchema.getState("state1"));
+
+		response = servletClient.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertNull(response.highestMessageSeverity());
+		
+		final Schema newSchema2 = servletClient.getSchema();
+		final HttpServletResponseMock httpResp = mockHttpServletResponse();
+		new VariantRuntimeExceptionInterceptor() {
+			@Override public void toRun() { 
+				req.commit(httpResp);
+			}
+		}.assertThrown(MessageTemplate.RUN_SCHEMA_MODIFIED, newSchema2.getId(), newSchema.getId());
+	
+	}
+
 	
 	/**
 	 * Test bare and servlet signatures of getSession()
@@ -42,47 +123,53 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	 */
 	@org.junit.Test
 	public void getSessionNoTrackerTest() throws Exception {
-		
-		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
-		
+
+		ParserResponse response = servletClient.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertNull(response.highestMessageSeverity());
+
 		// Servlet signatures
 		final HttpServletRequest httpReq = mockHttpServletRequest();
 		
-		ServletSession ssn1 = conn.getSession(httpReq);
+		VariantSession ssn1 = servletClient.getSession(httpReq);
 		assertNull(ssn1);
 		
-		ssn1 = conn.getOrCreateSession(httpReq);
+		ssn1 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 
-		ServletSession ssn2 = conn.getSession(httpReq);
+		VariantServletSession ssn2 = servletClient.getSession(httpReq);
 		assertNull(ssn2);
 		
-		ssn2 = conn.getOrCreateSession(httpReq);
+		ssn2 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn2);
 		assertNotEquals(ssn1, ssn2);
 
 		// Bare signatures		
-		ssn1 = conn.getSession((Object) httpReq);
+		ssn1 = servletClient.getSession((Object) httpReq);
 		assertNull(ssn1);
 		
-		ssn1 = conn.getOrCreateSession((Object)httpReq);
+		ssn1 = servletClient.getOrCreateSession((Object)httpReq);
 		assertNotNull(ssn1);
 
-		new ServletClientExceptionIntercepter() {
+		new VariantInternalExceptionInterceptor() {
 			@Override public void toRun() { 
-				conn.getSession(new Object());
+				servletClient.getSession(new Object());
+			}
+			@Override public void onThrown(VariantInternalException e) { 
+				assertTrue(e.getCause() instanceof ClassCastException);
 			}
 		}.assertThrown();
 
-		new ServletClientExceptionIntercepter() {
+		new VariantInternalExceptionInterceptor() {
 			@Override public void toRun() { 
-				conn.getOrCreateSession(new Object());
+				servletClient.getOrCreateSession(new Object());
+			}
+			@Override public void onThrown(VariantInternalException e) { 
+				assertTrue(e.getCause() instanceof ClassCastException);
 			}
 		}.assertThrown();
-		
-		conn.close();
-		assertEquals(Status.CLOSED_BY_CLIENT,conn.getStatus());
+
 	}
 	
 	/**
@@ -94,54 +181,56 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void getSessionWithTrackerTest() throws Exception {
 
-		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
+		ParserResponse response = servletClient.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertNull(response.highestMessageSeverity());
 
 		// Servlet signatures
-		String sid = newSid();
-		final HttpServletRequest httpReq = mockHttpServletRequest(sid);
+		String sessionId = VariantStringUtils.random64BitString(rand);
+		final HttpServletRequest httpReq = mockHttpServletRequest(sessionId);
 		
-		Session ssn1 = conn.getSession(httpReq);
+		VariantSession ssn1 = servletClient.getSession(httpReq);
 		assertNull(ssn1);
 		
-		ssn1 = conn.getOrCreateSession(httpReq);
+		ssn1 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 
-		ServletSession ssn2 = conn.getSession(httpReq);
+		VariantServletSession ssn2 = servletClient.getSession(httpReq);
 		assertNotNull(ssn2);  // ID in tracker => session already created by previous call.
 		
-		ssn2 = conn.getOrCreateSession(httpReq);
+		ssn2 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn2);
-		assertEquals(ssn1, ssn2);
+		assertEquals(((ServletSessionImpl)ssn1).getBareSession(), ((ServletSessionImpl)ssn2).getBareSession());
 
 		// Bare signatures		
-		sid = newSid();
-		final HttpServletRequest httpReq2 = mockHttpServletRequest(sid);
+		sessionId = VariantStringUtils.random64BitString(rand);
+		final HttpServletRequest httpReq2 = mockHttpServletRequest(sessionId);
 
-		ssn1 = conn.getSession((Object) httpReq2);
+		ssn1 = servletClient.getSession((Object) httpReq2);
 		assertNull(ssn1);
 		
-		ssn1 = conn.getOrCreateSession((Object)httpReq2);
+		ssn1 = servletClient.getOrCreateSession((Object)httpReq2);
 		assertNotNull(ssn1);
-		
-		ssn2 = conn.getOrCreateSession((Object)httpReq2);
-		assertNotNull(ssn2);
-		assertEquals(ssn1, ssn2);
 
-		ssn2 = conn.getSession((Object)httpReq2);
-		assertNotNull(ssn2);
-		assertEquals(ssn1, ssn2);
+		new VariantInternalExceptionInterceptor() {
+			@Override public void toRun() { 
+				servletClient.getSession(new Object());
+			}
+			@Override public void onThrown(VariantInternalException e) { 
+				assertTrue(e.getCause() instanceof ClassCastException);
+			}
+		}.assertThrown();
 
-		ssn2 = conn.getSessionById(sid);
-		assertNotNull(ssn2);
-		assertEquals(ssn1, ssn2);
+		new VariantInternalExceptionInterceptor() {
+			@Override public void toRun() { 
+				servletClient.getOrCreateSession(new Object());
+			}
+			@Override public void onThrown(VariantInternalException e) { 
+				assertTrue(e.getCause() instanceof ClassCastException);
+			}
+		}.assertThrown();
 
-		conn.close();
-		assertEquals(Status.CLOSED_BY_CLIENT,conn.getStatus());
-
-		//
-		conn.close();
-		assertEquals(Status.CLOSED_BY_CLIENT,conn.getStatus());
 
 	}
 	
@@ -151,36 +240,49 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	 * @throws Exception
 	 */
 	@org.junit.Test
-	public void fullStateRequestNoIdTracker() throws Exception {
+	public void noSessionWithIdInTrackerTest() throws Exception {
 		
-		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
-		
-		Schema schema = conn.getSchema();
-		assertNotNull(schema);
+		ParserResponse response = servletClient.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertNull(response.highestMessageSeverity());
+
+		Schema schema = servletClient.getSchema();
 		
 		HttpServletRequest httpReq = mockHttpServletRequest();
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		ServletSession ssn1 = conn.getOrCreateSession(httpReq);
+		VariantServletSession ssn1 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 		assertNotNull(ssn1.getId());
-		assertEquals(conn, ssn1.getConnection());
+		assertEquals(ssn1.getSchemaId(), schema.getId());
 		assertNull(ssn1.getStateRequest());		
 		assertEquals(0, ssn1.getTraversedStates().size());
 		assertEquals(0, ssn1.getTraversedTests().size());
 		assertEquals(0, httpResp.getCookies().length);
+		//assertEquals(1, httpResp.getCookies().length);  Cookie should be added after commit;
 		
-		ServletSession ssn2 = conn.getOrCreateSession(httpReq);
-		assertNotEquals(ssn1, ssn2);  // getSession is not idempotent, until committed.  
+		VariantServletSession ssn2 = servletClient.getOrCreateSession(httpReq);
+		assertNotNull(ssn2);
 		
+		// No guarantee that consequtive calls to getSession() with the same args will return the same object.
+		//assertEquals(ssn1, ssn2); 
+		assertNull(ssn2.getStateRequest());		
+		assertEquals(ssn2.getSchemaId(), schema.getId());
+		assertEquals(0, ssn2.getTraversedStates().size());
+		assertEquals(0, ssn2.getTraversedTests().size());
+
 		State state1 = schema.getState("state1");		
-		ServletStateRequest varReq = ssn2.targetForState(state1);
+		VariantServletStateRequest varReq = ssn2.targetForState(state1);
+		//System.out.println(((VariantServletSessionImpl)ssn2).toJson());
 		assertEquals(state1, varReq.getState());
-		assertEquals(varReq, ssn2.getStateRequest());
-		assertEqualAsSets(
-				VariantCollectionsUtils.pairsToMap(new Pair<State,Integer>(state1, 1)), 
-				ssn2.getTraversedStates());
+		assertEquals(ssn2.getSchemaId(), schema.getId());
+		assertEquals(
+				((ServletStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((ServletStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
+		assertEquals(
+				"[(state1, 1)]", 
+				Arrays.toString(ssn2.getTraversedStates().toArray()));
 		
 		Collection<Test> expectedTests = VariantCollectionsUtils.list(
 				schema.getTest("test2"), 
@@ -191,40 +293,40 @@ public class ServletSessionTest extends ServletClientBaseTest {
 		
 		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
 
-		assertTrue(varReq.commit(httpResp));
-		assertTrue(varReq.isCommitted());
+		varReq.commit(httpResp);
 
 		// commit() has added the targeting tracker cookie.
 		assertEquals(2, httpResp.getCookies().length);
 		assertEquals(ssn2, varReq.getSession());
-		assertEquals(varReq, ssn2.getStateRequest());
 		assertEquals(ssn2.getId(), httpResp.getCookie(SessionIdTrackerHttpCookie.COOKIE_NAME).getValue());
 		for (Test test: expectedTests)
 			assertMatches(".*\\." + test.getName() + "\\..*", httpResp.getCookie(TargetingTrackerHttpCookie.COOKIE_NAME).getValue());
 		
 		// The session shouldn't have changed after commit.
-		assertEqualAsSets(
-				VariantCollectionsUtils.pairsToMap(new Pair<State,Integer>(state1, 1)), 
-				ssn2.getTraversedStates());
+		assertEquals(ssn2.getSchemaId(), schema.getId());
+		assertEquals(
+				((ServletStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((ServletStateRequestImpl)ssn2.getStateRequest()).getCoreStateRequest().toJson());
+		assertEquals(
+				"[(state1, 1)]", 
+				Arrays.toString(ssn2.getTraversedStates().toArray()));
 
 		assertEqualAsSets(expectedTests, ssn2.getTraversedTests());
 
 		// Commit should have saved the session.
 		httpReq = mockHttpServletRequest(httpResp);
-		ServletSession ssn3 = conn.getSession(httpReq);
-		assertTrue(varReq.isCommitted());
+		VariantServletSession ssn3 = servletClient.getSession(httpReq);
 		assertEquals(ssn3, ssn2);
-		assertEqualAsSets(
-				VariantCollectionsUtils.pairsToMap(new Pair<State,Integer>(state1, 1)), 
-				ssn2.getTraversedStates());
-
+		assertEquals(ssn3.getSchemaId(), schema.getId());
+		System.out.println(((ServletStateRequestImpl)varReq).getCoreStateRequest().toJson());
+		System.out.println(((ServletStateRequestImpl)ssn3.getStateRequest()).getCoreStateRequest().toJson());
+		assertEquals(
+				((ServletStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((ServletStateRequestImpl)ssn3.getStateRequest()).getCoreStateRequest().toJson());
+		assertEquals(
+				"[(state1, 1)]", 
+				Arrays.toString(ssn3.getTraversedStates().toArray()));
 		assertEqualAsSets(expectedTests, ssn3.getTraversedTests());		
-
-		// should be a no-op.
-		assertFalse(varReq.commit(httpResp));
-		
-		conn.close();
-		assertEquals(Status.CLOSED_BY_CLIENT,conn.getStatus());
 	}
 	
 	/**
@@ -233,35 +335,40 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	 * @throws Exception
 	 */
 	@org.junit.Test
-	public void fullStateRequestWithIdTracker() throws Exception {
+	public void sessionIDInTrackerTest() throws Exception {
 		
-		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
-		
-		Schema schema = conn.getSchema();
-		assertNotNull(schema);
+		ParserResponse response = servletClient.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertNull(response.highestMessageSeverity());
 
-		String sid = newSid();
-		HttpServletRequest httpReq = mockHttpServletRequest(sid);
+		Schema schema = servletClient.getSchema();
+		String sessionId = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
+		HttpServletRequest httpReq = mockHttpServletRequest(sessionId);
 		HttpServletResponseMock httpResp = mockHttpServletResponse();
 
-		ServletSession ssn1 = conn.getSession(httpReq);
+		VariantServletSession ssn1 = servletClient.getSession(httpReq);
 		assertNull(ssn1);
 
-		ssn1 = conn.getOrCreateSession(httpReq);
+		ssn1 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
-		assertEquals(sid, ssn1.getId());
+		assertEquals(sessionId, ssn1.getId());
+		assertEquals(ssn1.getSchemaId(), schema.getId());
 		assertNull(ssn1.getStateRequest());		
 		assertEquals(0, ssn1.getTraversedStates().size());
 		assertEquals(0, ssn1.getTraversedTests().size());
 		assertEquals(0, httpResp.getCookies().length);  // We didn't drop the ssnid cookie, because there was one in request.
 		
 		State state2 = schema.getState("state2");		
-		StateRequest varReq = ssn1.targetForState(state2);
-		assertEquals(ssn1, varReq.getSession());
-		assertEqualAsSets(
-				VariantCollectionsUtils.pairsToMap(new Pair<State,Integer>(state2, 1)), 
-				ssn1.getTraversedStates());
+		VariantStateRequest varReq = ssn1.targetForState(state2);
+		assertEquals(((ServletSessionImpl)ssn1).getBareSession(), ((ServletSessionImpl)varReq.getSession()).getBareSession());
+		assertEquals(ssn1.getSchemaId(), schema.getId());
+		assertEquals(
+				((ServletStateRequestImpl)varReq).getCoreStateRequest().toJson(), 
+				((ServletStateRequestImpl)ssn1.getStateRequest()).getCoreStateRequest().toJson());
+		assertEquals(
+				"[(state2, 1)]", 
+				Arrays.toString(ssn1.getTraversedStates().toArray()));
 		
 		Collection<Test> expectedTests = VariantCollectionsUtils.list(
 				schema.getTest("test1"), 
@@ -273,20 +380,18 @@ public class ServletSessionTest extends ServletClientBaseTest {
 
 		assertEqualAsSets(expectedTests, ssn1.getTraversedTests());		
 
-		assertTrue(varReq.commit(httpResp));
+		varReq.commit(httpResp);
 		
 		// Create a new HTTP request with the same VRNT-SSNID cookie.  Should fetch the same bare session.
-		HttpServletRequest httpReq2 = mockHttpServletRequest(sid);
-		ServletSession ssn2 = conn.getSession(httpReq2);
-		assertEquals(ssn2, varReq.getSession());
-		assertEquals(ssn2.getStateRequest(), varReq);
-		assertEqualAsSets(
-				VariantCollectionsUtils.pairsToMap(new Pair<State,Integer>(state2, 1)), 
-				ssn1.getTraversedStates());
-		assertEqualAsSets(expectedTests, ssn1.getTraversedTests());
-		
-		conn.close();
-		assertEquals(Status.CLOSED_BY_CLIENT,conn.getStatus());
+		HttpServletRequest httpReq2 = mockHttpServletRequest(sessionId);
+		VariantServletSession ssn2 = servletClient.getSession(httpReq2);
+		assertEquals(((ServletSessionImpl)ssn2).getBareSession(), ((ServletSessionImpl)varReq.getSession()).getBareSession());
+		assertEquals(ssn2.getSchemaId(), schema.getId());
+		assertEquals(ssn2.getStateRequest().getResolvedParameterNames(), varReq.getSession().getStateRequest().getResolvedParameterNames());
+		assertEquals(
+				"[(state2, 1)]", 
+				Arrays.toString(ssn2.getTraversedStates().toArray()));
+		assertEqualAsSets(expectedTests, ssn1.getTraversedTests());		
 	}
 	
 	/**
@@ -297,89 +402,43 @@ public class ServletSessionTest extends ServletClientBaseTest {
 	@org.junit.Test
 	public void cookieForgedTest() throws Exception {
 		
-		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
-		
-		Schema schema = conn.getSchema();
-		assertNotNull(schema);
+		ParserResponse response = servletClient.parseSchema(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		if (response.hasMessages()) printMessages(response);
+		assertFalse(response.hasMessages());
+		assertNull(response.highestMessageSeverity());
 
+		Schema schema = servletClient.getSchema();
 		State state3 = schema.getState("state3");
 		assertNotNull(state3);
 		
 		// Request 1: new session.
 		HttpServletRequest httpReq = mockHttpServletRequest();
-		ServletSession ssn1 = conn.getOrCreateSession(httpReq);
+		VariantServletSession ssn1 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn1);
 		String sid1 = ssn1.getId();
-		ServletStateRequest req = ssn1.targetForState(state3);
+		VariantServletStateRequest req = ssn1.targetForState(state3);
 		HttpServletResponseMock resp = mockHttpServletResponse();
 		req.commit(resp);
 		
 		// Request 2: Same SID from cookie.
 		httpReq = mockHttpServletRequest(resp);
-		ServletSession ssn2 = conn.getSession(httpReq);
+		VariantServletSession ssn2 = servletClient.getSession(httpReq);
 		assertEquals(ssn1, ssn2);
 		assertEquals(sid1, ssn2.getId());
 		
 		// Request 3: SID cookie removed
 		httpReq = mockHttpServletRequest();
-		ssn2 = conn.getSession(httpReq);
+		ssn2 = servletClient.getSession(httpReq);
 		assertNull(ssn2);
 
 		// Request 4: New SID in cookie
-		String sid2 = newSid();
+		String sid2 = VariantStringUtils.random64BitString(rand);
 		assertNotEquals(sid1, sid2);
 		httpReq = mockHttpServletRequest(sid2);
-		ssn2 = conn.getSession(httpReq);
+		ssn2 = servletClient.getSession(httpReq);
 		assertNull(ssn2);
-		ssn2 = conn.getOrCreateSession(httpReq);
+		ssn2 = servletClient.getOrCreateSession(httpReq);
 		assertNotNull(ssn2);
 		assertEquals(sid2, ssn2.getId());
-		
-		conn.close();
-		assertEquals(Status.CLOSED_BY_CLIENT,conn.getStatus());
 	}
-	
-	/**
-	 */
-	@org.junit.Test
-	public void connClosedTest() throws Exception {
-		
-		final ServletConnection conn = servletClient.getConnection("big_covar_schema");
-		assertEquals(ServletConnection.Status.OPEN, conn.getStatus());
-
-		Schema schema = conn.getSchema();
-		assertNotNull(schema);
-
-		final State state2 = schema.getState("state2");
-		assertNotNull(state2);
-
-		String sid1 = newSid();
-		HttpServletRequest httpReq1 = mockHttpServletRequest(sid1);
-		ServletSession ssn1 = conn.getOrCreateSession(httpReq1);
-		assertNotNull(ssn1);
-		final ServletStateRequest varReq1 = ssn1.targetForState(state2);
-		final HttpServletResponseMock resp1 = mockHttpServletResponse();
-		
-		String sid2 = newSid();
-		HttpServletRequest httpReq2 = mockHttpServletRequest(sid2);
-		final ServletSession ssn2 = conn.getOrCreateSession(httpReq2);
-		assertNotNull(ssn2);
-
-		conn.close();
-		assertEquals(Status.CLOSED_BY_CLIENT,conn.getStatus());
-		
-		new ServletClientExceptionIntercepter() {
-			@Override public void toRun() { 
-				varReq1.commit(resp1);
-			}
-		}.assertThrown(ConnectionClosedException.class);
-
-		new ServletClientExceptionIntercepter() {
-			@Override public void toRun() { 
-				ssn2.targetForState(state2);
-			}
-		}.assertThrown(ConnectionClosedException.class);		
-	}
-
 }

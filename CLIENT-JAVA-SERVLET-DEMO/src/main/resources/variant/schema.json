@@ -1,0 +1,70 @@
+
+// Variant Demo Petclinic Application.
+// Demonstrates instrumentation of a basic Variant Experiment
+// in conjunction with the Varaint Servlet Adapter.
+
+{                                                           
+   'states':[                                                
+     { 
+       // The New Owner page used to add owner at /petclinic/owners/new 
+       'name':'newOwner',                                     
+	    'parameters': {
+           'path':'/petclinic/owners/new'
+        }                                                    
+     },                                                    
+     {  
+       // The Owner Detail page. Note that owner ID is in the path,
+        // so we have to use regular expression to match.
+       'name':'ownerDetail',          
+	    'parameters': {
+           'path':'/petclinic/owners/~\\d+/'
+        }                                                    
+     }                                                     
+   ],                                                        
+   'tests':[                                                 
+      {                                                      
+         'name':'NewOwnerTest',
+         'isOn': true,                                     
+         'experiences':[                                     
+            {                                                
+               'name':'outOfTheBox',                                   
+               'weight':1,                                  
+               'isControl':true                              
+            },                                               
+            {                                                
+               'name':'tosCheckbox',                                   
+               'weight':1                                   
+            },                                               
+            {                                                
+               'name':'tosAndMailCheckbox',                                   
+               'weight':1                                   
+            }                                               
+         ],                                                  
+         'onStates':[                                         
+            {                                                
+               'stateRef':'newOwner',                            
+               'variants':[                                  
+                  {                                          
+                     'experienceRef': 'tosCheckbox',                   
+                	 'parameters': {
+                        'path':'/owners/new/variant/newOwnerTest.tosCheckbox'         
+                     }                                          
+                  },                                         
+                  {                                          
+                     'experienceRef': 'tosAndMailCheckbox',                   
+                	 'parameters': {
+                        'path':'/owners/new/variant/newOwnerTest.tosAndMailCheckbox'         
+                     }                                          
+                  }                                          
+               ]                                             
+            },
+            {                                                
+               'stateRef':'ownerDetail',                            
+               'isNonvariant': true
+            }                                                
+            
+         ]                                                   
+      }                                                     
+   ]                                                         
+}                         
+		

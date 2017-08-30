@@ -126,9 +126,15 @@ see here: http://static.springsource.org/spring/docs/current/spring-framework-re
         <filter-name>variantFilter</filter-name>
         <filter-class>com.variant.client.servlet.VariantFilter</filter-class> 
         <init-param>
-           <param-name>schema</param-name>
-           <param-value>petclinic</param-value>
+           <param-name>schemaResourceName</param-name>
+           <param-value>/variant/schema.json</param-value>
         </init-param>
+        <!-- use this if, somehow, /variant.props (always looked for) doesn't work for you.
+        <init-param>
+           <param-name>propsResourceName</param-name>
+           <param-value>/variant/variant.props</param-value>
+        </init-param>
+        -->
      </filter>
      
      <filter-mapping>

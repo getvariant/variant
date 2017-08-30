@@ -1,0 +1,13 @@
+#
+# Copyright Variant, Inc. All Rights Reserved.
+#
+# Java Servlet Adapter system properties.
+#
+
+# Session ID tracker in HTTP cookie.
+session.id.tracker.class.name = com.variant.client.servlet.SessionIdTrackerHttpCookie
+session.id.tracker.class.init = {}
+
+# Targeting tracker in cookie.
+targeting.tracker.class.name = com.variant.client.servlet.TargetingTrackerHttpCookie
+targeting.tracker.class.init = {}

@@ -1,7 +1,5 @@
 package com.variant.client.servlet.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,40 +13,42 @@ import org.mockito.Answers;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.variant.client.ClientException;
-import com.variant.client.TargetingTracker;
+import com.variant.client.VariantClient;
+import com.variant.client.VariantTargetingTracker;
+import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.mock.HttpServletRequestMock;
 import com.variant.client.mock.HttpServletResponseMock;
 import com.variant.client.mock.HttpSessionMock;
 import com.variant.client.servlet.SessionIdTrackerHttpCookie;
 import com.variant.client.servlet.TargetingTrackerHttpCookie;
-import com.variant.client.test.ClientBaseTestWithServer;
+import com.variant.client.servlet.VariantServletClient;
+import com.variant.client.servlet.impl.ServletClientImpl;
+import com.variant.client.test.BareClientBaseTest;
+import com.variant.core.impl.VariantCore;
+import com.variant.core.util.inject.Injector;
 
 /**
  * Base class for all Core JUnit tests.
  */
-public abstract class ServletClientBaseTest extends ClientBaseTestWithServer {
-		
-	//---------------------------------------------------------------------------------------------//
-	//                                 Exception Intercepter                                       //
-	//---------------------------------------------------------------------------------------------//
+public abstract class ServletClientBaseTest extends BareClientBaseTest {
+	
+	private VariantCore core;
+	
+	@Override
+	protected VariantClient newBareClient() {
+		throw new UnsupportedOperationException("Servlet Adapter tests should call newAdapterClient() instead");
+	}
 
-	protected static abstract class ServletClientExceptionIntercepter 
-		extends ExceptionInterceptor<ClientException> {
-		
-		@Override
-		final public Class<ClientException> getExceptionClass() {
-			return ClientException.class;
-		}
-		
-		/**
-		 * Server side errors: We don't have access to them at comp time
-		 */
-		final public void assertThrown(Class<? extends ClientException> cls) throws Exception {
-			ClientException result = super.run();
-			assertNotNull("Expected exception not thrown", result);
-			assertEquals(cls, result.getClass());
-		}		
+	protected VariantServletClient newServletAdapterClient() {
+		Injector.setConfigNameAsResource("/variant/injector-servlet-adapter-local-test.json");
+		ServletClientImpl result = (ServletClientImpl) VariantServletClient.Factory.getInstance("/variant/servlet-adapter-test.props");
+		core = ((VariantClientImpl)result.getBareClient()).getCoreApi();
+		return result;
+	}
+
+	@Override
+	protected VariantCore getCoreApi() {
+		return core;
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -76,7 +76,7 @@ public abstract class ServletClientBaseTest extends ClientBaseTestWithServer {
 	 * @return
 	 */
 	protected HttpServletRequestMock mockHttpServletRequest(
-			String sessionId, Collection<TargetingTracker.Entry> entries) { 
+			String sessionId, Collection<VariantTargetingTracker.Entry> entries) { 
 		
 		String targetingTrackerVal = null;
 		if (entries != null && entries.size() > 0) {

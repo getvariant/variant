@@ -1,25 +1,35 @@
 package com.variant.client.servlet.impl;
 
-import com.typesafe.config.Config;
+import java.io.InputStream;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.variant.client.VariantClient;
-import com.variant.client.servlet.ServletVariantClient;
-import com.variant.client.servlet.ServletConnection;
+import com.variant.client.VariantSession;
+import com.variant.client.servlet.VariantServletClient;
+import com.variant.client.servlet.VariantServletSession;
+import com.variant.core.VariantProperties;
+import com.variant.core.event.impl.util.VariantArrayUtils;
+import com.variant.core.hook.HookListener;
+import com.variant.core.schema.ParserResponse;
+import com.variant.core.xdm.Schema;
 
 /**
- * The implementation of {@link ServletVariantClient}.
+ * The implementation of {@link VariantServletClient}.
  * 
  * @author Igor Urisman
  * @since 0.6
  */
-public class ServletClientImpl implements ServletVariantClient {
+public class ServletClientImpl implements VariantServletClient {
 
-	private VariantClient bareClient;
+	private static final String WRAP_ATTR_NAME = ServletClientImpl.class.getSimpleName();
+	private VariantClient client;
 	
 	/**
 	 * Wrap the bare session in a servlet session, but only once.
 	 * We don't want to keep re-wrapping the same bare session.
-	 *
-	private VariantServletSession wrapBareSession(Session vareSsn) {
+	 */
+	private VariantServletSession wrapBareSession(VariantSession bareSession) {
 		
 		if (bareSession == null) return null;
 		
@@ -32,26 +42,87 @@ public class ServletClientImpl implements ServletVariantClient {
 		}
 		return result;
 	}
-	*/
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
 	/**
 	 */		
-	public ServletClientImpl() {
-		this.bareClient = VariantClient.Factory.getInstance();
+	public ServletClientImpl(String...resourceNames) {
+		String[] newArgs = VariantArrayUtils.prepend("/com/variant/client/conf/servlet-adapter.props", resourceNames, String.class);
+		this.client = VariantClient.Factory.getInstance(newArgs);
 	}
 
+	/**
+	 */
 	@Override
-	public Config getConfig() {
-		return bareClient.getConfig();
+	public VariantProperties getProperties() {
+		return client.getProperties();
 	}
 
+	/**
+	 */
 	@Override
-	public ServletConnection getConnection(String url) {
-		return new ServletConnectionImpl(this, bareClient.getConnection(url));
+	public void addHookListener(HookListener<?> listener) {
+		client.addHookListener(listener);
 	}
+	
+	/**
+	 */
+	@Override
+	public void clearHookListeners() {
+		client.clearHookListeners();
+	}
+
+	/**
+	 */
+	@Override
+	public ParserResponse parseSchema(InputStream stream, boolean deploy) {
+		return client.parseSchema(stream, deploy);
+	}
+
+	/**
+	 */
+	@Override
+	public ParserResponse parseSchema(InputStream stream) {
+		return client.parseSchema(stream);
+	}
+
+	/**
+	 */
+	@Override
+	public Schema getSchema() {
+		return client.getSchema();
+	}
+
+	/**
+	 */
+	@Override
+	public VariantServletSession getOrCreateSession(Object... userData) {
+		return wrapBareSession(client.getOrCreateSession(userData));
+	}
+
+	/**
+	 */
+	@Override
+	public VariantServletSession getSession(Object...userData) {
+		return wrapBareSession(client.getSession(userData));
+	}
+
+	/**
+	 */
+	@Override
+	public VariantServletSession getOrCreateSession(HttpServletRequest request) {
+		return wrapBareSession(client.getOrCreateSession(request));
+	}
+
+	/**
+	 */
+	@Override
+	public VariantServletSession getSession(HttpServletRequest request) {
+		return wrapBareSession(client.getSession(request));
+	}
+
 
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
@@ -60,7 +131,7 @@ public class ServletClientImpl implements ServletVariantClient {
 	/**
 	 */
 	public VariantClient getBareClient() {
-		return bareClient;
+		return client;
 	}
 
 }
