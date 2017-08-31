@@ -61,8 +61,11 @@ public class ServerProcess {
 	/**
 	 * Stop the server.
 	 */
-	public void stop() {
-	   LOG.info(String.format("Stopping local server [%s] [%s]", execArgs[0], execArgs[1]));
+	public void stop() throws Exception {
+
+		if (svrProc != null && ! serverUp) throw new RuntimeException("No server process to stop");
+		
+		LOG.info(String.format("Stopping local server [%s] [%s]", execArgs[0], execArgs[1]));
 		// a slight delay to let the log reader have a chance to run one more time and catch up.
 		try {Thread.sleep(100);} catch(Throwable t) {}
 		svrProc.destroyProc();
@@ -98,7 +101,6 @@ public class ServerProcess {
 			catch (Exception e) {
 				LOG.error("Exception in proc thread", e);
 			}
-			LOG.debug("ProcessTread done");
 		}
 		
 		private void destroyProc() {

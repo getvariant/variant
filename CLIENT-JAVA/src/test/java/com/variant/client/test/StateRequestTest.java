@@ -27,6 +27,11 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
 	private Schema schema;
+	
+	public StateRequestTest() throws Exception {
+		startServer();
+	}
+	
 	@Override
 	protected Schema getSchema() {
 		return schema;

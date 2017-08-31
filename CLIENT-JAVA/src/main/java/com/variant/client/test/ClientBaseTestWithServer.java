@@ -33,9 +33,13 @@ public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 	   startServer(null);
 	}
 	
+	/**
+	 * Kill server is still up at end of test case.
+	 * @throws Exception
+	 */
 	@AfterClass
 	public static void afterClass() throws Exception {
-		server.stop();
+		if (server != null) server.stop();
 	}
 
 }
