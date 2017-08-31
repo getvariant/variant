@@ -19,7 +19,7 @@
     <name>Variant core library</name>
     <packaging>jar</packaging>
     <groupId>com.variant</groupId>
-    <version>0.7.1</version>
+    <version>0.8.0</version>
     
     <dependencies>
         

@@ -17,7 +17,7 @@
     <artifactId>java-client</artifactId>
     <name>Variant Java Client</name>
     <packaging>jar</packaging>
-    <version>0.7.1</version>
+    <version>0.8.0</version>
     
     <dependencies>
         
@@ -25,7 +25,7 @@
         <dependency>
 			<groupId>com.variant</groupId>
 			<artifactId>variant-core</artifactId>
-			<version>0.7.1</version>
+			<version>0.8.0</version>
 		</dependency>
         
         <!-- Apache Commons -->        

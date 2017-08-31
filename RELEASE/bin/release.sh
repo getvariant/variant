@@ -5,7 +5,7 @@
 
 #!/bin/bash
 
-export version=0.7.1
+export version=0.8.0
 export version2=""
 
 function usage() {
@@ -38,7 +38,7 @@ cp $variant_root/CORE/target/variant-core*.jar $server_ext_root/lib
 #
 ${variant_root}/SERVER/bin/release.sh
 cp $variant_root/SERVER/target/universal/variant-server-${version}.zip ${stage_dir}/server/variant-server-${version}${version2}.zip
-cp $variant_root/SERVER/target/universal/variant-server-api-0.7.1.jar $server_ext_root/lib
+cp $variant_root/SERVER/target/universal/variant-server-api-${version}.jar $server_ext_root/lib
 
 #
 # JAVA CLIENT
