@@ -63,7 +63,7 @@ public class HttpResponse {
 			ServerError error = ServerError.byCode(code);
 			
 			if (isInternal) {
-				return new ClientException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.code, error.asMessage(args.toArray()));
+				return new ClientException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.getCode(), error.asMessage(args.toArray()));
 			}
 			else {
 				return new ClientException.User(error, args.toArray());

@@ -11,40 +11,26 @@
    <modelVersion>4.0.0</modelVersion>
     
 	<properties>
-	    <variant.version>0.6.0</variant.version>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
 		<jackson.version>2.5.3</jackson.version>
     </properties>
 
     <artifactId>variant-core</artifactId>
-    <name>Variant core lib</name>
+    <name>Variant core library</name>
     <packaging>jar</packaging>
     <groupId>com.variant</groupId>
-    <version>${variant.version}</version>
+    <version>0.7.1</version>
     
     <dependencies>
         
-      <!-- Variant dependencies -->        
-      <!--
-      <dependency>
-         <groupId>com.variant</groupId>
-         <artifactId>variant-open-securestring</artifactId>
-         <version>1.0.0</version>
-      </dependency>
--->
-      <!-- Apache Commons -->        
-      <dependency>
+      <!-- Apache Commons -->  
+  
+        <dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
-        
-      <dependency>
-	    	<groupId>org.apache.commons</groupId>
-			<artifactId>commons-math3</artifactId>
-			<version>3.5</version>
-		</dependency>
-        
+                
         <dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -67,7 +53,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.1.2</version>
+            <version>1.2.1</version>
         </dependency>
         
         <!-- Jackson JSON parser -->
@@ -90,13 +76,6 @@
            <artifactId>jackson-annotations</artifactId>
            <version>${jackson.version}</version>
         </dependency>
-
-    	<!-- Postgres 9.1 JDBC driver -->
-	    <dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>9.1-901-1.jdbc4</version>
-		</dependency>
     	
     	<!-- JUnit -->    
         <dependency>
@@ -105,33 +84,20 @@
 			<version>4.12</version>
 		</dependency>
 	
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.191</version>
-		</dependency>
-
-		<!-- Hazelcast distributed cache 		
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast</artifactId>
-            <version>3.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.hazelcast</groupId>
-            <artifactId>hazelcast-client</artifactId>
-            <version>3.4</version>
-        </dependency>
-      -->
+		<!-- Typesafe Config --> 		
+      <dependency>
+         <groupId>com.typesafe</groupId>
+         <artifactId>config</artifactId>
+         <version>1.2.1</version>
+      </dependency>
       
-		<!-- Annovention annotation discovery lib -->
+		<!-- Annovention annotation discovery lib 
 		<dependency>
 			<groupId>tv.cntt</groupId>
 			<artifactId>annovention</artifactId>
 			<version>1.7</version>
 		</dependency>
-	
+	   -->
 	</dependencies>
 	
     <build>
@@ -141,8 +107,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
+                   <source>1.7</source>
                    <target>1.7</target>
-                </configuration>
+                </configuration>            
             </plugin>
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>

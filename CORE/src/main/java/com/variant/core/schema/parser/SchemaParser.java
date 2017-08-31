@@ -16,20 +16,27 @@ import org.apache.commons.io.IOUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.UserError.Severity;
 import com.variant.core.CommonError;
 import com.variant.core.CoreException;
+import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
 import com.variant.core.impl.UserHooker;
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.util.VariantStringUtils;
 
-public class SchemaParser implements Keywords {
-	
-	//private static final Logger LOG = LoggerFactory.getLogger(SchemaParser.class);
-	
+/**
+ * Client and Server side parsers will extend this. The principal difference is that 
+ * there are no hooks on the client, but for generality here we post them via an 
+ * abstract hooker.
+ * 
+ * @author Igor
+ *
+ */
+public abstract class SchemaParser implements Keywords {
+		
 	/**
 	 * Convert JsonParseException to ParserError.
 	 * @param parseException
@@ -53,8 +60,6 @@ public class SchemaParser implements Keywords {
 		response.addMessage(JSON_PARSE, line, column, message.toString(), rawInput);
 
 	}
-
-	private UserHooker hooker;
 	
 	/**
 	 * Schema pre-parser.
@@ -90,13 +95,15 @@ public class SchemaParser implements Keywords {
 		return result.toString();
 	}
 	
+	/**
+	 * Concrete implementations will supply a hooker.
+	 * @return
+	 */
+	protected abstract UserHooker getHooker();
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-	
-	public SchemaParser(UserHooker hooker) {
-		this.hooker = hooker;
-	}
 	
 	/**
 	 * Parse schema from input stream. 
@@ -174,6 +181,8 @@ public class SchemaParser implements Keywords {
 		else {			
 			// Parse meta info
 			MetaParser.parse(meta, response);
+			// Init all schema scoped hooks.
+			for (Hook hook: response.getSchema().getHooks()) getHooker().initHook(hook, response);
 		}
 
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());
@@ -185,13 +194,14 @@ public class SchemaParser implements Keywords {
 			// Parse all states
 			StatesParser.parse(states, response);
 			
-			// Post user hook listeners.
+			// Post parse time user hooks.
 			for (State state: response.getSchema().getStates()) {
 				try {
-					hooker.post(new StateParsedHookImpl(state, response));
+					getHooker().post(new StateParsedLifecycleEventImpl(state, response));
 				}
 				catch (VariantException e) {
-					response.addMessage(CommonError.HOOK_LISTENER_EXCEPTION, StateParsedHookImpl.class.getName(), e.getMessage());
+					response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
+					throw e;
 				}
 			}
 		}
@@ -209,16 +219,22 @@ public class SchemaParser implements Keywords {
 			
 			// Parse all tests
 			TestsParser.parse(tests, response);
-			
-			// Post user hook listeners.
+						
+			// Post parse time user hooks.
 			for (Test test: response.getSchema().getTests()) {
 				try {
-					hooker.post(new TestParsedHookImpl(test, response));
+					getHooker().post(new TestParsedLifecycleEventImpl(test, response));
 				}
 				catch (VariantException e) {
-					response.addMessage(CommonError.HOOK_LISTENER_EXCEPTION, TestParsedHookImpl.class.getName(), e.getMessage());
+					response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, TestParsedLifecycleEventImpl.class.getName(), e.getMessage());
 				}
 			}
+			
+			// Init all test scoped hooks.
+			for (Test test: response.getSchema().getTests()) {
+				for (Hook hook: test.getHooks()) getHooker().initHook(hook, response);
+			}
+
 		}
 		
 		if (response.hasMessages(Severity.ERROR)) response.clearSchema();

@@ -16,6 +16,10 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 	
 	private VariantClient client = VariantClient.Factory.getInstance();
 
+	public ConnectionTest() throws Exception {
+		startServer();
+	}
+	
 	/**
 	 */
 	@org.junit.Test

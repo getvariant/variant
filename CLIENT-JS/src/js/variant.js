@@ -59,7 +59,7 @@
 							url: variant.url + 'event',
 							method: "post",
 							data: JSON.stringify(event),
-							contentType: "text/plain",
+							contentType: "application/json",
 							success: variant.success,
 							error: variant.error
 						});
@@ -113,7 +113,7 @@
 	  
 		this.name = name;
 		this.value = value;
-		this.sid = variant.sid + "." + variant.cid;
+		this.sid = variant.sid;
 		this.ts = Date.now;
 		this.params = params;
 	}

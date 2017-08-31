@@ -5,11 +5,14 @@ package com.variant.core.schema.parser;
  */
 interface Keywords {
 
+	static String KEYWORD_CLASS                     = "class";
 	static String KEYWORD_COMMENT                   = "comment";
 	static String KEYWORD_COVARIANT_EXPERIENCE_REFS = "covariantExperienceRefs";
 	static String KEYWORD_COVARIANT_TEST_REFS       = "covariantTestRefs";
 	static String KEYWORD_EXPERIENCES               = "experiences";
 	static String KEYWORD_EXPERIENCE_REF            = "experienceRef";
+	static String KEYWORD_HOOKS                     = "hooks";
+	static String KEYWORD_INIT                      = "init";
 	//static String KEYWORD_IDLE_DAYS_TO_LIVE         = "idleDaysToLive";
 	static String KEYWORD_IS_CONTROL                = "isControl";
 	static String KEYWORD_IS_DEFINED                = "isDefined";

@@ -22,7 +22,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.variant.core.UserError.Severity;
-import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponseImpl;
@@ -143,7 +142,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -267,7 +266,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -392,7 +391,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -519,7 +518,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -716,7 +715,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -916,7 +915,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1122,7 +1121,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1330,7 +1329,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1537,7 +1536,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1705,7 +1704,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -1920,7 +1919,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());
@@ -2457,7 +2456,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(config);
 
 		assertTrue(response.hasMessages());

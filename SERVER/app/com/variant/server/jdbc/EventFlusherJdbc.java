@@ -10,9 +10,9 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.variant.core.schema.Test;
-import com.variant.server.EventFlusher;
-import com.variant.server.FlushableEvent;
-import com.variant.server.ServerException;
+import com.variant.server.api.EventFlusher;
+import com.variant.server.api.FlushableEvent;
+import com.variant.server.api.ServerException;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
 

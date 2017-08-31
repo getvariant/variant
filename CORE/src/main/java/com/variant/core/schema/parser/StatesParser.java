@@ -1,6 +1,7 @@
 package com.variant.core.schema.parser;
 
 import static com.variant.core.schema.parser.ParserError.NO_STATES;
+import static com.variant.core.schema.parser.ParserError.STATES_CLAUSE_NOT_LIST;
 import static com.variant.core.schema.parser.ParserError.STATE_NAME_DUPE;
 import static com.variant.core.schema.parser.ParserError.STATE_NAME_INVALID;
 import static com.variant.core.schema.parser.ParserError.STATE_NAME_MISSING;
@@ -46,18 +47,17 @@ public class StatesParser implements Keywords {
 				}
 			}
 		}
+		catch (ClassCastException e) {
+			response.addMessage(STATES_CLAUSE_NOT_LIST);
+		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
 		}
-		
 	}
 	
 	/**
-	 * 
-	 * @param view
-	 * @param response
+	 * Parse a state
 	 */
-	@SuppressWarnings("unchecked")
 	private static State parseState(Map<String, ?> rawState, final ParserResponseImpl response) {
 		
 		String name = null;

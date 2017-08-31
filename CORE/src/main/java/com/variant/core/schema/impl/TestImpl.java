@@ -1,11 +1,14 @@
 package com.variant.core.schema.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import com.variant.core.CoreException;
 import com.variant.core.impl.VariantSpace;
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -26,6 +29,9 @@ public class TestImpl implements Test {
 	private VariantSpace variantSpace;
 	private List<TestOnStateImpl> onStates;
 	
+	// Hooks are keyed by name.
+	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
+
 	// Runtime will cache stuff in this instance.
 	private HashMap<String, Object> runtimeAttributes = new HashMap<String, Object>();
 
@@ -143,6 +149,13 @@ public class TestImpl implements Test {
 	}
 
 	@Override
+	public List<Hook> getHooks() {
+		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
+		result.addAll(hooks);
+		return Collections.unmodifiableList(result);
+	}
+
+	@Override
 	public boolean isConcurrentWith(Test other) {
 		return !isSerialWith(other);
 	}
@@ -196,6 +209,15 @@ public class TestImpl implements Test {
 	 */
 	public VariantSpace getVariantSpace() {
 		return variantSpace;
+	}
+
+	/**
+	 * Add user hook to this test
+	 * @param hook
+	 * @return true if hook didn't exist, false if did.
+	 */
+	public boolean addHook(Hook hook) {
+		return hooks.add(hook);
 	}
 
 	/**

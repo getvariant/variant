@@ -6,7 +6,6 @@ import play.api.Application
 import play.api.test._
 import play.api.test.Helpers._
 import scala.collection.JavaConversions._
-import com.variant.server.test.util.ParamString
 import com.variant.server.test.util.EventReader
 import com.variant.server.conn.SessionStore
 import com.variant.server.boot.VariantServer
@@ -29,28 +28,28 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .configure(
-               Map("variant.schemas.dir" -> "test-schemas")) 
+               Map("variant.schemata.dir" -> "test-schemata")) 
             .build()
       }
       else if (testData.name.startsWith("2.")) {
          // Just system property
-         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTest.json"), new File("/tmp/test-schemas-override/test-schema.json"))
-         sys.props.contains("variant.schemas.dir") must be (false)
-         sys.props +=(("variant.schemas.dir","/tmp/test-schemas-override"))
+         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/test-schemata-override/test-schema.json"))
+         sys.props.contains("variant.schemata.dir") must be (false)
+         sys.props +=(("variant.schemata.dir","/tmp/test-schemata-override"))
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .build()
       }
       else if (testData.name.startsWith("3.")) {
          // Both application and system property
-         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTest.json"), new File("/tmp/test-schemas-override/test-schema.json"))
-         sys.props -= ("variant.schemas.dir")
-         sys.props.contains("variant.schemas.dir") must be (false)
-         sys.props += (("variant.schemas.dir","/tmp/test-schemas-override"))
+         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/test-schemata-override/test-schema.json"))
+         sys.props -= ("variant.schemata.dir")
+         sys.props.contains("variant.schemata.dir") must be (false)
+         sys.props += (("variant.schemata.dir","/tmp/test-schemata-override"))
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .configure(
-               Map("variant.schemas.dir" -> "test-schemas")) 
+               Map("variant.schemata.dir" -> "test-schemata")) 
             .build()
       }
       else {
@@ -62,7 +61,7 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
 
    }
  
-   "1. Schema should deploy from config property variant.schemas.dir" in {
+   "1. Schema should deploy from config property variant.schemata.dir" in {
       val server = app.injector.instanceOf[VariantServer]
       server.isUp mustBe true
       server.schema.isDefined mustBe true
@@ -70,7 +69,7 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
       server.schema.get.getName mustEqual "big_covar_schema"
    }
    
-   "2. Schema should deploy from system property variant.schemas.dir" in {
+   "2. Schema should deploy from system property variant.schemata.dir" in {
       
       val server = app.injector.instanceOf[VariantServer]
       server.isUp mustBe true
@@ -79,7 +78,7 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
       server.schema.get.getName mustEqual "parser_covariant_okay_big_test"
    }
 
-   "3. Schema should deploy from system property variant.schemas.dir" in {
+   "3. Schema should deploy from system property variant.schemata.dir" in {
       
       val server = app.injector.instanceOf[VariantServer]
       server.isUp mustBe true

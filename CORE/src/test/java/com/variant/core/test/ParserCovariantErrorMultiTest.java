@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.variant.core.UserError.Severity;
-import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.parser.ParserMessageImpl;
@@ -378,7 +377,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(schema);
 
 		assertTrue(response.hasMessages());
@@ -914,7 +913,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(schema);
 
 		assertTrue(response.hasMessages());
@@ -1189,7 +1188,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	     	    "  ]                                                                      \n" +
 	    	    "}                                                                         ";
 
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(schema);
 
 		assertTrue(response.hasMessages());

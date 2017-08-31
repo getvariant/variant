@@ -17,12 +17,13 @@ import com.variant.server.event.ServerEvent
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.boot.VariantServer
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
 import com.variant.server.conn.Connection
-import com.variant.server.session.ServerSession
+import com.variant.server.api.Session
+import com.variant.server.impl.SessionImpl
 
 //@Singleton -- Is this for non-shared state controllers?
-class EventController @Inject() (override val connStore: ConnectionStore, server: VariantServer) extends VariantController  {
+class EventController @Inject() (override val connStore: ConnectionStore, override val ssnStore: SessionStore) extends VariantController  {
    
    private val logger = Logger(this.getClass)	
  
@@ -36,59 +37,45 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     */
    def post() = VariantAction { req =>
 
-      def parse(json: JsValue): Result = {
-         
-         val scid = (json \ "sid").asOpt[String]
-         val name = (json \ "name").asOpt[String]
-         val value = (json \ "value").asOpt[String]
-         val timestamp = (json \ "ts").asOpt[Long]
-         val params = (json \ "params").asOpt[List[JsObject]]
-
-         // 400 if no required fields 
-         if (scid.isEmpty)
-            throw new ServerException.Remote(MissingProperty, "sid")   
-
-         if (name.isEmpty)
-            throw new ServerException.Remote(MissingProperty, "name")
-         
-         if (value.isEmpty)
-            throw new ServerException.Remote(MissingProperty, "value")
-
-         val (cid, sid) = parseScid(scid.get)
-         val (conn, ssn) = lookupSession(scid.get).getOrElse {
-            throw new ServerException.Remote(SessionExpired)
-         }
-         
-         if (ssn.getStateRequest == null)
-            throw new ServerException.Remote(UnknownState)   
-
-         val event = new ServerEvent(name.get, value.get, new Date(timestamp.getOrElse(System.currentTimeMillis())));  
-         
-         if (params.isDefined) {
-            params.get.foreach(p => {
-               val name = (p \ "name").asOpt[String].getOrElse {
-                  throw new ServerException.Remote(MissingParamName)
-               }
-               val value = (p \ "value").asOpt[String].getOrElse("")
-               event.setParameter(name, value)
-            })
-         }            
-         ssn.triggerEvent(event)            
-         Ok
+      val bodyJson = req.body.asJson.getOrElse {
+         throw new ServerException.Remote(EmptyBody)
       }
-            
-      req.contentType match {
-         case Some(ct) if ct.equalsIgnoreCase("text/plain") =>
-            parse {
-               try {
-                  Json.parse(req.body.asText.get)
-               }
-               catch {
-                  case t: Throwable => throw new ServerException.Remote(JsonParseError, t.getMessage)
-               }
+      
+      val sid = (bodyJson \ "sid").asOpt[String]
+      val name = (bodyJson \ "name").asOpt[String]
+      val value = (bodyJson \ "value").asOpt[String]
+      val timestamp = (bodyJson \ "ts").asOpt[Long]
+      val params = (bodyJson \ "params").asOpt[List[JsObject]]
+
+      if (sid.isEmpty)
+         throw new ServerException.Remote(MissingProperty, "sid")   
+
+      if (name.isEmpty)
+         throw new ServerException.Remote(MissingProperty, "name")
+      
+      if (value.isEmpty)
+         throw new ServerException.Remote(MissingProperty, "value")
+
+      val ssn = ssnStore.getOrBust(sid.get)
+      
+      if (ssn.getStateRequest == null)
+         throw new ServerException.Remote(UnknownState)   
+
+      val event = new ServerEvent(name.get, value.get, new Date(timestamp.getOrElse(System.currentTimeMillis())));  
+      
+      if (params.isDefined) {
+         params.get.foreach(p => {
+            val name = (p \ "name").asOpt[String].getOrElse {
+               throw new ServerException.Remote(MissingParamName)
             }
-         case _ => ServerErrorRemote(BadContentType).asResult()
-      }
-   }   
+            val value = (p \ "value").asOpt[String].getOrElse("")
+            event.setParameter(name, value)
+         })
+      }  
+      
+      ssn.asInstanceOf[SessionImpl].triggerEvent(event)            
+      Ok
+         
+   }  
 }
 

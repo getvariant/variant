@@ -13,15 +13,15 @@ import play.api.routing.Router
 import com.variant.core.schema.Schema
 import com.variant.server.schema.ServerSchema
 import play.api.Application
-import com.variant.core.impl.UserHooker
 import com.variant.server.schema.SchemaDeployerFromFS
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.runtime.Runtime
 import com.variant.core.schema.ParserResponse
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.variant.core.UserError.Severity._
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
+import play.api.ApplicationLoader
+
 
 /**
  * Need a trait to make DI to work.
@@ -32,8 +32,9 @@ trait VariantServer {
    val config: Config // Do not expose Play's Configuration
    val startupErrorLog: List[ServerException.User]
    val eventWriter: EventWriter
+   val productName = "Variant Experiment Server release %s".format(SbtService.version)
+   val startTs = System.currentTimeMillis
    def schema: Option[ServerSchema]
-   def hooker: UserHooker
    def installSchemaDeployer(newDeployer: SchemaDeployer): Option[ParserResponse]
    def runtime: Runtime
 }
@@ -42,32 +43,32 @@ trait VariantServer {
  * 
  */
 object VariantServer {
-   private [boot] val productName = "Variant Experiment Server"
-   private [boot] val startTs = System.currentTimeMillis
    private [boot] var _instance: VariantServer = null
    def server = _instance
+   //def classLoader = PlayApplicationInjector.playApp.classloader
 }
 
 /**
- * Instantiated once by 
+ * Instantiated once by Play
  */
 @Singleton
 class VariantServerImpl @Inject() (
       playConfig: Configuration, 
       appLifecycle: ApplicationLifecycle
-      //router: Provider[Router] DI craps out with circular dependency
-      ) extends VariantServer {
+      // We ask for the provider instead of the application, because application itself won't be available until
+      // all eager singletons are constructed, including this class.
+      //appProvider: Provider[Application] 
+   ) extends VariantServer {
    
-	private val logger = Logger(this.getClass)
+	private[this] val logger = Logger(this.getClass)
    
 	import VariantServer._
-	
-	_instance = this
 
+	_instance = this
+	
 	override val config = playConfig.underlying
-   override val eventWriter = new EventWriter(config)      
-   override val hooker = new UserHooker()
-   override val runtime = new Runtime(this) // THIS? 
+   override val eventWriter = new EventWriter(config)
+   override val runtime = new Runtime(this) // THIS?
 
 	private var _isUp = true
 	override lazy val isUp = _isUp
@@ -92,6 +93,7 @@ class VariantServerImpl @Inject() (
 	   }
 	   catch {
 	      case e: ServerException.User => {
+	         logger.error("Failed to install schema deployer", e)
 	         _startupErrorLog :+= e
 	         None
 	      }
@@ -100,27 +102,20 @@ class VariantServerImpl @Inject() (
 
 	// Flip isUp to false if we had errors.
 	startupErrorLog.foreach {e => if (e.getSeverity.greaterOrEqual(ERROR)) _isUp = false}
-
+	
 	if (!isUp) {
-		   logger.error(
-            String.format("%s release %s failed to bootstrap due to following ERRORS:",
-            productName,
-            SbtService.version))
+		   logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
 	}
 	else if (!schema.isDefined) {
-      logger.warn(
-            String.format("%s release %s bootstrapped on :%s%s in %s with WARNINGS:",
+      logger.warn("%s bootstrapped on :%s%s in %s with WARNINGS:".format(
             productName,
-            SbtService.version,
             config.getString("http.port"),
             config.getString("play.http.context"),
    			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))
 	}
 	else {
-      logger.info(
-            String.format("%s release %s bootstrapped on :%s%s in %s.",
+      logger.info("%s bootstrapped on :%s%s in %s.".format(
             productName,
-            SbtService.version,
             config.getString("http.port"),
             config.getString("play.http.context"),
    			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))
@@ -148,13 +143,11 @@ class VariantServerImpl @Inject() (
     */
    def shutdown() {
       eventWriter.shutdown()
-      logger.info(
-            String.format("%s release %s shutdown on :%s%s. Uptime %s.",
+      logger.info("%s shutdown on :%s%s. Uptime %s.".format(
             productName,
-            SbtService.version,
             config.getString("http.port"),
             config.getString("play.http.context"),
-   			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))
+   			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "HH:mm:ss")))
    }
    
    // When the application starts, register a stop hook with the

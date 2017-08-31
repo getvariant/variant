@@ -1,11 +1,11 @@
 #!/bin/bash
 
-vrnt_dir=$(dirname $0)
-cd $vrnt_dir/..
+# Class loader expects variant root to be the current dir.
+cd $(dirname $0)/..
 
 case "$1" in
 start)
-   ./bin/playapp -Dhttp.port=5377
+   bin/playapp -Dhttp.port=5377
    ;;
 
 stop)

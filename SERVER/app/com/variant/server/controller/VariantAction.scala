@@ -4,7 +4,7 @@ import play.api.mvc._
 import scala.concurrent.Future
 import com.variant.server.boot.VariantServer
 import play.api.Logger
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.core.ServerError
 
@@ -29,8 +29,10 @@ object VariantAction extends ActionBuilder[Request] with Results {
          Future.successful(ServiceUnavailable)
       }
       else {
+         val req = request.method + " " + request.path
+         
          // Delegate to the actual action
-         logger.trace("Delegated to concrete action");
+         logger.trace("Delegated request [%s]".format(req))
          try {
             block(request)
          }
@@ -38,8 +40,8 @@ object VariantAction extends ActionBuilder[Request] with Results {
             case sre: ServerException.Remote => 
                Future.successful(ServerErrorRemote(sre.error).asResult(sre.args:_*))
             case t: Throwable => 
-               logger.error("Unexpected Internal Error", t);
-               Future.successful(ServerErrorRemote(ServerError.InternalError).asResult(t.getMessage))
+               logger.error("Unexpected Internal Error in [%s]".format(req), t);
+               Future.successful(ServerErrorRemote(ServerError.InternalError).asResult(t.getMessage))            
          }
       }
    }

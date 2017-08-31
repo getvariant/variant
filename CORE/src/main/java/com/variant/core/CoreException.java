@@ -81,7 +81,7 @@ public class CoreException extends VariantException {
 		 * @return
 		 */
 		public Severity getSeverity() {
-			return error.severity;
+			return error.getSeverity();
 		}
 		
 		/**
@@ -90,7 +90,7 @@ public class CoreException extends VariantException {
 		 */
 		@Override
 		public String getMessage() {
-			return "[" + error.code + "] " + error.asMessage(args);
+			return "[" + error.getCode() + "] " + error.asMessage(args);
 		}
 
 		/**
@@ -98,7 +98,7 @@ public class CoreException extends VariantException {
 		 * @return
 		 */
 		public String getComment() {
-			return error.comment;
+			return error.getComment();
 		}
 
 	}

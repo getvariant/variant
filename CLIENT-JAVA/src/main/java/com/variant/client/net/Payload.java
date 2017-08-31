@@ -42,7 +42,10 @@ abstract public class Payload {
 				String id = (String) map.get("id");
 				Integer ssnto = (Integer) map.get("ssnto");
 				Long ts = (Long) map.get("ts");
-				String schemaSrc = (String) map.get("schema");
+				@SuppressWarnings("unchecked")
+				Map<String,String> schema = (Map<String,String>) map.get("schema");
+				String schemaSrc = schema.get("src");
+				String schemaId = schema.get("id");
 				if (id == null)
 					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "id", Connection.class.getName());
 				if (ts == null)
@@ -50,7 +53,9 @@ abstract public class Payload {
 				if (ssnto == null)
 					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "ssnto", Connection.class.getName());
 				if (schemaSrc == null)
-					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema", Connection.class.getName());
+					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/src", Connection.class.getName());
+				if (schemaId == null)
+					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/id", Connection.class.getName());
 				
 				return new Connection(id, ssnto, ts, schemaSrc);
 			}

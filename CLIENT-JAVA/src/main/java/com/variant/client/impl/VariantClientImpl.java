@@ -1,5 +1,7 @@
 package com.variant.client.impl;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.typesafe.config.Config;
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
@@ -18,6 +20,7 @@ public class VariantClientImpl implements VariantClient {
 		
 	private final Config config = new VariantConfigLoader("/variant.conf", "/com/variant/client/variant-default.conf").load();
 	private final ConnectionFactory connFactory = new ConnectionFactory();
+	private final ConcurrentHashMap<String, Connection> connMap = new ConcurrentHashMap<String, Connection>();
 	
 	/**
 	 * Handshake with the server.
@@ -41,8 +44,9 @@ public class VariantClientImpl implements VariantClient {
 	/**
 	 */
 	@Override
-	public Connection getConnection(String schema) {		
+	public Connection getConnection(String schema) {
 		ConnectionImpl result = connFactory.connectTo(this, schema);
+		connMap.put(result.getId(), result);
 		return result;
 	}
 	
@@ -56,5 +60,7 @@ public class VariantClientImpl implements VariantClient {
 	//---------------------------------------------------------------------------------------------//
 	//                                      PUBLIC EXT                                             //
 	//---------------------------------------------------------------------------------------------//
-
+	public void freeConnection(Connection conn) {
+		connMap.remove(conn.getId());
+	}
 }

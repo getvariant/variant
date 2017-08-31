@@ -1,21 +1,25 @@
 package com.variant.server.schema
 
+import scala.collection.JavaConversions._
 import com.variant.core.schema.Schema
 import java.io.File
 import com.variant.core.schema.ParserResponse
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
+import com.variant.core.UserError.Severity
+import com.variant.core.schema.Hook
+import com.variant.server.boot.VariantServer
 
 /**
  * 
  */
 object ServerSchema {
-   def apply(response: ParserResponse) = new ServerSchema(response)
+   def apply(response: ParserResponse, hooker: ServerHooker) = new ServerSchema(response, hooker)
 }
 
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (val response: ParserResponse) extends Schema {
+class ServerSchema (val response: ParserResponse, val hooker: ServerHooker) extends Schema {
   
    import State._
    
@@ -23,6 +27,14 @@ class ServerSchema (val response: ParserResponse) extends Schema {
    
    private var coreSchema =  response.getSchema
    
+   if (response.hasMessages(Severity.ERROR)) {
+      // Schema did not actually parse.
+	   state = State.Failed
+   }
+      
+   /**
+    * 
+    */
    private def checkState {
       if (state != Deployed)
          throw new ServerException.Internal(
@@ -39,6 +51,11 @@ class ServerSchema (val response: ParserResponse) extends Schema {
    override def getComment = {
 	   checkState
 	   coreSchema.getComment
+	}
+
+   override def getHooks = {
+	   checkState
+	   coreSchema.getHooks
 	}
 
    override def getId = {

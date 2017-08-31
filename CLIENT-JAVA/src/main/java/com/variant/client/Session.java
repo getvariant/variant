@@ -159,31 +159,44 @@ public interface Session {
 	 */
 	public boolean isExpired();
 
-	/**
-	 * <p>Set a session-scoped attribute. Session-scoped attributes are client-local and are not
-	 * replicated to the server. Consequently, another client will not see these attributes.
-	 * 
-	 * @return The object previously associated with this attribute, or null if none.
-	 * @since 0.6
-	 */
-	public Object setAttribute(String name, Object value);
+	public void addExpirationListener(ExpirationListener listener);
 	
 	/**
-	 * <p>Retrieve a session-scoped attribute. Session-scoped attributes are client-local and are not
-	 * replicated to the server. Consequently, another client will not see these attributes.
+	 * <p>Set a session-scoped attribute.
 	 * 
-	 * @return The object associated with this attribute.
+	 * @return The string previously associated with this attribute, or null if none.
 	 * @since 0.6
 	 */
-	public Object getAttribute(String name);
+	public String setAttribute(String name, String value);
+	
+	/**
+	 * <p>Retrieve the session-scoped attribute.
+	 * 
+	 * @return The string associated with this attribute.
+	 * @since 0.6
+	 */
+	public String getAttribute(String name);
 
 	/**
-	 * <p>Remove a session-scoped attribute. Session-scoped attributes are client-local and are not
-	 * replicated to the server. Consequently, another client will not see these attributes.
+	 * <p>Remove a session-scoped attribute.
 	 * 
 	 * @return The string, previously associated with this attribute, or null if none.
 	 * @since 0.7
 	 */
-	public Object clearAttribute(String name);
+	public String clearAttribute(String name);
 
+	/**
+	 * Interface to be implemented by a class whose instance may be passed to {@link Session#addExpirationListener(ExpirationListener)}.
+	 * 
+	 * @since 0.7
+	 */
+	public interface ExpirationListener {
+	   /**
+	    * The callback function to be invoked when Variant Client is about to expire the session
+	    * with which it has been registered.
+	    * 
+	    * @since 0.7
+	    */
+	   public void exec();
+	}
 }

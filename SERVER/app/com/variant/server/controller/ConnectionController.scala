@@ -13,7 +13,7 @@ import com.variant.server.conn.Connection
 import com.variant.server.conn.ConnectionStore
 
 //@Singleton -- Is this for non-shared state controllers?
-class ConnectionController @Inject() (store: ConnectionStore) extends Controller  {
+class ConnectionController @Inject() (override val connStore: ConnectionStore, override val ssnStore: SessionStore) extends VariantController  {
    
    private val logger = Logger(this.getClass)	
 
@@ -30,12 +30,12 @@ curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
             logger.debug("Schema [%s] found".format(name))
             val conn = Connection(schema)
             
-            if (store.put(conn)) {
-               logger.info("Opened connection [%s] to chema [%s]".format(conn.id, name))
+            if (connStore.put(conn)) {
+               logger.info("Opened connection [%s] to schema [%s]".format(conn.id, name))
                Ok(conn.asJson)
             }
             else {
-               logger.info("Unable to open connection to chema [%s]: connection table is full".format(name))
+               logger.info("Unable to open connection to schema [%s]: connection table is full".format(name))
                ServerErrorRemote(TooManyConnections).asResult()
             }
          }
@@ -52,14 +52,8 @@ curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
 curl -v -X DELETE http://localhost:9000/variant/connection/CID
     */
    def delete(cid: String) = VariantAction {
-      val conn = store.remove(cid)
-      if (conn.isDefined) {
-         logger.info("Closed connection [%s] to schema [%s]".format(cid, conn.get.schema.getName()))
-         Ok
-      }
-      else {
-         logger.debug("Unable to close connection: schema ID [%s] does not exist".format(cid)) 
-         ServerErrorRemote(UnknownConnection).asResult(cid)
-      }
+      val conn = connStore.deleteOrBust(cid)
+      logger.info("Closed connection [%s] to schema [%s]".format(cid, conn.schema.getName))
+      Ok
    }
 }

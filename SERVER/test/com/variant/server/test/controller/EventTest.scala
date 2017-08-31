@@ -7,17 +7,17 @@ import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.collection.JavaConversions._
 import com.variant.core.ServerError._
-import com.variant.server.test.util.ParamString
+import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.BaseSpecWithServer
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.ConnectionStore
 import javax.inject.Inject
-import com.variant.server.session.ServerSession
+import com.variant.server.api.Session
 
 object EventTest {
    
-   val body = ParamString("""
+   val body = ParameterizedString("""
       {"sid":"${sid:SID}",
        "name":"${name:NAME}",
        "value":"${value:VALUE}",
@@ -28,7 +28,7 @@ object EventTest {
       
    val bodyNoSid = """{"name":"NAME","value":"VALUE"}"""
    val bodyNoName = """{"sid":"SID","value":"VALUE"}"""
-   val bodyNoParamName = ParamString("""
+   val bodyNoParamName = ParameterizedString("""
       {"sid":"${sid:SID}",
        "name":"NAME",
        "value":"VALUE",
@@ -65,45 +65,44 @@ class EventTest extends BaseSpecWithServer {
 
 
       "return  400 and error on POST with no body" in {
-         val resp = route(app, FakeRequest(POST, endpoint).withHeaders("Content-Type" -> "text/plain")).get
+         val resp = route(app, FakeRequest(POST, endpoint)).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe JsonParseError.isInternal() 
-         (respJson \ "code").as[Int] mustBe JsonParseError.code 
+         (respJson \ "code").as[Int] mustBe EmptyBody.getCode 
          val args = (respJson \ "args").as[Seq[String]]
-         args(0) must startWith ("No content to map due to end-of-input")
-
+         args mustBe empty
      }
       
       "return  400 and error on POST with invalid JSON" in {
-         val resp = route(app, FakeRequest(POST, endpoint).withBody("bad json").withHeaders("Content-Type" -> "text/plain")).get
+         val resp = route(app, FakeRequest(POST, endpoint).withBody("bad json").withHeaders("Content-Type" -> "application/json")).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe JsonParseError.isInternal() 
-         (respJson \ "code").as[Int] mustBe JsonParseError.code 
+         (respJson \ "code").as[Int] mustBe JsonParseError.getCode 
          val args = (respJson \ "args").as[Seq[String]]
-         args(0) must startWith ("Unrecognized token 'bad'")
+         args(0) must startWith ("Invalid Json: Unrecognized token 'bad'")
      }
 
       "return  400 and error on POST with no sid" in {
-         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(bodyNoSid)).get
+         val resp = route(app, FakeRequest(POST, endpoint).withJsonBody(Json.parse(bodyNoSid))).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe MissingProperty.isInternal() 
-         (respJson \ "code").as[Int] mustBe MissingProperty.code 
+         (respJson \ "code").as[Int] mustBe MissingProperty.getCode 
          (respJson \ "args").as[Seq[String]] mustBe Seq("sid") 
       }
 
       "return 400 and error on POST with no name" in {
-         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(bodyNoName)).get
+         val resp = route(app, FakeRequest(POST, endpoint).withJsonBody(Json.parse(bodyNoName))).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe MissingProperty.isInternal() 
-         (respJson \ "code").as[Int] mustBe MissingProperty.code 
+         (respJson \ "code").as[Int] mustBe MissingProperty.getCode 
          (respJson \ "args").as[Seq[String]] mustBe Seq("name") 
       }
 
@@ -119,42 +118,43 @@ class EventTest extends BaseSpecWithServer {
          connId mustNot be (null)
       }
 
-      var ssn: ServerSession = null;
+      var ssn: Session = null;
+      
       "obtain a session" in {
          val sid = newSid()
          // PUT session.
-         val sessionJson = ParamString(SessionTest.sessionJsonProto.format(System.currentTimeMillis(), schemaId)).expand("sid" -> sid)
+         val sessionJson = ParameterizedString(SessionTest.sessionJsonProto.format(System.currentTimeMillis(), schemaId)).expand("sid" -> sid)
          val ssnBody = Json.obj(
             "cid" -> connId,
             "ssn" -> sessionJson
-            ).toString
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withTextBody(ssnBody)).get
+            )
+         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
-         ssn = connStore.get(connId).get.getSession(sid).get
+         ssn = ssnStore.get(sid).get
       }
       
       "return  400 and error on POST with non-existent session" in {
          
-         val eventBody = body.expand("sid" -> scid("foo", connId))
-         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
+         val eventBody = body.expand("sid" -> "foo")
+         val resp = route(app, FakeRequest(POST, endpoint).withJsonBody(Json.parse(eventBody))).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe SessionExpired.isInternal() 
-         (respJson \ "code").as[Int] mustBe SessionExpired.code 
-         (respJson \ "args").as[Seq[String]] mustBe empty 
+         (respJson \ "code").as[Int] mustBe SessionExpired.getCode 
+         (respJson \ "args").as[Seq[String]] mustBe Seq("foo") 
       }
 
       "return 400 and error on POST with missing param name" in {
 
-         val eventBody = bodyNoParamName.expand("sid" -> scid(ssn.getId, connId))
-         val resp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
+         val eventBody = bodyNoParamName.expand("sid" -> ssn.getId)
+         val resp = route(app, FakeRequest(POST, endpoint).withJsonBody(Json.parse(eventBody))).get
          status(resp)mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe MissingParamName.isInternal() 
-         (respJson \ "code").as[Int] mustBe MissingParamName.code 
+         (respJson \ "code").as[Int] mustBe MissingParamName.getCode 
          (respJson \ "args").as[Seq[String]] mustBe empty 
       }
 
@@ -163,8 +163,8 @@ class EventTest extends BaseSpecWithServer {
          val timestamp = System.currentTimeMillis()
          val eventName = Random.nextString(5)
          val eventValue = Random.nextString(5)
-         val eventBody = body.expand("sid" -> scid(ssn.getId, connId), "ts" -> timestamp, "name" -> eventName, "value" -> eventValue)
-         val eventResp = route(app, FakeRequest(POST, endpoint).withTextBody(eventBody)).get
+         val eventBody = body.expand("sid" -> ssn.getId, "ts" -> timestamp, "name" -> eventName, "value" -> eventValue)
+         val eventResp = route(app, FakeRequest(POST, endpoint).withJsonBody(Json.parse(eventBody))).get
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          status(eventResp) mustBe OK
          contentAsString(eventResp) mustBe empty

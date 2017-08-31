@@ -5,7 +5,7 @@ import com.variant.core.schema.Schema;
 
 
 /**
- * <p>A connection to Variant server. The first operation a new Variant client instance must
+ * <p>Represents a connection to Variant server. The first operation a new Variant client instance must
  * do is to connect to a particular schema on a Variant server, whose URL is provided by the
  * {@link ConfigKeys#SERVER_URL} config key.
  * 

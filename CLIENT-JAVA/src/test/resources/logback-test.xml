@@ -5,7 +5,7 @@
     </encoder>
   </appender>
 
-  <logger name="com.variant" level="TRACE"/>
+  <logger name="com.variant" level="DEBUG"/>
 
   <root level="INFO">
     <appender-ref ref="STDOUT" />

@@ -18,7 +18,7 @@ import com.variant.client.ClientException;
 public class HttpRemoter {
 
 	final private static Logger LOG = LoggerFactory.getLogger(HttpRemoter.class);
-
+	final private static String CONTENT_TYPE = "application/json; charset=utf-8";
 	/**
 	 * Package construction.
 	 */
@@ -33,7 +33,7 @@ public class HttpRemoter {
 		CloseableHttpResponse resp = null;
 		try {
 			HttpUriRequest req = requestable.requestOp();
-			req.setHeader("Content-Type", "text/plain; charset=utf-8");
+			req.setHeader("Content-Type", CONTENT_TYPE);
 			resp = client.execute(req);
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(String.format(

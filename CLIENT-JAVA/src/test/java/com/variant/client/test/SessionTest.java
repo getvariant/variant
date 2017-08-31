@@ -6,19 +6,30 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.LinkedList;
+
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
-import com.variant.client.impl.ClientUserError;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
+import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
+import com.variant.client.impl.ClientUserError;
 import com.variant.core.schema.State;
 
 public class SessionTest extends ClientBaseTestWithServer {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
+	
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	public SessionTest() throws Exception {
+	   startServer();
+	}
 	
 	/**
 	 */
@@ -93,11 +104,47 @@ public class SessionTest extends ClientBaseTestWithServer {
 					assertEquals(ClientUserError.SESSION_EXPIRED, e.getError());
 				}
 			}.assertThrown(SessionExpiredException.class);
-
 		}
-			
 	}
 
+   /**
+    */
+   @org.junit.Test
+   public void sessionExpirationListenerTest() throws Exception {
+      
+      Connection conn = client.getConnection("big_covar_schema");    
+      assertNotNull(conn);
+      assertEquals(Status.OPEN, conn.getStatus());
+      Session ssn = conn.getOrCreateSession(newSid());
+      assertNotNull(ssn);
+      final LinkedList<Integer> listenersRan = new LinkedList<Integer>();
+      
+      // Add two listeners, both of which should fire in the order added;
+      ssn.addExpirationListener(
+            new Session.ExpirationListener() {
+               @Override public void exec() {
+                  listenersRan.add(1);
+               }
+            }
+      );
+
+      ssn.addExpirationListener(
+            new Session.ExpirationListener() {
+               @Override public void exec() {
+                  listenersRan.add(2);
+               }
+            }
+      );
+
+      assertEquals(1000, ssn.getTimeoutMillis());
+      // Let vacuum thread a chance to run.
+      Thread.sleep(2000);
+
+      assertEquals(2, listenersRan.size());
+      assertTrue(listenersRan.get(0) == 1);
+      assertTrue(listenersRan.get(1) == 2);
+   }
+   
 	/**
 	 */
 	@org.junit.Test
@@ -122,6 +169,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 
 	/**
 	 * Session expires too soon. See bug https://github.com/getvariant/variant/issues/67
+	 * + bug 82, probably a dupe.
 	 */
 	//@org.junit.Test
 	public void connectionClosedRemotelyTest() throws Exception {
@@ -137,15 +185,15 @@ public class SessionTest extends ClientBaseTestWithServer {
 		server.restart();
 
 		assertEquals(Status.OPEN, conn.getStatus());
-		/*
+		
 		new ClientUserExceptionInterceptor() {
 			@Override public void toRun() {
 				ssn.targetForState(state2);
 			}
 		}.assertThrown(SessionExpiredException.class);
 		assertEquals(Status.CLOSED_BY_SERVER, conn.getStatus());
-		*/
-		ssn.targetForState(state2);
+		
+		//ssn.targetForState(state2);
 	}
 
 	/**
@@ -163,6 +211,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn);
 		assertEquals(sid, ssn.getId());
 		
+		// Local checks.
 		assertNull(ssn.getAttribute("foo"));
 		assertNull(ssn.clearAttribute("foo"));
 		String attr = "VALUE";
@@ -170,7 +219,16 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertEquals(attr, ssn.getAttribute("foo"));
 		assertEquals(attr, ssn.clearAttribute("foo"));
 		assertNull(ssn.getAttribute("foo"));
+		
+		// roundtrip to server.
+	   	State state1 = conn.getSchema().getState("state1");
+	   	StateRequest req = ssn.targetForState(state1);
+	   	assertNotNull(req);
+		assertEquals(attr, ssn.getAttribute("foo"));
+		assertEquals(attr, ssn.clearAttribute("foo"));
+		assertNull(ssn.getAttribute("foo"));
 		assertNull(ssn.clearAttribute("foo"));
+
 	}
 
 }

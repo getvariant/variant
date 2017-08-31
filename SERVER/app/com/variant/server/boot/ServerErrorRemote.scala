@@ -7,7 +7,7 @@ import play.api.http.HttpEntity
 import play.api.libs.json._
 import akka.util.ByteString
 import com.variant.core.ServerError
-import com.variant.server.ServerException
+import com.variant.server.api.ServerException
 
 /**
  * Wrap the core ServerError type with some server side semantics.
@@ -31,7 +31,7 @@ class ServerErrorRemote(error: ServerError) {
      
       // Internal errors are also logged, along with the call stack.
       if (error.isInternal) {
-         val msg = new StringBuilder("Internal API error [%s] [%s]".format(error.code, error.asMessage(args:_*)))
+         val msg = new StringBuilder("Internal API error [%s] [%s]".format(error.getCode, error.asMessage(args:_*)))
          // drop the first frame as it will be currentThread().
          Thread.currentThread().getStackTrace.drop(1).foreach(se => msg.append("\n  at ").append(se))
          logger.error(msg.toString())
@@ -39,10 +39,10 @@ class ServerErrorRemote(error: ServerError) {
       
       val bodyJson : JsObject = Json.obj(
          "isInternal" -> JsBoolean(error.isInternal),
-         "code" -> error.code,
+         "code" -> error.getCode,
          "args" -> JsArray(args.map {JsString(_)}))
      
-      if (error.comment != null) bodyJson + ("comment" -> JsString(error.comment))
+      if (error.getComment != null) bodyJson + ("comment" -> JsString(error.getComment))
       
       Result(
           header = ResponseHeader(HttpStatus.SC_BAD_REQUEST, Map.empty),

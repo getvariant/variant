@@ -23,7 +23,7 @@ Range   Base         Major Area               Minor Area
 151-170                                       --Unused
 171-200                                       Other
 201-220              Configuration
-241-250              Parse time user hooks
+241-250              --Available
 251-270              Other common runtime
 271-300              --Available
 
@@ -35,31 +35,32 @@ Range   Base         Major Area               Minor Area
 401-420              Server bootstrap
 421-440              Schema deployment
 441-460              Event writing
-461-480              Run time user hooks
+461-480              User                     Server API
 481-500              Other server runtime
-501-600              --Available
+501-600              -- Available
 
-601-800 Server API
+601-800 Server
 601-700              Internal
 601-610                                       Payload syntax error
 611-630                                       Payload parse error
 631-700                                       Other internal errors
-701-800              User
+701-800              User, Client API
 701-720                                       Connection
 721-740                                       Session
 741-760                                       Event
-761-800                                       --Available
+761-800                                       --Unused
 
-801-999 --Reserved
+801-999              Reserved
+
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 abstract public class UserError {
 		
 	private final String msgFormat;
-	public final int code;
-	public final Severity severity;
-	public final String comment;
+	private int code;
+	private Severity severity;
+	private String comment;
 	
 	protected UserError(int code, Severity severity, String msgFormat, String comment) {
 		this.code = code;
@@ -72,6 +73,18 @@ abstract public class UserError {
 		this(code, severity, msgFormat, null);
 	}
 
+	public int getCode() {
+		return code;
+	}
+	
+	public Severity getSeverity() {
+		return severity;
+	}
+	
+	public String getComment() {
+		return comment;
+	}
+	
 	/**
 	 * Runtime message
 	 * @param args

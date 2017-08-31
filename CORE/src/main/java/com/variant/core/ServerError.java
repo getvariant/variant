@@ -6,7 +6,7 @@ import com.variant.core.util.VariantReflectUtils;
 
 
 /**
- * User errors that are signaled by the server to be sent across the network to the client.
+ * User errors that are emitted by the server to be sent across the network to the client.
  * 
  * @author Igor
  */
@@ -22,7 +22,7 @@ public class ServerError extends UserError {
 			new ServerError(602, "JSON parsing error: '%s'");
 	
 	public static final ServerError BadContentType = 
-			new ServerError(603, "Unsupported content type", "Use 'application/json' or 'text/plain'.");
+			new ServerError(603, "Unsupported content type", "Use 'application/json'");
 	   
 	//
 	// 611-630 Internal, Payload parse error
@@ -58,7 +58,7 @@ public class ServerError extends UserError {
 	/**
 	 */
 	public boolean isInternal() {
-		return code <= 700;
+		return getCode() <= 700;
 	}
 
 	//
@@ -77,7 +77,7 @@ public class ServerError extends UserError {
 	// 721-740 User, Session
 	//
 	public static final ServerError SessionExpired = 
-			new ServerError(721, "Session expired");
+			new ServerError(721, "Requested session ID [%s] has expired");
 
 	//
 	// 741-760 User, Event
@@ -86,6 +86,7 @@ public class ServerError extends UserError {
 			new ServerError(741, "No state request in session", "Target this session for a state first");
 
 
+	
 	/**
 	 * Get the error by its code.
 	 * 
@@ -96,7 +97,7 @@ public class ServerError extends UserError {
 		try {
 			for (Field f: VariantReflectUtils.getStaticFields(ServerError.class, ServerError.class)) {
 				ServerError e = (ServerError) f.get(null);
-				if (e.code == code) return e;
+				if (e.getCode() == code) return e;
 			}
 		}
 		catch (Exception e) { 

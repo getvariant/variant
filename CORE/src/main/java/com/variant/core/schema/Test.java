@@ -63,7 +63,15 @@ public interface Test {
 	 * @since 0.5
 	 */
 	public boolean isOn();
-		
+	
+	/**
+	 * <p>List of user hooks, defined in the scope of this test.
+	 * 
+	 * @return A list of {@link Hook} object in the ordinal order.
+	 * @since 0.7
+	 */
+	public List<Hook> getHooks();
+
 	/**
 	 * List of all state instrumentations for this test, in the order they were defined.
 	 * 

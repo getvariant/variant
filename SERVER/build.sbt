@@ -2,7 +2,7 @@
 // Variant Server build config
 //
 
-val coreVersion = "0.7.0"
+val coreVersion = "0.7.1"
 name := "Variant"
 version := coreVersion
 
@@ -23,17 +23,16 @@ libraryDependencies ++= Seq(
   // Variant Core
   "com.variant"            % "variant-core"        % coreVersion,  
   // Postgres 9.1 JDBC driver in test
-  "postgresql" % "postgresql" % "9.1-901-1.jdbc4" % Test,
+  "postgresql"             % "postgresql"  % "9.1-901-1.jdbc4"   % Test,
   // H2 In mem DB in test 
-  "com.h2database" % "h2"   % "1.4.191"         % Test,
+  "com.h2database"         % "h2"          % "1.4.191"           % Test,
   
+  // Reflections class path scanner. As of May '17 provided with the WTFPL license.
+  // "org.reflections"        % "reflections" % "0.9.11",
+
   // Need to install CORS filter
   filters
 )
-
-// Test scoped classpath directory - need this for tests that deploy schema from classpath.
-unmanagedClasspath in Test += baseDirectory.value / "conf-test"
-unmanagedClasspath in Runtime += baseDirectory.value / "conf-test"
 
 // Capture SBT build info in a source file available at compile time.
 sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { (d, v, n) =>
@@ -47,6 +46,21 @@ sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { 
   Seq(file)
 }
 
-// Config overrides for run and test
+//
+// ScalaTest related settings
+//
+
+fork := true  // without this JVM options won't take place
+
+//testOptions += Tests.Argument(TestFrameworks.JUnit); Do we need this?
+
+// Test scoped classpath directory - need this for tests that deploy schema from classpath.
+unmanagedClasspath in Test += baseDirectory.value / "conf-test"
+unmanagedClasspath in Runtime += baseDirectory.value / "conf-test"
+
+// Config overrides for run and test.
 javaOptions in Test += "-Dvariant.config.file=conf-test/variant.conf"
 javaOptions in Runtime += "-Dvariant.config.file=conf-test/variant.conf"
+
+// If you want to debug, uncomment and connect with eclipse after the VM is suspended.
+// javaOptions in Test ++= Seq("-Xdebug",  "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000")

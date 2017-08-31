@@ -9,6 +9,7 @@ import com.variant.server.conn.SessionStore
 import play.api.routing.Router
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.ConnectionStoreImpl
+import com.variant.server.conn.SessionStoreImpl
 
 /**
  * This class is a Guice module that tells Guice how to bind several
@@ -30,8 +31,11 @@ class Module (environment: Environment, config: Configuration) extends AbstractM
       // Connection Store
       bind(classOf[ConnectionStore]).to(classOf[ConnectionStoreImpl]).asEagerSingleton
 
-      // Session Store - part of connection store now.
-      // bind(classOf[SessionStore]).to(classOf[SessionStoreImpl]).asEagerSingleton
+      // Session Store
+      bind(classOf[SessionStore]).to(classOf[SessionStoreImpl]).asEagerSingleton
+
+      // Application injector
+      //bind(classOf[ApplicationInjector]).to(classOf[PlayApplicationInjector]).asEagerSingleton
 
   }
 

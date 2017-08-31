@@ -9,7 +9,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.List;
 
 import com.variant.core.UserError.Severity;
-import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
@@ -618,7 +617,7 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	     	    "  ]                                                                      \n" +
 	    	    "}                                                                         ";
 
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());

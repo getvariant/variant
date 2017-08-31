@@ -22,6 +22,7 @@ import java.io.InputStreamReader
  * Statically accessible configuration logic that is accessible in any mode.
  */
 object VariantApplicationLoader { 
+      
    val config = new VariantConfigLoader("/variant.conf", "/com/variant/server/boot/variant-default.conf").load();
 }
 
@@ -32,19 +33,23 @@ class VariantApplicationLoader extends GuiceApplicationLoader() {
 
    import VariantApplicationLoader._
 
-   private val logger = Logger(this.getClass)
-   private val extra = new Configuration(config)
+   
+   
+   private[this] val logger = Logger(this.getClass)
+   private[this] val extra = new Configuration(config)
+   
    
    /**
     * Override builder() with Variant configuration.
     */
    override def builder(context: ApplicationLoader.Context): GuiceApplicationBuilder = {
   
-      logger.debug("Building Variant application in " + context.environment)
-      
+      logger.debug("Building Variant application in " + context.environment.mode)
+            
       initialBuilder
          .in(context.environment)
          .loadConfig(context.initialConfiguration ++ extra)
          .overrides(overrides(context): _*)
-  }
+   }
+   
 }

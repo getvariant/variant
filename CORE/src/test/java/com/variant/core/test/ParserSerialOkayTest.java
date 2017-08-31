@@ -1,19 +1,15 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.core.schema.parser.SchemaParser;
 
@@ -30,8 +26,16 @@ public class ParserSerialOkayTest extends BaseTestCore {
 
 				"{                                                                                 \n" +
 					    "  'meta':{                                                                \n" +		    	    
-					    "      'name':'allTestsOffTest',                                           \n" +
-					    "      'comment':'!@#$%^&*'                                                \n" +
+					    "     'name':'allTestsOffTest',                                            \n" +
+					    "     'comment':'!@#$%^&*',                                                \n" +
+					    "     'hooks':[                                                            \n" +
+					    "        {'name':'one', 'class':'c.v.s.one'},                              \n" +
+					    "        {'name':'two', 'class':'c.v.s.two'},                              \n" +
+					    "        {'name':'anotherOne', 'class':'c.v.s.one'},                       \n" +
+					    "        {'name':'three', 'class':'c.v.s.three'},                          \n" +
+					    "        {'name':'four', 'class':'c.v.s.four'},                            \n" +
+					    "        {'name':'anotherFour', 'class':'c.v.s.four'}                      \n" +
+					    "      ]                                                                   \n" +
 					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	   
@@ -46,7 +50,29 @@ public class ParserSerialOkayTest extends BaseTestCore {
 				        "  'tests':[                                                              \n" +
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test1',                                                  \n" +
-			    	    "        'isOn':false,                                                    \n" +
+			    	    "        'isOn':true,                                                     \n" +
+					    "        'hooks':[                                                        \n" +
+					    "           {                                                             \n" +
+					    "              'name':'one',                                              \n" +
+					    "              'class':'c.v.s.one',                                       \n" +
+					    "              'init':'just a string with \"quotes\\''                    \n" +
+					    "           },                                                            \n" +
+					    "           {                                                             \n" +
+					    "              'name':'two',                                              \n" +
+					    "              'class':'c.v.s.two',                                       \n" +
+					    "              'init':90                                                  \n" +
+					    "           },                                                            \n" +
+					    "           {                                                             \n" +
+					    "              'name':'three',                                            \n" +
+					    "              'class':'c.v.s.three',                                     \n" +
+					    "              'init':''                                                  \n" +
+					    "           },                                                            \n" +
+					    "           {                                                             \n" +
+					    "              'name':'four',                                             \n" +
+					    "              'class':'c.v.s.four',                                      \n" +
+					    "              'init':{'foo':'a string','bar':[1,2],'obj':{}}             \n" +
+					    "           }                                                             \n" +
+					    "        ],                                                               \n" +
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'A',                                                \n" +
@@ -121,7 +147,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
@@ -133,7 +159,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
-		assertFalse(test1.isOn());
+		assertTrue(test1.isOn());
 		assertFalse(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
 		assertFalse(test2.isSerialWith(test1));
@@ -142,6 +168,53 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertFalse(test1.isCovariantWith(test2));
 		assertFalse(test2.isCovariantWith(test1));
 
+		List<Hook> hooks = schema.getHooks();
+		assertEquals(6, hooks.size());
+		Hook hook = hooks.get(0);
+		assertEquals("one", hook.getName());
+		assertEquals("c.v.s.one", hook.getClassName());
+		assertNull(hook.getInit());
+		hook = hooks.get(1);
+		assertEquals("two", hook.getName());
+		assertEquals("c.v.s.two", hook.getClassName());
+		assertNull(hook.getInit());
+		hook = hooks.get(2);
+		assertEquals("anotherOne", hook.getName());
+		assertEquals("c.v.s.one", hook.getClassName());
+		assertNull(hook.getInit());
+		hook = hooks.get(3);
+		assertEquals("three", hook.getName());
+		assertEquals("c.v.s.three", hook.getClassName());
+		assertNull(hook.getInit());
+		hook = hooks.get(4);
+		assertEquals("four", hook.getName());
+		assertEquals("c.v.s.four", hook.getClassName());
+		assertNull(hook.getInit());
+		hook = hooks.get(5);
+		assertEquals("anotherFour", hook.getName());
+		assertEquals("c.v.s.four", hook.getClassName());
+		assertNull(hook.getInit());
+
+		hooks = test1.getHooks();
+		assertEquals(4, hooks.size());
+		hook = hooks.get(0);
+		assertEquals("one", hook.getName());
+		assertEquals("c.v.s.one", hook.getClassName());
+		assertEquals("\"just a string with \\\"quotes'\"", hook.getInit());
+		hook = hooks.get(1);
+		assertEquals("two", hook.getName());
+		assertEquals("c.v.s.two", hook.getClassName());
+		assertEquals("90", hook.getInit());
+		hook = hooks.get(2);
+		assertEquals("three", hook.getName());
+		assertEquals("c.v.s.three", hook.getClassName());
+		assertEquals("\"\"", hook.getInit());
+		hook = hooks.get(3);
+		assertEquals("four", hook.getName());
+		assertEquals("c.v.s.four", hook.getClassName());
+		assertEquals("{\"foo\":\"a string\",\"bar\":[1,2],\"obj\":{}}", hook.getInit());
+
+		assertTrue(test2.getHooks().isEmpty());
 	}
 
 	/**
@@ -257,7 +330,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
@@ -390,7 +463,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
@@ -415,7 +488,15 @@ public class ParserSerialOkayTest extends BaseTestCore {
 
 	"{                                                                                 \n" +
 		    "  'meta':{                                                                \n" +
-		    "      'name':'happy_path_schema'                                          \n" +
+		    "      'name':'happy_path_schema',                                         \n" +
+		    "     'hooks':[                                                            \n" +
+		    "        {'name':'one', 'class':'c.v.s.one'},                              \n" +
+		    "        {'name':'two', 'class':'c.v.s.two'},                              \n" +
+		    "        {'name':'anotherOne', 'class':'c.v.s.one'},                       \n" +
+		    "        {'name':'three', 'class':'c.v.s.three'},                          \n" +
+		    "        {'name':'four', 'class':'c.v.s.four'},                            \n" +
+		    "        {'name':'anotherFour', 'class':'c.v.s.four'}                      \n" +
+		    "      ]                                                                   \n" +
 		    "  },                                                                      \n" +
     	    //==========================================================================//
     	   
@@ -603,7 +684,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 	@org.junit.Test
 	public void happyPathTest() throws Exception {
 		
-		SchemaParser parser = new SchemaParser(new UserHooker());
+		SchemaParser parser = getSchemaParser();
 		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
@@ -612,9 +693,33 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals("happy_path_schema", schema.getName());
 		assertNull(schema.getComment());
 
+		//
+		// Hooks
+		//
+		
+		List<Hook> hooks = schema.getHooks();
+		assertEquals(6, hooks.size());
+		Hook hook = hooks.get(0);
+		assertEquals("one", hook.getName());
+		assertEquals("c.v.s.one", hook.getClassName());
+		hook = hooks.get(1);
+		assertEquals("two", hook.getName());
+		assertEquals("c.v.s.two", hook.getClassName());
+		hook = hooks.get(2);
+		assertEquals("anotherOne", hook.getName());
+		assertEquals("c.v.s.one", hook.getClassName());
+		hook = hooks.get(3);
+		assertEquals("three", hook.getName());
+		assertEquals("c.v.s.three", hook.getClassName());
+		hook = hooks.get(4);
+		assertEquals("four", hook.getName());
+		assertEquals("c.v.s.four", hook.getClassName());
+		hook = hooks.get(5);
+		assertEquals("anotherFour", hook.getName());
+		assertEquals("c.v.s.four", hook.getClassName());
 
 		//
-		// Views.
+		// States.
 		//
 		
 		String[][] expectedStates = {
@@ -632,7 +737,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 						
 		};
 		
-		// Verify views returned as a list.
+		// Verify states returned as a list.
 		List<State> actualStates = schema.getStates();
 		assertEquals(expectedStates.length, actualStates.size());
 		verifyState(expectedStates[0], actualStates.get(0));
@@ -647,7 +752,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		verifyState(expectedStates[9], actualStates.get(9));
 		verifyState(expectedStates[10], actualStates.get(10));
 		
-		// Verify views returned individually by name.
+		// Verify states returned individually by name.
 		for (String[] expectedView: expectedStates) {	
 			verifyState(expectedView, schema.getState(expectedView[0]));
 		}

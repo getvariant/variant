@@ -78,7 +78,7 @@ public class StateRequestImpl implements StateRequest {
 			return session.getCoreSession().getStateRequest().getLiveExperience(test);
 		}
 		catch (CoreException.User e) {
-			if (e.error.code == CommonError.STATE_NOT_INSTRUMENTED_BY_TEST.code)
+			if (e.error.getCode() == CommonError.STATE_NOT_INSTRUMENTED_BY_TEST.getCode())
 				throw new StateNotInstrumentedException(e);
 			else throw e;
 		}

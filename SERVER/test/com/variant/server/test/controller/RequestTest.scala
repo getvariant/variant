@@ -4,13 +4,12 @@ import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
 import scala.collection.JavaConversions._
-import com.variant.server.test.util.ParamString
-import com.variant.server.ConfigKeys
+import com.variant.server.api.ConfigKeys
 import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.ServerError._
 import com.variant.core.util.VariantStringUtils
 import play.api.libs.json._
-import com.variant.server.session.ServerSession
+import com.variant.server.impl.SessionImpl
 import com.variant.core.session.CoreSession
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.util.EventExperienceFromDatabase
@@ -56,9 +55,9 @@ class RequestTest extends BaseSpecWithServer {
          
          val reqBody = Json.obj(
             "cid" -> cid,
-            "ssn" -> ServerSession.empty(sid).toJson
-            ).toString
-         val resp = route(app, FakeRequest(PUT, context + "/session").withTextBody(reqBody)).get
+            "ssn" -> SessionImpl.empty(sid).toJson
+            )
+         val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(reqBody)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
          
@@ -67,7 +66,7 @@ class RequestTest extends BaseSpecWithServer {
       "create and commit new state request" in {
 
          // Get the session.
-         var resp = route(app, FakeRequest(GET, context + "/session/" + scid(sid, cid))).get
+         var resp = route(app, FakeRequest(GET, context + "/session/" + sid)).get
          status(resp) mustBe OK
          var respAsJson = contentAsJson(resp)
          val coreSsn1 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
@@ -76,12 +75,12 @@ class RequestTest extends BaseSpecWithServer {
          
          // Create state request object.
          val reqBody1 = Json.obj(
-            "sid" -> scid(sid, cid),
+            "sid" -> sid,
             "state" -> "state2"
-            ).toString
+            )
 
          // Target and get the request.
-         resp = route(app, FakeRequest(POST, context + "/request").withTextBody(reqBody1)).get
+         resp = route(app, FakeRequest(POST, context + "/request").withJsonBody(reqBody1)).get
          status(resp) mustBe OK
          respAsJson = contentAsJson(resp)
          val coreSsn2 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
@@ -95,10 +94,9 @@ class RequestTest extends BaseSpecWithServer {
 
          // Commit the request.
          val reqBody2 = Json.obj(
-            "cid" -> cid,
-            "ssn" -> coreSsn2.toJson
-            ).toString         
-         resp = route(app, FakeRequest(PUT, context + "/request").withTextBody(reqBody2)).get
+            "sid" -> sid
+            )    
+         resp = route(app, FakeRequest(PUT, context + "/request").withJsonBody(reqBody2)).get
          status(resp) mustBe OK
          respAsJson = contentAsJson(resp)
          val coreSsn3 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
@@ -110,7 +108,15 @@ class RequestTest extends BaseSpecWithServer {
          stateReq3.getSession.getId mustBe sid
          stateReq3.getState mustBe schema.getState("state2")
  
-         // Wait for event writer to flush and confirm we wrote the state visit event.
+         // Try committing again... Should work because we don't actually check for this on the server.
+         // and trust that the client will check before sending the request and check again after receiving.
+         val reqBody3 = Json.obj(
+            "sid" -> sid
+            )  
+         resp = route(app, FakeRequest(PUT, context + "/request").withJsonBody(reqBody3)).get
+         status(resp) mustBe OK
+
+         // Wait for event writer to flush and confirm we wrote 1 state visit event.
          Thread.sleep(2000)
          reader.read(e => e.getSessionId == sid).size mustBe 1
          for (e <- reader.read(e => e.getSessionId == sid)) {
@@ -122,20 +128,6 @@ class RequestTest extends BaseSpecWithServer {
                mustBe stateReq3.getLiveExperiences.toSet)
          }
          
-         // Try committing again... Should work because we don't actually check for this on the server.
-         // and trust that the client will check before sending the request and check again after receiving.
-         val reqBody3 = Json.obj(
-            "cid" -> cid,
-            "ssn" -> coreSsn3.toJson
-            ).toString         
-         resp = route(app, FakeRequest(PUT, context + "/request").withTextBody(reqBody3)).get
-         status(resp) mustBe OK
-/*         
-         val (isInternal, error, args) = parseError(contentAsJson(resp))
-         isInternal mustBe StateRequestAlreadyCommitted.isInternal() 
-         error mustBe StateRequestAlreadyCommitted
-         args mustBe (empty)
-*/
          // should not have produced a new event, i.e. still 1.
          Thread.sleep(2000)
          reader.read(e => e.getSessionId == sid).size mustBe 1

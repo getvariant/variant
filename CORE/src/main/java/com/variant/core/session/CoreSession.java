@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +32,9 @@ public class CoreSession implements Serializable {
 
 	private String sid;
 	private Date createDate = new Date();
+	private LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
 	private CoreStateRequest currentRequest = null;
-	private HashMap<State, Integer> traversedStates = new HashMap<State, Integer>();
+	private LinkedHashMap<State, Integer> traversedStates = new LinkedHashMap<State, Integer>();
 	private LinkedHashSet<Test> traversedTests = new LinkedHashSet<Test>();
 	private LinkedHashSet<Test> disqualTests = new LinkedHashSet<Test>();
 	private Schema schema;
@@ -96,11 +97,6 @@ public class CoreSession implements Serializable {
 		if (!(schidObj instanceof String)) 
 			throw new CoreException.Internal("Schema id not string");
 
-/* If schema has changed, we may not be able to deserialize it. Remember that we don't yet have a schema on server.
-		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER && !core.getSchema().getId().equals(schidObj)) {
-			throw new VariantSchemaModifiedException(core.getSchema().getId(), (String)schidObj);
-		}
-CLEANUP */									
 		Object tsObj = parsedJson.get(FIELD_NAME_TIMESTAMP);
 		if (tsObj == null) 
 			throw new CoreException.Internal("No timestamp");
@@ -136,13 +132,9 @@ CLEANUP */
 		}
 		result.setTargetingStabile(targetingStabile);
 
-		// If server, don't deserialize traversed tests and states because we don't have the schema.
-		/* Have schema now on both sides.
-		if (core.getComptime().getComponent() != VariantComptime.Component.SERVER) {
-		*/
 		Object statesObj = parsedJson.get(FIELD_NAME_TRAVERSED_STATES);
 		if (statesObj != null) {
-			HashMap<State,Integer> statesMap = new HashMap<State, Integer>();
+			LinkedHashMap<State,Integer> statesMap = new LinkedHashMap<State, Integer>();
 			try {
 				List<?> statesListRaw = (List<?>) statesObj; 
 				for (Object obj: statesListRaw) {
@@ -159,6 +151,26 @@ CLEANUP */
 			result.traversedStates = statesMap;
 		}
 	
+		
+		Object attributesObj = parsedJson.get(FIELD_NAME_ATTRIBUTES);
+		if (attributesObj != null) {
+
+			try {
+				List<?> attributesRaw = (List<?>) attributesObj; 
+				for (Object obj: attributesRaw) {
+					Map<?,?> objMap = (Map<?,?>) obj;
+					String name = (String) objMap.get(FIELD_NAME_NAME);
+					String value =  (String) objMap.get(FIELD_NAME_VALUE);
+					result.attributes.put(name, value);
+				}
+			}
+			catch (Exception e) {
+				throw new CoreException.Internal("Unable to deserialzie session: bad attributes spec", e);
+			}
+		}
+
+		
+		
 		Object testsObj = parsedJson.get(FIELD_NAME_TRAVERSED_TESTS);
 		if (testsObj != null) {
 			LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
@@ -192,6 +204,9 @@ CLEANUP */
 		return result;
 	}
 
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//	
 	/**
 	 * 
 	 */
@@ -224,6 +239,18 @@ CLEANUP */
 
 	public Set<Test> getDisqualifiedTests() {
 		return Collections.unmodifiableSet(disqualTests);
+	}
+
+	public String setAttribute(String name, String value) {
+		return attributes.put(name, value);
+	}    
+
+	public String getAttribute(String name) {
+		return attributes.get(name);
+	}
+
+	public String clearAttribute(String name) {
+		return attributes.remove(name);
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -290,33 +317,23 @@ CLEANUP */
 		return targetingStabile;
 	}
 
-	/**
-	 * core session doesn't know how to save itself.
-	 *
-	public void save() {
-		core.getSessionService().saveSession(this);
-	}
-	*
-	public void checkState() {
-		if (!schemaId.equals(core.getSchema().getId())) {
-			throw new VariantSchemaModifiedException(core.getSchema().getId(), schemaId);		
-		}
-	}
-	*/
 	//---------------------------------------------------------------------------------------------//
 	//                                       Serialization                                          //
 	//---------------------------------------------------------------------------------------------//
 
-	private static final String FIELD_NAME_ID = "sid";
-	private static final String FIELD_NAME_TIMESTAMP = "ts";
-	private static final String FIELD_NAME_SCHEMA_ID = "schid";
+	private static final String FIELD_NAME_ATTRIBUTES = "attrList";
+	private static final String FIELD_NAME_COUNT = "count";
+	private static final String FIELD_NAME_DISQUAL_TESTS = "disqualTests";
+	private static final String FIELD_NAME_NAME = "name";
 	private static final String FIELD_NAME_CURRENT_REQUEST = "request";
+	private static final String FIELD_NAME_SCHEMA_ID = "schid";
+	private static final String FIELD_NAME_ID = "sid";
+	private static final String FIELD_NAME_TARGETING_STABIL = "stabil";
+	private static final String FIELD_NAME_STATE = "state";
 	private static final String FIELD_NAME_TRAVERSED_STATES = "states";
 	private static final String FIELD_NAME_TRAVERSED_TESTS = "tests";
-	private static final String FIELD_NAME_DISQUAL_TESTS = "disqualTests";
-	private static final String FIELD_NAME_STATE = "state";
-	private static final String FIELD_NAME_COUNT = "count";
-	private static final String FIELD_NAME_TARGETING_STABIL = "stabil";
+	private static final String FIELD_NAME_TIMESTAMP = "ts";
+	private static final String FIELD_NAME_VALUE = "val";
 	
 	/**
 	 * Serialize as JSON.
@@ -348,6 +365,17 @@ CLEANUP */
 				jsonGen.writeEndArray();
 			}
 			
+			if (attributes.size() > 0) {
+				jsonGen.writeArrayFieldStart(FIELD_NAME_ATTRIBUTES);
+				for (Map.Entry<String, String> e: attributes.entrySet()) {
+					jsonGen.writeStartObject();
+					jsonGen.writeStringField(FIELD_NAME_NAME, e.getKey());
+					jsonGen.writeStringField(FIELD_NAME_VALUE, e.getValue());
+					jsonGen.writeEndObject();
+				}
+				jsonGen.writeEndArray();
+			}
+
 			if (traversedTests.size() > 0) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_TRAVERSED_TESTS);
 				for (Test t: traversedTests) {

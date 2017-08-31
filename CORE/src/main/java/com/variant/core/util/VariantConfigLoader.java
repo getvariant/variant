@@ -88,7 +88,7 @@ public class VariantConfigLoader {
 					throw new CoreException.User(CONFIG_RESOURCE_NOT_FOUND, resName);				
 				}
 				else {
-					LOG.debug(String.format(FORMAT_RESOURCE_FOUND, "", resName, res._2()));
+					LOG.info(String.format(FORMAT_RESOURCE_FOUND, "", resName, res._2()));
 					result = ConfigFactory.parseReader(new InputStreamReader(res._1()));
 				}
 			}
@@ -97,19 +97,22 @@ public class VariantConfigLoader {
 			}
 		}
 		else if (fileName != null) {
+
+		   InputStream is = null;
+		   
 			try {
-				InputStream is = VariantIoUtils.openFileAsStream(fileName);
+				is = VariantIoUtils.openFileAsStream(fileName);
 				if (is == null) {
 					throw new CoreException.User(CONFIG_FILE_NOT_FOUND, fileName);
 				}
-				else {
-					LOG.debug(String.format(FORMAT_FILE_FOUND, fileName));
-					result = ConfigFactory.parseReader(new InputStreamReader(is));
-				}
-			}
-			catch (Exception e) {
-				throw new CoreException.Internal(String.format(FORMAT_EXCEPTION, fileName), e);
-			}
+         }
+         catch (Exception e) {
+            throw new CoreException.User(CONFIG_FILE_NOT_FOUND, fileName);
+         }
+
+			LOG.info(String.format(FORMAT_FILE_FOUND, fileName));
+			result = ConfigFactory.parseReader(new InputStreamReader(is));
+		
 		}
 		else {
 			try {

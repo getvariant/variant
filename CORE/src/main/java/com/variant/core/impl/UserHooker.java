@@ -1,65 +1,56 @@
 package com.variant.core.impl;
 
-import java.util.ArrayList;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.variant.core.HookListener;
+import com.variant.core.LifecycleEvent;
 import com.variant.core.UserHook;
+import com.variant.core.schema.Hook;
+import com.variant.core.schema.parser.ParserResponseImpl;
 
 /**
- * User Hook processor
+ * User Hook processor.
  * 
  * @author
  *
  */
-public class UserHooker {
-
-	private static final Logger LOG = LoggerFactory.getLogger(UserHooker.class);
-
-	private ArrayList<HookListener<? extends UserHook>> listeners = 
-			new ArrayList<HookListener<? extends UserHook>>();
+public interface UserHooker {
 
 	/**
-	 * Package instantiation only.
+	 * Add an unbound user hook to this hooker.
 	 */
-	public UserHooker() {}
+	void initHook(Hook hook, ParserResponseImpl parserResponse);
 	
 	/**
-	 * 
-	 * @param listener
-	 */
-	@SuppressWarnings("unchecked") 
-	public void addListener(HookListener<? extends UserHook>... listeners) {
-		for (int i = 0; i < listeners.length; i++)
-			this.listeners.add(listeners[i]);
-	}
-	
-	/**
-	 * 
-	 */
-	public void clear() {
-		listeners.clear();
-	}
+	 * Add a test-bound user hook to this hooker.
+	 *
+	void addHook(UserHook<? extends LifecycleEvent> hook, Test test);
 
 	/**
-	 * Post all listeners listening on a particular hook.
-	 * @param listenerClass
-	 * @param hook
-	 * @return the hook passed in as argument.
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public UserHook post(UserHook hook) {
-		for (HookListener listener: listeners) {
-			if (listener.getHookClass().isInstance(hook)) {
-				listener.post(hook);
-				if (LOG.isTraceEnabled())
-					LOG.trace("Posted user hook [" + hook.getClass().getName() + "]");
-			}
-		}
-		return hook;
-	}
+	 * Remove all user hooks. 
+	 *
+	void clear();
 
+	/**
+	 * Post all hooks for a particular LCE type. This triggers post of all event types
+	 * assignable to the passed type, i.e. all of its subtypes.
+	 * 
+	 * @param event
+	 * @return the event passed in as argument.
+	 */
+	public UserHook.PostResult post(LifecycleEvent event);
+
+	/**
+	 * Null hooker, which does nothing whatsoever.
+	 * Good enough for core tests and for the client side (there are no hooks on the client).
+	 * 
+	 * @author Igor
+	 *
+	 */
+	public static final UserHooker NULL = new UserHooker() {
+		
+		@Override
+		public void initHook(Hook hook, ParserResponseImpl parserResponse) {}
+		
+		@Override
+		public UserHook.PostResult post(LifecycleEvent hook) {return null;}
+	};
 }
 

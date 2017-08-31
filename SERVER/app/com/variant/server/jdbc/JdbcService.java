@@ -120,10 +120,10 @@ public class JdbcService {
 	 */
 	public Vendor getVendor() {
 		// Figure out the JDBC vendor, if we can.
-		if (eventWriter.flusher() instanceof com.variant.server.event.EventFlusherPostgres) {
+		if (eventWriter.flusher() instanceof com.variant.server.api.EventFlusherPostgres) {
 			return Vendor.POSTGRES;
 		}
-		else if (eventWriter.flusher() instanceof com.variant.server.event.EventFlusherH2) {
+		else if (eventWriter.flusher() instanceof com.variant.server.api.EventFlusherH2) {
 			return Vendor.H2;
 		}
 		else return null;

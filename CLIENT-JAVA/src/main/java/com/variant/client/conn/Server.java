@@ -91,11 +91,11 @@ public class Server {
 
 	/**
 	 * SCID
-	 */
+	 *
 	private String scid(String sid) {
 		return sid + "." + connection.getId();
 	}
-	
+	*/
 	/**
 	 * Destroy this server.
 	 */
@@ -179,14 +179,14 @@ public class Server {
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session code() throws Exception {
-				HttpResponse resp = adapter.get(serverUrl + "session/" + scid(sid));
+				HttpResponse resp = adapter.get(serverUrl + "session/" + sid);
 				return Payload.Session.fromResponse(connection, resp);
 			}
 		}.run();
 	}
 
 	/**
-	 * Save core session on the remote server.
+	 * Save foreground session on server.
 	 */
 	public void sessionSave(final Session ssn) {
 		
@@ -225,7 +225,7 @@ public class Server {
 
 		checkState();
 
-		final String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", scid(sid), state);
+		final String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", sid, state);
 		
 		return new CommonExceptionHandler<Payload.Session>() {
 			
@@ -252,8 +252,9 @@ public class Server {
 				StringWriter body = new StringWriter();
 				JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 				jsonGen.writeStartObject();
-				jsonGen.writeStringField("cid", connection.getId());
-				jsonGen.writeStringField("ssn", ssn.toJson());
+				jsonGen.writeStringField("sid", ssn.getId());
+				//jsonGen.writeStringField("cid", connection.getId());
+				//jsonGen.writeStringField("ssn", ssn.toJson());
 				jsonGen.writeEndObject();
 				jsonGen.flush();
 				HttpResponse resp = adapter.put(serverUrl + "request", body.toString());

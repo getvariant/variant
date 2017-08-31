@@ -5,7 +5,7 @@
 
 #!/bin/bash
 
-export version=0.7.0
+export version=0.7.1
 export version2=""
 
 function usage() {
@@ -17,9 +17,9 @@ if [[ x != "x$1" ]]; then
     exit 1
 fi
 
-workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
-
-release_dir=${workspace_root_dir}/RELEASE
+variant_root=$(cd $(dirname $0)/../..; pwd)
+server_ext_root=$(cd ${variant_root}/../variant-server-extensions; pwd)
+release_dir=${variant_root}/RELEASE
 stage_dir=${release_dir}/stage
 target_dir=${release_dir}/target
 
@@ -29,67 +29,43 @@ mkdir ${stage_dir} ${target_dir} ${stage_dir}/server ${stage_dir}/java
 #
 # CORE
 #
-cd ${workspace_root_dir}/CORE
-mvn clean package -DskipTests
-cp $workspace_root_dir/CORE/target/variant-core*.jar ${stage_dir}/java
+${variant_root}/CORE/bin/release.sh
+cp $variant_root/CORE/target/variant-core*.jar ${stage_dir}/java
+cp $variant_root/CORE/target/variant-core*.jar $server_ext_root/lib
 
 #
 # SERVER
 #
-cd ${workspace_root_dir}/SERVER
-sbt clean dist
-mv target/universal/variant-${version}.zip ${stage_dir}/server
-cd ${stage_dir}/server
-unzip variant-${version}.zip
-rm variant-${version}.zip
-cd variant-${version}
-rm -rf README share
-cp -r ${workspace_root_dir}/SERVER/distr/schemas .
-mv bin/variant bin/playapp
-mv bin/variant.bat bin/playapp.bat
-cp ${workspace_root_dir}/SERVER/distr/bin/variant.sh bin
-mkdir -p db/postgres db/h2
-cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql db/postgres
-cp ${workspace_root_dir}/CORE/src/main/resources/variant/*schema.sql db/h2
-cd ..
-zip -r ${target_dir}/variant-${version}${version2}-server.zip variant-${version}/
-cd ..
-rm -rf server
+${variant_root}/SERVER/bin/release.sh
+cp $variant_root/SERVER/target/universal/variant-server-${version}.zip ${stage_dir}/server/variant-server-${version}${version2}.zip
+cp $variant_root/SERVER/target/universal/variant-server-api-0.7.1.jar $server_ext_root/lib
 
 #
-# JAVA CLIENT & SERVLET ADAPTER
+# JAVA CLIENT
 #
-cd ${workspace_root_dir}/CLIENT-JAVA
+cd ${variant_root}/CLIENT-JAVA
 mvn clean package -DskipTests
-cp target/variant-java-client*.jar ${stage_dir}/java
+cp target/java-client*.jar ${stage_dir}/java/variant-java-client-${version}.jar
 cp distr/variant.conf ${stage_dir}/java
 
-cd ${workspace_root_dir}/CLIENT-JAVA-SERVLET
-mvn clean package -DskipTests
-cp target/variant-java-client-servlet-adapter*.jar ${stage_dir}/java
+#
+# PACKAGE
+#
 
 cd ${stage_dir}/java
-zip ${target_dir}/variant-${version}${version2}-java.zip *
+zip ${target_dir}/variant-java-${version}${version2}.zip *
 cd ..
 rm -rf java
-
-#
-# SERVLET DEMO
-# Separate file because WP doesn't take files > 50M
-# Zip up the demo WAR because WP doesn't take WAR files. 
-#
-cd ${workspace_root_dir}/CLIENT-JAVA-SERVLET-DEMO
-mvn clean package -DskipTests
-cd target
-zip ${target_dir}/variant-${version}${version2}-java-servlet-demo.zip petclinic.war
+mv ${stage_dir}/server/* ${target_dir}
 
 #
 # JAVASCRIPT CLIENT
 #
-${workspace_root_dir}/CLIENT-JS/bin/package.sh
-cp ${workspace_root_dir}/CLIENT-JS/target/variant*.js ${target_dir}/variant-${version}${version2}.js
+${variant_root}/CLIENT-JS/bin/package.sh
+cp ${variant_root}/CLIENT-JS/target/variant*.js ${target_dir}/variant-${version}${version2}.js
 
 #
 # Javadoc
 #
-${release_dir}/bin/javadoc.sh
+#${release_dir}/bin/javadoc.sh
+

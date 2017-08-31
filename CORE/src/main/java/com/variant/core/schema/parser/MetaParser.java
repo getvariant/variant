@@ -65,6 +65,10 @@ public class MetaParser implements Keywords {
 						response.addMessage(META_COMMENT_INVALID);
 					}
 				}
+				else if (entry.getKey().equalsIgnoreCase(KEYWORD_HOOKS)) {
+					HooksParser.parse(entry.getValue(), response);
+				}
+
 				else {
 					response.addMessage(META_UNSUPPORTED_PROPERTY,  entry.getKey());
 				}
@@ -84,5 +88,4 @@ public class MetaParser implements Keywords {
 		}
 		
 	}
-
 }
