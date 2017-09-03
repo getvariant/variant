@@ -1,9 +1,8 @@
-package com.variant.core.impl;
+package com.variant.core.schema.parser;
 
 import com.variant.core.LifecycleEvent;
 import com.variant.core.UserHook;
 import com.variant.core.schema.Hook;
-import com.variant.core.schema.parser.ParserResponseImpl;
 
 /**
  * User Hook processor.
@@ -11,7 +10,7 @@ import com.variant.core.schema.parser.ParserResponseImpl;
  * @author
  *
  */
-public interface UserHooker {
+public interface HooksService {
 
 	/**
 	 * Add an unbound user hook to this hooker.
@@ -44,7 +43,7 @@ public interface UserHooker {
 	 * @author Igor
 	 *
 	 */
-	public static final UserHooker NULL = new UserHooker() {
+	public static final HooksService NULL = new HooksService() {
 		
 		@Override
 		public void initHook(Hook hook, ParserResponseImpl parserResponse) {}

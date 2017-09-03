@@ -1,8 +1,9 @@
  package com.variant.core.test;
 
-import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.parser.FlusherService;
 import com.variant.core.schema.parser.SchemaParser;
+import com.variant.core.schema.parser.HooksService;
 
 
 /**
@@ -25,8 +26,13 @@ public class BaseTestCore extends VariantBaseTest {
 	protected SchemaParser getSchemaParser() {
 		return new SchemaParser() {
 			@Override
-			protected UserHooker getHooker() {
-				return UserHooker.NULL;
+			protected HooksService getHooksService() {
+				return HooksService.NULL;
+			}
+
+			@Override
+			protected FlusherService getFlusherService() {
+				return FlusherService.NULL;
 			}
 		};
 	}

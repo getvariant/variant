@@ -20,7 +20,7 @@ import com.variant.core.CommonError;
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
-import com.variant.core.impl.UserHooker;
+import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.State;
@@ -96,10 +96,12 @@ public abstract class SchemaParser implements Keywords {
 	}
 	
 	/**
-	 * Concrete implementations will supply a hooker.
+	 * Concrete implementations will supply comp and run time services which cannot be implemented
+	 * in the core library..
 	 * @return
 	 */
-	protected abstract UserHooker getHooker();
+	protected abstract HooksService getHooksService();
+	protected abstract FlusherService getFlusherService();
 
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -173,6 +175,9 @@ public abstract class SchemaParser implements Keywords {
 		}
 		
 		// Pass 2. Look at all clauses.  Expected ones are already uppercased.
+	
+		HooksService hooksService = getHooksService();
+		FlusherService flusherService = getFlusherService();
 		
 		Object meta = cleanMap.get(KEYWORD_META.toUpperCase());
 		if (meta == null) {
@@ -181,8 +186,13 @@ public abstract class SchemaParser implements Keywords {
 		else {			
 			// Parse meta info
 			MetaParser.parse(meta, response);
+			
 			// Init all schema scoped hooks.
-			for (Hook hook: response.getSchema().getHooks()) getHooker().initHook(hook, response);
+			for (Hook hook: response.getSchema().getHooks()) hooksService.initHook(hook, response);
+			
+			// Init schema flusher, if any.
+			Flusher flusher = response.getSchema().getFlusher();
+			if (flusher != null) flusherService.initFlusher(flusher, response);
 		}
 
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());
@@ -197,7 +207,7 @@ public abstract class SchemaParser implements Keywords {
 			// Post parse time user hooks.
 			for (State state: response.getSchema().getStates()) {
 				try {
-					getHooker().post(new StateParsedLifecycleEventImpl(state, response));
+					hooksService.post(new StateParsedLifecycleEventImpl(state, response));
 				}
 				catch (VariantException e) {
 					response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
@@ -223,7 +233,7 @@ public abstract class SchemaParser implements Keywords {
 			// Post parse time user hooks.
 			for (Test test: response.getSchema().getTests()) {
 				try {
-					getHooker().post(new TestParsedLifecycleEventImpl(test, response));
+					hooksService.post(new TestParsedLifecycleEventImpl(test, response));
 				}
 				catch (VariantException e) {
 					response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, TestParsedLifecycleEventImpl.class.getName(), e.getMessage());
@@ -232,7 +242,7 @@ public abstract class SchemaParser implements Keywords {
 			
 			// Init all test scoped hooks.
 			for (Test test: response.getSchema().getTests()) {
-				for (Hook hook: test.getHooks()) getHooker().initHook(hook, response);
+				for (Hook hook: test.getHooks()) hooksService.initHook(hook, response);
 			}
 
 		}

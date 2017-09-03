@@ -1,7 +1,7 @@
 package com.variant.client.conn;
 
-import com.variant.core.impl.UserHooker;
 import com.variant.core.schema.parser.SchemaParser;
+import com.variant.core.schema.parser.HooksService;
 
 /**
  * Client side schema parser is the same as core, but uses a null hooker
@@ -13,8 +13,8 @@ import com.variant.core.schema.parser.SchemaParser;
 public class ClientSchemaParser extends SchemaParser {
 
 	@Override
-	protected UserHooker getHooker() {
-		return UserHooker.NULL;
+	protected HooksService getHooker() {
+		return HooksService.NULL;
 	}
 
 	
