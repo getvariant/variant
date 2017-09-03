@@ -1,15 +1,12 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.ParserError.META_COMMENT_INVALID;
-import static com.variant.core.schema.parser.ParserError.META_NAME_INVALID;
-import static com.variant.core.schema.parser.ParserError.META_NAME_MISSING;
-import static com.variant.core.schema.parser.ParserError.META_NOT_OBJECT;
-import static com.variant.core.schema.parser.ParserError.META_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.ParserError.*;
 
 import java.util.Map;
 
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
+import com.variant.core.schema.Flusher;
 import com.variant.core.schema.impl.SchemaImpl;
 
 /**
@@ -42,7 +39,8 @@ public class MetaParser implements Keywords {
 
 			String name = null, comment = null;
 			boolean nameFound = false;
-			
+            Flusher flusher = null;
+            
 			for(Map.Entry<String, ?> entry: metaObject.entrySet()) {
 				
 				if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
@@ -68,6 +66,9 @@ public class MetaParser implements Keywords {
 				else if (entry.getKey().equalsIgnoreCase(KEYWORD_HOOKS)) {
 					HooksParser.parse(entry.getValue(), response);
 				}
+				else if (entry.getKey().equalsIgnoreCase(KEYWORD_FLUSHER)) {
+					flusher = FlusherParser.parse(entry.getValue(), response);
+				}
 
 				else {
 					response.addMessage(META_UNSUPPORTED_PROPERTY,  entry.getKey());
@@ -80,7 +81,7 @@ public class MetaParser implements Keywords {
 			
 			if (response.hasMessages(Severity.ERROR)) return;
 					
-			schema.setMeta(name, comment);
+			schema.setMeta(name, comment, flusher);
 			
 		}
 		catch (Exception e) {

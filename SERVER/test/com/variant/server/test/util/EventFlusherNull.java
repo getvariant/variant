@@ -6,8 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.ConfigObject;
-import com.variant.server.api.EventFlusher;
-import com.variant.server.api.FlushableEvent;
+import com.variant.core.EventFlusher;
+import com.variant.core.FlushableEvent;
 
 /**
  * Null implementation: all events are discarded.  Useful for testing.

@@ -9,8 +9,8 @@ import play.api.Logger
 import com.typesafe.config.Config
 import com.variant.core.VariantException
 import com.variant.server.api.ServerException
-import com.variant.server.api.FlushableEvent
-import com.variant.server.api.EventFlusher
+import com.variant.core.FlushableEvent
+import com.variant.core.EventFlusher
 
 class EventWriter (config: Config) {
 	

@@ -64,8 +64,17 @@ public class ParserError extends UserError {
 	public static final ParserError HOOKS_NOT_OBJECT =
 			new ParserError(14, Severity.ERROR, "'meta/hooks' property element must be an object"); 
 
-	public static final ParserError HOOK_INIT_INVALID =
-			new ParserError(15, Severity.ERROR, "Hook init proerty must be a string (hook [%s]"); 
+	public static final ParserError FLUSHER_NOT_OBJECT =
+			new ParserError(15, Severity.ERROR, "'meta/flusher' property must be an object"); 
+
+	public static final ParserError FLUSHER_CLASS_NAME_INVALID =
+			new ParserError(16, Severity.ERROR, "Flusher class name must be a string"); 
+
+	public static final ParserError FLUSHER_UNSUPPORTED_PROPERTY =
+			new ParserError(17, Severity.WARN,  "Unsupported flusher property [%s]"); 
+
+	public static final ParserError FLUSHER_CLASS_NAME_MISSING =
+			new ParserError(18, Severity.ERROR, "Flusher class name missing"); 
 
 	// 
 	// 021-050 Schema parser, State

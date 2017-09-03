@@ -1,7 +1,10 @@
 package com.variant.core.schema;
 
 /**
- * Representation of Hook XDM element.
+ * Representation of the schema hook property. Schema scoped hooks
+ * are declared in the {@code meta/hooks} array; state scoped hooks are
+ * declared in the {@code states/[?]/hooks} array; and test scoped hooks are
+ * declared in the {@code tests/[?]/hooks} array. 
  * 
  * @author Igor Urisman
  * @since 0.7

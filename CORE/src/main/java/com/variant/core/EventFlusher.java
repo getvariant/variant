@@ -1,4 +1,4 @@
-package com.variant.server.api;
+package com.variant.core;
 
 import java.util.Collection;
 
@@ -6,15 +6,19 @@ import com.typesafe.config.ConfigObject;
 
 /**
  * <p>Interface to be implemented by a user-supplied class, which handles writing
- * Variant events to external storage. This implementation will be instantiated
- * by Variant and must be supplied in the {@code event.writer.class.name} system property.
- * By contract, the implementation must provide a no-argument constructor, which Variant will use
- * to instantiate it. Immedately followign instantiation, Variant will call {@link #init(VariantCoreInitParams)}
- * to allow state injection from external configuration.
+ * Variant events to external storage. The implementation will be instantiated
+ * by Variant and is bound to a particular Variant schema. The implementation is defined
+ * by the {@code meta/flusher} schema property. If no flusher is supplied in the schema,
+ * Variant will used the instance-wide default defined by {@code event.writer.class.name} system property.
+ * 
+ * 
+ * <p>By contract, the implementation must provide a no-argument constructor, which Variant will use
+ * to instantiate it. Immediately following instantiation, Variant will call {@link #init(ConfigObject)}
+ * to allow for state injection from external configuration, if provided.
  * 
  * <p>The implementation should expect Variant 
- * server to periodically call {@link #flush(Collection)} with a collection of events to be
- * written off. The frequency of this call and the likely number of passed events depend
+ * server to periodically call {@link #flush(Collection)} with a collection of events readu to be
+ * flushed. The frequency of this call and the likely number of events in the collection depend
  * on the rate of event production and the following system properties:
  * <ul>
  * <li>{@code variant.event.writer.buffer.size}: The maximum number of pending events that can be

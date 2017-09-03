@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.ConfigObject;
+import com.variant.core.EventFlusher;
+import com.variant.core.FlushableEvent;
 import com.variant.core.schema.Test.Experience;
 
 /**

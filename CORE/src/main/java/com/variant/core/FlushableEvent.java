@@ -1,16 +1,14 @@
-package com.variant.server.api;
+package com.variant.core;
 
 import java.util.Collection;
 
-import com.variant.core.VariantEvent;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
 
 /**
  * Variant event that can be flushed by {@link EventFlusher}. Instantiated by Variant server
  * and passed to an externally configured implementation of {@link EventFlusher}.
- * Extends {@link VariantEvent} with additional methods required for proper logging,
- * such as caller's current Variant session.
+ * Extends {@link VariantEvent} with methods exposing runtime details of the underlying {@code VariantEvent}.
  * 
  * @author Igor Urisman
  * @since 0.7

@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
 
+import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -22,6 +23,7 @@ public class SchemaImpl implements Schema {
 	// Meta
 	private String name = null;
 	private String comment = null;
+	private Flusher flusher = null;
 	
 	// Hooks are keyed by name.
 	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
@@ -56,6 +58,11 @@ public class SchemaImpl implements Schema {
 		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
 		result.addAll(hooks);
 		return Collections.unmodifiableList(result);
+	}
+
+	@Override
+	public Flusher getFlusher() {
+		return flusher;
 	}
 
 	@Override
@@ -120,9 +127,10 @@ public class SchemaImpl implements Schema {
 	 * @param name
 	 * @param comment
 	 */
-	public void setMeta(String name, String comment) {
+	public void setMeta(String name, String comment, Flusher flusher) {
 		this.name = name;
 		this.comment = comment;
+		this.flusher = flusher;
 	}
 	
 	/**

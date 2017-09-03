@@ -4,7 +4,7 @@ import java.util.List;
 
 
 /**
- * Representation of an XDM schema. A complete description of a set of experiments running on
+ * Representation of an experiment schema. A complete description of a set of experiments running on
  * a Variant server. Has two top level entities: {@link State}s and {@link Test}s. A schema
  * object is instantiated by the schema parser which reads and parses the schema file.
  * 
@@ -36,6 +36,15 @@ public interface Schema {
 	 * @since 0.7
 	 */
 	public List<Hook> getHooks();
+
+	/**
+	 * <p>This schema's declared {@link Flusher}. If no flusher is declared by the schema, the system wide default
+	 * is used.
+	 * 
+	 * @return An object of type {@link Flusher} if flusher was declared in this schema, or {@code null} otherwise.
+	 * @since 0.8
+	 */
+	public Flusher getFlusher();
 
 	/**
 	 * <p>This schema's ID.

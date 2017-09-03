@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
@@ -35,8 +36,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 					    "        {'name':'three', 'class':'c.v.s.three'},                          \n" +
 					    "        {'name':'four', 'class':'c.v.s.four'},                            \n" +
 					    "        {'name':'anotherFour', 'class':'c.v.s.four'}                      \n" +
-					    "      ]                                                                   \n" +
-					    "  },                                                                      \n" +
+					    "      ],                                                                  \n" +
+					    "      'flusher': {                                                        \n" +
+					    "        'class':'flusher.class.Foo',                                      \n" +  
+					    "        'init':{}                                                         \n" +
+					    "       }                                                                  \n" +
+ 		    		    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	   
 			    	    "   'states':[                                                             \n" +
@@ -156,6 +161,10 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertNotNull(response.getSchemaSrc());
 		assertEquals("allTestsOffTest", schema.getName());
 		assertEquals("!@#$%^&*", schema.getComment());
+		Flusher flusher = schema.getFlusher();
+		assertNotNull(flusher);
+		assertEquals("flusher.class.Foo", flusher.getClassName());
+		assertEquals("{}", flusher.getInit());
 
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
@@ -228,7 +237,10 @@ public class ParserSerialOkayTest extends BaseTestCore {
 				"{                                                                                 \n" +
 					    "  'meta':{                                                                \n" +		    	    
 					    "      'NAME':'oneOffOneDisqualifiedTest',                                 \n" +
-					    "      'CommenT':'oneOffOneDisqualifiedTest comment'                       \n" +
+					    "      'CommenT':'oneOffOneDisqualifiedTest comment',                      \n" +
+					    "      'flusher': {                                                        \n" +
+					    "        'class':'flusher.class.Foo'                                       \n" +  
+					    "       }                                                                  \n" +
 					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	   
@@ -338,6 +350,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Schema schema = response.getSchema();
 		assertEquals("oneOffOneDisqualifiedTest", schema.getName());
 		assertEquals("oneOffOneDisqualifiedTest comment", schema.getComment());
+
+		Flusher flusher = schema.getFlusher();
+		assertNotNull(flusher);
+		assertEquals("flusher.class.Foo", flusher.getClassName());
+		assertNull(flusher.getInit());
+
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
 		assertFalse(test1.isOn());
@@ -429,9 +447,9 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              'weight':0.6                                               \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ],                                                               \n" +
-			    	    "        'onStates':[                                                      \n" +
+			    	    "        'onStates':[                                                     \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'stateRef':'state1',                                        \n" +
+			    	    "              'stateRef':'state1',                                       \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
@@ -442,7 +460,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'stateRef':'state2',                                        \n" +
+			    	    "              'stateRef':'state2',                                       \n" +
 			    	    "              'isNonvariant':false,                                      \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
@@ -454,7 +472,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'stateRef':'state3',                                        \n" +
+			    	    "              'stateRef':'state3',                                       \n" +
 			    	    "              'isNonvariant':true                                        \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ]                                                                \n" +
@@ -471,6 +489,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Schema schema = response.getSchema();
 		assertEquals("allTestsDisqualifiedTest", schema.getName());
 		assertNull(schema.getComment());
+		assertNull(schema.getFlusher());
+
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
 		assertTrue(test1.isOn());

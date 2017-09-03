@@ -58,6 +58,11 @@ class ServerSchema (val response: ParserResponse, val hooker: ServerHooker) exte
 	   coreSchema.getHooks
 	}
 
+   override def getFlusher = {
+	   checkState
+	   coreSchema.getFlusher
+	}
+
    override def getId = {
 	   checkState
 	   coreSchema.getId

@@ -9,6 +9,7 @@ import java.util.Properties;
 
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
+import com.variant.core.EventFlusher;
 import com.variant.server.jdbc.EventFlusherJdbc;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
