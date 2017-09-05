@@ -2,8 +2,8 @@ package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
 import com.variant.core.UserHook;
+import com.variant.core.lce.TestQualificationLifecycleEvent;
 import com.variant.core.schema.Hook;
-import com.variant.server.api.hook.TestQualificationLifecycleEvent;
 
 /**
  * This class does not implement the required interface.

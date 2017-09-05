@@ -3,10 +3,10 @@ package com.variant.core.schema.parser;
 import com.typesafe.config.Config;
 import com.variant.core.UserError.Severity;
 import com.variant.core.UserHook;
+import com.variant.core.lce.TestParsedLifecycleEvent;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.TestParsedLifecycleEvent;
 
 /**
  * 

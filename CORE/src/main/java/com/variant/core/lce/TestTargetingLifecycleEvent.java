@@ -1,7 +1,6 @@
-package com.variant.server.api.hook;
+package com.variant.core.lce;
 
 import com.variant.core.UserHook;
-import com.variant.core.schema.State;
 import com.variant.core.schema.Test.Experience;
 
 /**
@@ -20,19 +19,11 @@ import com.variant.core.schema.Test.Experience;
  * reason other than the difference in treatment, that explains the difference in measurement.</b>
  * 
  * @author Igor.
- * @since 0.5
+ * @since 0.7
  *
  */
-public interface TestTargetingLifecycleEvent extends StateRequestAwareLifecycleEvent, TestScopedLifecycleEvent {
+public interface TestTargetingLifecycleEvent extends TestAwareLifecycleEvent, StateAwareLifecycleEvent {
 	
-	/**
-	 * The state for which this session is being targeted.
-	 * 
-	 * @return An object of type {@link State}.
-	 * @since 0.6
-	 */
-	public State getState();
-
    /**
     * The return type of the {@link UserHook#post(com.variant.core.LifecycleEvent) UserHook.post(TestTargetingLifecycleEvent)} 
     * method.

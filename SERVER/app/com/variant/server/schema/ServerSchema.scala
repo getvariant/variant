@@ -19,7 +19,7 @@ object ServerSchema {
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (val response: ParserResponse, val hooker: ServerHooker) extends Schema {
+class ServerSchema (val response: ParserResponse, val hooker: ServerHooksService) extends Schema {
   
    import State._
    

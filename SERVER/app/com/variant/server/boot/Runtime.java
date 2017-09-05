@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.util.VariantStringUtils;
+import com.variant.core.lce.TestQualificationLifecycleEvent;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.schema.State;
@@ -26,7 +27,6 @@ import static com.variant.server.boot.ServerErrorLocal.*;
 
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
-import com.variant.server.api.hook.TestQualificationLifecycleEvent;
 import com.variant.server.impl.SessionImpl;
 import com.variant.server.impl.StateRequestImpl;
 import com.variant.server.impl.TestQualificationLifecycleEventImpl;

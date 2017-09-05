@@ -1,8 +1,8 @@
-package com.variant.core.schema;
+package com.variant.core.lce;
 
-import com.variant.core.LifecycleEvent;
 import com.variant.core.UserHook;
 import com.variant.core.UserError.Severity;
+import com.variant.core.schema.Test;
 
 
 /**
@@ -14,7 +14,7 @@ import com.variant.core.UserError.Severity;
  * @since 0.5
  *
  */
-public interface TestParsedLifecycleEvent extends ParseTimeLifecycleEvent {
+public interface TestParsedLifecycleEvent extends ParsetimeLifecycleEvent {
 
 	/**
 	 * The test for which this hook is posting. It is safe to assume that no errors were

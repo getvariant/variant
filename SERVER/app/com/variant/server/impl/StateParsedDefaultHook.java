@@ -4,7 +4,7 @@ import com.typesafe.config.Config;
 import com.variant.core.UserHook;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.StateParsedLifecycleEvent;
-import com.variant.server.api.hook.PostResultFactory;
+import com.variant.server.api.PostResultFactory;
 
 class StateParsedDefaultHook implements UserHook<StateParsedLifecycleEvent> {
 	

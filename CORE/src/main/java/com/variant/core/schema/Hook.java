@@ -38,21 +38,38 @@ public interface Hook {
 	
 	
 	/**
-	 * A hook element defined at the meta (schema) level.
+	 * Schema scoped user hook.
 	 * @author Igor
 	 * @since 0.7
 	 */
 	public interface Schema extends Hook {}
 	
 	/**
-	 * A hook element defined at the test level.
+	 * State scoped user hook.
+	 * @author Igor
+	 * @since 0.7
+	 */
+	public interface State extends Hook {
+		
+		/**
+		 * The state in whose scope this hook is defined.
+		 * 
+		 * @return An object of type {@link com.variant.core.schema.Test}
+		 * @since 0.7
+		 */
+		public com.variant.core.schema.State getState();
+		
+	}
+
+	/**
+	 * Test scoped user hook..
 	 * @author Igor
 	 * @since 0.7
 	 */
 	public interface Test extends Hook {
 		
 		/**
-		 * The test , in shoe scope this hook is defined.
+		 * The test in whose scope this hook is defined.
 		 * 
 		 * @return An object of type {@link com.variant.core.schema.Test}
 		 * @since 0.7

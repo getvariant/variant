@@ -26,24 +26,28 @@ public class ServerErrorLocal extends CommonError {
 	public final static ServerErrorLocal MULTIPLE_SCHEMATA_NOT_SUPPORTED = 
 			new ServerErrorLocal(421, Severity.FATAL, "Schemata directory [%s] cannot contain multiple files");
 
+	public final static ServerErrorLocal OBJECT_CONSTRUCTOR_ERROR = 
+			new ServerErrorLocal(423, Severity.ERROR, "Unable to instantiate class [%s] becuase no suitable constructor was found.");
+
+	public final static ServerErrorLocal OBJECT_INSTANTIATION_ERROR = 
+			new ServerErrorLocal(423, Severity.ERROR, "Unable to instantiate class [%s] due to error [%s]. See log for details");
+
+	public final static ServerErrorLocal OBJECT_CLASS_NO_INTERFACE = 
+			new ServerErrorLocal(422, Severity.ERROR, "Hook class [%s] must implement interface [%s]");
+
+	public final static ServerErrorLocal HOOK_STATE_SCOPE_VIOLATION = 
+			new ServerErrorLocal(462, Severity.ERROR, "User hook [%s], defined at state [%s] cannot listen to life cycle event [%s].");
+	
+	public final static ServerErrorLocal HOOK_TEST_SCOPE_VIOLATION = 
+			new ServerErrorLocal(462, Severity.ERROR, "User hook [%s], defined at test [%s] cannot listen to life cycle event [%s].");
+
 	//
 	// 461-480 Server API
 	//
 
-	public final static ServerErrorLocal HOOK_CLASS_NO_INTERFACE = 
-			new ServerErrorLocal(461, Severity.ERROR, "Hook class [%s] must implement interface [%s]");
-
-	public final static ServerErrorLocal HOOK_INSTANTIATION_ERROR = 
-			new ServerErrorLocal(462, Severity.ERROR, "Unable to instantiate hook class [%s] due to error [%s]. See log for details");
-
 	public final static ServerErrorLocal HOOK_TARGETING_BAD_EXPERIENCE = 
-			new ServerErrorLocal(463, Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s]");
+			new ServerErrorLocal(461, Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s]");
 
-	public final static ServerErrorLocal HOOK_SCHEMA_DOMAIN_DEFINED_AT_TEST = 
-			new ServerErrorLocal(464, Severity.ERROR, "User hook [%s], which listens to the schema-scoped life cycle event [%s], cannot be defined at test level. (Test [%s]");
-	
-	public final static ServerErrorLocal HOOK_TEST_DOMAIN_DEFINED_AT_SCHEMA = 
-			new ServerErrorLocal(465, Severity.ERROR, "User hook [%s], which listens to the test-scoped life cycle event [%s], cannot be defined at schema level");
 
 	//
 	// 481-500 Other server runtime

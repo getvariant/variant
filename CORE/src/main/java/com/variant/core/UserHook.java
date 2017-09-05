@@ -1,19 +1,29 @@
 package com.variant.core;
 
 import com.typesafe.config.Config;
+import com.variant.core.lce.LifecycleEvent;
+import com.variant.core.lce.StateAwareLifecycleEvent;
+import com.variant.core.lce.TestAwareLifecycleEvent;
 import com.variant.core.schema.Hook;
 
 /**
  * <p>The interface to be implemented by a user hook, which wants to be posted of a life cycle event.
- * Whenever Variant server reaches the execution point corresponding to the life cycle event
- * type assignable to the class returned by {@link #getLifecycleEventClass()}, this listener is posted by 
- * Variant server via the {@link #post(LifecycleEvent)} method.
+ * Whenever Variant triggers a life cycle event type assignable to the class returned by {@link #getLifecycleEventClass()},
+ * this listener is posted via the {@link #post(LifecycleEvent)} method.
  * 
  * <p>It is permissible to register multiple hooks for the same life cycle event type.
  * In this case they form a hook chain, and Variant server will call them in the order of registration.
  * Hooks are posted until the {@link #post(LifecycleEvent)} method returns a non-null value. If
  * none of user defined hooks returned a non-null value, the default hook is posted, which is guaranteed
  * to return a value.
+ * 
+ * <p>User hooks are defined in the experiment schema at the meta, state or test level. Those hooks, defined
+ * at the meta level are <em>schema-scoped</em> and are applicable to all states and tests in the schema.
+ * Hooks defined at the state level are <em>state-scoped</em> and are only applicable to the state where
+ * they are defined. Finally, hooks defined at the test level are <em>test-scoped</em> and are only applicable
+ * to the test where they are defined. It is an error to define a state-scoped hook which listens to a non-
+ * {@link StateAwareLifecycleEvent}. Likewise, is an error to define a test-scoped hook which listens to a non-
+ * {@link TestAwareLifecycleEvent}.
  * 
  * <p>An implementation must provide a public no-argument constructor. If it is desirable to initialize a
  * newly constructed object, use {@link #init(Config, Hook)}.

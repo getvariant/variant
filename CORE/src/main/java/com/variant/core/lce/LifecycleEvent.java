@@ -1,4 +1,6 @@
-package com.variant.core;
+package com.variant.core.lce;
+
+import com.variant.core.UserHook;
 
 /**
  * <p>Ultimate super-interface for all life cycle event types. Concrete implementations

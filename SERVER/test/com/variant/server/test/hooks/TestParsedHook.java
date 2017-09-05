@@ -5,7 +5,7 @@ import com.variant.core.UserError.Severity;
 import com.variant.core.UserHook;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.TestParsedLifecycleEvent;
-import com.variant.server.api.hook.PostResultFactory;
+import com.variant.server.api.PostResultFactory;
 
 public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
 	

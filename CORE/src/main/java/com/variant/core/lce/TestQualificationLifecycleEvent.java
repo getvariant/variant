@@ -1,4 +1,4 @@
-package com.variant.server.api.hook;
+package com.variant.core.lce;
 
 import com.variant.core.UserHook;
 
@@ -20,7 +20,7 @@ import com.variant.core.UserHook;
  * @since 0.5
  *
  */
-public interface TestQualificationLifecycleEvent extends StateRequestAwareLifecycleEvent, TestScopedLifecycleEvent {
+public interface TestQualificationLifecycleEvent extends TestAwareLifecycleEvent {
       
    /**
     * The return type of the {@link UserHook#post(com.variant.core.LifecycleEvent) UserHook.post(TestQualificationLifecycleEvent)} 

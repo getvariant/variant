@@ -1,6 +1,6 @@
-package com.variant.server.api.hook;
+package com.variant.core.lce;
 
-import com.variant.core.LifecycleEvent;
+import com.variant.core.lce.LifecycleEvent;
 
 /**
  * Marker super-interface for all life cycle event types, which are triggered at experiment's run time.
@@ -9,4 +9,4 @@ import com.variant.core.LifecycleEvent;
  * @since 0.7
  *
  */
-public interface RunTimeLifecycleEvent extends LifecycleEvent {}
+public interface RuntimeLifecycleEvent extends LifecycleEvent {}

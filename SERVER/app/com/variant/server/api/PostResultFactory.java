@@ -1,8 +1,10 @@
-package com.variant.server.api.hook;
+package com.variant.server.api;
 
 import com.variant.core.LifecycleEvent;
 import com.variant.core.UserHook;
 import com.variant.core.UserHook.PostResult;
+import com.variant.core.lce.TestQualificationLifecycleEvent;
+import com.variant.core.lce.TestTargetingLifecycleEvent;
 import com.variant.core.schema.StateParsedLifecycleEvent;
 import com.variant.core.schema.TestParsedLifecycleEvent;
 import com.variant.server.impl.StateParsedLifecycleEventPostResultImpl;

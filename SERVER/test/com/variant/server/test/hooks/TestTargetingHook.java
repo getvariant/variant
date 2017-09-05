@@ -5,14 +5,14 @@ import java.util.Random;
 
 import com.typesafe.config.Config;
 import com.variant.core.UserHook;
+import com.variant.core.lce.TestTargetingLifecycleEvent;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
+import com.variant.server.api.PostResultFactory;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
-import com.variant.server.api.hook.PostResultFactory;
-import com.variant.server.api.hook.TestTargetingLifecycleEvent;
 
 /**
  * Target according to weights passed in the init property weights.

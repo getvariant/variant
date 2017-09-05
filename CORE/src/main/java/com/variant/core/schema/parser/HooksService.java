@@ -1,7 +1,7 @@
 package com.variant.core.schema.parser;
 
-import com.variant.core.LifecycleEvent;
 import com.variant.core.UserHook;
+import com.variant.core.lce.LifecycleEvent;
 import com.variant.core.schema.Hook;
 
 /**

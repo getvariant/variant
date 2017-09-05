@@ -1,6 +1,5 @@
-package com.variant.core.schema;
+package com.variant.core.lce;
 
-import com.variant.core.LifecycleEvent;
 
 /**
  * <p>Super-interface for all life cycle event types that post their hooks at schema parse time.
@@ -9,4 +8,4 @@ import com.variant.core.LifecycleEvent;
  * @since 0.5
  *
  */
-public interface ParseTimeLifecycleEvent extends LifecycleEvent {}
+public interface ParsetimeLifecycleEvent extends LifecycleEvent {}
