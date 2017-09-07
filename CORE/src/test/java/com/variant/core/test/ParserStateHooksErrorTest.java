@@ -95,7 +95,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
 			    "     {                                                        \n" +
-			    "        'name':'state1',                                      \n" +
+			    "        'nAmE':'state1',                                      \n" +
 			    "        'hooks':[1,2,3]                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
