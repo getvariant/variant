@@ -33,10 +33,9 @@ public class StateParsedHook implements UserHook<StateParsedLifecycleEvent> {
    
 	@Override
 	public PostResult post(StateParsedLifecycleEvent event) {
-		StateParsedLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);
-		result.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hookName, event.getState().getName()));
-		result.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hookName, event.getState().getName()));
-		result.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hookName, event.getState().getName()));
-		return clipChain ? result : null;
+		event.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hookName, event.getState().getName()));
+		event.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hookName, event.getState().getName()));
+		event.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hookName, event.getState().getName()));
+		return clipChain ? PostResultFactory.mkPostResult(event) : null;
 	}
 }
