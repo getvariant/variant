@@ -1,23 +1,16 @@
 package com.variant.server.schema;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigValue;
 import com.variant.core.CommonError;
-import com.variant.core.EventFlusher;
+import com.variant.core.UserHook;
 import com.variant.core.lce.LifecycleEvent;
-import com.variant.core.lce.ParsetimeLifecycleEvent;
 import com.variant.core.lce.StateAwareLifecycleEvent;
 import com.variant.core.lce.TestAwareLifecycleEvent;
-import com.variant.core.UserHook;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.HooksService;
 import com.variant.core.schema.parser.ParserResponseImpl;
@@ -44,11 +37,11 @@ public class ServerHooksService implements HooksService {
 	 */
 	
 	private static class HookListEntry {
-		private UserHook<? extends LifecycleEvent> hookImpl;       // Hook object will cloned for each post() just in case the implementation is mutable.
-		private Hook hookDef;                                      // Schema definition of the hook.
-		private HookListEntry(Hook hookDef, UserHook<? extends LifecycleEvent> hookImpl) {
+		private Class<? extends LifecycleEvent> lseClass;  // The life cycle event to which the hooks listens.
+		private Hook hookDef;                              // Schema definition of the hook.
+		private HookListEntry(Class<? extends LifecycleEvent> lseClass, Hook hookDef) {
+			this.lseClass = lseClass;
 			this.hookDef = hookDef;
-			this.hookImpl = hookImpl;
 		}
 	}
 	
@@ -75,7 +68,7 @@ public class ServerHooksService implements HooksService {
 	public void initHook(Hook hookDef, ParserResponseImpl parserResponse) {
 		
 		try {
-			// Create the Class object for the supplied UserHook implementation.
+			// Create the hook object for the supplied UserHook implementation.
 			Object hookObj = VariantClassLoader.instantiate(hookDef.getClassName(), hookDef.getInit());
 					
 			if (hookObj == null) {
@@ -85,7 +78,7 @@ public class ServerHooksService implements HooksService {
 			
 			// It must implement the right interface.
 			if (! (hookObj instanceof UserHook)) {
-				parserResponse.addMessage(ServerErrorLocal.OBJECT_CLASS_NO_INTERFACE, hookObj.getClass().getName(), UserHook.class.getName());
+				parserResponse.addMessage(ServerErrorLocal.HOOK_CLASS_NO_INTERFACE, hookObj.getClass().getName(), UserHook.class.getName());
 				return;
 			}
 			
@@ -107,9 +100,10 @@ public class ServerHooksService implements HooksService {
 
 						
 			// AOK. Add to apropriate hook list.
-			if (hookDef instanceof Hook.Schema) schemaHooks.add(new HookListEntry(hookDef, hookImpl));
-			else if (hookDef instanceof Hook.State) stateHooks.add(new HookListEntry(hookDef, hookImpl));
-			else if (hookDef instanceof Hook.Test) testHooks.add(new HookListEntry(hookDef, hookImpl));
+			HookListEntry hle = new HookListEntry(hookImpl.getLifecycleEventClass(), hookDef);
+			if (hookDef instanceof Hook.Schema) schemaHooks.add(hle);
+			else if (hookDef instanceof Hook.State) stateHooks.add(hle);
+			else if (hookDef instanceof Hook.Test) testHooks.add(hle);
 
 		}
 		catch (ConfigException.Parse e) {
@@ -131,44 +125,84 @@ public class ServerHooksService implements HooksService {
    @SuppressWarnings("unchecked")
    @Override
    public UserHook.PostResult post(LifecycleEvent event) {
-			 
+			   
+	   // 1. Build the hook chain, i.e. all hooks eligible for posting, in order.
+	   
+	   ArrayList<HookListEntry> chain = new ArrayList<HookListEntry>();
+	   
+	   if (event instanceof StateAwareLifecycleEvent) {
+		   
+		   for (HookListEntry hle : stateHooks) {
+			   			   
+			   // Only post subscribers to the event type and whose state matches.
+			   if (hle.lseClass.isAssignableFrom(event.getClass()) &&
+					   ((StateAwareLifecycleEvent) event).getState().equals(((Hook.State)hle.hookDef).getState())) {
+				   
+				   chain.add(hle);
+	
+				}				   
+			}
+	   }
+
+	   if (event instanceof TestAwareLifecycleEvent) {
+
+		   for (HookListEntry hle : testHooks) {
+				
+			   if (hle.lseClass.isAssignableFrom(event.getClass()) &&
+					   ((TestAwareLifecycleEvent) event).getTest().equals(((Hook.Test)hle.hookDef).getTest())) {
+											
+				   chain.add(hle);
+				}				   
+			}
+	   }
+
+	   for (HookListEntry hle : schemaHooks) {
+		   if (hle.lseClass.isAssignableFrom(event.getClass())) {
+			   chain.add(hle);
+			}				   
+		}
+
+	   if (LOG.isTraceEnabled()) {
+		   StringBuilder buff = new StringBuilder();
+		   buff.append("Hook chain for event [").append(event.getClass().getName()).append("]: ");
+		   boolean first = true;
+		   for (HookListEntry hle: chain) {
+			   if (first) first = false; else buff.append(", ");
+			   buff.append(hle.hookDef.getName());
+		   }
+		   LOG.trace(buff.toString());
+	   }
+	   
+	   // If user hook returned a result, clip the chain.
+	   // 2. Post hooks on the chain, until one returns a non-null.
+	   Hook hookDef = null; // Need this in the catch clause.
 
 	   try {
 
-			for (HookListEntry hle : hookList) {
-								
-				// Only post subscribers to the event type.
-				if (hle.hookImpl.getLifecycleEventClass().isAssignableFrom(event.getClass())) {
-					
-					// Test scoped events post for test-scoped hooks first, and then for schema scoped hooks.
-					if (event instanceof TestAwareLifecycleEvent &&
-						!((TestAwareLifecycleEvent) event).getTest().equals(((Hook.Test)schemaHook).getTest())) continue;
-					
-					UserHook<LifecycleEvent> hook = hme.hookClass.newInstance();
-					Config config = hme.config == null ? null : hme.config.atKey("init");
-					hook.init(config, schemaHook);
-					UserHook.PostResult result = hook.post(event);
-				
-					if (LOG.isTraceEnabled())
-						LOG.trace("Posted user hook [" + schemaHook.getName() + "] with [" + event + "]. Result: [" + result + "]");
-					
-					// If user hook returned a result, clip the chain.
-					if (result != null) return result;
-	
-				}	
-	
-			}
-			
-			// Either no hooks listening for this event, or none cared to return a result.
-			// Post default hook.
-			// (I don't understand the need form this cast)
-			return ((UserHook<LifecycleEvent>)event.getDefaultHook()).post(event);
+		   for (HookListEntry hle : chain) {
+				   
+			   hookDef = hle.hookDef;
+				   												
+			   UserHook<LifecycleEvent> hook = (UserHook<LifecycleEvent>) VariantClassLoader.instantiate(hle.hookDef.getClassName(), hle.hookDef.getInit());
+			   UserHook.PostResult result = hook.post(event);
+			   
+			   if (LOG.isTraceEnabled())
+				   LOG.trace("Posted user hook [" + hle.hookDef.getName() + "] with [" + event + "]. Result: [" + result + "]");
+						
+			   // If user hook returned a result, clip the chain.
+			   if (result != null) return result;
+		
+		   }
+
+		   // Either empty chain, or none cared to return a result: post default hook.
+		   // (I don't understand the need form this cast)
+		   return ((UserHook<LifecycleEvent>)event.getDefaultHook()).post(event);
 
 		} catch (ServerException.User e) {
 			throw e;
 		
 		} catch (Exception e) {
-			LOG.error(CommonError.HOOK_UNHANDLED_EXCEPTION.asMessage(hme.hookClass.getName(), e.getMessage()), e);
+			LOG.error(CommonError.HOOK_UNHANDLED_EXCEPTION.asMessage(hookDef.getClassName(), e.getMessage()), e);
 			throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
 		}				
 

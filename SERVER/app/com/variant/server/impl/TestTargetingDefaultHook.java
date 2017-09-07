@@ -4,7 +4,7 @@ import java.util.Random;
 
 import com.typesafe.config.Config;
 import com.variant.core.UserHook;
-import com.variant.core.lce.TestTargetingLifecycleEvent;
+import com.variant.server.lce.TestTargetingLifecycleEvent;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -26,9 +26,6 @@ class TestTargetingDefaultHook implements UserHook<TestTargetingLifecycleEvent> 
 	public Class<TestTargetingLifecycleEvent> getLifecycleEventClass() {
 		return TestTargetingLifecycleEvent.class;
 	}
-
-	@Override
-	public void init(Config config, Hook hook) throws Exception {}
 
 	/**
 	 * Default test qualifier. Qualify all.

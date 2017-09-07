@@ -5,14 +5,13 @@ import java.util.Random;
 
 import com.typesafe.config.Config;
 import com.variant.core.UserHook;
-import com.variant.core.lce.TestTargetingLifecycleEvent;
-import com.variant.core.schema.Hook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.PostResultFactory;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
+import com.variant.server.lce.TestTargetingLifecycleEvent;
 
 /**
  * Target according to weights passed in the init property weights.
@@ -26,8 +25,11 @@ public class TestTargetingHook implements UserHook<TestTargetingLifecycleEvent> 
 	private Double[] weights;
 	private String experienceToReturn;
 	
-	@Override
-	public void init(Config config, Hook hook) {
+	/**
+	 * Non nullary constructor
+	 * @param config
+	 */
+	public TestTargetingHook(Config config) {
 
 		if (config.hasPath("init.weights")) {
 			List<Double> weightsConfig = config.getDoubleList("init.weights");
@@ -49,12 +51,12 @@ public class TestTargetingHook implements UserHook<TestTargetingLifecycleEvent> 
 	@Override
 	public PostResult post(TestTargetingLifecycleEvent event) {
 
-		Session ssn = event.getStateRequest().getSession();
+		Session ssn = event.getSession();
 		TestTargetingLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);
 		
 		if (experienceToReturn != null) {
 			String[] tokens = experienceToReturn.split("\\.");
-			Experience exp = event.getStateRequest().getSession().getSchema().getTest(tokens[0]).getExperience(tokens[1]);			
+			Experience exp = event.getSession().getSchema().getTest(tokens[0]).getExperience(tokens[1]);			
 			result.setTargetedExperience(exp);
 			return result;
 		} 

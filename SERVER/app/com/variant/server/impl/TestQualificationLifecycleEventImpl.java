@@ -1,10 +1,9 @@
 package com.variant.server.impl;
 
 import com.variant.core.UserHook;
-import com.variant.core.lce.TestQualificationLifecycleEvent;
+import com.variant.server.lce.TestQualificationLifecycleEvent;
 import com.variant.core.schema.Test;
 import com.variant.server.api.Session;
-import com.variant.server.api.StateRequest;
 
 public class TestQualificationLifecycleEventImpl  implements TestQualificationLifecycleEvent {
 	
@@ -22,13 +21,13 @@ public class TestQualificationLifecycleEventImpl  implements TestQualificationLi
 	}
 	
 	@Override
-	public StateRequest getStateRequest() {
-		return session.getStateRequest();
+	public UserHook<TestQualificationLifecycleEvent> getDefaultHook() {
+		return new TestQualificationDefaultHook();
 	}
 
 	@Override
-	public UserHook<TestQualificationLifecycleEvent> getDefaultHook() {
-		return new TestQualificationDefaultHook();
+	public Session getSession() {
+		return session;
 	}
 
 }

@@ -5,7 +5,6 @@ import scala.collection.JavaConversions._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.util.ParameterizedString
-import com.variant.server.api.hook.TestQualificationLifecycleEvent
 import com.variant.server.test.hooks.TestQualificationHookNil
 import com.variant.core.schema.Hook
 
@@ -48,19 +47,19 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             Map(
                "test1-hooks" -> 
                """ {
-                     'name' :'nullQualificationHook',
+                     'name' :'nullQualificationHookT1',
                      'class':'com.variant.server.test.hooks.TestQualificationHookNil'
                    }
                """,
                "test2-hooks" -> 
                """ {
-                     'name' :'nullQualificationHook',
+                     'name' :'nullQualificationHookT2',
                      'class':'com.variant.server.test.hooks.TestQualificationHookNil'
                    }
                """,
                "test3-hooks" -> 
                """ {
-                     'name' :'nullQualificationHook',
+                     'name' :'nullQualificationHookT3',
                      'class':'com.variant.server.test.hooks.TestQualificationHookNil'
                    }
                """
@@ -69,9 +68,9 @@ class TestQualificationHookTest extends BaseSpecWithServer {
          
          val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
 
+        //response.getMessages.foreach(println(_))
    	   response.hasMessages() mustBe false
-   	   response.getMessages.foreach(println(_))
-   		server.schema.isDefined mustBe true
+       server.schema.isDefined mustBe true
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")
    	   val test1 = schema.getTest("test1")
@@ -84,17 +83,17 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   schema.getHooks() mustBe empty
    	   test1.getHooks.size mustBe 1
    	   val h1 = test1.getHooks.get(0)
-   	   h1.getName mustBe "nullQualificationHook"
+   	   h1.getName mustBe "nullQualificationHookT1"
    	   h1.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookNil"
    	   h1.getInit mustBe null
    	   test2.getHooks.size mustBe 1
-   	   val h2 = test1.getHooks.get(0)
-   	   h2.getName mustBe "nullQualificationHook"
+   	   val h2 = test2.getHooks.get(0)
+   	   h2.getName mustBe "nullQualificationHookT2"
    	   h2.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookNil"
    	   h2.getInit mustBe null
    	   test3.getHooks.size mustBe 1
-   	   val h3 = test1.getHooks.get(0)
-   	   h3.getName mustBe "nullQualificationHook"
+   	   val h3 = test3.getHooks.get(0)
+   	   h3.getName mustBe "nullQualificationHookT3"
    	   h3.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookNil"
    	   h3.getInit mustBe null
    	   test4.getHooks.size mustBe 0
@@ -182,10 +181,9 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             )
          )
          
-         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
-
-   	   response.hasMessages() mustBe false
-   		server.schema.isDefined mustBe true
+        val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
+        response.hasMessages() mustBe false
+   		  server.schema.isDefined mustBe true
    	   val schema = server.schema.get
    		val state1 = schema.getState("state1")
    		val state2 = schema.getState("state2")

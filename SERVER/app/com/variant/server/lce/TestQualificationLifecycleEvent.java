@@ -1,6 +1,7 @@
-package com.variant.core.lce;
+package com.variant.server.lce;
 
 import com.variant.core.UserHook;
+import com.variant.core.lce.TestAwareLifecycleEvent;
 
 
 /**
@@ -20,7 +21,7 @@ import com.variant.core.UserHook;
  * @since 0.5
  *
  */
-public interface TestQualificationLifecycleEvent extends TestAwareLifecycleEvent {
+public interface TestQualificationLifecycleEvent extends RuntimeLifecycleEvent, TestAwareLifecycleEvent {
       
    /**
     * The return type of the {@link UserHook#post(com.variant.core.LifecycleEvent) UserHook.post(TestQualificationLifecycleEvent)} 

@@ -8,18 +8,19 @@ import com.variant.server.api.ServerException
 import com.variant.core.UserError.Severity
 import com.variant.core.schema.Hook
 import com.variant.server.boot.VariantServer
+import com.variant.core.schema.parser.HooksService
 
 /**
  * 
  */
 object ServerSchema {
-   def apply(response: ParserResponse, hooker: ServerHooker) = new ServerSchema(response, hooker)
+   def apply(response: ParserResponse, hooker: HooksService) = new ServerSchema(response, hooker)
 }
 
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (val response: ParserResponse, val hooker: ServerHooksService) extends Schema {
+class ServerSchema (val response: ParserResponse, val hooker: HooksService) extends Schema {
   
    import State._
    

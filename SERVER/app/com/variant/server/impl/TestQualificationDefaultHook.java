@@ -2,7 +2,7 @@ package com.variant.server.impl;
 
 import com.typesafe.config.Config;
 import com.variant.core.UserHook;
-import com.variant.core.lce.TestQualificationLifecycleEvent;
+import com.variant.server.lce.TestQualificationLifecycleEvent;
 import com.variant.core.schema.Hook;
 import com.variant.server.api.PostResultFactory;
 
@@ -17,9 +17,6 @@ class TestQualificationDefaultHook implements UserHook<TestQualificationLifecycl
 	public Class<TestQualificationLifecycleEvent> getLifecycleEventClass() {
 		return TestQualificationLifecycleEvent.class;
 	}
-
-	@Override
-	public void init(Config config, Hook hook) throws Exception {}
 
 	/**
 	 * Default test qualifier. Qualify all.

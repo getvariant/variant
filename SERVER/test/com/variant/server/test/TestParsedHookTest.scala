@@ -1,21 +1,16 @@
 package com.variant.server.test;
 
-import com.variant.core.LifecycleEvent
-import com.variant.core.schema.StateParsedLifecycleEvent
 import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
 import com.variant.server.schema.SchemaDeployer
-import com.variant.core.schema.TestParsedLifecycleEvent
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.CommonError._
 import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.server.api.hook.TestQualificationLifecycleEvent
-import com.variant.server.api.hook.TestTargetingLifecycleEvent
 import com.variant.core.schema.parser.ParserError
 import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
@@ -39,13 +34,15 @@ class TestParsedHookTest extends BaseSpecWithServer {
       'name':'allTestsOffTest',
       'hooks':[
          {                                                              
-   		   'name':'testParsed',                                       
-   			'class':'com.variant.server.test.hooks.TestParsedHook'     
-   	   },
-         {                                                              
-   		   'name':'stateParsed',                                       
-   			'class':'com.variant.server.test.hooks.StateParsedHook'     
-   	   }                                                              
+   		     'name':'testParsed',                                       
+   			   'class':'com.variant.server.test.hooks.TestParsedHook',
+           'init':{'hookName':'testParsed', 'clipChain':false}
+   	     },
+        {                                                              
+   		     'name':'stateParsed',                                       
+   			   'class':'com.variant.server.test.hooks.StateParsedHook',    
+           'init':{'hookName':'stateParsed', 'clipChain':false}
+   	     }                                                              
       ]                                                                
    },                                                                   
 	'states':[                                                          

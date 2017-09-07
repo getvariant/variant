@@ -7,7 +7,7 @@ import com.variant.core.schema.Hook;
  * @author Igor
  *
  */
-public class TestHookImpl extends SchemaHookImpl implements Hook.Test {
+public class TestHookImpl extends BaseHookImpl implements Hook.Test {
 
 	private final com.variant.core.schema.Test test;
 	
@@ -26,18 +26,18 @@ public class TestHookImpl extends SchemaHookImpl implements Hook.Test {
 	}
 
 	/**
-	 * Hook names are unique within a scope. 
+	 * Test hook names must be unique within the scope of the test. 
 	 */
 	@Override
 	public boolean equals(Object other) {
 		return (other instanceof TestHookImpl) && 
-				((TestHookImpl)other).getName().equals(this.getName()) &&
-				((TestHookImpl)other).getTest().equals(this.getTest());
+				((TestHookImpl)other).name.equals(name) &&
+				((TestHookImpl)other).test.equals(test);
 	}
 	
 	@Override
 	public int hashCode() {
-		return super.hashCode() + test.hashCode();
+		return name.hashCode() + test.hashCode();
 	}
 
 }

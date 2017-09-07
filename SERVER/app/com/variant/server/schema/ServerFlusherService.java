@@ -4,18 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.ConfigException;
-import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigValue;
 import com.variant.core.EventFlusher;
-import com.variant.core.LifecycleEvent;
-import com.variant.core.UserHook;
 import com.variant.core.schema.Flusher;
-import com.variant.core.schema.Hook;
-import com.variant.core.schema.ParseTimeLifecycleEvent;
 import com.variant.core.schema.parser.FlusherService;
 import com.variant.core.schema.parser.ParserResponseImpl;
-import com.variant.server.api.ServerException;
-import com.variant.server.api.hook.TestScopedLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.VariantClassLoader;
 
@@ -33,33 +25,26 @@ public class ServerFlusherService implements FlusherService {
 
 		try {
 			// Create the Class object for the supplied UserHook implementation.
-			Class<?> flusherClass = VariantClassLoader.instance.loadClass(flusher.getClassName());
+			Object flusherObj = VariantClassLoader.instantiate(flusher.getClassName(), flusher.getInit());
 			
+			if (flusherObj == null) {
+				parserResponse.addMessage(ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR, flusher.getClassName());
+				return;
+			}			
 			
-			OBJECT_CONSTRUCTOR_ERROR
-			Object flusherObject = flusherClass.newInstance();
-					
 			// It must implement the right interface.
-			if (! (flusherObject instanceof UserHook)) {
-				parserResponse.addMessage(ServerErrorLocal.FLUSHER_CLASS_NO_INTERFACE, flusherClass.getName(), EventFlusher.class.getName());
+			if (! (flusherObj instanceof EventFlusher)) {
+				parserResponse.addMessage(ServerErrorLocal.FLUSHER_CLASS_NO_INTERFACE, flusherObj.getClass().getName(), EventFlusher.class.getName());
 				return;
 			}
 						
-			// Parse init JSON string
-			ConfigValue config = null;
-			if (flusher.getInit() != null) {
-				config = ConfigFactory.parseString("{init:"  + flusher.getInit() + "}").getValue("init"); 
-			}
-
-
-			LOG.debug("Init'ed Hook [" + flusher.getClassName() + "]");
 		}
 		catch (ConfigException.Parse e) {
-			parserResponse.addMessage(ServerErrorLocal.HOOK_INSTANTIATION_ERROR, hook.getClassName(), e.getClass().getName());
+			parserResponse.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, flusher.getClassName(), e.getClass().getName());
 		}
 		catch (Exception e) {
-			LOG.error(ServerErrorLocal.HOOK_INSTANTIATION_ERROR.asMessage(hook.getClassName(), e.getClass().getName()), e);
-			parserResponse.addMessage(ServerErrorLocal.HOOK_INSTANTIATION_ERROR, hook.getClassName(), e.getClass().getName());
+			LOG.error(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage(flusher.getClassName(), e.getClass().getName()), e);
+			parserResponse.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, flusher.getClassName(), e.getClass().getName());
 		}
 		
 	}

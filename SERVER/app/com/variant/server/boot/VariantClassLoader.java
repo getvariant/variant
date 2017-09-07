@@ -9,6 +9,7 @@ import java.net.URLClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
@@ -68,22 +69,39 @@ public class VariantClassLoader {
 		if (initArg == null) {
 			
 			// First look for the nullary constructor
-			Constructor<?> constructor = cls.getConstructor();
-			if (constructor == null) {
-				// Nullary constructor not provided.  
-				// Ok, if there's one that take a single argument of type ConfigObject
-				constructor = cls.getConstructor(ConfigObject.class);
-				if (constructor == null) return null;
+			Constructor<?> constructor = null;
+			try {
+				constructor = cls.getConstructor();
+				result = constructor.newInstance();
+			}
+			catch (NoSuchMethodException e) {
+				// Not provided. May be okay.
 			}
 			
-			result = constructor.newInstance((Object[])null);
+			if (constructor == null) {
+				// Look for constructor which takes a single argument of type Config
+				try {
+					constructor = cls.getConstructor(Config.class);
+					result = constructor.newInstance((Object)null);
+		}
+				catch (NoSuchMethodException e) {
+					return null;
+				}
+			}
+		
 		}
 		else {
 			// If we were given the init argument, wrap it as a proper Config object rooted in "init"
-			ConfigValue config  = ConfigFactory.parseString("{init:"  + initArg + "}").getValue("init"); 
-			Constructor<?> constructor = cls.getConstructor(ConfigObject.class);
-			if (constructor == null) return null;
-			result = constructor.newInstance(config);
+			Config config  = ConfigFactory.parseString("{init:"  + initArg + "}"); 
+			
+			// and pass it to the constructor that takes it (must be provided)
+			try {
+				Constructor<?> constructor = cls.getConstructor(Config.class);
+				result = constructor.newInstance(config);
+			}
+			catch (NoSuchMethodException e) {
+				return null;
+			}
 		}
 	
 		LOG.debug("Instantiated object of type [" + result.getClass().getCanonicalName() + "]");

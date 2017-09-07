@@ -1,10 +1,8 @@
 package com.variant.core.schema.parser;
 
-import com.typesafe.config.Config;
 import com.variant.core.UserError.Severity;
 import com.variant.core.UserHook;
 import com.variant.core.lce.TestParsedLifecycleEvent;
-import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Test;
 
@@ -36,9 +34,6 @@ public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 	public UserHook<TestParsedLifecycleEvent> getDefaultHook() {
 
 		return new UserHook<TestParsedLifecycleEvent>() {
-
-			@Override
-			public void init(Config config, Hook hook) throws Exception {}
 
 			@Override
 			public Class<TestParsedLifecycleEvent> getLifecycleEventClass() {

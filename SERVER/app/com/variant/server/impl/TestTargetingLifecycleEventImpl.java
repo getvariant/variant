@@ -1,11 +1,10 @@
 package com.variant.server.impl;
 
 import com.variant.core.UserHook;
-import com.variant.core.lce.TestTargetingLifecycleEvent;
+import com.variant.server.lce.TestTargetingLifecycleEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.server.api.Session;
-import com.variant.server.api.StateRequest;
 
 /**
  * 
@@ -23,11 +22,6 @@ public class TestTargetingLifecycleEventImpl implements TestTargetingLifecycleEv
 	}
 	
 	@Override
-	public StateRequest getStateRequest() {
-		return session.getStateRequest();
-	}
-
-	@Override
 	public Test getTest() {
 		return test;
 	}
@@ -41,6 +35,11 @@ public class TestTargetingLifecycleEventImpl implements TestTargetingLifecycleEv
 	public UserHook<TestTargetingLifecycleEvent> getDefaultHook() {
 		
 		return new TestTargetingDefaultHook();
+	}
+
+	@Override
+	public Session getSession() {
+		return session;
 	}
 	
 

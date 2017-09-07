@@ -2,11 +2,11 @@ package com.variant.server.impl;
 
 import static com.variant.server.boot.ServerErrorLocal.HOOK_TARGETING_BAD_EXPERIENCE;
 
-import com.variant.core.lce.TestTargetingLifecycleEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.ServerException;
+import com.variant.server.lce.TestTargetingLifecycleEvent;
 
 public class TestTargetingLifecycleEventPostResultImpl implements TestTargetingLifecycleEvent.PostResult {
 

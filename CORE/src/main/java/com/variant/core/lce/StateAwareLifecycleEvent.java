@@ -1,6 +1,6 @@
 package com.variant.core.lce;
 
-import com.variant.core.schema.Test;
+import com.variant.core.schema.State;
 
 /**
  * <p>p>Super-interface for all life cycle event types, whose scope is limited to a particular test.
@@ -9,7 +9,7 @@ import com.variant.core.schema.Test;
  * @since 0.7
  *
  */
-public interface StateAwareLifecycleEvent extends RuntimeLifecycleEvent {
+public interface StateAwareLifecycleEvent extends LifecycleEvent {
 
 	/**
 	 * The event's triggering state.
@@ -18,6 +18,6 @@ public interface StateAwareLifecycleEvent extends RuntimeLifecycleEvent {
 	 * 
      * @since 0.7
 	 */
-	public Test getState();
+	public State getState();
 	
 }

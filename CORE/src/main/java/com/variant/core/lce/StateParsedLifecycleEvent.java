@@ -1,7 +1,6 @@
 package com.variant.core.lce;
 
 import com.variant.core.UserError.Severity;
-import com.variant.core.schema.State;
 import com.variant.core.UserHook;
 
 
@@ -15,16 +14,7 @@ import com.variant.core.UserHook;
  * @since 0.5
  *
  */
-public interface StateParsedLifecycleEvent extends ParsetimeLifecycleEvent {
-
-	/**
-	 * The state for which this hook is posting. It is safe to assume that no errors were
-	 * encountered during parsing of this state.
-	 * 
-	 * @return An object of type {@link com.variant.core.xdm.State}.
-    * @since 0.5
-	 */
-	public State getState();
+public interface StateParsedLifecycleEvent extends StateAwareLifecycleEvent, ParsetimeLifecycleEvent {
 	
 	/**
     * A {@link com.variant.core.UserHook.PostResult} suitable as the return type of the {@link UserHook#post(LifecycleEvent)},

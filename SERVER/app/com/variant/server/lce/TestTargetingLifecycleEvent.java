@@ -1,6 +1,8 @@
-package com.variant.core.lce;
+package com.variant.server.lce;
 
 import com.variant.core.UserHook;
+import com.variant.core.lce.StateAwareLifecycleEvent;
+import com.variant.core.lce.TestAwareLifecycleEvent;
 import com.variant.core.schema.Test.Experience;
 
 /**
@@ -22,7 +24,7 @@ import com.variant.core.schema.Test.Experience;
  * @since 0.7
  *
  */
-public interface TestTargetingLifecycleEvent extends TestAwareLifecycleEvent, StateAwareLifecycleEvent {
+public interface TestTargetingLifecycleEvent extends RuntimeLifecycleEvent, TestAwareLifecycleEvent, StateAwareLifecycleEvent {
 	
    /**
     * The return type of the {@link UserHook#post(com.variant.core.LifecycleEvent) UserHook.post(TestTargetingLifecycleEvent)} 

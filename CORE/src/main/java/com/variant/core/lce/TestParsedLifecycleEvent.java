@@ -14,16 +14,7 @@ import com.variant.core.schema.Test;
  * @since 0.5
  *
  */
-public interface TestParsedLifecycleEvent extends ParsetimeLifecycleEvent {
-
-	/**
-	 * The test for which this hook is posting. It is safe to assume that no errors were
-	 * encountered during parsing of this test.
-	 * 
-	 * @return An object of type {@link com.variant.core.xdm.Test}.
-     * @since 0.5
-	 */
-	public Test getTest();
+public interface TestParsedLifecycleEvent extends TestAwareLifecycleEvent, ParsetimeLifecycleEvent {
 	
    /**
     * A {@link com.variant.core.UserHook.PostResult} suitable as the return type of the {@link UserHook#post(LifecycleEvent)},

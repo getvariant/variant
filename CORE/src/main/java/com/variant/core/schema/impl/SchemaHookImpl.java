@@ -7,39 +7,14 @@ import com.variant.core.schema.Hook;
  * @author Igor
  *
  */
-public class SchemaHookImpl implements Hook.Schema {
-
-	private final String name;
-	private final String className;
-	private final String init;
+public class SchemaHookImpl extends BaseHookImpl implements Hook.Schema {
 	
 	public SchemaHookImpl(String name, String className, String init) {
-		this.name = name;
-		this.className = className;
-		this.init = init;
-	}
-	
-	//---------------------------------------------------------------------------------------------//
-	//                                          PUBLIC                                             //
-	//---------------------------------------------------------------------------------------------//
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public String getClassName() {
-		return className;
-	}
-
-	@Override
-	public String getInit() {
-		return init;
+		super(name, className, init);
 	}
 
 	/**
-	 * Hook names are unique within a scope. 
+	 * Schema hook names must be globally unique. 
 	 */
 	@Override
 	public boolean equals(Object other) {
@@ -51,6 +26,4 @@ public class SchemaHookImpl implements Hook.Schema {
 	public int hashCode() {
 		return name.hashCode();
 	}
-
-
 }

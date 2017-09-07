@@ -1,21 +1,17 @@
 package com.variant.server.test;
 
-import com.variant.core.LifecycleEvent
-import com.variant.core.schema.StateParsedLifecycleEvent
 import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
 import com.variant.server.schema.SchemaDeployer
-import com.variant.core.schema.TestParsedLifecycleEvent
+import com.variant.core.lce.TestParsedLifecycleEvent
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.CommonError._
 import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.server.api.hook.TestQualificationLifecycleEvent
-import com.variant.server.api.hook.TestTargetingLifecycleEvent
 import com.variant.core.schema.parser.ParserError
 import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
@@ -38,8 +34,9 @@ class StateParsedHookTest extends BaseSpecWithServer {
       'name':'allTestsOffTest',
       'hooks':[                                                         
          {                                                              
-   		   'name':'stateParsed',                                       
-   			'class':'com.variant.server.test.hooks.StateParsedHook'     
+   		     'name':'stateParsed',                                       
+   			   'class':'com.variant.server.test.hooks.StateParsedHook',
+           'init':{'hookName':'stateParsed', 'clipChain':false}     
    	   }                                                              
       ]                                                                
    },                                                                   
@@ -127,20 +124,22 @@ class StateParsedHookTest extends BaseSpecWithServer {
       'hooks':[
          // Gets posted
          {                                                              
-   		   'name':'stateParsed1',                                       
-   			'class':'com.variant.server.test.hooks.StateParsedHook'
+   		     'name':'stateParsed1',                                       
+   			   'class':'com.variant.server.test.hooks.StateParsedHook',
+           'init':{'hookName':'stateParsed1', 'clipChain':false}
    	   },
          // Gets posted, but clips the chain.                                                       
-         {                                                              
-   		   'name':'stateParsed2',                                       
-   			'class':'com.variant.server.test.hooks.StateParsedHook',
-            'init':{'clipChain':true}
+         { 
+     		   'name':'stateParsed2',                                       
+   			   'class':'com.variant.server.test.hooks.StateParsedHook',
+           'init':{'hookName':'stateParsed2', 'clipChain':true}
    	   },
          // Does not get posted.                                                          
          {                                                              
-   		   'name':'stateParsed3',                                       
-   			'class':'com.variant.server.test.hooks.StateParsedHook'     
-   	   }                                                              
+   		      'name':'stateParsed3',                                       
+   			    'class':'com.variant.server.test.hooks.StateParsedHook',
+            'init':{'hookName':'stateParsed3', 'clipChain':false}
+   	     }                                                              
       ]                                                                
    },                                                                   
 	'states':[                                                          

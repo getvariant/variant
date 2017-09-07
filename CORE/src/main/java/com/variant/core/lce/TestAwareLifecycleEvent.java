@@ -9,7 +9,7 @@ import com.variant.core.schema.Test;
  * @since 0.7
  *
  */
-public interface TestAwareLifecycleEvent extends RuntimeLifecycleEvent{
+public interface TestAwareLifecycleEvent extends LifecycleEvent{
 
 	/**
 	 * The event's triggering test.

@@ -4,7 +4,6 @@ import com.typesafe.config.Config;
 import com.variant.core.lce.LifecycleEvent;
 import com.variant.core.lce.StateAwareLifecycleEvent;
 import com.variant.core.lce.TestAwareLifecycleEvent;
-import com.variant.core.schema.Hook;
 
 /**
  * <p>The interface to be implemented by a user hook, which wants to be posted of a life cycle event.
@@ -25,8 +24,15 @@ import com.variant.core.schema.Hook;
  * {@link StateAwareLifecycleEvent}. Likewise, is an error to define a test-scoped hook which listens to a non-
  * {@link TestAwareLifecycleEvent}.
  * 
- * <p>An implementation must provide a public no-argument constructor. If it is desirable to initialize a
- * newly constructed object, use {@link #init(Config, Hook)}.
+ * <p>An implementation must provide at least one public constructor: 
+ * <ol>
+ * <li>If no state initialization is required, the default nullary constructor is sufficient. 
+ * <li>If you need to pass an initial state to the newly constructed hook object, you must provide a constructor
+ * which takes the single argument of the type {@link Config}. Variant will invoke this constructor and pass it
+ * the value of the hook definitions's {@code init} property, parsed and rooted at element {@code 'init'}.
+ * </ol>
+ * 
+ * <p>Variant creates a new instance of the implementation class for each triggered event.
  * 
  * @author Igor Urisman
  * @since 0.5
@@ -34,21 +40,6 @@ import com.variant.core.schema.Hook;
  */
 
 public interface UserHook<E extends LifecycleEvent> {
-
-	/**
-	 * <p>Object initializer. By contract, an implementation must provide a public, no-argument constructor, which Variant server
-	 * will use to instantiate it. However, user may wish to pass initialization data into this newly instantiated object by
-	 * providing the <code>init</code> parameter in the schema definition of the hook. Its value can be an arbitrary JSON literal
-	 * which will be parsed and passed to this method in the form of a <a href="https://typesafehub.github.io/config/latest/api/">
-	 * Typesafe Config</a> object, rooted at the key <code>init</init>.
-	 * 
-	 * @param config The configuration data as instance of <a href="https://typesafehub.github.io/config/latest/api/com/typesafe/config/Config.html">
-	 * Config</a> type.
-	 * @param hook The schema definition of this hook. May be useful when multiple hooks are posted by the same life cycle event.
-	 *             
-    * @since 0.7
-	 */
-	public void init(Config config, Hook hook) throws Exception;
 		
 	/**
 	 * Implementation must tell the server what life cycle event type(s) it wants to be posted on.

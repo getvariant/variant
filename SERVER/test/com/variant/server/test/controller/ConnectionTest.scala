@@ -15,7 +15,6 @@ import com.variant.server.test.util.EventReader
 import com.variant.server.api.ConfigKeys._
 import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.schema.parser.SchemaParser
-import com.variant.core.impl.UserHooker
 import com.variant.server.schema.ServerSchemaParser
 
 /*
