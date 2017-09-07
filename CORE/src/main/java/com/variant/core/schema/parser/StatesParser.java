@@ -8,7 +8,6 @@ import static com.variant.core.schema.parser.ParserError.STATE_NAME_MISSING;
 import static com.variant.core.schema.parser.ParserError.STATE_PARAMS_NOT_OBJECT;
 import static com.variant.core.schema.parser.ParserError.STATE_UNSUPPORTED_PROPERTY;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,6 +57,7 @@ public class StatesParser implements Keywords {
 	/**
 	 * Parse a state
 	 */
+	@SuppressWarnings("unchecked")
 	private static State parseState(Map<String, ?> rawState, final ParserResponseImpl response) {
 		
 		String name = null;
@@ -90,7 +90,9 @@ public class StatesParser implements Keywords {
 			return null;
 		}
 		
-		// Pass 2: Parse parameters, if we have the name.
+		StateImpl result = new StateImpl(response.getSchema(), name);
+		
+		// Pass 2: Parse parameters and hooks.
 		for(Map.Entry<String, ?> entry: rawState.entrySet()) {
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) continue;
@@ -102,14 +104,17 @@ public class StatesParser implements Keywords {
 				}
 				params = (Map<String, String>) paramsObject;
 			}
+			else if (entry.getKey().equalsIgnoreCase(KEYWORD_HOOKS)) {
+				HooksParser.parse(entry.getValue(), result, response);
+			}
 			else {
 				response.addMessage(STATE_UNSUPPORTED_PROPERTY, entry.getKey(), name);
 			}
 		}
 		
-		if (params == null) params = new HashMap<String,String>();
+		if (params != null) result.setParameterMap(params);
 
-		return new StateImpl(response.getSchema(), name, params);
+		return result;
 	}
 
 }

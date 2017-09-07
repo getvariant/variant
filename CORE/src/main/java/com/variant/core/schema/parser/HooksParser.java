@@ -11,6 +11,8 @@ import com.variant.core.CoreException;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.impl.SchemaHookImpl;
 import com.variant.core.schema.impl.SchemaImpl;
+import com.variant.core.schema.impl.StateHookImpl;
+import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestHookImpl;
 import com.variant.core.schema.impl.TestImpl;
 
@@ -47,6 +49,37 @@ public class HooksParser implements Keywords {
 		}
 	}
 	
+	/**
+	 * Parse hooks list with the state scope. 
+	 * @param hooksObject
+	 * @param response
+	 */
+	static void parse(Object hooksObject, StateImpl state, ParserResponseImpl response) {		
+		try {
+			List<?> rawHooks = (List<?>) hooksObject;
+									
+			for (Object rawHook: rawHooks) {
+				
+				Hook hook = parseHook(rawHook, response);
+				
+				if (hook != null) {
+					// The method above created a schema level hook, but in this case we need a test
+					// domian hook.
+					hook = new StateHookImpl(hook.getName(), hook.getClassName(), hook.getInit(), state);
+					if (!state.addHook(hook)) {
+						response.addMessage(HOOK_NAME_DUPE, hook.getName());
+					}
+				}	
+			}
+		}
+		catch (ClassCastException e) {
+			response.addMessage(HOOKS_NOT_LIST);
+		}
+		catch (Exception e) {
+			throw new CoreException.Internal(e);
+		}
+	}
+
 	/**
 	 * Parse hooks list with the test scope. 
 	 * @param hooksObject

@@ -4,10 +4,12 @@ import static com.variant.core.CommonError.STATE_NOT_INSTRUMENTED_BY_TEST;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
 import com.variant.core.CoreException;
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -20,19 +22,21 @@ import com.variant.core.util.CaseInsensitiveMap;
  */
 public class StateImpl implements State {
 
-	private Schema schema;
-	private String name;
+	private final Schema schema;
+	private final String name;
 	private CaseInsensitiveMap<String> parameters;
+
+	// Hooks are keyed by name.
+	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
 
 	/**
 	 * Package scoped constructor;
 	 * @param name
 	 * @param path
 	 */
-	public StateImpl(Schema schema, String name, Map<String, String> parameters) {
+	public StateImpl(Schema schema, String name) {
 		this.schema = schema;
 		this.name = name;
-		this.parameters = new CaseInsensitiveMap<String>(parameters);
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -88,13 +92,30 @@ public class StateImpl implements State {
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
-
+	/**
+	 * 
+	 * @param parameters
+	 */
+	public void setParameterMap(Map<String, String> parameters) {
+		this.parameters = new CaseInsensitiveMap<String>(parameters);
+	}
+	
 	/**
 	 * Entire state param map
 	 */
 	public Map<String, String> getParameterMap() {
 		return parameters;
 	}
+	
+	/**
+	 * Add user hook to this test
+	 * @param hook
+	 * @return true if hook didn't exist, false if did.
+	 */
+	public boolean addHook(Hook hook) {
+		return hooks.add(hook);
+	}
+
 	/**
 	 * States are held in a HashSet, keyed by view name.
 	 */

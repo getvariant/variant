@@ -14,11 +14,11 @@ import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.SchemaParser;
 
 /**
- * Parse time exceptions related to hooks with schema scope.
+ * Parse time exceptions related to hooks with test scope.
  * @author Igor
  *
  */
-public class ParserSchemaHooksErrorTest extends BaseTestCore {
+public class ParserStateHooksErrorTest extends BaseTestCore {
 	
 	/**
 	 * HOOKS_NOT_LIS
@@ -31,11 +31,13 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name',                                  \n" +
-			    "      'comment':'a comment *&^',                              \n" +
-			    "      'hooks':'cannot be a string'                            \n" +
+			    "      'comment':'a comment *&^'                               \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
-			    "     { 'name':'state1' }                                      \n" +
+			    "     {                                                        \n" +
+			    "        'name':'state1',                                      \n" +
+			    "        'hooks':'cannot be a string'                          \n" +
+			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
@@ -51,14 +53,14 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 			    "              'weight':50                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
+			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
+			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
                 "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'           \n" +
+			    "                       'path':'/path/to/state1/test1.B'       \n" +
 			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
@@ -70,7 +72,6 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
-
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
@@ -90,11 +91,13 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name',                                  \n" +
-			    "      'comment':'a comment *&^',                              \n" +
-			    "      'hooks':[1,2,3]                                         \n" +
+			    "      'comment':'a comment *&^'                               \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
-			    "     { 'name':'state1' }                                      \n" +
+			    "     {                                                        \n" +
+			    "        'name':'state1',                                      \n" +
+			    "        'hooks':[1,2,3]                                       \n" +
+			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
@@ -155,11 +158,13 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name',                                  \n" +
-			    "      'comment':'a comment *&^',                              \n" +
-			    "      'hooks':[{'nameE':'foo', 'class':'bar'}]                \n" +
+			    "      'comment':'a comment *&^'                               \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
-			    "     { 'name':'state1' }                                      \n" +
+			    "     {                                                        \n" +
+			    "        'hooks':[{'nameE':'foo', 'class':'bar'}],             \n" +
+			    "        'name':'state1'                                       \n" +
+			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
@@ -215,11 +220,13 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name',                                  \n" +
-			    "      'comment':'a comment *&^',                              \n" +
-			    "      'hooks':[{'name':'bar', 'class-Name':'c.v.s'}]          \n" +
+			    "      'comment':'a comment *&^'                               \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
-			    "     { 'name':'state1' }                                      \n" +
+			    "     {                                                        \n" +
+			    "        'name':'state1',                                      \n" +
+			    "        'hooks':[{'name':'bar', 'class-Name':'c.v.s'}]        \n" +
+			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
@@ -277,11 +284,13 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name',                                  \n" +
-			    "      'comment':'a comment *&^',                              \n" +
-			    "      'hooks':[{'name':'bar', 'class':'c.v.s', 'foo':true}]   \n" +
+			    "      'comment':'a comment *&^'                               \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
-			    "     { 'name':'state1' }                                      \n" +
+			    "     {                                                        \n" +
+			    "        'hooks':[{'name':'bar', 'class':'c.v.s', 'foo':true}], \n" +
+			    "        'name':'state1'                                       \n" +
+			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
@@ -336,13 +345,15 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "     'name':'_schema_name',                                   \n" +
-			    "     'comment':'a comment *&^',                               \n" +
-			    "     'hooks':[                                                \n" +
-			    "        {'name':'2cents', 'class':'c.v.s'}                    \n" +
-			    "      ]                                                       \n" +
+			    "     'comment':'a comment *&^'                                \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
-			    "     { 'name':'state1' }                                      \n" +
+			    "     {                                                        \n" +
+			    "        'name':'state1',                                      \n" +
+			    "        'hooks':[                                             \n" +
+			    "          {'name':'2cents', 'class':'c.v.s'}                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
@@ -397,14 +408,16 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "     'name':'_schema_name',                                   \n" +
-			    "     'comment':'a comment *&^',                               \n" +
-			    "     'hooks':[                                                \n" +
-			    "        {'name':'bar', 'class':'c.v.s'},                      \n" +
-			    "        {'name':'bar', 'class':'c.v.s.two'}                   \n" +
-			    "      ]                                                       \n" +
+			    "     'comment':'a comment *&^'                                \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
-			    "     { 'name':'state1' }                                      \n" +
+			    "     {                                                        \n" +
+			    "        'name':'state1',                                      \n" +
+			    "        'hooks':[                                             \n" +
+			    "          {'name':'bar', 'class':'c.v.s'},                    \n" +
+			    "          {'name':'bar', 'class':'c.v.s.two'}                 \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
