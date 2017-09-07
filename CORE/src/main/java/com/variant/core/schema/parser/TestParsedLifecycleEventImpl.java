@@ -14,9 +14,9 @@ import com.variant.core.schema.Test;
 public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 
 	private Test test;
-	private ParserResponse response;
+	private ParserResponseImpl response;
 	
-	TestParsedLifecycleEventImpl(Test test, ParserResponse response) {
+	TestParsedLifecycleEventImpl(Test test, ParserResponseImpl response) {
 		this.test = test;
 		this.response = response;
 	}
@@ -28,6 +28,16 @@ public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 	@Override
 	public Test getTest() {
 		return test;
+	}
+
+	@Override
+	public ParserResponse getParserResponse() {
+    	return response;
+    }
+
+	@Override
+	public void addMessage(Severity severity, String message) {
+		response.addMessage(severity, message);
 	}
 
 	@Override
@@ -43,21 +53,10 @@ public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 			@Override
 			public UserHook.PostResult post(TestParsedLifecycleEvent event) {
 					
-				return new TestParsedLifecycleEvent.PostResult() {
-					@Override
-					public void addMessage(Severity severity, String message) {}
-				};
+				return new TestParsedLifecycleEvent.PostResult() {};
 				
 			}	
 		};
 	}
-
-	//---------------------------------------------------------------------------------------------//
-	//                                        PUBLIC EXT                                           //
-	//---------------------------------------------------------------------------------------------//
-
-	public ParserResponse getParserResponse() {
-    	return response;
-    }
 
 }

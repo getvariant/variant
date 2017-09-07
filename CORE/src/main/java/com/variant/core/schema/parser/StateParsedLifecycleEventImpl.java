@@ -14,9 +14,9 @@ import com.variant.core.schema.State;
 public class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent {
 
 	private State state;
-	private ParserResponse response;
+	private ParserResponseImpl response;
 	
-	StateParsedLifecycleEventImpl(State state, ParserResponse response) {
+	StateParsedLifecycleEventImpl(State state, ParserResponseImpl response) {
 		this.state = state;
 		this.response = response;
 	}
@@ -31,6 +31,16 @@ public class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent 
 	}
 	
 	@Override
+	public void addMessage(Severity severity, String message) {
+		response.addMessage(severity, message);
+	}
+
+	@Override
+	public ParserResponse getParserResponse() {
+    	return response;
+    }
+
+	@Override
 	public UserHook<StateParsedLifecycleEvent> getDefaultHook() {
 		
 		return new UserHook<StateParsedLifecycleEvent>() {
@@ -42,22 +52,10 @@ public class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent 
 
 			@Override
 			public UserHook.PostResult post(StateParsedLifecycleEvent event) {
-					
-				return new StateParsedLifecycleEvent.PostResult() {	
-					@Override
-					public void addMessage(Severity severity, String message) {}
-				};
+				return new StateParsedLifecycleEvent.PostResult() {};
 				
 			}	
 		};
 	}
-
-	//---------------------------------------------------------------------------------------------//
-	//                                        PUBLIC EXT                                           //
-	//---------------------------------------------------------------------------------------------//
-
-	public ParserResponse getParserResponse() {
-    	return response;
-    }
 
 }

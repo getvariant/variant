@@ -1,8 +1,6 @@
 package com.variant.core.lce;
 
 import com.variant.core.UserHook;
-import com.variant.core.UserError.Severity;
-import com.variant.core.schema.Test;
 
 
 /**
@@ -11,7 +9,7 @@ import com.variant.core.schema.Test;
  * semantics that is external to XDM.
  * 
  * @author Igor Urisman.
- * @since 0.5
+ * @since 0.7
  *
  */
 public interface TestParsedLifecycleEvent extends TestAwareLifecycleEvent, ParsetimeLifecycleEvent {
@@ -22,15 +20,6 @@ public interface TestParsedLifecycleEvent extends TestAwareLifecycleEvent, Parse
     * 
     * @since 0.7
     */
-   public interface PostResult extends UserHook.PostResult {
-      
-      /**
-       * Add a custom schema parser message.
-       * 
-       * @since 0.7
-       */
-       public void addMessage(Severity severity, String message);
-
-   }
+   public interface PostResult extends UserHook.PostResult {}
 
 }

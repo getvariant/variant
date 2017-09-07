@@ -23,10 +23,10 @@ import com.variant.server.boot.ServerErrorLocal
  */
 class StateParsedHookTest extends BaseSpecWithServer {
 	   
-	"StateParsedHook" should {
+	"Schema Level StateParsedHook" should {
 	   
 	   ////////////////
-	   "be posted when a state is parsed" in {
+	   "be posted for all states" in {
 	      
    	    val schema = """
 {                                                                              
@@ -41,9 +41,9 @@ class StateParsedHookTest extends BaseSpecWithServer {
       ]                                                                
    },                                                                   
 	'states':[                                                          
-	   {'name':'state1'},                                                
-		{'name':'state2'},                                                
-		{'name':'state3'}                                                 
+	    {'name':'state1'},                                                
+		  {'name':'state2'},                                                
+		  {'name':'state3'}                                                 
    ],                                                                   
 	'tests':[                                                           
 	   {                                                                
