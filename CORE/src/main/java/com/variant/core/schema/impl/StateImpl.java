@@ -89,6 +89,16 @@ public class StateImpl implements State {
 		throw new CoreException.User(STATE_NOT_INSTRUMENTED_BY_TEST, name, test.getName());
 	}
 
+	/**
+	 * 
+	 */
+	@Override
+	public List<Hook> getHooks() {
+		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
+		result.addAll(hooks);
+		return Collections.unmodifiableList(result);
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//

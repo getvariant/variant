@@ -204,6 +204,11 @@ public abstract class SchemaParser implements Keywords {
 			// Parse all states
 			StatesParser.parse(states, response);
 			
+			// Init all state scoped hooks.
+			for (State state: response.getSchema().getStates()) {
+				for (Hook hook: state.getHooks()) hooksService.initHook(hook, response);
+			}
+			
 			// Post parse time user hooks.
 			for (State state: response.getSchema().getStates()) {
 				try {
@@ -229,7 +234,12 @@ public abstract class SchemaParser implements Keywords {
 			
 			// Parse all tests
 			TestsParser.parse(tests, response);
-						
+			
+			// Init all test scoped hooks.
+			for (Test test: response.getSchema().getTests()) {
+				for (Hook hook: test.getHooks()) hooksService.initHook(hook, response);
+			}
+
 			// Post parse time user hooks.
 			for (Test test: response.getSchema().getTests()) {
 				try {
@@ -240,11 +250,6 @@ public abstract class SchemaParser implements Keywords {
 				}
 			}
 			
-			// Init all test scoped hooks.
-			for (Test test: response.getSchema().getTests()) {
-				for (Hook hook: test.getHooks()) hooksService.initHook(hook, response);
-			}
-
 		}
 		
 		if (response.hasMessages(Severity.ERROR)) response.clearSchema();

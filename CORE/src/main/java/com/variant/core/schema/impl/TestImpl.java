@@ -148,6 +148,9 @@ public class TestImpl implements Test {
 		return isOn;
 	}
 
+	/**
+	 * 
+	 */
 	@Override
 	public List<Hook> getHooks() {
 		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());

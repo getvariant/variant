@@ -22,8 +22,11 @@ import com.variant.server.boot.ServerErrorLocal
  * 
  */
 class StateParsedHookTest extends BaseSpecWithServer {
-	   
-	"Schema Level StateParsedHook" should {
+	  
+  /*
+   * 
+   */
+	"Schema Scoped StateParsedHook" should {
 	   
 	   ////////////////
 	   "be posted for all states" in {
@@ -31,7 +34,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
    	    val schema = """
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'allTestsOffTest',
+      'name':'schemaScopedHooks',
       'hooks':[                                                         
          {                                                              
    		     'name':'stateParsed',                                       
@@ -120,7 +123,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
    	    val schema = """
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'allTestsOffTest',
+      'name':'schemaScopedHooks',
       'hooks':[
          // Gets posted
          {                                                              
@@ -143,8 +146,8 @@ class StateParsedHookTest extends BaseSpecWithServer {
       ]                                                                
    },                                                                   
 	'states':[                                                          
-	   {'name':'state1'},                                                
-		{'name':'state2'},                                                
+    {'name':'state1'},                                                
+    {'name':'state2'},                                                
 		{'name':'state3'}                                                 
    ],                                                                   
 	'tests':[                                                           
@@ -179,7 +182,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
 }"""
 
    		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
-   		response.getMessages.foreach(println(_))
+   		//response.getMessages.foreach(println(_))
    		response.getMessages.size mustBe 18
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 6
@@ -245,5 +248,318 @@ class StateParsedHookTest extends BaseSpecWithServer {
 
    		server.schema.isDefined mustBe false
 	   }
+	}
+	
+	  
+  /*
+   * 
+   */
+	"State Scoped StateParsedHook" should {
+	   
+	   ////////////////
+	   "be posted for enclosing state only" in {
+	      
+   	    val schema = """
+{                                                                              
+   'meta':{                                                             		    	    
+      'name':'stateScopedHooks'                                                           
+   },                                                                   
+	'states':[
+	    {
+        'name':'state1'
+      },                                                
+		  {
+        'name':'state2',
+        'hooks':[                                                         
+           {                                                              
+     		     'name':'stateParsed',                                       
+     			   'class':'com.variant.server.test.hooks.StateParsedHook',
+             'init':{'hookName':'stateParsed', 'clipChain':false}     
+     	     }
+         ]                                                              
+      },  
+		  {
+        'name':'state3'
+      }                                                 
+   ],                                                                   
+	'tests':[                                                           
+	   {                                                                
+		   'name':'test1',
+	      'experiences':[                                               
+            {                                                          
+				   'name':'A',                                             
+				   'weight':10,                                            
+				   'isControl':true                                        
+	         },                                                         
+		      {                                                          
+		         'name':'B',                                             
+				     'weight':20                                             
+				  }                                                          
+	      ],                                                            
+			'onStates':[                                                   
+				  {                                                          
+				     'stateRef':'state1',                                     
+				    	'variants':[                                            
+				    	   {                                                    
+				    	      'experienceRef':'B',                              
+							   'parameters':{                                    
+				    	      'path':'/path/to/state1/test1.B'               
+				         }                                                 
+				     }                                                    
+			     ]                                                       
+	        }                                                          
+	     ]                                                             
+	  }                                                               
+  ]                                                                   
+}"""
+
+   		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
+   		response.getMessages.size mustBe 3
+//   		response.getMessages.foreach(println(_))
+   		response.getMessages(FATAL) mustBe empty
+   		response.getMessages(ERROR).size() mustBe 1
+   		response.getMessages(WARN).size() mustBe 2
+   		response.getMessages(INFO).size() mustBe 3
+   		var msg = response.getMessages.get(0)
+   		msg.getSeverity mustBe INFO
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state2")))
+   		msg = response.getMessages.get(1)
+   		msg.getSeverity mustBe WARN
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed", "state2")))
+   		msg = response.getMessages.get(2)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state2")))
+
+   		server.schema.isDefined mustBe false
+	   }
+	
+		////////////////
+	   "be posted by all non-clipping hooks on the chain" in {
+	      
+   	    val schema = """
+{                                                                              
+   'meta':{                                                             		    	    
+      'name':'schemaScopedHooks'
+   },                                                                   
+	'states':[
+	    {
+        'name':'state1'
+      },                                                
+		  {
+        'name':'state2',
+        'hooks':[
+           // Gets posted
+           {                                                              
+     		     'name':'stateParsed1',                                       
+     			   'class':'com.variant.server.test.hooks.StateParsedHook',
+             'init':{'hookName':'stateParsed1', 'clipChain':false}
+     	   },
+           // Gets posted, but clips the chain.                                                       
+           { 
+       		   'name':'stateParsed2',                                       
+     			   'class':'com.variant.server.test.hooks.StateParsedHook',
+             'init':{'hookName':'stateParsed2', 'clipChain':true}
+     	   },
+           // Does not get posted.                                                          
+           {                                                              
+     		      'name':'stateParsed3',                                       
+     			    'class':'com.variant.server.test.hooks.StateParsedHook',
+              'init':{'hookName':'stateParsed3', 'clipChain':false}
+     	     }                                                              
+        ]                                                                
+      },  
+		  {
+        'name':'state3'
+      }                                                 
+   ],                                                                   
+	'tests':[                                                           
+	   {                                                                
+		   'name':'test1',
+	      'experiences':[                                               
+            {                                                          
+				   'name':'A',                                             
+				   'weight':10,                                            
+				   'isControl':true                                        
+	         },                                                         
+		      {                                                          
+		         'name':'B',                                             
+				   'weight':20                                             
+				}                                                          
+	      ],                                                            
+			'onStates':[                                                   
+				  {                                                          
+				     'stateRef':'state1',                                     
+				    	'variants':[                                            
+				    	   {                                                    
+				    	      'experienceRef':'B',                              
+							   'parameters':{                                    
+				    	      'path':'/path/to/state1/test1.B'               
+				         }                                                 
+				     }                                                    
+			     ]                                                       
+	        }                                                          
+	     ]                                                             
+	  }                                                               
+  ]                                                                   
+}"""
+
+   		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
+   		//response.getMessages.foreach(println(_))
+   		response.getMessages.size mustBe 6
+   		response.getMessages(FATAL) mustBe empty
+   		response.getMessages(ERROR).size() mustBe 2
+   		response.getMessages(WARN).size() mustBe 4
+   		response.getMessages(INFO).size() mustBe 6
+
+   		var msg = response.getMessages.get(0)
+   		msg.getSeverity mustBe INFO
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed1", "state2")))
+   		msg = response.getMessages.get(1)
+   		msg.getSeverity mustBe WARN
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed1", "state2")))
+   		msg = response.getMessages.get(2)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed1", "state2")))
+   		msg = response.getMessages.get(3)
+   		msg.getSeverity mustBe INFO
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed2", "state2")))
+   		msg = response.getMessages.get(4)
+   		msg.getSeverity mustBe WARN
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed2", "state2")))
+   		msg = response.getMessages.get(5)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed2", "state2")))
+
+   		server.schema.isDefined mustBe false
+	   }
+
+			////////////////
+	   "be posted before the schema-scoped one" in {
+	      
+   	    val schema = """
+{                                                                              
+   'meta':{                                                             		    	    
+      'name':'schemaScopedHooks',
+      'hooks':[
+         {                                                              
+   		     'name':'stateParsed',                                       
+   			   'class':'com.variant.server.test.hooks.StateParsedHook',
+           'init':{'hookName':'stateParsedSchema', 'clipChain':false}
+   	   }
+     ]                                                                
+   },                                                                   
+	'states':[
+	    {
+        'name':'state1',
+        'hooks':[
+           {                                                              
+     		     'name':'stateParsed',                                       
+     			   'class':'com.variant.server.test.hooks.StateParsedHook',
+             'init':{'hookName':'stateParsedS1', 'clipChain':false}
+       	   }
+        ]                                                                
+      },                                                
+		  {
+        'name':'state2',
+        'hooks':[
+           {                                                              
+     		     'name':'stateParsed',                                       
+     			   'class':'com.variant.server.test.hooks.StateParsedHook',
+             'init':{'hookName':'stateParsedS2', 'clipChain':false}
+       	   }
+         ]                                                                
+      },  
+		  {
+        'name':'state3'
+      }                                                 
+   ],                                                                   
+	'tests':[                                                           
+	   {
+		   'name':'test1',
+	      'experiences':[                                               
+            {                                                          
+				   'name':'A',                                             
+				   'weight':10,                                            
+				   'isControl':true                                        
+	         },                                                         
+		      {                                                          
+		         'name':'B',                                             
+				   'weight':20                                             
+				}                                                          
+	      ],                                                            
+			'onStates':[                                                   
+				  {                                                          
+				     'stateRef':'state1',                                     
+				    	'variants':[                                            
+				    	   {                                                    
+				    	      'experienceRef':'B',                              
+							   'parameters':{                                    
+				    	      'path':'/path/to/state1/test1.B'               
+				         }                                                 
+				     }                                                    
+			     ]                                                       
+	        }                                                          
+	     ]                                                             
+	  }                                                               
+  ]                                                                   
+}"""
+
+   		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
+   		response.getMessages.foreach(println(_))
+   		response.getMessages.size mustBe 15
+   		response.getMessages(FATAL) mustBe empty
+   		response.getMessages(ERROR).size() mustBe 5
+   		response.getMessages(WARN).size() mustBe 10
+   		response.getMessages(INFO).size() mustBe 15
+
+   		var msg = response.getMessages.get(0)
+   		msg.getSeverity mustBe INFO
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg = response.getMessages.get(1)
+   		msg.getSeverity mustBe WARN
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg = response.getMessages.get(2)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg = response.getMessages.get(3)
+   		msg.getSeverity mustBe INFO
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state1")))
+   		msg = response.getMessages.get(4)
+   		msg.getSeverity mustBe WARN
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state1")))
+   		msg = response.getMessages.get(5)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state1")))
+   		msg = response.getMessages.get(6)
+   		msg.getSeverity mustBe INFO
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedS2", "state2")))
+   		msg = response.getMessages.get(7)
+   		msg.getSeverity mustBe WARN
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedS2", "state2")))
+   		msg = response.getMessages.get(8)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS2", "state2")))
+   		msg = response.getMessages.get(9)
+   		msg.getSeverity mustBe INFO
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state2")))
+   		msg = response.getMessages.get(10)
+   		msg.getSeverity mustBe WARN
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state2")))
+   		msg = response.getMessages.get(11)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state2")))
+   		msg = response.getMessages.get(12)
+   		msg.getSeverity mustBe INFO
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+   		msg = response.getMessages.get(13)
+   		msg.getSeverity mustBe WARN
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+   		msg = response.getMessages.get(14)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+
+   		server.schema.isDefined mustBe false
+	   }
    }
+
 }
