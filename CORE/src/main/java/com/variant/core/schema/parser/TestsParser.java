@@ -140,7 +140,7 @@ public class TestsParser implements Keywords {
 	private static Test parseTest(Map<String, ?> test, ParserResponseImpl response){
 		
 		List<TestExperienceImpl> experiences = new ArrayList<TestExperienceImpl>();
-		List<TestOnStateImpl> onViews = new ArrayList<TestOnStateImpl>();
+		List<TestOnStateImpl> onStates = new ArrayList<TestOnStateImpl>();
 
 		String name = null;
 		boolean nameFound = false;
@@ -286,49 +286,51 @@ public class TestsParser implements Keywords {
 		}
 		result.setCovariantTests(covarTestsReordered);
 		
-		// Pass 4: Parse onViews.
-		for(Map.Entry<String, ?> entry: test.entrySet()) {
-			
-			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), 
-					KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS, KEYWORD_IS_ON, KEYWORD_HOOKS)) continue;
-
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_STATES)) {
-				Object onViewsObject = entry.getValue();
-				if (! (onViewsObject instanceof List)) {
-					response.addMessage(ONSTATES_NOT_LIST, name);
-				}
-				else {
-					List<?> rawOnViews = (List<?>) onViewsObject;
-					if (rawOnViews.size() == 0) {
-						response.addMessage(ONSTATES_LIST_EMPTY, name);						
+		// Pass 4: Parse onStates, if we have the control variant
+		if (controlExperienceFound) {
+			for(Map.Entry<String, ?> entry: test.entrySet()) {
+				
+				if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), 
+						KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS, KEYWORD_IS_ON, KEYWORD_HOOKS)) continue;
+	
+				if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_STATES)) {
+					Object onViewsObject = entry.getValue();
+					if (! (onViewsObject instanceof List)) {
+						response.addMessage(ONSTATES_NOT_LIST, name);
 					}
 					else {
-						for (Object testOnViewObject: rawOnViews) {
-							TestOnStateImpl tov = parseTestOnView(testOnViewObject, result, response);
-							if (tov != null) {
-								boolean dupe = false;
-								for (Test.OnState newTov: onViews) {
-									if (tov.getState().equals(newTov.getState())) {
-										response.addMessage(STATEREF_DUPE, newTov.getState().getName(), name);
-										dupe = true;
-										break;
+						List<?> rawOnViews = (List<?>) onViewsObject;
+						if (rawOnViews.size() == 0) {
+							response.addMessage(ONSTATES_LIST_EMPTY, name);						
+						}
+						else {
+							for (Object testOnViewObject: rawOnViews) {
+								TestOnStateImpl tov = parseTestOnState(testOnViewObject, result, response);
+								if (tov != null) {
+									boolean dupe = false;
+									for (Test.OnState newTov: onStates) {
+										if (tov.getState().equals(newTov.getState())) {
+											response.addMessage(STATEREF_DUPE, newTov.getState().getName(), name);
+											dupe = true;
+											break;
+										}
 									}
+	
+									if (!dupe) onStates.add(tov);
 								}
-
-								if (!dupe) onViews.add(tov);
 							}
 						}
 					}
 				}
-			}
-			else {
-				response.addMessage(TEST_UNSUPPORTED_PROPERTY, entry.getKey(), name);
+				else {
+					response.addMessage(TEST_UNSUPPORTED_PROPERTY, entry.getKey(), name);
+				}
 			}
 		}
-
-		if (onViews.isEmpty()) return null;
 		
-		result.setOnViews(onViews);
+		if (onStates.isEmpty()) return null;
+		
+		result.setOnViews(onStates);
 		
 		// A covariant test cannot be disjoint.
 		if (covarTests != null) {
@@ -420,14 +422,14 @@ public class TestsParser implements Keywords {
 	}
 	
 	/**
-	 * Parse a single element of the onViews array.
+	 * Parse a single element of the onStates array.
 	 * @param testOnViewObject
 	 * @param response
 	 * @return
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	private static TestOnStateImpl parseTestOnView(Object testOnStateObject, TestImpl test, ParserResponseImpl response) {
+	private static TestOnStateImpl parseTestOnState(Object testOnStateObject, TestImpl test, ParserResponseImpl response) {
 		
 		Map<String, Object> rawTestOnState = null;
 		

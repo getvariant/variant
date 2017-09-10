@@ -103,7 +103,7 @@ public class ParserMessageImpl implements ParserMessage {
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		result.append(getSeverity().name()).append(" - [").append(getCode()).append("] ").append(getText());
+		result.append("[").append(getCode()).append("] [").append(getSeverity().name()).append("] ").append(getText());
 		if (line != null) result.append(String.format(" @ line %s, column %s", line, column));
 		return result.toString();
 	}

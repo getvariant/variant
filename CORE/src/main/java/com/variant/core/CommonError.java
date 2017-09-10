@@ -21,15 +21,6 @@ public class CommonError extends UserError {
 	public final static CommonError CONFIG_PROPERTY_NOT_SET = 
 			new CommonError(204, Severity.FATAL, "Configuration property [%s] must be set but is not");
 
-//	public static final CommonError CONFIG_INIT_PROPERTY_NOT_SET =
-//			new CommonError(5, Severity.ERROR, "Init property [%s] is required by class [%s] but is missing in system property [%s]");
-
-	//public static final RuntimeError CONFIG_INIT_INVALID_JSON =
-	//		new RuntimeError(Severity.ERROR, "Invalid JSON [%s] in system property [%s]");
-	
-	// SCHEMA_UNDEFINED                                  (Severity.ERROR, "Cannot create a session on an idle Variant instance. Deploy a schema first");
-	// SESSION_EXPIRED                                   (Severity.ERROR, "This session has expired"); 
-	// METHOD_UNSUPPORTED                                (Severity.ERROR, "Method unsupported in Core");
 
 	//
 	// 241-250  Available

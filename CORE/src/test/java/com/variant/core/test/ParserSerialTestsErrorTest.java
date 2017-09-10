@@ -2399,6 +2399,81 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 	}
 
 	/**
+	 * CONTROL_EXPERIENCE_MISSING
+	 * @throws Exception
+	 */
+	@Test
+	public void controlExperienceMissing_Test() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1',                                      \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'path':'/path/to/state1'                           \n" +
+			    "        }                                                     \n" +
+			    "     },                                                       \n" +
+	    	    "     {  'parameters': {                                       \n" +
+			    "           'path':'/path/to/state2'                           \n" +
+			    "        },                                                    \n" +
+			    "        'name':'state2'                                       \n" +
+			    "     }                                                        \n" +
+			    "  ],                                                          \n" +
+				"  'tests':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'name':'TEST',                                        \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50                                    \n" +
+			    "              //'isControl':true                                \n" + 
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'C',                                     \n" +
+			    "              'weight':50                                    \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                           \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'A',                     \n" +
+                "                    'parameters': {                           \n" +
+			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                    }                                         \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		SchemaParser parser = getSchemaParser();
+		ParserResponse response = parser.parse(config);
+
+		assertTrue(response.hasMessages());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertTrue(response.hasMessages(Severity.ERROR));
+		assertTrue(response.hasMessages(Severity.WARN));
+		assertTrue(response.hasMessages(Severity.INFO));
+		assertEquals(1, response.getMessages().size());
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessageImpl(ParserError.CONTROL_EXPERIENCE_MISSING, "TEST").getText(), error.getText());
+		assertEquals(Severity.ERROR, error.getSeverity());
+	}
+
+	/**
 	 * CONTROL_EXPERIENCE_DUPE
 	 * @throws Exception
 	 */
