@@ -25,7 +25,7 @@ public class StateImpl implements State {
 	private final Schema schema;
 	private final String name;
 	private CaseInsensitiveMap<String> parameters;
-
+    
 	// Hooks are keyed by name.
 	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
 
@@ -125,7 +125,7 @@ public class StateImpl implements State {
 	public boolean addHook(Hook hook) {
 		return hooks.add(hook);
 	}
-
+	
 	/**
 	 * States are held in a HashSet, keyed by view name.
 	 */

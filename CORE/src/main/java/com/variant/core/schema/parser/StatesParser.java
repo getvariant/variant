@@ -11,10 +11,16 @@ import static com.variant.core.schema.parser.ParserError.STATE_UNSUPPORTED_PROPE
 import java.util.List;
 import java.util.Map;
 
+import com.variant.core.CommonError;
 import com.variant.core.CoreException;
+import com.variant.core.UserError.Severity;
+import com.variant.core.VariantException;
+import com.variant.core.schema.Hook;
+import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.State;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.StateImpl;
+import com.variant.core.util.MutableInteger;
 
 /**
  * Parse the STATES clause.
@@ -29,7 +35,7 @@ public class StatesParser implements Keywords {
 	 * @param response 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parse(Object statesObject, ParserResponseImpl response) {
+	static void parse(Object statesObject, ParserResponseImpl response, HooksService hooksService) {
 
 		try {
 
@@ -40,10 +46,38 @@ public class StatesParser implements Keywords {
 			}
 			
 			for (Map<String, ?> rawState: rawStates) {
+
+				// Increment a local integer count whenever a parse error occurs.
+				final MutableInteger errorCount = new MutableInteger(0);
+				response.setParserListener(
+						new ParserListener() {
+							@Override
+							public void messageAdded(ParserMessage message) {
+								if (message.getSeverity().greaterOrEqual(Severity.ERROR)) 
+									errorCount.add(1);
+							}
+				});
+				
+				// Parse individual state
 				State state = parseState(rawState, response);
 				if (state != null && !((SchemaImpl) response.getSchema()).addState(state)) {
 					response.addMessage(STATE_NAME_DUPE, state.getName());
 				}
+				
+				// If no errors, register state scoped hooks.
+				if (errorCount.intValue() == 0) {
+					for (Hook hook: state.getHooks()) hooksService.initHook(hook, response);
+	
+					// Post the state parsed event.
+					try {
+						hooksService.post(new StateParsedLifecycleEventImpl(state, response));
+					}
+					catch (VariantException e) {
+						response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
+						throw e;
+					}
+				}
+				response.setParserListener(null);
 			}
 		}
 		catch (ClassCastException e) {
@@ -58,7 +92,7 @@ public class StatesParser implements Keywords {
 	 * Parse a state
 	 */
 	@SuppressWarnings("unchecked")
-	private static State parseState(Map<String, ?> rawState, final ParserResponseImpl response) {
+	private static StateImpl parseState(Map<String, ?> rawState, final ParserResponseImpl response) {
 		
 		String name = null;
 		boolean nameFound = false;

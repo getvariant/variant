@@ -47,8 +47,13 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.variant.core.CommonError;
 import com.variant.core.CoreException;
+import com.variant.core.VariantException;
+import com.variant.core.UserError.Severity;
 import com.variant.core.impl.VariantSpace;
+import com.variant.core.schema.Hook;
+import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -58,6 +63,7 @@ import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.TestExperienceImpl;
 import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
+import com.variant.core.util.MutableInteger;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -75,7 +81,7 @@ public class TestsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parse(Object testsObject, ParserResponseImpl response) {
+	static void parse(Object testsObject, ParserResponseImpl response, HooksService hooksService) {
 		List<Map<String, ?>> rawTests = null;
 		try {
 			rawTests = (List<Map<String, ?>>) testsObject;
@@ -89,10 +95,39 @@ public class TestsParser implements Keywords {
 		}
 		
 		for (Map<String, ?> rawTest: rawTests) {
+			
+			// Increment a local integer count whenever a parse error occurs.
+			final MutableInteger errorCount = new MutableInteger(0);
+			response.setParserListener(
+					new ParserListener() {
+						@Override
+						public void messageAdded(ParserMessage message) {
+							if (message.getSeverity().greaterOrEqual(Severity.ERROR)) 
+								errorCount.add(1);
+						}
+			});
+
+			// Parse individual test
 			Test test = parseTest(rawTest, response);
 			if (test != null && !((SchemaImpl) response.getSchema()).addTest(test)) {
 				response.addMessage(TEST_NAME_DUPE, test.getName());
 			}
+			
+			// If no errors, register test scoped hooks.
+			if (errorCount.intValue() == 0) {
+				for (Hook hook: test.getHooks()) hooksService.initHook(hook, response);
+
+				// Post the test parsed event.
+				try {
+					hooksService.post(new TestParsedLifecycleEventImpl(test, response));
+				}
+				catch (VariantException e) {
+					response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, TestParsedLifecycleEventImpl.class.getName(), e.getMessage());
+					throw e;
+				}
+			}
+			response.setParserListener(null);
+
 		}
 	}
 	

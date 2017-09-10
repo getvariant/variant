@@ -264,6 +264,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
+		printMessages(response);
 		assertEquals(2, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImpl(ParserError.HOOK_UNSUPPORTED_PROPERTY, "class-Name", "bar").getText(), error.getText());

@@ -18,6 +18,16 @@ public class ParserResponseImpl implements ParserResponse {
 	private ArrayList<ParserMessage> messages = new ArrayList<ParserMessage>();
 	private SchemaImpl schema = new SchemaImpl();
 	private String schemaSrc = null;
+	private ParserListener parserListener = null;
+	
+	/**
+	 * Private common part of adding the message which posts the parser listener, if any.
+	 * @param message
+	 */
+	private void addMessageCommon(ParserMessage message) {
+		messages.add(message);
+		if (parserListener != null) parserListener.messageAdded(message);
+	}
 	
 	public ParserResponseImpl() {}
 	
@@ -74,7 +84,7 @@ public class ParserResponseImpl implements ParserResponse {
 	 */
     public void addMessage(Severity severity, String message) {
 		ParserMessage result = new ParserMessageImpl(new ParserHookError(severity, message));
-		messages.add(result);
+		addMessageCommon(result);
 	}
 
 	/**
@@ -90,20 +100,24 @@ public class ParserResponseImpl implements ParserResponse {
 		else {
 			result = new ParserMessageImpl(error, line, column, args);
 		}
-		messages.add(result);
+		addMessageCommon(result);
 		return result;
 	}
-	
+
 	/**
 	 * 
 	 * @param error
 	 */
 	public ParserMessage addMessage(UserError error, String...args) {
 		ParserMessage result = new ParserMessageImpl(error, args);
-		messages.add(result);
+		addMessageCommon(result);
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param schemaSrc
+	 */
 	public void setSchemaSrc(String schemaSrc) {
 		this.schemaSrc = schemaSrc;
 	}
@@ -114,5 +128,13 @@ public class ParserResponseImpl implements ParserResponse {
 	public void clearSchema() {
 		schema = null;
 		schemaSrc = null;
+	}
+	
+	/**
+	 * 
+	 * @param listener
+	 */
+	public void setParserListener(ParserListener listener) {
+		this.parserListener = listener;
 	}
 }

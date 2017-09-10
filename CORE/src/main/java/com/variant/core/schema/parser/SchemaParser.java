@@ -23,7 +23,6 @@ import com.variant.core.VariantException;
 import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserResponse;
-import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.util.VariantStringUtils;
 
@@ -200,25 +199,8 @@ public abstract class SchemaParser implements Keywords {
 			response.addMessage(NO_STATES_CLAUSE);
 		}
 		else {
-			
 			// Parse all states
-			StatesParser.parse(states, response);
-			
-			// Init all state scoped hooks.
-			for (State state: response.getSchema().getStates()) {
-				for (Hook hook: state.getHooks()) hooksService.initHook(hook, response);
-			}
-			
-			// Post parse time user hooks.
-			for (State state: response.getSchema().getStates()) {
-				try {
-					hooksService.post(new StateParsedLifecycleEventImpl(state, response));
-				}
-				catch (VariantException e) {
-					response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
-					throw e;
-				}
-			}
+			StatesParser.parse(states, response, hooksService);		
 		}
 
 		if (!response.getMessages(Severity.FATAL).isEmpty()) {
@@ -231,26 +213,11 @@ public abstract class SchemaParser implements Keywords {
 			response.addMessage(NO_TESTS_CLAUSE);
 		}
 		else {
-			
 			// Parse all tests
-			TestsParser.parse(tests, response);
-			
-			// Init all test scoped hooks.
-			for (Test test: response.getSchema().getTests()) {
-				for (Hook hook: test.getHooks()) hooksService.initHook(hook, response);
-			}
-
-			// Post parse time user hooks.
-			for (Test test: response.getSchema().getTests()) {
-				try {
-					hooksService.post(new TestParsedLifecycleEventImpl(test, response));
-				}
-				catch (VariantException e) {
-					response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, TestParsedLifecycleEventImpl.class.getName(), e.getMessage());
-				}
-			}
-			
+			TestsParser.parse(tests, response, hooksService);			
 		}
+		
+		response.setParserListener(null);
 		
 		if (response.hasMessages(Severity.ERROR)) response.clearSchema();
 		
