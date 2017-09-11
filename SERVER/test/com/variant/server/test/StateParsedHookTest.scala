@@ -39,7 +39,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
          {                                                              
    		     'name':'stateParsed',                                       
    			   'class':'com.variant.server.test.hooks.StateParsedHook',
-           'init':{'hookName':'stateParsed', 'clipChain':false}     
+           'init':{'hookName':'stateParsed'}     
    	   }                                                              
       ]                                                                
    },                                                                   
@@ -129,7 +129,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
          {                                                              
    		     'name':'stateParsed1',                                       
    			   'class':'com.variant.server.test.hooks.StateParsedHook',
-           'init':{'hookName':'stateParsed1', 'clipChain':false}
+           'init':{'hookName':'stateParsed1'}
    	   },
          // Gets posted, but clips the chain.                                                       
          { 
@@ -141,7 +141,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
          {                                                              
    		      'name':'stateParsed3',                                       
    			    'class':'com.variant.server.test.hooks.StateParsedHook',
-            'init':{'hookName':'stateParsed3', 'clipChain':false}
+            'init':{'hookName':'stateParsed3'}
    	     }                                                              
       ]                                                                
    },                                                                   
@@ -274,7 +274,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
            {                                                              
      		     'name':'stateParsed',                                       
      			   'class':'com.variant.server.test.hooks.StateParsedHook',
-             'init':{'hookName':'stateParsed', 'clipChain':false}     
+             'init':{'hookName':'stateParsed'}     
      	     }
          ]                                                              
       },  
@@ -352,7 +352,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
            {                                                              
      		     'name':'stateParsed1',                                       
      			   'class':'com.variant.server.test.hooks.StateParsedHook',
-             'init':{'hookName':'stateParsed1', 'clipChain':false}
+             'init':{'hookName':'stateParsed1'}
      	   },
            // Gets posted, but clips the chain.                                                       
            { 
@@ -364,7 +364,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
            {                                                              
      		      'name':'stateParsed3',                                       
      			    'class':'com.variant.server.test.hooks.StateParsedHook',
-              'init':{'hookName':'stateParsed3', 'clipChain':false}
+              'init':{'hookName':'stateParsed3'}
      	     }                                                              
         ]                                                                
       },  
@@ -444,7 +444,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
          {                                                              
    		     'name':'stateParsed',                                       
    			   'class':'com.variant.server.test.hooks.StateParsedHook',
-           'init':{'hookName':'stateParsedSchema', 'clipChain':false}
+           'init':{'hookName':'stateParsedSchema'}
    	   }
      ]                                                                
    },                                                                   
@@ -455,7 +455,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
            {                                                              
      		     'name':'stateParsed',                                       
      			   'class':'com.variant.server.test.hooks.StateParsedHook',
-             'init':{'hookName':'stateParsedS1', 'clipChain':false}
+             'init':{'hookName':'stateParsedS1'}
        	   }
         ]                                                                
       },                                                
@@ -465,7 +465,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
            {                                                              
      		     'name':'stateParsed',                                       
      			   'class':'com.variant.server.test.hooks.StateParsedHook',
-             'init':{'hookName':'stateParsedS2', 'clipChain':false}
+             'init':{'hookName':'stateParsedS2'}
        	   }
          ]                                                                
       },  
@@ -579,7 +579,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
          {                                                              
    		     'name':'stateParsed',                                       
    			   'class':'com.variant.server.test.hooks.StateParsedHook',
-           'init':{'hookName':'stateParsedSchema', 'clipChain':false}     
+           'init':{'hookName':'stateParsedSchema'}     
    	     }
        ]                                                              
    },                                                                   
@@ -590,7 +590,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
            {                                                              
      		     'name':'stateParsed1',                                       
      			   'class':'com.variant.server.test.hooks.StateParsedHook',
-             'init':{'hookName':'stateParsed1', 'clipChain':false}     
+             'init':{'hookName':'stateParsed1'}     
      	     }
          ]                                                              
       },                                                
@@ -600,12 +600,12 @@ class StateParsedHookTest extends BaseSpecWithServer {
            {                                                              
      		     'name':'stateParsed',                                       
      			   'class':'com.variant.server.test.hooks.StateParsedHook',
-             'init':{'hookName':'stateParsed', 'clipChain':false}     
+             'init':{'hookName':'stateParsed'}     
      	     },
            {                                                              
      		     'name':'stateParsed',                                       
      			   'class':'com.variant.server.test.hooks.StateParsedHook',
-             'init':{'hookName':'stateParsed', 'clipChain':false}     
+             'init':{'hookName':'stateParsed'}     
      	     }
          ]                                                              
       },  

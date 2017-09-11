@@ -1,7 +1,8 @@
 #! /bin/bash
 # Make and package a Variant release
 #
-# 1. Core jar 
+# To count source code lines:
+# find . \( -name '*.java' -or -name '*scala' \) | grep -v target | xargs wc -l | tail -1 
 
 #!/bin/bash
 

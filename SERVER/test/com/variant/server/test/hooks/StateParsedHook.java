@@ -14,6 +14,7 @@ public class StateParsedHook implements UserHook<StateParsedLifecycleEvent> {
 		
 	private String hookName = null;
 	private boolean clipChain = false;
+	private boolean infoOnly = false;
 	
 	/**
 	 * Non nullary constructor
@@ -21,8 +22,9 @@ public class StateParsedHook implements UserHook<StateParsedLifecycleEvent> {
 	 */
 	public StateParsedHook(Config config) {
 		if (config != null) {
-			hookName = config.getString("init.hookName");
-			clipChain = config.getBoolean("init.clipChain");
+			if (config.hasPath("init.hookName")) hookName = config.getString("init.hookName");
+			if (config.hasPath("init.clipChain")) clipChain = config.getBoolean("init.clipChain");
+			if (config.hasPath("init.infoOnly")) infoOnly = config.getBoolean("init.infoOnly");
 		}
 	}
 	
@@ -34,8 +36,10 @@ public class StateParsedHook implements UserHook<StateParsedLifecycleEvent> {
 	@Override
 	public PostResult post(StateParsedLifecycleEvent event) {
 		event.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hookName, event.getState().getName()));
-		event.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hookName, event.getState().getName()));
-		event.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hookName, event.getState().getName()));
+		if (!infoOnly) {
+			event.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hookName, event.getState().getName()));
+			event.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hookName, event.getState().getName()));
+		}
 		return clipChain ? PostResultFactory.mkPostResult(event) : null;
 	}
 }

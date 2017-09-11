@@ -14,7 +14,10 @@ import com.variant.server.api.Session;
 import com.variant.server.lce.TestTargetingLifecycleEvent;
 
 /**
- * Target according to weights passed in the init property weights.
+ * Test targeter hook.
+ * if init.weights is given as array if doubles, they are interpreted as random weights.
+ * otherwise, if init.experience is given, attempt to find that experience.
+ * 
  */
 public class TestTargetingHook implements UserHook<TestTargetingLifecycleEvent> {
 
