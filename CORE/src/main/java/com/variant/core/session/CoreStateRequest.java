@@ -180,20 +180,6 @@ public class CoreStateRequest implements Serializable {
 		}
 	}
 		
-	/**
-	 * A transitional hack to get access to state name on the server where we
-	 * don't yet have the schema and cannot properly instantiate state by state
-	 * name.  Which is fine because we'llonly need the name to log events.
-	 * @return
-	 *
-	public String getStateName() {
-		
-		if (session.getCoreApi().getComptime().getComponent() == VariantComptime.Component.SERVER)
-			throw new VariantInternalException("Method is supported only on Server");
-		
-		return stateName;
-	}
-	*/
 	//---------------------------------------------------------------------------------------------//
 	//                                       SERIALIZATION                                         //
 	//---------------------------------------------------------------------------------------------//

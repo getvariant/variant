@@ -24,7 +24,7 @@ public class StateImpl implements State {
 
 	private final Schema schema;
 	private final String name;
-	private CaseInsensitiveMap<String> parameters;
+	private final CaseInsensitiveMap<String> parameters = new CaseInsensitiveMap<String>();
     
 	// Hooks are keyed by name.
 	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
@@ -106,8 +106,8 @@ public class StateImpl implements State {
 	 * 
 	 * @param parameters
 	 */
-	public void setParameterMap(Map<String, String> parameters) {
-		this.parameters = new CaseInsensitiveMap<String>(parameters);
+	public void setParameterMap(Map<String, String> params) {
+		this.parameters.putAll(params);
 	}
 	
 	/**

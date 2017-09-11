@@ -66,7 +66,7 @@ public interface StateRequest {
 	 * likely-named state parameters declared at the state level.  
 	 * 
 	 * @param name Parameter name.
-	 * @return Immutable map keyed by parameter names. Empty, if no state parameters were declared.
+	 * @return Immutable map keyed by parameter names. Empty map, if no state parameters were declared.
 	 * @since 0.7
 	 */	
 	Map<String, String> getResolvedParameters();
