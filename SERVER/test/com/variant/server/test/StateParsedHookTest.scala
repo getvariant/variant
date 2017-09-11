@@ -505,7 +505,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
 }"""
 
    		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
-   		response.getMessages.foreach(println(_))
+
    		response.getMessages.size mustBe 15
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 5
@@ -557,6 +557,118 @@ class StateParsedHookTest extends BaseSpecWithServer {
    		msg = response.getMessages.get(14)
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+
+   		server.schema.isDefined mustBe false
+	   }
+   }
+
+	  	  
+  /*
+   * 
+   */
+	"No StateParsedHook" should {
+	   
+	   ////////////////
+	   "be posted for states which had parser errors" in {
+	      
+   	    val schema = """
+{                                                                              
+   'meta':{                                                             		    	    
+      'name':'stateScopedHooks',                                                          
+      'hooks':[                                                         
+         {                                                              
+   		     'name':'stateParsed',                                       
+   			   'class':'com.variant.server.test.hooks.StateParsedHook',
+           'init':{'hookName':'stateParsedSchema', 'clipChain':false}     
+   	     }
+       ]                                                              
+   },                                                                   
+	'states':[
+	    {
+        'name':'invalid name',  // No state hooks should be posted.
+        'hooks':[                                                         
+           {                                                              
+     		     'name':'stateParsed1',                                       
+     			   'class':'com.variant.server.test.hooks.StateParsedHook',
+             'init':{'hookName':'stateParsed1', 'clipChain':false}     
+     	     }
+         ]                                                              
+      },                                                
+		  {
+        'name':'state2',  // No staet hooks should be posted.
+        'hooks':[     // Dupe hook name
+           {                                                              
+     		     'name':'stateParsed',                                       
+     			   'class':'com.variant.server.test.hooks.StateParsedHook',
+             'init':{'hookName':'stateParsed', 'clipChain':false}     
+     	     },
+           {                                                              
+     		     'name':'stateParsed',                                       
+     			   'class':'com.variant.server.test.hooks.StateParsedHook',
+             'init':{'hookName':'stateParsed', 'clipChain':false}     
+     	     }
+         ]                                                              
+      },  
+		  {
+        'name':'state3' // schema scoped hook will be posted.
+      }                                                 
+   ],                                                                   
+	'tests':[                                                           
+	   {                                                                
+		   'name':'test1',
+	      'experiences':[                                               
+            {                                                          
+				   'name':'A',                                             
+				   'weight':10,                                            
+				   'isControl':true                                        
+	         },                                                         
+		      {                                                          
+		         'name':'B',                                             
+				     'weight':20                                             
+				  }                                                          
+	      ],                                                            
+			'onStates':[                                                   
+				  {                                                          
+				     'stateRef':'state1',                                     
+				    	'variants':[                                            
+				    	   {                                                    
+				    	      'experienceRef':'B',                              
+							   'parameters':{                                    
+				    	      'path':'/path/to/state1/test1.B'               
+				         }                                                 
+				     }                                                    
+			     ]                                                       
+	        }                                                          
+	     ]                                                             
+	  }
+  ]                                                                   
+}"""
+
+   		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
+   		response.getMessages.foreach(println(_))
+   		response.getMessages.size mustBe 6
+   		response.getMessages(FATAL) mustBe empty
+   		response.getMessages(ERROR).size() mustBe 4
+   		response.getMessages(WARN).size() mustBe 5
+   		response.getMessages(INFO).size() mustBe 6
+   		var msg = response.getMessages.get(0)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.STATE_NAME_INVALID.asMessage())
+   		msg = response.getMessages.get(1)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.HOOK_NAME_DUPE.asMessage("stateParsed"))
+   		msg = response.getMessages.get(2)
+   		msg.getSeverity mustBe INFO
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+   		msg = response.getMessages.get(3)
+   		msg.getSeverity mustBe WARN
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+   		msg = response.getMessages.get(4)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+   		msg = response.getMessages.get(5)
+   		msg.getSeverity mustBe ERROR
+   		msg.getText must include (ParserError.STATEREF_UNDEFINED.asMessage("state1", "test1"))
 
    		server.schema.isDefined mustBe false
 	   }

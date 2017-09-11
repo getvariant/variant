@@ -4,15 +4,16 @@ import com.typesafe.config.Config;
 import com.variant.core.UserError.Severity;
 import com.variant.core.UserHook;
 import com.variant.core.lce.TestParsedLifecycleEvent;
+import com.variant.server.api.PostResultFactory;
 
 public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
 	
 	public static final String INFO_MESSAGE_FORMAT = "Info-Message-Test %s %s";
 	public static final String WARN_MESSAGE_FORMAT = "Warn-Message-Test %s %s";
-	public static final String ERROR_MESSAGE_FORMAT = "Error Message Test %s %s";
+	public static final String ERROR_MESSAGE_FORMAT = "Error-Message-Test %s %s";
 		
 	private String hookName = null;
-	
+	private boolean clipChain = false;
 	/**
 	 * Non nullary constructor
 	 * @param config
@@ -20,6 +21,7 @@ public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
 	public TestParsedHook(Config config) {
 		if (config != null) {
 			hookName = config.getString("init.hookName");
+			clipChain = config.getBoolean("init.clipChain");
 		}
 	}
 
@@ -33,6 +35,6 @@ public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
 		event.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hookName, event.getTest().getName()));
 		event.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hookName, event.getTest().getName()));
 		event.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hookName, event.getTest().getName()));
-		return null;
+		return clipChain ? PostResultFactory.mkPostResult(event) : null;
 	}
 }
