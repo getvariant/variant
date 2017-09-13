@@ -13,8 +13,8 @@ import static org.junit.Assert.assertTrue;
 
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.parser.ParserMessageImpl;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
 
 

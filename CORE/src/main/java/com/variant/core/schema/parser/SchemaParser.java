@@ -20,7 +20,6 @@ import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Hook;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.util.VariantStringUtils;
 
 /**

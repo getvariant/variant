@@ -1,7 +1,6 @@
 package com.variant.core.lce;
 
 import com.variant.core.UserError.Severity;
-import com.variant.core.schema.ParserResponse;
 
 
 /**
@@ -18,8 +17,9 @@ public interface ParsetimeLifecycleEvent extends LifecycleEvent {
 	 * 
 	 * @return Object of type {@link ParserResponse}
 	 * @since 0.8
-	 */
+	 *
 	ParserResponse getParserResponse();
+	*/
 	
 	/**
 	 * Add a custom message to the pending parser resonse.
