@@ -22,8 +22,8 @@ import com.variant.client.session.SessionCache;
 import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
 import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserResponse;
 import com.variant.core.schema.Schema;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.VariantStringUtils;
 
