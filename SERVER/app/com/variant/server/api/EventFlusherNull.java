@@ -1,28 +1,22 @@
-package com.variant.server.test.util;
+package com.variant.server.api;
 
 import java.util.Collection;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.typesafe.config.ConfigObject;
-import com.variant.core.EventFlusher;
-import com.variant.core.FlushableEvent;
-
 /**
- * Null implementation: all events are discarded.  Useful for testing.
+ * Null event flusher. All Variant events are discarded. 
+ * Useful, for instance, when instrumenting a feature toggle, instead of an experiment.
  * 
  * 
- * @author Igor
+ * @since 0.8
  *
  */
-class EventFlusherNull implements EventFlusher {
+public class EventFlusherNull implements EventFlusher {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(EventFlusherNull.class);
-	
-	@Override
-	public void init(ConfigObject config) {}
-	
+		
 	@Override
 	public void flush(Collection<FlushableEvent> events) throws Exception {
 			LOG.debug(String.format("Discarded %s events.", events.size()));

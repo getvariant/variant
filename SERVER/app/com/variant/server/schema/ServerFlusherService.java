@@ -4,17 +4,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.ConfigException;
-import com.variant.core.EventFlusher;
 import com.variant.core.schema.Flusher;
 import com.variant.core.schema.parser.FlusherService;
 import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.VariantClassLoader;
+import com.variant.server.api.EventFlusher;
+import com.variant.server.api.EventFlusherNull;
 
 public class ServerFlusherService implements FlusherService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ServerFlusherService.class);
 
+	// Default flusher is NULL flusher
+	private EventFlusher flusher = new EventFlusherNull();
+	
+	private ServerSchema schema = null;
+	
+	
 	/**
 	 * Package instantiation only.
 	 */
@@ -37,6 +44,8 @@ public class ServerFlusherService implements FlusherService {
 				parserResponse.addMessage(ServerErrorLocal.FLUSHER_CLASS_NO_INTERFACE, flusherObj.getClass().getName(), EventFlusher.class.getName());
 				return;
 			}
+			
+			this.flusher = (EventFlusher) flusherObj;
 						
 		}
 		catch (ConfigException.Parse e) {
@@ -46,7 +55,29 @@ public class ServerFlusherService implements FlusherService {
 			LOG.error(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage(flusher.getClassName(), e.getClass().getName()), e);
 			parserResponse.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, flusher.getClassName(), e.getClass().getName());
 		}
-		
 	}
 
+	/**
+	 * The event flusher underlying this service.
+	 * @return
+	 */
+	public EventFlusher getFlusher() {
+		return flusher;
+	}
+	
+	/**
+	 * 
+	 * @param schema
+	 */
+	public void setSchema(ServerSchema schema) {
+		this.schema = schema;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public ServerSchema getSchema() {
+		return this.schema;
+	}
 }

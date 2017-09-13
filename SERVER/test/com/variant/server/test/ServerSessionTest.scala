@@ -5,7 +5,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import com.variant.core.session.CoreSession
 import com.variant.server.impl.SessionImpl
-import com.variant.server.schema.SchemaDeployer
+import com.variant.server.schema.deploy.SchemaDeployer
 
 /**
  * Add your spec here.

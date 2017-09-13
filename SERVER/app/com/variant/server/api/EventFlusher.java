@@ -1,7 +1,8 @@
-package com.variant.core;
+package com.variant.server.api;
 
 import java.util.Collection;
 
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
 
 /**
@@ -31,23 +32,20 @@ import com.typesafe.config.ConfigObject;
  * percent full, if the last flush completed this many milliseconds ago. (Default = 30,000).
  *  </ul>
  * 
+ * <p>An implementation must provide at least one public constructor: 
+ * <ol>
+ * <li>If no state initialization is required, the default nullary constructor is sufficient. 
+ * <li>If you need to pass an initial state to the newly constructed hook object, you must provide a constructor
+ * which takes the single argument of the type {@link Config}. Variant will invoke this constructor and pass it
+ * the value of the hook definitions's {@code init} property, parsed and rooted at element {@code 'init'}.
+ * </ol>
+ * 
+ * <p>Variant creates a new instance of the implementation class for each schema where it is defined.
+
  * @author Igor Urisman
  * @since 0.7
  */
 public interface EventFlusher {
-
-	/**
-	 * <p>Called by Variant to initialize a newly instantiated concrete implementation. 
-	 * Variant server calls this method immediately following the instantiation during 
-	 * Variant server's initialization. Use this to inject state from external configuration.
-	 * 
-	 * @param configObject The object of type {@link ConfigObject} holding the parsed
-	 *                     HOCON value given by the variant.event.flusher.class.init configuration
-	 *                     parameter.
-	 * 
-	 * @since 0.7
-	 */
-	public void init(ConfigObject config) throws Exception;
 	
 	/**
 	 * <p>Called by the server, whenever the asynchronous event writer needs to flush events from memory. 
@@ -60,5 +58,4 @@ public interface EventFlusher {
 	 * @since 0.7
 	 */
 	public void flush(Collection<FlushableEvent> events) throws Exception;
-
 }

@@ -3,35 +3,41 @@ package com.variant.server.schema
 import scala.collection.JavaConversions._
 import com.variant.core.schema.Schema
 import java.io.File
-import com.variant.core.schema.ParserResponse
+import com.variant.core.schema.parser.ParserResponse
 import com.variant.server.api.ServerException
 import com.variant.core.UserError.Severity
 import com.variant.core.schema.Hook
 import com.variant.server.boot.VariantServer
 import com.variant.core.schema.parser.HooksService
+import com.variant.server.api.EventFlusher
+import com.variant.core.schema.parser.FlusherService
+import play.api.Logger
+import com.variant.server.boot.Runtime
 
 /**
  * 
  */
 object ServerSchema {
-   def apply(response: ParserResponse, hooker: HooksService) = new ServerSchema(response, hooker)
+   def apply(response: ParserResponse, hooker: HooksService, flusher: ServerFlusherService) = 
+     new ServerSchema(response, hooker, flusher)
 }
 
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (val response: ParserResponse, val hooker: HooksService) extends Schema {
+class ServerSchema (val response: ParserResponse, val hooker: HooksService, val flusher: ServerFlusherService) extends Schema {
   
    import State._
    
-   var state: State = New
+   private val logger = Logger(this.getClass)   
    
    private var coreSchema =  response.getSchema
-   
-   if (response.hasMessages(Severity.ERROR)) {
-      // Schema did not actually parse.
-	   state = State.Failed
-   }
+   private val runtime = new Runtime(this)
+
+   var state: State = Deployed
+  
+   flusher.setSchema(this)
+  
       
    /**
     * 
@@ -92,6 +98,10 @@ class ServerSchema (val response: ParserResponse, val hooker: HooksService) exte
 	/*------------------------------------ Public Extensions ------------------------------------*/
 	
 	val source = response.getSchemaSrc
+	
+	def undeploy(): Unit = {
+	   logger.info("Schema [%s], ID [%s] undeployed".format(getName, getId))
+	}
 }
 
 /**
@@ -99,5 +109,5 @@ class ServerSchema (val response: ParserResponse, val hooker: HooksService) exte
  */
 object State extends Enumeration {
    type State = Value
-   val New, Failed, Deployed, Undeployed = Value
+   val Deployed, Undeployed, Gone = Value
 }

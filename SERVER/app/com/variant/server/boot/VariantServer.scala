@@ -13,14 +13,13 @@ import play.api.routing.Router
 import com.variant.core.schema.Schema
 import com.variant.server.schema.ServerSchema
 import play.api.Application
-import com.variant.server.schema.SchemaDeployerFromFS
-import com.variant.server.schema.SchemaDeployer
-import com.variant.core.schema.ParserResponse
+import com.variant.core.schema.parser.ParserResponse
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.variant.core.UserError.Severity._
 import com.variant.server.api.ServerException
 import play.api.ApplicationLoader
+import com.variant.server.schema.SchemaDeployer
 
 
 /**
@@ -30,13 +29,11 @@ trait VariantServer {
    
    val isUp: Boolean
    val config: Config // Do not expose Play's Configuration
-   val startupErrorLog: List[ServerException.User]
-   val eventWriter: EventWriter
+   val startupErrorLog: List[ServerException]
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
    def schema: Option[ServerSchema]
    def installSchemaDeployer(newDeployer: SchemaDeployer): Option[ParserResponse]
-   def runtime: Runtime
 }
 
 /**
@@ -67,53 +64,19 @@ class VariantServerImpl @Inject() (
 	_instance = this
 	
 	override val config = playConfig.underlying
-   override val eventWriter = new EventWriter(config)
-   override val runtime = new Runtime(this) // THIS?
-
-	private var _isUp = true
-	override lazy val isUp = _isUp
 	
-	private var _startupErrorLog = List[ServerException.User]()
+	private var _startupErrorLog = List[ServerException.Internal]()
 	override lazy val startupErrorLog = _startupErrorLog
 	
-	// Default schema deployer is from file system.
-   private var _schemaDeployer: SchemaDeployer = null
-   installSchemaDeployer(SchemaDeployer.fromFileSystem())
+	// Default schema deployer is from file system, but may be overridded by tests.
+  private var _schemaDeployer: SchemaDeployer = null
+  installSchemaDeployer(SchemaDeployer.fromFileSystem())
 	   
-	override def schema = _schemaDeployer.schema
+  override def schema = Some(_schemaDeployer.schemata(0))
 
-	/**
-	 * Override the default mutator for schema deployer because we need to do some housekeeping
-	 * if a new deployer is installed.
-	 */
-   def installSchemaDeployer (newDeployer: SchemaDeployer): Option[ParserResponse] = {
-	   try {
-   	   _schemaDeployer = newDeployer
-	      Some(_schemaDeployer.deploy)
-	   }
-	   catch {
-	      case e: ServerException.User => {
-	         logger.error("Failed to install schema deployer", e)
-	         _startupErrorLog :+= e
-	         None
-	      }
-	   }
-	}
-
-	// Flip isUp to false if we had errors.
-	startupErrorLog.foreach {e => if (e.getSeverity.greaterOrEqual(ERROR)) _isUp = false}
+	override val isUp = {startupErrorLog.size == 0}
 	
-	if (!isUp) {
-		   logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
-	}
-	else if (!schema.isDefined) {
-      logger.warn("%s bootstrapped on :%s%s in %s with WARNINGS:".format(
-            productName,
-            config.getString("http.port"),
-            config.getString("play.http.context"),
-   			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))
-	}
-	else {
+	if (isUp) {
       logger.info("%s bootstrapped on :%s%s in %s.".format(
             productName,
             config.getString("http.port"),
@@ -124,25 +87,37 @@ class VariantServerImpl @Inject() (
         config.entrySet().filter(x => x.getKey.startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
      }
 	}
-	
-	// Log startup messages
-	if (!isUp || !schema.isDefined) {
-	   startupErrorLog.foreach {
-	      e => e.getSeverity match {
-	         case FATAL => {logger.error("FATAL: " + e.getMessage, e)}
-	         case ERROR => {logger.error("ERROR: " + e.getMessage, e)}
-	         case WARN => logger.warn(e.getMessage)
-	         case _ => throw new ServerException.Internal("Unexpected exception severity %s".format(e.getSeverity), e)
-	      }
-	   }
-	   shutdown()
+	else {
+		logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
+		startupErrorLog.foreach { (e: ServerException) => logger.error(e.getMessage(), e) }
+	  shutdown()
 	}
 	
+	
+  /**
+	 * Tests can override the default schema deployer to be able to deploy from a memory string.
+	 */
+   def installSchemaDeployer (newDeployer: SchemaDeployer): Unit = {
+	    try {
+   	     _schemaDeployer = newDeployer
+      }
+	    catch {
+	       case e: ServerException.Internal => {
+	          logger.error("Failed to install schema deployer", e)
+	          _startupErrorLog :+= e
+	       }
+	       case t: Throwable => {
+	         _startupErrorLog :+= new ServerException.Internal("Unhandled exception", t)
+	       }
+	    }
+	 }
+
+
    /**
     * One time application shutdown.
     */
    def shutdown() {
-      eventWriter.shutdown()
+      schema.foreach { _.undeploy() }
       logger.info("%s shutdown on :%s%s. Uptime %s.".format(
             productName,
             config.getString("http.port"),

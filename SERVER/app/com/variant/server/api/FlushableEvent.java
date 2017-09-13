@@ -1,7 +1,8 @@
-package com.variant.core;
+package com.variant.server.api;
 
 import java.util.Collection;
 
+import com.variant.core.VariantEvent;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
 

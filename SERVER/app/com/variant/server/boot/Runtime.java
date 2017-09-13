@@ -45,7 +45,7 @@ public class Runtime {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Runtime.class);
 	
-	final private VariantServer server;
+	final private ServerSchema schema;
 	
 	/**
 	 * Target this session for all active tests.
@@ -81,7 +81,7 @@ public class Runtime {
      *    TT those experiences that did not make the compatible subset. These tests will be treated as 
      *    untargeted, i.e. as if they had never been targeted in the past.
      *    
-     * 6. For each test that is on ATL but not in TTL: if test is targetable, post the targeting hook 
+     * 6. For each test that is on ATL but not in TTL: if test is targetable, post the targeting hook Ò
      *    and, if the hook returns an experience, add it to TT. If the test is not targetable, target
      *    for control.
      *    
@@ -91,8 +91,6 @@ public class Runtime {
 	 * 
 	 */
 	private void target(SessionImpl session, StateImpl state) {
-
-		ServerSchema schema = server.schema().get();
 		
 		StateRequestImpl newReq = session.newStateRequest(state);
 		
@@ -241,11 +239,6 @@ public class Runtime {
 	 */
 	private boolean qualifyTest(TestImpl test, SessionImpl session) {
 		
-		/**
-		 * 
-		 */
-
-		ServerSchema schema = server.schema().get();
 
 		TestQualificationLifecycleEvent event = new TestQualificationLifecycleEventImpl(session, test);
 		TestQualificationLifecycleEventPostResultImpl hookResult = (TestQualificationLifecycleEventPostResultImpl) schema.hooker().post(event);
@@ -405,7 +398,6 @@ public class Runtime {
 	 */
 	Pair<Boolean, StateVariantImpl> resolveState(State state, Collection<Experience> vector) {
 
-		ServerSchema schema = server.schema().get();
 		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
 			
 		for (Test t: schema.getTests()) {
@@ -458,8 +450,8 @@ public class Runtime {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	public Runtime(VariantServer server) {
-		this.server = server;
+	public Runtime(ServerSchema schema) {
+		this.schema = schema;
 	}
 	
 	/**

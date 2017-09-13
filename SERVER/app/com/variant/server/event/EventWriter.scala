@@ -9,60 +9,41 @@ import play.api.Logger
 import com.typesafe.config.Config
 import com.variant.core.VariantException
 import com.variant.server.api.ServerException
-import com.variant.core.FlushableEvent
-import com.variant.core.EventFlusher
+import com.variant.server.api.FlushableEvent
+import com.variant.server.api.EventFlusher
+import com.variant.server.schema.ServerFlusherService
 
-class EventWriter (config: Config) {
+class EventWriter (config: Config, flushService: ServerFlusherService) {
 	
    private val logger = Logger(this.getClass)
-   val bufferSize = config.getInt(EVENT_WRITER_BUFFER_SIZE)
-   val pctFullSize = bufferSize * config.getInt(EVENT_WRITER_PERCENT_FULL) / 100
-	val pctEmptySize = Math.ceil(bufferSize * 0.1).intValue()
-	val maxDelayMillis = config.getInt(EVENT_WRITER_MAX_DELAY) * 1000
+   
+   val maxBufferSize = config.getInt(EVENT_WRITER_BUFFER_SIZE)
+   
+   // We're full if 50% or more of max buffer is taken.
+   val fullSize = math.ceil(maxBufferSize * 0.5)
+   
+   // We're empty if 1% or less of max buffer is taken.
+	 val emptySize = math.ceil(maxBufferSize * 0.01)
+	 
+	 // Force flush after this long, even if still empty.
+	 val maxDelayMillis = config.getInt(EVENT_WRITER_MAX_DELAY) * 1000
 
-	// Asynchronous flusher thread consumes events from the holding queue.
+	 // The flusher thread.
    private val flusherThread = new FlusherThread();
-	// Not a daemon. Intercept interrupt and flush the buffer before exiting.
-	flusherThread.setDaemon(false)
-	flusherThread.setName("Variant Event Writer")
-	flusherThread.start()
+	 // Not a daemon. Intercept interrupt and flush the buffer before exiting.
+	 flusherThread.setDaemon(false)
+	 flusherThread.setName("Event Flusher For Schema " + flushService.getSchema().getName())
+	 flusherThread.start() 
 
-	// The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
-	// refusing inserts that will put the queue size over the limit, but not worrying about
-	// a possible overage due to concurrency.
-	private val bufferQueue = new ConcurrentLinkedQueue[FlushableEvent]()
+ 	 // The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
+	 // refusing inserts that will put the queue size over the limit, but not worrying about
+	 // a possible overage due to concurrency.
+	 private val bufferQueue = new ConcurrentLinkedQueue[FlushableEvent]()
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 	
-	/**
-	 *  Instantiate externally defined event flusher.
-	 */
-	val flusher = {
-		val className = config.getString(EVENT_FLUSHER_CLASS_NAME)
-		try {
-			val result = {
-			   val clazz = Class.forName(className).newInstance();		
-   			if (!clazz.isInstanceOf[EventFlusher]) {
-   				throw new ServerException.User(EVENT_FLUSHER_NO_INTERFACE, className, classOf[EventFlusher].getName);
-	   		}
-		  	   clazz.asInstanceOf[EventFlusher]
-			}
-			
-			val initObj = config.getObject(EVENT_FLUSHER_CLASS_INIT)
-         result.init(initObj);
-			result	
-		}
-		catch {
-		   case e : VariantException => throw e
-		   case e : Throwable => {
-		      logger.error("Unable to instantiate event flusher class [" + className +"]", e)
-		      throw new ServerException.Internal("Unable to instantiate event flusher class [" + className +"]", e);
-		   }
-		}
-	}
-
 	logger.debug("Event writer started.");
 
 	/**
@@ -96,25 +77,25 @@ class EventWriter (config: Config) {
 				
 		// We don't worry about possible concurrent writes because the underlying
 		// queue implementation is thread safe and unbound.  It's okay to temporarily 
-		// go over the queueSize due to concurrency, so long as we eventually shrink back.
+		// go over the maxQueueSize due to concurrency, so long as we eventually shrink back.
 		// But we won't go over it knowingly.
 		val currentSize = bufferQueue.size();
 		var dropCount = 0
 		
-		if (currentSize < bufferSize) {
-			bufferQueue.add(event);
+		if (currentSize < maxBufferSize) {
+      bufferQueue.add(event);
 		}
 		else {
-		   val msg = "Dropped %d event(s) due to buffer overflow. Consider increasing %d system property (current value %d)"
-			logger.trace(msg.format(1, EVENT_WRITER_BUFFER_SIZE, bufferSize))
+		  val msg = "Dropped %d event(s) due to buffer overflow. Consider increasing %s system property (current value %d)"
+			logger.trace(msg.format(1, EVENT_WRITER_BUFFER_SIZE, maxBufferSize))
 			dropCount += 1
 			if (dropCount % 1000 == 0)
-			   logger.info(msg.format(1000, EVENT_WRITER_BUFFER_SIZE, bufferSize))
+			   logger.info(msg.format(1000, EVENT_WRITER_BUFFER_SIZE, maxBufferSize))
 		}
 		
-		// Block momentarily to wake up the flusher thread if the queue has reached the pctFull size.
+		// Block momentarily to wake up the flusher thread if the queue has reached the full size.
 		bufferQueue.synchronized {
-		   if (currentSize >= pctFullSize) bufferQueue.notify();
+		   if (currentSize >= fullSize) bufferQueue.notify();
 		}
 
 	}
@@ -142,7 +123,7 @@ class EventWriter (config: Config) {
    				// and the keep flushing until under pctEmpty.
    				do {
    					flush();
-   				} while (!isInterrupted() && bufferQueue.size() >= pctEmptySize);
+   				} while (!isInterrupted() && bufferQueue.size() >= emptySize);
    									
    				// Block until the queue is over pctFull again, but with timeout.
    				if (!isInterrupted()) {
@@ -150,10 +131,10 @@ class EventWriter (config: Config) {
       					bufferQueue.wait(maxDelayMillis);
       				}
    				}
-      		}
+      	}
    			catch {
    			   case _ : InterruptedException => interruptedExceptionThrown = true
-   			   case t : Throwable => logger.error("Ignoring unexpected exception in event writer.", t)
+   			   case t : Throwable => logger.error("Unhandled exception in event writer", t)
    			}
    			
    			if (interruptedExceptionThrown || isInterrupted()) {
@@ -161,7 +142,7 @@ class EventWriter (config: Config) {
    					flush();
    				}
    				catch {
-   				   case t : Throwable => logger.error("Unexpected exception in async database event writer.", t);
+   				   case t : Throwable => logger.error("Unhandled exception in event flusher", t);
    				}
    				timeToGo = true
    			}
@@ -178,7 +159,7 @@ class EventWriter (config: Config) {
 
    		if (!events.isEmpty()) {
       		var now = System.currentTimeMillis();
-   		   flusher.flush(events);		
+   		   flushService.getFlusher().flush(events);		
    		   logger.info("Flushed " + events.size() + " event(s) in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
    		}
    	}

@@ -1,7 +1,7 @@
 package com.variant.server.test
 
 import com.variant.server.impl.SessionImpl
-import com.variant.server.schema.SchemaDeployer
+import com.variant.server.schema.deploy.SchemaDeployer
 import com.variant.server.test.hooks.TestTargetingHook
 import com.variant.server.test.hooks.TestTargetingHookNil
 import com.variant.server.test.util.ParameterizedString
