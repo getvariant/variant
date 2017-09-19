@@ -1,16 +1,14 @@
 package com.variant.server.api;
 
 
+import static com.variant.core.CommonError.CONFIG_PROPERTY_NOT_SET;
+import static com.variant.server.api.ConfigKeys.EVENT_FLUSHER_CLASS_INIT;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
-
-import static com.variant.server.api.ConfigKeys.EVENT_FLUSHER_CLASS_INIT;
-import static com.variant.server.boot.ServerErrorLocal.*;
-
-import com.variant.core.EventFlusher;
 import com.variant.server.jdbc.EventFlusherJdbc;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
@@ -36,8 +34,7 @@ public class EventFlusherH2 extends EventFlusherJdbc {
 	String user = null;
 	String password = null;
 	
-	@Override
-	public void init(ConfigObject config) throws Exception {
+	public EventFlusherH2(ConfigObject config) throws Exception {
 		
 		ConfigValue val = config.get("url");
 		if (val == null)

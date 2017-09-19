@@ -8,16 +8,18 @@ import com.variant.core.schema.parser.FlusherService
  * Server side schema parser uses real hooker.
  */
 object ServerSchemaParser {   
-   def apply(hooker: HooksService, flusher: FlusherService) = new ServerSchemaParser(hooker, flusher)
+
+   def apply() = new ServerSchemaParser()
+
 }
 
 /**
  * Server side implementation of schema parser, complete with server side services.
  */
-class ServerSchemaParser (private val hooker: HooksService, private val flusher: FlusherService) extends SchemaParser {
+class ServerSchemaParser () extends SchemaParser {
       
-   override def getHooksService(): HooksService = hooker
-   override def getFlusherService(): FlusherService = flusher
+   override val getHooksService: HooksService = new ServerHooksService()
+   override val getFlusherService: FlusherService = new ServerFlusherService()
 
 }
 

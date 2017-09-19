@@ -14,7 +14,7 @@ import com.variant.server.api.EventFlusherNull;
 
 public class ServerFlusherService implements FlusherService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ServerFlusherService.class);
+	private static final Logger logger = LoggerFactory.getLogger(ServerFlusherService.class);
 
 	// Default flusher is NULL flusher
 	private EventFlusher flusher = new EventFlusherNull();
@@ -46,13 +46,14 @@ public class ServerFlusherService implements FlusherService {
 			}
 			
 			this.flusher = (EventFlusher) flusherObj;
+			logger.info(String.format("Registered custom event logger [%s] for schema [%s]", flusher.getClassName(), schema.getName()));
 						
 		}
 		catch (ConfigException.Parse e) {
 			parserResponse.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, flusher.getClassName(), e.getClass().getName());
 		}
 		catch (Exception e) {
-			LOG.error(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage(flusher.getClassName(), e.getClass().getName()), e);
+			logger.error(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage(flusher.getClassName(), e.getClass().getName()), e);
 			parserResponse.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, flusher.getClassName(), e.getClass().getName());
 		}
 	}

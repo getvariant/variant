@@ -37,7 +37,7 @@ import com.typesafe.config.ConfigObject;
  * <li>If no state initialization is required, the default nullary constructor is sufficient. 
  * <li>If you need to pass an initial state to the newly constructed hook object, you must provide a constructor
  * which takes the single argument of the type {@link Config}. Variant will invoke this constructor and pass it
- * the value of the hook definitions's {@code init} property, parsed and rooted at element {@code 'init'}.
+ * the value of the hook definitions's {@code init} property.
  * </ol>
  * 
  * <p>Variant creates a new instance of the implementation class for each schema where it is defined.

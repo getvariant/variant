@@ -97,7 +97,7 @@ class SessionImpl(var coreSession: CoreSession, val connection: Connection) exte
    /*
     */
    def targetForState(state: State): StateRequest = {
-      VariantServer.server.runtime.targetForState(this, state) 
+      connection.schema.runtime.targetForState(this, state) 
       this.getStateRequest()
    }
 
@@ -105,7 +105,7 @@ class SessionImpl(var coreSession: CoreSession, val connection: Connection) exte
     * 
     */
 	def triggerEvent(event: VariantEvent) {
-		VariantServer.server.eventWriter.write(new FlushableEventImpl(event, coreSession));
+		connection.schema.eventWriter.write(new FlushableEventImpl(event, coreSession));
 	}
 	
 	/*

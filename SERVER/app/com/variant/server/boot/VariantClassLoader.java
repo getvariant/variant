@@ -11,8 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.typesafe.config.ConfigObject;
-import com.typesafe.config.ConfigValue;
 import com.variant.server.api.ServerException;
 
 public class VariantClassLoader {
@@ -92,7 +90,7 @@ public class VariantClassLoader {
 		}
 		else {
 			// If we were given the init argument, wrap it as a proper Config object rooted in "init"
-			Config config  = ConfigFactory.parseString("{init:"  + initArg + "}"); 
+			Config config  = ConfigFactory.parseString(initArg); 
 			
 			// and pass it to the constructor that takes it (must be provided)
 			try {

@@ -7,6 +7,11 @@ import org.apache.commons.io.IOUtils
  * 
  */
 object SchemaDeployerClasspath {
+
+  /**
+   * 
+   */
+  def apply(resource: String) = new SchemaDeployerClasspath(resource)
   
   /**
    * Read resource into a memory string.

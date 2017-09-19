@@ -20,10 +20,12 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
    */
   protected def parse(schemaSrc: String): ParserResponse = {
 
-    hooker = new ServerHooksService()
-    flusher = new ServerFlusherService()
-
-    val resp = ServerSchemaParser(hooker, flusher).parse(schemaSrc)
+    val parser = new ServerSchemaParser()
+    hooker = parser.getHooksService.asInstanceOf[ServerHooksService]
+    flusher = parser.getFlusherService.asInstanceOf[ServerFlusherService]
+    
+    // Parser the schema.
+    val resp = parser.parse(schemaSrc)
 
     // Log all parser messages.
     resp.getMessages(Severity.ERROR).foreach { logParserMessage(_) }

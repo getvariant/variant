@@ -48,6 +48,7 @@ class EventTest extends BaseSpecWithServer {
    
    val endpoint = context + "/event"
    val schemaId = server.schema.get.getId
+   val eventWriter = server.schema.get.eventWriter
    
    "EventController" should {
 
@@ -170,9 +171,9 @@ class EventTest extends BaseSpecWithServer {
          contentAsString(eventResp) mustBe empty
          
          // Read events back from the db, but must wait for the asych flusher.
-         server.eventWriter.maxDelayMillis  mustEqual 2000
-         Thread.sleep(server.eventWriter.maxDelayMillis + 500)
-         val eventsFromDatabase = EventReader(server.eventWriter).read()
+         eventWriter.maxDelayMillis  mustEqual 2000
+         Thread.sleep(eventWriter.maxDelayMillis + 500)
+         val eventsFromDatabase = EventReader(eventWriter).read()
          eventsFromDatabase.size mustBe 1
          val event = eventsFromDatabase.head
          event.getCreatedOn.getTime mustBe timestamp

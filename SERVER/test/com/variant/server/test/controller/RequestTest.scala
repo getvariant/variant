@@ -23,14 +23,14 @@ class RequestTest extends BaseSpecWithServer {
    
    val schema = server.schema.get
    val schemaId = schema.getId
-   val writer = server.eventWriter
+   val writer = server.schema.get.eventWriter
    val reader = EventReader(writer)
 
    "Event writer" should {
 
       "have expected confuration" in {
-         writer.bufferSize mustEqual 200
-         writer.pctFullSize mustEqual 100
+         writer.maxBufferSize mustEqual 200
+         writer.fullSize mustEqual 100
 	      writer.maxDelayMillis mustEqual 2000
 
       }

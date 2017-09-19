@@ -6,9 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.typesafe.config.ConfigObject;
-import com.variant.core.EventFlusher;
-import com.variant.core.FlushableEvent;
+import com.typesafe.config.Config;
 import com.variant.core.schema.Test.Experience;
 
 /**
@@ -23,8 +21,7 @@ public class EventFlusherAppLogger implements EventFlusher {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(EventFlusherAppLogger.class);
 
-	@Override
-	public void init(ConfigObject config) {
+	public EventFlusherAppLogger(Config config) {
 		LOG.debug("Bootstrapped");
 	}
 

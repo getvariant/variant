@@ -4,7 +4,6 @@ import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
-import com.variant.server.schema.deploy.SchemaDeployer
 import com.variant.core.lce.TestParsedLifecycleEvent
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
@@ -15,6 +14,7 @@ import com.variant.core.schema.parser.ParserMessageImpl
 import com.variant.core.schema.parser.ParserError
 import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
+import com.variant.server.schema.SchemaDeployerString
 
 /**
  * TODO: Need to also test annotations.
@@ -79,9 +79,10 @@ class StateParsedHookTest extends BaseSpecWithServer {
   ]                                                                   
 }"""
 
-   		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
+      val schemaDeployer = SchemaDeployerString(schema)
+      server.useSchemaDeployer(schemaDeployer)
+      val response = schemaDeployer.parserResponse
    		response.getMessages.size mustBe 9
-//   		response.getMessages.foreach(println(_))
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 3
    		response.getMessages(WARN).size() mustBe 6
@@ -181,8 +182,9 @@ class StateParsedHookTest extends BaseSpecWithServer {
   ]                                                                   
 }"""
 
-   		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
-   		//response.getMessages.foreach(println(_))
+      val schemaDeployer = SchemaDeployerString(schema)
+      server.useSchemaDeployer(schemaDeployer)
+      val response = schemaDeployer.parserResponse
    		response.getMessages.size mustBe 18
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 6
@@ -313,9 +315,10 @@ class StateParsedHookTest extends BaseSpecWithServer {
   ]                                                                   
 }"""
 
-   		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
+      val schemaDeployer = SchemaDeployerString(schema)
+      server.useSchemaDeployer(schemaDeployer)
+      val response = schemaDeployer.parserResponse
    		response.getMessages.size mustBe 3
-//   		response.getMessages.foreach(println(_))
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
    		response.getMessages(WARN).size() mustBe 2
@@ -403,8 +406,9 @@ class StateParsedHookTest extends BaseSpecWithServer {
   ]                                                                   
 }"""
 
-   		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
-   		//response.getMessages.foreach(println(_))
+      val schemaDeployer = SchemaDeployerString(schema)
+      server.useSchemaDeployer(schemaDeployer)
+      val response = schemaDeployer.parserResponse
    		response.getMessages.size mustBe 6
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 2
@@ -504,7 +508,9 @@ class StateParsedHookTest extends BaseSpecWithServer {
   ]                                                                   
 }"""
 
-   		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
+      val schemaDeployer = SchemaDeployerString(schema)
+      server.useSchemaDeployer(schemaDeployer)
+      val response = schemaDeployer.parserResponse
 
    		response.getMessages.size mustBe 15
    		response.getMessages(FATAL) mustBe empty
@@ -644,7 +650,9 @@ class StateParsedHookTest extends BaseSpecWithServer {
   ]                                                                   
 }"""
 
-   		val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get
+      val schemaDeployer = SchemaDeployerString(schema)
+      server.useSchemaDeployer(schemaDeployer)
+      val response = schemaDeployer.parserResponse
    		response.getMessages.foreach(println(_))
    		response.getMessages.size mustBe 6
    		response.getMessages(FATAL) mustBe empty

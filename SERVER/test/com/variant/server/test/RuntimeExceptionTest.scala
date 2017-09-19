@@ -2,17 +2,17 @@ package com.variant.server.test
 
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.CommonError._
-import com.variant.server.schema.deploy.SchemaDeployer
 import com.variant.server.api.Session
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerSuite
 import com.variant.server.api.ServerException
 import com.variant.core.CoreException
 import com.variant.server.impl.SessionImpl
+import com.variant.server.schema.SchemaDeployerString
 
 class RuntimeExceptionTest extends BaseSpecWithServer {
 
-   val schemaJson = """
+   val schemaSrc = """
 {
    'meta':{
       'name':'RuntimeExceptionTest'
@@ -104,7 +104,9 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
 
       "throw STATE_NOT_INSTRUMENTED_BY_TEST" in  {
 
-         server.installSchemaDeployer(SchemaDeployer.fromString(schemaJson))
+         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponse
          server.schema.isDefined mustBe true
          val schema = server.schema.get
          val state2 = schema.getState("state2")
@@ -131,7 +133,9 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
 
       "throw WEIGHT_MISSING" in {
 
-         server.installSchemaDeployer(SchemaDeployer.fromString(schemaJson))
+         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponse
          server.schema.isDefined mustBe true
          val schema = server.schema.get
          val ssn = SessionImpl.empty("sid")

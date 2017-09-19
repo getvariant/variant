@@ -57,11 +57,9 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
 	 * 
 	 */
 	private def recreateSchema() {
-		
-		val jdbc = new JdbcService(server.eventWriter);
-		
+		val jdbc = new JdbcService(server.schema.get.eventWriter)
 		try {			
-			jdbc.getVendor() match {
+			jdbc.getVendor match {
    			case JdbcService.Vendor.POSTGRES => jdbc.recreateSchema()
 	   		case JdbcService.Vendor.H2 => jdbc.createSchema()  // Fresh in-memory DB.
 		   }

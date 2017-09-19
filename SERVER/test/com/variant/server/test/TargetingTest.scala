@@ -1,12 +1,12 @@
 package com.variant.server.test
 
 import com.variant.server.impl.SessionImpl
-import com.variant.server.schema.deploy.SchemaDeployer
 import com.variant.server.test.hooks.TestTargetingHook
 import com.variant.server.test.hooks.TestTargetingHookNil
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
+import com.variant.server.schema.SchemaDeployerString
 
 class TargetingTest extends BaseSpecWithServer {
 
@@ -119,7 +119,9 @@ class TargetingTest extends BaseSpecWithServer {
 
          val schemaSrc = ParameterizedString(schemaJson).expand()
          
-         server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc))
+         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponse
          server.schema.isDefined mustBe true
          val schema = server.schema.get
          val state = schema.getState("state1")
@@ -149,7 +151,9 @@ class TargetingTest extends BaseSpecWithServer {
                    }
                """)
                
-         server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc))
+         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponse
 
          server.schema.isDefined mustBe true
          val schema = server.schema.get
@@ -186,7 +190,9 @@ class TargetingTest extends BaseSpecWithServer {
                    }
                """)
                
-         server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc))
+         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponse
 
          server.schema.isDefined mustBe true
          val schema = server.schema.get
@@ -226,7 +232,9 @@ class TargetingTest extends BaseSpecWithServer {
                    }
                """)
                
-         server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc))
+         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponse
 
          server.schema.isDefined mustBe true
          val schema = server.schema.get
@@ -266,7 +274,9 @@ class TargetingTest extends BaseSpecWithServer {
                    }
                """)
                
-         server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc))
+         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponse
 
          server.schema.isDefined mustBe true
          val schema = server.schema.get
@@ -306,7 +316,6 @@ class TargetingTest extends BaseSpecWithServer {
                    }
                """)
                
-         server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc))
          server.schema.isDefined mustBe true
          val schema = server.schema.get
 

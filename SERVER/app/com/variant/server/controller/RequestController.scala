@@ -56,7 +56,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 
       val ssn = ssnStore.getOrBust(sid.get)
 
-      VariantServer.server.runtime.targetForState(ssn, server.schema.get.getState(state.get))
+      schema.runtime.targetForState(ssn, server.schema.get.getState(state.get))
 
       val response = JsObject(Seq(
          "session" -> JsString(ssn.asInstanceOf[SessionImpl].coreSession.toJson())

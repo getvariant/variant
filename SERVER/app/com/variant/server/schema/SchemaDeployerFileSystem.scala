@@ -53,7 +53,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
    
     // If failed parsing, print errors and no schema.
     if (parserResp.hasMessages(Severity.ERROR)) {
-      logger.error("Schema was not deployed due to previous parser error(s)")
+      logger.error("Schema [%s] was not deployed due to previous parser error(s)".format(schemaFile.getName));
       Seq()
     }
     else {

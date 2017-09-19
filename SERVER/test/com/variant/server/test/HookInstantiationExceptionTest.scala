@@ -6,7 +6,6 @@ import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
-import com.variant.server.schema.deploy.SchemaDeployer
 import com.variant.core.lce.TestParsedLifecycleEvent
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
@@ -17,6 +16,7 @@ import com.variant.core.schema.parser.ParserMessageImpl
 import com.variant.core.schema.parser.ParserError
 import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
+import com.variant.server.schema.SchemaDeployerString
 
 /**
  * TODO: Need to also test annotations.
@@ -69,7 +69,9 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
+   	     val schemaDeployer = SchemaDeployerString(schema)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponse
          response.getMessages.size mustBe 1
      		 response.getMessages(FATAL) mustBe empty
      		 response.getMessages(ERROR).size() mustBe 1
@@ -123,7 +125,9 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-      val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
+   	  val schemaDeployer = SchemaDeployerString(schema)
+      server.useSchemaDeployer(schemaDeployer)
+      val response = schemaDeployer.parserResponse
       response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
@@ -171,7 +175,9 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-      val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
+     val schemaDeployer = SchemaDeployerString(schema)
+      server.useSchemaDeployer(schemaDeployer)
+      val response = schemaDeployer.parserResponse
       response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
@@ -219,7 +225,9 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-      val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
+      val schemaDeployer = SchemaDeployerString(schema)
+      server.useSchemaDeployer(schemaDeployer)
+      val response = schemaDeployer.parserResponse
       response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
@@ -267,7 +275,9 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-      val response = server.installSchemaDeployer(SchemaDeployer.fromString(schema)).get  
+      val schemaDeployer = SchemaDeployerString(schema)
+      server.useSchemaDeployer(schemaDeployer)
+      val response = schemaDeployer.parserResponse
       response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1

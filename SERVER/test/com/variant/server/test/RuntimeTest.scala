@@ -4,7 +4,6 @@ import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
-import com.variant.server.schema.deploy.SchemaDeployer
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
@@ -13,6 +12,7 @@ import org.scalatestplus.play.OneAppPerSuite
 import com.variant.server.boot.RuntimeTestFacade
 import com.variant.server.api.ServerException
 import scala.collection.mutable.ArrayBuffer
+import com.variant.server.schema.SchemaDeployerClasspath
 
 /**
  * TODO: Need to also test annotations.
@@ -23,11 +23,14 @@ class RuntimeTest extends BaseSpecWithServer {
    
 	"Runtime" should {
 	   
-	   val runtime = RuntimeTestFacade(server)
-      val response = server.installSchemaDeployer(SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTestNoHooks.json")).get
-      response.hasMessages() mustBe false		
+    val schemaDeployer = SchemaDeployerClasspath("/ParserCovariantOkayBigTestNoHooks.json")
+    server.useSchemaDeployer(schemaDeployer)
+    val response = schemaDeployer.parserResponse
+    response.hasMessages() mustBe false		
    	server.schema.isDefined mustBe true
    	val schema = server.schema.get
+ 	  val runtime = RuntimeTestFacade(schema)
+
    	val state1 = schema.getState("state1")
    	val state2 = schema.getState("state2")
    	val state3 = schema.getState("state3")

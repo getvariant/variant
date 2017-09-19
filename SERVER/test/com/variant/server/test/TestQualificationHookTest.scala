@@ -3,10 +3,10 @@ package com.variant.server.test
 import org.apache.commons.io.IOUtils
 import scala.collection.JavaConversions._
 import com.variant.server.impl.SessionImpl
-import com.variant.server.schema.deploy.SchemaDeployer
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.hooks.TestQualificationHookNil
 import com.variant.core.schema.Hook
+import com.variant.server.schema.SchemaDeployerString
 
 class TestQualificationHookTest extends BaseSpecWithServer {
       
@@ -66,7 +66,9 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             )
          )
          
-         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
+       val schemaDeployer = SchemaDeployerString(schemaSrc)
+       server.useSchemaDeployer(schemaDeployer)
+       val response = schemaDeployer.parserResponse
 
         //response.getMessages.foreach(println(_))
    	   response.hasMessages() mustBe false
@@ -181,12 +183,15 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             )
          )
          
-        val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
-        response.hasMessages() mustBe false
-   		  server.schema.isDefined mustBe true
+       val schemaDeployer = SchemaDeployerString(schemaSrc)
+       server.useSchemaDeployer(schemaDeployer)
+       val response = schemaDeployer.parserResponse
+
+       response.hasMessages() mustBe false
+       server.schema.isDefined mustBe true
    	   val schema = server.schema.get
-   		val state1 = schema.getState("state1")
-   		val state2 = schema.getState("state2")
+   		 val state1 = schema.getState("state1")
+   		 val state2 = schema.getState("state2")
    	   val test1 = schema.getTest("test1")
    	   val test2 = schema.getTest("test2")
    	   val test3 = schema.getTest("test3")
@@ -255,13 +260,16 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             )
          )
 
-         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
+       val schemaDeployer = SchemaDeployerString(schemaSrc)
+       server.useSchemaDeployer(schemaDeployer)
+       val response = schemaDeployer.parserResponse
+
    	   response.hasMessages() mustBe false
-   		server.schema.isDefined mustBe true
+       server.schema.isDefined mustBe true
 
    	   val schema = server.schema.get
-   		val state1 = schema.getState("state1")
-   		val state2 = schema.getState("state2")
+   		 val state1 = schema.getState("state1")
+   		 val state2 = schema.getState("state2")
    	   val test1 = schema.getTest("test1")
    	   val test2 = schema.getTest("test2")
    	   val test3 = schema.getTest("test3")
@@ -332,7 +340,10 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             )
          )
 
-         val response = server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc)).get
+       val schemaDeployer = SchemaDeployerString(schemaSrc)
+       server.useSchemaDeployer(schemaDeployer)
+       val response = schemaDeployer.parserResponse
+
    	   response.hasMessages() mustBe false
    		server.schema.isDefined mustBe true
 

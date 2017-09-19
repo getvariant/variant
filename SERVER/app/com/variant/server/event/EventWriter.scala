@@ -12,18 +12,23 @@ import com.variant.server.api.ServerException
 import com.variant.server.api.FlushableEvent
 import com.variant.server.api.EventFlusher
 import com.variant.server.schema.ServerFlusherService
+import com.variant.server.boot.VariantServer
 
-class EventWriter (config: Config, flushService: ServerFlusherService) {
+class EventWriter (private val flushService: ServerFlusherService) {
 	
    private val logger = Logger(this.getClass)
+   
+   private val config = VariantServer.server.config
+   
+   val flusher = flushService.getFlusher
    
    val maxBufferSize = config.getInt(EVENT_WRITER_BUFFER_SIZE)
    
    // We're full if 50% or more of max buffer is taken.
-   val fullSize = math.ceil(maxBufferSize * 0.5)
+   val fullSize = math.round(maxBufferSize * 0.5F)
    
    // We're empty if 1% or less of max buffer is taken.
-	 val emptySize = math.ceil(maxBufferSize * 0.01)
+	 val emptySize = math.round(maxBufferSize * 0.01F)
 	 
 	 // Force flush after this long, even if still empty.
 	 val maxDelayMillis = config.getInt(EVENT_WRITER_MAX_DELAY) * 1000
@@ -159,7 +164,7 @@ class EventWriter (config: Config, flushService: ServerFlusherService) {
 
    		if (!events.isEmpty()) {
       		var now = System.currentTimeMillis();
-   		   flushService.getFlusher().flush(events);		
+   		   flusher.flush(events);		
    		   logger.info("Flushed " + events.size() + " event(s) in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
    		}
    	}

@@ -13,26 +13,26 @@ import com.variant.server.api.EventFlusher
 import com.variant.core.schema.parser.FlusherService
 import play.api.Logger
 import com.variant.server.boot.Runtime
+import com.variant.server.event.EventWriter
 
 /**
  * 
  */
 object ServerSchema {
-   def apply(response: ParserResponse, hooker: HooksService, flusher: ServerFlusherService) = 
+   def apply(response: ParserResponse, hooker: ServerHooksService, flusher: ServerFlusherService) = 
      new ServerSchema(response, hooker, flusher)
 }
 
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (val response: ParserResponse, val hooker: HooksService, val flusher: ServerFlusherService) extends Schema {
+class ServerSchema (val response: ParserResponse, val hooker: ServerHooksService, val flusher: ServerFlusherService) extends Schema {
   
    import State._
    
    private val logger = Logger(this.getClass)   
    
    private var coreSchema =  response.getSchema
-   private val runtime = new Runtime(this)
 
    var state: State = Deployed
   
@@ -97,7 +97,9 @@ class ServerSchema (val response: ParserResponse, val hooker: HooksService, val 
 
 	/*------------------------------------ Public Extensions ------------------------------------*/
 	
+  val runtime = new Runtime(this)
 	val source = response.getSchemaSrc
+	val eventWriter = new EventWriter(flusher)
 	
 	def undeploy(): Unit = {
 	   logger.info("Schema [%s], ID [%s] undeployed".format(getName, getId))

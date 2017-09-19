@@ -1,29 +1,23 @@
 package com.variant.server.boot
 
-import scala.collection.JavaConversions._
-
-import com.variant.core.schema.State
-import com.variant.core.schema.Test.Experience
-
-import java.util.Collection
-
-import com.variant.core.schema.impl.StateVariantImpl
-
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.ListBuffer
-
 import java.util.ArrayList
 
+import scala.collection.JavaConversions.seqAsJavaList
+
+import com.variant.core.schema.State
 import com.variant.core.schema.Test
+import com.variant.core.schema.Test.Experience
+import com.variant.core.schema.impl.StateVariantImpl
+import com.variant.server.schema.ServerSchema
 
 /**
  * Test facade extends scope of non-public methods to public for testability.
  */
 object RuntimeTestFacade {
-    def apply(server: VariantServer) = new RuntimeTestFacade(server)  
+    def apply(schema: ServerSchema) = new RuntimeTestFacade(schema)  
 }
 
-class RuntimeTestFacade(server: VariantServer)  extends Runtime(server) {
+class RuntimeTestFacade(schema: ServerSchema)  extends Runtime(schema) {
 
    /**
     * 

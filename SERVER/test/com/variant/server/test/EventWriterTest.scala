@@ -17,6 +17,8 @@ import com.variant.server.impl.SessionImpl
 class EventWriterTest extends BaseSpecWithServer {
 
    val schemaId = server.schema.get.getId
+   val eventWriter = server.schema.get.eventWriter
+   val eventReader = EventReader(eventWriter)
 
    val sessionJson = ParameterizedString("""
       {"sid":"${sid:SID}",
@@ -29,16 +31,13 @@ class EventWriterTest extends BaseSpecWithServer {
         "tests": ["test1","test2"]
       }
    """.format(System.currentTimeMillis(), schemaId))
-
-   val writer = server.eventWriter
-   val reader = EventReader(writer)
    
    "Event writer" should {
 
       "have expected confuration" in {
-         writer.bufferSize mustEqual 200
-         writer.pctFullSize mustEqual 100
-	      writer.maxDelayMillis mustEqual 2000
+         eventWriter.maxBufferSize mustEqual 200
+         eventWriter.fullSize mustEqual 100
+	       eventWriter.maxDelayMillis mustEqual 2000
 
       }
     
@@ -58,7 +57,7 @@ class EventWriterTest extends BaseSpecWithServer {
          
          // PUT session.
          val sid = newSid
-         reader.read(e => e.getSessionId == sid).size mustBe 0 
+         eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val ssnBody = Json.obj(
             "cid" -> connId,
             "ssn" -> sessionJson.expand("sid" -> sid)
@@ -74,8 +73,8 @@ class EventWriterTest extends BaseSpecWithServer {
          ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          
          // Read events back from the db, but must wait for the asych flusher.
-         Thread.sleep(server.eventWriter.maxDelayMillis * 2)
-         val eventsFromDatabase = reader.read(e => e.getSessionId == sid)
+         Thread.sleep(eventWriter.maxDelayMillis * 2)
+         val eventsFromDatabase = eventReader.read(e => e.getSessionId == sid)
          eventsFromDatabase.size mustBe 1
          val event = eventsFromDatabase.head
          event.getCreatedOn.getTime mustBe timestamp
@@ -105,7 +104,7 @@ class EventWriterTest extends BaseSpecWithServer {
       "not flush before EVENT_WRITER_MAX_DELAY if fewer than EVENT_WRITER_PERCENT_FULL" in {
          
          val sid = newSid
-         reader.read(e => e.getSessionId == sid).size mustBe 0 
+         eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val ssnBody = Json.obj(
             "cid" -> connId,
             "ssn" -> sessionJson.expand("sid" -> sid)
@@ -117,11 +116,11 @@ class EventWriterTest extends BaseSpecWithServer {
          val ssn = ssnStore.get(sid).get
 
          // Ensure the writer buffer is empty.
-         writer.flush()
+         eventWriter.flush()
 
          val startOfWrite = System.currentTimeMillis()
          
-         for (i <- 1 to writer.pctFullSize) { 
+         for (i <- 1 to eventWriter.fullSize) { 
             val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
             val se = new ServerEvent(name, value, new Date(timestamp));
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
@@ -133,17 +132,17 @@ class EventWriterTest extends BaseSpecWithServer {
          // Wait a bit, but less than max delay - must not have flushed
          // TODO Occasionally, this fails due to a race condition.
          Thread.sleep(200)          
-         reader.read(e => e.getSessionId == ssn.getId).size mustBe 0
+         eventReader.read(e => e.getSessionId == ssn.getId).size mustBe 0
          
          // Read after delay - must be flushed
          Thread.sleep(2000)
-         reader.read(e => e.getSessionId == ssn.getId).size mustBe writer.pctFullSize
+         eventReader.read(e => e.getSessionId == ssn.getId).size mustBe eventWriter.fullSize
       }
 
       "flush before EVENT_WRITER_MAX_DELAY if EVENT_WRITER_PERCENT_FULL" in {
          
          val sid = newSid
-         reader.read(e => e.getSessionId == sid).size mustBe 0 
+         eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val ssnBody = Json.obj(
             "cid" -> connId,
             "ssn" -> sessionJson.expand("sid" -> sid)
@@ -156,7 +155,7 @@ class EventWriterTest extends BaseSpecWithServer {
          
          val startOfWrite = System.currentTimeMillis()
 
-         for (i <- 1 to writer.pctFullSize + 1) { 
+         for (i <- 1 to eventWriter.fullSize + 1) { 
             val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
             val se = new ServerEvent(name, value, new Date(timestamp));
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
@@ -166,8 +165,8 @@ class EventWriterTest extends BaseSpecWithServer {
          assert(writeTook < 500, "Write took too long")
          
          // Wait a bit, but less than max delay - must be flushed
-         Thread.sleep(writer.maxDelayMillis - 1000)          
-         reader.read(e => e.getSessionId == ssn.getId).size mustBe (writer.pctFullSize + 1)
+         Thread.sleep(eventWriter.maxDelayMillis - 1000)          
+         eventReader.read(e => e.getSessionId == ssn.getId).size mustBe (eventWriter.fullSize + 1)
       }
    }
 }

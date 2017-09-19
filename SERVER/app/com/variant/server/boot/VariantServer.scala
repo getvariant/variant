@@ -33,7 +33,7 @@ trait VariantServer {
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
    def schema: Option[ServerSchema]
-   def installSchemaDeployer(newDeployer: SchemaDeployer): Option[ParserResponse]
+   def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
 }
 
 /**
@@ -70,7 +70,7 @@ class VariantServerImpl @Inject() (
 	
 	// Default schema deployer is from file system, but may be overridded by tests.
   private var _schemaDeployer: SchemaDeployer = null
-  installSchemaDeployer(SchemaDeployer.fromFileSystem())
+  useSchemaDeployer(SchemaDeployer.fromFileSystem())
 	   
   override def schema = Some(_schemaDeployer.schemata(0))
 
@@ -97,7 +97,7 @@ class VariantServerImpl @Inject() (
   /**
 	 * Tests can override the default schema deployer to be able to deploy from a memory string.
 	 */
-   def installSchemaDeployer (newDeployer: SchemaDeployer): Unit = {
+   override def useSchemaDeployer (newDeployer: SchemaDeployer): Unit = {
 	    try {
    	     _schemaDeployer = newDeployer
       }
