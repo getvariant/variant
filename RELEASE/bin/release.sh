@@ -19,7 +19,7 @@ if [[ x != "x$1" ]]; then
 fi
 
 variant_root=$(cd $(dirname $0)/../..; pwd)
-server_ext_root=$(cd ${variant_root}/../variant-server-extensions; pwd)
+server_extapi_root=$(cd ${variant_root}/../variant-server-extapi; pwd)
 release_dir=${variant_root}/RELEASE
 stage_dir=${release_dir}/stage
 target_dir=${release_dir}/target
@@ -32,14 +32,14 @@ mkdir ${stage_dir} ${target_dir} ${stage_dir}/server ${stage_dir}/java
 #
 ${variant_root}/CORE/bin/release.sh
 cp $variant_root/CORE/target/variant-core*.jar ${stage_dir}/java
-cp $variant_root/CORE/target/variant-core*.jar $server_ext_root/lib
+cp $variant_root/CORE/target/variant-core*.jar $server_extapi_root/lib
 
 #
 # SERVER
 #
-${variant_root}/SERVER/bin/release.sh
+${variant_root}/SERVER/mbin/release.sh
 cp $variant_root/SERVER/target/universal/variant-server-${version}.zip ${stage_dir}/server/variant-server-${version}${version2}.zip
-cp $variant_root/SERVER/target/universal/variant-server-api-${version}.jar $server_ext_root/lib
+cp $variant_root/SERVER/target/universal/variant-server-extapi-${version}.jar $server_extapi_root/lib
 
 #
 # JAVA CLIENT
