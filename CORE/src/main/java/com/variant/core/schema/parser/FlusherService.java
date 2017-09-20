@@ -13,7 +13,7 @@ public interface FlusherService {
 	/**
 	 * Initialize a flusher.
 	 */
-	void initFlusher(Flusher fluhser, ParserResponseImpl parserResponse);
+	void initFlusher(Flusher fluhser);
 	
 	/**
 	 * Null Flusher service, which does nothing whatsoever — good enough for core tests.
@@ -22,7 +22,7 @@ public interface FlusherService {
 	public static final FlusherService NULL = new FlusherService() {
 		
 		@Override
-		public void initFlusher(Flusher flusher, ParserResponseImpl parserResponse) {}
+		public void initFlusher(Flusher flusher) {}
 		
 	};
 }

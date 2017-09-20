@@ -32,6 +32,9 @@ import com.variant.core.util.VariantStringUtils;
  */
 public abstract class SchemaParser implements Keywords {
 		
+	// Parser response object in progress, if any.
+	private ParserResponseImpl response = null;
+	
 	/**
 	 * Convert JsonParseException to ParserError.
 	 * @param parseException
@@ -102,6 +105,9 @@ public abstract class SchemaParser implements Keywords {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 	
+	public ParserResponse responseInProgress() {
+		return response;
+	}
 	/**
 	 * Parse schema from input stream. 
 	 * @param annotatedJsonStream
@@ -113,6 +119,9 @@ public abstract class SchemaParser implements Keywords {
 			return parse(input);
 		} catch (IOException e) {
 			throw new CoreException.Internal("Unable to read input from stream", e);
+		}
+		finally {
+			response = null;
 		}
 	}
 
@@ -129,7 +138,7 @@ public abstract class SchemaParser implements Keywords {
 		String cleanJsonString = preParse(annotatedJsonString);
 		
 		// 2. Syntactical phase.
-		ParserResponseImpl response = new ParserResponseImpl();
+		response = new ParserResponseImpl();
 		
 		response.setSchemaSrc(annotatedJsonString);
 		
@@ -187,7 +196,7 @@ public abstract class SchemaParser implements Keywords {
 			
 			// Init schema flusher, if any.
 			Flusher flusher = response.getSchema().getFlusher();
-			if (flusher != null) flusherService.initFlusher(flusher, response);
+			if (flusher != null) flusherService.initFlusher(flusher);
 		}
 
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());
