@@ -2,6 +2,7 @@ package com.variant.server.boot
 
 import scala.concurrent.Future
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 import org.apache.commons.lang3.time.DurationFormatUtils
 import com.variant.server.event.EventWriter
 import javax.inject._
@@ -27,26 +28,27 @@ import com.variant.server.schema.SchemaDeployer
  */
 trait VariantServer {
    
-   val isUp: Boolean
    val config: Config // Do not expose Play's Configuration
-   val startupErrorLog: List[ServerException]
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
    def schema: Option[ServerSchema]
    def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
+   def isUp: Boolean
 }
 
 /**
  * 
  */
 object VariantServer {
-   private [boot] var _instance: VariantServer = null
-   def server = _instance
+   private [boot] var _instance: VariantServer = _
+   lazy val instance = _instance
+   val startupErrorLog = mutable.ArrayBuffer[ServerException.Internal]()
+
    //def classLoader = PlayApplicationInjector.playApp.classloader
 }
 
 /**
- * Instantiated once by Play
+ * Instantiated once by Play at startup via Guice.
  */
 @Singleton
 class VariantServerImpl @Inject() (
@@ -58,24 +60,17 @@ class VariantServerImpl @Inject() (
    ) extends VariantServer {
    
 	private[this] val logger = Logger(this.getClass)
-   
-	import VariantServer._
-
-	_instance = this
-	
+  private[this] var _schemaDeployer: SchemaDeployer = null
+  
+	// Make this instance statically discoverable
+	VariantServer._instance = this	
 	override val config = playConfig.underlying
-	
-	private var _startupErrorLog = List[ServerException.Internal]()
-	override lazy val startupErrorLog = _startupErrorLog
-	
-	// Default schema deployer is from file system, but may be overridded by tests.
-  private var _schemaDeployer: SchemaDeployer = null
-  useSchemaDeployer(SchemaDeployer.fromFileSystem())
-	   
   override def schema = Some(_schemaDeployer.schemata(0))
+  override def isUp = {VariantServer.startupErrorLog.size == 0}
 
-	override val isUp = {startupErrorLog.size == 0}
-	
+	// Default schema deployer is from file system, but may be overridded by tests.
+  useSchemaDeployer(SchemaDeployer.fromFileSystem())
+	   	
 	if (isUp) {
       logger.info("%s bootstrapped on :%s%s in %s.".format(
             productName,
@@ -89,7 +84,7 @@ class VariantServerImpl @Inject() (
 	}
 	else {
 		logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
-		startupErrorLog.foreach { (e: ServerException) => logger.error(e.getMessage(), e) }
+		VariantServer.startupErrorLog.foreach { (e: ServerException) => logger.error(e.getMessage(), e) }
 	  shutdown()
 	}
 	
@@ -104,10 +99,10 @@ class VariantServerImpl @Inject() (
 	    catch {
 	       case e: ServerException.Internal => {
 	          logger.error("Failed to install schema deployer", e)
-	          _startupErrorLog :+= e
+	          VariantServer.startupErrorLog += e
 	       }
 	       case t: Throwable => {
-	         _startupErrorLog :+= new ServerException.Internal("Unhandled exception", t)
+	         VariantServer.startupErrorLog += new ServerException.Internal("Unhandled exception", t)
 	       }
 	    }
 	 }

@@ -24,7 +24,7 @@ curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
     */
    def post(name: String) = VariantAction {
       var result: Option[ServerSchema] = None
-      VariantServer.server.schema.foreach {s => if (s.getName().equals(name)) result = Some(s)}
+      VariantServer.instance.schema.foreach {s => if (s.getName().equals(name)) result = Some(s)}
       result match {
          case Some(schema) => {
             logger.debug("Schema [%s] found".format(name))

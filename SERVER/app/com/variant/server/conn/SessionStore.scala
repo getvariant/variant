@@ -44,7 +44,7 @@ trait SessionStore {
    class Entry (val session: SessionImpl) {
       
    	private var lastTouchTs = System.currentTimeMillis();
-      private val sessionTimeoutMillis = VariantServer.server.config.getInt(SESSION_TIMEOUT) * 1000
+      private val sessionTimeoutMillis = VariantServer.instance.config.getInt(SESSION_TIMEOUT) * 1000
       
       /**
        * An entry is dead if its session's connection is gone
@@ -140,7 +140,7 @@ import SessionStoreImpl._
 class VacuumThread(store: SessionStore) extends Thread {
 
    private val logger = Logger(this.getClass)
-   private val vacuumingFrequencyMillis = VariantServer.server.config.getInt(SESSION_STORE_VACUUM_INTERVAL) * 1000
+   private val vacuumingFrequencyMillis = VariantServer.instance.config.getInt(SESSION_STORE_VACUUM_INTERVAL) * 1000
 	 setName("SsnVacThread");
    setDaemon(true); // JVM will kill it when on non-daemon threads exit.
 

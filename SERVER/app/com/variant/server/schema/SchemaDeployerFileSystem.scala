@@ -5,7 +5,7 @@ import com.variant.server.api.ConfigKeys._
 import com.variant.core.CommonError
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
-import com.variant.server.boot.VariantServer.server
+import com.variant.server.boot.VariantServer
 import java.io.File
 import scala.io.Source
 import com.variant.core.UserError.Severity
@@ -28,9 +28,9 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
     var dirName = sys.props.get(SCHEMATA_DIR)
 
     if (dirName.isEmpty) {
-      if (!server.config.hasPath(SCHEMATA_DIR))
+      if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
         throw new ServerException.User(CommonError.CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
-      dirName = Option(server.config.getString(SCHEMATA_DIR))
+      dirName = Option(VariantServer.instance.config.getString(SCHEMATA_DIR))
     }
 
     val dir = new File(dirName.get)

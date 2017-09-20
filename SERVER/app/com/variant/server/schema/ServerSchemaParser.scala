@@ -19,7 +19,7 @@ object ServerSchemaParser {
 class ServerSchemaParser () extends SchemaParser {
       
    override val getHooksService: HooksService = new ServerHooksService()
-   override val getFlusherService: FlusherService = new ServerFlusherService()
+   override val getFlusherService: FlusherService = new ServerFlusherService(this)
 
 }
 

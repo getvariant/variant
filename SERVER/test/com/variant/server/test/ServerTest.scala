@@ -24,7 +24,7 @@ class ServerTest extends BaseSpecWithServer {
          val resp = route(app, FakeRequest(GET, context)).get
          status(resp) mustBe OK
          println(contentAsString(resp))
-         contentAsString(resp) must startWith (VariantServer.server.productName)
+         contentAsString(resp) must startWith (VariantServer.instance.productName)
          contentAsString(resp) must include ("Uptime")
       }
       

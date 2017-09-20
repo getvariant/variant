@@ -23,7 +23,7 @@ object VariantAction extends ActionBuilder[Request] with Results {
     */
    def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
 
-      if (!VariantServer.server.isUp) {
+      if (!VariantServer.instance.isUp) {
          // If the server didn't come up, regurn 503
          logger.warn("Server unavailable");
          Future.successful(ServiceUnavailable)

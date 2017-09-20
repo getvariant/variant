@@ -56,7 +56,7 @@ class Connection(val schema: ServerSchema) {
    def asJson = {
       JsObject(Seq(
          "id" -> JsString(id),
-         "ssnto" -> JsNumber(VariantServer.server.config.getInt(ConfigKeys.SESSION_TIMEOUT)),
+         "ssnto" -> JsNumber(VariantServer.instance.config.getInt(ConfigKeys.SESSION_TIMEOUT)),
          "ts" -> JsNumber(timestamp),
          "schema" -> JsObject(Seq(
                "id" -> JsString(schema.getId()),

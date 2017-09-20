@@ -29,7 +29,7 @@ class RequestController @Inject() (
       server: VariantServer) extends VariantController  {
    
    private val logger = Logger(this.getClass)	
-   private lazy val schema = VariantServer.server.schema.get
+   private lazy val schema = VariantServer.instance.schema.get
    
    /**
     * POST: Create state request by targeting a session.

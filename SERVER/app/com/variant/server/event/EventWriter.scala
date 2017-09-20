@@ -18,7 +18,7 @@ class EventWriter (private val flushService: ServerFlusherService) {
 	
    private val logger = Logger(this.getClass)
    
-   private val config = VariantServer.server.config
+   private val config = VariantServer.instance.config
    
    val flusher = flushService.getFlusher
    
