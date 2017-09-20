@@ -18,7 +18,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
-import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Hook;
 import com.variant.core.util.VariantStringUtils;
 
@@ -194,9 +193,9 @@ public abstract class SchemaParser implements Keywords {
 			// Init all schema scoped hooks.
 			for (Hook hook: response.getSchema().getHooks()) hooksService.initHook(hook, response);
 			
-			// Init schema flusher, if any.
-			Flusher flusher = response.getSchema().getFlusher();
-			if (flusher != null) flusherService.initFlusher(flusher);
+			// Init schema flusher. If no flusher was supplied, 
+			// flusher service is expected to init the default flusher.
+			flusherService.initFlusher(response.getSchema().getFlusher());
 		}
 
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());

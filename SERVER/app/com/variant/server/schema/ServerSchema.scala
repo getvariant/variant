@@ -34,10 +34,7 @@ class ServerSchema (val response: ParserResponse, val hooker: ServerHooksService
    
    private var coreSchema =  response.getSchema
 
-   var state: State = Deployed
-  
-   flusher.setSchema(this)
-  
+   var state: State = Deployed  
       
    /**
     * 

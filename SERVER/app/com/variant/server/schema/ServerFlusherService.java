@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.variant.core.schema.Flusher;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.FlusherService;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.ParserResponseImpl;
@@ -27,26 +28,23 @@ public class ServerFlusherService implements FlusherService {
 	
 	// If flusher is not defined, it will be instantiated lazily by getFlusher
 	private EventFlusher flusher = null;	
-	private ServerSchema schema = null;
 	
 		
-	private void initDefaultFlusher() {
+	private Flusher defaultFlusher() {
 		
 		// This is how we access companion objects's fields from java.
 		Config config = VariantServer$.MODULE$.instance().config();
 		
-		initFlusher(
-				
-				new Flusher() {
+		return new Flusher() {
 					
 					@Override public String getClassName() {
 						return config.getString(EVENT_FLUSHER_CLASS_NAME);
 					}
 					
 					@Override public String getInit() {
-						return config.getString(EVENT_FLUSHER_CLASS_INIT);
+						return config.getObject(EVENT_FLUSHER_CLASS_INIT).render();
 					}			
-				});
+		};
 	}
 	
 	/**
@@ -56,9 +54,15 @@ public class ServerFlusherService implements FlusherService {
 		this.parser = parser;
 	}
 
+	/**
+	 * If we're invoked with null parameter, we take it that caller wants default flusher, 
+	 * as externally configured in variant.conf.
+	 */
 	@Override
 	public void initFlusher(Flusher flusher) {
 
+		if (flusher == null) flusher = defaultFlusher();
+		
 		ParserResponseImpl response = (ParserResponseImpl) parser.responseInProgress();
 		
 		try {
@@ -77,7 +81,9 @@ public class ServerFlusherService implements FlusherService {
 			}
 			
 			this.flusher = (EventFlusher) flusherObj;
-			logger.info(String.format("Registered custom event logger [%s] for schema [%s]", flusher.getClassName(), schema.getName()));
+			logger.info(String.format(
+					"Registered event logger [%s] for schema [%s]", 
+					flusher.getClassName(), parser.responseInProgress().getSchema().getName()));
 						
 		}
 		catch (ConfigException.Parse e) {
@@ -95,23 +101,14 @@ public class ServerFlusherService implements FlusherService {
 	 * @return
 	 */
 	public EventFlusher getFlusher() {
-		if (flusher == null)  initDefaultFlusher();
 		return flusher;
-	}
-	
-	/**
-	 * 
-	 * @param schema
-	 */
-	public void setSchema(ServerSchema schema) {
-		this.schema = schema;
 	}
 	
 	/**
 	 * 
 	 * @return
 	 */
-	public ServerSchema getSchema() {
-		return this.schema;
+	public Schema getSchema() {
+		return parser.responseInProgress().getSchema();
 	}
 }

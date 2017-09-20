@@ -31,6 +31,7 @@ trait VariantServer {
    val config: Config // Do not expose Play's Configuration
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
+   val startupErrorLog = mutable.ArrayBuffer[ServerException.Internal]()
    def schema: Option[ServerSchema]
    def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
    def isUp: Boolean
@@ -42,7 +43,6 @@ trait VariantServer {
 object VariantServer {
    private [boot] var _instance: VariantServer = _
    lazy val instance = _instance
-   val startupErrorLog = mutable.ArrayBuffer[ServerException.Internal]()
 
    //def classLoader = PlayApplicationInjector.playApp.classloader
 }
@@ -64,9 +64,14 @@ class VariantServerImpl @Inject() (
   
 	// Make this instance statically discoverable
 	VariantServer._instance = this	
+	
 	override val config = playConfig.underlying
-  override def schema = Some(_schemaDeployer.schemata(0))
-  override def isUp = {VariantServer.startupErrorLog.size == 0}
+  
+	override def schema = { 
+	  if (_schemaDeployer.schemata.size == 0) None else Some(_schemaDeployer.schemata(0)) 
+	}
+	
+  override def isUp = {startupErrorLog.size == 0}
 
 	// Default schema deployer is from file system, but may be overridded by tests.
   useSchemaDeployer(SchemaDeployer.fromFileSystem())
@@ -84,7 +89,7 @@ class VariantServerImpl @Inject() (
 	}
 	else {
 		logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
-		VariantServer.startupErrorLog.foreach { (e: ServerException) => logger.error(e.getMessage(), e) }
+		startupErrorLog.foreach { (e: ServerException) => logger.error(e.getMessage(), e) }
 	  shutdown()
 	}
 	
@@ -99,10 +104,10 @@ class VariantServerImpl @Inject() (
 	    catch {
 	       case e: ServerException.Internal => {
 	          logger.error("Failed to install schema deployer", e)
-	          VariantServer.startupErrorLog += e
+	          startupErrorLog += e
 	       }
 	       case t: Throwable => {
-	         VariantServer.startupErrorLog += new ServerException.Internal("Unhandled exception", t)
+	         startupErrorLog += new ServerException.Internal("Unhandled exception", t)
 	       }
 	    }
 	 }
