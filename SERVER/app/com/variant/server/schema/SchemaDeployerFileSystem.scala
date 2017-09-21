@@ -60,7 +60,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       logger.error("Schema [%s] was not deployed due to previous parser error(s)".format(schemaFile.getName));
     }
     else {
-      _schemata :+ deploy(parserResp)
+      _schemata += deploy(parserResp)
     }    
   }
 
