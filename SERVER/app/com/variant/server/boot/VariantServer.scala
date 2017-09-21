@@ -31,7 +31,7 @@ trait VariantServer {
    val config: Config // Do not expose Play's Configuration
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
-   val startupErrorLog = mutable.ArrayBuffer[ServerException.Internal]()
+   val startupErrorLog = mutable.ArrayBuffer[ServerException]()
    def schema: Option[ServerSchema]
    def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
    def isUp: Boolean
@@ -42,7 +42,9 @@ trait VariantServer {
  */
 object VariantServer {
    private [boot] var _instance: VariantServer = _
-   lazy val instance = _instance
+   
+   // This must be a method because some tests will rebuild the server, so the content of _instance will be changing.
+   def instance = _instance
 
    //def classLoader = PlayApplicationInjector.playApp.classloader
 }
@@ -92,17 +94,17 @@ class VariantServerImpl @Inject() (
 		startupErrorLog.foreach { (e: ServerException) => logger.error(e.getMessage(), e) }
 	  shutdown()
 	}
-	
-	
+		
   /**
 	 * Tests can override the default schema deployer to be able to deploy from a memory string.
 	 */
    override def useSchemaDeployer (newDeployer: SchemaDeployer): Unit = {
 	    try {
    	     _schemaDeployer = newDeployer
+   	     _schemaDeployer.bootstrap()
       }
 	    catch {
-	       case e: ServerException.Internal => {
+	       case e: ServerException.User => {
 	          logger.error("Failed to install schema deployer", e)
 	          startupErrorLog += e
 	       }

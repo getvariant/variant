@@ -1,6 +1,9 @@
 package com.variant.server.schema
 
 import play.api.Logger
+import scala.collection.mutable
+import com.variant.server.api.ServerException
+
 
 trait SchemaDeployer {
 
@@ -10,10 +13,16 @@ trait SchemaDeployer {
    * scan periodically for updates.
    */
   def schemata: Seq[ServerSchema]
+  
+ /**
+   * Subclasses should override this, if there's anything to be done prior to parsing.
+   */
+  def bootstrap() = {}
+
 }
 
-object SchemaDeployer {
-
+object SchemaDeployer {  
+  
   /**
    * Factory method returns a file system deployer.
    */

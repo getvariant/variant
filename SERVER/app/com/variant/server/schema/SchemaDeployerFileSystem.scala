@@ -1,14 +1,16 @@
 package com.variant.server.schema
 
+import java.io.File
+import scala.io.Source
+import scala.collection.mutable
 import play.api.Logger
 import com.variant.server.api.ConfigKeys._
 import com.variant.core.CommonError
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.VariantServer
-import java.io.File
-import scala.io.Source
 import com.variant.core.UserError.Severity
+import scala.collection.mutable.ArrayBuffer
 
 /**
  * Deploy schemata from a directory on the file system.
@@ -19,14 +21,16 @@ import com.variant.core.UserError.Severity
 class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
 
   private val logger = Logger(this.getClass)
+  private val _schemata = new ArrayBuffer[ServerSchema]
+  // Default is empty
+  override def schemata = _schemata.toSeq
 
   /**
    * Read content of schemata dir and deploy.
    */
-  override val schemata = {
+  override def bootstrap: Unit = {
 
     var dirName = sys.props.get(SCHEMATA_DIR)
-
     if (dirName.isEmpty) {
       if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
         throw new ServerException.User(CommonError.CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
@@ -54,10 +58,9 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
     // If failed parsing, print errors and no schema.
     if (parserResp.hasMessages(Severity.ERROR)) {
       logger.error("Schema [%s] was not deployed due to previous parser error(s)".format(schemaFile.getName));
-      Seq()
     }
     else {
-      Seq(deploy(parserResp))
+      _schemata :+ deploy(parserResp)
     }    
   }
 

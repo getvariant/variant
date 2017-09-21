@@ -29,7 +29,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
       if (testData.name.contains("CONFIG_PROPERTY_NOT_SET")) 
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.schemata.dir")))
-            .build()
+            .build() 
       else if (testData.name.contains("SCHEMATA_DIR_MISSING")) 
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
