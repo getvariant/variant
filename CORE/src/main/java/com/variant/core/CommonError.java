@@ -19,7 +19,7 @@ public class CommonError extends UserError {
 			new CommonError(203, Severity.FATAL, "Config file [%s] could not be found"); 
 
 	public final static CommonError CONFIG_PROPERTY_NOT_SET = 
-			new CommonError(204, Severity.FATAL, "Configuration property [%s] must be set but is not");
+			new CommonError(204, Severity.FATAL, "Configuration property [%s] must be set, but is not");
 
 
 	//
