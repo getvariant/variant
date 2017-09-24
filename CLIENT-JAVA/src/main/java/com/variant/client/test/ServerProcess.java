@@ -63,7 +63,7 @@ public class ServerProcess {
 	 */
 	public void stop() throws Exception {
 
-		if (svrProc != null && ! serverUp) throw new RuntimeException("No server process to stop");
+		if (svrProc == null) return;
 		
 		LOG.info(String.format("Stopping local server [%s] [%s]", execArgs[0], execArgs[1]));
 		// a slight delay to let the log reader have a chance to run one more time and catch up.
