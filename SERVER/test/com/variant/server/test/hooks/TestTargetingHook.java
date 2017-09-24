@@ -15,8 +15,8 @@ import com.variant.server.lce.TestTargetingLifecycleEvent;
 
 /**
  * Test targeter hook.
- * if init.weights is given as array if doubles, they are interpreted as random weights.
- * otherwise, if init.experience is given, attempt to find that experience.
+ * if weights is given as array if doubles, they are interpreted as random weights.
+ * otherwise, if experience is given, attempt to find that experience.
  * 
  */
 public class TestTargetingHook implements UserHook<TestTargetingLifecycleEvent> {
@@ -34,12 +34,12 @@ public class TestTargetingHook implements UserHook<TestTargetingLifecycleEvent> 
 	 */
 	public TestTargetingHook(Config config) {
 
-		if (config.hasPath("init.weights")) {
-			List<Double> weightsConfig = config.getDoubleList("init.weights");
+		if (config.hasPath("weights")) {
+			List<Double> weightsConfig = config.getDoubleList("weights");
 			weights = weightsConfig.toArray(new Double[weightsConfig.size()]);
 		}
-		else if (config.hasPath("init.experience")) {
-			experienceToReturn = config.getString("init.experience");
+		else if (config.hasPath("experience")) {
+			experienceToReturn = config.getString("experience");
 		}
 		else {
 			throw new RuntimeException(String.format("Either 'weights' or 'experience' must be provided"));

@@ -7,6 +7,7 @@ import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.hooks.TestQualificationHookNil
 import com.variant.core.schema.Hook
 import com.variant.server.schema.SchemaDeployerString
+import com.variant.server.api.Session
 
 class TestQualificationHookTest extends BaseSpecWithServer {
       
@@ -39,7 +40,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
   	"TestQualificationHook" should {
 	   
-	   var ssn = SessionImpl.empty(newSid())
+	   var ssn: SessionImpl = null
 
       "be posted for tests instrumented on state1" in {
 
@@ -69,18 +70,19 @@ class TestQualificationHookTest extends BaseSpecWithServer {
        val schemaDeployer = SchemaDeployerString(schemaSrc)
        server.useSchemaDeployer(schemaDeployer)
        val response = schemaDeployer.parserResponse
-
+       
         //response.getMessages.foreach(println(_))
    	   response.hasMessages() mustBe false
        server.schema.isDefined mustBe true
    	   val schema = server.schema.get
-   		val state1 = schema.getState("state1")
+   		 val state1 = schema.getState("state1")
    	   val test1 = schema.getTest("test1")
    	   val test2 = schema.getTest("test2")
    	   val test3 = schema.getTest("test3")
    	   val test4 = schema.getTest("test4")
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
+       ssn = SessionImpl.empty(newSid())
 
    	   schema.getHooks() mustBe empty
    	   test1.getHooks.size mustBe 1
@@ -198,8 +200,9 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test4 = schema.getTest("test4")
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
-
-   	   schema.getHooks() mustBe empty
+       ssn = SessionImpl.empty(newSid())
+   	   
+       schema.getHooks() mustBe empty
    	   test1.getHooks.size mustBe 1
    	   val h1 = test1.getHooks.get(0)
    	   h1.getName mustBe "disqualHook"
@@ -241,12 +244,6 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
 	   "disqual test1, and drop it from targeting stabile" in {
 
-	      // second test1 listener, in addition to one added in previous test.
-   	   //val dl1 = new TestQualificationHookDisqual(true, test1)
-		   //server.hooker.addHook(dl1)
-
-	      // New session. Disqualify, but keep in TT.
-	      
 	      // Same schema as before, but remove from TT on test1.
          val schemaSrc = generateSchema(
             Map(
@@ -255,6 +252,13 @@ class TestQualificationHookTest extends BaseSpecWithServer {
                      'name' :'disqualHook',
                      'class':'com.variant.server.test.hooks.TestQualificationHookDisqual',
                      'init':{'removeFromTargetingTracker':true}
+                  }
+""",
+                  "test6-hooks" ->
+"""               {
+                     'name' :'disqualHook',
+                     'class':'com.variant.server.test.hooks.TestQualificationHookDisqual',
+                     'init':{'removeFromTargetingTracker':false}
                   }
 """
             )
@@ -266,7 +270,6 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
    	   response.hasMessages() mustBe false
        server.schema.isDefined mustBe true
-
    	   val schema = server.schema.get
    		 val state1 = schema.getState("state1")
    		 val state2 = schema.getState("state2")
@@ -276,11 +279,11 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test4 = schema.getTest("test4")
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
-
-   	   // Note that reusing session after schema reaload is an error. Still works, until
-   	   // reloadable schema is implement, and schema reload will invalidate current sessions.
+       ssn = SessionImpl.empty(newSid())
+   	   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
+   	 
 		   val req = ssn.targetForState(state2);
-		   ssn.getTraversedStates.toSet mustEqual Set((state1,1), (state2,1))
+		   ssn.getTraversedStates.toSet mustEqual Set((state2,1))
 		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5)
 		   ssn.getDisqualifiedTests.toSet mustEqual Set(test1, test6)
 
@@ -310,7 +313,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test6 = schema.getTest("test6")
 
 		   val req = ssn.targetForState(state3);
-		   ssn.getTraversedStates.toSet mustEqual Set((state1,1), (state2,1), (state3,1))
+		   ssn.getTraversedStates.toSet mustEqual Set((state2,1), (state3,1))
 		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5)
 		   ssn.getDisqualifiedTests.toSet mustEqual Set(test1, test6)
 
@@ -345,13 +348,13 @@ class TestQualificationHookTest extends BaseSpecWithServer {
        val response = schemaDeployer.parserResponse
 
    	   response.hasMessages() mustBe false
-   		server.schema.isDefined mustBe true
+   		 server.schema.isDefined mustBe true
 
    	   val schema = server.schema.get
-   		val state1 = schema.getState("state1")
+   		 val state1 = schema.getState("state1")
 		
-   		// New session.
-         ssn = SessionImpl.empty(newSid())
+   		 // New session.
+       ssn = SessionImpl.empty(newSid())
 		   ssn.targetForState(state1)
 		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
 	   }

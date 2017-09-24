@@ -22,9 +22,9 @@ public class StateParsedHook implements UserHook<StateParsedLifecycleEvent> {
 	 */
 	public StateParsedHook(Config config) {
 		if (config != null) {
-			if (config.hasPath("init.hookName")) hookName = config.getString("init.hookName");
-			if (config.hasPath("init.clipChain")) clipChain = config.getBoolean("init.clipChain");
-			if (config.hasPath("init.infoOnly")) infoOnly = config.getBoolean("init.infoOnly");
+			if (config.hasPath("hookName")) hookName = config.getString("hookName");
+			if (config.hasPath("clipChain")) clipChain = config.getBoolean("clipChain");
+			if (config.hasPath("infoOnly")) infoOnly = config.getBoolean("infoOnly");
 		}
 	}
 	

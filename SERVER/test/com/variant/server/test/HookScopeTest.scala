@@ -137,7 +137,7 @@ class HookScopeTest extends BaseSpecWithServer {
       val schemaDeployer = SchemaDeployerString(schemaSrc)
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponse
-  
+      response.getMessages.foreach(println _)
    		response.getMessages.size mustBe 5
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 0

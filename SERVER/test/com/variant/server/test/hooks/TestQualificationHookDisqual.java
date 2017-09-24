@@ -14,7 +14,7 @@ public class TestQualificationHookDisqual implements UserHook<TestQualificationL
 	 * @param config
 	 */
 	public TestQualificationHookDisqual(Config config) {
-		removeFromTargetingTracker = config.getBoolean("init.removeFromTargetingTracker");
+		removeFromTargetingTracker = config.getBoolean("removeFromTargetingTracker");
 	}
 
 	@Override
