@@ -300,7 +300,7 @@ class TargetingTest extends BaseSpecWithServer {
    		} 
    		verifyCounts(counts, Array(1f, 1f, 1f))
 		}
-
+		
 	   "Throw exception if targeting hook sets bad experience" in {
 
          val schemaSrc = ParameterizedString(schemaJson).expand(         
@@ -316,6 +316,10 @@ class TargetingTest extends BaseSpecWithServer {
                    }
                """)
                
+         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponse
+         
          server.schema.isDefined mustBe true
          val schema = server.schema.get
 
@@ -334,50 +338,6 @@ class TargetingTest extends BaseSpecWithServer {
  
 	   }
 
-
-/*********** Chaining doesn't work yet.
-		"trarget at 2/1/1 with the a/b and a/c hooks" in {
-
-         val schemaSrc = ParameterizedString(schemaJson).expand(         
-               "hooks" -> 
-               """ {
-                     'name' :'A_B_Hook',
-                     'class':'com.variant.server.test.hooks.TestTargetingHook',
-                     'init': {'weights':[1,1,0]}
-                   },
-                   {
-                     'name' :'A_C_Hook',
-                     'class':'com.variant.server.test.hooks.TestTargetingHook',
-                     'init': {'weights':[1,0,1]}
-                   }
-               """)
-               
-         server.installSchemaDeployer(SchemaDeployer.fromString(schemaSrc))
-
-         server.schema.isDefined mustBe true
-         val schema = server.schema.get
-         val state = schema.getState("state1")
-         val test = schema.getTest("test1")
-
-   		val counts = Array(0, 0, 0)
-   		for (i <- 1 to trials) {
-   			val ssn = SessionImpl.empty("sid" + i)
-   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
-   			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe null
-   			val req = ssn.targetForState(state)
-   			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe "test1 test1"
-   			val expName = req.getLiveExperience(test).getName()
-   			println(expName)
-   			expName match {
-   			   case "A" => counts(0) += 1
-      			case "B" => counts(1) += 1
-      			case "C" => counts(2) += 1
-   			}
-   		} 
-   		verifyCounts(counts, Array(2f, 1f, 1f))
-		}
-		* 
-		*/
 	}
 	
 	/**

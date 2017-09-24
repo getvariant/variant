@@ -101,10 +101,25 @@ public class ServerHooksService implements HooksService {
 						
 			// AOK. Add to apropriate hook list.
 			HookListEntry hle = new HookListEntry(hookImpl.getLifecycleEventClass(), hookDef);
-			if (hookDef instanceof Hook.Schema) schemaHooks.add(hle);
-			else if (hookDef instanceof Hook.State) stateHooks.add(hle);
-			else if (hookDef instanceof Hook.Test) testHooks.add(hle);
 
+			if (hookDef instanceof Hook.Schema) {
+				schemaHooks.add(hle);
+				if (LOG.isDebugEnabled()) 
+					LOG.debug(String.format("Registered schema-scoped hook [%s] [%s]", 
+							hookDef.getName() , hookDef.getClass()));
+			}
+			else if (hookDef instanceof Hook.State) {
+				stateHooks.add(hle);
+				if (LOG.isDebugEnabled()) 
+					LOG.debug(String.format("Registered state-scoped hook [%s] [%s] for state [%s]", 
+							hookDef.getName() , hookDef.getClassName(), ((Hook.State)hookDef).getState()));
+			}
+			else if (hookDef instanceof Hook.Test) {
+				testHooks.add(hle);
+				if (LOG.isDebugEnabled()) 
+					LOG.debug(String.format("Registered test-scoped hook [%s] [%s] for test [%s]", 
+							hookDef.getName() , hookDef.getClassName(), ((Hook.Test)hookDef).getTest()));
+			}
 		}
 		catch (ConfigException.Parse e) {
 			parserResponse.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, hookDef.getClassName(), e.getClass().getName());

@@ -102,7 +102,8 @@ public class VariantClassLoader {
 			}
 		}
 	
-		LOG.debug("Instantiated object of type [" + result.getClass().getCanonicalName() + "]");
+		if (LOG.isTraceEnabled())
+			LOG.trace("Instantiated object of type [" + result.getClass().getCanonicalName() + "]");
 		
 		return result;
 	}
