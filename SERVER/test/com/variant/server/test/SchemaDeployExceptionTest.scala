@@ -24,6 +24,9 @@ import com.variant.server.api.ServerException
  */
 class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
    
+  /**
+   * This will implicitely rebuild the server before each test.
+   */
    implicit override def newAppForTest(testData: TestData): Application = {
 
       if (testData.name.contains("CONFIG_PROPERTY_NOT_SET")) 
