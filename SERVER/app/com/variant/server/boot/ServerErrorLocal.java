@@ -27,7 +27,7 @@ public class ServerErrorLocal extends CommonError {
 			new ServerErrorLocal(421, Severity.FATAL, "Schemata directory [%s] cannot contain multiple files");
 
 	public final static ServerErrorLocal OBJECT_CONSTRUCTOR_ERROR = 
-			new ServerErrorLocal(422, Severity.ERROR, "Unable to instantiate class [%s] becuase no suitable constructor was found.");
+			new ServerErrorLocal(422, Severity.ERROR, "Unable to instantiate class [%s] becuase no suitable constructor was found");
 
 	public final static ServerErrorLocal OBJECT_INSTANTIATION_ERROR = 
 			new ServerErrorLocal(423, Severity.ERROR, "Unable to instantiate class [%s] due to error [%s]. See log for details");
@@ -36,13 +36,16 @@ public class ServerErrorLocal extends CommonError {
 			new ServerErrorLocal(424, Severity.ERROR, "Hook class [%s] must implement interface [%s]");
 
 	public final static ServerErrorLocal HOOK_STATE_SCOPE_VIOLATION = 
-			new ServerErrorLocal(425, Severity.ERROR, "User hook [%s], defined at state [%s] cannot listen to life cycle event [%s].");
+			new ServerErrorLocal(425, Severity.ERROR, "User hook [%s], defined at state [%s] cannot listen to life cycle event [%s]");
 	
 	public final static ServerErrorLocal HOOK_TEST_SCOPE_VIOLATION = 
-			new ServerErrorLocal(426, Severity.ERROR, "User hook [%s], defined at test [%s] cannot listen to life cycle event [%s].");
+			new ServerErrorLocal(426, Severity.ERROR, "User hook [%s], defined at test [%s] cannot listen to life cycle event [%s]");
+
+	public final static ServerErrorLocal FLUSHER_NOT_CONFIGURED = 
+			new ServerErrorLocal(427, Severity.ERROR, "No event flusher defined in experiment schema, and no default event flusher is configured");
 
 	public final static ServerErrorLocal FLUSHER_CLASS_NO_INTERFACE = 
-			new ServerErrorLocal(427, Severity.ERROR, "Event flusher class [%s] must implement interface [%s]");
+			new ServerErrorLocal(428, Severity.ERROR, "Event flusher class [%s] must implement interface [%s]");
 
 	//
 	// 461-480 Server API

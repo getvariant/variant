@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.parser.ParserResponseImpl;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
@@ -26,7 +26,7 @@ public class TargetingStabileTest extends BaseTestCore {
 	public void targetingTrackerStringTest() throws Exception {
 				
 		SchemaParser parser = getSchemaParser();
-		ParserResponseImpl response = (ParserResponseImpl) parser.parse(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		ParserResponse response = parser.parse(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		schema = response.getSchema();

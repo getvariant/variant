@@ -12,7 +12,7 @@ import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.parser.ParserResponseImpl;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
 import com.variant.core.util.VariantCollectionsUtils;
 
@@ -338,7 +338,7 @@ public class ParserCovariantOkay2Test extends BaseTestCore {
 	    	    "}                                                                         ";
 
 		SchemaParser parser = getSchemaParser();
-		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
+		ParserResponse response = (ParserResponse) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchema());

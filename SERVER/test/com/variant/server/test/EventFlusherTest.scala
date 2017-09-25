@@ -39,7 +39,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    */
    implicit override def newAppForTest(testData: TestData): Application = {
 
-      if (testData.name.contains("blow up")) 
+      if (testData.name.contains("EVENT_FLUSHER_CLASS_NAME")) 
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.event.flusher.class")))
             .build() 
@@ -107,19 +107,18 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
     }
 
     //-\\
-    "blow up if none defined in conf." in {    
+    "emit EVENT_FLUSHER_CLASS_NAME if none defined in conf." in {    
 
       val schemaDeployer = SchemaDeployerString(schemaNoFlusherSrc)
       val server = VariantServer.instance
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponse
-   		response.getMessages.size mustBe 0
-   		server.schema.isDefined mustBe true
-   		val schema = server.schema.get
-   		schema.getFlusher() mustBe null
+   		response.getMessages.size mustBe 1
+   		server.schema.isDefined mustBe false
    		
-   		// As defined in conf-test/variant.conf
-   		schema.eventWriter.flusher.getClass mustBe classOf[com.variant.server.api.EventFlusherH2]
+     	var msg = response.getMessages.get(0)
+     	msg.getSeverity mustBe ERROR
+     	msg.getText mustBe ServerErrorLocal.FLUSHER_NOT_CONFIGURED.asMessage()
    		
     }
 

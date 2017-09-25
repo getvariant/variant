@@ -29,7 +29,7 @@ public class HooksParser implements Keywords {
 	 * @param hooksObject
 	 * @param response
 	 */
-	static void parse(Object hooksObject, ParserResponseImpl response) {		
+	static void parse(Object hooksObject, ParserResponse response) {		
 		try {
 			List<?> rawHooks = (List<?>) hooksObject;
 									
@@ -54,7 +54,7 @@ public class HooksParser implements Keywords {
 	 * @param hooksObject
 	 * @param response
 	 */
-	static void parse(Object hooksObject, StateImpl state, ParserResponseImpl response) {		
+	static void parse(Object hooksObject, StateImpl state, ParserResponse response) {		
 		try {
 			List<?> rawHooks = (List<?>) hooksObject;
 									
@@ -85,7 +85,7 @@ public class HooksParser implements Keywords {
 	 * @param hooksObject
 	 * @param response
 	 */
-	static void parse(Object hooksObject, TestImpl test, ParserResponseImpl response) {		
+	static void parse(Object hooksObject, TestImpl test, ParserResponse response) {		
 		try {
 			List<?> rawHooks = (List<?>) hooksObject;
 									
@@ -118,7 +118,7 @@ public class HooksParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static Hook parseHook(Object rawHook, ParserResponseImpl response) {
+	private static Hook parseHook(Object rawHook, ParserResponse response) {
 		String name = null;
 		String className = null;
 		String init = null;

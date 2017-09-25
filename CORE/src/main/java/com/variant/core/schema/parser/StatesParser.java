@@ -35,7 +35,7 @@ public class StatesParser implements Keywords {
 	 * @param response 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parse(Object statesObject, ParserResponseImpl response, HooksService hooksService) {
+	static void parse(Object statesObject, ParserResponse response, HooksService hooksService) {
 
 		try {
 
@@ -92,7 +92,7 @@ public class StatesParser implements Keywords {
 	 * Parse a state
 	 */
 	@SuppressWarnings("unchecked")
-	private static StateImpl parseState(Map<String, ?> rawState, final ParserResponseImpl response) {
+	private static StateImpl parseState(Map<String, ?> rawState, final ParserResponse response) {
 		
 		String name = null;
 		boolean nameFound = false;

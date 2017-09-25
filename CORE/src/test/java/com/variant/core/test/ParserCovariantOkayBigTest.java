@@ -14,7 +14,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.parser.ParserResponseImpl;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
 import com.variant.core.util.VariantCollectionsUtils;
 
@@ -31,7 +31,7 @@ public class ParserCovariantOkayBigTest extends BaseTestCore {
 	public void test() throws Exception {
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponseImpl response = (ParserResponseImpl) parser.parse(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		ParserResponse response = (ParserResponse) parser.parse(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchema());

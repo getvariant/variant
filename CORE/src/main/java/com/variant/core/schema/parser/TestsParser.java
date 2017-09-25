@@ -81,7 +81,7 @@ public class TestsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parse(Object testsObject, ParserResponseImpl response, HooksService hooksService) {
+	static void parse(Object testsObject, ParserResponse response, HooksService hooksService) {
 		List<Map<String, ?>> rawTests = null;
 		try {
 			rawTests = (List<Map<String, ?>>) testsObject;
@@ -137,7 +137,7 @@ public class TestsParser implements Keywords {
 	 * @param response
 	 * @throws VariantRuntimeException 
 	 */
-	private static Test parseTest(Map<String, ?> test, ParserResponseImpl response){
+	private static Test parseTest(Map<String, ?> test, ParserResponse response){
 		
 		List<TestExperienceImpl> experiences = new ArrayList<TestExperienceImpl>();
 		List<TestOnStateImpl> onStates = new ArrayList<TestOnStateImpl>();
@@ -351,7 +351,7 @@ public class TestsParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static TestExperienceImpl parseTestExperience(Object experienceObject, String testName, ParserResponseImpl response) {
+	private static TestExperienceImpl parseTestExperience(Object experienceObject, String testName, ParserResponse response) {
 		
 		Map<String, ?> experience = null;
 		try {
@@ -429,7 +429,7 @@ public class TestsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	private static TestOnStateImpl parseTestOnState(Object testOnStateObject, TestImpl test, ParserResponseImpl response) {
+	private static TestOnStateImpl parseTestOnState(Object testOnStateObject, TestImpl test, ParserResponse response) {
 		
 		Map<String, Object> rawTestOnState = null;
 		

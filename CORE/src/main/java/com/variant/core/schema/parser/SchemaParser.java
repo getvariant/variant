@@ -32,14 +32,14 @@ import com.variant.core.util.VariantStringUtils;
 public abstract class SchemaParser implements Keywords {
 		
 	// Parser response object in progress, if any.
-	private ParserResponseImpl response = null;
+	private ParserResponse response = null;
 	
 	/**
 	 * Convert JsonParseException to ParserError.
 	 * @param parseException
 	 * @return
 	 */
-	private static void toParserError(JsonParseException parseException, String rawInput, ParserResponseImpl response) {
+	private static void toParserError(JsonParseException parseException, String rawInput, ParserResponse response) {
 		
 		String rawMessage = parseException.getMessage();
 		// Pull out the actual message: it's on the first line.
@@ -137,7 +137,7 @@ public abstract class SchemaParser implements Keywords {
 		String cleanJsonString = preParse(annotatedJsonString);
 		
 		// 2. Syntactical phase.
-		response = new ParserResponseImpl();
+		response = new ParserResponse();
 		
 		response.setSchemaSrc(annotatedJsonString);
 		

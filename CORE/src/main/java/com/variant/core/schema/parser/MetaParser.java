@@ -22,7 +22,7 @@ public class MetaParser implements Keywords {
 	 * @param response 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parse(Object metaRaw, ParserResponseImpl response) {
+	static void parse(Object metaRaw, ParserResponse response) {
 
 		SchemaImpl schema = (SchemaImpl) response.getSchema();
 		

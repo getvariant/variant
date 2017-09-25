@@ -15,7 +15,7 @@ public interface HooksService {
 	/**
 	 * Add an unbound user hook to this hooker.
 	 */
-	void initHook(Hook hook, ParserResponseImpl parserResponse);
+	void initHook(Hook hook, ParserResponse parserResponse);
 	
 	/**
 	 * Add a test-bound user hook to this hooker.
@@ -46,7 +46,7 @@ public interface HooksService {
 	public static final HooksService NULL = new HooksService() {
 		
 		@Override
-		public void initHook(Hook hook, ParserResponseImpl parserResponse) {}
+		public void initHook(Hook hook, ParserResponse parserResponse) {}
 		
 		@Override
 		public UserHook.PostResult post(LifecycleEvent hook) {return null;}

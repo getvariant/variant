@@ -1,5 +1,5 @@
 package com.variant.core.schema.parser;
-
+/*
 import static com.variant.core.schema.parser.ParserError.JSON_PARSE;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class ParserResponseImpl implements ParserResponse {
 	/**
 	 * Private common part of adding the message which posts the parser listener, if any.
 	 * @param message
-	 */
+	 *
 	private void addMessageCommon(ParserMessage message) {
 		messages.add(message);
 		if (parserListener != null) parserListener.messageAdded(message);
@@ -36,7 +36,7 @@ public class ParserResponseImpl implements ParserResponse {
 
 	/**
 	 * @return
-	 */
+	 *
 	@Override
 	public List<ParserMessage> getMessages() {
 		return Collections.unmodifiableList(messages);
@@ -49,7 +49,7 @@ public class ParserResponseImpl implements ParserResponse {
 
 	/**
 	 * @return
-	 */
+	 *
 	@Override
 	public List<ParserMessage> getMessages(Severity severity) {
 		ArrayList<ParserMessage> response = new ArrayList<ParserMessage>();
@@ -80,7 +80,7 @@ public class ParserResponseImpl implements ParserResponse {
 
 	/**
 	 * Add externally generated message.
-	 */
+	 *
     public void addMessage(Severity severity, String message) {
 		ParserMessage result = new ParserMessageImpl(new ParserHookError(severity, message));
 		addMessageCommon(result);
@@ -88,7 +88,7 @@ public class ParserResponseImpl implements ParserResponse {
 
 	/**
 	 * Add internally generated messsage
-	 */
+	 *
 	public ParserMessage addMessage(ParserError error, int line, int column, String...args) {
 		
 		ParserMessage result;
@@ -106,7 +106,7 @@ public class ParserResponseImpl implements ParserResponse {
 	/**
 	 * 
 	 * @param error
-	 */
+	 *
 	public ParserMessage addMessage(UserError error, String...args) {
 		ParserMessage result = new ParserMessageImpl(error, args);
 		addMessageCommon(result);
@@ -116,14 +116,14 @@ public class ParserResponseImpl implements ParserResponse {
 	/**
 	 * 
 	 * @param schemaSrc
-	 */
+	 *
 	public void setSchemaSrc(String schemaSrc) {
 		this.schemaSrc = schemaSrc;
 	}
 	
 	/**
 	 * Clear the schema in progress, at the end of an unsuccessful parse.
-	 */
+	 *
 	public void clearSchema() {
 		schema = null;
 		schemaSrc = null;
@@ -132,8 +132,9 @@ public class ParserResponseImpl implements ParserResponse {
 	/**
 	 * 
 	 * @param listener
-	 */
+	 *
 	public void setParserListener(ParserListener listener) {
 		this.parserListener = listener;
 	}
 }
+*/

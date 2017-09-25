@@ -13,9 +13,9 @@ import com.variant.core.schema.State;
 public class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent {
 
 	private State state;
-	private ParserResponseImpl response;
+	private ParserResponse response;
 	
-	StateParsedLifecycleEventImpl(State state, ParserResponseImpl response) {
+	StateParsedLifecycleEventImpl(State state, ParserResponse response) {
 		this.state = state;
 		this.response = response;
 	}

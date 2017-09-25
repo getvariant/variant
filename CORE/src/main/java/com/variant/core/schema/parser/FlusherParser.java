@@ -27,7 +27,7 @@ public class FlusherParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static Flusher parse(Object rawFlusher, ParserResponseImpl response) {
+	public static Flusher parse(Object rawFlusher, ParserResponse response) {
 
 		String className = null;
 		String init = null;

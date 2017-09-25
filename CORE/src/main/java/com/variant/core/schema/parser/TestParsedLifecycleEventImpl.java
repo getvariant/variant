@@ -13,9 +13,9 @@ import com.variant.core.schema.Test;
 public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 
 	private Test test;
-	private ParserResponseImpl response;
+	private ParserResponse response;
 	
-	TestParsedLifecycleEventImpl(Test test, ParserResponseImpl response) {
+	TestParsedLifecycleEventImpl(Test test, ParserResponse response) {
 		this.test = test;
 		this.response = response;
 	}

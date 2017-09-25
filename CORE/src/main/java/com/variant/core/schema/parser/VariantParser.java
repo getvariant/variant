@@ -52,7 +52,7 @@ public class VariantParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static StateVariantImpl parseVariant(Object variantObject, TestOnStateImpl tov, ParserResponseImpl response) {
+	public static StateVariantImpl parseVariant(Object variantObject, TestOnStateImpl tov, ParserResponse response) {
 		
 		TestImpl test = (TestImpl) tov.getTest();
 		StateImpl state = (StateImpl) tov.getState();

@@ -9,7 +9,6 @@ import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.FlusherService;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.schema.parser.ParserResponseImpl;
 import com.variant.core.schema.parser.SchemaParser;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.VariantClassLoader;
@@ -34,7 +33,12 @@ public class ServerFlusherService implements FlusherService {
 		
 		// This is how we access companion objects's fields from java.
 		Config config = VariantServer$.MODULE$.instance().config();
-		
+
+		if (!config.hasPath(EVENT_FLUSHER_CLASS_NAME)) {
+			parser.responseInProgress().addMessage(ServerErrorLocal.FLUSHER_NOT_CONFIGURED);
+			return null;
+		}
+
 		return new Flusher() {
 					
 					@Override public String getClassName() {
@@ -63,7 +67,10 @@ public class ServerFlusherService implements FlusherService {
 
 		if (flusher == null) flusher = defaultFlusher();
 		
-		ParserResponseImpl response = (ParserResponseImpl) parser.responseInProgress();
+		// If default flusher is misconfigured, it's still null -- quit.
+		if (flusher == null) return;
+		
+		ParserResponse response = parser.responseInProgress();
 		
 		try {
 			// Create the Class object for the supplied UserHook implementation.

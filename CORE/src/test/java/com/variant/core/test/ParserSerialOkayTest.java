@@ -11,7 +11,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Hook;
-import com.variant.core.schema.parser.ParserResponseImpl;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
 
 
@@ -153,7 +153,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "}                                                                         ";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
+		ParserResponse response = (ParserResponse) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchemaSrc());
@@ -343,7 +343,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "}                                                                         ";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
+		ParserResponse response = (ParserResponse) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchemaSrc());
@@ -482,7 +482,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "}                                                                         ";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
+		ParserResponse response = (ParserResponse) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchemaSrc());
@@ -705,7 +705,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 	public void happyPathTest() throws Exception {
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponseImpl response = (ParserResponseImpl) parser.parse(SCHEMA);
+		ParserResponse response = (ParserResponse) parser.parse(SCHEMA);
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchemaSrc());

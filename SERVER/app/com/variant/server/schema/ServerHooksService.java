@@ -13,7 +13,7 @@ import com.variant.core.lce.StateAwareLifecycleEvent;
 import com.variant.core.lce.TestAwareLifecycleEvent;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.HooksService;
-import com.variant.core.schema.parser.ParserResponseImpl;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.server.api.ServerException;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.VariantClassLoader;
@@ -65,7 +65,7 @@ public class ServerHooksService implements HooksService {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void initHook(Hook hookDef, ParserResponseImpl parserResponse) {
+	public void initHook(Hook hookDef, ParserResponse parserResponse) {
 		
 		try {
 			// Create the hook object for the supplied UserHook implementation.
