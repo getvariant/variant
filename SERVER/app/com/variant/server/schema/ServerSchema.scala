@@ -19,14 +19,14 @@ import com.variant.server.event.EventWriter
  * 
  */
 object ServerSchema {
-   def apply(response: ParserResponse, hooker: ServerHooksService, flusher: ServerFlusherService) = 
-     new ServerSchema(response, hooker, flusher)
+   def apply(response: ParserResponse, hookService: ServerHooksService, flushService: ServerFlusherService) = 
+     new ServerSchema(response, hookService, flushService)
 }
 
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (val response: ParserResponse, val hooker: ServerHooksService, val flusher: ServerFlusherService) extends Schema {
+class ServerSchema (val response: ParserResponse, val hookService: ServerHooksService, val flushService: ServerFlusherService) extends Schema {
   
    import State._
    
@@ -96,7 +96,7 @@ class ServerSchema (val response: ParserResponse, val hooker: ServerHooksService
 	
   val runtime = new Runtime(this)
 	val source = response.getSchemaSrc
-	val eventWriter = new EventWriter(flusher)
+	val eventWriter = new EventWriter(flushService)
 	
 	def undeploy(): Unit = {
 	   logger.info("Schema [%s], ID [%s] undeployed".format(getName, getId))
