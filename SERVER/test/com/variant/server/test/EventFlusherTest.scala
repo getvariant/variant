@@ -123,4 +123,65 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
     }
 
   }
+	
+  /*
+   * 
+   */
+	"Schema with a flusher" should {
+
+    val schemaNoFlusherSrc = """
+{                                                                              
+   'meta':{                                                             		    	    
+      'name':'FlusherTest',
+      'flusher': {
+        'class':'com.variant.server.api.EventFlusherNull'  
+       }
+   },                                                                   
+	'states':[ 
+	   {'name':'state1'}
+   ],                                                                   
+	'tests':[
+	   {                                                                
+		   'name':'test1',
+	      'experiences':[                                               
+            {                                                          
+				   'name':'A',                                             
+				   'weight':10,                                            
+				   'isControl':true
+	         },                                                         
+		      {                                                          
+		         'name':'B',                                             
+				   'weight':20                                             
+				}                                                          
+	      ],                                                            
+			'onStates':[                                                   
+			   {                                                          
+				   'stateRef':'state1',                                     
+				   'variants':[                                            
+				      {'experienceRef':'B'}
+			      ]                                                       
+	         }                                                          
+	      ]                                                             
+	   }
+   ]                                                                   
+}"""
+
+	   //-\\
+    "Override the default" in {    
+
+      val schemaDeployer = SchemaDeployerString(schemaNoFlusherSrc)
+      val server = VariantServer.instance
+      server.useSchemaDeployer(schemaDeployer)
+      val response = schemaDeployer.parserResponse
+   		response.getMessages.size mustBe 0
+   		server.schema.isDefined mustBe true
+   		val schema = server.schema.get
+   		schema.getFlusher() mustNot be (null)
+   		
+   		// As defined in conf-test/variant.conf
+   		schema.eventWriter.flusher.getClass mustBe classOf[com.variant.server.api.EventFlusherNull]
+   		
+    }
+
+  }
 }
