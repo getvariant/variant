@@ -32,7 +32,7 @@ trait VariantServer {
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
    val startupErrorLog = mutable.ArrayBuffer[ServerException]()
-   def schema: Option[ServerSchema]
+   def schemata: Map[String, ServerSchema]
    def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
    def isUp: Boolean
 }
@@ -69,14 +69,12 @@ class VariantServerImpl @Inject() (
 	
 	override val config = playConfig.underlying
   
-	override def schema = { 
-	  if (_schemaDeployer.schemata.size == 0) None else Some(_schemaDeployer.schemata(0)) 
-	}
+	override def schemata = _schemaDeployer.schemata 
 	
-  override def isUp = {startupErrorLog.size == 0}
+   override def isUp = {startupErrorLog.size == 0}
 
 	// Default schema deployer is from file system, but may be overridded by tests.
-  useSchemaDeployer(SchemaDeployer.fromFileSystem())
+   useSchemaDeployer(SchemaDeployer.fromFileSystem())
 	   	
 	if (isUp) {
       logger.info("%s bootstrapped on :%s%s in %s.".format(
@@ -119,7 +117,10 @@ class VariantServerImpl @Inject() (
     * One time application shutdown.
     */
    def shutdown() {
-      schema.foreach { _.undeploy() }
+      
+      // Undeploy all schemata
+      schemata.foreach { case (name: String, schema: ServerSchema) => schema.undeploy() }
+      
       logger.info("%s shutdown on :%s%s. Uptime %s.".format(
             productName,
             config.getString("http.port"),

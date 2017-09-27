@@ -12,10 +12,12 @@ import com.variant.server.schema.SchemaDeployerString
 
 class RuntimeExceptionTest extends BaseSpecWithServer {
 
-   val schemaSrc = """
+   val schemaName = "RuntimeExceptionTest"
+   
+   val schemaSrc = s"""
 {
    'meta':{
-      'name':'RuntimeExceptionTest'
+      'name':'$schemaName'
    },
    'states':[
       {'name':'state1'},
@@ -107,8 +109,8 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
          val schemaDeployer = SchemaDeployerString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponse
-         server.schema.isDefined mustBe true
-         val schema = server.schema.get
+         server.schemata.get(schemaName).isDefined mustBe true
+         val schema = server.schemata.get(schemaName).get
          val state2 = schema.getState("state2")
 
          try {
@@ -136,9 +138,9 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
          val schemaDeployer = SchemaDeployerString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponse
-         server.schema.isDefined mustBe true
-         val schema = server.schema.get
-         val ssn = SessionImpl.empty("sid")
+         server.schemata.get(schemaName).isDefined mustBe true
+         val schema = server.schemata.get(schemaName).get
+         val ssn = SessionImpl.empty(newSid(), schema)
    
    		try {
    		   ssn.targetForState(schema.getState("state1"))

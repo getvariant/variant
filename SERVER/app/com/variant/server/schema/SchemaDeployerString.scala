@@ -20,15 +20,16 @@ class SchemaDeployerString(schemaStr: String) extends AbstractSchemaDeployer {
 
   val parserResponse = parse(schemaStr)
   
-  override val schemata = {
+  override val schemata: Map[String, ServerSchema] = {
        
     // If failed parsing, print errors and no schema.
     if (parserResponse.hasMessages(Severity.ERROR)) {
       logger.error("Schema was not deployed due to previous parser error(s)")
-      Seq()
+      Map()
     }
     else {
-      Seq(deploy(parserResponse))
+       val schema = deploy(parserResponse)
+       Map(schema.getName -> schema)
     }   
   }
 }

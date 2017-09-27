@@ -37,11 +37,19 @@ object SessionImpl {
 
    /**
     * New server session with nothing in it, but the SID - good for tests.
-    */
-   def empty(sid: String) = {
-      val conn = new Connection(VariantServer.instance.schema.get)
-      new SessionImpl(new CoreSession(sid, VariantServer.instance.schema.get), conn)
+    *
+   def empty(sid: String, schemaName: String) = {
+      val schema = VariantServer.instance.schemata(schemaName)
+      new SessionImpl(new CoreSession(sid, schema), new Connection(schema))
    }
+   */
+   /**
+    * New server session with nothing in it, but the SID - good for tests.
+    */
+   def empty(sid: String, schema: ServerSchema) = {
+      new SessionImpl(new CoreSession(sid, schema), new Connection(schema))
+   }
+
 }
 
 /**
@@ -50,7 +58,7 @@ object SessionImpl {
 class SessionImpl(var coreSession: CoreSession, val connection: Connection) extends Session {
    
    def this(json: String, connection: Connection) {
-      this(CoreSession.fromJson(json, VariantServer.instance.schema.get), connection)
+      this(CoreSession.fromJson(json, connection.schema), connection)
    }
 
    /*----------------------------------------------------------------------------------------*/

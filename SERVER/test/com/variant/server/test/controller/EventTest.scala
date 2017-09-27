@@ -47,8 +47,8 @@ class EventTest extends BaseSpecWithServer {
    import EventTest._
    
    val endpoint = context + "/event"
-   val schemaId = server.schema.get.getId
-   val eventWriter = server.schema.get.eventWriter
+   val schemaId = server.schemata.head._2.getId
+   val eventWriter = server.schemata.head._2.eventWriter
    
    "EventController" should {
 

@@ -23,6 +23,8 @@ import com.variant.server.schema.SchemaDeployerString
  */
 class TestParsedHookTest extends BaseSpecWithServer {
 
+   val schemaName = "TestParsedHookTest"
+   
   /*
    * 
    */
@@ -31,10 +33,10 @@ class TestParsedHookTest extends BaseSpecWithServer {
 	   ////////////////
 	   "be posted for all tests" in {
 	      
-   	    val schema = """
+   	    val schema = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'testParsedHookTest',
+      'name':'$schemaName',
       'hooks':[
          {                                                              
    		     'name':'testParsed',                                       
@@ -136,7 +138,8 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsed", "test2")))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
+   		server.isUp mustBe true
 	   }
    }
 
@@ -148,10 +151,10 @@ class TestParsedHookTest extends BaseSpecWithServer {
 	   ////////////////
 	   "be posted for enclosing test only and before any schema scoped hooks" in {
 	      
-   	    val schema = """
+   	    val schema = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'testParsedHookTest',
+      'name':'$schemaName',
       'hooks':[
          {                                                              
    		     'name':'testParsedS1',                                       
@@ -296,7 +299,8 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedS1", "test2")))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
+   		server.isUp mustBe true
 	   }
    }
 
@@ -308,10 +312,10 @@ class TestParsedHookTest extends BaseSpecWithServer {
 	   ////////////////
 	   "be posted for tests which had parser errors" in {
 	      
-   	    val schema = """
+   	    val schema = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'stateScopedHooks',                                                          
+      'name':'$schemaName',                                                          
       'hooks':[                                                         
          {                                                              
    		     'name':'testParsed',                                       
@@ -442,7 +446,8 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ParserError.HOOK_NAME_DUPE.asMessage("testParsed"))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
+   		server.isUp mustBe true
 	   }
    }
 

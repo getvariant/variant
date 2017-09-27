@@ -56,8 +56,9 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
 	 * @throws Exception 
 	 * 
 	 */
-	private def recreateSchema() {
-		val jdbc = new JdbcService(server.schema.get.eventWriter)
+	private def recreateDatabase() {
+	   // Assuming the first schema in schemata has the right event writer
+		val jdbc = new JdbcService(server.schemata.head._2.eventWriter)
 		try {			
 			jdbc.getVendor match {
    			case JdbcService.Vendor.POSTGRES => jdbc.recreateSchema()
@@ -74,9 +75,9 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
    protected val server = app.injector.instanceOf[VariantServer]
    protected val connStore = app.injector.instanceOf[ConnectionStore]
    protected val ssnStore = app.injector.instanceOf[SessionStore]
- 
+   
    "Server must come up with a valid schema" in {
-      server.schema.isDefined mustBe true 
+      server.schemata.size > 0 mustBe true 
    }
    
     /**
@@ -90,7 +91,7 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
    override def beforeAll() {
 		synchronized { // once per JVM
 			if (!sqlSchemaCreated) {
-				recreateSchema()
+				recreateDatabase()
 				sqlSchemaCreated = true
 			}
 		}

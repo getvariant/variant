@@ -36,7 +36,7 @@ class SessionTest extends BaseSpecWithServer {
    import SessionTest._
    
    val endpoint = context + "/session"
-   val schemaId = server.schema.get.getId
+   val schemaId = server.schemata.head._2.getId
    val sessionJson = ParameterizedString(sessionJsonProto.format(System.currentTimeMillis(), schemaId))
 
    "SessionController" should {

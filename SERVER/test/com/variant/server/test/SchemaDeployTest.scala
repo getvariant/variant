@@ -64,27 +64,27 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
    "1. Schema should deploy from config property variant.schemata.dir" in {
       val server = app.injector.instanceOf[VariantServer]
       server.isUp mustBe true
-      server.schema.isDefined mustBe true
+      server.schemata.get("big_covar_schema").isDefined mustBe true
       server.startupErrorLog.size mustEqual 0
-      server.schema.get.getName mustEqual "big_covar_schema"
+      server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema"
    }
    
    "2. Schema should deploy from system property variant.schemata.dir" in {
       
       val server = app.injector.instanceOf[VariantServer]
       server.isUp mustBe true
-      server.schema.isDefined mustBe true
+      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
       server.startupErrorLog.size mustEqual 0
-      server.schema.get.getName mustEqual "parser_covariant_okay_big_test"
+      server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
    }
 
    "3. Schema should deploy from system property variant.schemata.dir" in {
       
       val server = app.injector.instanceOf[VariantServer]
       server.isUp mustBe true
-      server.schema.isDefined mustBe true
+      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
       server.startupErrorLog.size mustEqual 0
-      server.schema.get.getName mustEqual "parser_covariant_okay_big_test"
+      server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
    }
 
 }

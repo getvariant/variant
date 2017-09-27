@@ -21,9 +21,9 @@ import com.variant.core.impl.StateVisitedEvent
  */
 class RequestTest extends BaseSpecWithServer {
    
-   val schema = server.schema.get
+   val schema = server.schemata.head._2
    val schemaId = schema.getId
-   val writer = server.schema.get.eventWriter
+   val writer = server.schemata.head._2.eventWriter
    val reader = EventReader(writer)
 
    "Event writer" should {
@@ -55,7 +55,7 @@ class RequestTest extends BaseSpecWithServer {
          
          val reqBody = Json.obj(
             "cid" -> cid,
-            "ssn" -> SessionImpl.empty(sid).toJson
+            "ssn" -> SessionImpl.empty(sid, schema).toJson
             )
          val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(reqBody)).get
          status(resp) mustBe OK

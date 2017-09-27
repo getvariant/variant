@@ -14,7 +14,8 @@ class TargetingTest extends BaseSpecWithServer {
 	val deltaAsFraction = .05f
 
 		
-
+	val schemaName = "TargetingTest"
+	
    val schemaJson = """
 {
    'meta':{
@@ -122,14 +123,14 @@ class TargetingTest extends BaseSpecWithServer {
          val schemaDeployer = SchemaDeployerString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponse
-         server.schema.isDefined mustBe true
-         val schema = server.schema.get
+         server.schemata.get(schemaName).isDefined mustBe true
+         val schema = server.schemata.get(schemaName).get
          val state = schema.getState("state1")
          val test = schema.getTest("test1")
    		
          val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = SessionImpl.empty("sid")
+   			val ssn = SessionImpl.empty("sid", schema)
    			ssn.targetForState(state)
    			val expName = ssn.coreSession.getStateRequest.getLiveExperience(test).getName()
    			expName match {
@@ -155,14 +156,14 @@ class TargetingTest extends BaseSpecWithServer {
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponse
 
-         server.schema.isDefined mustBe true
-         val schema = server.schema.get
+         server.schemata.get(schemaName).isDefined mustBe true
+         val schema = server.schemata.get(schemaName).get
          val state = schema.getState("state1")
          val test = schema.getTest("test1")
 
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = SessionImpl.empty("sid" + i)
+   			val ssn = SessionImpl.empty("sid" + i, schema)
    			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
    			val req = ssn.targetForState(state)
    			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
@@ -194,14 +195,14 @@ class TargetingTest extends BaseSpecWithServer {
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponse
 
-         server.schema.isDefined mustBe true
-         val schema = server.schema.get
+         server.schemata.get(schemaName).isDefined mustBe true
+         val schema = server.schemata.get(schemaName).get
          val state = schema.getState("state1")
          val test = schema.getTest("test1")
 
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = SessionImpl.empty("sid" + i)
+   			val ssn = SessionImpl.empty("sid" + i, schema)
    			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
    			val req = ssn.targetForState(state)
    			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test1"
@@ -236,14 +237,14 @@ class TargetingTest extends BaseSpecWithServer {
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponse
 
-         server.schema.isDefined mustBe true
-         val schema = server.schema.get
+         server.schemata.get(schemaName).isDefined mustBe true
+         val schema = server.schemata.get(schemaName).get
          val state = schema.getState("state1")
          val test = schema.getTest("test1")
 
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = SessionImpl.empty("sid" + i)
+   			val ssn = SessionImpl.empty("sid" + i, schema)
    			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
    			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe null
    			val req = ssn.targetForState(state)
@@ -278,14 +279,14 @@ class TargetingTest extends BaseSpecWithServer {
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponse
 
-         server.schema.isDefined mustBe true
-         val schema = server.schema.get
+         server.schemata.get(schemaName).isDefined mustBe true
+         val schema = server.schemata.get(schemaName).get
          val state = schema.getState("state1")
          val test = schema.getTest("test1")
 
    		val counts = Array(0, 0, 0)
    		for (i <- 1 to trials) {
-   			val ssn = SessionImpl.empty("sid" + i)
+   			val ssn = SessionImpl.empty("sid" + i, schema)
    			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
    			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe null
    			val req = ssn.targetForState(state)
@@ -320,13 +321,13 @@ class TargetingTest extends BaseSpecWithServer {
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponse
          
-         server.schema.isDefined mustBe true
-         val schema = server.schema.get
+         server.schemata.get(schemaName).isDefined mustBe true
+         val schema = server.schemata.get(schemaName).get
 
          val state1 = schema.getState("state1")
 		   
 	
-		   var ssn = SessionImpl.empty(newSid())
+		   var ssn = SessionImpl.empty(newSid(), schema)
    	   
    	   val caughtEx = intercept[ServerException.User] {
              ssn.targetForState(state1)   // targeting hook returns an experience not from test1

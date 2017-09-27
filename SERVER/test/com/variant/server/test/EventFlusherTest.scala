@@ -97,8 +97,8 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponse
    		response.getMessages.size mustBe 0
-   		server.schema.isDefined mustBe true
-   		val schema = server.schema.get
+   		server.schemata.get("FlusherTest").isDefined mustBe true
+   		val schema = server.schemata("FlusherTest")
    		schema.getFlusher() mustBe null
    		
    		// As defined in conf-test/variant.conf
@@ -114,7 +114,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponse
    		response.getMessages.size mustBe 1
-   		server.schema.isDefined mustBe false
+   		server.schemata.size mustBe 0
    		
      	var msg = response.getMessages.get(0)
      	msg.getSeverity mustBe ERROR
@@ -174,8 +174,8 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponse
    		response.getMessages.size mustBe 0
-   		server.schema.isDefined mustBe true
-   		val schema = server.schema.get
+   		server.schemata.get("FlusherTest").isDefined mustBe true
+   		val schema = server.schemata("FlusherTest")
    		schema.getFlusher() mustNot be (null)
    		
    		// As defined in conf-test/variant.conf

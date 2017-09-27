@@ -12,7 +12,7 @@ trait SchemaDeployer {
    * The returned collection may change over time, as some deployers may
    * scan periodically for updates.
    */
-  def schemata: Seq[ServerSchema]
+  def schemata: Map[String, ServerSchema]
   
  /**
    * Subclasses should override this, if there's anything to be done prior to parsing.

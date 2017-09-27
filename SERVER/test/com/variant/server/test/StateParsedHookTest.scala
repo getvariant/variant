@@ -22,7 +22,9 @@ import com.variant.server.schema.SchemaDeployerString
  * 
  */
 class StateParsedHookTest extends BaseSpecWithServer {
-	  
+	 
+   val schemaName = "SchemaScopedHooks"
+   
   /*
    * 
    */
@@ -31,10 +33,10 @@ class StateParsedHookTest extends BaseSpecWithServer {
 	   ////////////////
 	   "be posted for all states" in {
 	      
-   	    val schema = """
+   	    val schema = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'schemaScopedHooks',
+      'name':'$schemaName',
       'hooks':[                                                         
          {                                                              
    		     'name':'stateParsed',                                       
@@ -115,16 +117,16 @@ class StateParsedHookTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed",  "state3")))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
 	   }
 	
 		////////////////
 	   "be posted by all non-clipping hooks on the chain" in {
 	      
-   	    val schema = """
+   	    val schema = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'schemaScopedHooks',
+      'name':'$schemaName',
       'hooks':[
          // Gets posted
          {                                                              
@@ -248,7 +250,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed2", "state3")))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
 	   }
 	}
 	
@@ -261,10 +263,10 @@ class StateParsedHookTest extends BaseSpecWithServer {
 	   ////////////////
 	   "be posted for enclosing state only" in {
 	      
-   	    val schema = """
+   	    val schema = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'stateScopedHooks'                                                           
+      'name':'$schemaName'                                                           
    },                                                                   
 	'states':[
 	    {
@@ -333,16 +335,16 @@ class StateParsedHookTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state2")))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
 	   }
 	
 		////////////////
 	   "be posted by all non-clipping hooks on the chain" in {
 	      
-   	    val schema = """
+   	    val schema = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'schemaScopedHooks'
+      'name':'$schemaName'
    },                                                                   
 	'states':[
 	    {
@@ -434,16 +436,16 @@ class StateParsedHookTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed2", "state2")))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
 	   }
 
 			////////////////
 	   "be posted before the schema-scoped one" in {
 	      
-   	    val schema = """
+   	    val schema = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'schemaScopedHooks',
+      'name':'$schemaName',
       'hooks':[
          {                                                              
    		     'name':'stateParsed',                                       
@@ -564,7 +566,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
 	   }
    }
 
@@ -577,10 +579,10 @@ class StateParsedHookTest extends BaseSpecWithServer {
 	   ////////////////
 	   "be posted for states which had parser errors" in {
 	      
-   	    val schema = """
+   	    val schema = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'stateScopedHooks',                                                          
+      'name':'$schemaName',                                                          
       'hooks':[                                                         
          {                                                              
    		     'name':'stateParsed',                                       
@@ -678,7 +680,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ParserError.STATEREF_UNDEFINED.asMessage("state1", "test1"))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
 	   }
    }
 

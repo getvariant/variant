@@ -38,6 +38,8 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             "test6-hooks"->test6HooksList)
    }
 
+   val schemaName = "parser_ovariant_okay_big_test"
+   
   	"TestQualificationHook" should {
 	   
 	   var ssn: SessionImpl = null
@@ -73,8 +75,8 @@ class TestQualificationHookTest extends BaseSpecWithServer {
        
         //response.getMessages.foreach(println(_))
    	   response.hasMessages() mustBe false
-       server.schema.isDefined mustBe true
-   	   val schema = server.schema.get
+       server.schemata.get(schemaName).isDefined mustBe true
+   	   val schema = server.schemata.get(schemaName).get
    		 val state1 = schema.getState("state1")
    	   val test1 = schema.getTest("test1")
    	   val test2 = schema.getTest("test2")
@@ -82,7 +84,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test4 = schema.getTest("test4")
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
-       ssn = SessionImpl.empty(newSid())
+       ssn = SessionImpl.empty(newSid(), schema)
 
    	   schema.getHooks() mustBe empty
    	   test1.getHooks.size mustBe 1
@@ -126,7 +128,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 	   
 	   "not be posted for tests already qualified" in {
 
-   	   val schema = server.schema.get
+   	   val schema = server.schemata.get(schemaName).get
    		val state1 = schema.getState("state1")
    		val state2 = schema.getState("state2")
    	   val test1 = schema.getTest("test1")
@@ -190,8 +192,8 @@ class TestQualificationHookTest extends BaseSpecWithServer {
        val response = schemaDeployer.parserResponse
 
        response.hasMessages() mustBe false
-       server.schema.isDefined mustBe true
-   	   val schema = server.schema.get
+       server.schemata.get(schemaName).isDefined mustBe true
+   	   val schema = server.schemata.get(schemaName).get
    		 val state1 = schema.getState("state1")
    		 val state2 = schema.getState("state2")
    	   val test1 = schema.getTest("test1")
@@ -200,7 +202,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test4 = schema.getTest("test4")
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
-       ssn = SessionImpl.empty(newSid())
+       ssn = SessionImpl.empty(newSid(), schema)
    	   
        schema.getHooks() mustBe empty
    	   test1.getHooks.size mustBe 1
@@ -223,7 +225,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   h6.getInit mustBe "{\"removeFromTargetingTracker\":false}"
 
    	   // New Session.
-		   ssn = SessionImpl.empty(newSid())
+		   ssn = SessionImpl.empty(newSid(), schema)
 		   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
 		   val req = ssn.targetForState(state1);
 		   ssn.getTraversedStates.toSet mustEqual Set((state1, 1))
@@ -269,8 +271,8 @@ class TestQualificationHookTest extends BaseSpecWithServer {
        val response = schemaDeployer.parserResponse
 
    	   response.hasMessages() mustBe false
-       server.schema.isDefined mustBe true
-   	   val schema = server.schema.get
+       server.schemata.get(schemaName).isDefined mustBe true
+   	   val schema = server.schemata.get(schemaName).get
    		 val state1 = schema.getState("state1")
    		 val state2 = schema.getState("state2")
    	   val test1 = schema.getTest("test1")
@@ -279,7 +281,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   val test4 = schema.getTest("test4")
    	   val test5 = schema.getTest("test5")
    	   val test6 = schema.getTest("test6")
-       ssn = SessionImpl.empty(newSid())
+       ssn = SessionImpl.empty(newSid(), schema)
    	   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
    	 
 		   val req = ssn.targetForState(state2);
@@ -301,7 +303,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
 	   "honor session-current targeting settings when targeting for state3" in {
 
-   	   val schema = server.schema.get
+   	   val schema = server.schemata.get(schemaName).get
    		val state1 = schema.getState("state1")
    		val state2 = schema.getState("state2")
    		val state3 = schema.getState("state3")
@@ -348,13 +350,13 @@ class TestQualificationHookTest extends BaseSpecWithServer {
        val response = schemaDeployer.parserResponse
 
    	   response.hasMessages() mustBe false
-   		 server.schema.isDefined mustBe true
+   		 server.schemata.get(schemaName).isDefined mustBe true
 
-   	   val schema = server.schema.get
+   	   val schema = server.schemata.get(schemaName).get
    		 val state1 = schema.getState("state1")
 		
    		 // New session.
-       ssn = SessionImpl.empty(newSid())
+       ssn = SessionImpl.empty(newSid(), schema)
 		   ssn.targetForState(state1)
 		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
 	   }

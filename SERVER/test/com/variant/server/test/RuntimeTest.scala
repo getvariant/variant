@@ -23,13 +23,13 @@ class RuntimeTest extends BaseSpecWithServer {
    
 	"Runtime" should {
 	   
-    val schemaDeployer = SchemaDeployerClasspath("/ParserCovariantOkayBigTestNoHooks.json")
-    server.useSchemaDeployer(schemaDeployer)
-    val response = schemaDeployer.parserResponse
-    response.hasMessages() mustBe false		
-   	server.schema.isDefined mustBe true
-   	val schema = server.schema.get
- 	  val runtime = RuntimeTestFacade(schema)
+       val schemaDeployer = SchemaDeployerClasspath("/ParserCovariantOkayBigTestNoHooks.json")
+       server.useSchemaDeployer(schemaDeployer)
+       val response = schemaDeployer.parserResponse
+       response.hasMessages() mustBe false		
+       server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
+   	 val schema = server.schemata.get("ParserCovariantOkayBigTestNoHooks").get
+ 	    val runtime = RuntimeTestFacade(schema)
 
    	val state1 = schema.getState("state1")
    	val state2 = schema.getState("state2")

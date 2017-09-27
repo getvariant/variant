@@ -50,7 +50,7 @@ class SessionController @Inject() (
 
       logger.debug(s"Found connection [$cid]")      
 
-      val coreSession = CoreSession.fromJson(ssnJson, server.schema.get);
+      val coreSession = CoreSession.fromJson(ssnJson, conn.schema);
       ssnStore.put(coreSession, conn)
       Ok
    }

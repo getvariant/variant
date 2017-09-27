@@ -11,6 +11,7 @@ import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.VariantServer
 import com.variant.core.UserError.Severity
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.HashMap
 
 /**
  * Deploy schemata from a directory on the file system.
@@ -21,16 +22,18 @@ import scala.collection.mutable.ArrayBuffer
 class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
 
   private val logger = Logger(this.getClass)
-  private val _schemata = new ArrayBuffer[ServerSchema]
-  // Default is empty
-  override def schemata = _schemata.toSeq
+  private val _schemata = HashMap[String, ServerSchema]()
+  
+  // Convert internal mutable map to an immutable one for the worldy
+  override def schemata = _schemata.toMap  
 
   /**
    * Read content of schemata dir and deploy.
    */
   override def bootstrap: Unit = {
 
-    var dirName = sys.props.get(SCHEMATA_DIR)
+    var dirName = sys.props.get(SCHEMATA_DIR)  // Shouldn't this work automatically for Config?
+    
     if (dirName.isEmpty) {
       if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
         throw new ServerException.User(CommonError.CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
@@ -45,23 +48,23 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
 
     val schemaFiles = dir.listFiles()
 
-    if (schemaFiles.length == 0) {
-      logger.info("No schemata detected")
-    } else if (schemaFiles.length > 1)
-      throw new ServerException.User(ServerErrorLocal.MULTIPLE_SCHEMATA_NOT_SUPPORTED, dirName.get)
-
-    val schemaFile = schemaFiles.head
+    if (schemaFiles.length == 0) logger.info("No schemata detected in " + dirName)
     
-    // Parse
-    val parserResp = parse(Source.fromFile(schemaFile).mkString)
-   
-    // If failed parsing, print errors and no schema.
-    if (parserResp.hasMessages(Severity.ERROR)) {
-      logger.error("Schema [%s] was not deployed due to previous parser error(s)".format(schemaFile.getName));
+    schemaFiles.foreach { (file) => 
+      
+      logger.debug("Deploying schema from file [%s]".format(file.getName))
+      
+      // Parse
+      val parserResp = parse(Source.fromFile(file).mkString)
+     
+      // If failed parsing, print errors and no schema.
+      if (parserResp.hasMessages(Severity.ERROR)) {
+        logger.error("Schema [%s] was not deployed due to previous parser error(s)".format(file.getName));
+      }
+      else {
+         val schema = deploy(parserResp)
+        _schemata += (schema.getName -> schema)
+      }    
     }
-    else {
-      _schemata += deploy(parserResp)
-    }    
   }
-
 }

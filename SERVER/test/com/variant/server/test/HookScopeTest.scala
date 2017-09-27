@@ -26,6 +26,7 @@ import com.variant.server.schema.SchemaDeployerString
  */
 class HookScopeTest extends BaseSpecWithServer {
 
+   val schemaName = "HookScopeTest"
   /*
    * 
    */
@@ -34,10 +35,10 @@ class HookScopeTest extends BaseSpecWithServer {
 	   ////////////////
 	   "never violate scoping rules" in {
 	      
-   	    val schemaSrc = """
+   	    val schemaSrc = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'testParsedHookTest',
+      'name':'$schemaName',
       'hooks':[
          {                                                              
    		     'name':'testParsed',                                       
@@ -161,14 +162,14 @@ class HookScopeTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe INFO
    		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test3")))
 
-   		server.schema.isDefined mustBe true
+   		server.schemata.get(schemaName).isDefined mustBe true
    		
    		// Confirm runtime hooks were posted.
-   		val schema = server.schema.get
-      val state1 = schema.getState("state1")
-      val state2 = schema.getState("state2")
-      val test = schema.getTest("test1")
-      val ssn = SessionImpl.empty(newSid())
+   		val schema = server.schemata(schemaName)
+         val state1 = schema.getState("state1")
+         val state2 = schema.getState("state2")
+         val test = schema.getTest("test1")
+         val ssn = SessionImpl.empty(newSid(), schema)
    		ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
    		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
    		ssn.targetForState(state1)
@@ -192,10 +193,10 @@ class HookScopeTest extends BaseSpecWithServer {
 	   ////////////////
 	   "throw state scope violation error if defined at test scope" in {
 	      
-   	    val schemaSrc = """
+   	    val schemaSrc = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'testParsedHookTest'
+      'name':'$schemaName'
    },                                                                   
 	'states':[ 
     {
@@ -269,7 +270,7 @@ class HookScopeTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ServerErrorLocal.HOOK_TEST_SCOPE_VIOLATION.asMessage("stateParsed", "test1", "com.variant.core.lce.StateParsedLifecycleEvent"))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
    		
 	   }
    }
@@ -282,10 +283,10 @@ class HookScopeTest extends BaseSpecWithServer {
 	   ////////////////
 	   "throw state scope violation error if defined at state scope" in {
 	      
-   	    val schemaSrc = """
+   	    val schemaSrc = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'testParsedHookTest'
+      'name':'$schemaName'
    },                                                                   
 	'states':[ 
     {
@@ -359,7 +360,7 @@ class HookScopeTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT1", "test1")))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
    		
 	   }
    }
@@ -372,10 +373,10 @@ class HookScopeTest extends BaseSpecWithServer {
 	   ////////////////
 	   "never violate scoping rules" in {
 	      
-   	    val schemaSrc = """
+   	    val schemaSrc = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'testTargeter',
+      'name':'$schemaName',
       'hooks':[
         {                                                              
    		     'name':'testTargeter',                                       
@@ -427,19 +428,20 @@ class HookScopeTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-      val schemaDeployer = SchemaDeployerString(schemaSrc)
-      server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponse
+         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponse
   
-   		response.getMessages.size mustBe 0
+   	   response.getMessages.size mustBe 0
 
-   		server.schema.isDefined mustBe true
+   		server.schemata.get(schemaName).isDefined mustBe true
    		
    		// Confirm runtime hooks were posted.
-   		val schema = server.schema.get
-      val state1 = schema.getState("state1")
-      val test = schema.getTest("test1")
-      val ssn = SessionImpl.empty(newSid())
+   		val schema = server.schemata.get(schemaName).get
+
+         val state1 = schema.getState("state1")
+         val test = schema.getTest("test1")
+         val ssn = SessionImpl.empty(newSid(), schema)
    		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
    		ssn.targetForState(state1)
    		// Only test1 is instrumented on state1
@@ -456,13 +458,13 @@ class HookScopeTest extends BaseSpecWithServer {
 	   ////////////////
 	   "throw state scope violation error if defined at state scope" in {
 	      
-   	    val schemaSrc = """
+   	    val schemaSrc = s"""
 {                                                                              
    'meta':{                                                             		    	    
       'name':'_',
       'hooks': [
         {                                                              
-   		     'name':'testQualifier',                                       
+   		     'name':'$schemaName',                                       
    			   'class':'com.variant.server.test.hooks.TestQualificationHookNil'
    	     }
       ]                                                                
@@ -522,7 +524,7 @@ class HookScopeTest extends BaseSpecWithServer {
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testQualifier", "state1", "com.variant.server.lce.TestQualificationLifecycleEvent"))
 
-   		server.schema.isDefined mustBe false
+   		server.schemata.get(schemaName).isDefined mustBe false
    		
    		   		
 	   }

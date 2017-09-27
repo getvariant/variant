@@ -1,16 +1,14 @@
 package com.variant.server.controller
 
-import javax.inject.Inject
-import play.api.mvc.Controller
-import play.api.mvc.Request
-import com.variant.server.conn.SessionStore
-import play.api.Logger
-import com.variant.core.ServerError._
+import com.variant.core.ServerError.TooManyConnections
+import com.variant.core.ServerError.UnknownSchema
 import com.variant.server.boot.ServerErrorRemote
-import com.variant.server.boot.VariantServer
-import com.variant.server.schema.ServerSchema
 import com.variant.server.conn.Connection
 import com.variant.server.conn.ConnectionStore
+import com.variant.server.conn.SessionStore
+
+import javax.inject.Inject
+import play.api.Logger
 
 //@Singleton -- Is this for non-shared state controllers?
 class ConnectionController @Inject() (override val connStore: ConnectionStore, override val ssnStore: SessionStore) extends VariantController  {
@@ -23,10 +21,11 @@ class ConnectionController @Inject() (override val connStore: ConnectionStore, o
 curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
     */
    def post(name: String) = VariantAction {
-      var result: Option[ServerSchema] = None
-      VariantServer.instance.schema.foreach {s => if (s.getName().equals(name)) result = Some(s)}
-      result match {
+     
+      schema(name) match {
+        
          case Some(schema) => {
+           
             logger.debug("Schema [%s] found".format(name))
             val conn = Connection(schema)
             

@@ -59,7 +59,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
       "throw CONFIG_PROPERTY_NOT_SET" in {
          val server = app.injector.instanceOf[VariantServer]
          server.isUp mustBe false
-         server.schema.isDefined mustBe false
+         server.schemata.size mustBe 0
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          //ex.getSeverity mustEqual FATAL
@@ -73,7 +73,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
       "cause server to throw SCHEMATA_DIR_MISSING" in {
          val server = app.injector.instanceOf[VariantServer]
          server.isUp mustBe false
-         server.schema.isDefined mustBe false
+         server.schemata.size mustBe 0
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          //ex.getSeverity mustEqual FATAL
@@ -83,7 +83,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
       "return 503 in every http request after SCHEMATA_DIR_MISSING" in {
          val context = app.configuration.getString("play.http.context").get
          val server = app.injector.instanceOf[VariantServer]
-         server.isUp mustBe false
+         server.isUp mustBe false 
          val resp = route(app, FakeRequest(GET, context + "/session/foo")).get
          status(resp) mustBe SERVICE_UNAVAILABLE
          contentAsString(resp) mustBe empty
@@ -94,9 +94,8 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
       
       "cause server to throw SCHEMATA_DIR_NOT_DIR" in {
          val server = app.injector.instanceOf[VariantServer]
-         server.schema.isDefined mustBe false
+         server.schemata.size mustBe 0
          server.isUp mustBe false
-         server.schema.isDefined mustBe false
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          //ex.getSeverity mustEqual FATAL
@@ -113,27 +112,4 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
       }
    }
    
-   "Schemata dir with multiple files" should {
-
-      "cause server to throw MULTIPLE_SCHEMATA_NOT_SUPPORTED" in {
-         val server = app.injector.instanceOf[VariantServer]
-         server.schema.isDefined mustBe false
-         server.isUp mustBe false
-         server.schema.isDefined mustBe false
-         server.startupErrorLog.size mustEqual 1
-         val ex = server.startupErrorLog.head
-         //ex.getSeverity mustEqual FATAL
-         ex.getMessage mustEqual new ServerException.User(MULTIPLE_SCHEMATA_NOT_SUPPORTED, "test-schemata-multi").getMessage
-      }
-
-      "return 503 in every http request after MULTIPLE_SCHEMATA_NOT_SUPPORTED" in {
-         val context = app.configuration.getString("play.http.context").get
-         val server = app.injector.instanceOf[VariantServer]
-         server.isUp mustBe false
-         server.schema.isDefined mustBe false
-         val resp = route(app, FakeRequest(GET, context + "/session/foo")).get
-         status(resp) mustBe SERVICE_UNAVAILABLE
-         contentAsString(resp) mustBe empty
-      }
-   }
 }

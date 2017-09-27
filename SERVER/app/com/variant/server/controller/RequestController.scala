@@ -7,7 +7,6 @@ import play.api.mvc.Request
 import com.variant.server.conn.SessionStore
 import play.api.Logger
 import com.variant.core.ServerError._
-import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerSchema
 import com.variant.server.conn.Connection
 import com.variant.server.conn.ConnectionStore
@@ -25,11 +24,9 @@ import com.variant.server.impl.StateRequestImpl
 //@Singleton -- Is this for non-shared state controllers?
 class RequestController @Inject() (
       override val connStore: ConnectionStore, 
-      override val ssnStore: SessionStore, 
-      server: VariantServer) extends VariantController  {
+      override val ssnStore: SessionStore) extends VariantController  {
    
    private val logger = Logger(this.getClass)	
-   private lazy val schema = VariantServer.instance.schema.get
    
    /**
     * POST: Create state request by targeting a session.
@@ -55,8 +52,9 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          throw new ServerException.Remote(MissingProperty, "state")
 
       val ssn = ssnStore.getOrBust(sid.get)
-
-      schema.runtime.targetForState(ssn, server.schema.get.getState(state.get))
+      val schema = ssn.connection.schema
+      
+      schema.runtime.targetForState(ssn, schema.getState(state.get))
 
       val response = JsObject(Seq(
          "session" -> JsString(ssn.asInstanceOf[SessionImpl].coreSession.toJson())

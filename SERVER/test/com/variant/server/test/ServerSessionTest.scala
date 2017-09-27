@@ -17,11 +17,11 @@ class ServerSessionTest extends BaseSpecWithServer {
 
       "should serialize and deserialize" in  {
 	
-         val schema = server.schema.get
+         val schema = server.schemata.head._2
          val state1 = schema.getState("state1")
          state1 mustNot be (null)
        
-         val ssn = SessionImpl.empty(newSid())
+         val ssn = SessionImpl.empty(newSid(), schema)
        
          ssn.targetForState(state1)
          ssn.getStateRequest mustNot be (null)

@@ -22,8 +22,7 @@ import play.api.mvc.AnyContent
 //@Singleton -- Is this for non-shared state controllers?
 class RootController @Inject() (
       override val connStore: ConnectionStore, 
-      override val ssnStore: SessionStore, 
-      private val server: VariantServer) extends VariantController  {
+      override val ssnStore: SessionStore) extends VariantController  {
       
    def splash() = VariantAction { req =>
       Ok(server.productName + ", " +

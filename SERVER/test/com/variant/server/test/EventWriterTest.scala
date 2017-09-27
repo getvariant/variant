@@ -16,8 +16,8 @@ import com.variant.server.impl.SessionImpl
 		
 class EventWriterTest extends BaseSpecWithServer {
 
-   val schemaId = server.schema.get.getId
-   val eventWriter = server.schema.get.eventWriter
+   val schema = server.schemata("big_covar_schema")
+   val eventWriter = schema.eventWriter
    val eventReader = EventReader(eventWriter)
 
    val sessionJson = ParameterizedString("""
@@ -30,7 +30,7 @@ class EventWriterTest extends BaseSpecWithServer {
         "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
         "tests": ["test1","test2"]
       }
-   """.format(System.currentTimeMillis(), schemaId))
+   """.format(System.currentTimeMillis(), schema.getId()))
    
    "Event writer" should {
 

@@ -16,8 +16,8 @@
  
 {
    'meta':{
-      'name':'parser_covariant_okay_big_test',
-      'comment':'Based on Parser Covariant Okay Bit Test Schema in Core.',
+      'name':'ParserCovariantOkayBigTestNoHooks',
+      'comment':'Based on Parser Covariant Okay Big Test Schema in Core.',
       'hooks':[]
       
    },

@@ -98,8 +98,8 @@ import EventTest._
          (json \ "ts").asOpt[Long].isDefined mustBe true
          val schemaSrc = (json \ "schema" \ "src").as[String]
          val schemaId = (json \ "schema" \ "id").as[String]
-         schemaSrc mustBe server.schema.get.source
-         schemaId mustBe server.schema.get.getId
+         schemaSrc mustBe server.schemata("big_covar_schema").source
+         schemaId mustBe server.schemata("big_covar_schema").getId
          val parser = ServerSchemaParser()
          val parserResp = parser.parse(schemaSrc)
          parserResp.hasMessages() mustBe false
@@ -138,8 +138,8 @@ import EventTest._
             (json \ "ts").asOpt[Long].isDefined mustBe true
             val schemaSrc = (json \ "schema" \ "src").as[String]
             val schemaId = (json \ "schema" \ "id").as[String]
-            schemaSrc mustBe server.schema.get.source
-            schemaId mustBe server.schema.get.getId
+            schemaSrc mustBe server.schemata("big_covar_schema").source
+            schemaId mustBe server.schemata("big_covar_schema").getId
             val parser = ServerSchemaParser()
             val parserResp = parser.parse(schemaSrc)
             parserResp.hasMessages() mustBe false
@@ -174,8 +174,8 @@ import EventTest._
          (json \ "ts").asOpt[Long].isDefined mustBe true
          val schemaSrc = (json \ "schema" \ "src").as[String]
          val schemaId = (json \ "schema" \ "id").as[String]
-         schemaSrc mustBe server.schema.get.source
-         schemaId mustBe server.schema.get.getId
+         schemaSrc mustBe server.schemata("big_covar_schema").source
+         schemaId mustBe server.schemata("big_covar_schema").getId
          val parser = ServerSchemaParser()
          val parserResp = parser.parse(schemaSrc)
          parserResp.hasMessages() mustBe false

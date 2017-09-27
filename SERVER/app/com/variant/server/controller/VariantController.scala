@@ -13,6 +13,7 @@ import com.variant.server.conn.SessionStore
 import play.api.mvc.Request
 import play.api.mvc.AnyContent
 import com.variant.server.boot.ServerErrorRemote
+import com.variant.server.schema.ServerSchema
 
 /**
  * All Variant controllers inherit from this.
@@ -22,5 +23,15 @@ abstract class VariantController extends Controller {
    val connStore: ConnectionStore
    val ssnStore: SessionStore
    
-   // Anything?
+   /**
+    * An alias for the server
+    */
+   val server = VariantServer.instance
+   
+   /**
+    * Find schema by name
+    */
+   def schema(name:String): Option[ServerSchema] = {
+      server.schemata.get(name)
+   }
 }
