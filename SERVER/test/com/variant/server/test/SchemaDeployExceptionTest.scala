@@ -25,7 +25,7 @@ import com.variant.server.api.ServerException
 class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
    
   /**
-   * This will implicitely rebuild the server before each test.
+   * This will implicitly rebuild the server before each test.
    */
    implicit override def newAppForTest(testData: TestData): Application = {
 
@@ -42,11 +42,6 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .configure(Map("variant.schemata.dir" -> "test-schemata-file"))
-            .build()
-      else if (testData.name.contains("MULTIPLE_SCHEMATA_NOT_SUPPORTED")) 
-         new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.config))
-            .configure(Map("variant.schemata.dir" -> "test-schemata-multi"))
             .build()
       else 
          new GuiceApplicationBuilder()
