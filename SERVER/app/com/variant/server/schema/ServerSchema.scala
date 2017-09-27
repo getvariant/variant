@@ -99,7 +99,7 @@ class ServerSchema (val response: ParserResponse, val hookService: ServerHooksSe
 	val eventWriter = new EventWriter(flushService)
 	
 	def undeploy(): Unit = {
-	   logger.info("Schema [%s], ID [%s] undeployed".format(getName, getId))
+	   logger.info("Undeployed schema [%s], ID [%s]".format(getName, getId))
 	}
 }
 

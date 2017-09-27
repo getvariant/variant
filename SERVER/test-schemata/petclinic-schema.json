@@ -8,7 +8,7 @@
 
 {
    'meta':{
-      'name':'petclinicNoHooks',
+      'name':'PetclinicNoHooks',
       'comment':'Experiment schema for the Pet Clinic demo application w/o the hooks'
    },
    'states':[                                                

@@ -64,9 +64,12 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
    "1. Schema should deploy from config property variant.schemata.dir" in {
       val server = app.injector.instanceOf[VariantServer]
       server.isUp mustBe true
-      server.schemata.get("big_covar_schema").isDefined mustBe true
       server.startupErrorLog.size mustEqual 0
+      server.schemata.size mustBe 2
+      server.schemata.get("big_covar_schema").isDefined mustBe true
       server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema"
+      server.schemata.get("PetclinicNoHooks").isDefined mustBe true
+      server.schemata.get("PetclinicNoHooks").get.getName mustEqual "PetclinicNoHooks"
    }
    
    "2. Schema should deploy from system property variant.schemata.dir" in {
