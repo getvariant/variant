@@ -21,9 +21,9 @@ import com.variant.core.impl.StateVisitedEvent
  */
 class RequestTest extends BaseSpecWithServer {
    
-   val schema = server.schemata.head._2
+   val schema = server.schemata("big_covar_schema")
    val schemaId = schema.getId
-   val writer = server.schemata.head._2.eventWriter
+   val writer = schema.eventWriter
    val reader = EventReader(writer)
 
    "Event writer" should {

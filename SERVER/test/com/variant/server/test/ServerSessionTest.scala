@@ -17,7 +17,7 @@ class ServerSessionTest extends BaseSpecWithServer {
 
       "should serialize and deserialize" in  {
 	
-         val schema = server.schemata.head._2
+         val schema = server.schemata("big_covar_schema")
          val state1 = schema.getState("state1")
          state1 mustNot be (null)
        
