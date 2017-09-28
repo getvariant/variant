@@ -32,10 +32,12 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
             .build()
       }
       else if (testData.name.startsWith("2.")) {
-         // Just system property
-         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/test-schemata-override/test-schema.json"))
+         // Override with system property. In order for the distribution version of the petclinic schema
+         // to parse, we need to give a custom variant.ext.dir location
          sys.props.contains("variant.schemata.dir") must be (false)
-         sys.props +=(("variant.schemata.dir","/tmp/test-schemata-override"))
+         sys.props.contains("variant.ext.dir") must be (false)
+         sys.props +=("variant.schemata.dir" -> "distr/schemata")  // only has petclinic schema.
+         sys.props +=("variant.ext.dir" -> "distr/ext")
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .build()
@@ -76,9 +78,10 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
       
       val server = app.injector.instanceOf[VariantServer]
       server.isUp mustBe true
-      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
       server.startupErrorLog.size mustEqual 0
-      server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
+      server.schemata.size mustBe 1
+      server.schemata.get("petclinic").isDefined mustBe true
+      server.schemata.get("petclinic").get.getName mustEqual "petclinic"
    }
 
    "3. Schema should deploy from system property variant.schemata.dir" in {

@@ -29,6 +29,7 @@ import com.variant.server.schema.SchemaDeployer
 trait VariantServer {
    
    val config: Config // Do not expose Play's Configuration
+   val classloader: VariantClassLoader
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
    val startupErrorLog = mutable.ArrayBuffer[ServerException]()
@@ -46,7 +47,6 @@ object VariantServer {
    // This must be a method because some tests will rebuild the server, so the content of _instance will be changing.
    def instance = _instance
 
-   //def classLoader = PlayApplicationInjector.playApp.classloader
 }
 
 /**
@@ -62,12 +62,14 @@ class VariantServerImpl @Inject() (
    ) extends VariantServer {
    
 	private[this] val logger = Logger(this.getClass)
-  private[this] var _schemaDeployer: SchemaDeployer = null
+   private[this] var _schemaDeployer: SchemaDeployer = null
   
 	// Make this instance statically discoverable
 	VariantServer._instance = this	
 	
 	override val config = playConfig.underlying
+	
+	override val classloader = new VariantClassLoader()
   
 	override def schemata = _schemaDeployer.schemata 
 	

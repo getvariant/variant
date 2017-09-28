@@ -1,5 +1,8 @@
 package com.variant.server.schema;
 
+import static com.variant.server.api.ConfigKeys.EVENT_FLUSHER_CLASS_INIT;
+import static com.variant.server.api.ConfigKeys.EVENT_FLUSHER_CLASS_NAME;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,13 +13,10 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.FlusherService;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.server.boot.ServerErrorLocal;
-import com.variant.server.boot.VariantClassLoader;
-import com.variant.server.boot.VariantServer$;
-
-import static com.variant.server.api.ConfigKeys.*;
-
 import com.variant.server.api.EventFlusher;
+import com.variant.server.boot.ServerErrorLocal;
+import com.variant.server.boot.VariantServer;
+import com.variant.server.boot.VariantServer$;
 
 public class ServerFlusherService implements FlusherService {
 
@@ -25,14 +25,16 @@ public class ServerFlusherService implements FlusherService {
 	// Schema parser in whose scope we operate
 	private final SchemaParser parser;
 	
+	// This is how we access companion objects's fields from java.
+	private final VariantServer server = VariantServer$.MODULE$.instance();
+	
 	// If flusher is not defined, it will be instantiated lazily by getFlusher
 	private EventFlusher flusher = null;	
 	
 		
 	private Flusher defaultFlusher() {
 		
-		// This is how we access companion objects's fields from java.
-		Config config = VariantServer$.MODULE$.instance().config();
+		Config config = server.config();
 
 		if (!config.hasPath(EVENT_FLUSHER_CLASS_NAME)) {
 			parser.responseInProgress().addMessage(ServerErrorLocal.FLUSHER_NOT_CONFIGURED);
@@ -74,7 +76,7 @@ public class ServerFlusherService implements FlusherService {
 		
 		try {
 			// Create the Class object for the supplied UserHook implementation.
-			Object flusherObj = VariantClassLoader.instantiate(flusher.getClassName(), flusher.getInit());
+			Object flusherObj = server.classloader().instantiate(flusher.getClassName(), flusher.getInit());
 			
 			if (flusherObj == null) {
 				response.addMessage(ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR, flusher.getClassName());

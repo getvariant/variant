@@ -13,28 +13,28 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.variant.server.api.ServerException;
 
-public class VariantClassLoader {
+public class VariantClassLoader extends URLClassLoader {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantClassLoader.class);
-	private final static ClassLoader instance = newInstance();   
-
+	
 	/**
-	 * 
+	 * Build an array of custom URLs we want to include in the path.
 	 * @return
 	 */
-	private static ClassLoader newInstance() {
-	   
-		String extDirName = System.getProperty("user.dir") + "/ext";
+	private static URL[] getCustomUrls() {
 
+		// Let tests override the location of the ext directory
+		String extDirName = System.getProperty("variant.ext.dir");
+		if (extDirName == null) extDirName = System.getProperty("user.dir") + "/ext";
+		
 		File extDir = new File(extDirName);
          
 	   // if ext directory doesn't exist, we assume to run not in production.
 	   if (!extDir.exists() || !extDir.isDirectory()) {
-		   //TODO; inject play mode here so we only issue this error in produciton.
 		   LOG.error("Extension directory [" + extDir.getAbsolutePath() + "] does not exist.");
-		   return URLClassLoader.newInstance(new URL[0]);
+		   return new URL[0];
 	   }
-      
+
 	   // Construct list of all jars in the directory as URLs
 	   File[] files = extDir.listFiles(
 			   new FileFilter() {
@@ -50,7 +50,18 @@ public class VariantClassLoader {
 			   throw new ServerException.Internal("Unable to initialize Variant class loader");
 		   }
 	   }
-      return URLClassLoader.newInstance(urls);
+
+	   LOG.debug("Instantiated class loader from [" + extDirName + "]");
+	   return (urls);
+
+	}
+	
+	/**
+	 * package visibility constructor.
+	 * @return
+	 */
+	public VariantClassLoader() {
+		super(getCustomUrls());
 	}
 
 	/**
@@ -58,9 +69,9 @@ public class VariantClassLoader {
 	 * @return null if proper constructor could not be found, i.e. nullary if initArg was null,
 	 *         or the single arg constructor of type ConfigObject otherwise.
 	 */
-	public static Object instantiate(String className, String initArg) throws Exception {
+	public Object instantiate(String className, String initArg) throws Exception {
 		
-		Class<?> cls = VariantClassLoader.instance.loadClass(className);
+		Class<?> cls = super.loadClass(className);
 
 		Object result = null;
 		

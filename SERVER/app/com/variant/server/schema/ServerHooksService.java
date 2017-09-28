@@ -16,7 +16,8 @@ import com.variant.core.schema.parser.HooksService;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.server.api.ServerException;
 import com.variant.server.boot.ServerErrorLocal;
-import com.variant.server.boot.VariantClassLoader;
+import com.variant.server.boot.VariantServer;
+import com.variant.server.boot.VariantServer$;
 
 /**
  * User Hook processor
@@ -54,7 +55,9 @@ public class ServerHooksService implements HooksService {
 	// Test scoped hooks, in ordinal order
 	private ArrayList<HookListEntry> testHooks = new ArrayList<HookListEntry>();
 
-	
+	// This is how we access companion objects's fields from java.
+   private final VariantServer server = VariantServer$.MODULE$.instance();
+		
 	/**
 	 * Package instantiation only.
 	 */
@@ -69,7 +72,7 @@ public class ServerHooksService implements HooksService {
 		
 		try {
 			// Create the hook object for the supplied UserHook implementation.
-			Object hookObj = VariantClassLoader.instantiate(hookDef.getClassName(), hookDef.getInit());
+			Object hookObj = server.classloader().instantiate(hookDef.getClassName(), hookDef.getInit());
 					
 			if (hookObj == null) {
 				parserResponse.addMessage(ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR, hookDef.getClassName());
@@ -198,7 +201,7 @@ public class ServerHooksService implements HooksService {
 				   
 			   hookDef = hle.hookDef;
 				   												
-			   UserHook<LifecycleEvent> hook = (UserHook<LifecycleEvent>) VariantClassLoader.instantiate(hle.hookDef.getClassName(), hle.hookDef.getInit());
+			   UserHook<LifecycleEvent> hook = (UserHook<LifecycleEvent>) server.classloader().instantiate(hle.hookDef.getClassName(), hle.hookDef.getInit());
 			   UserHook.PostResult result = hook.post(event);
 			   
 			   if (LOG.isTraceEnabled())
