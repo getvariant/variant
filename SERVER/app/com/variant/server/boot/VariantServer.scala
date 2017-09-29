@@ -36,6 +36,7 @@ trait VariantServer {
    def schemata: Map[String, ServerSchema]
    def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
    def isUp: Boolean
+   def schemaDeployer: SchemaDeployer
 }
 
 /**
@@ -72,6 +73,8 @@ class VariantServerImpl @Inject() (
 	override val classloader = new VariantClassLoader()
   
 	override def schemata = _schemaDeployer.schemata 
+	
+	override def schemaDeployer = _schemaDeployer
 	
    override def isUp = {startupErrorLog.size == 0}
 

@@ -3,6 +3,7 @@ package com.variant.server.schema
 import play.api.Logger
 import scala.collection.mutable
 import com.variant.server.api.ServerException
+import com.variant.core.schema.parser.ParserResponse
 
 
 trait SchemaDeployer {
@@ -13,6 +14,12 @@ trait SchemaDeployer {
    * scan periodically for updates.
    */
   def schemata: Map[String, ServerSchema]
+  
+  /**
+   * All parser response objects in order they were produced by the deployer,
+   * regardless whether the schema was deployed or not.
+   */
+  def parserResponses: Seq[ParserResponse]
   
  /**
    * Subclasses should override this, if there's anything to be done prior to parsing.

@@ -23,9 +23,8 @@ public class ServerErrorLocal extends CommonError {
 	//
 	// 421-440 Schema deployment
 	//
-// Available
-//	public final static ServerErrorLocal MULTIPLE_SCHEMATA_NOT_SUPPORTED = 
-//			new ServerErrorLocal(421, Severity.FATAL, "Schemata directory [%s] cannot contain multiple files");
+	public final static ServerErrorLocal SCHEMA_NAME_DUPE = 
+			new ServerErrorLocal(421, Severity.ERROR, "Duplicate schema name [%s]");
 
 	public final static ServerErrorLocal OBJECT_CONSTRUCTOR_ERROR = 
 			new ServerErrorLocal(422, Severity.ERROR, "Unable to instantiate class [%s] becuase no suitable constructor was found");

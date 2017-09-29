@@ -46,20 +46,22 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
     if (!dir.isDirectory)
       throw new ServerException.User(ServerErrorLocal.SCHEMATA_DIR_NOT_DIR, dirName.get)
 
+    logger.info("Schemata deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
+    
     val schemaFiles = dir.listFiles()
 
     if (schemaFiles.length == 0) logger.info("No schemata detected in " + dirName)
     
     schemaFiles.foreach { (file) => 
       
-      logger.debug("Deploying schema from file [%s]".format(file.getName))
+      logger.debug("Deploying schema from file [%s]".format(file.getAbsolutePath))
       
       // Parse
       val parserResp = parse(Source.fromFile(file).mkString)
-     
+               
       // If failed parsing, print errors and no schema.
       if (parserResp.hasMessages(Severity.ERROR)) {
-        logger.error("Schema [%s] was not deployed due to previous parser error(s)".format(file.getName));
+        logger.error("Schema [%s] was not deployed due to previous parser error(s)".format(file.getAbsolutePath));
       }
       else {
          val schema = deploy(parserResp)
