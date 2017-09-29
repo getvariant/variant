@@ -90,13 +90,6 @@ public class Server {
 	}
 
 	/**
-	 * SCID
-	 *
-	private String scid(String sid) {
-		return sid + "." + connection.getId();
-	}
-	*/
-	/**
 	 * Destroy this server.
 	 */
 	private void destroy() {

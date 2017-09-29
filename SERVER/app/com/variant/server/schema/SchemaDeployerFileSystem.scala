@@ -24,7 +24,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
   private val logger = Logger(this.getClass)
   private val _schemata = HashMap[String, ServerSchema]()
   
-  // Convert internal mutable map to an immutable one for the worldy
+  // Convert internal mutable map to an immutable one for the world
   override def schemata = _schemata.toMap  
 
   /**

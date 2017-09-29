@@ -201,7 +201,7 @@ public class CoreStateRequest implements Serializable {
 	 * @return
 	 * @throws Exception
 	 */
-	public String toJson(Schema schema) throws Exception {
+	public String toJson() throws Exception {
 		
 		StringWriter result = new StringWriter(2048);
 		JsonGenerator jsonGen = new JsonFactory().createGenerator(result);

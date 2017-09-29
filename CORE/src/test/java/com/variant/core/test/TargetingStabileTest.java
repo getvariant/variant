@@ -31,7 +31,7 @@ public class TargetingStabileTest extends BaseTestCore {
 		assertFalse(response.hasMessages());
 		schema = response.getSchema();
 		
-		CoreSession ssn = new CoreSession("SID", schema);
+		CoreSession ssn = new CoreSession("SID");
 		assertNull(ssn.getStateRequest());
 		
 		// 

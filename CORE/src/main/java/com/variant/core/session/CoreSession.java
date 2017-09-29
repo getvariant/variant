@@ -37,7 +37,6 @@ public class CoreSession implements Serializable {
 	private LinkedHashMap<State, Integer> traversedStates = new LinkedHashMap<State, Integer>();
 	private LinkedHashSet<Test> traversedTests = new LinkedHashSet<Test>();
 	private LinkedHashSet<Test> disqualTests = new LinkedHashSet<Test>();
-	private Schema schema;
 	private SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
 	
 	//---------------------------------------------------------------------------------------------//
@@ -48,9 +47,8 @@ public class CoreSession implements Serializable {
 	 * Brand new session
 	 * @param id
 	 */
-	public CoreSession(String id, Schema schema) {
+	public CoreSession(String id) {
 		this.sid = id;		
-		this.schema = schema;
 	}
 	
 	/**
@@ -82,7 +80,7 @@ public class CoreSession implements Serializable {
 	@SuppressWarnings("unchecked")
 	public static CoreSession fromJson(Map<String,?> parsedJson, Schema schema) {
 		
-		CoreSession result = new CoreSession(null, schema);
+		CoreSession result = new CoreSession(null);
 		
 		Object idObj = parsedJson.get(FIELD_NAME_ID);
 		if (idObj == null) 
@@ -91,12 +89,6 @@ public class CoreSession implements Serializable {
 			throw new CoreException.Internal("id not string");
 		result.sid = (String)idObj;
 		
-		Object schidObj = parsedJson.get(FIELD_NAME_SCHEMA_ID);
-		if (schidObj == null ) 
-			throw new CoreException.Internal("No schema id");
-		if (!(schidObj instanceof String)) 
-			throw new CoreException.Internal("Schema id not string");
-
 		Object tsObj = parsedJson.get(FIELD_NAME_TIMESTAMP);
 		if (tsObj == null) 
 			throw new CoreException.Internal("No timestamp");
@@ -214,13 +206,6 @@ public class CoreSession implements Serializable {
 		return sid;
 	}
 
-	/**
-	 * 
-	 */
-	public Schema getSchema() {
-		return schema;
-	}
-
 	public Date createDate() {
 		return createDate;
 	}
@@ -326,7 +311,6 @@ public class CoreSession implements Serializable {
 	private static final String FIELD_NAME_DISQUAL_TESTS = "disqualTests";
 	private static final String FIELD_NAME_NAME = "name";
 	private static final String FIELD_NAME_CURRENT_REQUEST = "request";
-	private static final String FIELD_NAME_SCHEMA_ID = "schid";
 	private static final String FIELD_NAME_ID = "sid";
 	private static final String FIELD_NAME_TARGETING_STABIL = "stabil";
 	private static final String FIELD_NAME_STATE = "state";
@@ -347,11 +331,10 @@ public class CoreSession implements Serializable {
 			jsonGen.writeStartObject();
 			jsonGen.writeStringField(FIELD_NAME_ID, sid);
 			jsonGen.writeNumberField(FIELD_NAME_TIMESTAMP, createDate.getTime());
-			jsonGen.writeStringField(FIELD_NAME_SCHEMA_ID, schema.getId());
 			
 			if (currentRequest != null) {
 				jsonGen.writeFieldName(FIELD_NAME_CURRENT_REQUEST);
-				jsonGen.writeRawValue(currentRequest.toJson(schema));
+				jsonGen.writeRawValue(currentRequest.toJson());
 			}
 			
 			if (traversedStates.size() > 0) {

@@ -105,7 +105,7 @@ public class ConnectionImpl implements Connection {
 		
 		if (result == null && create) {
 			// Session expired locally, recreate OK.  Don't bother with the server.
-			CoreSession coreSession = new CoreSession(sessionId, schema);
+			CoreSession coreSession = new CoreSession(sessionId);
 			result = new SessionImpl(this, coreSession, sidTracker, userData);
 			server.sessionSave(result);
 			cache.add(result);

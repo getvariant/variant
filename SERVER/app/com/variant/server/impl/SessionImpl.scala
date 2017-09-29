@@ -47,7 +47,7 @@ object SessionImpl {
     * New server session with nothing in it, but the SID - good for tests.
     */
    def empty(sid: String, schema: ServerSchema) = {
-      new SessionImpl(new CoreSession(sid, schema), new Connection(schema))
+      new SessionImpl(new CoreSession(sid), new Connection(schema))
    }
 
 }
@@ -71,7 +71,7 @@ class SessionImpl(var coreSession: CoreSession, val connection: Connection) exte
    
    override def getId = coreSession.getId
    
-   override def getSchema  = coreSession.getSchema
+   override def getSchema  = connection.schema
       
    override def getStateRequest = StateRequestImpl(this, coreSession.getStateRequest)
    

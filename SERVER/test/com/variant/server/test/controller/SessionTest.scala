@@ -20,7 +20,6 @@ object SessionTest {
    val sessionJsonProto = """
       {"sid":"${sid:SID}",
        "ts": ${ts:%d}, 
-       "schid": "${schid:}",
        "request": {"state": "state1","status": "OK","committed": true, 
                   "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}], 
                   "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
@@ -48,7 +47,6 @@ class SessionTest extends BaseSpecWithServer {
       }
 
       var connId: String = null 
-      var schId: String = null
       
       "obtain a connection" in {
          // POST new connection
@@ -58,7 +56,6 @@ class SessionTest extends BaseSpecWithServer {
          json mustNot be (null)
          connId = (json \ "id").as[String]
          connId mustNot be (null)
-         schId = server.schemata("big_covar_schema").getId()
       }
 
       "return SessionExpired on GET non-existent session" in {  
@@ -76,22 +73,11 @@ class SessionTest extends BaseSpecWithServer {
          
          val body = Json.obj(
             "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> "foo", "schid" -> schId)
+            "ssn" -> sessionJson.expand("sid" -> "foo")
             )
          val resp = route(app, FakeRequest(PUT, endpoint).withJsonBody(body)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
-      }
-
-      "return what on PUT non-existent session with invalid schema ID" in {
-         val body = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> "foo", "schid" -> "non-existent")
-            )
-         val resp = route(app, FakeRequest(PUT, endpoint).withJsonBody(body)).get
-         status(resp) mustBe OK
-         contentAsString(resp) mustBe empty
-
       }
       
       "return OK and existing session on GET" in {
@@ -100,14 +86,14 @@ class SessionTest extends BaseSpecWithServer {
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
          VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
-            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo", "schid" -> schId).toString())
+            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo").toString())
       }
 
       "return OK and replace existing session on PUT" in {
        
          val body = Json.obj(
             "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> "foo2", "schid" -> schId)
+            "ssn" -> sessionJson.expand("sid" -> "foo2")
             )
 
          val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
@@ -119,14 +105,14 @@ class SessionTest extends BaseSpecWithServer {
          status(respGet) mustBe OK
          val respAsJson = contentAsJson(respGet)
          VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
-            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo", "schid" -> schId))
+            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo"))
       }
 
       "return OK and create session on PUT" in {
        
          val body = Json.obj(
             "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> "bar1", "schid" -> schId)
+            "ssn" -> sessionJson.expand("sid" -> "bar1")
             )
          val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
          val respPut = route(app, reqPut).get
@@ -137,7 +123,7 @@ class SessionTest extends BaseSpecWithServer {
          status(respGet) mustBe OK
          val respAsJson = contentAsJson(respGet)
          VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
-            VariantStringUtils.digest(sessionJson.expand("sid" -> "bar1", "schid" -> schId))
+            VariantStringUtils.digest(sessionJson.expand("sid" -> "bar1"))
       }
 
      "not lose existing session with different key" in {
@@ -146,7 +132,7 @@ class SessionTest extends BaseSpecWithServer {
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
          VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
-            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo", "schid" -> schId))
+            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo"))
       }
 
       "return SessionExpired on GET expired session" in {
@@ -173,7 +159,7 @@ class SessionTest extends BaseSpecWithServer {
          val sid = newSid()
          val body = Json.obj(
             "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> sid, "schid" -> schId)
+            "ssn" -> sessionJson.expand("sid" -> sid)
             )
          val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
          val respPut = route(app, reqPut).get
@@ -195,7 +181,7 @@ class SessionTest extends BaseSpecWithServer {
          // Attempt to resave the session on the new connection should fail.
          val body2 = Json.obj(
             "cid" -> conn2Id,
-            "ssn" -> sessionJson.expand("sid" -> sid, "schid" -> schId)
+            "ssn" -> sessionJson.expand("sid" -> sid)
          )
          val reqPut2 = FakeRequest(PUT, endpoint).withJsonBody(body2)
          val respPut2 = route(app, reqPut2).get
@@ -221,7 +207,7 @@ class SessionTest extends BaseSpecWithServer {
          val sid = newSid()
          val body = Json.obj(
             "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> sid, "schid" -> schId)
+            "ssn" -> sessionJson.expand("sid" -> sid)
             )
          val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
          val respPut = route(app, reqPut).get
@@ -249,7 +235,7 @@ class SessionTest extends BaseSpecWithServer {
          val ts = System.currentTimeMillis()
          val body = Json.obj(
             "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> sid, "schid" -> schId , "ts" -> ts)
+            "ssn" -> sessionJson.expand("sid" -> sid, "ts" -> ts)
             )
          val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
          val respPut = route(app, reqPut).get
@@ -257,7 +243,7 @@ class SessionTest extends BaseSpecWithServer {
          contentAsString(respPut) mustBe empty
          val ssnJson = ssnStore.get(sid).get.asInstanceOf[SessionImpl].toJson
          
-         ssnJson mustBe normalJson(sessionJson.expand("sid" -> sid, "schid" -> schId, "ts" -> ts))
+         ssnJson mustBe normalJson(sessionJson.expand("sid" -> sid, "ts" -> ts))
          val ssn = ssnStore.get(sid).get
          ssn.getCreateDate.getTime mustBe ts
          ssn.getId mustBe sid
