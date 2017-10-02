@@ -1,6 +1,7 @@
 package com.variant.client.test;
 
 import org.junit.AfterClass;
+import org.junit.BeforeClass;
 
 /**
  * Base class for all Core JUnit tests.
@@ -21,7 +22,7 @@ public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 	 * Start the server once for test case
 	 * @throws Exception
 	 */
-	protected void startServer(String serverConfig) throws Exception {
+	protected static void startServer(String serverConfig) throws Exception {
 		String sysVar = System.getProperty("variant.server.project.dir");
 		String exec = (sysVar == null ? defaultPathToServerProject : sysVar) + "/mbin/startServer.sh";
 		String conf = serverConfig == null ? defaultServerConfig : serverConfig;
@@ -29,8 +30,13 @@ public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 		server.start();
 	}
 
-	protected void startServer() throws Exception {
+	protected static void startServer() throws Exception {
 	   startServer(null);
+	}
+	
+	@BeforeClass
+	public static void beforeClass() throws Exception {
+		startServer();
 	}
 	
 	/**
