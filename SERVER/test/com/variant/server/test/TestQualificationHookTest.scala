@@ -71,7 +71,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
          
        val schemaDeployer = SchemaDeployerString(schemaSrc)
        server.useSchemaDeployer(schemaDeployer)
-       val response = schemaDeployer.parserResponse
+       val response = schemaDeployer.parserResponses(0)
        
         //response.getMessages.foreach(println(_))
    	   response.hasMessages() mustBe false
@@ -189,7 +189,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
          
        val schemaDeployer = SchemaDeployerString(schemaSrc)
        server.useSchemaDeployer(schemaDeployer)
-       val response = schemaDeployer.parserResponse
+       val response = schemaDeployer.parserResponses(0)
 
        response.hasMessages() mustBe false
        server.schemata.get(schemaName).isDefined mustBe true
@@ -268,7 +268,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
        val schemaDeployer = SchemaDeployerString(schemaSrc)
        server.useSchemaDeployer(schemaDeployer)
-       val response = schemaDeployer.parserResponse
+       val response = schemaDeployer.parserResponses(0)
 
    	   response.hasMessages() mustBe false
        server.schemata.get(schemaName).isDefined mustBe true
@@ -347,7 +347,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
        val schemaDeployer = SchemaDeployerString(schemaSrc)
        server.useSchemaDeployer(schemaDeployer)
-       val response = schemaDeployer.parserResponse
+       val response = schemaDeployer.parserResponses(0)
 
    	   response.hasMessages() mustBe false
    		 server.schemata.get(schemaName).isDefined mustBe true

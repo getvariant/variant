@@ -6,16 +6,19 @@ import com.variant.core.UserError.Severity
 import com.variant.core.schema.ParserMessage
 import scala.collection.mutable.HashMap
 
+/**
+ * 
+ */
 object SchemaDeployerString {
 
-  def apply(schemaStr: String) = new SchemaDeployerString(schemaStr)
+  def apply(schemaStrings: String*) = new SchemaDeployerString(schemaStrings:_*)
   
 }
 
 /**
  * Deploy single schema from a string in memory.
  */
-class SchemaDeployerString(schemaStr: String) extends AbstractSchemaDeployer {
+class SchemaDeployerString(schemaStrings: String*) extends AbstractSchemaDeployer {
 
    private val logger = Logger(this.getClass)
 
@@ -24,15 +27,19 @@ class SchemaDeployerString(schemaStr: String) extends AbstractSchemaDeployer {
    // Convert internal mutable map to an immutable one for the world
    override def schemata = _schemata.toMap  
   
-   val parserResponse = parse(schemaStr)
+   schemaStrings.foreach { (schemaSrc:String) =>
+      
+      val parserResponse = parse(schemaSrc)
        
-   // If failed parsing, print errors and no schema.
-   if (parserResponse.hasMessages(Severity.ERROR)) {
-      logger.error("Schema was not deployed due to previous parser error(s)")
+      // If failed parsing, print errors and no schema.
+      if (parserResponse.hasMessages(Severity.ERROR)) {
+         logger.error("Schema was not deployed due to previous parser error(s)")
+      }
+      else {
+         val schema = deploy(parserResponse)
+         _schemata += schema.getName -> schema
+      }   
+      
    }
-   else {
-      val schema = deploy(parserResponse)
-      _schemata += schema.getName -> schema
-   }   
 
 }

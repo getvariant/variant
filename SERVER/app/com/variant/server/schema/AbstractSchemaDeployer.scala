@@ -18,7 +18,7 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
   private var hooker: ServerHooksService = _
   private var flusher: ServerFlusherService = _
 
-  private var _parserResponses = mutable.Seq[ParserResponse]()
+  private val _parserResponses = mutable.ArrayBuffer[ParserResponse]()
   override lazy val parserResponses = _parserResponses.toSeq
   
   /**
@@ -40,7 +40,7 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
     // Log all parser messages.
     resp.getMessages(Severity.ERROR).foreach { logParserMessage(_) }
     
-    _parserResponses = _parserResponses :+ resp
+    _parserResponses += resp
     resp
   }
  

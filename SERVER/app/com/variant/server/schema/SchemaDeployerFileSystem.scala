@@ -46,7 +46,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
     if (!dir.isDirectory)
       throw new ServerException.User(ServerErrorLocal.SCHEMATA_DIR_NOT_DIR, dirName.get)
 
-    logger.info("Schemata deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
+    logger.info("File system deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
     
     val schemaFiles = dir.listFiles()
 

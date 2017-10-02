@@ -50,7 +50,7 @@ sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { 
 // ScalaTest related settings
 //
 
-fork := true  // without this JVM options won't take place
+fork := true  // without this JVM options won't hold
 
 //testOptions += Tests.Argument(TestFrameworks.JUnit); Do we need this?
 

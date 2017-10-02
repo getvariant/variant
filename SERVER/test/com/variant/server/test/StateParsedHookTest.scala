@@ -83,7 +83,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
 
       val schemaDeployer = SchemaDeployerString(schema)
       server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponse
+      val response = schemaDeployer.parserResponses(0)
    		response.getMessages.size mustBe 9
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 3
@@ -186,7 +186,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
 
       val schemaDeployer = SchemaDeployerString(schema)
       server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponse
+      val response = schemaDeployer.parserResponses(0)
    		response.getMessages.size mustBe 18
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 6
@@ -319,7 +319,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
 
       val schemaDeployer = SchemaDeployerString(schema)
       server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponse
+      val response = schemaDeployer.parserResponses(0)
    		response.getMessages.size mustBe 3
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
@@ -410,7 +410,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
 
       val schemaDeployer = SchemaDeployerString(schema)
       server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponse
+      val response = schemaDeployer.parserResponses(0)
    		response.getMessages.size mustBe 6
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 2
@@ -512,7 +512,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
 
       val schemaDeployer = SchemaDeployerString(schema)
       server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponse
+      val response = schemaDeployer.parserResponses(0)
 
    		response.getMessages.size mustBe 15
    		response.getMessages(FATAL) mustBe empty
@@ -654,7 +654,7 @@ class StateParsedHookTest extends BaseSpecWithServer {
 
       val schemaDeployer = SchemaDeployerString(schema)
       server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponse
+      val response = schemaDeployer.parserResponses(0)
    		response.getMessages.foreach(println(_))
    		response.getMessages.size mustBe 6
    		response.getMessages(FATAL) mustBe empty

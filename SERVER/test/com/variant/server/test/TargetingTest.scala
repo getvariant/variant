@@ -8,18 +8,15 @@ import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.schema.SchemaDeployerString
 
-class TargetingTest extends BaseSpecWithServer {
+class TargetingTest extends BaseSpecWithServerAsync {
 
 	val trials = 500000
 	val deltaAsFraction = .05f
-
-		
-	val schemaName = "TargetingTest"
 	
    val schemaJson = """
 {
    'meta':{
-      'name':'TargetingTest'
+      'name':'${schemaName:}'
    },
    'states':[
       {
@@ -114,197 +111,213 @@ class TargetingTest extends BaseSpecWithServer {
    ]
 }"""
 
+   val schemaNames = Array(
+         "TargetingTestNoHooks", 
+         "TargetingTest1NullHook", 
+         "TargetingTest2NullHooks",
+         "TargetingTestABHook",
+         "TargetingTestABCHook")
+   
+   val schemaSrc0 = ParameterizedString(schemaJson).expand(
+         "schemaName" -> schemaNames(0))
+   val schemaSrc1 = ParameterizedString(schemaJson).expand(
+         "schemaName" -> schemaNames(1),
+         "hooks" -> 
+         """ {
+               'name' :'nullTargetingHook',
+               'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+             }
+         """)
+         
+    val schemaSrc2 = ParameterizedString(schemaJson).expand(         
+         "schemaName" -> schemaNames(2),
+         "hooks" -> 
+         """ {
+               'name' :'nullTargetingHook1',
+               'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+             },
+             {
+               'name' :'nullTargetingHook2',
+               'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+             }
+         """)
+
+   val schemaSrc3 = ParameterizedString(schemaJson).expand(
+         "schemaName" -> schemaNames(3),
+         "hooks" -> 
+         """ {
+               'name' :'nullHook',
+               'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+             },
+             {
+               'name' :'A_B_Hook',
+               'class':'com.variant.server.test.hooks.TestTargetingHook',
+               'init': {'weights':[1,1,0]}
+             }
+         """)
+         
+   val schemaSrc4 = ParameterizedString(schemaJson).expand(         
+         "schemaName" -> schemaNames(4),
+         "hooks" -> 
+         """ {
+               'name' :'nullHook',
+               'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+             },
+             {
+               'name' :'A_B_CHook',
+               'class':'com.variant.server.test.hooks.TestTargetingHook',
+               'init': {'weights':[1,1,1]}
+             }
+         """)
+
+   
 	"Runtime" should {
 
+	   "deploy multiple schemata from strings" in {
+         val schemaDeployer = SchemaDeployerString(schemaSrc0, schemaSrc1, schemaSrc2, schemaSrc3, schemaSrc4)
+         server.useSchemaDeployer(schemaDeployer)
+         schemaDeployer.parserResponses.size mustBe schemaNames.size
+         schemaDeployer.parserResponses.foreach { _.getMessages.size() mustBe 0 }
+         schemaNames.foreach {server.schemata.get(_).isDefined mustBe true}
+	   }
+	   
       "target according to weights with no targeting hooks" in {
 
-         val schemaSrc = ParameterizedString(schemaJson).expand()
-         
-         val schemaDeployer = SchemaDeployerString(schemaSrc)
-         server.useSchemaDeployer(schemaDeployer)
-         val response = schemaDeployer.parserResponse
-         server.schemata.get(schemaName).isDefined mustBe true
-         val schema = server.schemata.get(schemaName).get
-         val state = schema.getState("state1")
-         val test = schema.getTest("test1")
-   		
-         val counts = Array(0, 0, 0)
-   		for (i <- 1 to trials) {
-   			val ssn = SessionImpl.empty("sid", schema)
-   			ssn.targetForState(state)
-   			val expName = ssn.coreSession.getStateRequest.getLiveExperience(test).getName()
-   			expName match {
-   			   case "A" => counts(0) += 1
-      			case "B" => counts(1) += 1
-      			case "C" => counts(2) += 1
-   			}
-   		} 
-   		verifyCounts(counts, Array(1f, 2f, 97f))
+	      async {
+	         
+            val schema = server.schemata.get(schemaNames(0)).get
+            val state = schema.getState("state1")
+            val test = schema.getTest("test1")
+      		
+            val counts = Array(0, 0, 0)
+      		for (i <- 1 to trials) {
+      			val ssn = SessionImpl.empty("sid", schema)
+      			ssn.targetForState(state)
+      			val expName = ssn.coreSession.getStateRequest.getLiveExperience(test).getName()
+      			expName match {
+      			   case "A" => counts(0) += 1
+         			case "B" => counts(1) += 1
+         			case "C" => counts(2) += 1
+      			}
+      		} 
+      		verifyCounts(counts, Array(1f, 2f, 97f))
+	      }
       }
       
    	"target according to weights with null targeting hook" in {
 
-   	   val schemaSrc = ParameterizedString(schemaJson).expand(         
-               "hooks" -> 
-               """ {
-                     'name' :'nullTargetingHook',
-                     'class':'com.variant.server.test.hooks.TestTargetingHookNil'
-                   }
-               """)
-               
-         val schemaDeployer = SchemaDeployerString(schemaSrc)
-         server.useSchemaDeployer(schemaDeployer)
-         val response = schemaDeployer.parserResponse
+	      async {
 
-         server.schemata.get(schemaName).isDefined mustBe true
-         val schema = server.schemata.get(schemaName).get
-         val state = schema.getState("state1")
-         val test = schema.getTest("test1")
-
-   		val counts = Array(0, 0, 0)
-   		for (i <- 1 to trials) {
-   			val ssn = SessionImpl.empty("sid" + i, schema)
-   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
-   			val req = ssn.targetForState(state)
-   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
-   			val expName = req.getLiveExperience(test).getName()
-   			expName match {
-   			   case "A" => counts(0) += 1
-      			case "B" => counts(1) += 1
-      			case "C" => counts(2) += 1
-   			}
-   		} 
-   		verifyCounts(counts, Array(1f, 2f, 97f))
+	         val schema = server.schemata.get(schemaNames(1)).get
+            val state = schema.getState("state1")
+            val test = schema.getTest("test1")
+   
+      		val counts = Array(0, 0, 0)
+      		for (i <- 1 to trials) {
+      			val ssn = SessionImpl.empty("sid" + i, schema)
+      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			val req = ssn.targetForState(state)
+      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+      			val expName = req.getLiveExperience(test).getName()
+      			expName match {
+      			   case "A" => counts(0) += 1
+         			case "B" => counts(1) += 1
+         			case "C" => counts(2) += 1
+      			}
+      		} 
+      		verifyCounts(counts, Array(1f, 2f, 97f))
+	      }
       }
      
       "target according to weights with two null targeting hooks" in {
 
-         val schemaSrc = ParameterizedString(schemaJson).expand(         
-               "hooks" -> 
-               """ {
-                     'name' :'nullTargetingHook1',
-                     'class':'com.variant.server.test.hooks.TestTargetingHookNil'
-                   },
-                   {
-                     'name' :'nullTargetingHook2',
-                     'class':'com.variant.server.test.hooks.TestTargetingHookNil'
-                   }
-               """)
-               
-         val schemaDeployer = SchemaDeployerString(schemaSrc)
-         server.useSchemaDeployer(schemaDeployer)
-         val response = schemaDeployer.parserResponse
+	      async {
 
-         server.schemata.get(schemaName).isDefined mustBe true
-         val schema = server.schemata.get(schemaName).get
-         val state = schema.getState("state1")
-         val test = schema.getTest("test1")
-
-   		val counts = Array(0, 0, 0)
-   		for (i <- 1 to trials) {
-   			val ssn = SessionImpl.empty("sid" + i, schema)
-   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
-   			val req = ssn.targetForState(state)
-   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test1"
-   			val expName = req.getLiveExperience(test).getName()
-   			expName match {
-   			   case "A" => counts(0) += 1
-      			case "B" => counts(1) += 1
-      			case "C" => counts(2) += 1
-   			}
-   		} 
-   		verifyCounts(counts, Array(1f, 2f, 97f))
+            val schema = server.schemata.get(schemaNames(2)).get
+            val state = schema.getState("state1")
+            val test = schema.getTest("test1")
+   
+      		val counts = Array(0, 0, 0)
+      		for (i <- 1 to trials) {
+      			val ssn = SessionImpl.empty("sid" + i, schema)
+      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			val req = ssn.targetForState(state)
+      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test1"
+      			val expName = req.getLiveExperience(test).getName()
+      			expName match {
+      			   case "A" => counts(0) += 1
+         			case "B" => counts(1) += 1
+         			case "C" => counts(2) += 1
+      			}
+      		} 
+      		verifyCounts(counts, Array(1f, 2f, 97f))
+	      }
       }
 
 
       "target at 1/1/0 with the null hook and the A/B hook" in {
 
-         
-         val schemaSrc = ParameterizedString(schemaJson).expand(         
-               "hooks" -> 
-               """ {
-                     'name' :'nullHook',
-                     'class':'com.variant.server.test.hooks.TestTargetingHookNil'
-                   },
-                   {
-                     'name' :'A_B_Hook',
-                     'class':'com.variant.server.test.hooks.TestTargetingHook',
-                     'init': {'weights':[1,1,0]}
-                   }
-               """)
-               
-         val schemaDeployer = SchemaDeployerString(schemaSrc)
-         server.useSchemaDeployer(schemaDeployer)
-         val response = schemaDeployer.parserResponse
+	      async {
 
-         server.schemata.get(schemaName).isDefined mustBe true
-         val schema = server.schemata.get(schemaName).get
-         val state = schema.getState("state1")
-         val test = schema.getTest("test1")
-
-   		val counts = Array(0, 0, 0)
-   		for (i <- 1 to trials) {
-   			val ssn = SessionImpl.empty("sid" + i, schema)
-   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
-   			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe null
-   			val req = ssn.targetForState(state)
-   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
-   			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe "test1"
-   			val expName = req.getLiveExperience(test).getName()
-   			expName match {
-   			   case "A" => counts(0) += 1
-      			case "B" => counts(1) += 1
-      			case "C" => counts(2) += 1
-   			}
-   		} 
-   		verifyCounts(counts, Array(1f, 1f, 0f))
+            val schema = server.schemata.get(schemaNames(3)).get
+            val state = schema.getState("state1")
+            val test = schema.getTest("test1")
+   
+      		val counts = Array(0, 0, 0)
+      		for (i <- 1 to trials) {
+      			val ssn = SessionImpl.empty("sid" + i, schema)
+      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe null
+      			val req = ssn.targetForState(state)
+      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+      			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe "test1"
+      			val expName = req.getLiveExperience(test).getName()
+      			expName match {
+      			   case "A" => counts(0) += 1
+         			case "B" => counts(1) += 1
+         			case "C" => counts(2) += 1
+      			}
+      		} 
+      		verifyCounts(counts, Array(1f, 1f, 0f))
+	      }
       }
 
 		"still target at 1/1/1 with the null hook and the A/B/C hook" in {
          
-         val schemaSrc = ParameterizedString(schemaJson).expand(         
-               "hooks" -> 
-               """ {
-                     'name' :'nullHook',
-                     'class':'com.variant.server.test.hooks.TestTargetingHookNil'
-                   },
-                   {
-                     'name' :'A_B_CHook',
-                     'class':'com.variant.server.test.hooks.TestTargetingHook',
-                     'init': {'weights':[1,1,1]}
-                   }
-               """)
-               
-         val schemaDeployer = SchemaDeployerString(schemaSrc)
-         server.useSchemaDeployer(schemaDeployer)
-         val response = schemaDeployer.parserResponse
+	      async {
 
-         server.schemata.get(schemaName).isDefined mustBe true
-         val schema = server.schemata.get(schemaName).get
-         val state = schema.getState("state1")
-         val test = schema.getTest("test1")
-
-   		val counts = Array(0, 0, 0)
-   		for (i <- 1 to trials) {
-   			val ssn = SessionImpl.empty("sid" + i, schema)
-   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
-   			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe null
-   			val req = ssn.targetForState(state)
-   			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
-   			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe "test1"
-   			val expName = req.getLiveExperience(test).getName()
-   			expName match {
-   			   case "A" => counts(0) += 1
-      			case "B" => counts(1) += 1
-      			case "C" => counts(2) += 1
-   			}
-   		} 
-   		verifyCounts(counts, Array(1f, 1f, 1f))
+            val schema = server.schemata.get(schemaNames(4)).get
+            val state = schema.getState("state1")
+            val test = schema.getTest("test1")
+   
+      		val counts = Array(0, 0, 0)
+      		for (i <- 1 to trials) {
+      			val ssn = SessionImpl.empty("sid" + i, schema)
+      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe null
+      			val req = ssn.targetForState(state)
+      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+      			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe "test1"
+      			val expName = req.getLiveExperience(test).getName()
+      			expName match {
+      			   case "A" => counts(0) += 1
+         			case "B" => counts(1) += 1
+         			case "C" => counts(2) += 1
+      			}
+      		} 
+      		verifyCounts(counts, Array(1f, 1f, 1f))
+	      }
 		}
+		
+     "join all" in {
+         joinAll()
+      }
 		
 	   "Throw exception if targeting hook sets bad experience" in {
 
-         val schemaSrc = ParameterizedString(schemaJson).expand(         
+	      val schemaName = "bad_experience"
+         val schemaSrc = ParameterizedString(schemaJson).expand(
+               "schemaName" -> schemaName,
                "hooks" -> 
                """ {
                      'name' :'nullHook',
@@ -319,7 +332,7 @@ class TargetingTest extends BaseSpecWithServer {
                
          val schemaDeployer = SchemaDeployerString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
-         val response = schemaDeployer.parserResponse
+         val response = schemaDeployer.parserResponses(0)
          
          server.schemata.get(schemaName).isDefined mustBe true
          val schema = server.schemata.get(schemaName).get
@@ -347,8 +360,8 @@ class TargetingTest extends BaseSpecWithServer {
 	 * @param weights
 	 */
 	private def verifyCounts(counts: Array[Int], weights: Array[Float]) {
-	   println(counts.mkString(","))
-	   println(weights.mkString(","))
+	   //println(counts.mkString(","))
+	   //println(weights.mkString(","))
 		var sumCounts = 0
 		var sumWeights = 0f
 		for (i <- 0 until counts.length) {

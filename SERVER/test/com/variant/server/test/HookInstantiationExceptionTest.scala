@@ -71,7 +71,7 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
 
    	     val schemaDeployer = SchemaDeployerString(schema)
          server.useSchemaDeployer(schemaDeployer)
-         val response = schemaDeployer.parserResponse
+         val response = schemaDeployer.parserResponses(0)
          response.getMessages.size mustBe 1
      		 response.getMessages(FATAL) mustBe empty
      		 response.getMessages(ERROR).size() mustBe 1
@@ -127,7 +127,7 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
 
    	  val schemaDeployer = SchemaDeployerString(schema)
       server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponse
+      val response = schemaDeployer.parserResponses(0)
       response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
@@ -177,7 +177,7 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
 
      val schemaDeployer = SchemaDeployerString(schema)
       server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponse
+      val response = schemaDeployer.parserResponses(0)
       response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
@@ -227,7 +227,7 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
 
       val schemaDeployer = SchemaDeployerString(schema)
       server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponse
+      val response = schemaDeployer.parserResponses(0)
       response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1
@@ -277,7 +277,7 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
 
       val schemaDeployer = SchemaDeployerString(schema)
       server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponse
+      val response = schemaDeployer.parserResponses(0)
       response.getMessages.size mustBe 1
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 1

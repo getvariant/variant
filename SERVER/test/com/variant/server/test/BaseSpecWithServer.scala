@@ -31,6 +31,7 @@ import com.variant.core.ServerError
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.util.ParameterizedString
 import org.apache.commons.io.IOUtils
+import play.api.Logger
 
 /**
  * Common to all tests.
@@ -43,6 +44,8 @@ object BaseSpecWithServer {
 class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
 
    import BaseSpecWithServer._
+   
+   private val logger = Logger(this.getClass)
    
    // Custom applicaiton builder uses test specific config in front of the regular one.  
    implicit override lazy val app: Application = {
@@ -61,8 +64,13 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
 		val jdbc = new JdbcService(server.schemata.head._2.eventWriter)
 		try {			
 			jdbc.getVendor match {
-   			case JdbcService.Vendor.POSTGRES => jdbc.recreateSchema()
-	   		case JdbcService.Vendor.H2 => jdbc.createSchema()  // Fresh in-memory DB.
+   			case JdbcService.Vendor.POSTGRES => {
+   			   jdbc.recreateSchema()
+   			   logger.info("Recreated PostgreSQL schema")
+   			}
+	   		case JdbcService.Vendor.H2 => 
+	   		   jdbc.createSchema()
+   			   logger.info("Recreated H2 schema")
 		   }
 		}
 		catch {

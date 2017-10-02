@@ -108,7 +108,7 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
 
          val schemaDeployer = SchemaDeployerString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
-         val response = schemaDeployer.parserResponse
+         val response = schemaDeployer.parserResponses(0)
          server.schemata.get(schemaName).isDefined mustBe true
          val schema = server.schemata.get(schemaName).get
          val state2 = schema.getState("state2")
@@ -137,7 +137,7 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
 
          val schemaDeployer = SchemaDeployerString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
-         val response = schemaDeployer.parserResponse
+         val response = schemaDeployer.parserResponses(0)
          server.schemata.get(schemaName).isDefined mustBe true
          val schema = server.schemata.get(schemaName).get
          val ssn = SessionImpl.empty(newSid(), schema)
