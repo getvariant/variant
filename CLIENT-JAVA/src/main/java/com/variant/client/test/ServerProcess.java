@@ -40,7 +40,7 @@ public class ServerProcess {
 				
 		if (svrProc != null && svrProc.isAlive()) throw new RuntimeException("Server thread is alive. Call stop() first");
 		
-		LOG.info(String.format("Starting local server [%s] [%s]", execArgs[0], execArgs[1]));
+		LOG.info(String.format("Starting local server [%s]", execArgs[0]));
 
 		svrProc = new SbtThread();
 		svrProc.start();
@@ -65,7 +65,7 @@ public class ServerProcess {
 
 		if (svrProc == null) return;
 		
-		LOG.info(String.format("Stopping local server [%s] [%s]", execArgs[0], execArgs[1]));
+		LOG.info(String.format("Stopping local server [%s]", execArgs[0]));
 		// a slight delay to let the log reader have a chance to run one more time and catch up.
 		try {Thread.sleep(100);} catch(Throwable t) {}
 		svrProc.destroyProc();

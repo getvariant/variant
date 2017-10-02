@@ -8,7 +8,7 @@ import org.junit.BeforeClass;
  */
 public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 		
-	protected static ServerProcess server;
+	protected static ServerProcess server = null;
 	
 	// Junit's implementation of BeforeClass() requires it to be static, so we
 	// can't use an abstract method here since it must be static. This value will only
@@ -16,7 +16,7 @@ public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 	// the java servlet project will have to override it.
 	final private static String defaultPathToServerProject = "../SERVER";
 	
-	final private static String defaultServerConfig = "conf-test/variant-testProd.conf";
+	//final private static String defaultServerConfig = "conf-test/variant-testProd.conf";
 	
 	/**
 	 * Start the server once for test case
@@ -25,8 +25,8 @@ public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 	protected static void startServer(String serverConfig) throws Exception {
 		String sysVar = System.getProperty("variant.server.project.dir");
 		String exec = (sysVar == null ? defaultPathToServerProject : sysVar) + "/mbin/startServer.sh";
-		String conf = serverConfig == null ? defaultServerConfig : serverConfig;
-		server = new ServerProcess(new String[] {exec, conf});
+		String[] procArgs = serverConfig == null ? new String[] {exec} : new String[] {exec, serverConfig};
+		server = new ServerProcess(procArgs);
 		server.start();
 	}
 
