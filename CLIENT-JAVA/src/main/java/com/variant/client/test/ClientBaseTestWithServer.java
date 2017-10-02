@@ -34,6 +34,10 @@ public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 	   startServer(null);
 	}
 	
+	/**
+	 * Start server once per test case.
+	 * @throws Exception
+	 */
 	@BeforeClass
 	public static void beforeClass() throws Exception {
 		startServer();
