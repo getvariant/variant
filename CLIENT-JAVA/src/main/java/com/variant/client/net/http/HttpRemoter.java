@@ -1,11 +1,14 @@
 package com.variant.client.net.http;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,8 +22,9 @@ public class HttpRemoter {
 
 	final private static Logger LOG = LoggerFactory.getLogger(HttpRemoter.class);
 	final private static String CONTENT_TYPE = "application/json; charset=utf-8";
+
 	/**
-	 * Package construction.
+	 * Public construction.
 	 */
 	public HttpRemoter(){};
 	
@@ -37,13 +41,21 @@ public class HttpRemoter {
 			resp = client.execute(req);
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(String.format(
-						"%s %s : %s (%s)", 
+						"+++ %s %s : %s (%s):", 
 						req.getMethod(), req.getURI(), 
 						resp.getStatusLine().getStatusCode(), 
 						DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
+				if (req instanceof HttpEntityEnclosingRequestBase) {
+					HttpEntity entity = ((HttpEntityEnclosingRequestBase)req).getEntity();
+					String body = entity == null ? "null" : EntityUtils.toString(entity);
+					LOG.trace(">>> " + body);
+				}
 			}
-
+			
 			HttpResponse result = new HttpResponse(req, resp);
+
+			if (LOG.isTraceEnabled()) LOG.trace("<<< " + result.body);
+
 			switch (result.status) {
 			case HttpStatus.SC_OK:
 				return result;
