@@ -24,7 +24,16 @@ class RootController @Inject() (
       override val connStore: ConnectionStore, 
       override val ssnStore: SessionStore) extends VariantController  {
       
-   def splash() = VariantAction { req =>
+  /**
+   *  If a path ends in a slash, redirect to the same path without the trailing /.
+   */
+
+   def untrail(path:String) = VariantAction { MovedPermanently("/" + path) }
+
+   /**
+    * Print server status message
+    */
+   def status() = VariantAction { req =>
       Ok(server.productName + ", " +
          {
             if (server.isUp) "Uptime %s.".format(DurationFormatUtils.formatDuration(System.currentTimeMillis() - server.startTs, "HH:mm:ss")) 
