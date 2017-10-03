@@ -81,7 +81,8 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
       val stateReq = ssn.getStateRequest
       val sve = stateReq.getStateVisitedEvent
       
-		// We won't have an event if nothing is instrumented on this state
+		// We won't have an event if nothing is instrumented on this state, or session
+      // is disqualified for the test(s) instrumented on this state.
       if (sve != null) {
 	      sve.getParameterMap().put("$REQ_STATUS", ssn.getStateRequest.getStatus.name);
 			// log all resolved state params as event params.
@@ -90,8 +91,11 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
 	      }
    		// Trigger state visited event
 	   	ssn.triggerEvent(sve);
-	   	stateReq.asInstanceOf[StateRequestImpl].commit(); 
       }
+
+      // Actual commit.
+      stateReq.asInstanceOf[StateRequestImpl].commit(); 
+
       val response = JsObject(Seq(
          "session" -> JsString(ssn.coreSession.toJson)
       )).toString()
