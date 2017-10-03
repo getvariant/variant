@@ -5,6 +5,9 @@
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
+# If a path ends in a slash, redirect to the same path without the trailing /.
+GET     /*path/                     com.variant.server.controller.RootController.untrail(path)
+
 # Variant Controllers
 POST    /connection/:schema      com.variant.server.controller.ConnectionController.post(schema: String)
 DELETE  /connection/:cid         com.variant.server.controller.ConnectionController.delete(cid: String)
@@ -17,4 +20,4 @@ PUT     /session                 com.variant.server.controller.SessionController
 POST    /request                 com.variant.server.controller.RequestController.create()
 PUT     /request                 com.variant.server.controller.RequestController.commit()
 
-GET     /                        com.variant.server.controller.RootController.splash()
+GET     /                        com.variant.server.controller.RootController.status()
