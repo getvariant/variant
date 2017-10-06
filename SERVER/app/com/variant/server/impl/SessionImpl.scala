@@ -113,9 +113,7 @@ class SessionImpl(var coreSession: CoreSession, val connection: Connection) exte
     * 
     */
 	def triggerEvent(event: VariantEvent) {
-	   val fe = new FlushableEventImpl(event, coreSession)
-	   if (!fe.getLiveExperiences.isEmpty())
-	   	connection.schema.eventWriter.write(new FlushableEventImpl(event, coreSession));
+		connection.schema.eventWriter.write(new FlushableEventImpl(event, coreSession));
 	}
 	
 	/*
