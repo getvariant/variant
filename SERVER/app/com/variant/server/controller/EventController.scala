@@ -23,55 +23,52 @@ import com.variant.server.api.Session
 import com.variant.server.impl.SessionImpl
 
 //@Singleton -- Is this for non-shared state controllers?
-class EventController @Inject() (override val connStore: ConnectionStore, override val ssnStore: SessionStore) extends VariantController  {
+class EventController @Inject() (
+      override val connStore: ConnectionStore, 
+      override val ssnStore: SessionStore) 
+      extends VariantController  {
    
    private val logger = Logger(this.getClass)	
  
    /**
-    * POST a remote event, i.e. write it off to external storage.
-    * test with:
-curl -v -H "Content-Type: text/plain; charset=utf-8" \
-     -X POST \
-     -d '{"sid":"SID","name":"NAME","val":"VALUE","crdate":1476124715698,"params":{"parm1":"foo","parm2":"bar"}}' \
-     http://localhost:9000/variant/event
+    * Trigger a remote event, i.e. write it off to external storage.
     */
-   def post() = VariantAction { req =>
+   def trigger() = VariantAction { req =>
 
       val bodyJson = req.body.asJson.getOrElse {
          throw new ServerException.Remote(EmptyBody)
       }
       
-      val sid = (bodyJson \ "sid").asOpt[String]
-      val name = (bodyJson \ "name").asOpt[String]
-      val value = (bodyJson \ "value").asOpt[String]
-      val timestamp = (bodyJson \ "ts").asOpt[Long]
-      val params = (bodyJson \ "params").asOpt[List[JsObject]]
-
-      if (sid.isEmpty)
-         throw new ServerException.Remote(MissingProperty, "sid")   
-
-      if (name.isEmpty)
-         throw new ServerException.Remote(MissingProperty, "name")
+      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "sid")            
+      }
       
-      if (value.isEmpty)
-         throw new ServerException.Remote(MissingProperty, "value")
+      val name = (bodyJson \ "name").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "name")         
+      }
+      
+      val value = (bodyJson \ "value").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "value")         
+      }
+      
+      val timestamp = (bodyJson \ "ts").asOpt[Long].getOrElse(System.currentTimeMillis())
+      
+      val params = (bodyJson \ "params").asOpt[List[JsObject]].getOrElse(List[JsObject]())
 
-      val ssn = ssnStore.getOrBust(sid.get)
+      val ssn = ssnStore.getOrBust(sid)
       
       if (ssn.getStateRequest == null)
          throw new ServerException.Remote(UnknownState)   
 
-      val event = new ServerEvent(name.get, value.get, new Date(timestamp.getOrElse(System.currentTimeMillis())));  
+      val event = new ServerEvent(name, value, new Date(timestamp));  
       
-      if (params.isDefined) {
-         params.get.foreach(p => {
-            val name = (p \ "name").asOpt[String].getOrElse {
-               throw new ServerException.Remote(MissingParamName)
-            }
-            val value = (p \ "value").asOpt[String].getOrElse("")
-            event.setParameter(name, value)
-         })
-      }  
+      params.foreach(p => {
+         val name = (p \ "name").asOpt[String].getOrElse {
+            throw new ServerException.Remote(MissingParamName)
+         }
+         val value = (p \ "value").asOpt[String].getOrElse("")
+         event.setParameter(name, value)
+      })
       
       ssn.asInstanceOf[SessionImpl].triggerEvent(event)            
       Ok

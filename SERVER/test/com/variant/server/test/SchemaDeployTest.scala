@@ -24,6 +24,7 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
    implicit override def newAppForTest(testData: TestData): Application = {
       
       if (testData.name.startsWith("1.")) {
+         sys.props +=("variant.ext.dir" -> "distr/ext")  // petclinic needs this.
          // Just application property
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
@@ -35,9 +36,8 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
          // Override with system property. In order for the distribution version of the petclinic schema
          // to parse, we need to give a custom variant.ext.dir location
          sys.props.contains("variant.schemata.dir") must be (false)
-         sys.props.contains("variant.ext.dir") must be (false)
          sys.props +=("variant.schemata.dir" -> "distr/schemata")  // only has petclinic schema.
-         sys.props +=("variant.ext.dir" -> "distr/ext")
+         sys.props +=("variant.ext.dir" -> "distr/ext") // petclinic needs this.
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .build()
@@ -70,8 +70,8 @@ class SchemaDeployTest extends PlaySpec with OneAppPerTest {
       server.schemata.size mustBe 2
       server.schemata.get("big_covar_schema").isDefined mustBe true
       server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema"
-      server.schemata.get("PetclinicNoHooks").isDefined mustBe true
-      server.schemata.get("PetclinicNoHooks").get.getName mustEqual "PetclinicNoHooks"
+      server.schemata.get("petclinic").isDefined mustBe true
+      server.schemata.get("petclinic").get.getName mustEqual "petclinic"
    }
    
    "2. Schema should deploy from system property variant.schemata.dir" in {

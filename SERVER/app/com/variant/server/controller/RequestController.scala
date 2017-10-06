@@ -42,19 +42,21 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          throw new ServerException.Remote(EmptyBody)
       }      
       
-      val sid = (bodyJson \ "sid").asOpt[String]
-      val state = (bodyJson \ "state").asOpt[String]
-      
-      if (sid.isEmpty)
-         throw new ServerException.Remote(MissingProperty, "sid")
+      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "sid")         
+      }
+      val stateName = (bodyJson \ "state").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "state")         
+      }
 
-      if (state.isEmpty) 
-         throw new ServerException.Remote(MissingProperty, "state")
-
-      val ssn = ssnStore.getOrBust(sid.get)
+      val ssn = ssnStore.getOrBust(sid)
       val schema = ssn.connection.schema
+      val state = schema.getState(stateName)
+
+      if (state == null)
+         throw new ServerException.Internal("State [%s] not in schema [%s]".format(stateName, schema.getName()))
       
-      schema.runtime.targetForState(ssn, schema.getState(state.get))
+      schema.runtime.targetForState(ssn, state)
 
       val response = JsObject(Seq(
          "session" -> JsString(ssn.asInstanceOf[SessionImpl].coreSession.toJson())

@@ -49,7 +49,8 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
    
    // Custom applicaiton builder uses test specific config in front of the regular one.  
    implicit override lazy val app: Application = {
-
+      // hook in the ext directory from the distribution dir.
+      sys.props +=("variant.ext.dir" -> "distr/ext")
       new GuiceApplicationBuilder()
          .configure(new Configuration(VariantApplicationLoader.config))
          .build()

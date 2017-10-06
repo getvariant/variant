@@ -16,28 +16,27 @@ import com.variant.server.impl.SessionImpl
 		
 class EventWriterTest extends BaseSpecWithServer {
 
-   val schema = server.schemata("big_covar_schema")
-   val eventWriter = schema.eventWriter
-   val eventReader = EventReader(eventWriter)
-
    val sessionJson = ParameterizedString("""
-      {"sid":"${sid:SID}",
+      {"sid":"${sid:}",
        "ts": ${ts:%d}, 
-       "schid": "%s",
        "request": {"state": "state1","status": "OK","committed": true, 
                   "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}], 
                   "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
         "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
         "tests": ["test1","test2"]
       }
-   """.format(System.currentTimeMillis(), schema.getId()))
+   """.format(System.currentTimeMillis()))
    
    "Event writer" should {
+
+      val schema = server.schemata("big_covar_schema")
+      val eventWriter = schema.eventWriter
+      val eventReader = EventReader(eventWriter)
 
       "have expected confuration" in {
          eventWriter.maxBufferSize mustEqual 200
          eventWriter.fullSize mustEqual 100
-	       eventWriter.maxDelayMillis mustEqual 2000
+	      eventWriter.maxDelayMillis mustEqual 2000
 
       }
     

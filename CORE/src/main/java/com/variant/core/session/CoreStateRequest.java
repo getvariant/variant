@@ -57,16 +57,13 @@ public class CoreStateRequest implements Serializable {
 	private StateRequestStatus status = StateRequestStatus.OK;
 	private boolean committed = false;
 	
-	//---------------------------------------------------------------------------------------------//
-	//                                          PACKAGE                                            //
-	//---------------------------------------------------------------------------------------------//
 	/**
 	 * Regular constructor
 	 * @param session
 	 */
-	public CoreStateRequest(CoreSession session, StateImpl state) {
+	public CoreStateRequest(CoreSession session, State state) {
 		this.session = session;
-		this.state = state;
+		this.state = (StateImpl) state;
 		session.setStateRequest(this);
 	}
 	
@@ -264,13 +261,16 @@ public class CoreStateRequest implements Serializable {
 		String stateName = (String) fields.get(FIELD_NAME_STATE);
 		if (stateName == null) 
 			throw new CoreException.Internal("Unable to deserialzie request: no state");
+		
 		if (!(stateName instanceof String)) 
 			throw new CoreException.Internal("Unable to deserialzie request: state not string");
 		
-		// If we're on the server, we don't have the schema => we can't instantiate a State object,
-		// but we need the state name to log events.
+		State state = schema.getState(stateName);
 		
-		CoreStateRequest result = new CoreStateRequest(session, (StateImpl) schema.getState(stateName));
+		if (state == null) 
+			throw new CoreException.Internal(String.format("State [%s] not in schema [%s]", stateName, schema.getName()));
+
+		CoreStateRequest result = new CoreStateRequest(session, state);
 		
 		String statusStr = (String) fields.get(FIELD_NAME_STATUS);
 		if (statusStr == null) 

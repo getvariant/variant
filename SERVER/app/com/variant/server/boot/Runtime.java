@@ -92,13 +92,14 @@ public class Runtime {
 	 */
 	private void target(SessionImpl session, StateImpl state) {
 		
-		StateRequestImpl newReq = session.newStateRequest(state);
-		
 		// State must be in current schema.
 		State schemaState = schema.getState(state.getName());
+		
 		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
 			throw new ServerException.Internal("State [" + state.getName() + "] is not in schema");
-		
+
+		StateRequestImpl newReq = session.newStateRequest(state);
+				
 		// 1. Build the active test list.
 		ArrayList<Test> activeTestList = new ArrayList<Test>();
 		for (Test test: state.getInstrumentedTests()) {
@@ -222,7 +223,7 @@ public class Runtime {
 			}
 		}
 
-		// If all went well, we must be resolvable!
+		// If all went well, we must be resolvable.
 		Pair<Boolean, StateVariantImpl> resolution = resolveState(state, vector);
 		if (!resolution._1()) throw new ServerException.Internal(
 				"Vector [" + VariantStringUtils.toString(vector, ",") + "] is unresolvable");
@@ -466,7 +467,7 @@ public class Runtime {
 		StateImpl stateImpl = (StateImpl) state;
 		
 		// All the heavy lifting happens here.
-		target((SessionImpl)session, (StateImpl)state);		
+		target(ssnImpl, stateImpl);		
 		
 		// Targeting stabile contains targeted experiences.
 		SessionScopedTargetingStabile targetingStabile = ssnImpl.getTargetingStabile();

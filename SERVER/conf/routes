@@ -12,7 +12,7 @@ GET     /*path/                     com.variant.server.controller.RootController
 POST    /connection/:schema      com.variant.server.controller.ConnectionController.post(schema: String)
 DELETE  /connection/:cid         com.variant.server.controller.ConnectionController.delete(cid: String)
 
-POST    /event                   com.variant.server.controller.EventController.post()
+POST    /event                   com.variant.server.controller.EventController.trigger()
 
 GET     /session/:id             com.variant.server.controller.SessionController.get(id: String)
 PUT     /session                 com.variant.server.controller.SessionController.save()

@@ -14,6 +14,11 @@ import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.ConnectionStore
 import javax.inject.Inject
 import com.variant.server.api.Session
+import org.scalatest.TestData
+import play.api.Application
+import play.api.inject.guice.GuiceApplicationBuilder
+import com.variant.server.boot.VariantApplicationLoader
+import play.api.Configuration
 
 object EventTest {
    
@@ -47,10 +52,11 @@ class EventTest extends BaseSpecWithServer {
    import EventTest._
    
    val endpoint = context + "/event"
-   val schemaId = server.schemata.head._2.getId
-   val eventWriter = server.schemata.head._2.eventWriter
-   
+      
    "EventController" should {
+
+      val schema = server.schemata("big_covar_schema")
+      val eventWriter = schema.eventWriter
 
       "return 404 on GET" in {
          val resp = route(app, FakeRequest(GET, endpoint)).get
@@ -124,7 +130,7 @@ class EventTest extends BaseSpecWithServer {
       "obtain a session" in {
          val sid = newSid()
          // PUT session.
-         val sessionJson = ParameterizedString(SessionTest.sessionJsonProto.format(System.currentTimeMillis(), schemaId)).expand("sid" -> sid)
+         val sessionJson = ParameterizedString(SessionTest.sessionJsonProto.format(System.currentTimeMillis(), schema.getId)).expand("sid" -> sid)
          val ssnBody = Json.obj(
             "cid" -> connId,
             "ssn" -> sessionJson

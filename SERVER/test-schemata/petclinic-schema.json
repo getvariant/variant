@@ -8,8 +8,8 @@
 
 {
    'meta':{
-      'name':'PetclinicNoHooks',
-      'comment':'Experiment schema for the Pet Clinic demo application w/o the hooks'
+      'name':'petclinic',
+      'comment':'Experiment schema for the Pet Clinic demo application'
    },
    'states':[                                                
      { 
@@ -69,6 +69,18 @@
                'stateRef':'ownerDetail',                            
                'isNonvariant': true
             }                                                
+         ],
+         'hooks':[
+            {
+               // Disqualifies all Firefox traffic.
+               'name':'FirefoxDisqualifier',
+               'class':'com.variant.server.ext.demo.FirefoxDisqualHook'
+            },
+            {
+               // Assigns all Chrome traffic to the control experience
+               'name':'ChromeTargeter',
+               'class':'com.variant.server.ext.demo.ChromeTargetingHook'
+            }
          ]
       }                                                     
    ]                                                         
