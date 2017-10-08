@@ -34,7 +34,7 @@ public class VariantClassLoader extends URLClassLoader {
 		   LOG.error("Extension directory [" + extDir.getAbsolutePath() + "] does not exist.");
 		   return new URL[0];
 	   }
-
+	   
 	   // Construct list of all jars in the directory as URLs
 	   File[] files = extDir.listFiles(
 			   new FileFilter() {
@@ -45,13 +45,15 @@ public class VariantClassLoader extends URLClassLoader {
 	   for (int i = 0; i < files.length; i++) {
 		   try {
 			   urls[i] = files[i].toURI().toURL();
+			   if (LOG.isTraceEnabled())
+				   LOG.trace("Found class or jar file " + urls[i].toExternalForm());
 		   }
 		   catch (Exception e) {
 			   throw new ServerException.Internal("Unable to initialize Variant class loader");
 		   }
 	   }
 
-	   LOG.debug("Instantiated class loader from [" + extDirName + "]");
+	   LOG.debug("Instantiated class loader from [" + extDir.getAbsolutePath() + "]");
 	   return (urls);
 
 	}
