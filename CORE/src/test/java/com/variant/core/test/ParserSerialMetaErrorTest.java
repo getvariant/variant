@@ -12,6 +12,7 @@ import com.variant.core.schema.parser.ParserError;
 import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
+import com.variant.core.schema.parser.SyntaxErrorLocation;
 
 /**
  * Parse time exceptions
@@ -78,10 +79,10 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.JSON_PARSE, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries").getText(), error.getText());		
+		assertEquals(new ParserMessageImpl(ParserError.JSON_SYNTAX_ERROR, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries").getText(), error.getText());		
 		assertEquals(Severity.FATAL, error.getSeverity());
-		assertEquals(13, error.getLine().intValue());
-		assertEquals(4, error.getColumn().intValue());
+		assertEquals(13, ((SyntaxErrorLocation)error.getLocation()).line);
+		assertEquals(4, ((SyntaxErrorLocation)error.getLocation()).column);
 	}
 	
 	/**

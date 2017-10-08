@@ -23,11 +23,12 @@ interface Keywords {
 	static String KEYWORD_NAME                      = "name";
 	static String KEYWORD_ON_STATES                 = "onStates";
 	static String KEYWORD_PARAMETERS                = "parameters";
+	static String KEYWORD_STATE_REF                 = "stateRef"; 
 	static String KEYWORD_STATES                    = "states";
 	static String KEYWORD_TESTS                     = "tests";
 	static String KEYWORD_TEST_REF                  = "testRef";
+	static String KEYWORD_VALUE                     = "value";
 	static String KEYWORD_VARIANTS                  = "variants";
-	static String KEYWORD_STATE_REF                 = "stateRef"; 
 	static String KEYWORD_WEIGHT                    = "weight";
 	
 }

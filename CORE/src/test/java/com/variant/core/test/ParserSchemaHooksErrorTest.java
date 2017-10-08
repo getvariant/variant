@@ -134,13 +134,13 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(3, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.HOOKS_NOT_OBJECT).getText(), error.getText());
+		assertEquals(new ParserMessageImpl(ParserError.HOOK_NOT_OBJECT).getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(ParserError.HOOKS_NOT_OBJECT).getText(), error.getText());
+		assertEquals(new ParserMessageImpl(ParserError.HOOK_NOT_OBJECT).getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 		error = response.getMessages().get(2);
-		assertEquals(new ParserMessageImpl(ParserError.HOOKS_NOT_OBJECT).getText(), error.getText());
+		assertEquals(new ParserMessageImpl(ParserError.HOOK_NOT_OBJECT).getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
 	}
 

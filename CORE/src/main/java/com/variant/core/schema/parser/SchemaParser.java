@@ -1,6 +1,6 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.ParserError.JSON_PARSE;
+import static com.variant.core.schema.parser.ParserError.JSON_SYNTAX_ERROR;
 import static com.variant.core.schema.parser.ParserError.NO_META_CLAUSE;
 import static com.variant.core.schema.parser.ParserError.NO_STATES_CLAUSE;
 import static com.variant.core.schema.parser.ParserError.NO_TESTS_CLAUSE;
@@ -39,7 +39,7 @@ public abstract class SchemaParser implements Keywords {
 	 * @param parseException
 	 * @return
 	 */
-	private static void toParserError(JsonParseException parseException, String rawInput, ParserResponse response) {
+	private static void toParserError(JsonParseException parseException, String schemaSrc, ParserResponse response) {
 		
 		String rawMessage = parseException.getMessage();
 		// Pull out the actual message: it's on the first line.
@@ -54,7 +54,7 @@ public abstract class SchemaParser implements Keywords {
 		String[] tokens = tail.split(",");
 		int line = Integer.parseInt(tokens[0]);
 		int column = Integer.parseInt(tokens[1]);
-		response.addMessage(JSON_PARSE, line, column, message.toString(), rawInput);
+		response.addMessage(new SyntaxErrorLocation(schemaSrc, line, column), JSON_SYNTAX_ERROR, message.toString());
 
 	}
 	

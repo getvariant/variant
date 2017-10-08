@@ -131,7 +131,7 @@ public class HooksParser implements Keywords {
 			rawMap = (Map<String,?>) rawHook;
 		}
 		catch (ClassCastException e) {
-			response.addMessage(HOOKS_NOT_OBJECT);
+			response.addMessage(HOOK_NOT_OBJECT);
 			return null;
 		}
 		

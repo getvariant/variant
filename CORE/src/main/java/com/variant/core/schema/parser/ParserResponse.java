@@ -61,8 +61,6 @@ public interface ParserResponse {
 }
 */
 
-import static com.variant.core.schema.parser.ParserError.JSON_PARSE;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -70,6 +68,7 @@ import java.util.List;
 import com.variant.core.UserError;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.ParserMessage.Location;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.impl.SchemaImpl;
 
@@ -94,7 +93,7 @@ public class ParserResponse {
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-
+	
 	/**
 	 * @return
 	 */
@@ -130,7 +129,7 @@ public class ParserResponse {
 	}
 
 	/**
-	 * Add externally generated message.
+	 * Add a message generated externally by a parser time user hook.
 	 */
     public void addMessage(Severity severity, String message) {
 		ParserMessage result = new ParserMessageImpl(new ParserHookError(severity, message));
@@ -138,24 +137,17 @@ public class ParserResponse {
 	}
 
 	/**
-	 * Add internally generated messsage
+	 * Message with location
 	 */
-	public ParserMessage addMessage(ParserError error, int line, int column, String...args) {
+	public ParserMessage addMessage(Location location, ParserError error, String...args) {
 		
-		ParserMessage result;
-		
-		if (error.equals(JSON_PARSE)) {
-			result = new SyntaxError(error, line, column, args);
-		}
-		else {
-			result = new ParserMessageImpl(error, line, column, args);
-		}
+		ParserMessage result = new ParserMessageImpl(location, error, args);
 		addMessageCommon(result);
 		return result;
 	}
 
 	/**
-	 * 
+	 * Generic message without location
 	 * @param error
 	 */
 	public ParserMessage addMessage(UserError error, String...args) {

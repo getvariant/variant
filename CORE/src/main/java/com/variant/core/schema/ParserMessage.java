@@ -37,19 +37,30 @@ public interface ParserMessage {
 	public int getCode();
 
 	/**
-	 * Line number in the source document where the syntax error was encountered.
+	 * Location, in the schema source, where this message was detected. Most messages will have the location
+	 * information, though some won't, e.g. "'/meta' clause is missing."
 	 * 
-	 * @return Line number, if this is a syntax error, or null if this is a semantical error.
-	 * @since 0.5
+	 * @return An object of type {@link Location}.
+	 * @since 0.8
 	 */
-	public Integer getLine();
-	
+	public Location getLocation();
+
 	/**
-	 * Column number in the source document where the syntax error was encountered.
-	 * 
-	 * @return Column number if this is a syntax error, or null if this is a semantical error.
-	 * @since 0.5
+	 * Location, in the schema source, where a parser message is emitted.
+	 * Caller will be able to examine the implementation for methods revealing
+	 * the location information, e.g. line number.
+     *
+     * @since 0.8
 	 */
-	public Integer getColumn();
-	
+	public static interface Location {
+		
+		/**
+		 * Unstructured location information as a human-readable string.
+		 * 
+		 * @return
+		 * @since 0.8
+		 */
+		String asString();
+	}
+
 }

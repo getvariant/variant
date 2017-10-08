@@ -59,12 +59,12 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 		assertEquals(6, conn2.getSchema().getTests().size());
 
 		// Third connection to another schema
-		Connection conn3 = client.getConnection("PetclinicNoHooks");		
+		Connection conn3 = client.getConnection("petclinic");		
 		assertNotNull(conn3);
 		assertEquals(Status.OPEN, conn3.getStatus());
 		assertEquals(conn1.getClient(), conn3.getClient());
 		assertNotNull(conn3.getSchema());
-		assertEquals("PetclinicNoHooks", conn3.getSchema().getName());
+		assertEquals("petclinic", conn3.getSchema().getName());
 		assertEquals(2, conn3.getSchema().getStates().size());
 		assertEquals(1, conn3.getSchema().getTests().size());
 
@@ -82,7 +82,7 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 		assertEquals(5, conn2.getSchema().getStates().size());
 		assertEquals(6, conn2.getSchema().getTests().size());
 		assertEquals(Status.OPEN, conn3.getStatus());
-		assertEquals("PetclinicNoHooks", conn3.getSchema().getName());
+		assertEquals("petclinic", conn3.getSchema().getName());
 		assertEquals(2, conn3.getSchema().getStates().size());
 		assertEquals(1, conn3.getSchema().getTests().size());
 
@@ -93,7 +93,7 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 
 		// Third connection should not be affected.
 		assertEquals(Status.OPEN, conn3.getStatus());
-		assertEquals("PetclinicNoHooks", conn3.getSchema().getName());
+		assertEquals("petclinic", conn3.getSchema().getName());
 		assertEquals(2, conn3.getSchema().getStates().size());
 		assertEquals(1, conn3.getSchema().getTests().size());
 

@@ -2316,8 +2316,8 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.EXPERIENCEREF_PARAMS_NOT_OBJECT, "test1", "state1", "A").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		//assertEquals(new ParserMessageImpl(ParserError.EXPERIENCEREF_PARAMS_NOT_OBJECT, "test1", "state1", "A").getText(), error.getText());
+		assertTrue("fix above", false);
 	}
 
 	/**

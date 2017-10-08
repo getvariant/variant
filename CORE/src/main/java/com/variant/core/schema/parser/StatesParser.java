@@ -5,7 +5,6 @@ import static com.variant.core.schema.parser.ParserError.STATES_CLAUSE_NOT_LIST;
 import static com.variant.core.schema.parser.ParserError.STATE_NAME_DUPE;
 import static com.variant.core.schema.parser.ParserError.STATE_NAME_INVALID;
 import static com.variant.core.schema.parser.ParserError.STATE_NAME_MISSING;
-import static com.variant.core.schema.parser.ParserError.STATE_PARAMS_NOT_OBJECT;
 import static com.variant.core.schema.parser.ParserError.STATE_UNSUPPORTED_PROPERTY;
 
 import java.util.List;
@@ -96,7 +95,6 @@ public class StatesParser implements Keywords {
 		
 		String name = null;
 		boolean nameFound = false;
-		Map<String, String> params = null;
 		
 		// Pass 1: figure out the name.
 		for(Map.Entry<String, ?> entry: rawState.entrySet()) {
@@ -131,12 +129,8 @@ public class StatesParser implements Keywords {
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) continue;
 			
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_PARAMETERS)) {
-				Object paramsObject = entry.getValue();
-				if (! (paramsObject instanceof Map)) {
-					response.addMessage(STATE_PARAMS_NOT_OBJECT, name);
-				}
-				params = (Map<String, String>) paramsObject;
+			else if (entry.getKey().equalsIgnoreCase(KEYWORD_PARAMETERS)) {
+				result.setParameterMap(ParamsParser.parse(entry.getValue(), response));
 			}
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_HOOKS)) {
 				HooksParser.parse(entry.getValue(), result, response);
@@ -146,7 +140,6 @@ public class StatesParser implements Keywords {
 			}
 		}
 		
-		if (params != null) result.setParameterMap(params);
 
 		return result;
 	}

@@ -3,6 +3,8 @@ package com.variant.core.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.variant.core.util.Tuples.Pair;
+
 public class CaseInsensitiveMap<V> extends HashMap<String, V> {
 
 	/**
@@ -26,6 +28,15 @@ public class CaseInsensitiveMap<V> extends HashMap<String, V> {
 		return super.put(key.toUpperCase(), value);
 	}
 	
+	/**
+	 * Treat Pair as (key,value) tuple.
+	 * @param pair
+	 * @return
+	 */
+	public V put(Pair<String, V> pair) {
+		return super.put(pair._1().toUpperCase(), pair._2());
+	}
+
 	/**
 	 * In 8, implementation of HashMap.putAll() changed to go directly into the
 	 * table, around the put() method. We need to override that in order to explicitly

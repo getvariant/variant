@@ -50,15 +50,22 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
+			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
+			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
+	    	    "                    'parameters': [                           \n" +
+			    "                       {                                      \n" +
+			    "                          'name':'foo',                       \n" +
+			    "                          'value':'bar'                       \n" +
+			    "                       },                                     \n" +
+			    "                       {                                      \n" +
+			    "                          'name':'bar',                       \n" +
+			    "                          'value':'foo'                       \n" +
+			    "                       }                                      \n" +
+			    "                    ]                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -94,9 +101,9 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		String config = 
 				"{                                                             \n" +			    	   
 			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                    \n" +
-			    "      'comment':'schema comment'                               \n" +
-			    "  },                                                           \n" +
+			    "      'name':'schema_name',                                   \n" +
+			    "      'comment':'schema comment'                              \n" +
+			    "  },                                                          \n" +
 				"  'tests':[                                                   \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
@@ -111,15 +118,12 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "              'weight':50                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
+			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
+			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef':'A'                       \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -177,10 +181,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef':'A'                       \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -219,14 +220,9 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "      'comment':'schema comment'                               \n" +
 			    "  },                                                           \n" +
 			    "   'states':[                                                  \n" +
-			    "     {  'name':'state1',                                       \n" +
-	    	    "        'parameters': {                                        \n" +
-			    "           'path':'/path/to/state1'                            \n" +
-			    "        }                                                     \n" +
+			    "     {  'name':'state1'                                       \n" +
 			    "     },                                                       \n" +
-	    	    "     {  'parameters': {                                        \n" +
-			    "           'path':'/path/to/state2'                            \n" +
-			    "        }                                                      \n" +
+	    	    "     {                                                        \n" +
 //			    "        'name':'state2'                                        \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
@@ -249,10 +245,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef':'A'                       \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -264,7 +257,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
-		
+
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
@@ -285,20 +278,12 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "      'comment':'schema comment'                               \n" +
 			    "  },                                                           \n" +
 			    "   'states':[                                                  \n" +
-			    "     {  'name':'state1',                                       \n" +
-	    	    "        'parameters': {                                        \n" +
-			    "           'path':'/path/to/state1'                            \n" +
-			    "        }                                                     \n" +
-			    "     },                                                       \n" +
-	    	    "     {  'parameters': {                                        \n" +
-			    "           'path':'/path/to/state2'                            \n" +
-			    "        },                                                     \n" +
+			    "     {  'name':'state1'                                        \n" +
+			    "     },                                                        \n" +
+	    	    "     {                                                         \n" +
 			    "        'name':'state2'                                        \n" +
-			    "     },                                                       \n" +
-			    "     {  'name':[1,2],                                         \n" + 
-	    	    "        'parameters': {                                        \n" +
-			    "           'path':'/path/to/state3'                           \n" +
-			    "        }                                                     \n" +
+			    "     },                                                        \n" +
+			    "     {  'name':[1,2]                                           \n" + 
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -320,10 +305,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef':'A'                       \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -356,14 +338,9 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "      'comment':'schema comment'                               \n" +
 			    "  },                                                           \n" +
 			    "   'states':[                                                 \n" +
-			    "     {  'name':'state1',                                      \n" +
-	    	    "        'parameters': {                                       \n" +
-			    "           'path':'/path/to/state1'                           \n" +
-			    "        }                                                     \n" +
+			    "     {  'name':'state1'                                        \n" +
 			    "     },                                                       \n" +
-	    	    "     {  'parameters': {                                       \n" +
-			    "           'path':'/path/to/state2'                           \n" +
-			    "        },                                                    \n" +
+	    	    "     {                                                      \n" +
 			    "        'name':'state1'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
@@ -386,10 +363,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef':'A'                       \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -419,18 +393,13 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		String config = 
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                    \n" +
-			    "      'comment':'schema comment'                               \n" +
-			    "  },                                                           \n" +
+			    "      'name':'schema_name',                                   \n" +
+			    "      'comment':'schema comment'                              \n" +
+			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
-			    "     {  'name':'state1',                                      \n" +
-	    	    "        'parameters': {                                       \n" +
-			    "           'path':'/path/to/state1'                           \n" +
-			    "        }                                                     \n" +
+			    "     {  'name':'state1'                                       \n" +
 			    "     },                                                       \n" +
-	    	    "     {  'parameters': {                                       \n" +
-			    "           'path':'/path/to/state2'                           \n" +
-			    "        },                                                    \n" +
+	    	    "     {                                                       \n" +
 			    "        'name':'state2',                                      \n" +
 			    "        'invalid property':'throw an error'                   \n" +
 			    "     }                                                        \n" +
@@ -454,10 +423,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef':'A'                       \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -527,10 +493,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'A',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'       \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef': 'A'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -555,5 +518,167 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		}
 	}
 
+	/**
+	 * PARAMS_NOT_LIST, PARAM_NOT_OBJECT
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void paramsNotList_Test() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
+			    "  'states':[                                                  \n" +
+			    "     {                                                        \n" +
+			    "        'name':'state1',                                      \n" +
+	    	    "        'parameters':                                         \n" +
+			    "           {                                                  \n" +
+			    "              'name':'foo',                                   \n" +
+			    "              'value':'bar'                                   \n" +
+			    "           }                                                  \n" +
+			    "     }                                                        \n" +
+			    "  ],                                                          \n" +
+				"  'tests':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'name':'Test1',                                       \n" +
+			    "        'isOn': false,                                       \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                          \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1',                            \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef':'A',                      \n" +
+	    	    "                    'parameters': [                           \n" +
+			    "                       'foo',                                 \n" +
+			    "                       123,                                   \n" +
+			    "                       {                                      \n" +
+			    "                          'name':'bar',                       \n" +
+			    "                          'value':'foo'                       \n" +
+			    "                       }                                      \n" +
+			    "                    ]                                         \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		SchemaParser parser = getSchemaParser();
+		ParserResponse response = parser.parse(config);
+printMessages(response);
+		assertTrue(response.hasMessages());
+		assertEquals(2, response.getMessages().size());
+
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessageImpl(ParserError.STATES_CLAUSE_NOT_LIST).getText(), error.getText());
+		assertEquals(Severity.ERROR, error.getSeverity());
+
+		error = response.getMessages().get(1);
+		assertEquals(new ParserMessageImpl(ParserError.STATEREF_UNDEFINED, "state1", "Test1").getText(), error.getText());
+		assertEquals(Severity.ERROR, error.getSeverity());
+
+	}
+
+	/**
+	 * STATES_CLAUSE_NOT_LIST, STATEREF_UNDEFINED
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void params_Test() throws Exception {
+		
+		String config = 
+				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
+			    "  'states':[                                                  \n" +
+			    "     {                                                        \n" +
+			    "        'name':'state1',                                      \n" +
+	    	    "        'parameters': [                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'foo',                                   \n" +
+			    "              'value':'bar'                                   \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'bar',                                   \n" +
+			    "              'value':'foo'                                   \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    "  ],                                                          \n" +
+				"  'tests':[                                                   \n" +
+			    "     {                                                        \n" +
+			    "        'name':'Test1',                                       \n" +
+			    "        'isOn': false,                                       \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                          \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1',                            \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef':'A',                      \n" +
+	    	    "                    'parameters': [                           \n" +
+			    "                       {                                      \n" +
+			    "                          'name':'foo',                       \n" +
+			    "                          'value':'bar'                       \n" +
+			    "                       },                                     \n" +
+			    "                       {                                      \n" +
+			    "                          'name':'bar',                       \n" +
+			    "                          'value':'foo'                       \n" +
+			    "                       }                                      \n" +
+			    "                    ]                                         \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		SchemaParser parser = getSchemaParser();
+		ParserResponse response = parser.parse(config);
+
+		assertTrue(response.hasMessages());
+		assertEquals(2, response.getMessages().size());
+
+		ParserMessage error = response.getMessages().get(0);
+		assertEquals(new ParserMessageImpl(ParserError.STATES_CLAUSE_NOT_LIST).getText(), error.getText());
+		assertEquals(Severity.ERROR, error.getSeverity());
+
+		error = response.getMessages().get(1);
+		assertEquals(new ParserMessageImpl(ParserError.STATEREF_UNDEFINED, "state1", "Test1").getText(), error.getText());
+		assertEquals(Severity.ERROR, error.getSeverity());
+
+	}
 
 }

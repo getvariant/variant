@@ -15,7 +15,6 @@ import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_ISCONTROL
 import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_MISSING;
 import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_NOT_STRING;
 import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_PARAMS_NOT_ALLOWED;
-import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_PARAMS_NOT_OBJECT;
 import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_UNDEFINED;
 import static com.variant.core.schema.parser.ParserError.ISDEFINED_NOT_BOOLEAN;
 import static com.variant.core.schema.parser.ParserError.VARIANTS_UNSUPPORTED_PROPERTY;
@@ -224,12 +223,7 @@ public class VariantParser implements Keywords {
 					return null;					
 				}
 
-				try {
-					params = (Map<String,String>) entry.getValue();
-				}
-				catch (Exception e) {
-					response.addMessage(EXPERIENCEREF_PARAMS_NOT_OBJECT, test.getName(), tov.getState().getName(), experienceRef);
-				}
+				params = ParamsParser.parse(entry.getValue(), response);
 			}
 			else {
 				response.addMessage(VARIANTS_UNSUPPORTED_PROPERTY, entry.getKey(), test.getName(), state.getName());

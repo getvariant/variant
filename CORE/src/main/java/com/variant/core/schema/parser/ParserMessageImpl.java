@@ -16,7 +16,7 @@ public class ParserMessageImpl implements ParserMessage {
 	private final Severity severity;
 	private final String message;
 	private final int code;	
-	private Integer line = null, column = null;
+	private Location location = null;
 
 	/**
 	 * 
@@ -38,10 +38,9 @@ public class ParserMessageImpl implements ParserMessage {
 	 * @param args
 	 * @since 0.5
 	 */
-	public ParserMessageImpl(UserError error, int line, int column, String...args) {
+	public ParserMessageImpl(Location location, UserError error, String...args) {
 		this(error, args);
-		this.line = line;
-		this.column = column;
+		this.location = location;
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -49,48 +48,31 @@ public class ParserMessageImpl implements ParserMessage {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * 
-	 * @return
-	 * @since 0.5
 	 */
+	@Override
 	public Severity getSeverity() {
 		return severity;
 	}
 
 	/**
-	 * 
-	 * @return
-	 * @since 0.5
 	 */
+	@Override
 	public String getText() {
 		return message;
 	}
 	
 	/**
-	 * Error code
-	 * @return
-	 * @since 0.5
 	 */
+	@Override
 	public int getCode() {
 		return code;
 	}
-
-	/**
-	 * 
-	 * @return
-	 * @since 0.5
-	 */
-	public Integer getLine() {
-		return line;
-	}
 	
 	/**
-	 * 
-	 * @return
-	 * @since 0.5
 	 */
-	public Integer getColumn() {
-		return column;
+	@Override
+	public Location getLocation() {
+		return location;
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -104,7 +86,7 @@ public class ParserMessageImpl implements ParserMessage {
 	public String toString() {
 		StringBuilder result = new StringBuilder();
 		result.append("[").append(getCode()).append("] [").append(getSeverity().name()).append("] ").append(getText());
-		if (line != null) result.append(String.format(" @ line %s, column %s", line, column));
+		if (location != null) result.append(" Location: ").append(location.asString());
 		return result.toString();
 	}
 
