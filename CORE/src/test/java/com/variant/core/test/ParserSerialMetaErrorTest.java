@@ -35,10 +35,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "      'comment':'schema comment'                               \n" +
 			    "  },                                                           \n" +
 			    "   'states':[                                                  \n" +		    	    
-			    "     {  'name':'state1',                                       \n" +
-	    	    "        'parameters': {                                        \n" +
-			    "           'path':'/path/to/state1'                           \n" +
-			    "        }                                                     \n" +
+			    "     {  'name':'state1'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ]                                                           \n" + // missing comma
 				"  'tests':[                                                   \n" +
@@ -60,10 +57,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef':'A'                       \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -81,7 +75,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImpl(ParserError.JSON_SYNTAX_ERROR, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries").getText(), error.getText());		
 		assertEquals(Severity.FATAL, error.getSeverity());
-		assertEquals(13, ((SyntaxErrorLocation)error.getLocation()).line);
+		assertEquals(10, ((SyntaxErrorLocation)error.getLocation()).line);
 		assertEquals(4, ((SyntaxErrorLocation)error.getLocation()).column);
 	}
 	
@@ -147,10 +141,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -202,10 +193,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -260,10 +248,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -318,10 +303,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -376,10 +358,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -434,10 +413,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -488,15 +464,12 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "              'weight':50                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
+			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
+			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'           \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +

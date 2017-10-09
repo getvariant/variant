@@ -20,7 +20,7 @@ Range   Base         Major Area               Minor Area
 001-020                                       Meta
 021-050                                       State
 051-150                                       Test
-151-170                                       --Unused
+151-170                                       Parameters
 171-200                                       Other
 201-220              Configuration
 241-250              --Available

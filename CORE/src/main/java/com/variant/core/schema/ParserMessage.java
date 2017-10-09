@@ -55,12 +55,12 @@ public interface ParserMessage {
 	public static interface Location {
 		
 		/**
-		 * Unstructured location information as a human-readable string.
+		 * Path to the JSON element which emitted a parse error.
 		 * 
-		 * @return
+		 * @return Path specification, e.g. "/meta", or null if syntax error.
 		 * @since 0.8
 		 */
-		String asString();
+		String getPath();
 	}
 
 }

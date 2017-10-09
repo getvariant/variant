@@ -22,15 +22,20 @@ public class SyntaxErrorLocation implements Location {
 	}
 	
 	@Override
-	public String asString() {
-		return String.format("line [%s], column [%s]:\n%s", line, column, getSourceFragment());
+	public String getPath() {
+		return null;
 	}
 	
-	public String getSourceFragment() {
+	@Override
+	public String toString() {
+		return String.format("line [%s], column [%s]:\n%s", line, column, getSourceFragment());
+	}
+
+	private String getSourceFragment() {
 		
 		String lines[] = schemaSrc.split("\n");
 		
-		StringBuilder result = new StringBuilder(super.toString()); 
+		StringBuilder result = new StringBuilder(); 
 		
 		if (line > 3) {
 			result.append("\n     ...");

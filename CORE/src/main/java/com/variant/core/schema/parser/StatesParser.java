@@ -48,8 +48,8 @@ public class StatesParser implements Keywords {
 
 				// Increment a local integer count whenever a parse error occurs.
 				final MutableInteger errorCount = new MutableInteger(0);
-				response.setParserListener(
-						new ParserListener() {
+				response.setMessageListener(
+						new ParserResponse.MessageListener() {
 							@Override
 							public void messageAdded(ParserMessage message) {
 								if (message.getSeverity().greaterOrEqual(Severity.ERROR)) 
@@ -76,7 +76,7 @@ public class StatesParser implements Keywords {
 						throw e;
 					}
 				}
-				response.setParserListener(null);
+				response.setMessageListener(null);
 			}
 		}
 		catch (ClassCastException e) {

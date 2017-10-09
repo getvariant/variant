@@ -25,7 +25,7 @@ public class ParserError extends UserError {
 	 * @return
 	 */
 	public String asMessage(Location location, Object...msgArgs) {
-		return String.format(msgFormat, msgArgs) + "\nLocation: " + location.asString();
+		return String.format(msgFormat, msgArgs) + "\nLocation: " + location.getPath();
 	}
 
 	// 
@@ -109,24 +109,6 @@ public class ParserError extends UserError {
 	public static final ParserError STATE_NAME_DUPE =
 			new ParserError(27, Severity.ERROR, "Duplicate state name [%s]"); 
 	
-	public static final ParserError PARAMS_NOT_LIST = 
-			new ParserError(28, Severity.ERROR, "'parameters' property must be a list"); 
-
-	public static final ParserError PARAM_NOT_OBJECT =
-			new ParserError(29, Severity.ERROR, "'parameters' property element must be an object  (Location: %s)"); 
-	
-	public static final ParserError PARAM_NAME_INVALID =
-			new ParserError(30, Severity.ERROR, "Parameter name must be a string, containing letters, digits and _, and cannot start with a digit"); 
-
-	public static final ParserError PARAM_VALUE_INVALID =
-			new ParserError(30, Severity.ERROR, "Parameter value must be a string (Location: %s)"); 
-
-	public static final ParserError PARAM_NAME_MISSING =
-			new ParserError(31, Severity.ERROR, "Parameter name missing"); 
-
-	public static final ParserError PARAM_VALUE_MISSING =
-			new ParserError(32, Severity.ERROR, "Parameter value missing"); 
-
 	// 
 	// 051-150 Schema parser, Test
 	//
@@ -310,6 +292,27 @@ public class ParserError extends UserError {
 	public static final ParserError EXPERIENCEREF_ISCONTROL =
 			new ParserError(110, Severity.ERROR, "'tests/onStates/variants/experienceRef' property [%s] cannot reference a control expereince, unless undefined (Test [%s], StateRef [%s])"); 
 	
+	// 
+	// 151-170 Schema parser Parameters
+	//
+	public static final ParserError PARAMS_NOT_LIST = 
+			new ParserError(151, Severity.ERROR, "'parameters' property must be a list"); 
+
+	public static final ParserError PARAM_NOT_OBJECT =
+			new ParserError(152, Severity.ERROR, "'parameters' property element must be an object"); 
+	
+	public static final ParserError PARAM_NAME_INVALID =
+			new ParserError(153, Severity.ERROR, "Parameter name must be a string, containing letters, digits and _, and cannot start with a digit"); 
+
+	public static final ParserError PARAM_VALUE_INVALID =
+			new ParserError(154, Severity.ERROR, "Parameter value must be a string"); 
+
+	public static final ParserError PARAM_NAME_MISSING =
+			new ParserError(155, Severity.ERROR, "Parameter name missing"); 
+
+	public static final ParserError PARAM_VALUE_MISSING =
+			new ParserError(156, Severity.ERROR, "Parameter value missing"); 
+
 	// 
 	// 171-200 Schema parser Other
 	//

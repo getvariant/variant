@@ -1,12 +1,17 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.ParserError.*;
+import static com.variant.core.schema.parser.ParserError.META_COMMENT_INVALID;
+import static com.variant.core.schema.parser.ParserError.META_NAME_INVALID;
+import static com.variant.core.schema.parser.ParserError.META_NAME_MISSING;
+import static com.variant.core.schema.parser.ParserError.META_NOT_OBJECT;
+import static com.variant.core.schema.parser.ParserError.META_UNSUPPORTED_PROPERTY;
 
 import java.util.Map;
 
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Flusher;
+import com.variant.core.schema.ParserMessage.Location;
 import com.variant.core.schema.impl.SchemaImpl;
 
 /**
@@ -15,16 +20,29 @@ import com.variant.core.schema.impl.SchemaImpl;
  *
  */
 public class MetaParser implements Keywords {
-			
+	
+	private static class MetaLocation extends SemanticErrorLocation {
+				
+		private final Location rootLocation;
+		private MetaLocation(Location rootLocation) {
+			this.rootLocation = rootLocation;
+		}
+		
+		@Override public String getPath() {
+			return rootLocation.getPath() + "meta/";
+		}
+	};
+	
 	/**
 	 * Parse the META clause.
 	 * @param statesObject
 	 * @param response 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parse(Object metaRaw, ParserResponse response) {
+	static void parse(Object metaRaw, Location rootLocation, ParserResponse response) {
 
 		SchemaImpl schema = (SchemaImpl) response.getSchema();
+		Location metaLocation = new MetaLocation(rootLocation);
 		
 		try {
 			
@@ -48,7 +66,7 @@ public class MetaParser implements Keywords {
 					try {
 						name = (String) entry.getValue();
 						if (!SemanticChecks.isName(name)) {
-							response.addMessage(META_NAME_INVALID);
+							response.addMessage(metaLocation, META_NAME_INVALID);
 						}
 					}
 					catch (ClassCastException e) {

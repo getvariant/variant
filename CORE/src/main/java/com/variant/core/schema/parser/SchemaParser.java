@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.ParserMessage;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -100,6 +101,14 @@ public abstract class SchemaParser implements Keywords {
 	protected abstract HooksService getHooksService();
 	protected abstract FlusherService getFlusherService();
 
+	private static ParserMessage.Location rootLocation = new SemanticErrorLocation() {
+		
+		@Override
+		public String getPath() { 
+			return "/";
+		}
+	};
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -188,7 +197,7 @@ public abstract class SchemaParser implements Keywords {
 		}
 		else {			
 			// Parse meta info
-			MetaParser.parse(meta, response);
+			MetaParser.parse(meta, rootLocation, response);
 			
 			// Init all schema scoped hooks.
 			for (Hook hook: response.getSchema().getHooks()) hooksService.initHook(hook, response);
@@ -221,7 +230,7 @@ public abstract class SchemaParser implements Keywords {
 			TestsParser.parse(tests, response, hooksService);			
 		}
 		
-		response.setParserListener(null);
+		response.setMessageListener(null);
 		
 		if (response.hasMessages(Severity.ERROR)) response.clearSchema();
 		

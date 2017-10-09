@@ -77,7 +77,7 @@ public class ParserResponse {
 	private ArrayList<ParserMessage> messages = new ArrayList<ParserMessage>();
 	private SchemaImpl schema = new SchemaImpl();
 	private String schemaSrc = null;
-	private ParserListener parserListener = null;
+	private MessageListener messageListener = null;
 	
 	/**
 	 * Private common part of adding the message which posts the parser listener, if any.
@@ -85,16 +85,20 @@ public class ParserResponse {
 	 */
 	private void addMessageCommon(ParserMessage message) {
 		messages.add(message);
-		if (parserListener != null) parserListener.messageAdded(message);
+		if (messageListener != null) messageListener.messageAdded(message);
 	}
-	
-	public ParserResponse() {}
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
+	public static interface MessageListener {
+
+		void messageAdded(ParserMessage message);
+	}
+
+	public ParserResponse() {}
 	
-	/**
+   /**
 	 * @return
 	 */
 	public List<ParserMessage> getMessages() {
@@ -176,7 +180,7 @@ public class ParserResponse {
 	 * 
 	 * @param listener
 	 */
-	public void setParserListener(ParserListener listener) {
-		this.parserListener = listener;
+	public void setMessageListener(MessageListener listener) {
+		this.messageListener = listener;
 	}
 }

@@ -49,8 +49,8 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.variant.core.CommonError;
 import com.variant.core.CoreException;
-import com.variant.core.VariantException;
 import com.variant.core.UserError.Severity;
+import com.variant.core.VariantException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserMessage;
@@ -98,8 +98,8 @@ public class TestsParser implements Keywords {
 			
 			// Increment a local integer count whenever a parse error occurs.
 			final MutableInteger errorCount = new MutableInteger(0);
-			response.setParserListener(
-					new ParserListener() {
+			response.setMessageListener(
+					new ParserResponse.MessageListener() {
 						@Override
 						public void messageAdded(ParserMessage message) {
 							if (message.getSeverity().greaterOrEqual(Severity.ERROR)) 
@@ -126,7 +126,7 @@ public class TestsParser implements Keywords {
 					throw e;
 				}
 			}
-			response.setParserListener(null);
+			response.setMessageListener(null);
 
 		}
 	}
