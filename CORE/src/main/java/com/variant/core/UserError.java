@@ -21,9 +21,10 @@ Range   Base         Major Area               Minor Area
 021-050                                       State
 051-150                                       Test
 151-170                                       Parameters
-171-200                                       Other
+171-180                                       Syntax
+181-200                                       Other
 201-220              Configuration
-241-250              --Available
+241-250              Collateral
 251-270              Other common runtime
 271-300              --Available
 
@@ -60,17 +61,11 @@ abstract public class UserError {
 	protected final String msgFormat;
 	private int code;
 	private Severity severity;
-	private String comment;
 	
-	protected UserError(int code, Severity severity, String msgFormat, String comment) {
+	protected UserError(int code, Severity severity, String msgFormat) {
 		this.code = code;
 		this.severity = severity;
 		this.msgFormat = msgFormat;
-		this.comment = comment;
-	}
-
-	protected UserError(int code, Severity severity, String msgFormat) {
-		this(code, severity, msgFormat, null);
 	}
 
 	public int getCode() {
@@ -80,11 +75,7 @@ abstract public class UserError {
 	public Severity getSeverity() {
 		return severity;
 	}
-	
-	public String getComment() {
-		return comment;
-	}
-	
+		
 	/**
 	 * Runtime message
 	 * @param args

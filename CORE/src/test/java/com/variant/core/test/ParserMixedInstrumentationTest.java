@@ -1,12 +1,12 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_COVARIANT_UNDEFINED;
-import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_MISSING;
-import static com.variant.core.schema.parser.ParserError.COVARIANT_VARIANT_PROPER_UNDEFINED;
-import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.schema.parser.ParserError.EXPERIENCEREF_PARAMS_NOT_ALLOWED;
-import static com.variant.core.schema.parser.ParserError.ISDEFINED_NOT_BOOLEAN;
-import static com.variant.core.schema.parser.ParserError.VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.ParserError.COVARIANT_VARIANT_COVARIANT_UNDEFINED;
+import static com.variant.core.schema.parser.error.ParserError.COVARIANT_VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.ParserError.COVARIANT_VARIANT_PROPER_UNDEFINED;
+import static com.variant.core.schema.parser.error.ParserError.EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.schema.parser.error.ParserError.EXPERIENCEREF_PARAMS_NOT_ALLOWED;
+import static com.variant.core.schema.parser.error.ParserError.ISDEFINED_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.error.ParserError.VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

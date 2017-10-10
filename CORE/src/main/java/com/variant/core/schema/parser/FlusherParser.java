@@ -1,9 +1,9 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.ParserError.FLUSHER_CLASS_NAME_INVALID;
-import static com.variant.core.schema.parser.ParserError.FLUSHER_NOT_OBJECT;
-import static com.variant.core.schema.parser.ParserError.FLUSHER_UNSUPPORTED_PROPERTY;
-import static com.variant.core.schema.parser.ParserError.FLUSHER_CLASS_NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_CLASS_NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_CLASS_NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_UNSUPPORTED_PROPERTY;
 
 import java.util.Map;
 
@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.CoreException;
 import com.variant.core.schema.Flusher;
 import com.variant.core.schema.impl.SchemaFlusherImpl;
+import com.variant.core.schema.parser.error.SemanticError.Location;
 
 /**
  * Hooks parser
@@ -27,17 +28,18 @@ public class FlusherParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static Flusher parse(Object rawFlusher, ParserResponse response) {
+	public static Flusher parse(Object rawFlusher, Location metaLocation, ParserResponse response) {
 
 		String className = null;
 		String init = null;
-
+		Location flusherLocation = metaLocation.plus("/flusher");
+		
 		Map<String, ?> rawMap;
 		try {
 			rawMap = (Map<String,?>) rawFlusher;
 		}
 		catch (ClassCastException e) {
-			response.addMessage(FLUSHER_NOT_OBJECT);
+			response.addMessage(FLUSHER_NOT_OBJECT, metaLocation);
 			return null;
 		}
 		
@@ -49,7 +51,7 @@ public class FlusherParser implements Keywords {
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_CLASS)) {
 				Object classNameObject = entry.getValue();
 				if (! (classNameObject instanceof String)) {
-					response.addMessage(FLUSHER_CLASS_NAME_INVALID);
+					response.addMessage(FLUSHER_CLASS_NAME_INVALID, flusherLocation);
 					return null;
 				}
 				else {
@@ -72,12 +74,12 @@ public class FlusherParser implements Keywords {
 				}
 			}
 			else {
-				response.addMessage(FLUSHER_UNSUPPORTED_PROPERTY, entry.getKey());
+				response.addMessage(FLUSHER_UNSUPPORTED_PROPERTY, flusherLocation, entry.getKey());
 			}
 		}
 	
 		if (className == null) {
-			response.addMessage(FLUSHER_CLASS_NAME_MISSING);
+			response.addMessage(FLUSHER_CLASS_NAME_MISSING, flusherLocation);
 			return null;
 		}
 		else {

@@ -1,18 +1,16 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.parser.ParserError;
 import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.core.schema.parser.SyntaxErrorLocation;
+import com.variant.core.schema.parser.error.ParserError;
+import com.variant.core.schema.parser.error.SyntaxErrorLocation;
 
 /**
  * Parse time exceptions
@@ -77,6 +75,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertEquals(Severity.FATAL, error.getSeverity());
 		assertEquals(10, ((SyntaxErrorLocation)error.getLocation()).line);
 		assertEquals(4, ((SyntaxErrorLocation)error.getLocation()).column);
+		assertNull(error.getLocation().getPath());
 	}
 	
 	/**
@@ -84,7 +83,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 	 * @throws Exception
 	 */
 	@Test
-	public void noViewsClause_NoTestsClause_Test() throws Exception {
+	public void noStatesClause_NoTestsClause_Test() throws Exception {
 		
 		String config = 
 				"{                                                              \n" +			    	   
@@ -103,11 +102,12 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImpl(ParserError.NO_STATES_CLAUSE).getText(), error.getText());
 		assertEquals(Severity.INFO, error.getSeverity());
-
+		assertEquals("/", error.getLocation().getPath());
+		
 		error = response.getMessages().get(1);
 		assertEquals(new ParserMessageImpl(ParserError.NO_TESTS_CLAUSE).getText(), error.getText());
 		assertEquals(Severity.INFO, error.getSeverity());
-
+		assertEquals("/", error.getLocation().getPath());
 	}
 
 	/**
@@ -152,13 +152,14 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
-		
+
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImpl(ParserError.NO_META_CLAUSE).getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
+		assertEquals("/", error.getLocation().getPath());
 	}
 
 	/**
@@ -211,6 +212,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImpl(ParserError.META_NOT_OBJECT).getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
+		assertEquals("/", error.getLocation().getPath());
 	}
 
 	/**
@@ -266,6 +268,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImpl(ParserError.META_NAME_INVALID).getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
+		assertEquals("/meta/name", error.getLocation().getPath());
 	}
 
 	/**
@@ -321,6 +324,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImpl(ParserError.META_NAME_INVALID).getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
+		assertEquals("/meta/name", error.getLocation().getPath());
 	}
 
 	/**
@@ -376,6 +380,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImpl(ParserError.META_COMMENT_INVALID).getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
+		assertEquals("/meta/comment", error.getLocation().getPath());
 	}
 
 	/**
@@ -432,6 +437,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImpl(ParserError.META_UNSUPPORTED_PROPERTY, "coment").getText(), error.getText());
 		assertEquals(Severity.WARN, error.getSeverity());
+		assertEquals("/meta", error.getLocation().getPath());
 	}
 
 	/**
@@ -487,9 +493,11 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		ParserMessage error = response.getMessages().get(0);
 		assertEquals(new ParserMessageImpl(ParserError.META_UNSUPPORTED_PROPERTY, "namee").getText(), error.getText());
 		assertEquals(Severity.WARN, error.getSeverity());
+		assertEquals("/meta", error.getLocation().getPath());
 		error = response.getMessages().get(1);
 		assertEquals(new ParserMessageImpl(ParserError.META_NAME_MISSING).getText(), error.getText());
 		assertEquals(Severity.ERROR, error.getSeverity());
+		assertEquals("/meta", error.getLocation().getPath());
 	}
 
 }

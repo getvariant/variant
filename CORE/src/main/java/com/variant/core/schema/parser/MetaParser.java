@@ -1,18 +1,18 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.ParserError.META_COMMENT_INVALID;
-import static com.variant.core.schema.parser.ParserError.META_NAME_INVALID;
-import static com.variant.core.schema.parser.ParserError.META_NAME_MISSING;
-import static com.variant.core.schema.parser.ParserError.META_NOT_OBJECT;
-import static com.variant.core.schema.parser.ParserError.META_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.META_COMMENT_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.META_NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.META_NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.META_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.META_UNSUPPORTED_PROPERTY;
 
 import java.util.Map;
 
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Flusher;
-import com.variant.core.schema.ParserMessage.Location;
 import com.variant.core.schema.impl.SchemaImpl;
+import com.variant.core.schema.parser.error.SemanticError.Location;
 
 /**
  * Parse the META clause.
@@ -21,17 +21,6 @@ import com.variant.core.schema.impl.SchemaImpl;
  */
 public class MetaParser implements Keywords {
 	
-	private static class MetaLocation extends SemanticErrorLocation {
-				
-		private final Location rootLocation;
-		private MetaLocation(Location rootLocation) {
-			this.rootLocation = rootLocation;
-		}
-		
-		@Override public String getPath() {
-			return rootLocation.getPath() + "meta/";
-		}
-	};
 	
 	/**
 	 * Parse the META clause.
@@ -42,7 +31,7 @@ public class MetaParser implements Keywords {
 	static void parse(Object metaRaw, Location rootLocation, ParserResponse response) {
 
 		SchemaImpl schema = (SchemaImpl) response.getSchema();
-		Location metaLocation = new MetaLocation(rootLocation);
+		Location metaLocation = rootLocation.plus("meta");
 		
 		try {
 			
@@ -51,7 +40,7 @@ public class MetaParser implements Keywords {
 				metaObject = (Map<String,?>) metaRaw;
 			}
 			catch (ClassCastException e) {
-				response.addMessage(META_NOT_OBJECT);
+				response.addMessage(META_NOT_OBJECT, rootLocation);
 				return;
 			}
 
@@ -66,11 +55,11 @@ public class MetaParser implements Keywords {
 					try {
 						name = (String) entry.getValue();
 						if (!SemanticChecks.isName(name)) {
-							response.addMessage(metaLocation, META_NAME_INVALID);
+							response.addMessage(META_NAME_INVALID, metaLocation.plus("/name"));
 						}
 					}
 					catch (ClassCastException e) {
-						response.addMessage(META_NAME_INVALID);
+						response.addMessage(META_NAME_INVALID, metaLocation.plus("/name"));
 					}
 				}
 				else if (entry.getKey().equalsIgnoreCase(KEYWORD_COMMENT)) {
@@ -78,23 +67,23 @@ public class MetaParser implements Keywords {
 						comment = (String) entry.getValue();
 					}
 					catch (ClassCastException e) {
-						response.addMessage(META_COMMENT_INVALID);
+						response.addMessage(META_COMMENT_INVALID, metaLocation.plus("/comment"));
 					}
 				}
 				else if (entry.getKey().equalsIgnoreCase(KEYWORD_HOOKS)) {
-					HooksParser.parse(entry.getValue(), response);
+					HooksParser.parseMetaHooks(entry.getValue(), metaLocation, response);
 				}
 				else if (entry.getKey().equalsIgnoreCase(KEYWORD_FLUSHER)) {
-					flusher = FlusherParser.parse(entry.getValue(), response);
+					flusher = FlusherParser.parse(entry.getValue(), metaLocation, response);
 				}
 
 				else {
-					response.addMessage(META_UNSUPPORTED_PROPERTY,  entry.getKey());
+					response.addMessage(META_UNSUPPORTED_PROPERTY,  metaLocation, entry.getKey());
 				}
 			}
 			
 			if (!nameFound) {
-				response.addMessage(META_NAME_MISSING);
+				response.addMessage(META_NAME_MISSING, metaLocation);
 			}
 			
 			if (response.hasMessages(Severity.ERROR)) return;

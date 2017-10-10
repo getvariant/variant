@@ -93,14 +93,6 @@ public class CoreException extends VariantException {
 			return "[" + error.getCode() + "] " + error.asMessage(args);
 		}
 
-		/**
-		 * 
-		 * @return
-		 */
-		public String getComment() {
-			return error.getComment();
-		}
-
 	}
 
 }

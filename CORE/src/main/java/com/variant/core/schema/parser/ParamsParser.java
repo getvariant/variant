@@ -1,11 +1,12 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.ParserError.*;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.util.List;
 import java.util.Map;
 
 import com.variant.core.CoreException;
+import com.variant.core.schema.parser.error.SemanticError.Location;
 import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.util.Tuples.Pair;
 
@@ -21,22 +22,23 @@ public class ParamsParser implements Keywords {
 	 * @param hooksObject
 	 * @param response
 	 */
-	static CaseInsensitiveMap<String> parse(Object paramsObject, ParserResponse response) {		
+	static CaseInsensitiveMap<String> parse(Object paramsObject, Location paramsLocation, ParserResponse response) {		
 		
 		CaseInsensitiveMap<String> result = new CaseInsensitiveMap<String>();
 		
 		try {
 			List<?> rawParams = (List<?>) paramsObject;
 									
+			int index = 0;
 			for (Object rawParam: rawParams) {
 				
-				Pair<String,String> param = parseParam(rawParam, response);
+				Pair<String,String> param = parseParam(rawParam, paramsLocation.plus(index++), response);
 				
 				if (param != null) result.put(param);
 			}
 		}
 		catch (ClassCastException e) {
-			response.addMessage(PARAMS_NOT_LIST);
+			response.addMessage(PARAMS_NOT_LIST, paramsLocation);
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
@@ -52,7 +54,7 @@ public class ParamsParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static Pair<String,String> parseParam(Object rawParam, ParserResponse response) {
+	private static Pair<String,String> parseParam(Object rawParam, Location paramLocation, ParserResponse response) {
 		
 		String name = null;
 		String value = null;
@@ -65,7 +67,7 @@ public class ParamsParser implements Keywords {
 			rawMap = (Map<String,?>) rawParam;
 		}
 		catch (ClassCastException e) {
-			response.addMessage(PARAM_NOT_OBJECT);
+			response.addMessage(PARAM_NOT_OBJECT, paramLocation);
 			return null;
 		}
 		
@@ -75,12 +77,12 @@ public class ParamsParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(PARAM_NAME_INVALID);
+					response.addMessage(PARAM_NAME_INVALID, paramLocation.plus(KEYWORD_NAME));
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage(PARAM_NAME_INVALID);
+						response.addMessage(PARAM_NAME_INVALID, paramLocation.plus(KEYWORD_NAME));
 					}
 				}
 				break;
@@ -89,7 +91,7 @@ public class ParamsParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addMessage(PARAM_NAME_MISSING);
+				response.addMessage(PARAM_NAME_MISSING, paramLocation);
 			}
 			return null;
 		}
@@ -103,14 +105,14 @@ public class ParamsParser implements Keywords {
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_VALUE)) {
 				Object valueObject = entry.getValue();
 				if (! (valueObject instanceof String)) {
-					response.addMessage(PARAM_VALUE_INVALID, name);
+					response.addMessage(PARAM_VALUE_INVALID, paramLocation.plus(KEYWORD_VALUE), name);
 				}
 				else {
 					value = (String) valueObject;
 				}
 			}
 			else {
-				response.addMessage(HOOK_UNSUPPORTED_PROPERTY, entry.getKey(), name);
+				response.addMessage(HOOK_UNSUPPORTED_PROPERTY, paramLocation, entry.getKey(), name);
 			}
 		}
 	

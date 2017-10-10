@@ -65,12 +65,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.variant.core.UserError;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.ParserMessage.Location;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.impl.SchemaImpl;
+import com.variant.core.schema.parser.error.CollateralMessage;
+import com.variant.core.schema.parser.error.SemanticError;
+import com.variant.core.schema.parser.error.SyntaxError;
 
 public class ParserResponse {
 
@@ -134,16 +135,16 @@ public class ParserResponse {
 
 	/**
 	 * Add a message generated externally by a parser time user hook.
-	 */
+	 *
     public void addMessage(Severity severity, String message) {
 		ParserMessage result = new ParserMessageImpl(new ParserHookError(severity, message));
 		addMessageCommon(result);
 	}
 
 	/**
-	 * Message with location
+	 * Add a syntax error.
 	 */
-	public ParserMessage addMessage(Location location, ParserError error, String...args) {
+	public ParserMessage addMessage(SyntaxError error, SyntaxError.Location location, String...args) {
 		
 		ParserMessage result = new ParserMessageImpl(location, error, args);
 		addMessageCommon(result);
@@ -151,11 +152,21 @@ public class ParserResponse {
 	}
 
 	/**
-	 * Generic message without location
+	 * Add a simantic error.
+	 */
+	public ParserMessage addMessage(SemanticError error, SemanticError.Location location, String...args) {
+		
+		ParserMessage result = new ParserMessageImpl(location, error, args);
+		addMessageCommon(result);
+		return result;
+	}
+
+	/**
+	 * Collateral messages, emitted or caused by user code.
 	 * @param error
 	 */
-	public ParserMessage addMessage(UserError error, String...args) {
-		ParserMessage result = new ParserMessageImpl(error, args);
+	public ParserMessage addMessage(CollateralMessage error, String...args) {
+		ParserMessage result = new ParserMessageImpl(null, error, args);
 		addMessageCommon(result);
 		return result;
 	}

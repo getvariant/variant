@@ -1,16 +1,15 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.ParserError.NO_STATES;
-import static com.variant.core.schema.parser.ParserError.STATES_CLAUSE_NOT_LIST;
-import static com.variant.core.schema.parser.ParserError.STATE_NAME_DUPE;
-import static com.variant.core.schema.parser.ParserError.STATE_NAME_INVALID;
-import static com.variant.core.schema.parser.ParserError.STATE_NAME_MISSING;
-import static com.variant.core.schema.parser.ParserError.STATE_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.STATES_CLAUSE_EMPTY;
+import static com.variant.core.schema.parser.error.SemanticError.STATES_CLAUSE_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.STATE_NAME_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.STATE_NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.STATE_NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.STATE_UNSUPPORTED_PROPERTY;
 
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.CommonError;
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
@@ -19,6 +18,8 @@ import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.State;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.StateImpl;
+import com.variant.core.schema.parser.error.CollateralMessage;
+import com.variant.core.schema.parser.error.SemanticError.Location;
 import com.variant.core.util.MutableInteger;
 
 /**
@@ -34,18 +35,23 @@ public class StatesParser implements Keywords {
 	 * @param response 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parse(Object statesObject, ParserResponse response, HooksService hooksService) {
+	static void parse(Object statesObject, Location rootLocation, ParserResponse response, HooksService hooksService) {
 
+		Location statesLocation = rootLocation.plus(KEYWORD_STATES);
+		
 		try {
 
 			List<Map<String, ?>> rawStates = (List<Map<String, ?>>) statesObject;
 			
 			if (rawStates.size() == 0) {
-				response.addMessage(NO_STATES);
+				response.addMessage(STATES_CLAUSE_EMPTY, statesLocation);
 			}
 			
+			int index = 0;
 			for (Map<String, ?> rawState: rawStates) {
 
+				Location stateLocation = statesLocation.plus(index++);
+				
 				// Increment a local integer count whenever a parse error occurs.
 				final MutableInteger errorCount = new MutableInteger(0);
 				response.setMessageListener(
@@ -58,9 +64,9 @@ public class StatesParser implements Keywords {
 				});
 				
 				// Parse individual state
-				State state = parseState(rawState, response);
+				State state = parseState(rawState, stateLocation, response);
 				if (state != null && !((SchemaImpl) response.getSchema()).addState(state)) {
-					response.addMessage(STATE_NAME_DUPE, state.getName());
+					response.addMessage(STATE_NAME_DUPE, stateLocation, state.getName());
 				}
 				
 				// If no errors, register state scoped hooks.
@@ -72,7 +78,7 @@ public class StatesParser implements Keywords {
 						hooksService.post(new StateParsedLifecycleEventImpl(state, response));
 					}
 					catch (VariantException e) {
-						response.addMessage(CommonError.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
+						response.addMessage(CollateralMessage.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
 						throw e;
 					}
 				}
@@ -80,7 +86,7 @@ public class StatesParser implements Keywords {
 			}
 		}
 		catch (ClassCastException e) {
-			response.addMessage(STATES_CLAUSE_NOT_LIST);
+			response.addMessage(STATES_CLAUSE_NOT_LIST, rootLocation);
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
@@ -91,7 +97,7 @@ public class StatesParser implements Keywords {
 	 * Parse a state
 	 */
 	@SuppressWarnings("unchecked")
-	private static StateImpl parseState(Map<String, ?> rawState, final ParserResponse response) {
+	private static StateImpl parseState(Map<String, ?> rawState, Location stateLocation, final ParserResponse response) {
 		
 		String name = null;
 		boolean nameFound = false;
@@ -103,12 +109,12 @@ public class StatesParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(STATE_NAME_INVALID);
+					response.addMessage(STATE_NAME_INVALID, stateLocation.plus(KEYWORD_NAME));
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage(STATE_NAME_INVALID);
+						response.addMessage(STATE_NAME_INVALID, stateLocation.plus(KEYWORD_NAME));
 					}
 				}
 				break;
@@ -117,7 +123,7 @@ public class StatesParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addMessage(STATE_NAME_MISSING);
+				response.addMessage(STATE_NAME_MISSING, stateLocation);
 			}
 			return null;
 		}
@@ -130,13 +136,15 @@ public class StatesParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) continue;
 			
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_PARAMETERS)) {
-				result.setParameterMap(ParamsParser.parse(entry.getValue(), response));
+				Location paramsLocation = stateLocation.plus(KEYWORD_PARAMETERS);
+				result.setParameterMap(ParamsParser.parse(entry.getValue(), paramsLocation, response));
 			}
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_HOOKS)) {
-				HooksParser.parse(entry.getValue(), result, response);
+				Location hooksLocation = stateLocation.plus(KEYWORD_HOOKS);
+				HooksParser.parseStateHooks(entry.getValue(), result, hooksLocation, response);
 			}
 			else {
-				response.addMessage(STATE_UNSUPPORTED_PROPERTY, entry.getKey(), name);
+				response.addMessage(STATE_UNSUPPORTED_PROPERTY, stateLocation, entry.getKey(), name);
 			}
 		}
 		

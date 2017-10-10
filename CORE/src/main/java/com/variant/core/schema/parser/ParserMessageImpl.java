@@ -17,20 +17,25 @@ public class ParserMessageImpl implements ParserMessage {
 	private Location location = null;
 
 	/**
+	 * Create parser message from a syntax error.
 	 */
-	 public ParserMessageImpl(UserError error, String...args) {
+	 public ParserMessageImpl(Location location, UserError error, String...args) {
 		severity = error.getSeverity();
 		message = error.asMessage((Object[])args);
 		code = error.getCode();
-	}
-
-	/**
-	 */
-	public ParserMessageImpl(Location location, UserError error, String...args) {
-		this(error, args);
 		this.location = location;
 	}
 
+	/**
+	 * Create parser message from a semantic error.
+	 *
+	public ParserMessageImpl(SemanticError.Location location, SemanticError error, String...args) {
+		severity = error.getSeverity();
+		message = error.asMessage((Object[])args);
+		code = error.getCode();
+		this.location = location;
+	}
+*/
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//

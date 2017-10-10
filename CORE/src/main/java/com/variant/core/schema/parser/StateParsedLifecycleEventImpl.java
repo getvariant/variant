@@ -4,6 +4,7 @@ import com.variant.core.UserError.Severity;
 import com.variant.core.UserHook;
 import com.variant.core.lce.StateParsedLifecycleEvent;
 import com.variant.core.schema.State;
+import com.variant.core.schema.parser.error.CollateralMessage;
 
 /**
  * 
@@ -31,7 +32,15 @@ public class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent 
 	
 	@Override
 	public void addMessage(Severity severity, String message) {
-		response.addMessage(severity, message);
+		CollateralMessage cm = null;
+		switch (severity) {
+		case INFO: cm = CollateralMessage.HOOK_USER_MESSAGE_INFO;
+		case WARN: cm = CollateralMessage.HOOK_USER_MESSAGE_INFO;
+		case ERROR: cm = CollateralMessage.HOOK_USER_MESSAGE_ERROR;
+		case FATAL: cm = CollateralMessage.HOOK_USER_MESSAGE_ERROR;
+		}
+		
+		response.addMessage(cm, message);
 	}
 
 	@Override

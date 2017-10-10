@@ -22,7 +22,7 @@ public class ServerError extends UserError {
 			new ServerError(602, "JSON parsing error: '%s'");
 	
 	public static final ServerError BadContentType = 
-			new ServerError(603, "Unsupported content type", "Use 'application/json'");
+			new ServerError(603, "Unsupported content type, use 'application/json'");
 	   
 	//
 	// 611-630 Internal, Payload parse error
@@ -31,7 +31,7 @@ public class ServerError extends UserError {
 			new ServerError(611, "Missing required property '%s'");
 	
 	public static final ServerError InvalidDate = 
-			new ServerError(612, "Invalid date specification in property '%s'", "Epoch milliseconds expected");
+			new ServerError(612, "Invalid date specification in property '%s', epoch milliseconds expected");
 	
 	public static final ServerError UnsupportedProperty = 
 			new ServerError(613, "Unsupported property '%s' in payload");
@@ -83,7 +83,7 @@ public class ServerError extends UserError {
 	// 741-760 User, Event
 	//
 	public static final ServerError UnknownState = 
-			new ServerError(741, "No state request in session", "Target this session for a state first");
+			new ServerError(741, "No state request in session. Target this session for a state first");
 
 
 	
@@ -106,13 +106,6 @@ public class ServerError extends UserError {
 		return null;
 	}
 	
-	/**
-	 * With comment
-	 */
-	protected ServerError(int code, String format, String comment) {
-		super(code, Severity.ERROR, format, comment);
-	}
-
 	/**
 	 * Without comment
 	 */

@@ -8,10 +8,10 @@ import org.junit.Test;
 
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.parser.ParserError;
 import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
+import com.variant.core.schema.parser.error.ParserError;
 
 /**
  * Parse time exceptions

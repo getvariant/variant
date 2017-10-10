@@ -1,6 +1,6 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.ParserError.*;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +15,7 @@ import com.variant.core.schema.impl.StateHookImpl;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestHookImpl;
 import com.variant.core.schema.impl.TestImpl;
-
+import com.variant.core.schema.parser.error.SemanticError.Location;
 /**
  * Hooks parser
  * @author Igor
@@ -29,20 +29,25 @@ public class HooksParser implements Keywords {
 	 * @param hooksObject
 	 * @param response
 	 */
-	static void parse(Object hooksObject, ParserResponse response) {		
+	static void parseMetaHooks(Object hooksObject, Location metaLocation, ParserResponse response) {		
+		
+		Location hooksLocation = metaLocation.plus("/hooks");
+		
 		try {
 			List<?> rawHooks = (List<?>) hooksObject;
 									
+			int i = 0;
 			for (Object rawHook: rawHooks) {
-				Hook hook = parseHook(rawHook, response);
+				
+				Hook hook = parseHook(rawHook, hooksLocation.plus(i++), response);
 				
 				if (hook != null && !((SchemaImpl) response.getSchema()).addHook(hook)) {
-					response.addMessage(HOOK_NAME_DUPE, hook.getName());
+					response.addMessage(HOOK_NAME_DUPE, hooksLocation, hook.getName());
 				}
 			}
 		}
 		catch (ClassCastException e) {
-			response.addMessage(HOOKS_NOT_LIST);
+			response.addMessage(HOOKS_NOT_LIST, metaLocation);
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
@@ -50,75 +55,14 @@ public class HooksParser implements Keywords {
 	}
 	
 	/**
-	 * Parse hooks list with the state scope. 
-	 * @param hooksObject
-	 * @param response
-	 */
-	static void parse(Object hooksObject, StateImpl state, ParserResponse response) {		
-		try {
-			List<?> rawHooks = (List<?>) hooksObject;
-									
-			for (Object rawHook: rawHooks) {
-				
-				Hook hook = parseHook(rawHook, response);
-				
-				if (hook != null) {
-					// The method above created a schema level hook, but in this case we need a test
-					// domian hook.
-					hook = new StateHookImpl(hook.getName(), hook.getClassName(), hook.getInit(), state);
-					if (!state.addHook(hook)) {
-						response.addMessage(HOOK_NAME_DUPE, hook.getName());
-					}
-				}	
-			}
-		}
-		catch (ClassCastException e) {
-			response.addMessage(HOOKS_NOT_LIST);
-		}
-		catch (Exception e) {
-			throw new CoreException.Internal(e);
-		}
-	}
-
-	/**
-	 * Parse hooks list with the test scope. 
-	 * @param hooksObject
-	 * @param response
-	 */
-	static void parse(Object hooksObject, TestImpl test, ParserResponse response) {		
-		try {
-			List<?> rawHooks = (List<?>) hooksObject;
-									
-			for (Object rawHook: rawHooks) {
-				
-				Hook hook = parseHook(rawHook, response);
-				
-				if (hook != null) {
-					// The method above created a schema level hook, but in this case we need a test
-					// domian hook.
-					hook = new TestHookImpl(hook.getName(), hook.getClassName(), hook.getInit(), test);
-					if (!test.addHook(hook)) {
-						response.addMessage(HOOK_NAME_DUPE, hook.getName());
-					}
-				}	
-			}
-		}
-		catch (ClassCastException e) {
-			response.addMessage(HOOKS_NOT_LIST);
-		}
-		catch (Exception e) {
-			throw new CoreException.Internal(e);
-		}
-	}
-
-	/**
 	 * Parse an individual user hook definition
 	 * @param rawHook
 	 * @param response
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static Hook parseHook(Object rawHook, ParserResponse response) {
+	private static Hook parseHook(Object rawHook, Location hookLocation, ParserResponse response) {
+		
 		String name = null;
 		String className = null;
 		String init = null;
@@ -131,7 +75,7 @@ public class HooksParser implements Keywords {
 			rawMap = (Map<String,?>) rawHook;
 		}
 		catch (ClassCastException e) {
-			response.addMessage(HOOK_NOT_OBJECT);
+			response.addMessage(HOOK_NOT_OBJECT, hookLocation);
 			return null;
 		}
 		
@@ -141,12 +85,12 @@ public class HooksParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(HOOK_NAME_INVALID);
+					response.addMessage(HOOK_NAME_INVALID, hookLocation.plus("/name"));
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage(HOOK_NAME_INVALID);
+						response.addMessage(HOOK_NAME_INVALID, hookLocation.plus("/name"));
 					}
 				}
 				break;
@@ -155,7 +99,7 @@ public class HooksParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addMessage(HOOK_NAME_MISSING);
+				response.addMessage(HOOK_NAME_MISSING, hookLocation);
 			}
 			return null;
 		}
@@ -169,7 +113,7 @@ public class HooksParser implements Keywords {
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_CLASS)) {
 				Object classNameObject = entry.getValue();
 				if (! (classNameObject instanceof String)) {
-					response.addMessage(HOOK_CLASS_NAME_INVALID, name);
+					response.addMessage(HOOK_CLASS_NAME_INVALID, hookLocation.plus("/class"), name);
 				}
 				else {
 					className = (String) classNameObject;
@@ -191,16 +135,85 @@ public class HooksParser implements Keywords {
 				}
 			}
 			else {
-				response.addMessage(HOOK_UNSUPPORTED_PROPERTY, entry.getKey(), name);
+				response.addMessage(HOOK_UNSUPPORTED_PROPERTY, hookLocation, entry.getKey(), name);
 			}
 		}
 	
 		if (className == null) {
-			response.addMessage(HOOK_CLASS_NAME_MISSING, name);
+			response.addMessage(HOOK_CLASS_NAME_MISSING, hookLocation, name);
 			return null;
 		}
 		else {
 			return new SchemaHookImpl(name, className, init);
 		}
 	}
+	
+	/**
+	 * Parse hooks list with the state scope. 
+	 * @param hooksObject
+	 * @param response
+	 */
+	static void parseStateHooks(Object hooksObject, StateImpl state, Location stateLocation, ParserResponse response) {		
+		try {
+			List<?> rawHooks = (List<?>) hooksObject;
+									
+			int index = 0;
+			for (Object rawHook: rawHooks) {
+				
+				Location hookLocation = stateLocation.plus(index++);
+				
+				Hook hook = parseHook(rawHook, hookLocation, response);
+				
+				if (hook != null) {
+					// The method above created a schema level hook, but in this case we need a test
+					// domian hook.
+					hook = new StateHookImpl(hook.getName(), hook.getClassName(), hook.getInit(), state);
+					if (!state.addHook(hook)) {
+						response.addMessage(HOOK_NAME_DUPE, hookLocation, hook.getName());
+					}
+				}	
+			}
+		}
+		catch (ClassCastException e) {
+			response.addMessage(HOOKS_NOT_LIST, stateLocation);
+		}
+		catch (Exception e) {
+			throw new CoreException.Internal(e);
+		}
+	}
+
+	/**
+	 * Parse hooks list with the test scope. 
+	 * @param hooksObject
+	 * @param response
+	 */
+	static void parseTestHook(Object hooksObject, TestImpl test, Location testLocation, ParserResponse response) {		
+		try {
+			List<?> rawHooks = (List<?>) hooksObject;
+						
+			int index = 0;
+			for (Object rawHook: rawHooks) {
+				
+				Location hookLocation = testLocation.plus(index++);
+				
+				Hook hook = parseHook(rawHook, hookLocation, response);
+				
+				if (hook != null) {
+					// The method above created a schema level hook, but in this case we need a test
+					// domian hook.
+					hook = new TestHookImpl(hook.getName(), hook.getClassName(), hook.getInit(), test);
+					if (!test.addHook(hook)) {
+						response.addMessage(HOOK_NAME_DUPE, hookLocation, hook.getName());
+					}
+				}	
+			}
+		}
+		catch (ClassCastException e) {
+			response.addMessage(HOOKS_NOT_LIST, testLocation);
+		}
+		catch (Exception e) {
+			throw new CoreException.Internal(e);
+		}
+	}
+
 }

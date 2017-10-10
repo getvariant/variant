@@ -1,10 +1,10 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.ParserError.JSON_SYNTAX_ERROR;
-import static com.variant.core.schema.parser.ParserError.NO_META_CLAUSE;
-import static com.variant.core.schema.parser.ParserError.NO_STATES_CLAUSE;
-import static com.variant.core.schema.parser.ParserError.NO_TESTS_CLAUSE;
-import static com.variant.core.schema.parser.ParserError.UNSUPPORTED_CLAUSE;
+import static com.variant.core.schema.parser.error.SyntaxError.JSON_SYNTAX_ERROR;
+import static com.variant.core.schema.parser.error.SemanticError.NO_META_CLAUSE;
+import static com.variant.core.schema.parser.error.SemanticError.NO_STATES_CLAUSE;
+import static com.variant.core.schema.parser.error.SemanticError.NO_TESTS_CLAUSE;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_CLAUSE;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +19,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Hook;
-import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.parser.error.SemanticError;
+import com.variant.core.schema.parser.error.SyntaxError;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -55,7 +56,7 @@ public abstract class SchemaParser implements Keywords {
 		String[] tokens = tail.split(",");
 		int line = Integer.parseInt(tokens[0]);
 		int column = Integer.parseInt(tokens[1]);
-		response.addMessage(new SyntaxErrorLocation(schemaSrc, line, column), JSON_SYNTAX_ERROR, message.toString());
+		response.addMessage(JSON_SYNTAX_ERROR, new SyntaxError.Location(schemaSrc, line, column), message.toString());
 
 	}
 	
@@ -100,15 +101,9 @@ public abstract class SchemaParser implements Keywords {
 	 */
 	protected abstract HooksService getHooksService();
 	protected abstract FlusherService getFlusherService();
-
-	private static ParserMessage.Location rootLocation = new SemanticErrorLocation() {
-		
-		@Override
-		public String getPath() { 
-			return "/";
-		}
-	};
 	
+	private static SemanticError.Location rootLocation = new SemanticError.Location("/");
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -182,7 +177,7 @@ public abstract class SchemaParser implements Keywords {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {
-				response.addMessage(UNSUPPORTED_CLAUSE, entry.getKey());
+				response.addMessage(UNSUPPORTED_CLAUSE, rootLocation, entry.getKey());
 			}
 		}
 		
@@ -193,7 +188,7 @@ public abstract class SchemaParser implements Keywords {
 		
 		Object meta = cleanMap.get(KEYWORD_META.toUpperCase());
 		if (meta == null) {
-			response.addMessage(NO_META_CLAUSE);
+			response.addMessage(NO_META_CLAUSE, rootLocation);
 		}
 		else {			
 			// Parse meta info
@@ -209,11 +204,11 @@ public abstract class SchemaParser implements Keywords {
 
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());
 		if (states == null) {
-			response.addMessage(NO_STATES_CLAUSE);
+			response.addMessage(NO_STATES_CLAUSE, rootLocation);
 		}
 		else {
 			// Parse all states
-			StatesParser.parse(states, response, hooksService);		
+			StatesParser.parse(states, rootLocation, response, hooksService);		
 		}
 
 		if (!response.getMessages(Severity.FATAL).isEmpty()) {
@@ -223,7 +218,7 @@ public abstract class SchemaParser implements Keywords {
 
 		Object tests = cleanMap.get(KEYWORD_TESTS.toUpperCase());
 		if (tests == null) {
-			response.addMessage(NO_TESTS_CLAUSE);
+			response.addMessage(NO_TESTS_CLAUSE, rootLocation);
 		}
 		else {
 			// Parse all tests

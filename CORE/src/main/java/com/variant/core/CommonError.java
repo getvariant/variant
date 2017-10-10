@@ -21,19 +21,12 @@ public class CommonError extends UserError {
 	public final static CommonError CONFIG_PROPERTY_NOT_SET = 
 			new CommonError(204, Severity.FATAL, "Configuration property [%s] must be set, but is not");
 
-
-	//
-	// 241-250  Available
-	//
 	
 	//
-	// 251-270              Common runtime, including common hook errors.
+	// 251-270              Common runtime, shared btwn client and server.
 	//
 	public static final CommonError STATE_NOT_INSTRUMENTED_BY_TEST =
 			new CommonError(251, Severity.ERROR, "State [%s] is not instrumented by test [%s]");
-
-	public static final CommonError  HOOK_UNHANDLED_EXCEPTION =
-			new CommonError(252, Severity.ERROR, "User hook class [%s] threw an exception [%s]. See logs for details.");
 
 	/**
 	 * 
