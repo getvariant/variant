@@ -96,7 +96,6 @@ public class StatesParser implements Keywords {
 	/**
 	 * Parse a state
 	 */
-	@SuppressWarnings("unchecked")
 	private static StateImpl parseState(Map<String, ?> rawState, Location stateLocation, final ParserResponse response) {
 		
 		String name = null;

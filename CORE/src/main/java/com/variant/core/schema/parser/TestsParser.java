@@ -1,6 +1,45 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
+import static com.variant.core.schema.parser.error.SemanticError.ALL_PROPER_EXPERIENCES_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_TESTREF_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_TESTREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_TESTS_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_TEST_DISJOINT;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_COVARIANT_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_PROPER_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCES_LIST_EMPTY;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCES_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCE_NAME_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCE_NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCE_NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCE_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCE_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.ISCONTROL_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.error.SemanticError.ISNONVARIANT_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.error.SemanticError.NO_TESTS;
+import static com.variant.core.schema.parser.error.SemanticError.ONSTATES_LIST_EMPTY;
+import static com.variant.core.schema.parser.error.SemanticError.ONSTATES_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.ONSTATES_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.STATEREF_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.STATEREF_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.STATEREF_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.STATEREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.TEST_ISON_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.error.SemanticError.TEST_NAME_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.TEST_NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.TEST_NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.TEST_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_INCOMPATIBLE;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_XOR;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_LIST_EMPTY;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANT_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.WEIGHT_NOT_NUMBER;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +47,6 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.variant.core.CommonError;
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
@@ -25,6 +63,7 @@ import com.variant.core.schema.impl.TestExperienceImpl;
 import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.schema.parser.error.CollateralMessage;
+import com.variant.core.schema.parser.error.SemanticError.Location;
 import com.variant.core.util.MutableInteger;
 import com.variant.core.util.VariantStringUtils;
 
@@ -481,8 +520,9 @@ public class TestsParser implements Keywords {
 				int index = 0;
 				for (Object variantObject: rawVariants) {
 					
-					StateVariantImpl variant = VariantParser.parseVariant(variantObject, tos, response);					
-					index++;
+					Location variantLocation = tosLocation.plus(KEYWORD_VARIANTS).plus(index++);
+					
+					StateVariantImpl variant = VariantParser.parseVariant(variantObject, variantLocation, tos, response);					
 					
 					if (variant != null) {
 						boolean dupe = false;
@@ -492,7 +532,7 @@ public class TestsParser implements Keywords {
 									// Dupe proper experience ref and no covariant experiences in this view.
 									response.addMessage(
 											VARIANT_DUPE,
-											tosLocation.plus(KEYWORD_VARIANTS).plus(index),
+											variantLocation,
 											v.getExperience().getName(), 
 											test.getName(), stateRef);
 									dupe = true;
@@ -502,7 +542,7 @@ public class TestsParser implements Keywords {
 									// Dupe local and covariant list.  Note that for this predicate relies on proper ordering. 
 									response.addMessage(
 											COVARIANT_VARIANT_DUPE, 
-											tosLocation.plus(KEYWORD_VARIANTS).plus(index),
+											variantLocation,
 											StringUtils.join(v.getCovariantExperiences(), ", "), 
 											test.getName(), stateRef, v.getExperience().getName());
 									dupe = true;

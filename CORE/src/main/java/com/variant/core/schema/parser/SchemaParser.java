@@ -222,7 +222,7 @@ public abstract class SchemaParser implements Keywords {
 		}
 		else {
 			// Parse all tests
-			TestsParser.parse(tests, response, hooksService);			
+			TestsParser.parse(tests, rootLocation, response, hooksService);			
 		}
 		
 		response.setMessageListener(null);
