@@ -1,5 +1,13 @@
 package com.variant.core.test;
 
+import static com.variant.core.schema.parser.error.SemanticError.NO_STATES_CLAUSE;
+import static com.variant.core.schema.parser.error.SemanticError.STATEREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.STATES_CLAUSE_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.STATE_NAME_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.STATE_NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.STATE_NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.STATE_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_CLAUSE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -11,7 +19,7 @@ import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.core.schema.parser.error.ParserError;
+import com.variant.core.schema.parser.error.SemanticError.Location;
 
 /**
  * Parse time exceptions
@@ -81,13 +89,15 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(2, response.getMessages().size());
 
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.STATES_CLAUSE_NOT_LIST).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), STATES_CLAUSE_NOT_LIST);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(ParserError.STATEREF_UNDEFINED, "state1", "Test1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), STATEREF_UNDEFINED, "state1", "Test1");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 
 	}
 
@@ -138,13 +148,15 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(2, response.getMessages().size());
 
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.NO_STATES_CLAUSE).getText(), error.getText());
-		assertEquals(Severity.INFO, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NO_STATES_CLAUSE);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.INFO, actual.getSeverity());
 
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(ParserError.STATEREF_UNDEFINED, "state1", "Test1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		actual = response.getMessages().get(1);
+	    expected = new ParserMessageImpl(new Location("/figure/out"), STATEREF_UNDEFINED, "state1", "Test1");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
 
 	/**
@@ -176,9 +188,9 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "              'weight':50                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
+			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
+			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A'                       \n" +
@@ -196,13 +208,15 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(2, response.getMessages().size());
 
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.NO_STATES).getText(), error.getText());
-		assertEquals(Severity.INFO, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NO_STATES_CLAUSE);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.INFO, actual.getSeverity());
 
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(ParserError.STATEREF_UNDEFINED, "state1", "Test1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), STATEREF_UNDEFINED, "state1", "Test1");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 
 	}
 
@@ -260,8 +274,9 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.STATE_NAME_MISSING).getText(), error.getText());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), STATE_NAME_MISSING);
+		assertEquals(expected.getText(), actual.getText());
 	}
 
 	/**
@@ -320,8 +335,9 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.STATE_NAME_INVALID).getText(), error.getText());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), STATE_NAME_INVALID);
+		assertEquals(expected.getText(), actual.getText());
 	}
 
 	/**
@@ -379,8 +395,9 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.STATE_NAME_DUPE, "state1").getText(), error.getText());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), STATE_NAME_DUPE, "state1");
+		assertEquals(expected.getText(), actual.getText());
 	}
 
 	/**
@@ -443,10 +460,12 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(2, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.UNSUPPORTED_CLAUSE, "invalid clause").getText(), error.getText());
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(ParserError.STATE_UNSUPPORTED_PROPERTY, "invalid property", "state2").getText(), error.getText());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_CLAUSE, "invalid clause");
+		assertEquals(expected.getText(), actual.getText());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), STATE_UNSUPPORTED_PROPERTY, "invalid property", "state2");
+		assertEquals(expected.getText(), actual.getText());
 	}
 
 	/**
@@ -459,9 +478,9 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		String config = 
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                    \n" +
-			    "      'comment':'schema comment'                               \n" +
-			    "  },                                                           \n" +
+			    "      'name':'schema_name',                                   \n" +
+			    "      'comment':'schema comment'                              \n" +
+			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
 			    "     {'name':''},                                             \n" +
 			    "     {'name':'%abc'},                                         \n" +
@@ -512,9 +531,10 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(5, response.getMessages().size());
 		for (int i = 0; i < 5; i++) {
-			ParserMessage error = response.getMessages().get(i);
-			assertEquals(new ParserMessageImpl(ParserError.STATE_NAME_INVALID).getText(), error.getText());
-			assertEquals(Severity.ERROR, error.getSeverity());
+			ParserMessage actual = response.getMessages().get(i);
+			ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), STATE_NAME_INVALID);
+			assertEquals(expected.getText(), actual.getText());
+			assertEquals(Severity.ERROR, actual.getSeverity());
 		}
 	}
 
@@ -582,17 +602,19 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
-printMessages(response);
+
 		assertTrue(response.hasMessages());
 		assertEquals(2, response.getMessages().size());
 
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.STATES_CLAUSE_NOT_LIST).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), STATES_CLAUSE_NOT_LIST);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(ParserError.STATEREF_UNDEFINED, "state1", "Test1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), STATEREF_UNDEFINED, "state1", "Test1");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 
 	}
 
@@ -671,13 +693,15 @@ printMessages(response);
 		assertTrue(response.hasMessages());
 		assertEquals(2, response.getMessages().size());
 
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.STATES_CLAUSE_NOT_LIST).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), STATES_CLAUSE_NOT_LIST);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(ParserError.STATEREF_UNDEFINED, "state1", "Test1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), STATEREF_UNDEFINED, "state1", "Test1");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 
 	}
 

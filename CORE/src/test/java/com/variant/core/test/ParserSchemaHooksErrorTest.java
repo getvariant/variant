@@ -3,6 +3,7 @@ package com.variant.core.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import org.junit.Test;
 
@@ -11,7 +12,7 @@ import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.core.schema.parser.error.ParserError;
+import com.variant.core.schema.parser.error.SemanticError.Location;;
 
 /**
  * Parse time exceptions related to hooks with schema scope.
@@ -74,9 +75,10 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.HOOKS_NOT_LIST, "namee").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOKS_NOT_LIST, "namee");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
 
 	/**
@@ -133,15 +135,18 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(3, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.HOOK_NOT_OBJECT).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(ParserError.HOOK_NOT_OBJECT).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(2);
-		assertEquals(new ParserMessageImpl(ParserError.HOOK_NOT_OBJECT).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NOT_OBJECT);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NOT_OBJECT);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		actual = response.getMessages().get(2);
+		expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NOT_OBJECT);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
 
 	/**
@@ -198,9 +203,10 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.HOOK_NAME_MISSING).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NAME_MISSING);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 
 	}
 
@@ -258,12 +264,14 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(2, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.HOOK_UNSUPPORTED_PROPERTY, "class-Name", "bar").getText(), error.getText());
-		assertEquals(Severity.WARN, error.getSeverity());
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(ParserError.HOOK_CLASS_NAME_MISSING, "bar").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_UNSUPPORTED_PROPERTY, "class-Name", "bar");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.WARN, actual.getSeverity());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_CLASS_NAME_MISSING, "bar");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
 
 	/**
@@ -320,9 +328,10 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertFalse(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.HOOK_UNSUPPORTED_PROPERTY, "foo", "bar").getText(), error.getText());
-		assertEquals(Severity.WARN, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_UNSUPPORTED_PROPERTY, "foo", "bar");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.WARN, actual.getSeverity());
 	}
 
 	/**
@@ -381,9 +390,10 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.HOOK_NAME_INVALID).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NAME_INVALID);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
 
 	/**
@@ -443,9 +453,10 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.HOOK_NAME_DUPE, "bar").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NAME_DUPE, "bar");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
 
 }

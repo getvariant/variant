@@ -1,8 +1,7 @@
 package com.variant.core.schema.parser.error;
 
-import com.variant.core.UserError;
 
-public class SemanticError extends UserError {
+public class SemanticError extends ParserError {
 	
 	/**
 	 */

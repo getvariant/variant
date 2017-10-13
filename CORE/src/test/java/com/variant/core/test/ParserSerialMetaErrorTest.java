@@ -4,13 +4,16 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import static com.variant.core.schema.parser.error.SyntaxError.*;
+import static com.variant.core.schema.parser.error.SemanticError.*;
+
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.core.schema.parser.error.ParserError;
-import com.variant.core.schema.parser.error.SyntaxErrorLocation;
+import com.variant.core.schema.parser.error.SemanticError.Location;
+import com.variant.core.schema.parser.error.SyntaxError;
 
 /**
  * Parse time exceptions
@@ -26,7 +29,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 	@Test
 	public void jsonParse_Test() throws Exception {
 		
-		String config = 
+		String schema = 
 				"{                                                              \n" +
 			    "   'meta':{                                                    \n" +		    	    
 			    "      'name':'schema_name',                                    \n" +
@@ -66,16 +69,17 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "}                                                             \n";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
+		ParserResponse response = parser.parse(schema);
 
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.JSON_SYNTAX_ERROR, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries").getText(), error.getText());		
-		assertEquals(Severity.FATAL, error.getSeverity());
-		assertEquals(10, ((SyntaxErrorLocation)error.getLocation()).line);
-		assertEquals(4, ((SyntaxErrorLocation)error.getLocation()).column);
-		assertNull(error.getLocation().getPath());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new SyntaxError.Location(schema, 10, 4), JSON_SYNTAX_ERROR, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries");
+		assertEquals(expected.getText(), actual.getText());		
+		assertEquals(Severity.FATAL, actual.getSeverity());
+		assertEquals(10, ((SyntaxError.Location)actual.getLocation()).line);
+		assertEquals(4, ((SyntaxError.Location)actual.getLocation()).column);
+		assertNull(actual.getLocation().getPath());
 	}
 	
 	/**
@@ -85,7 +89,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 	@Test
 	public void noStatesClause_NoTestsClause_Test() throws Exception {
 		
-		String config = 
+		String schema = 
 				"{                                                              \n" +			    	   
 			    "   'meta':{                                                    \n" +		    	    
 			    "      'name':'schema_name',                                    \n" +
@@ -94,20 +98,22 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "}                                                              \n";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
+		ParserResponse response = parser.parse(schema);
 
 		assertTrue(response.hasMessages());
 		assertEquals(2, response.getMessages().size());
 
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.NO_STATES_CLAUSE).getText(), error.getText());
-		assertEquals(Severity.INFO, error.getSeverity());
-		assertEquals("/", error.getLocation().getPath());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NO_STATES_CLAUSE);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.INFO, actual.getSeverity());
+		assertEquals("/", actual.getLocation().getPath());
 		
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(ParserError.NO_TESTS_CLAUSE).getText(), error.getText());
-		assertEquals(Severity.INFO, error.getSeverity());
-		assertEquals("/", error.getLocation().getPath());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), NO_TESTS_CLAUSE);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.INFO, actual.getSeverity());
+		assertEquals("/", actual.getLocation().getPath());
 	}
 
 	/**
@@ -117,7 +123,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 	@Test
 	public void metaMissingTest() throws Exception {
 		
-		String config = 
+		String schema = 
 				"{                                                             \n" +
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
@@ -151,15 +157,16 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "}                                                             \n";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
+		ParserResponse response = parser.parse(schema);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.NO_META_CLAUSE).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		assertEquals("/", error.getLocation().getPath());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NO_META_CLAUSE);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		assertEquals("/", actual.getLocation().getPath());
 	}
 
 	/**
@@ -169,7 +176,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 	@Test
 	public void metaNotObjectTest() throws Exception {
 		
-		String config = 
+		String schema = 
 				"{                                                             \n" +
 			    "  'meta': 'blah',                                             \n" +
 			    "   'states':[                                                 \n" +
@@ -204,15 +211,16 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "}                                                             \n";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
+		ParserResponse response = parser.parse(schema);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.META_NOT_OBJECT).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		assertEquals("/", error.getLocation().getPath());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), META_NOT_OBJECT);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		assertEquals("/", actual.getLocation().getPath());
 	}
 
 	/**
@@ -222,7 +230,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 	@Test
 	public void metaNameInvalid1Test() throws Exception {
 		
-		String config = 
+		String schema = 
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':{},                                              \n" +
@@ -260,15 +268,16 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "}                                                             \n";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
+		ParserResponse response = parser.parse(schema);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.META_NAME_INVALID).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		assertEquals("/meta/name", error.getLocation().getPath());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), META_NAME_INVALID);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		assertEquals("/meta/name", actual.getLocation().getPath());
 	}
 
 	/**
@@ -278,7 +287,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 	@Test
 	public void metaNameInvalid2Test() throws Exception {
 		
-		String config = 
+		String schema = 
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'schema&name',                                    \n" +
@@ -316,15 +325,16 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "}                                                             \n";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
+		ParserResponse response = parser.parse(schema);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.META_NAME_INVALID).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		assertEquals("/meta/name", error.getLocation().getPath());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), META_NAME_INVALID);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		assertEquals("/meta/name", actual.getLocation().getPath());
 	}
 
 	/**
@@ -334,7 +344,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 	@Test
 	public void metaCommentInvalidTest() throws Exception {
 		
-		String config = 
+		String schema = 
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name2',                                 \n" +
@@ -372,15 +382,16 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "}                                                             \n";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
+		ParserResponse response = parser.parse(schema);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.META_COMMENT_INVALID).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		assertEquals("/meta/comment", error.getLocation().getPath());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), META_COMMENT_INVALID);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		assertEquals("/meta/comment", actual.getLocation().getPath());
 	}
 
 	/**
@@ -390,7 +401,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 	@Test
 	public void metaUnsupportedProperty1Test() throws Exception {
 		
-		String config = 
+		String schema = 
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name2',                                 \n" +
@@ -428,16 +439,17 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "}                                                             \n";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
+		ParserResponse response = parser.parse(schema);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertFalse(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.META_UNSUPPORTED_PROPERTY, "coment").getText(), error.getText());
-		assertEquals(Severity.WARN, error.getSeverity());
-		assertEquals("/meta", error.getLocation().getPath());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), META_UNSUPPORTED_PROPERTY, "coment");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.WARN, actual.getSeverity());
+		assertEquals("/meta", actual.getLocation().getPath());
 	}
 
 	/**
@@ -447,7 +459,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 	@Test
 	public void metaUnsupportedProperty2Test() throws Exception {
 		
-		String config = 
+		String schema = 
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'namee':'_schema_name2',                                \n" +
@@ -485,19 +497,21 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "}                                                             \n";
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
+		ParserResponse response = parser.parse(schema);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(2, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(ParserError.META_UNSUPPORTED_PROPERTY, "namee").getText(), error.getText());
-		assertEquals(Severity.WARN, error.getSeverity());
-		assertEquals("/meta", error.getLocation().getPath());
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(ParserError.META_NAME_MISSING).getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		assertEquals("/meta", error.getLocation().getPath());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), META_UNSUPPORTED_PROPERTY, "namee");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.WARN, actual.getSeverity());
+		assertEquals("/meta", actual.getLocation().getPath());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), META_NAME_MISSING);
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		assertEquals("/meta", actual.getLocation().getPath());
 	}
 
 }

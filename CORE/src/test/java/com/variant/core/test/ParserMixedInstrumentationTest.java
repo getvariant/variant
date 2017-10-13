@@ -1,12 +1,6 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.error.ParserError.COVARIANT_VARIANT_COVARIANT_UNDEFINED;
-import static com.variant.core.schema.parser.error.ParserError.COVARIANT_VARIANT_MISSING;
-import static com.variant.core.schema.parser.error.ParserError.COVARIANT_VARIANT_PROPER_UNDEFINED;
-import static com.variant.core.schema.parser.error.ParserError.EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.schema.parser.error.ParserError.EXPERIENCEREF_PARAMS_NOT_ALLOWED;
-import static com.variant.core.schema.parser.error.ParserError.ISDEFINED_NOT_BOOLEAN;
-import static com.variant.core.schema.parser.error.ParserError.VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -16,6 +10,7 @@ import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
+import com.variant.core.schema.parser.error.SemanticError.Location;
 
 
 /**
@@ -203,24 +198,30 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 
 		assertEquals(6, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(EXPERIENCEREF_PARAMS_NOT_ALLOWED, "test1", "state1", "B").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(VARIANT_MISSING, "B", "test1", "state1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(2);
-		assertEquals(new ParserMessageImpl(VARIANT_MISSING, "B", "test2", "state2").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(3);
-		assertEquals(new ParserMessageImpl(ISDEFINED_NOT_BOOLEAN, "test3", "state1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(4);
-		assertEquals(new ParserMessageImpl(ISDEFINED_NOT_BOOLEAN, "test4", "state2").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(5);
-		assertEquals(new ParserMessageImpl(EXPERIENCEREF_ISCONTROL, "A", "test4", "state2").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCEREF_PARAMS_NOT_ALLOWED, "test1", "state1", "B");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "B", "test1", "state1");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		actual = response.getMessages().get(2);
+		expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "B", "test2", "state2");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		actual = response.getMessages().get(3);
+		expected = new ParserMessageImpl(new Location("/figure/out"), ISDEFINED_NOT_BOOLEAN, "test3", "state1");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		actual = response.getMessages().get(4);
+		expected = new ParserMessageImpl(new Location("/figure/out"), ISDEFINED_NOT_BOOLEAN, "test4", "state2");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		actual = response.getMessages().get(5);
+		expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCEREF_ISCONTROL, "A", "test4", "state2");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 
 	}
 
@@ -338,9 +339,10 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(VARIANT_MISSING, "B", "test2", "state1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "B", "test2", "state1");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 
 	}
 
@@ -487,12 +489,14 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 
 		assertEquals(2, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_COVARIANT_UNDEFINED, "B", "test1.B", "test1.B", "test2", "state1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_PROPER_UNDEFINED, "B", "test1.B", "test2", "state2").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_VARIANT_COVARIANT_UNDEFINED, "B", "test1.B", "test1.B", "test2", "state1");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_VARIANT_PROPER_UNDEFINED, "B", "test1.B", "test2", "state2");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
 	
 	/**
@@ -638,12 +642,14 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 
 		assertEquals(2, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_COVARIANT_UNDEFINED, "B", "test1.B", "test1.B", "test2", "state1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
-		error = response.getMessages().get(1);
-		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_PROPER_UNDEFINED, "B", "test1.B", "test2", "state2").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_VARIANT_COVARIANT_UNDEFINED, "B", "test1.B", "test1.B", "test2", "state1");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_VARIANT_PROPER_UNDEFINED, "B", "test1.B", "test2", "state2");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
 	
 	/**
@@ -835,9 +841,10 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 
 		assertEquals(1, response.getMessages().size());
-		ParserMessage error = response.getMessages().get(0);
-		assertEquals(new ParserMessageImpl(COVARIANT_VARIANT_MISSING, "B", "test1.C", "test2", "state1").getText(), error.getText());
-		assertEquals(Severity.ERROR, error.getSeverity());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_VARIANT_MISSING, "B", "test1.C", "test2", "state1");
+		assertEquals(expected.getText(), actual.getText());
+		assertEquals(Severity.ERROR, actual.getSeverity());
 
 	}
 	
