@@ -303,7 +303,7 @@ public class SemanticError extends ParserError {
 			new SemanticError(98, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs' list element must be an object (Test [%s], StateRef [%s], ExperienceRefs [%s])"); 
 */
 	public static final SemanticError COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT =
-			new SemanticError(99, Severity.ERROR, "Property 'covariantExperienceRefs' cannot reference non-covariant tests [%s] and [%s]"); 
+			new SemanticError(99, Severity.ERROR, "Property 'covariantExperienceRefs' cannot reference non-covariant tests [%s]"); 
 /*	
 	public static final SemanticError COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING =
 			new SemanticError(100, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs/testRef' property must be a string (Test [%s], StateRef [%s], ExperienceRef [%s])"); 
@@ -321,7 +321,7 @@ public class SemanticError extends ParserError {
 			new SemanticError(104, Severity.ERROR, "Property 'experienceRef' references a non-existent experience [%s.%s]"); 
 	
 	public static final SemanticError COVARIANT_EXPERIENCE_DUPE =
-			new SemanticError(105, Severity.ERROR, "Duplicate property 'covariantExperienceRefs' references experience [%s.%s]"); 
+			new SemanticError(105, Severity.ERROR, "Duplicate covariant experience reference [%s.%s]"); 
 /*	
 	public static final SemanticError ISDEFINED_NOT_BOOLEAN =
 			new SemanticError(106, Severity.ERROR, "'tests/onStates/variants/isDefined' property must be a boolean (Test [%s], StateRef [%s])"); 

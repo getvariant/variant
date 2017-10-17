@@ -306,7 +306,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(schema);
-printMessages(response);
+
 		assertTrue(response.hasMessages());
 		assertNull(response.getSchema());
 		assertNull(response.getSchemaSrc());
@@ -322,8 +322,6 @@ printMessages(response);
 	}
 
 	/**
-	 * PARSER_COVARIANT_EXPERIENCE_DUPE
-	 * 
 	 * @throws Exception
 	 */
 	@Test
@@ -337,19 +335,41 @@ printMessages(response);
 			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
-				"        'parameters':{                                         \n" +
-				"           'path':'/path/to/state1'                            \n" +
-				"        }                                                      \n" +
+				"        'parameters': [                                        \n" +
+				"           {                                                   \n" +
+				"             'name': 'path',                                   \n" +
+				"             'value': '/path/to/state1'                        \n" +
+				"           },                                                  \n" +
+				"           {                                                   \n" +
+				"             'name': 'bar',                                    \n" +
+				"             'value': 'foo'                                    \n" +
+				"           }                                                   \n" +
+				"        ]                                                      \n" +
 				"     },                                                        \n" +
 				"     {                                                         \n" +
-				"        'parameters':                                          \n" +
-				"        {  'path':'/path/to/state2' },                         \n" +
+				"        'parameters': [                                        \n" +
+				"           {                                                   \n" +
+				"             'name': 'path',                                   \n" +
+				"             'value': '/path/to/state2'                        \n" +
+				"           },                                                  \n" +
+				"           {                                                   \n" +
+				"             'name': 'bar',                                    \n" +
+				"             'value': 'foo'                                    \n" +
+				"           }                                                   \n" +
+				"        ],                                                     \n" +
 				"        'name':'state2'                                        \n" +
 				"     },                                                       \n" +
 				"     {  'name':'state3',                                       \n" +
-				"        'parameters':{                                         \n" +
-				"           'path':'/path/to/state3'                            \n" +
-				"        }                                                      \n" +
+				"        'parameters': [                                        \n" +
+				"           {                                                   \n" +
+				"             'name': 'path',                                   \n" +
+				"             'value': '/path/to/state3'                        \n" +
+				"           },                                                  \n" +
+				"           {                                                   \n" +
+				"             'name': 'bar',                                    \n" +
+				"             'value': 'foo'                                    \n" +
+				"           }                                                   \n" +
+				"        ]                                                      \n" +
 				"     }                                                        \n" +
 				"  ],                                                          \n" +
 				"  'tests':[                                                   \n" +
@@ -379,16 +399,10 @@ printMessages(response);
 			    "              'stateRef':'state2',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B'           \n" +
-			    "                    }                                            \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C'           \n" +
-			    "                    }                                            \n" +
+			    "                    'experienceRef': 'C'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -418,16 +432,10 @@ printMessages(response);
 			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state1/test1.B'           \n" +
-			    "                    }                                            \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state1/test1.C'           \n" +
-			    "                    }                                            \n" +
+			    "                    'experienceRef': 'C'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
@@ -435,10 +443,7 @@ printMessages(response);
 			    "              'stateRef':'state2',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B'           \n" +
-			    "                    }                                            \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -447,10 +452,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test2.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -459,16 +461,10 @@ printMessages(response);
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test2.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C'           \n" +
-			    "                    }                                            \n" +
+			    "                    'experienceRef': 'C'                      \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -477,10 +473,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test2.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -489,10 +482,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test2.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
@@ -526,10 +516,7 @@ printMessages(response);
 			    "              'stateRef':'state1',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state1/test3.B'           \n" +
-			    "                    }                                            \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -538,10 +525,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state1/test2.B+test3.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -550,16 +534,10 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state1/test2.C+test3.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state1/test1.C'           \n" +
-			    "                    }                                            \n" +
+			    "                    'experienceRef': 'C'                      \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -568,10 +546,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state1/test2.B+test3.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -580,10 +555,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test2.C+test3.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
@@ -591,10 +563,7 @@ printMessages(response);
 			    "              'stateRef':'state2',                              \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test3.B'           \n" +
-			    "                    }                                           \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -603,10 +572,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test3.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -615,10 +581,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test3.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -627,10 +590,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test2.B+test3.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -639,10 +599,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test2.C+test3.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -655,10 +612,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test2.B+test3.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -671,10 +625,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test2.C+test3.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -687,10 +638,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test2.B+test3.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
@@ -703,17 +651,11 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test2.C+test3.B'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test3.C'           \n" +
-			    "                    }                                            \n" +
+			    "                    'experienceRef': 'C'                      \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -722,10 +664,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test3.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -734,10 +673,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test3.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -746,10 +682,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test2.B+test3.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -758,10 +691,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test2.C+test3.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -774,10 +704,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test1',                 \n" +  // Should have been test2
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test2.B+test3.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -790,10 +717,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.B+test2.C+test3.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                    ]                                         \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -806,10 +730,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test2.B+test3.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
@@ -822,10 +743,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
-	    	    "                     ],                                       \n" +
-				"                    'parameters':{                            \n" +
-			    "                      'path':'/path/to/state2/test1.C+test2.C+test3.C'   \n" +
-			    "                    }                                            \n" +
+	    	    "                     ]                                        \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
@@ -841,7 +759,7 @@ printMessages(response);
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(schema);
-
+		printMessages(response);
 		assertTrue(response.hasMessages());
 		assertNull(response.getSchema());
 		assertNull(response.getSchemaSrc());
@@ -852,13 +770,14 @@ printMessages(response);
 
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_EXPERIENCE_DUPE, "test1", "B", "test3", "state2", "C");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(
+				new Location("/tests[2]/onStates[1]/variants[14]/covariantExperienceRefs[1]/experienceRef/"), 
+				COVARIANT_EXPERIENCE_DUPE, "test1", "B");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_VARIANT_MISSING, "C", "test1.B,test2.B", "test3", "state2");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		expected = new ParserMessageImpl(
+				new Location("/tests[2]/onStates[1]/variants/"), COVARIANT_VARIANT_MISSING, "C", "test1.B,test2.B", "test3", "state2");
+		assertMessageEqual(expected, actual);
 
 	}
 
@@ -867,7 +786,7 @@ printMessages(response);
 	 * PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED
 	 */
 	@Test
-	public void testBlah() throws Exception {
+	public void testMore() throws Exception {
 		
 		final String schema = 
 
@@ -880,19 +799,40 @@ printMessages(response);
 	    	   
 	    	    "   'states':[                                                             \n" +
 	    	    "     {  'name':'state1',                                                  \n" +
-	    	    "        'parameters': {                                                   \n" +
-	    	    "           'path':'/path/to/state1'                                          \n" +
-	    	    "        }                                                                  \n" +
+				"        'parameters': [                                        \n" +
+				"           {                                                   \n" +
+				"             'name': 'path',                                   \n" +
+				"             'value': '/path/to/state1'                        \n" +
+				"           },                                                  \n" +
+				"           {                                                   \n" +
+				"             'name': 'bar',                                    \n" +
+				"             'value': 'foo'                                    \n" +
+				"           }                                                   \n" +
+				"        ]                                                      \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'NAME':'state2',                                                  \n" +
-	    	    "        'parameters': {                                                   \n" +
-	    	    "           'path':'/path/to/state2'                                          \n" +
-	    	    "        }                                                                  \n" +
+	    	    "     {  'NAME':'state2',                                                 \n" +
+				"        'parameters': [                                        \n" +
+				"           {                                                   \n" +
+				"             'name': 'path',                                   \n" +
+				"             'value': '/path/to/state2'                        \n" +
+				"           },                                                  \n" +
+				"           {                                                   \n" +
+				"             'name': 'bar',                                    \n" +
+				"             'value': 'foo'                                    \n" +
+				"           }                                                   \n" +
+				"        ]                                                      \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'nAmE':'state3',                                                  \n" +
-	    	    "        'parameters': {                                                   \n" +
-	    	    "           'path':'/path/to/state3'                                          \n" +
-	    	    "        }                                                                  \n" +
+	    	    "     {  'nAmE':'state3',                                                 \n" +
+				"        'parameters': [                                        \n" +
+				"           {                                                   \n" +
+				"             'name': 'path',                                   \n" +
+				"             'value': '/path/to/state3'                        \n" +
+				"           },                                                  \n" +
+				"           {                                                   \n" +
+				"             'name': 'bar',                                    \n" +
+				"             'value': 'foo'                                    \n" +
+				"           }                                                   \n" +
+				"        ]                                                      \n" +
 	    	    "     }                                                                   \n" +
 	            "  ],                                                                     \n" +
 	            
@@ -917,10 +857,7 @@ printMessages(response);
 	    	    "              'stateRef':'state2',                                       \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B'                  \n" +
-	    	    "                    }                                                    \n" +
+	    	    "                    'experienceRef':'B'                                  \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
@@ -928,10 +865,7 @@ printMessages(response);
 	    	    "              'stateRef':'state3',                                       \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test1.B'                  \n" +
-	    	    "                    }                                                    \n" +
+	    	    "                    'experienceRef':'B'                                  \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           }                                                             \n" +
@@ -960,10 +894,7 @@ printMessages(response);
 	    	    "              'stateRef':'state2',                                       \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test2.B'                  \n" +
-	    	    "                    }                                                    \n" +
+	    	    "                    'experienceRef':'B'                                  \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
@@ -971,10 +902,7 @@ printMessages(response);
 	    	    "              'stateRef':'state3',                                       \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test2.B'                  \n" +
-	    	    "                    }                                                    \n" +
+	    	    "                    'experienceRef':'B'                                  \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           }                                                             \n" +
@@ -1000,10 +928,7 @@ printMessages(response);
 	    	    "              'stateRef':'state1',                                         \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state1/test3.B'                      \n" +
-	    	    "                    }                                                       \n" +
+	    	    "                    'experienceRef':'B'                                  \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
@@ -1011,10 +936,7 @@ printMessages(response);
 	    	    "              'stateRef':'state2',                                         \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test3.B'                  \n" +
-	    	    "                    }                                                    \n" +
+	    	    "                    'experienceRef':'B'                                  \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -1023,10 +945,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+	    	    "                     ]                                                   \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -1035,10 +954,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test2.B+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+	    	    "                     ]                                                   \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +  // Invalid because T1 and T2 are not covariant.
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -1051,10 +967,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.B+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+	    	    "                     ]                                                   \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not covariant + there's no T2.C
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -1067,10 +980,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.C+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+	    	    "                     ]                                                   \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not covariant + there's no T1.C
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -1083,10 +993,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.B+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+	    	    "                     ]                                                   \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not covariant + there's no T1.C nor T2.C
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -1099,10 +1006,7 @@ printMessages(response);
 	    	    "                          'testRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
-	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.C+test3.B'  \n" +
-	    	    "                    }                                                    \n" +
+	    	    "                     ]                                                   \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
@@ -1118,6 +1022,7 @@ printMessages(response);
 
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(schema);
+		printMessages(response);
 
 		assertTrue(response.hasMessages());
 		assertNull(response.getSchema());
@@ -1129,17 +1034,25 @@ printMessages(response);
 
 		assertEquals(4, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, "test3", "state2", "B", "test1.B,test2.B");
-		assertEquals(expected.getText(), actual.getText());
+		ParserMessage expected = new ParserMessageImpl(
+				new Location("/tests[2]/onStates[1]/variants[3]/covariantExperienceRefs[1]/"), 
+				COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, "test1, test2");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test2", "C", "test3", "state2", "B");
-		assertEquals(expected.getText(), actual.getText());
+		expected = new ParserMessageImpl(
+				new Location("/tests[2]/onStates[1]/variants[4]/covariantExperienceRefs[1]/experienceRef/"), 
+				COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test2", "C");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(2);
-		expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C", "test3", "state2", "B");
-		assertEquals(expected.getText(), actual.getText());
+		expected = new ParserMessageImpl(
+				new Location("/tests[2]/onStates[1]/variants[5]/covariantExperienceRefs[0]/experienceRef/"), 
+				COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(3);
-		expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C", "test3", "state2", "B");
-		assertEquals(expected.getText(), actual.getText());
+		expected = new ParserMessageImpl(
+				new Location("/tests[2]/onStates[1]/variants[6]/covariantExperienceRefs[0]/experienceRef/"), 
+				COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C");
+		assertMessageEqual(expected, actual);
 
 	}
 

@@ -188,7 +188,7 @@ public class VariantParser implements Keywords {
 						response.addMessage(
 								covarExpRefLocation.plus(KEYWORD_EXPERIENCE_REF),
 								COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, 
-								KEYWORD_EXPERIENCE_REF);
+								covarTestRef, covarExperienceRef);
 						return null;
 					}
 
@@ -213,10 +213,9 @@ public class VariantParser implements Keywords {
 					for (TestExperienceImpl e: covarTestExperiences) {
 						if (!e.getTest().isCovariantWith(covarExperience.getTest())) {
 							response.addMessage(
-									covarExpRefLocation.plus(KEYWORD_EXPERIENCE_REF),
+									covarExpRefLocation,
 									COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, 
-									test.getName(), 
-									VariantStringUtils.toString(VariantCollectionsUtils.list(e, covarExperience), ","));
+									VariantStringUtils.toString(VariantCollectionsUtils.list(e.getTest(), covarExperience.getTest()), ", "));
 							return null;
 						}
 					}

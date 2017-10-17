@@ -1,9 +1,27 @@
 package com.variant.core.test;
 
+import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.DUPE_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_EMPTY_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_NUMBER;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPER_VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.STATEREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_INCOMPATIBLE;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_XOR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import org.junit.Test;
 
