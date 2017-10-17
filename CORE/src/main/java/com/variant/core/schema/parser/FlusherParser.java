@@ -1,9 +1,6 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_CLASS_NAME_INVALID;
-import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_CLASS_NAME_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_NOT_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.util.Map;
 
@@ -39,7 +36,7 @@ public class FlusherParser implements Keywords {
 			rawMap = (Map<String,?>) rawFlusher;
 		}
 		catch (ClassCastException e) {
-			response.addMessage(FLUSHER_NOT_OBJECT, metaLocation);
+			response.addMessage(metaLocation, PROPERTY_NOT_OBJECT, "flusher");
 			return null;
 		}
 		
@@ -51,7 +48,7 @@ public class FlusherParser implements Keywords {
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_CLASS)) {
 				Object classNameObject = entry.getValue();
 				if (! (classNameObject instanceof String)) {
-					response.addMessage(FLUSHER_CLASS_NAME_INVALID, flusherLocation);
+					response.addMessage(flusherLocation, NAME_INVALID);
 					return null;
 				}
 				else {
@@ -74,12 +71,12 @@ public class FlusherParser implements Keywords {
 				}
 			}
 			else {
-				response.addMessage(FLUSHER_UNSUPPORTED_PROPERTY, flusherLocation, entry.getKey());
+				response.addMessage(flusherLocation, UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 	
 		if (className == null) {
-			response.addMessage(FLUSHER_CLASS_NAME_MISSING, flusherLocation);
+			response.addMessage(flusherLocation, PROPERTY_MISSING, "class");
 			return null;
 		}
 		else {

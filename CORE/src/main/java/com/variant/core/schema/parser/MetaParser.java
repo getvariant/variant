@@ -1,10 +1,6 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.META_COMMENT_INVALID;
-import static com.variant.core.schema.parser.error.SemanticError.META_NAME_INVALID;
-import static com.variant.core.schema.parser.error.SemanticError.META_NAME_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.META_NOT_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.META_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.util.Map;
 
@@ -28,10 +24,9 @@ public class MetaParser implements Keywords {
 	 * @param response 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parse(Object metaRaw, Location rootLocation, ParserResponse response) {
+	static void parse(Object metaRaw, Location metaLocation, ParserResponse response) {
 
 		SchemaImpl schema = (SchemaImpl) response.getSchema();
-		Location metaLocation = rootLocation.plus("meta");
 		
 		try {
 			
@@ -40,7 +35,7 @@ public class MetaParser implements Keywords {
 				metaObject = (Map<String,?>) metaRaw;
 			}
 			catch (ClassCastException e) {
-				response.addMessage(META_NOT_OBJECT, rootLocation);
+				response.addMessage(metaLocation, PROPERTY_NOT_OBJECT, "meta");
 				return;
 			}
 
@@ -55,11 +50,11 @@ public class MetaParser implements Keywords {
 					try {
 						name = (String) entry.getValue();
 						if (!SemanticChecks.isName(name)) {
-							response.addMessage(META_NAME_INVALID, metaLocation.plus("/name"));
+							response.addMessage(metaLocation.plus("/name"), NAME_INVALID);
 						}
 					}
 					catch (ClassCastException e) {
-						response.addMessage(META_NAME_INVALID, metaLocation.plus("/name"));
+						response.addMessage(metaLocation.plus("/name"), NAME_INVALID);
 					}
 				}
 				else if (entry.getKey().equalsIgnoreCase(KEYWORD_COMMENT)) {
@@ -67,7 +62,7 @@ public class MetaParser implements Keywords {
 						comment = (String) entry.getValue();
 					}
 					catch (ClassCastException e) {
-						response.addMessage(META_COMMENT_INVALID, metaLocation.plus("/comment"));
+						response.addMessage(metaLocation.plus("/comment"), PROPERTY_NOT_STRING, "comment");
 					}
 				}
 				else if (entry.getKey().equalsIgnoreCase(KEYWORD_HOOKS)) {
@@ -78,12 +73,12 @@ public class MetaParser implements Keywords {
 				}
 
 				else {
-					response.addMessage(META_UNSUPPORTED_PROPERTY,  metaLocation, entry.getKey());
+					response.addMessage(metaLocation, UNSUPPORTED_PROPERTY, entry.getKey());
 				}
 			}
 			
 			if (!nameFound) {
-				response.addMessage(META_NAME_MISSING, metaLocation);
+				response.addMessage(metaLocation, NAME_MISSING);
 			}
 			
 			if (response.hasMessages(Severity.ERROR)) return;

@@ -134,6 +134,19 @@ abstract public class VariantBaseTest {
 	}
 	
 	/**
+	 * Assert two Parser messages are equal
+	 * @param expected
+	 * @param actual
+	 */
+	protected static void assertMessageEqual(ParserMessage expected, ParserMessage actual) {
+		
+		org.junit.Assert.assertEquals(expected.getCode(), actual.getCode());
+		org.junit.Assert.assertEquals(expected.getText(), actual.getText());
+		org.junit.Assert.assertEquals(expected.getSeverity(), actual.getSeverity());
+		org.junit.Assert.assertEquals(expected.getLocation(), actual.getLocation());
+	}
+	
+	/**
 	 * Assert that two collections are set-equivalent, i.e.
 	 * for each element in one, there's an equal element in the other.
 	 * Custom comparator.

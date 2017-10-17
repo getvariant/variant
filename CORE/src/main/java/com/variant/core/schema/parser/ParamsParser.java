@@ -38,7 +38,7 @@ public class ParamsParser implements Keywords {
 			}
 		}
 		catch (ClassCastException e) {
-			response.addMessage(PARAMS_NOT_LIST, paramsLocation);
+			response.addMessage(paramsLocation, PROPERTY_NOT_LIST, KEYWORD_PARAMETERS);
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
@@ -67,7 +67,7 @@ public class ParamsParser implements Keywords {
 			rawMap = (Map<String,?>) rawParam;
 		}
 		catch (ClassCastException e) {
-			response.addMessage(PARAM_NOT_OBJECT, paramLocation);
+			response.addMessage(paramLocation, ELEMENT_NOT_OBJECT, KEYWORD_PARAMETERS);
 			return null;
 		}
 		
@@ -77,12 +77,12 @@ public class ParamsParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(PARAM_NAME_INVALID, paramLocation.plus(KEYWORD_NAME));
+					response.addMessage(paramLocation.plus(KEYWORD_NAME), NAME_INVALID);
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage(PARAM_NAME_INVALID, paramLocation.plus(KEYWORD_NAME));
+						response.addMessage(paramLocation.plus(KEYWORD_NAME), NAME_INVALID);
 					}
 				}
 				break;
@@ -91,7 +91,7 @@ public class ParamsParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addMessage(PARAM_NAME_MISSING, paramLocation);
+				response.addMessage(paramLocation, NAME_MISSING);
 			}
 			return null;
 		}
@@ -105,14 +105,14 @@ public class ParamsParser implements Keywords {
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_VALUE)) {
 				Object valueObject = entry.getValue();
 				if (! (valueObject instanceof String)) {
-					response.addMessage(PARAM_VALUE_INVALID, paramLocation.plus(KEYWORD_VALUE), name);
+					response.addMessage(paramLocation.plus(KEYWORD_VALUE), PROPERTY_NOT_STRING, KEYWORD_VALUE);
 				}
 				else {
 					value = (String) valueObject;
 				}
 			}
 			else {
-				response.addMessage(HOOK_UNSUPPORTED_PROPERTY, paramLocation, entry.getKey(), name);
+				response.addMessage(paramLocation, UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 	

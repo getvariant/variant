@@ -35,22 +35,28 @@ public class SemanticError extends ParserError {
 			return getPath();
 		}
 
+		@Override
+		public boolean equals(Object other) {
+			return (other instanceof Location)
+					&& ((Location)other).path.equals(path);
+		}
+		
 		/**
 		 * New SemanticErrorLocation with the extraPath added to the path of this.
 		 * @param extraPath
 		 * @return
 		 */
 		public Location plus(String extraPath) {		
-			return new Location(getPath() + "/" + extraPath);
+			return new Location(path + extraPath + "/");
 		}
 		
 		/**
-		 * Same, but array index.
+		 * Tack array index to the existing path. Array index goes in front of the trailing /
 		 * @param index
 		 * @return
 		 */
 		public Location plus(int index) {
-			return plus(String.format("[%s]", index));
+			return new Location(path.substring(0, path.length()-1) + String.format("[%s]", index) + "/");
 		}
 
 	}
@@ -67,6 +73,7 @@ public class SemanticError extends ParserError {
 	// 
 	// 001-020 Schema parser, Meta 
 	//
+/*
 	public static final SemanticError NO_META_CLAUSE =
 			new SemanticError(1, Severity.ERROR,  "'/meta' clause is missing");
 
@@ -83,8 +90,9 @@ public class SemanticError extends ParserError {
 			new SemanticError(5, Severity.ERROR, "Schema comment must be a string"); 
 
 	public static final SemanticError META_UNSUPPORTED_PROPERTY =
-			new SemanticError(6, Severity.WARN,  "Unsupported property 'meta/%s'"); 
-
+			new SemanticError(6, Severity.WARN,  "Unsupported property [%s]"); 
+*/
+/*
 	public static final SemanticError HOOK_NAME_INVALID =
 			new SemanticError(7, Severity.ERROR, "Hook name must be a string, containing letters, digits and _, and cannot start with a digit"); 
 
@@ -120,10 +128,11 @@ public class SemanticError extends ParserError {
 
 	public static final SemanticError FLUSHER_CLASS_NAME_MISSING =
 			new SemanticError(18, Severity.ERROR, "Flusher class name missing"); 
-
+*/
 	// 
 	// 021-050 Schema parser, State
 	//
+/*
 	public static final SemanticError STATE_UNSUPPORTED_PROPERTY =
 			new SemanticError(21, Severity.WARN,  "Unsupported state property [%s] (State [%s])"); 
 
@@ -144,10 +153,11 @@ public class SemanticError extends ParserError {
 	
 	public static final SemanticError STATE_NAME_DUPE =
 			new SemanticError(27, Severity.ERROR, "Duplicate state name [%s]"); 
-	
+*/
 	// 
 	// 051-150 Schema parser, Test
 	//
+/*
 	public static final SemanticError NO_TESTS_CLAUSE =
 			new SemanticError(51, Severity.INFO,  "'/tests' clause is missing"); 
 	
@@ -189,28 +199,28 @@ public class SemanticError extends ParserError {
 	
 	public static final SemanticError COVARIANT_TESTS_NOT_LIST =
 			new SemanticError(64, Severity.ERROR, "'tests/covariantTestRefs' property must be a list (Test [%s])"); 
-	
+
 	public static final SemanticError COVARIANT_TESTREF_NOT_STRING =
 			new SemanticError(65, Severity.ERROR, "'tests/covariantTestRefs' list element must be a string (Test [%s])"); 
-	
+*/	
 	public static final SemanticError COVARIANT_TESTREF_UNDEFINED =
-			new SemanticError(66, Severity.ERROR, "Property 'tests/covariantTestRefs' references test [%s], which does not exist (Test [%s])"); 
+			new SemanticError(66, Severity.ERROR, "Property 'covariantTestRefs' references non-existent test [%s]"); 
 	
 	public static final SemanticError COVARIANT_TEST_DISJOINT =
-			new SemanticError(67, Severity.ERROR, "Covariant test [%s] cannot be disjoint (Test [%s])"); 
-	
+			new SemanticError(67, Severity.ERROR, "Covariant test [%s] cannot be disjoint"); 
+/*	
 	public static final SemanticError ISCONTROL_NOT_BOOLEAN =
 			new SemanticError(68, Severity.ERROR, "'tests/experience/isControl' property must be a boolean (Test [%s], Experience [%s])"); 
-	
+*/	
 	public static final SemanticError CONTROL_EXPERIENCE_DUPE =
 			new SemanticError(69, Severity.ERROR, "Duplicate control experience [%s] in test [%s]"); 
 	
 	public static final SemanticError CONTROL_EXPERIENCE_MISSING =
 			new SemanticError(70, Severity.ERROR, "Control experience is missing in test [%s]"); 
-	
+/*	
 	public static final SemanticError WEIGHT_NOT_NUMBER =
 			new SemanticError(71, Severity.ERROR, "'tests/experience/weight' property must be a number (Test [%s], Experience [%s])"); 
-	
+
 	public static final SemanticError EXPERIENCE_UNSUPPORTED_PROPERTY =
 			new SemanticError(72, Severity.WARN,  "Unsupported property 'test/experience/%s' (Test [%s], Experience [%s])"); 
 	
@@ -231,13 +241,13 @@ public class SemanticError extends ParserError {
 	
 	public static final SemanticError STATEREF_DUPE =
 			new SemanticError(78, Severity.ERROR, "Duplicate property 'tests/onStates/stateRef' [%s] (Test [%s])"); 
-	
+*/	
 	public static final SemanticError STATEREF_UNDEFINED =
-			new SemanticError(79, Severity.ERROR, "'tests/onStates/stateRef' property [%s] references a state which does not exist (Test [%s])"); 
+			new SemanticError(79, Severity.ERROR, "Property 'stateRef' references non-existent state [%s]"); 
 	
 	public static final SemanticError ALL_PROPER_EXPERIENCES_UNDEFINED =
-			new SemanticError(80, Severity.ERROR, "At least one proper state variant must be defined (Test [%s], StateRef [%s])"); 
-	
+			new SemanticError(80, Severity.ERROR, "At least one proper state variant must be defined"); 
+/*
 	public static final SemanticError ISNONVARIANT_NOT_BOOLEAN =
 			new SemanticError(81, Severity.ERROR, "'tests/onStates/isNonvariant' property must be a boolean (Test [%s], StateRef [%s])"); 
 	
@@ -249,40 +259,40 @@ public class SemanticError extends ParserError {
 	
 	public static final SemanticError VARIANTS_UNSUPPORTED_PROPERTY =
 			new SemanticError(84, Severity.ERROR, "Unsupported property 'tests/onStates/variants/[%s]' (Test [%s], StateRef [%s])"); 
-	
+*/
 	public static final SemanticError VARIANTS_ISNONVARIANT_INCOMPATIBLE =
-			new SemanticError(85, Severity.ERROR, "Property 'tests/onStates' cannot be nonvariant and have variants (Test [%s], StateRef [%s])"); 
+			new SemanticError(85, Severity.ERROR, "Property 'onStates' cannot be nonvariant and have variants"); 
 	
 	public static final SemanticError VARIANTS_ISNONVARIANT_XOR =
-			new SemanticError(86, Severity.ERROR, "Property 'tests/onStates' must specify one of: 'isNonvariant' or 'variants' (Test [%s], StateRef [%s])"); 
-	
+			new SemanticError(86, Severity.ERROR, "Property 'tests/onStates' must specify one of: 'isNonvariant' or 'variants'"); 
+/*	
 	public static final SemanticError VARIANT_NOT_OBJECT =
 			new SemanticError(87, Severity.ERROR, "'tests/onStates/variants' list element must be an object (Test [%s], StateRef [%s])"); 
-	
-	public static final SemanticError VARIANT_DUPE =
-			new SemanticError(88, Severity.ERROR, "Duplicate list element 'tests/onStates/variants' references experience [%s] (Test [%s], StateRef [%s])"); 
+*/	
+	public static final SemanticError PROPER_VARIANT_DUPE =
+			new SemanticError(88, Severity.ERROR, "Duplicate state variant references proper experience [%s]"); 
 	
 	public static final SemanticError COVARIANT_VARIANT_DUPE =
-			new SemanticError(89, Severity.ERROR, "Duplicate list element 'tests/onStates/variants' references covariant experience(s) [%s] (Test [%s], StateRef [%s], Experience [%s])"); 
+			new SemanticError(89, Severity.ERROR, "Duplicate state variant references covariant experience(s) [%s]"); 
 	
-	public static final SemanticError VARIANT_MISSING =
-			new SemanticError(90, Severity.ERROR, "Variant element 'tests/onStates/variants' missing for experience [%s] (Test [%s], StateRef [%s])"); 
+	public static final SemanticError PROPER_VARIANT_MISSING =
+			new SemanticError(90, Severity.ERROR, "State variant missing for proper experience [%s]"); 
 	
 	public static final SemanticError COVARIANT_VARIANT_MISSING =
-			new SemanticError(91, Severity.ERROR, "'tests/onStates/variants' list element missing for proper experience [%s] and covariant experience(s) [%s] (Test [%s], StateRef [%s])"); 	
+			new SemanticError(91, Severity.ERROR, "State variant missing for proper experience [%s] and covariant experience(s) [%s]");
 	
 	public static final SemanticError COVARIANT_VARIANT_TEST_NOT_COVARIANT =
-			new SemanticError(92, Severity.ERROR, "Variant element 'tests/onStates/variants' for covariant experience [%s.%s] cannot refer to a non-covariant test (Test [%s], StateRef [%s])"); 	
+			new SemanticError(92, Severity.ERROR, "State variant for covariant experience [%s.%s] cannot refer to a non-covariant test"); 	
 	
 	public static final SemanticError COVARIANT_VARIANT_PROPER_UNDEFINED =
-			new SemanticError(93, Severity.ERROR, "'tests/onStates/variants' list element for proper experience [%s] and covariant experience(s) [%s] is invalid because its proper experience is undefined (Test [%s], StateRef [%s])"); 	
+			new SemanticError(93, Severity.ERROR, "State variant for proper experience [%s] and covariant experience(s) [%s] cannot refer to undefined proper experience [%s]"); 	
 	
 	public static final SemanticError COVARIANT_VARIANT_COVARIANT_UNDEFINED =
-			new SemanticError(94, Severity.ERROR, "'tests/onStates/variants' list element for proper experience [%s] and covariant experience(s) [%s] is invalid because its covariant experience [%s] is undefined (Test [%s], StateRef [%s])"); 	
+			new SemanticError(94, Severity.ERROR, "State variant for proper experience [%s] and covariant experience(s) [%s] cannot refer to undefined covariant experience [%s]"); 	
 	
-	public static final SemanticError COVARIANT_EXPERIENCEREFS_NOT_ALLOWED =
-			new SemanticError(95, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs' property not allowed in an undefined variant (Test [%s], StateRef [%s], ExperienceRef [%s])"); 
-	
+	public static final SemanticError PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT =
+			new SemanticError(95, Severity.ERROR, "Property '%s' is not allowed in an undefined state variant"); 
+/*
 	public static final SemanticError EXPERIENCEREF_PARAMS_NOT_ALLOWED =
 			new SemanticError(96, Severity.ERROR, "'tests/onStates/variants/parameters' property not allowed in an undefined variant (Test [%s], StateRef [%s], ExperienceRef [%s])");
 	
@@ -291,28 +301,28 @@ public class SemanticError extends ParserError {
 	
 	public static final SemanticError COVARIANT_EXPERIENCE_REF_NOT_OBJECT =
 			new SemanticError(98, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs' list element must be an object (Test [%s], StateRef [%s], ExperienceRefs [%s])"); 
-
+*/
 	public static final SemanticError COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT =
-			new SemanticError(99, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs' list element cannot reference multiple tests, which are not covariant with each other (Test [%s], StateRef [%s], ExperienceRef [%s] CovariantExperienceRefs [%s])"); 
-	
+			new SemanticError(99, Severity.ERROR, "Property 'covariantExperienceRefs' cannot reference non-covariant tests [%s] and [%s]"); 
+/*	
 	public static final SemanticError COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING =
 			new SemanticError(100, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs/testRef' property must be a string (Test [%s], StateRef [%s], ExperienceRef [%s])"); 
 	
 	public static final SemanticError COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING =
 			new SemanticError(101, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs/experienceRefs' property must be a string (Test [%s], StateRef [%s], ExperienceRef [%s])"); 
-	
+*/
 	public static final SemanticError COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED =
-			new SemanticError(102, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs/testRef' references test [%s], which does not exist (Test [%s], StateRef [%s], ExperienceRef [%s])"); 
+			new SemanticError(102, Severity.ERROR, "Property 'testRef' references non-existent test [%s]"); 
 	
 	public static final SemanticError COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT =
-			new SemanticError(103, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs/testRef' cannot reference test [%s] which is nonvariant on this state (Test [%s], StateRef [%s], ExperienceRef [%s])"); 
+			new SemanticError(103, Severity.ERROR, "Property 'testRef' cannot reference test [%s] because it is nonvariant on the enclosing state [%s]"); 
 	
 	public static final SemanticError COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED =
-			new SemanticError(104, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs/experienceRef' references a experience [%s.%s], which does not exist (Test [%s], StateRef [%s], ExperienceRef [%s])"); 
+			new SemanticError(104, Severity.ERROR, "Property 'experienceRef' references a non-existent experience [%s.%s]"); 
 	
 	public static final SemanticError COVARIANT_EXPERIENCE_DUPE =
-			new SemanticError(105, Severity.ERROR, "Duplicate list element 'tests/onStates/variants/covariantExperienceRefs' references experience [%s.%s] (Test [%s], StateRef [%s], Experience [%s])"); 
-	
+			new SemanticError(105, Severity.ERROR, "Duplicate property 'covariantExperienceRefs' references experience [%s.%s]"); 
+/*	
 	public static final SemanticError ISDEFINED_NOT_BOOLEAN =
 			new SemanticError(106, Severity.ERROR, "'tests/onStates/variants/isDefined' property must be a boolean (Test [%s], StateRef [%s])"); 
 	
@@ -321,16 +331,17 @@ public class SemanticError extends ParserError {
 	
 	public static final SemanticError EXPERIENCEREF_NOT_STRING =
 			new SemanticError(108, Severity.ERROR, "'tests/onStates/variants/experienceRef' property must be a string (Test [%s], StateRef [%s])"); 
-	
+*/
 	public static final SemanticError EXPERIENCEREF_UNDEFINED =
-			new SemanticError(109, Severity.ERROR, "'tests/onStates/variants/experienceRef' property [%s] references an expereince that does not exist (Test [%s], StateRef [%s])"); 
+			new SemanticError(109, Severity.ERROR, "Property 'experienceRef' references a non-existent experience [%s]"); 
 	
 	public static final SemanticError EXPERIENCEREF_ISCONTROL =
-			new SemanticError(110, Severity.ERROR, "'tests/onStates/variants/experienceRef' property [%s] cannot reference a control expereince, unless undefined (Test [%s], StateRef [%s])"); 
+			new SemanticError(110, Severity.ERROR, "Property 'experienceRef' cannot reference a control expereince, unless undefined."); 
 	
 	// 
 	// 151-170 Schema parser Parameters
 	//
+/*	
 	public static final SemanticError PARAMS_NOT_LIST = 
 			new SemanticError(151, Severity.ERROR, "'parameters' property must be a list"); 
 
@@ -348,11 +359,47 @@ public class SemanticError extends ParserError {
 
 	public static final SemanticError PARAM_VALUE_MISSING =
 			new SemanticError(156, Severity.ERROR, "Parameter value missing"); 
-
+*/
 	// 
 	// 171-200 Schema parser Other
 	//
-	public static final SemanticError UNSUPPORTED_CLAUSE =
-			new SemanticError(172, Severity.WARN,  "Unsupported clause [%s]");
+	public static final SemanticError UNSUPPORTED_PROPERTY =
+			new SemanticError(171, Severity.WARN,  "Unsupported property [%s]");
+
+	public static final SemanticError NAME_INVALID =
+			new SemanticError(172, Severity.ERROR, "Property 'name' must be a string, containing letters, digits and _, and cannot start with a digit"); 
+
+	public static final SemanticError NAME_MISSING =
+			new SemanticError(174, Severity.ERROR, "Property 'name' is missing"); 
+
+	public static final SemanticError DUPE_OBJECT =
+			new SemanticError(176, Severity.ERROR, "Object [%s] already defined"); 
+
+	public static final SemanticError PROPERTY_NOT_LIST = 
+			new SemanticError(176, Severity.ERROR, "Property '%s' must be a list"); 
+
+	public static final SemanticError PROPERTY_NOT_OBJECT =
+			new SemanticError(177, Severity.ERROR, "Property '%s' must be an object"); 
+
+	public static final SemanticError ELEMENT_NOT_OBJECT =
+			new SemanticError(178, Severity.ERROR, "Element of list property '%s' must be an object"); 
+
+	public static final SemanticError PROPERTY_NOT_BOOLEAN =
+			new SemanticError(179, Severity.ERROR, "Property '%s' must be a boolean"); 
+
+	public static final SemanticError PROPERTY_NOT_STRING =
+			new SemanticError(180, Severity.ERROR, "Property '%s' must be a string"); 
+
+	public static final SemanticError ELEMENT_NOT_STRING =
+			new SemanticError(181, Severity.ERROR, "Element of list property '%s' must be a string");
+	
+	public static final SemanticError PROPERTY_NOT_NUMBER =
+			new SemanticError(182, Severity.ERROR, "Property '%s' must be a number"); 
+
+	public static final SemanticError PROPERTY_EMPTY_LIST =
+			new SemanticError(183, Severity.ERROR, "Property '%s' cannot be an empty list"); 
+	
+	public static final SemanticError PROPERTY_MISSING =
+			new SemanticError(184, Severity.ERROR, "Property '%s' is missing"); 
 	
 }

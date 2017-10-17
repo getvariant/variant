@@ -77,7 +77,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOKS_NOT_LIST, "namee");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_LIST, "hooks");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -139,15 +139,15 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(3, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NOT_OBJECT);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT);
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NOT_OBJECT);
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT);
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(2);
-		expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NOT_OBJECT);
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT);
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -209,7 +209,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NAME_MISSING);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_MISSING);
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 
@@ -273,11 +273,11 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 		//printMessages(response);
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_UNSUPPORTED_PROPERTY, "class-Name", "bar");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_PROPERTY, "class-Name", "bar");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.WARN, actual.getSeverity());
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_CLASS_NAME_MISSING, "bar");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING, "class");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -339,7 +339,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 		assertFalse(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_UNSUPPORTED_PROPERTY, "foo", "bar");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_PROPERTY, "foo", "bar");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.WARN, actual.getSeverity());
 	}
@@ -403,7 +403,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NAME_INVALID);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_INVALID);
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -468,7 +468,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), HOOK_NAME_DUPE, "bar");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), DUPE_OBJECT, "bar");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}

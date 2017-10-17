@@ -1,9 +1,6 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_CLASS_NAME_INVALID;
-import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_CLASS_NAME_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_NOT_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.FLUSHER_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -79,7 +76,7 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), FLUSHER_NOT_OBJECT);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT);
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -141,7 +138,7 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"),FLUSHER_CLASS_NAME_INVALID);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_INVALID);
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -203,11 +200,11 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), FLUSHER_UNSUPPORTED_PROPERTY, "invalid");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_PROPERTY, "invalid");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.WARN, actual.getSeverity());
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), FLUSHER_CLASS_NAME_MISSING);
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING);
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}

@@ -54,7 +54,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NO_TESTS_CLAUSE);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING, "tests");
 		assertEquals(expected.getText(), actual.getText());
 	}
 
@@ -93,7 +93,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NO_TESTS);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING, "tests");
 		assertEquals(expected.getText(), actual.getText());
 	}
 
@@ -137,14 +137,14 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "              'isControl':true                                \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
+			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
+			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
 	    	    "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
+			    "                       'path':'/path/to/state1/test1.A'       \n" +
 			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
@@ -161,7 +161,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), TEST_ISON_NOT_BOOLEAN, "Test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_BOOLEAN, "Test1");
 		assertEquals(expected.getText(), actual.getText());
 	}
 
@@ -232,7 +232,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), TEST_NAME_MISSING);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_MISSING);
 		assertEquals(expected.getText(), actual.getText());
 	}
 
@@ -303,7 +303,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), TEST_NAME_INVALID);
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_INVALID);
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -403,7 +403,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), TEST_NAME_DUPE, "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), DUPE_OBJECT, "test1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -418,9 +418,9 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		String schema = 
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                    \n" +
-			    "      'comment':'schema comment'                               \n" +
-			    "  },                                                           \n" +
+			    "      'name':'schema_name',                                   \n" +
+			    "      'comment':'schema comment'                              \n" +
+			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
 			    "     {  'name':'state1',                                      \n" +
 	    	    "        'parameters': {                                       \n" +
@@ -476,7 +476,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), TEST_UNSUPPORTED_PROPERTY, "unsupported", "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_PROPERTY, "unsupported");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.WARN, actual.getSeverity());
 	}
@@ -538,7 +538,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCES_NOT_LIST, "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_LIST, "test1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -602,7 +602,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCES_LIST_EMPTY, "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_EMPTY_LIST, "test1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -676,7 +676,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCE_NOT_OBJECT, "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT, "test1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -768,7 +768,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(6, response.getMessages().size());
 		for (int i = 0; i < 6; i++) {
 			ParserMessage actual = response.getMessages().get(i);
-			ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCE_NAME_INVALID, "test1");
+			ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_INVALID, "test1");
 			assertEquals(expected.getText(), actual.getText());
 			assertEquals(Severity.ERROR, actual.getSeverity());
 		}
@@ -842,7 +842,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), ISCONTROL_NOT_BOOLEAN, "test1", "A");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_BOOLEAN, "test1", "A");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -914,7 +914,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), WEIGHT_NOT_NUMBER, "test1", "A");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_NUMBER, "test1", "A");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -987,7 +987,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCE_UNSUPPORTED_PROPERTY, "unsupported", "test1", "A");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_PROPERTY, "unsupported", "test1", "A");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.WARN, actual.getSeverity());
 	}
@@ -1059,7 +1059,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), ONSTATES_NOT_LIST, "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_LIST, "test1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -1119,7 +1119,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), ONSTATES_LIST_EMPTY, "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_EMPTY_LIST, "test1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -1180,7 +1180,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), ONSTATES_NOT_OBJECT, "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT, "test1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -1252,7 +1252,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 	assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), STATEREF_NOT_STRING, "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_STRING, "test1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -1323,7 +1323,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), STATEREF_MISSING, "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING, "stateRef");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -1406,7 +1406,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), STATEREF_DUPE, "state1", "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), DUPE_OBJECT, "state1", "test1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -1552,7 +1552,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), ISNONVARIANT_NOT_BOOLEAN, "test1", "state1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_BOOLEAN, "test1", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -1625,7 +1625,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), VARIANTS_NOT_LIST, "test1", "state1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_LIST, "variants");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -1692,7 +1692,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), VARIANTS_LIST_EMPTY, "test1", "state1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_EMPTY_LIST, "test1", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -1765,7 +1765,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), VARIANTS_UNSUPPORTED_PROPERTY, "unsupported", "test1", "state1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_PROPERTY, "unsupported");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -1967,15 +1967,15 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(3, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_NOT_OBJECT, "test1", "state1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT, "test1", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_NOT_OBJECT, "test1", "state1");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT, "test1", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(2);
-		expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "A", "test1", "state1");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT, "A", "test1", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -2047,11 +2047,11 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCEREF_MISSING, "test1", "state1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING, "experienceRef");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "A", "test1", "state1");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPER_VARIANT_MISSING);
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -2129,7 +2129,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCEREF_NOT_STRING, "test1", "state1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_STRING, "experienceRef");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -2205,7 +2205,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "A", "test1", "state1");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPER_VARIANT_MISSING, "A", "test1", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -2429,11 +2429,11 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCE_NAME_DUPE, "B", "TEST");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), DUPE_OBJECT, "B", "TEST");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "B", "TEST", "state1");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPER_VARIANT_MISSING, "B", "TEST", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -2668,11 +2668,11 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_DUPE, "A", "TEST", "state1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), DUPE_OBJECT, "A", "TEST", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "B", "TEST", "state1");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPER_VARIANT_MISSING, "B", "TEST", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -2748,7 +2748,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "B", "TEST", "state1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPER_VARIANT_MISSING, "B", "TEST", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -2919,7 +2919,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(5, response.getMessages().size());
 		for (int i = 0; i < 5; i++) {
 			ParserMessage actual = response.getMessages().get(i);
-			ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), TEST_NAME_INVALID);
+			ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_INVALID);
 			assertEquals(expected.getText(), actual.getText());
 			assertEquals(Severity.ERROR, actual.getSeverity());
 		}

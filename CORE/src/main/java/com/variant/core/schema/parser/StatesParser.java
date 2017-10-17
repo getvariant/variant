@@ -1,11 +1,6 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.STATES_CLAUSE_EMPTY;
-import static com.variant.core.schema.parser.error.SemanticError.STATES_CLAUSE_NOT_LIST;
-import static com.variant.core.schema.parser.error.SemanticError.STATE_NAME_DUPE;
-import static com.variant.core.schema.parser.error.SemanticError.STATE_NAME_INVALID;
-import static com.variant.core.schema.parser.error.SemanticError.STATE_NAME_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.STATE_UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.util.List;
 import java.util.Map;
@@ -44,7 +39,7 @@ public class StatesParser implements Keywords {
 			List<Map<String, ?>> rawStates = (List<Map<String, ?>>) statesObject;
 			
 			if (rawStates.size() == 0) {
-				response.addMessage(STATES_CLAUSE_EMPTY, statesLocation);
+				response.addMessage(statesLocation, PROPERTY_EMPTY_LIST, KEYWORD_STATES);
 			}
 			
 			int index = 0;
@@ -66,7 +61,7 @@ public class StatesParser implements Keywords {
 				// Parse individual state
 				State state = parseState(rawState, stateLocation, response);
 				if (state != null && !((SchemaImpl) response.getSchema()).addState(state)) {
-					response.addMessage(STATE_NAME_DUPE, stateLocation, state.getName());
+					response.addMessage(stateLocation, DUPE_OBJECT, state.getName());
 				}
 				
 				// If no errors, register state scoped hooks.
@@ -86,7 +81,7 @@ public class StatesParser implements Keywords {
 			}
 		}
 		catch (ClassCastException e) {
-			response.addMessage(STATES_CLAUSE_NOT_LIST, rootLocation);
+			response.addMessage(rootLocation, PROPERTY_NOT_LIST, KEYWORD_STATES);
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
@@ -108,12 +103,12 @@ public class StatesParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(STATE_NAME_INVALID, stateLocation.plus(KEYWORD_NAME));
+					response.addMessage(stateLocation.plus(KEYWORD_NAME), NAME_INVALID, KEYWORD_NAME);
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage(STATE_NAME_INVALID, stateLocation.plus(KEYWORD_NAME));
+						response.addMessage(stateLocation.plus(KEYWORD_NAME), NAME_INVALID, KEYWORD_NAME);
 					}
 				}
 				break;
@@ -122,7 +117,7 @@ public class StatesParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addMessage(STATE_NAME_MISSING, stateLocation);
+				response.addMessage(stateLocation, PROPERTY_MISSING, KEYWORD_NAME);
 			}
 			return null;
 		}
@@ -143,7 +138,7 @@ public class StatesParser implements Keywords {
 				HooksParser.parseStateHooks(entry.getValue(), result, hooksLocation, response);
 			}
 			else {
-				response.addMessage(STATE_UNSUPPORTED_PROPERTY, stateLocation, entry.getKey(), name);
+				response.addMessage(stateLocation, UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 		

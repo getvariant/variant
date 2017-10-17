@@ -39,15 +39,16 @@ public class HooksParser implements Keywords {
 			int i = 0;
 			for (Object rawHook: rawHooks) {
 				
-				Hook hook = parseHook(rawHook, hooksLocation.plus(i++), response);
+				Location hookLocation = hooksLocation.plus(i++);
+				Hook hook = parseHook(rawHook, hookLocation, response);
 				
 				if (hook != null && !((SchemaImpl) response.getSchema()).addHook(hook)) {
-					response.addMessage(HOOK_NAME_DUPE, hooksLocation, hook.getName());
+					response.addMessage(hookLocation, DUPE_OBJECT, hook.getName());
 				}
 			}
 		}
 		catch (ClassCastException e) {
-			response.addMessage(HOOKS_NOT_LIST, metaLocation);
+			response.addMessage(metaLocation, PROPERTY_NOT_LIST, "hooks");
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
@@ -75,7 +76,7 @@ public class HooksParser implements Keywords {
 			rawMap = (Map<String,?>) rawHook;
 		}
 		catch (ClassCastException e) {
-			response.addMessage(HOOK_NOT_OBJECT, hookLocation);
+			response.addMessage(hookLocation, ELEMENT_NOT_OBJECT, "hooks");
 			return null;
 		}
 		
@@ -85,12 +86,12 @@ public class HooksParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(HOOK_NAME_INVALID, hookLocation.plus("/name"));
+					response.addMessage(hookLocation.plus("/name"), NAME_INVALID);
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage(HOOK_NAME_INVALID, hookLocation.plus("/name"));
+						response.addMessage( hookLocation.plus("/name"), NAME_INVALID);
 					}
 				}
 				break;
@@ -99,7 +100,7 @@ public class HooksParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addMessage(HOOK_NAME_MISSING, hookLocation);
+				response.addMessage(hookLocation, NAME_MISSING);
 			}
 			return null;
 		}
@@ -113,7 +114,7 @@ public class HooksParser implements Keywords {
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_CLASS)) {
 				Object classNameObject = entry.getValue();
 				if (! (classNameObject instanceof String)) {
-					response.addMessage(HOOK_CLASS_NAME_INVALID, hookLocation.plus("/class"), name);
+					response.addMessage(hookLocation.plus("/class"), NAME_INVALID);
 				}
 				else {
 					className = (String) classNameObject;
@@ -135,12 +136,12 @@ public class HooksParser implements Keywords {
 				}
 			}
 			else {
-				response.addMessage(HOOK_UNSUPPORTED_PROPERTY, hookLocation, entry.getKey(), name);
+				response.addMessage(hookLocation, UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 	
 		if (className == null) {
-			response.addMessage(HOOK_CLASS_NAME_MISSING, hookLocation, name);
+			response.addMessage(hookLocation, PROPERTY_MISSING, "class");
 			return null;
 		}
 		else {
@@ -169,13 +170,13 @@ public class HooksParser implements Keywords {
 					// domian hook.
 					hook = new StateHookImpl(hook.getName(), hook.getClassName(), hook.getInit(), state);
 					if (!state.addHook(hook)) {
-						response.addMessage(HOOK_NAME_DUPE, hookLocation, hook.getName());
+						response.addMessage(hookLocation, DUPE_OBJECT, hook.getName());
 					}
 				}	
 			}
 		}
 		catch (ClassCastException e) {
-			response.addMessage(HOOKS_NOT_LIST, stateLocation);
+			response.addMessage(stateLocation, PROPERTY_NOT_LIST, "hooks");
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
@@ -203,13 +204,13 @@ public class HooksParser implements Keywords {
 					// domian hook.
 					hook = new TestHookImpl(hook.getName(), hook.getClassName(), hook.getInit(), test);
 					if (!test.addHook(hook)) {
-						response.addMessage(HOOK_NAME_DUPE, hookLocation, hook.getName());
+						response.addMessage(hookLocation, DUPE_OBJECT, hook.getName());
 					}
 				}	
 			}
 		}
 		catch (ClassCastException e) {
-			response.addMessage(HOOKS_NOT_LIST, testLocation);
+			response.addMessage(testLocation, PROPERTY_NOT_LIST, "hooks");
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);

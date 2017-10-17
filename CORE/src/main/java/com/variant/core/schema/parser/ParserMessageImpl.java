@@ -1,6 +1,5 @@
 package com.variant.core.schema.parser;
 
-import com.variant.core.UserError;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.parser.error.ParserError;

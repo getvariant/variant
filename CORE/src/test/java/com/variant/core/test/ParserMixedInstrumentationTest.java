@@ -199,23 +199,23 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 
 		assertEquals(6, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCEREF_PARAMS_NOT_ALLOWED, "test1", "state1", "B");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT, "test1", "state1", "B");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "B", "test1", "state1");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPER_VARIANT_MISSING, "B", "test1", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(2);
-		expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "B", "test2", "state2");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPER_VARIANT_MISSING, "B", "test2", "state2");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(3);
-		expected = new ParserMessageImpl(new Location("/figure/out"), ISDEFINED_NOT_BOOLEAN, "test3", "state1");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_BOOLEAN, "test3", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(4);
-		expected = new ParserMessageImpl(new Location("/figure/out"), ISDEFINED_NOT_BOOLEAN, "test4", "state2");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_BOOLEAN, "test4", "state2");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(5);
@@ -340,7 +340,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "B", "test2", "state1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPER_VARIANT_MISSING, "B", "test2", "state1");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 

@@ -144,7 +144,7 @@ public class ParserResponse {
 	/**
 	 * Add a syntax error.
 	 */
-	public ParserMessage addMessage(SyntaxError error, SyntaxError.Location location, String...args) {
+	public ParserMessage addMessage( SyntaxError.Location location, SyntaxError error, String...args) {
 		
 		ParserMessage result = new ParserMessageImpl(location, error, args);
 		addMessageCommon(result);
@@ -154,7 +154,7 @@ public class ParserResponse {
 	/**
 	 * Add a simantic error.
 	 */
-	public ParserMessage addMessage(SemanticError error, SemanticError.Location location, String...args) {
+	public ParserMessage addMessage(SemanticError.Location location, SemanticError error, String...args) {
 		
 		ParserMessage result = new ParserMessageImpl(location, error, args);
 		addMessageCommon(result);

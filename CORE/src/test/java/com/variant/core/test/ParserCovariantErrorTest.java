@@ -139,7 +139,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_TESTS_NOT_LIST, "test2");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_LIST, "test2");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -390,11 +390,11 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_TESTREF_NOT_STRING, "test2");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), ELEMENT_NOT_STRING, "test2");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_TESTREF_NOT_STRING, "test2");
+		expected = new ParserMessageImpl(new Location("/figure/out"), ELEMENT_NOT_STRING, "test2");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 	}
@@ -717,7 +717,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_EXPERIENCEREFS_NOT_LIST, "test2", "state2", "C");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_LIST, "test2", "state2", "C");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);
@@ -919,7 +919,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_EXPERIENCE_REF_NOT_OBJECT, "test2", "state2", "B");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT, "test2", "state2", "B");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);
@@ -1127,11 +1127,11 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(3, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING, "test2", "state2", "C");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_STRING, "test2", "state2", "C");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING, "test2", "state2", "C");
+		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_STRING, "test2", "state2", "C");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(2);
@@ -2471,7 +2471,7 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(3, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), VARIANT_MISSING, "B", "test2", "state2");
+		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING, "B", "test2", "state2");
 		assertEquals(expected.getText(), actual.getText());
 		assertEquals(Severity.ERROR, actual.getSeverity());
 		actual = response.getMessages().get(1);

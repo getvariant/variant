@@ -1,10 +1,7 @@
 package com.variant.core.schema.parser;
 
 import static com.variant.core.schema.parser.error.SyntaxError.JSON_SYNTAX_ERROR;
-import static com.variant.core.schema.parser.error.SemanticError.NO_META_CLAUSE;
-import static com.variant.core.schema.parser.error.SemanticError.NO_STATES_CLAUSE;
-import static com.variant.core.schema.parser.error.SemanticError.NO_TESTS_CLAUSE;
-import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_CLAUSE;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,7 +53,7 @@ public abstract class SchemaParser implements Keywords {
 		String[] tokens = tail.split(",");
 		int line = Integer.parseInt(tokens[0]);
 		int column = Integer.parseInt(tokens[1]);
-		response.addMessage(JSON_SYNTAX_ERROR, new SyntaxError.Location(schemaSrc, line, column), message.toString());
+		response.addMessage(new SyntaxError.Location(schemaSrc, line, column), JSON_SYNTAX_ERROR, message.toString());
 
 	}
 	
@@ -177,7 +174,7 @@ public abstract class SchemaParser implements Keywords {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {
-				response.addMessage(UNSUPPORTED_CLAUSE, rootLocation, entry.getKey());
+				response.addMessage(rootLocation, UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 		
@@ -188,11 +185,11 @@ public abstract class SchemaParser implements Keywords {
 		
 		Object meta = cleanMap.get(KEYWORD_META.toUpperCase());
 		if (meta == null) {
-			response.addMessage(NO_META_CLAUSE, rootLocation);
+			response.addMessage(rootLocation, PROPERTY_MISSING, KEYWORD_META);
 		}
 		else {			
 			// Parse meta info
-			MetaParser.parse(meta, rootLocation, response);
+			MetaParser.parse(meta, rootLocation.plus(KEYWORD_META), response);
 			
 			// Init all schema scoped hooks.
 			for (Hook hook: response.getSchema().getHooks()) hooksService.initHook(hook, response);
@@ -204,7 +201,7 @@ public abstract class SchemaParser implements Keywords {
 
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());
 		if (states == null) {
-			response.addMessage(NO_STATES_CLAUSE, rootLocation);
+			response.addMessage(rootLocation, PROPERTY_MISSING, KEYWORD_STATES);
 		}
 		else {
 			// Parse all states
@@ -218,11 +215,11 @@ public abstract class SchemaParser implements Keywords {
 
 		Object tests = cleanMap.get(KEYWORD_TESTS.toUpperCase());
 		if (tests == null) {
-			response.addMessage(NO_TESTS_CLAUSE, rootLocation);
+			response.addMessage(rootLocation, PROPERTY_MISSING, KEYWORD_TESTS);
 		}
 		else {
 			// Parse all tests
-			TestsParser.parse(tests, rootLocation, response, hooksService);			
+			TestsParser.parse(tests, rootLocation.plus(KEYWORD_TESTS), response, hooksService);			
 		}
 		
 		response.setMessageListener(null);
