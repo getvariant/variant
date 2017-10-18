@@ -255,10 +255,6 @@ public class VariantParser implements Keywords {
 			experience.addUninstrumentedState(state);
 			return null;
 		}
-
-		// The map from json parser is not case insensitive.
-		CaseInsensitiveMap<String> ciParams = new CaseInsensitiveMap<String>();
-		if (params != null) ciParams.putAll(params);  
 		
 		// Resort covarTestExperiences in ordinal order, if present.
 		List<TestExperienceImpl> orderedCovarTestExperiences = null; 
@@ -276,6 +272,6 @@ public class VariantParser implements Keywords {
 			}
 		}
 		
-		return new StateVariantImpl(tov, experience, orderedCovarTestExperiences, ciParams);
+		return new StateVariantImpl(tov, experience, orderedCovarTestExperiences, params);
 	}
 }

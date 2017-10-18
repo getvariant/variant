@@ -601,7 +601,6 @@ public class ParserCovariantErrorTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = (ParserResponse) parser.parse(schema);
-		printMessages(response);
 
 		assertTrue(response.hasMessages());
 		assertNull(response.getSchema());

@@ -1,13 +1,18 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
+import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.variant.core.CoreException;
 import com.variant.core.schema.parser.error.SemanticError.Location;
-import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.util.Tuples.Pair;
 
 /**
@@ -22,9 +27,9 @@ public class ParamsParser implements Keywords {
 	 * @param hooksObject
 	 * @param response
 	 */
-	static CaseInsensitiveMap<String> parse(Object paramsObject, Location paramsLocation, ParserResponse response) {		
+	static Map<String, String> parse(Object paramsObject, Location paramsLocation, ParserResponse response) {		
 		
-		CaseInsensitiveMap<String> result = new CaseInsensitiveMap<String>();
+		LinkedHashMap<String, String> result = new LinkedHashMap<String, String>();
 		
 		try {
 			List<?> rawParams = (List<?>) paramsObject;
@@ -34,7 +39,8 @@ public class ParamsParser implements Keywords {
 				
 				Pair<String,String> param = parseParam(rawParam, paramsLocation.plus(index++), response);
 				
-				if (param != null) result.put(param);
+				if (param != null) result.put(param._1(), param._2());
+
 			}
 		}
 		catch (ClassCastException e) {
