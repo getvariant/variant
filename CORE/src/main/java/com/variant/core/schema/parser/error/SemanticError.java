@@ -207,7 +207,7 @@ public class SemanticError extends ParserError {
 			new SemanticError(66, Severity.ERROR, "Property 'covariantTestRefs' references non-existent test [%s]"); 
 	
 	public static final SemanticError COVARIANT_TEST_DISJOINT =
-			new SemanticError(67, Severity.ERROR, "Covariant test [%s] cannot be disjoint"); 
+			new SemanticError(67, Severity.ERROR, "Test [%s] cannot declar test [%s] as covariant because they do not share any states"); 
 /*	
 	public static final SemanticError ISCONTROL_NOT_BOOLEAN =
 			new SemanticError(68, Severity.ERROR, "'tests/experience/isControl' property must be a boolean (Test [%s], Experience [%s])"); 
@@ -282,7 +282,7 @@ public class SemanticError extends ParserError {
 			new SemanticError(91, Severity.ERROR, "State variant missing for proper experience [%s] and covariant experience(s) [%s]");
 	
 	public static final SemanticError COVARIANT_VARIANT_TEST_NOT_COVARIANT =
-			new SemanticError(92, Severity.ERROR, "State variant for covariant experience [%s.%s] cannot refer to a non-covariant test"); 	
+			new SemanticError(92, Severity.ERROR, "List element 'covariantExperienceRefs' cannot refer to non-covariant test [%s]"); 	
 	
 	public static final SemanticError COVARIANT_VARIANT_PROPER_UNDEFINED =
 			new SemanticError(93, Severity.ERROR, "State variant for proper experience [%s] and covariant experience(s) [%s] cannot refer to undefined proper experience [%s]"); 	

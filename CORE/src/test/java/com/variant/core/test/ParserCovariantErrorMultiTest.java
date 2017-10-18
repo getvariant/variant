@@ -759,7 +759,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(schema);
-		printMessages(response);
+
 		assertTrue(response.hasMessages());
 		assertNull(response.getSchema());
 		assertNull(response.getSchemaSrc());
@@ -1022,7 +1022,6 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(schema);
-		printMessages(response);
 
 		assertTrue(response.hasMessages());
 		assertNull(response.getSchema());
@@ -1053,8 +1052,6 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 				new Location("/tests[2]/onStates[1]/variants[6]/covariantExperienceRefs[0]/experienceRef/"), 
 				COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C");
 		assertMessageEqual(expected, actual);
-
 	}
-
 	
 }

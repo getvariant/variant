@@ -167,9 +167,9 @@ public class VariantParser implements Keywords {
 					TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);					
 					if (covarTest == null) {
 						response.addMessage(
-								covarExpRefLocation.plus(KEYWORD_EXPERIENCE_REF),
+								covarExpRefLocation.plus(KEYWORD_TEST_REF),
 								COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED,
-								KEYWORD_EXPERIENCE_REF);
+								covarTestRef);
 						return null;
 					}
 					
@@ -178,7 +178,7 @@ public class VariantParser implements Keywords {
 						response.addMessage(
 								covarExpRefLocation.plus(KEYWORD_EXPERIENCE_REF),
 								COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT, 
-								covarTestRef, test.getName(), state.getName(), experienceRef);
+								covarTestRef, state.getName());
 						return null;						
 					}
 					

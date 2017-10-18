@@ -223,7 +223,7 @@ public class TestsParser implements Keywords {
 							// have been initialized by now.  Single pass parser!
 							TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);
 							if (covarTest == null) {
-								response.addMessage(testRefLocation, COVARIANT_TESTREF_UNDEFINED, name);
+								response.addMessage(testRefLocation, COVARIANT_TESTREF_UNDEFINED, covarTestRef);
 							}
 							else {
 								covarTests.add(covarTest);
@@ -312,10 +312,9 @@ public class TestsParser implements Keywords {
 		if (covarTests != null) {
 			int covarTestIx = 0;
 			for (Test covarTest: covarTests) {
-				covarTestIx++;
 				if (result.isSerialWith(covarTest)) {
-					Location tosLocation = testLocation.plus(KEYWORD_COVARIANT_TEST_REFS).plus(covarTestIx);
-					response.addMessage(tosLocation, COVARIANT_TEST_DISJOINT, covarTest.getName());
+					Location tosLocation = testLocation.plus(KEYWORD_COVARIANT_TEST_REFS).plus(covarTestIx++);
+					response.addMessage(tosLocation, COVARIANT_TEST_DISJOINT, name, covarTest.getName());
 				}
 			}
 		}
