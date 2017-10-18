@@ -1,6 +1,20 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_TEST_NOT_COVARIANT;
+import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +27,7 @@ import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.TestExperienceImpl;
 import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
-import com.variant.core.util.CaseInsensitiveMap;
+import com.variant.core.schema.parser.error.SemanticError.Location;
 import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantStringUtils;
 
