@@ -47,31 +47,67 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 			    "  },                                                                     \n" +
 	    	    //==========================================================================//
 	    	   
-	    	    "   'states':[                                                             \n" +
-	    	    "     {  'name':'state1',                                                  \n" +
-	    	    "        'parameters': {                                                   \n" +
-	    	    "           'path':'/path/to/state1'                                          \n" +
-	    	    "        }                                                                  \n" +
+	    	    "   'states':[                                                            \n" +
+	    	    "     {  'name':'state1',                                                 \n" +
+				"        'parameters': [                                                  \n" +
+				"          {                                                              \n" +
+				"            'name':'path',                                               \n" +
+				"            'value':'/path/to/state1'                                    \n" +
+				"          },                                                             \n" +
+				"          {                                                              \n" +
+				"            'name':'foo',                                                \n" +
+				"            'value':'bar'                                                \n" +
+				"          }                                                              \n" +
+				"        ]                                                                \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'NAME':'state2',                                                  \n" +
-	    	    "        'parameters': {                                                   \n" +
-	    	    "           'path':'/path/to/state2'                                          \n" +
-	    	    "        }                                                                  \n" +
+	    	    "     {  'NAME':'state2',                                                 \n" +
+				"        'parameters': [                                                  \n" +
+				"          {                                                              \n" +
+				"            'nAmE':'path',                                               \n" +
+				"            'value':'/path/to/state2'                                    \n" +
+				"          },                                                             \n" +
+				"          {                                                              \n" +
+				"            'name':'foo',                                                \n" +
+				"            'value':'bar'                                                \n" +
+				"          }                                                              \n" +
+				"        ]                                                                \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'nAmE':'state3',                                                  \n" +
-	    	    "        'parameters': {                                                   \n" +
-	    	    "           'path':'/path/to/state3'                                          \n" +
-	    	    "        }                                                                  \n" +
+	    	    "     {  'nAmE':'state3',                                                 \n" +
+				"        'parameters': [                                                  \n" +
+				"          {                                                              \n" +
+				"            'name':'foo',                                                \n" +
+				"            'value':'bar'                                                \n" +
+				"          },                                                             \n" +
+				"          {                                                              \n" +
+				"            'NAME':'path',                                               \n" +
+				"            'value':'/path/to/state3'                                    \n" +
+				"          }                                                              \n" +
+				"        ]                                                                \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'name':'state4',                                                  \n" +
-	    	    "        'parameters': {                                                   \n" +
-	    	    "           'path':'/path/to/state4'                                          \n" +
-	    	    "        }                                                                  \n" +
+	    	    "     {  'name':'state4',                                                 \n" +
+				"        'parameters': [                                                  \n" +
+				"          {                                                              \n" +
+				"            'name':'foo',                                                \n" +
+				"            'value':'bar'                                                \n" +
+				"          },                                                             \n" +
+				"          {                                                              \n" +
+				"            'Name':'path',                                               \n" +
+				"            'value':'/path/to/state4'                                    \n" +
+				"          }                                                              \n" +
+				"        ]                                                                \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'name':'state5',                                                  \n" +
-	    	    "        'parameters': {                                                   \n" +
-	    	    "           'path':'/path/to/state5'                                          \n" +
-	    	    "        }                                                                  \n" +
+	    	    "     {                                                                  \n" +
+				"        'parameters': [                                                  \n" +
+				"          {                                                              \n" +
+				"            'name':'foo',                                               \n" +
+				"            'value':'bar'                                                \n" +
+				"          },                                                             \n" +
+				"          {                                                              \n" +
+				"            'NAME':'path',                                               \n" +
+				"            'value':'/path/to/state5'                                    \n" +
+				"          }                                                              \n" +
+				"        ],                                                               \n" +
+	    	    "        'name':'state5'                                                  \n" +
 	    	    "     }                                                                   \n" +
 	            "  ],                                                                     \n" +
 	            
@@ -101,15 +137,21 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
@@ -118,15 +160,21 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test1.B'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state3/test1.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test1.C'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state3/test1.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
@@ -170,9 +218,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test2.B'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test2.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -182,9 +233,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.B+test2.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -194,16 +248,22 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.C+test2.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test2.C'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test2.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -213,9 +273,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.B+test2.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -225,9 +288,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.C+test2.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
@@ -237,9 +303,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test2.B'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state3/test2.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    
 	    	    "                 {                                                       \n" +
@@ -250,9 +319,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test1.B+test2.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state3/test1.B+test2.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -262,16 +334,22 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test1.C+test2.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state3/test1.C+test2.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test2.C'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state3/test2.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -281,9 +359,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test1.B+test2.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state3/test1.B+test2.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -293,9 +374,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state3/test1.C+test2.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state3/test1.C+test2.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
@@ -305,15 +389,21 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state4/test2.B'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state4/test2.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state4/test2.C'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state4/test2.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           }                                                             \n" +
@@ -344,15 +434,21 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state1/test3.B'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state1/test3.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state1/test3.C'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state1/test3.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
@@ -362,9 +458,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
                 // B
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test3.B'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test3.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -374,9 +473,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.B+test3.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -386,9 +488,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.C+test3.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -398,9 +503,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test2.B+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test2.B+test3.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -410,9 +518,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test2.C+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test2.C+test3.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -426,9 +537,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.B+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.B+test2.B+test3.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -442,9 +556,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.C+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.B+test2.C+test3.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -458,9 +575,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.B+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.C+test2.B+test3.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
@@ -474,16 +594,22 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.C+test3.B'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.C+test2.C+test3.B'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
                 // C
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test3.C'                      \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test3.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -493,9 +619,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.B+test3.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -505,9 +634,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.C+test3.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -517,9 +649,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test2.B+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test2.B+test3.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -529,9 +664,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test2.C+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test2.C+test3.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -545,9 +683,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.B+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.B+test2.B+test3.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -561,9 +702,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.B+test2.C+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.B+test2.C+test3.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -577,9 +721,12 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.B+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.C+test2.B+test3.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'C',                                 \n" +
@@ -593,23 +740,26 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
-	    	    "                    'parameters': {                                      \n" +
-	    	    "                       'path':'/path/to/state2/test1.C+test2.C+test3.C'              \n" +
-	    	    "                    }                                                       \n" +
+				"                    'parameters': [                                      \n" +
+				"                       {                                                 \n" +
+				"                          'name':'path',                                 \n" +
+				"                          'value':'/path/to/state2/test1.C+test2.C+test3.C'              \n" +
+				"                       }                                                 \n" +
+				"                    ]                                                    \n" +
 	    	    "                 }                                                       \n" +
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state3',                                         \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'stateRef':'state3',                                       \n" +
+	    	    "              'isNonvariant':true                                        \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state4',                                         \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'stateRef':'state4',                                       \n" +
+	    	    "              'isNonvariant':true                                        \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state5',                                         \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'stateRef':'state5',                                       \n" +
+	    	    "              'isNonvariant':true                                        \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     }                                                                   \n" +
