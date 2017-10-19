@@ -29,14 +29,14 @@ public class FlusherParser implements Keywords {
 
 		String className = null;
 		String init = null;
-		Location flusherLocation = metaLocation.plus("/flusher");
+		Location flusherLocation = metaLocation.plus(KEYWORD_FLUSHER);
 		
 		Map<String, ?> rawMap;
 		try {
 			rawMap = (Map<String,?>) rawFlusher;
 		}
 		catch (ClassCastException e) {
-			response.addMessage(metaLocation, PROPERTY_NOT_OBJECT, "flusher");
+			response.addMessage(flusherLocation, PROPERTY_NOT_OBJECT, KEYWORD_FLUSHER);
 			return null;
 		}
 		

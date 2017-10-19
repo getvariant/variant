@@ -57,10 +57,7 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'       \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -76,9 +73,8 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/flusher/"), PROPERTY_NOT_OBJECT, "flusher");
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -119,10 +115,7 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'       \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -133,14 +126,14 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
+		printMessages(response);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_INVALID);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/flusher/"), NAME_INVALID);
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -181,10 +174,7 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'       \n" +
-			    "                    }                                         \n" +
+			    "                    'experienceRef': 'B'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -200,13 +190,11 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_PROPERTY, "invalid");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.WARN, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/flusher/"), UNSUPPORTED_PROPERTY, "invalid");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		expected = new ParserMessageImpl(new Location("/meta/flusher/"), PROPERTY_MISSING, "class");
+		assertMessageEqual(expected, actual);
 	}
 
 }
