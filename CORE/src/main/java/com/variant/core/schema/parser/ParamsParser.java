@@ -37,7 +37,7 @@ public class ParamsParser implements Keywords {
 			int index = 0;
 			for (Object rawParam: rawParams) {
 				
-				Pair<String,String> param = parseParam(rawParam, paramsLocation.plus(index++), response);
+				Pair<String,String> param = parseParam(rawParam, paramsLocation.plusIx(index++), response);
 				
 				if (param != null) result.put(param._1(), param._2());
 
@@ -83,12 +83,12 @@ public class ParamsParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(paramLocation.plus(KEYWORD_NAME), NAME_INVALID);
+					response.addMessage(paramLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage(paramLocation.plus(KEYWORD_NAME), NAME_INVALID);
+						response.addMessage(paramLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
 					}
 				}
 				break;
@@ -111,7 +111,7 @@ public class ParamsParser implements Keywords {
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_VALUE)) {
 				Object valueObject = entry.getValue();
 				if (! (valueObject instanceof String)) {
-					response.addMessage(paramLocation.plus(KEYWORD_VALUE), PROPERTY_NOT_STRING, KEYWORD_VALUE);
+					response.addMessage(paramLocation.plusProp(KEYWORD_VALUE), PROPERTY_NOT_STRING, KEYWORD_VALUE);
 				}
 				else {
 					value = (String) valueObject;

@@ -50,11 +50,11 @@ public class MetaParser implements Keywords {
 					try {
 						name = (String) entry.getValue();
 						if (!SemanticChecks.isName(name)) {
-							response.addMessage(metaLocation.plus("/name"), NAME_INVALID);
+							response.addMessage(metaLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
 						}
 					}
 					catch (ClassCastException e) {
-						response.addMessage(metaLocation.plus("/name"), NAME_INVALID);
+						response.addMessage(metaLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
 					}
 				}
 				else if (entry.getKey().equalsIgnoreCase(KEYWORD_COMMENT)) {
@@ -62,7 +62,7 @@ public class MetaParser implements Keywords {
 						comment = (String) entry.getValue();
 					}
 					catch (ClassCastException e) {
-						response.addMessage(metaLocation.plus("/comment"), PROPERTY_NOT_STRING, "comment");
+						response.addMessage(metaLocation.plusProp(KEYWORD_COMMENT), PROPERTY_NOT_STRING, "comment");
 					}
 				}
 				else if (entry.getKey().equalsIgnoreCase(KEYWORD_HOOKS)) {

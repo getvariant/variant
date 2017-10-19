@@ -75,7 +75,7 @@ public class VariantParser implements Keywords {
 					experienceRef = (String) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(variantLocation.plus(KEYWORD_EXPERIENCE_REF), PROPERTY_NOT_STRING, KEYWORD_EXPERIENCE_REF);
+					response.addMessage(variantLocation.plusProp(KEYWORD_EXPERIENCE_REF), PROPERTY_NOT_STRING, KEYWORD_EXPERIENCE_REF);
 					return null;
 				}
 			}
@@ -84,7 +84,7 @@ public class VariantParser implements Keywords {
 					isDefined = (Boolean) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(variantLocation.plus(KEYWORD_IS_DEFINED), PROPERTY_NOT_BOOLEAN, KEYWORD_IS_DEFINED);
+					response.addMessage(variantLocation.plusProp(KEYWORD_IS_DEFINED), PROPERTY_NOT_BOOLEAN, KEYWORD_IS_DEFINED);
 				}
 			}
 		}
@@ -97,13 +97,13 @@ public class VariantParser implements Keywords {
 		// The experience must exist
 		TestExperienceImpl experience = (TestExperienceImpl) test.getExperience(experienceRef);
 		if (experience == null) {
-			response.addMessage(variantLocation.plus(KEYWORD_EXPERIENCE_REF), EXPERIENCEREF_UNDEFINED, experienceRef);
+			response.addMessage(variantLocation.plusProp(KEYWORD_EXPERIENCE_REF), EXPERIENCEREF_UNDEFINED, experienceRef);
 			return null;			
 		}
 
 		// Variant cannot refer to a control experience, unless undefined.
 		if (experience.isControl() && isDefined) {
-			response.addMessage(variantLocation.plus(KEYWORD_EXPERIENCE_REF), EXPERIENCEREF_ISCONTROL,  experienceRef);
+			response.addMessage(variantLocation.plusProp(KEYWORD_EXPERIENCE_REF), EXPERIENCEREF_ISCONTROL,  experienceRef);
 			return null;						
 		}
 		
@@ -116,7 +116,7 @@ public class VariantParser implements Keywords {
 				
 				if (!isDefined) {
 					response.addMessage(
-							variantLocation.plus(KEYWORD_EXPERIENCE_REF),
+							variantLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 							PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT, 
 							KEYWORD_COVARIANT_EXPERIENCE_REFS);
 					
@@ -129,7 +129,7 @@ public class VariantParser implements Keywords {
 				}
 				catch (Exception e) {
 					response.addMessage(
-							variantLocation.plus(KEYWORD_COVARIANT_EXPERIENCE_REFS),
+							variantLocation.plusObj(KEYWORD_COVARIANT_EXPERIENCE_REFS),
 							PROPERTY_NOT_LIST,  
 							KEYWORD_COVARIANT_EXPERIENCE_REFS);
 					
@@ -141,7 +141,7 @@ public class VariantParser implements Keywords {
 				int index = 0;
 				for (Object covarExperienceRefObj: covarExperienceRefList) {
 					
-					Location covarExpRefLocation = variantLocation.plus(KEYWORD_COVARIANT_EXPERIENCE_REFS).plus(index++);
+					Location covarExpRefLocation = variantLocation.plusObj(KEYWORD_COVARIANT_EXPERIENCE_REFS).plusIx(index++);
 					
 					Map<String,?> covarExperienceRefMap;
 					try {
@@ -161,7 +161,7 @@ public class VariantParser implements Keywords {
 					}
 					catch (Exception e) {
 						response.addMessage(
-								covarExpRefLocation.plus(KEYWORD_TEST_REF),
+								covarExpRefLocation.plusProp(KEYWORD_TEST_REF),
 								PROPERTY_NOT_STRING, 
 								KEYWORD_TEST_REF);
 					}
@@ -170,7 +170,7 @@ public class VariantParser implements Keywords {
 					}
 					catch (Exception e) {
 						response.addMessage(
-								covarExpRefLocation.plus(KEYWORD_EXPERIENCE_REF),
+								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 								PROPERTY_NOT_STRING,  
 								KEYWORD_EXPERIENCE_REF);
 					}
@@ -181,7 +181,7 @@ public class VariantParser implements Keywords {
 					TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);					
 					if (covarTest == null) {
 						response.addMessage(
-								covarExpRefLocation.plus(KEYWORD_TEST_REF),
+								covarExpRefLocation.plusProp(KEYWORD_TEST_REF),
 								COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED,
 								covarTestRef);
 						return null;
@@ -190,7 +190,7 @@ public class VariantParser implements Keywords {
 					// Current view cannot be nonvariant in the covar test.
 					if (state.isNonvariantIn(covarTest)) {
 						response.addMessage(
-								covarExpRefLocation.plus(KEYWORD_EXPERIENCE_REF),
+								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 								COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT, 
 								covarTestRef, state.getName());
 						return null;						
@@ -200,7 +200,7 @@ public class VariantParser implements Keywords {
 					TestExperienceImpl covarExperience = (TestExperienceImpl) covarTest.getExperience(covarExperienceRef);
 					if (covarExperience == null) {
 						response.addMessage(
-								covarExpRefLocation.plus(KEYWORD_EXPERIENCE_REF),
+								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 								COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, 
 								covarTestRef, covarExperienceRef);
 						return null;
@@ -209,7 +209,7 @@ public class VariantParser implements Keywords {
 					// This test must declare the other test as covariant.
 					if (test.getCovariantTests() == null || !test.getCovariantTests().contains(covarTest)) {
 						response.addMessage(
-								covarExpRefLocation.plus(KEYWORD_EXPERIENCE_REF),
+								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 								COVARIANT_VARIANT_TEST_NOT_COVARIANT,
 								covarTestRef);
 						return null;
@@ -217,7 +217,7 @@ public class VariantParser implements Keywords {
 
 					if (covarTestExperiences.contains(covarExperience)) {
 						response.addMessage(
-								covarExpRefLocation.plus(KEYWORD_EXPERIENCE_REF),
+								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 								COVARIANT_EXPERIENCE_DUPE,
 								covarTestRef, covarExperienceRef);
 						return null;
@@ -251,13 +251,13 @@ public class VariantParser implements Keywords {
 				
 				if (!isDefined) {
 					response.addMessage(
-							variantLocation.plus(KEYWORD_PARAMETERS),
+							variantLocation.plusObj(KEYWORD_PARAMETERS),
 							PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT, 
 							KEYWORD_PARAMETERS);
 					return null;					
 				}
 
-				params = ParamsParser.parse(entry.getValue(), variantLocation.plus(KEYWORD_PARAMETERS), response);
+				params = ParamsParser.parse(entry.getValue(), variantLocation.plusObj(KEYWORD_PARAMETERS), response);
 			}
 			else {
 				response.addMessage(variantLocation, UNSUPPORTED_PROPERTY, entry.getKey());

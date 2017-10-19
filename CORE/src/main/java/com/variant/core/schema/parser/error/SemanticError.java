@@ -42,21 +42,36 @@ public class SemanticError extends ParserError {
 		}
 		
 		/**
-		 * New SemanticErrorLocation with the extraPath added to the path of this.
+		 * New Location with extra object.
 		 * @param extraPath
 		 * @return
 		 */
-		public Location plus(String extraPath) {		
-			return new Location(path + extraPath + "/");
+		public Location plusObj(String objPath) {		
+			return new Location(path + objPath + "/");
 		}
 		
 		/**
-		 * Tack array index to the existing path. Array index goes in front of the trailing /
+		 * New Location with extra property - no trailing slash.
+		 * @param extraPath
+		 * @return
+		 */
+		public Location plusProp(String propPath) {		
+			return new Location(path + propPath);
+		}
+
+		/**
+		 * Tack array index to the existing path. If path to array ends in /.
+		 * insert the index before it. 
 		 * @param index
 		 * @return
 		 */
-		public Location plus(int index) {
-			return new Location(path.substring(0, path.length()-1) + String.format("[%s]", index) + "/");
+		public Location plusIx(int index) {
+			
+			String newPath = path.endsWith("/") ? 
+					newPath = path.substring(0, path.length()-1) + String.format("[%s]", index) + "/"
+					: path + String.format("[%s]", index);
+			
+			return new Location(newPath);
 		}
 
 	}

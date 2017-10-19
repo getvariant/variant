@@ -29,7 +29,7 @@ public class FlusherParser implements Keywords {
 
 		String className = null;
 		String init = null;
-		Location flusherLocation = metaLocation.plus(KEYWORD_FLUSHER);
+		Location flusherLocation = metaLocation.plusObj(KEYWORD_FLUSHER);
 		
 		Map<String, ?> rawMap;
 		try {

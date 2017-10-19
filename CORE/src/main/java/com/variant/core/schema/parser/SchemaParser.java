@@ -189,7 +189,7 @@ public abstract class SchemaParser implements Keywords {
 		}
 		else {			
 			// Parse meta info
-			MetaParser.parse(meta, rootLocation.plus(KEYWORD_META), response);
+			MetaParser.parse(meta, rootLocation.plusObj(KEYWORD_META), response);
 			
 			// Init all schema scoped hooks.
 			for (Hook hook: response.getSchema().getHooks()) hooksService.initHook(hook, response);
@@ -219,7 +219,7 @@ public abstract class SchemaParser implements Keywords {
 		}
 		else {
 			// Parse all tests
-			TestsParser.parse(tests, rootLocation.plus(KEYWORD_TESTS), response, hooksService);			
+			TestsParser.parse(tests, rootLocation.plusObj(KEYWORD_TESTS), response, hooksService);			
 		}
 		
 		response.setMessageListener(null);

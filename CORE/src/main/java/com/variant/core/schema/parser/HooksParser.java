@@ -31,7 +31,7 @@ public class HooksParser implements Keywords {
 	 */
 	static void parseMetaHooks(Object hooksObject, Location metaLocation, ParserResponse response) {		
 		
-		Location hooksLocation = metaLocation.plus("/hooks");
+		Location hooksLocation = metaLocation.plusObj(KEYWORD_HOOKS);
 		
 		try {
 			List<?> rawHooks = (List<?>) hooksObject;
@@ -39,7 +39,7 @@ public class HooksParser implements Keywords {
 			int i = 0;
 			for (Object rawHook: rawHooks) {
 				
-				Location hookLocation = hooksLocation.plus(i++);
+				Location hookLocation = hooksLocation.plusIx(i++);
 				Hook hook = parseHook(rawHook, hookLocation, response);
 				
 				if (hook != null && !((SchemaImpl) response.getSchema()).addHook(hook)) {
@@ -76,7 +76,7 @@ public class HooksParser implements Keywords {
 			rawMap = (Map<String,?>) rawHook;
 		}
 		catch (ClassCastException e) {
-			response.addMessage(hookLocation, ELEMENT_NOT_OBJECT, "hooks");
+			response.addMessage(hookLocation, ELEMENT_NOT_OBJECT, KEYWORD_HOOKS);
 			return null;
 		}
 		
@@ -86,12 +86,12 @@ public class HooksParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(hookLocation.plus("/name"), NAME_INVALID);
+					response.addMessage(hookLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage( hookLocation.plus("/name"), NAME_INVALID);
+						response.addMessage( hookLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
 					}
 				}
 				break;
@@ -114,7 +114,7 @@ public class HooksParser implements Keywords {
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_CLASS)) {
 				Object classNameObject = entry.getValue();
 				if (! (classNameObject instanceof String)) {
-					response.addMessage(hookLocation.plus("/class"), NAME_INVALID);
+					response.addMessage(hookLocation.plusProp(KEYWORD_CLASS), NAME_INVALID);
 				}
 				else {
 					className = (String) classNameObject;
@@ -161,7 +161,7 @@ public class HooksParser implements Keywords {
 			int index = 0;
 			for (Object rawHook: rawHooks) {
 				
-				Location hookLocation = stateLocation.plus(index++);
+				Location hookLocation = stateLocation.plusIx(index++);
 				
 				Hook hook = parseHook(rawHook, hookLocation, response);
 				
@@ -195,7 +195,7 @@ public class HooksParser implements Keywords {
 			int index = 0;
 			for (Object rawHook: rawHooks) {
 				
-				Location hookLocation = testLocation.plus(index++);
+				Location hookLocation = testLocation.plusIx(index++);
 				
 				Hook hook = parseHook(rawHook, hookLocation, response);
 				

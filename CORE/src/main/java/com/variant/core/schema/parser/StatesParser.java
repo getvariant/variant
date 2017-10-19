@@ -32,7 +32,7 @@ public class StatesParser implements Keywords {
 	@SuppressWarnings("unchecked")
 	static void parse(Object statesObject, Location rootLocation, ParserResponse response, HooksService hooksService) {
 
-		Location statesLocation = rootLocation.plus(KEYWORD_STATES);
+		Location statesLocation = rootLocation.plusObj(KEYWORD_STATES);
 		
 		try {
 
@@ -45,7 +45,7 @@ public class StatesParser implements Keywords {
 			int index = 0;
 			for (Map<String, ?> rawState: rawStates) {
 
-				Location stateLocation = statesLocation.plus(index++);
+				Location stateLocation = statesLocation.plusIx(index++);
 				
 				// Increment a local integer count whenever a parse error occurs.
 				final MutableInteger errorCount = new MutableInteger(0);
@@ -103,12 +103,12 @@ public class StatesParser implements Keywords {
 				nameFound = true;
 				Object nameObject = entry.getValue();
 				if (! (nameObject instanceof String)) {
-					response.addMessage(stateLocation.plus(KEYWORD_NAME), NAME_INVALID, KEYWORD_NAME);
+					response.addMessage(stateLocation.plusProp(KEYWORD_NAME), NAME_INVALID, KEYWORD_NAME);
 				}
 				else {
 					name = (String) nameObject;
 					if (!SemanticChecks.isName(name)) {
-						response.addMessage(stateLocation.plus(KEYWORD_NAME), NAME_INVALID, KEYWORD_NAME);
+						response.addMessage(stateLocation.plusProp(KEYWORD_NAME), NAME_INVALID, KEYWORD_NAME);
 					}
 				}
 				break;
@@ -130,11 +130,11 @@ public class StatesParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) continue;
 			
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_PARAMETERS)) {
-				Location paramsLocation = stateLocation.plus(KEYWORD_PARAMETERS);
+				Location paramsLocation = stateLocation.plusObj(KEYWORD_PARAMETERS);
 				result.setParameterMap(ParamsParser.parse(entry.getValue(), paramsLocation, response));
 			}
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_HOOKS)) {
-				Location hooksLocation = stateLocation.plus(KEYWORD_HOOKS);
+				Location hooksLocation = stateLocation.plusObj(KEYWORD_HOOKS);
 				HooksParser.parseStateHooks(entry.getValue(), result, hooksLocation, response);
 			}
 			else {
