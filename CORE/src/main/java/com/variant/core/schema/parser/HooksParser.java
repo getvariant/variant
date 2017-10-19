@@ -48,7 +48,7 @@ public class HooksParser implements Keywords {
 			}
 		}
 		catch (ClassCastException e) {
-			response.addMessage(metaLocation, PROPERTY_NOT_LIST, "hooks");
+			response.addMessage(metaLocation.plusObj(KEYWORD_HOOKS), PROPERTY_NOT_LIST, "hooks");
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
@@ -136,7 +136,7 @@ public class HooksParser implements Keywords {
 				}
 			}
 			else {
-				response.addMessage(hookLocation, UNSUPPORTED_PROPERTY, entry.getKey());
+				response.addMessage(hookLocation.plusProp(entry.getKey()), UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 	

@@ -58,9 +58,12 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'           \n" +
-			    "                    }                                         \n" +
+				"                    'parameters': [                           \n" +
+				"                       {                                      \n" +
+				"                          'name':'path',                      \n" +
+				"                          'value':'/path/to/state1/test1.B'   \n" +
+				"                       }                                      \n" +
+				"                    ]                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -76,9 +79,8 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_LIST, "namee");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks/"), PROPERTY_NOT_LIST, "hooks");
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -118,9 +120,12 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'       \n" +
-			    "                    }                                         \n" +
+				"                    'parameters': [                           \n" +
+				"                       {                                      \n" +
+				"                          'name':'path',                      \n" +
+				"                          'value':'/path/to/state1/test1.B'   \n" +
+				"                       }                                      \n" +
+				"                    ]                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -136,17 +141,14 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(3, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[0]/"), ELEMENT_NOT_OBJECT, "hooks");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		expected = new ParserMessageImpl(new Location("/meta/hooks[1]/"), ELEMENT_NOT_OBJECT, "hooks");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(2);
-		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		expected = new ParserMessageImpl(new Location("/meta/hooks[2]/"), ELEMENT_NOT_OBJECT, "hooks");
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -186,9 +188,12 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'       \n" +
-			    "                    }                                         \n" +
+				"                    'parameters': [                           \n" +
+				"                       {                                      \n" +
+				"                          'name':'path',                      \n" +
+				"                          'value':'/path/to/state1/test1.B'   \n" +
+				"                       }                                      \n" +
+				"                    ]                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -204,9 +209,8 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_MISSING);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[0]/"), NAME_MISSING);
+		assertMessageEqual(expected, actual);
 
 	}
 
@@ -247,9 +251,12 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'       \n" +
-			    "                    }                                         \n" +
+				"                    'parameters': [                           \n" +
+				"                       {                                      \n" +
+				"                          'name':'path',                      \n" +
+				"                          'value':'/path/to/state1/test1.B'   \n" +
+				"                       }                                      \n" +
+				"                    ]                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -265,13 +272,11 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_PROPERTY, "class-Name", "bar");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.WARN, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[0]/class-Name"), UNSUPPORTED_PROPERTY, "class-Name", "bar");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING, "bar");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		expected = new ParserMessageImpl(new Location("/meta/hooks[0]/"), PROPERTY_MISSING, "class");
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -311,9 +316,12 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'       \n" +
-			    "                    }                                         \n" +
+				"                    'parameters': [                           \n" +
+				"                       {                                      \n" +
+				"                          'name':'path',                      \n" +
+				"                          'value':'/path/to/state1/test1.B'   \n" +
+				"                       }                                      \n" +
+				"                    ]                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -329,9 +337,8 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertFalse(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_PROPERTY, "foo", "bar");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.WARN, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[0]/foo"), UNSUPPORTED_PROPERTY, "foo");
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -373,9 +380,12 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'       \n" +
-			    "                    }                                         \n" +
+				"                    'parameters': [                           \n" +
+				"                       {                                      \n" +
+				"                          'name':'path',                      \n" +
+				"                          'value':'/path/to/state1/test1.B'   \n" +
+				"                       }                                      \n" +
+				"                    ]                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -391,9 +401,8 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_INVALID);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[0]/name"), NAME_INVALID);
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -436,9 +445,12 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.B'       \n" +
-			    "                    }                                         \n" +
+				"                    'parameters': [                           \n" +
+				"                       {                                      \n" +
+				"                          'name':'path',                      \n" +
+				"                          'value':'/path/to/state1/test1.B'   \n" +
+				"                       }                                      \n" +
+				"                    ]                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -454,9 +466,8 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), DUPE_OBJECT, "bar");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[1]/"), DUPE_OBJECT, "bar");
+		assertMessageEqual(expected, actual);
 	}
 
 }
