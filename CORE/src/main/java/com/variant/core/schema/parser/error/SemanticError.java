@@ -285,10 +285,10 @@ public class SemanticError extends ParserError {
 			new SemanticError(92, Severity.ERROR, "List element 'covariantExperienceRefs' cannot refer to non-covariant test [%s]"); 	
 	
 	public static final SemanticError COVARIANT_VARIANT_PROPER_UNDEFINED =
-			new SemanticError(93, Severity.ERROR, "State variant for proper experience [%s] and covariant experience(s) [%s] cannot refer to undefined proper experience [%s]"); 	
+			new SemanticError(93, Severity.ERROR, "State variant cannot refer to proper experience [%s], which is undefined on state [%s]"); 	
 	
 	public static final SemanticError COVARIANT_VARIANT_COVARIANT_UNDEFINED =
-			new SemanticError(94, Severity.ERROR, "State variant for proper experience [%s] and covariant experience(s) [%s] cannot refer to undefined covariant experience [%s]"); 	
+			new SemanticError(94, Severity.ERROR, "State variant cannot refer to covariant experience [%s], which is undefined on state [%s]"); 	
 	
 	public static final SemanticError PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT =
 			new SemanticError(95, Severity.ERROR, "Property '%s' is not allowed in an undefined state variant"); 
@@ -336,7 +336,7 @@ public class SemanticError extends ParserError {
 			new SemanticError(109, Severity.ERROR, "Property 'experienceRef' references a non-existent experience [%s]"); 
 	
 	public static final SemanticError EXPERIENCEREF_ISCONTROL =
-			new SemanticError(110, Severity.ERROR, "Property 'experienceRef' cannot reference a control expereince, unless undefined."); 
+			new SemanticError(110, Severity.ERROR, "Property 'experienceRef' cannot reference a control expereince"); 
 	
 	// 
 	// 151-170 Schema parser Parameters

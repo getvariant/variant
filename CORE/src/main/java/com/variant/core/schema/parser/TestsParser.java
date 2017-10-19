@@ -564,17 +564,14 @@ public class TestsParser implements Keywords {
 					response.addMessage(
 							tosLocation.plus(KEYWORD_VARIANTS),
 							COVARIANT_VARIANT_PROPER_UNDEFINED, 
-							point.getExperience().getName(),
-							VariantStringUtils.toString(point.getCovariantExperiences(),  ","));
+							point.getExperience().toString(), tos.getState().getName());
 				}
 				for (Experience e: point.getCovariantExperiences()) {
 					if (e.isDefinedOn(tos.getState())) continue;
 					response.addMessage(
 							tosLocation.plus(KEYWORD_VARIANTS),
-							COVARIANT_VARIANT_COVARIANT_UNDEFINED, 
-							point.getExperience().getName(),
-							VariantStringUtils.toString(point.getCovariantExperiences(),  ","), 
-							e.toString());
+							COVARIANT_VARIANT_COVARIANT_UNDEFINED,  
+							e.toString(), tos.getState().getName());
 				}				
 			}
 		}

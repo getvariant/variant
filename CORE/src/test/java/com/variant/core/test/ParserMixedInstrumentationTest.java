@@ -62,9 +62,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
 			    	    "                    'isDefined':false,                                   \n" +
-						"                    'parameters':{  // not allowed                       \n" + 
-			    	    "                       'path':'/path/to/state1/test1.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [    // not allowed                    \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -140,50 +143,22 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'stateRef':'state2',                                       \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
-			    	    "                    'experienceRef':'A',                                 \n" + 
+			    	    "                    'experienceRef':'B',                                 \n" + 
 			    	    "                    'isDefined': {'foo':'bar'} // Not a boolean          \n" + 
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
-			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test3.B'                  \n" +
-			    	    "                    }                                                    \n" +
-			    	    "                 }                                                       \n" +
-			    	    "              ]                                                          \n" +
-			    	    "           }                                                             \n" +
-			    	    "        ]                                                                \n" +
-			    	    "     },                                                                  \n" +
-			    	    "     {                                                                   \n" +
-			    	    "        'name':'test5',                                                  \n" +
-			    	    "        'experiences':[                                                  \n" +
-			    	    "           {                                                             \n" +
-			    	    "              'name':'A',                                                \n" +
-			    	    "              'weight':10,                                               \n" +
-			    	    "              'isControl':true                                           \n" +
-			    	    "           },                                                            \n" +
-			    	    "           {                                                             \n" +
-			    	    "              'name':'B',                                                \n" +
-			    	    "              'weight':20                                                \n" +
-			    	    "           }                                                             \n" +
-			    	    "        ],                                                               \n" +
-			    	    "        'onStates':[                                                     \n" +
-			    	    "           {                                                             \n" +
-			    	    "              'stateRef':'state2',                                       \n" +
-			    	    "              'variants':[                                               \n" +
-			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
-			    	    "                 },                                                      \n" +
-			    	    "                 {                                                       \n" +
-			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test4.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test3.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ]                                                                \n" +
-			    	    "     }                                                                   \n" +
+			    	    "     }                                                                  \n" +
 			    	    //--------------------------------------------------------------------------//	
 			    	    "  ]                                                                      \n" +
 			    	    "}                                                                         ";
@@ -199,30 +174,35 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 
 		assertEquals(6, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT, "test1", "state1", "B");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(
+				new Location("/tests[0]/onStates[0]/variants[0]/parameters/"), 
+				PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT, "parameters");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), PROPER_VARIANT_MISSING, "B", "test1", "state1");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		expected = new ParserMessageImpl(
+				new Location("/tests[0]/onStates[0]/variants/"), 
+				PROPER_VARIANT_MISSING, "B");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(2);
-		expected = new ParserMessageImpl(new Location("/figure/out"), PROPER_VARIANT_MISSING, "B", "test2", "state2");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		expected = new ParserMessageImpl(
+				new Location("/tests[1]/onStates[0]/variants/"), 
+				PROPER_VARIANT_MISSING, "B");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(3);
-		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_BOOLEAN, "test3", "state1");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		expected = new ParserMessageImpl(
+				new Location("/tests[2]/onStates[0]/variants[0]/isDefined/"), 
+				PROPERTY_NOT_BOOLEAN, "isDefined");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(4);
-		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_BOOLEAN, "test4", "state2");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		expected = new ParserMessageImpl(
+				new Location("/tests[3]/onStates[0]/variants[0]/isDefined/"), 
+				PROPERTY_NOT_BOOLEAN, "isDefined");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(5);
-		expected = new ParserMessageImpl(new Location("/figure/out"), EXPERIENCEREF_ISCONTROL, "A", "test4", "state2");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
-
+		expected = new ParserMessageImpl(
+				new Location("/tests[3]/onStates[0]/variants[1]/experienceRef/"), 
+				EXPERIENCEREF_ISCONTROL, "A");
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -277,9 +257,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test1.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -309,7 +292,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                    'experienceRef':'A',                                 \n" +
 			    	    "                    'isDefined':false                                    \n" +
 			    	    "                 }                                                       \n" +
-				        "                 // ERROR: need the def for the local B                  \n" +
+				        "                 // ERROR: need the def for the proper B                 \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
@@ -320,7 +303,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                    'isDefined':false                                    \n" +
 			    	    "                 }                                                       \n" +
 				        "                 // Not an error: don't need hybrid def for T1.B         \n" +
-				        "                 // becose proper B is off => the entire slice is too    \n" +
+				        "                 // becose proper B is off => the entire slice is also   \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ]                                                                \n" +
@@ -340,9 +323,10 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPER_VARIANT_MISSING, "B", "test2", "state1");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(
+				new Location("/tests[1]/onStates[0]/variants/"), 
+				PROPER_VARIANT_MISSING, "B");
+		assertMessageEqual(expected, actual);
 
 	}
 
@@ -398,9 +382,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test1.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -432,9 +419,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state1/test2.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test2.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 				        "                 // Error: covar A is off => the entire slice is too    \n" +
 			    	    "                 {                                                       \n" +
@@ -445,9 +435,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state1/test1.B-test2.B'          \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.B-test2.B'      \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -467,9 +460,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test1.B-test2.B'          \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.B-test2.B'      \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -490,13 +486,15 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_VARIANT_COVARIANT_UNDEFINED, "B", "test1.B", "test1.B", "test2", "state1");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(
+				new Location("/tests[1]/onStates[0]/variants/"), 
+				COVARIANT_VARIANT_COVARIANT_UNDEFINED, "test1.B", "state1");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_VARIANT_PROPER_UNDEFINED, "B", "test1.B", "test2", "state2");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		expected = new ParserMessageImpl(
+				new Location("/tests[1]/onStates[1]/variants/"), 
+				COVARIANT_VARIANT_PROPER_UNDEFINED, "test2.B", "state2");
+		assertMessageEqual(expected, actual);
 	}
 	
 	/**
@@ -551,9 +549,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test1.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -585,11 +586,14 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state1/test2.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test2.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
-				        "                 // Error: covar A is off => the entire slice is too    \n" +
+				        "                 // Error: covar A is undef on => the entire slice is too    \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
 			    	    "                    'covariantExperienceRefs': [                         \n" +
@@ -598,9 +602,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state1/test1.B-test2.B'          \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.B-test2.B'      \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -620,9 +627,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test1.B-test2.B'          \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.B-test2.B'      \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -643,13 +653,15 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_VARIANT_COVARIANT_UNDEFINED, "B", "test1.B", "test1.B", "test2", "state1");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(
+				new Location("/tests[1]/onStates[0]/variants/"), 
+				COVARIANT_VARIANT_COVARIANT_UNDEFINED, "test1.B", "state1");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_VARIANT_PROPER_UNDEFINED, "B", "test1.B", "test2", "state2");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		expected = new ParserMessageImpl(
+				new Location("/tests[1]/onStates[1]/variants/"), 
+				COVARIANT_VARIANT_PROPER_UNDEFINED, "test2.B", "state2");
+		assertMessageEqual(expected, actual);
 	}
 	
 	/**
@@ -714,9 +726,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-						"                    'parameters':{                                       \n" +
-			    	    "                       'path':'/path/to/state1/test1.C'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.C'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
@@ -733,9 +748,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test1.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
@@ -743,9 +761,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test1.D'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.D'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -783,9 +804,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state1/test2.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test2.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 /*	This covariant variant is missing.		
 					    "                 {                                                       \n" +
@@ -796,9 +820,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'C'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" +
-					    "                      'path':'/path/to/state1/test1.C+test2.B'           \n" +
-					    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.C+test2.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 					    "                 },                                                      \n" +
 */
 			    	    "                 {                                                       \n" +
@@ -807,9 +834,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state1/test2.D'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test2.D'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'D',                                \n" +
@@ -819,9 +849,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'C'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" +
-					    "                      'path':'/path/to/state1/test1.C+test2.D'           \n" +
-					    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.C+test2.D'      \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 					    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -842,9 +875,10 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), COVARIANT_VARIANT_MISSING, "B", "test1.C", "test2", "state1");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
+		ParserMessage expected = new ParserMessageImpl(
+				new Location("/tests[1]/onStates[0]/variants/"), 
+				COVARIANT_VARIANT_MISSING, "B", "test1.C");
+		assertMessageEqual(expected, actual);
 
 	}
 	
@@ -870,7 +904,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		final String SCHEMA = 
 				"{                                                                                 \n" +
 					    "  'meta':{                                                                \n" +
-					    "      'name':'okayTest1'                                                \n" +
+					    "      'name':'okayTest1'                                                  \n" +
 					    "  },                                                                      \n" +
 			    	    //==========================================================================//
 			    	    "   'states':[                                                             \n" +
@@ -911,9 +945,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-						"                    'parameters':{                                       \n" +
-			    	    "                       'path':'/path/to/state1/test1.C'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.C'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
@@ -930,9 +967,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test1.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
@@ -940,9 +980,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test1.D'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.D'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -984,9 +1027,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state1/test2.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test2.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'B',                                \n" +
@@ -996,9 +1042,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'C'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" +
-					    "                      'path':'/path/to/state1/test1.C+test2.B'           \n" +
-					    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.C+test2.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 					    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
@@ -1006,9 +1055,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state1/test2.D'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test2.D'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'D',                                \n" +
@@ -1018,9 +1070,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'C'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" +
-					    "                      'path':'/path/to/state1/test1.C+test2.C'           \n" +
-					    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.C+test2.C'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 					    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -1029,9 +1084,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test2.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test2.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'B',                                \n" +
@@ -1041,9 +1099,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" +
-					    "                      'path':'/path/to/state2/test1.B+test2.B'           \n" +
-					    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.B+test2.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 					    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'B',                                \n" +
@@ -1053,15 +1114,21 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'D'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" +
-					    "                      'path':'/path/to/state2/test1.D+test2.B'           \n" +
-					    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.D+test2.B'      \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 					    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test2.C'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test2.C'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'C',                                \n" +
@@ -1071,9 +1138,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" +
-					    "                      'path':'/path/to/state2/test1.B+test2.C'           \n" +
-					    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.B+test2.C'      \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 					    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'C',                                \n" +
@@ -1083,15 +1153,21 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'D'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" +
-					    "                      'path':'/path/to/state2/test1.C+test2.D'           \n" +
-					    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.C+test2.D'      \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 					    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state2/test2.C'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test2.C'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'D',                                \n" +
@@ -1101,9 +1177,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" +
-					    "                      'path':'/path/to/state2/test1.B+test2.D'           \n" +
-					    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.B+test2.D'      \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 					    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'D',                                \n" +
@@ -1113,9 +1192,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                          'experienceRef': 'D'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
-						"                    'parameters':{                                       \n" +
-					    "                      'path':'/path/to/state2/test1.D+test2.D'           \n" +
-					    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test1.D+test2.D'      \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 					    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -1128,15 +1210,21 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state3/test2.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state3/test2.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-						"                    'parameters':{                                       \n" + 
-			    	    "                       'path':'/path/to/state3/test2.C'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state3/test2.C'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
@@ -1152,6 +1240,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(SCHEMA);
+
 		assertFalse(response.hasMessages());
 	}
 }
