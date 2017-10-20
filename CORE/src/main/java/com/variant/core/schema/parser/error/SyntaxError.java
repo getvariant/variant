@@ -36,6 +36,12 @@ public class SyntaxError extends ParserError {
 			return String.format("line [%s], column [%s]:\n%s", line, column, getSourceFragment());
 		}
 
+		@Override
+		public boolean equals(Object other) {
+			return (other instanceof Location)
+					&& ((Location)other).toString().equals(toString());
+		}
+
 		private String getSourceFragment() {
 			
 			String lines[] = schemaSrc.split("\n");

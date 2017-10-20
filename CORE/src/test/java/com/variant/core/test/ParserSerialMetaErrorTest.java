@@ -75,11 +75,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(new SyntaxError.Location(schema, 10, 4), JSON_SYNTAX_ERROR, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries");
-		assertEquals(expected.getText(), actual.getText());		
-		assertEquals(Severity.FATAL, actual.getSeverity());
-		assertEquals(10, ((SyntaxError.Location)actual.getLocation()).line);
-		assertEquals(4, ((SyntaxError.Location)actual.getLocation()).column);
-		assertNull(actual.getLocation().getPath());
+		assertMessageEqual(expected, actual);
 	}
 	
 	/**
@@ -104,16 +100,11 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.INFO, actual.getSeverity());
-		assertEquals("/", actual.getLocation().getPath());
-		
+		ParserMessage expected = new ParserMessageImpl(new Location("/"), PROPERTY_MISSING, "states");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.INFO, actual.getSeverity());
-		assertEquals("/", actual.getLocation().getPath());
+		expected = new ParserMessageImpl(new Location("/"), PROPERTY_MISSING, "tests");
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -163,10 +154,8 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_MISSING);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
-		assertEquals("/", actual.getLocation().getPath());
+		ParserMessage expected = new ParserMessageImpl(new Location("/"), PROPERTY_MISSING, "meta");
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -217,10 +206,8 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_OBJECT, "meta");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
-		assertEquals("/", actual.getLocation().getPath());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/"), PROPERTY_NOT_OBJECT, "meta");
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -274,10 +261,8 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_INVALID);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
-		assertEquals("/meta/name", actual.getLocation().getPath());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/name"), NAME_INVALID);
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -290,7 +275,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		String schema = 
 				"{                                                             \n" +
 			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema&name',                                    \n" +
+			    "      'name':'bad&name',                                      \n" +
 			    "      'comment':'schema$comment'                               \n" +
 			    "  },                                                           \n" +
 			    "   'states':[                                                 \n" +
@@ -331,10 +316,8 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), NAME_INVALID);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
-		assertEquals("/meta/name", actual.getLocation().getPath());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/name"), NAME_INVALID);
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -388,10 +371,8 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), PROPERTY_NOT_STRING);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
-		assertEquals("/meta/comment", actual.getLocation().getPath());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/comment"), PROPERTY_NOT_STRING, "comment");
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -446,10 +427,8 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_PROPERTY, "coment");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.WARN, actual.getSeverity());
-		assertEquals("/meta", actual.getLocation().getPath());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/"), UNSUPPORTED_PROPERTY, "coment");
+		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -503,15 +482,11 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/figure/out"), UNSUPPORTED_PROPERTY, "namee");
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.WARN, actual.getSeverity());
-		assertEquals("/meta", actual.getLocation().getPath());
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/"), UNSUPPORTED_PROPERTY, "namee");
+		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/figure/out"), NAME_MISSING);
-		assertEquals(expected.getText(), actual.getText());
-		assertEquals(Severity.ERROR, actual.getSeverity());
-		assertEquals("/meta", actual.getLocation().getPath());
+		expected = new ParserMessageImpl(new Location("/meta/"), NAME_MISSING);
+		assertMessageEqual(expected, actual);
 	}
 
 }
