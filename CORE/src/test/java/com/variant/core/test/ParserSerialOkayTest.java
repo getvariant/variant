@@ -95,9 +95,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" +
-			    	    "                       'path':'/path/to/state1/test1.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -124,9 +127,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-						"                    'parameters':{                                       \n" +
-			    	    "                       'path':'/path/to/state1/test2.D'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test2.D'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -136,9 +142,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-						"                    'parameters':{                                       \n" +
-			    	    "                       'path':'/path/to/state2/test2.D'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test2.D'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -246,19 +255,28 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	   
 			    	    "   'states':[                                                             \n" +
 			    	    "     {  'name':'state1',                                                  \n" +
-						"        'parameters':{                                                    \n" +
-			    	    "           'path':'/path/to/state1'                                       \n" +
-			    	    "        }                                                                 \n" +
+						"         'parameters': [                                                  \n" +
+						"            {                                                             \n" +
+						"               'name':'path',                                             \n" +
+						"               'value':'/path/to/state1'                                  \n" +
+						"            }                                                             \n" +
+						"        ]                                                                 \n" +
 			    	    "     },                                                                   \n" +
 			    	    "     {  'NAME':'state2',                                                  \n" +
-						"        'parameters':{                                                    \n" +
-			    	    "           'path':'/path/to/state2'                                       \n" +
-			    	    "        }                                                                 \n" +
+						"         'parameters': [                                                  \n" +
+						"            {                                                             \n" +
+						"               'name':'path',                                             \n" +
+						"               'value':'/path/to/state2'                                  \n" +
+						"            }                                                             \n" +
+						"        ]                                                                 \n" +
 			    	    "     },                                                                   \n" +
 			    	    "     {  'NAME':'state3',                                                  \n" +
-						"        'parameters':{                                                    \n" +
-			    	    "           'path':'/path/to/state3'                                       \n" +
-			    	    "        }                                                                 \n" +
+						"         'parameters': [                                                  \n" +
+						"            {                                                             \n" +
+						"               'name':'path',                                             \n" +
+						"               'value':'/path/to/state3'                                  \n" +
+						"            }                                                             \n" +
+						"        ]                                                                 \n" +
 			    	    "     }                                                                    \n" +
 			            "  ],                                                                      \n" +
 			            
@@ -285,9 +303,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" +
-			    	    "                       'path':'/path/to/state1/test1.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -314,9 +335,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-						"                    'parameters':{                                       \n" +
-			    	    "                       'path':'/path/to/state1/test2.D'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test2.D'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -326,9 +350,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-						"                    'parameters':{                                       \n" +
-			    	    "                       'path':'/path/to/state2/test2.D'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test2.D'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -385,19 +412,28 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	   
 			    	    "   'states':[                                                             \n" +
 			    	    "     {  'name':'state1',                                                  \n" +
-						"        'parameters':{                                                    \n" +
-			    	    "           'path':'/path/to/state1'                                       \n" +
-			    	    "        }                                                                 \n" +
+						"         'parameters': [                                                  \n" +
+						"            {                                                             \n" +
+						"               'name':'path',                                             \n" +
+						"               'value':'/path/to/state1'                                  \n" +
+						"            }                                                             \n" +
+						"        ]                                                                 \n" +
 			    	    "     },                                                                   \n" +
 			    	    "     {  'NAME':'state2',                                                  \n" +
-						"        'parameters':{                                                    \n" +
-			    	    "           'path':'/path/to/state2'                                       \n" +
-			    	    "        }                                                                 \n" +
+						"         'parameters': [                                                  \n" +
+						"            {                                                             \n" +
+						"               'name':'path',                                             \n" +
+						"               'value':'/path/to/state2'                                  \n" +
+						"            }                                                             \n" +
+						"        ]                                                                 \n" +
 			    	    "     },                                                                   \n" +
 			    	    "     {  'NAME':'state3',                                                  \n" +
-						"        'parameters':{                                                    \n" +
-			    	    "           'path':'/path/to/state3'                                       \n" +
-			    	    "        }                                                                 \n" +
+						"         'parameters': [                                                  \n" +
+						"            {                                                             \n" +
+						"               'name':'path',                                             \n" +
+						"               'value':'/path/to/state3'                                  \n" +
+						"            }                                                             \n" +
+						"        ]                                                                 \n" +
 			    	    "     }                                                                    \n" +
 			            "  ],                                                                      \n" +
 			            
@@ -424,9 +460,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-						"                    'parameters':{                                       \n" +
-			    	    "                       'path':'/path/to/state1/test1.B'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test1.B'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -453,9 +492,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-						"                    'parameters':{                                       \n" +
-			    	    "                       'path':'/path/to/state1/test2.D'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state1/test2.D'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -465,9 +507,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-						"                    'parameters':{                                       \n" +
-			    	    "                       'path':'/path/to/state2/test2.D'                  \n" +
-			    	    "                    }                                                    \n" +
+						"                    'parameters': [                                      \n" +
+						"                       {                                                 \n" +
+						"                          'name':'path',                                 \n" +
+						"                          'value':'/path/to/state2/test2.D'              \n" +
+						"                       }                                                 \n" +
+						"                    ]                                                    \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -522,59 +567,92 @@ public class ParserSerialOkayTest extends BaseTestCore {
     	   
     	    "   'sTaTeS':[                                                             \n" +
     	    "     {  'name':'state1',                                                  \n" +
-			"        'parameters':{                                                    \n" +
-    	    "           'path':'/path/to/state1'                                       \n" +
-    	    "        }                                                                 \n" +
+			"         'parameters': [                                                  \n" +
+			"            {                                                             \n" +
+			"               'name':'path',                                             \n" +
+			"               'value':'/path/to/state1'                                  \n" +
+			"            }                                                             \n" +
+			"        ]                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'NAME':'state2',                                                  \n" +
-			"        'parameters':{                                                    \n" +
-    	    "           'Path':'/path/to/state2'                                       \n" +
-    	    "        }                                                                 \n" +
+			"         'parameters': [                                                  \n" +
+			"            {                                                             \n" +
+			"               'name':'path',                                             \n" +
+			"               'value':'/path/to/state2'                                  \n" +
+			"            }                                                             \n" +
+			"        ]                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'nAmE':'state3',                                                  \n" +
-			"        'parameters':{                                                    \n" +
-    	    "           'PATH':'/path/to/state3'                                       \n" +
-    	    "        }                                                                 \n" +
+			"         'parameters': [                                                  \n" +
+			"            {                                                             \n" +
+			"               'name':'path',                                             \n" +
+			"               'value':'/path/to/state3'                                  \n" +
+			"            }                                                             \n" +
+			"        ]                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'name':'state4',                                                  \n" +
-			"        'parameters':{                                                    \n" +
-    	    "           'path':'/path/to/state4'                                       \n" +
-    	    "        }                                                                 \n" +
+			"         'parameters': [                                                  \n" +
+			"            {                                                             \n" +
+			"               'name':'path',                                             \n" +
+			"               'value':'/path/to/state4'                                  \n" +
+			"            }                                                             \n" +
+			"        ]                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'name':'state5',                                                  \n" +
-			"        'parameters':{                                                    \n" +
-    	    "           'path':'/path/to/state5'                                       \n" +
-    	    "        }                                                                 \n" +
+			"         'parameters': [                                                  \n" +
+			"            {                                                             \n" +
+			"               'name':'path',                                             \n" +
+			"               'value':'/path/to/state5'                                  \n" +
+			"            }                                                             \n" +
+			"        ]                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'name':'state6',                                                  \n" +
-			"        'parameters':{                                                    \n" +
-    	    "           'path':'/path/to/state6'                                       \n" +
-    	    "        }                                                                 \n" +
+			"         'parameters': [                                                  \n" +
+			"            {                                                             \n" +
+			"               'name':'path',                                             \n" +
+			"               'value':'/path/to/state6'                                  \n" +
+			"            }                                                             \n" +
+			"        ]                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'name':'state7',                                                  \n" +
-			"        'parameters':{                                                    \n" +
-    	    "           'path':'/path/to/state7'                                       \n" +
-    	    "        }                                                                 \n" +
+			"         'parameters': [                                                  \n" +
+			"            {                                                             \n" +
+			"               'name':'path',                                             \n" +
+			"               'value':'/path/to/state7'                                  \n" +
+			"            }                                                             \n" +
+			"        ]                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'name':'state8',                                                  \n" +
-			"        'parameters':{                                                    \n" +
-    	    "           'path':'/path/to/state8'                                       \n" +
-    	    "        }                                                                 \n" +
+			"         'parameters': [                                                  \n" +
+			"            {                                                             \n" +
+			"               'name':'path',                                             \n" +
+			"               'value':'/path/to/state8'                                  \n" +
+			"            }                                                             \n" +
+			"        ]                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'name':'state9',                                                  \n" +
-			"        'parameters':{                                                    \n" +
-    	    "           'path':'/path/to/state9'                                       \n" +
-    	    "        }                                                                 \n" +
+			"         'parameters': [                                                  \n" +
+			"            {                                                             \n" +
+			"               'name':'path',                                             \n" +
+			"               'value':'/path/to/state9'                                  \n" +
+			"            }                                                             \n" +
+			"        ]                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'name':'state10',                                                 \n" +
-			"        'parameters':{                                                    \n" +
-    	    "           'path':'/path/to/state10'                                      \n" +
-    	    "        }                                                                 \n" +
+			"         'parameters': [                                                  \n" +
+			"            {                                                             \n" +
+			"               'name':'path',                                             \n" +
+			"               'value':'/path/to/state10'                                  \n" +
+			"            }                                                             \n" +
+			"        ]                                                                 \n" +
     	    "     },                                                                   \n" +
     	    "     {  'name':'State1',                                                  \n" +
-			"        'parameters':{                                                    \n" +
-    	    "           'path':'/path/to/State1'                                       \n" +
-    	    "        }                                                                 \n" +
+			"         'parameters': [                                                  \n" +
+			"            {                                                             \n" +
+			"               'name':'path',                                             \n" +
+			"               'value':'/path/to/State1'                                  \n" +
+			"            }                                                             \n" +
+			"        ]                                                                 \n" +
     	    "     }                                                                    \n" +
             "  ],                                                                      \n" +
             
@@ -605,15 +683,21 @@ public class ParserSerialOkayTest extends BaseTestCore {
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'B',                                 \n" +
-			"                    'parameters':{                                       \n" +
-    	    "                       'path':'/path/to/state1/test1.B'                  \n" +
-    	    "                    }                                                    \n" +
+			"                    'parameters': [                                      \n" +
+			"                       {                                                 \n" +
+			"                          'name':'path',                                 \n" +
+			"                          'value':'/path/to/state1/test1.B'              \n" +
+			"                       }                                                 \n" +
+			"                    ]                                                    \n" +
     	    "                 },                                                      \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'C',                                 \n" +
-			"                    'parameters':{                                       \n" +
-    	    "                       'path':'/path/to/state1/test1.C'                  \n" +
-    	    "                    }                                                    \n" +
+			"                    'parameters': [                                      \n" +
+			"                       {                                                 \n" +
+			"                          'name':'path',                                 \n" +
+			"                          'value':'/path/to/state1/test1.C'              \n" +
+			"                       }                                                 \n" +
+			"                    ]                                                    \n" +
     	    "                 }                                                       \n" +
     	    "              ]                                                          \n" +
     	    "           }                                                             \n" +
@@ -640,9 +724,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'D',                                 \n" +
-			"                    'parameters':{                                       \n" +
-    	    "                       'path':'/path/to/state3/test2.D'                  \n" +
-    	    "                    }                                                    \n" +
+			"                    'parameters': [                                      \n" +
+			"                       {                                                 \n" +
+			"                          'name':'path',                                 \n" +
+			"                          'value':'/path/to/state3/test2.D'              \n" +
+			"                       }                                                 \n" +
+			"                    ]                                                    \n" +
     	    "                 }                                                       \n" +
     	    "              ]                                                          \n" +
     	    "           },                                                            \n" +
@@ -652,9 +739,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'D',                                 \n" +
-			"                    'parameters':{                                       \n" +
-    	    "                       'path':'/path/to/state2/test2.D'                  \n" +
-    	    "                    }                                                    \n" +
+			"                    'parameters': [                                      \n" +
+			"                       {                                                 \n" +
+			"                          'name':'path',                                 \n" +
+			"                          'value':'/path/to/state2/test2.D'              \n" +
+			"                       }                                                 \n" +
+			"                    ]                                                    \n" +
     	    "                 }                                                       \n" +
     	    "              ]                                                          \n" +
     	    "           },                                                            \n" +
@@ -685,9 +775,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'A',                                 \n" +
-			"                    'parameters':{                                       \n" +
-    	    "                       'path':'/path/to/state1/Test1.A'                  \n" +
-    	    "                    }                                                    \n" +
+			"                    'parameters': [                                      \n" +
+			"                       {                                                 \n" +
+			"                          'name':'path',                                 \n" +
+			"                          'value':'/path/to/state1/Test1.A'              \n" +
+			"                       }                                                 \n" +
+			"                    ]                                                    \n" +
     	    "                 }                                                       \n" +
     	    "              ]                                                          \n" +
     	    "           }                                                             \n" +
@@ -850,7 +943,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertNotNull(actualState);
 		assertEquals(expectedState[0], actualState.getName());
 		assertEquals(expectedState[1], actualState.getParameter("path"));		
-		assertEquals(expectedState[1], actualState.getParameter("Path"));		
+		assertNotEquals(expectedState[1], actualState.getParameter("Path"));		
 	}
 	
 	/**

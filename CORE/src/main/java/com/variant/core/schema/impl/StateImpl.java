@@ -4,6 +4,7 @@ import static com.variant.core.CommonError.STATE_NOT_INSTRUMENTED_BY_TEST;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,6 @@ import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.util.CaseInsensitiveMap;
 
 /**
  * 
@@ -24,7 +24,7 @@ public class StateImpl implements State {
 
 	private final Schema schema;
 	private final String name;
-	private final CaseInsensitiveMap<String> parameters = new CaseInsensitiveMap<String>();
+	private final LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
     
 	// Hooks are keyed by name.
 	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
