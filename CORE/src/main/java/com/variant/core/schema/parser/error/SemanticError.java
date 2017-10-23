@@ -384,11 +384,14 @@ public class SemanticError extends ParserError {
 	public static final SemanticError NAME_INVALID =
 			new SemanticError(172, Severity.ERROR, "Property 'name' must be a string, containing letters, digits and _, and cannot start with a digit"); 
 
+	//public static final SemanticError NAME_MISSING =
+	//		new SemanticError(173, Severity.ERROR, "Property 'name' is missing"); 
+
 	public static final SemanticError NAME_MISSING =
 			new SemanticError(174, Severity.ERROR, "Property 'name' is missing"); 
 
 	public static final SemanticError DUPE_OBJECT =
-			new SemanticError(176, Severity.ERROR, "Object [%s] already defined"); 
+			new SemanticError(175, Severity.ERROR, "Object [%s] already defined"); 
 
 	public static final SemanticError PROPERTY_NOT_LIST = 
 			new SemanticError(176, Severity.ERROR, "Property '%s' must be a list"); 

@@ -71,7 +71,7 @@ public class FlusherParser implements Keywords {
 				}
 			}
 			else {
-				response.addMessage(flusherLocation, UNSUPPORTED_PROPERTY, entry.getKey());
+				response.addMessage(flusherLocation.plusProp(entry.getKey()), UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 	

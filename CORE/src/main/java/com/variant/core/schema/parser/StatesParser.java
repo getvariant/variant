@@ -81,7 +81,7 @@ public class StatesParser implements Keywords {
 			}
 		}
 		catch (ClassCastException e) {
-			response.addMessage(rootLocation, PROPERTY_NOT_LIST, KEYWORD_STATES);
+			response.addMessage(rootLocation.plusProp(KEYWORD_STATES), PROPERTY_NOT_LIST, KEYWORD_STATES);
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
@@ -117,7 +117,7 @@ public class StatesParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addMessage(stateLocation, PROPERTY_MISSING, KEYWORD_NAME);
+				response.addMessage(stateLocation, NAME_MISSING);
 			}
 			return null;
 		}
@@ -138,7 +138,7 @@ public class StatesParser implements Keywords {
 				HooksParser.parseStateHooks(entry.getValue(), result, hooksLocation, response);
 			}
 			else {
-				response.addMessage(stateLocation, UNSUPPORTED_PROPERTY, entry.getKey());
+				response.addMessage(stateLocation.plusProp(entry.getKey()), UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 		

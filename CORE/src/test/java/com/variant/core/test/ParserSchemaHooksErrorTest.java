@@ -272,7 +272,7 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[0]/class-Name"), UNSUPPORTED_PROPERTY, "class-Name", "bar");
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[0]/class-Name"), UNSUPPORTED_PROPERTY, "class-Name");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(new Location("/meta/hooks[0]/"), PROPERTY_MISSING, "class");

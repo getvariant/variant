@@ -299,7 +299,7 @@ public class TestsParser implements Keywords {
 					}
 				}
 				else {
-					response.addMessage(testLocation, UNSUPPORTED_PROPERTY, entry.getKey());
+					response.addMessage(testLocation.plusProp(entry.getKey()), UNSUPPORTED_PROPERTY, entry.getKey());
 				}
 			}
 		}
@@ -391,7 +391,7 @@ public class TestsParser implements Keywords {
 				}
 			}
 			else {
-				response.addMessage(expLocation, UNSUPPORTED_PROPERTY, entry.getKey());
+				response.addMessage(expLocation.plusProp(entry.getKey()), UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 		

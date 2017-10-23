@@ -189,7 +189,7 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/meta/flusher/"), UNSUPPORTED_PROPERTY, "invalid");
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/flusher/invalid"), UNSUPPORTED_PROPERTY, "invalid");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(new Location("/meta/flusher/"), PROPERTY_MISSING, "class");

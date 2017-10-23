@@ -73,7 +73,7 @@ public class MetaParser implements Keywords {
 				}
 
 				else {
-					response.addMessage(metaLocation, UNSUPPORTED_PROPERTY, entry.getKey());
+					response.addMessage(metaLocation.plusProp(entry.getKey()), UNSUPPORTED_PROPERTY, entry.getKey());
 				}
 			}
 			

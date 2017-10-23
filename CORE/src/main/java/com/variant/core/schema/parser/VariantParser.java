@@ -260,7 +260,7 @@ public class VariantParser implements Keywords {
 				params = ParamsParser.parse(entry.getValue(), variantLocation.plusObj(KEYWORD_PARAMETERS), response);
 			}
 			else {
-				response.addMessage(variantLocation, UNSUPPORTED_PROPERTY, entry.getKey());
+				response.addMessage(variantLocation.plusProp(entry.getKey()), UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 

@@ -118,7 +118,7 @@ public class ParamsParser implements Keywords {
 				}
 			}
 			else {
-				response.addMessage(paramLocation, UNSUPPORTED_PROPERTY, entry.getKey());
+				response.addMessage(paramLocation.plusProp(entry.getKey()), UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 	

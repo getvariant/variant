@@ -427,7 +427,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/meta/"), UNSUPPORTED_PROPERTY, "coment");
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/coment"), UNSUPPORTED_PROPERTY, "coment");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -482,7 +482,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/meta/"), UNSUPPORTED_PROPERTY, "namee");
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/namee"), UNSUPPORTED_PROPERTY, "namee");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(new Location("/meta/"), NAME_MISSING);

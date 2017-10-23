@@ -174,7 +174,7 @@ public abstract class SchemaParser implements Keywords {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {
-				response.addMessage(rootLocation, UNSUPPORTED_PROPERTY, entry.getKey());
+				response.addMessage(rootLocation.plusProp(entry.getKey()), UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 		
