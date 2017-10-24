@@ -1,6 +1,6 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.CommonError.STATE_NOT_INSTRUMENTED_BY_TEST;
+import static com.variant.core.RuntimeError.STATE_NOT_INSTRUMENTED_BY_TEST;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -1,10 +1,10 @@
 package com.variant.core.schema.parser;
 
 import com.variant.core.UserError.Severity;
+import com.variant.core.RuntimeError;
 import com.variant.core.UserHook;
 import com.variant.core.lce.TestParsedLifecycleEvent;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.parser.error.CollateralMessage;
 
 /**
  * 
@@ -32,15 +32,15 @@ public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 
 	@Override
 	public void addMessage(Severity severity, String message) {
-		CollateralMessage cm = null;
+		RuntimeError error = null;
 		switch (severity) {
-		case INFO: cm = CollateralMessage.HOOK_USER_MESSAGE_INFO;
-		case WARN: cm = CollateralMessage.HOOK_USER_MESSAGE_INFO;
-		case ERROR: cm = CollateralMessage.HOOK_USER_MESSAGE_ERROR;
-		case FATAL: cm = CollateralMessage.HOOK_USER_MESSAGE_ERROR;
+		case INFO: error = RuntimeError.HOOK_USER_MESSAGE_INFO;
+		case WARN: error = RuntimeError.HOOK_USER_MESSAGE_INFO;
+		case ERROR: error = RuntimeError.HOOK_USER_MESSAGE_ERROR;
+		case FATAL: error = RuntimeError.HOOK_USER_MESSAGE_ERROR;
 		}
 		
-		response.addMessage(cm, message);
+		response.addMessage(error, message);
 	}
 
 	@Override

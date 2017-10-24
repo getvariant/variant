@@ -5,6 +5,7 @@ import static com.variant.core.schema.parser.error.SemanticError.*;
 import java.util.List;
 import java.util.Map;
 
+import com.variant.core.RuntimeError;
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
@@ -13,7 +14,6 @@ import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.State;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.StateImpl;
-import com.variant.core.schema.parser.error.CollateralMessage;
 import com.variant.core.schema.parser.error.SemanticError.Location;
 import com.variant.core.util.MutableInteger;
 
@@ -73,7 +73,7 @@ public class StatesParser implements Keywords {
 						hooksService.post(new StateParsedLifecycleEventImpl(state, response));
 					}
 					catch (VariantException e) {
-						response.addMessage(CollateralMessage.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
+						response.addMessage(RuntimeError.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
 						throw e;
 					}
 				}

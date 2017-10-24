@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import com.variant.core.CommonError;
+import com.variant.core.RuntimeError;
 import com.variant.core.CoreException;
 
 /**
@@ -13,7 +13,7 @@ import com.variant.core.CoreException;
 public class StateNotInstrumentedException extends ClientException.User {
 	
 	public StateNotInstrumentedException(CoreException.User e) {
-		super(CommonError.STATE_NOT_INSTRUMENTED_BY_TEST, e, e.args);
+		super(RuntimeError.STATE_NOT_INSTRUMENTED_BY_TEST, e, e.args);
 	}
 
 }

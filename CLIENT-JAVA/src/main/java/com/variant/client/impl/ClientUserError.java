@@ -1,18 +1,18 @@
 package com.variant.client.impl;
 
-import com.variant.core.CommonError;
+import com.variant.core.RuntimeError;
 import com.variant.core.ServerError;
 
 /**
  * <p>User error emitted by the client and originating on the client. 
  * 
- * @see CommonError
+ * @see RuntimeError
  * @see ServerError
  * 
  * @author Igor Urisman
  * @since 0.7
  */
-public class ClientUserError extends CommonError {
+public class ClientUserError extends RuntimeError {
 	
 	//
 	// 331-400 Client Local user errors.

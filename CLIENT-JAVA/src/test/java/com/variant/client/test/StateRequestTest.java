@@ -15,7 +15,7 @@ import com.variant.client.SessionExpiredException;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
-import com.variant.core.CommonError;
+import com.variant.core.RuntimeError;
 import com.variant.core.VariantEvent;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
@@ -70,7 +70,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 				req.getLiveExperience(test1);
 			}
 			@Override public void onThrown(ClientException.User e) {
-				assertEquals(CommonError.STATE_NOT_INSTRUMENTED_BY_TEST, e.getError());
+				assertEquals(RuntimeError.STATE_NOT_INSTRUMENTED_BY_TEST, e.getError());
 			}
 		}.assertThrown(StateNotInstrumentedException.class);
 		

@@ -65,11 +65,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.variant.core.RuntimeError;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.impl.SchemaImpl;
-import com.variant.core.schema.parser.error.CollateralMessage;
 import com.variant.core.schema.parser.error.SemanticError;
 import com.variant.core.schema.parser.error.SyntaxError;
 
@@ -144,7 +144,7 @@ public class ParserResponse {
 	/**
 	 * Add a syntax error.
 	 */
-	public ParserMessage addMessage( SyntaxError.Location location, SyntaxError error, String...args) {
+	public ParserMessage addMessage(SyntaxError.Location location, SyntaxError error, String...args) {
 		
 		ParserMessage result = new ParserMessageImpl(location, error, args);
 		addMessageCommon(result);
@@ -164,9 +164,20 @@ public class ParserResponse {
 	/**
 	 * Collateral messages, emitted or caused by user code.
 	 * @param error
-	 */
+	 *
 	public ParserMessage addMessage(CollateralMessage error, String...args) {
 		ParserMessage result = new ParserMessageImpl(null, error, args);
+		addMessageCommon(result);
+		return result;
+	}
+*/
+	/**
+	 * Runtime user errors which are not emitted by the parser,
+	 * but are reported with the ParserResponse.
+	 * @param error
+	 */
+	public ParserMessage addMessage(RuntimeError error, String...args) {
+		ParserMessage result = new ParserMessageImpl(error, args);
 		addMessageCommon(result);
 		return result;
 	}

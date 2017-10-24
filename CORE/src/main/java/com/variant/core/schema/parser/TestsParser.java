@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.variant.core.RuntimeError;
 import com.variant.core.CoreException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
@@ -23,7 +24,6 @@ import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.TestExperienceImpl;
 import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
-import com.variant.core.schema.parser.error.CollateralMessage;
 import com.variant.core.schema.parser.error.SemanticError.Location;
 import com.variant.core.util.MutableInteger;
 import com.variant.core.util.VariantStringUtils;
@@ -87,7 +87,7 @@ public class TestsParser implements Keywords {
 					hooksService.post(new TestParsedLifecycleEventImpl(test, response));
 				}
 				catch (VariantException e) {
-					response.addMessage(CollateralMessage.HOOK_UNHANDLED_EXCEPTION, TestParsedLifecycleEventImpl.class.getName(), e.getMessage());
+					response.addMessage(RuntimeError.HOOK_UNHANDLED_EXCEPTION, TestParsedLifecycleEventImpl.class.getName(), e.getMessage());
 					throw e;
 				}
 			}

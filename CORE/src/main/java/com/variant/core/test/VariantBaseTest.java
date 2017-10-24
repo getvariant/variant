@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import com.variant.core.CommonError;
+import com.variant.core.RuntimeError;
 import com.variant.core.CoreException;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
@@ -283,7 +283,7 @@ abstract public class VariantBaseTest {
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
-		final public void assertThrown(CommonError template, Object...args) throws Exception {
+		final public void assertThrown(RuntimeError template, Object...args) throws Exception {
 			CoreException.User result = super.run();
 			assertNotNull("Expected exception not thrown", result);
 			assertEquals(new CoreException.User(template, args).getMessage(), result.getMessage());
