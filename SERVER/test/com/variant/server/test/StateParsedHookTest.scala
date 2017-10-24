@@ -8,13 +8,13 @@ import com.variant.core.lce.TestParsedLifecycleEvent
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.CommonError._
+import com.variant.core.RuntimeError._
 import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.core.schema.parser.ParserError
 import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.schema.SchemaDeployerString
+import com.variant.core.schema.parser.error.SemanticError
 
 /**
  * TODO: Need to also test annotations.
@@ -91,31 +91,31 @@ class StateParsedHookTest extends BaseSpecWithServer {
    		response.getMessages(INFO).size() mustBe 9
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state1")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed", "state1")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state2")))
    		msg = response.getMessages.get(4)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed", "state2")))
    		msg = response.getMessages.get(5)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state2")))
    		msg = response.getMessages.get(6)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state3")))
    		msg = response.getMessages.get(7)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT,  "stateParsed", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT,  "stateParsed", "state3")))
    		msg = response.getMessages.get(8)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed",  "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed",  "state3")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
 	   }
@@ -195,60 +195,60 @@ class StateParsedHookTest extends BaseSpecWithServer {
 
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed1", "state1")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed1", "state1")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed1", "state1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed2", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed2", "state1")))
    		msg = response.getMessages.get(4)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed2", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed2", "state1")))
    		msg = response.getMessages.get(5)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed2", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed2", "state1")))
 
    		msg = response.getMessages.get(6)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed1", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed1", "state2")))
    		msg = response.getMessages.get(7)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed1", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed1", "state2")))
    		msg = response.getMessages.get(8)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed1", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed1", "state2")))
    		msg = response.getMessages.get(9)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed2", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed2", "state2")))
    		msg = response.getMessages.get(10)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed2", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed2", "state2")))
    		msg = response.getMessages.get(11)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed2", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed2", "state2")))
 
    		msg = response.getMessages.get(12)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed1", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed1", "state3")))
    		msg = response.getMessages.get(13)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed1", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed1", "state3")))
    		msg = response.getMessages.get(14)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed1", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed1", "state3")))
    		msg = response.getMessages.get(15)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed2", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed2", "state3")))
    		msg = response.getMessages.get(16)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed2", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed2", "state3")))
    		msg = response.getMessages.get(17)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed2", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed2", "state3")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
 	   }
@@ -327,13 +327,13 @@ class StateParsedHookTest extends BaseSpecWithServer {
    		response.getMessages(INFO).size() mustBe 3
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state2")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed", "state2")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state2")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
 	   }
@@ -419,22 +419,22 @@ class StateParsedHookTest extends BaseSpecWithServer {
 
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed1", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed1", "state2")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed1", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed1", "state2")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed1", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed1", "state2")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed2", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed2", "state2")))
    		msg = response.getMessages.get(4)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed2", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed2", "state2")))
    		msg = response.getMessages.get(5)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed2", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed2", "state2")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
 	   }
@@ -522,49 +522,49 @@ class StateParsedHookTest extends BaseSpecWithServer {
 
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedS1", "state1")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedS1", "state1")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS1", "state1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state1")))
    		msg = response.getMessages.get(4)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state1")))
    		msg = response.getMessages.get(5)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state1")))
    		msg = response.getMessages.get(6)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedS2", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedS2", "state2")))
    		msg = response.getMessages.get(7)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedS2", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedS2", "state2")))
    		msg = response.getMessages.get(8)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS2", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS2", "state2")))
    		msg = response.getMessages.get(9)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state2")))
    		msg = response.getMessages.get(10)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state2")))
    		msg = response.getMessages.get(11)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state2")))
    		msg = response.getMessages.get(12)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
    		msg = response.getMessages.get(13)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
    		msg = response.getMessages.get(14)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
 	   }
@@ -663,22 +663,22 @@ class StateParsedHookTest extends BaseSpecWithServer {
    		response.getMessages(INFO).size() mustBe 6
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.STATE_NAME_INVALID.asMessage())
+   		msg.getText must include (SemanticError.NAME_INVALID.asMessage())
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_NAME_DUPE.asMessage("stateParsed"))
+   		msg.getText must include (SemanticError.DUPE_OBJECT.asMessage("stateParsed"))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
    		msg = response.getMessages.get(4)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedSchema", "state3")))
    		msg = response.getMessages.get(5)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.STATEREF_UNDEFINED.asMessage("state1", "test1"))
+   		msg.getText must include (SemanticError.STATEREF_UNDEFINED.asMessage("state1"))
 
    		server.schemata.get(schemaName).isDefined mustBe false
 	   }

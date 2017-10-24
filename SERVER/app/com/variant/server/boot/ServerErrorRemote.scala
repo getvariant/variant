@@ -42,8 +42,6 @@ class ServerErrorRemote(error: ServerError) {
          "code" -> error.getCode,
          "args" -> JsArray(args.map {JsString(_)}))
      
-      if (error.getComment != null) bodyJson + ("comment" -> JsString(error.getComment))
-      
       Result(
           header = ResponseHeader(HttpStatus.SC_BAD_REQUEST, Map.empty),
           body = HttpEntity.Strict(ByteString(bodyJson.toString()), Some("application/json"))

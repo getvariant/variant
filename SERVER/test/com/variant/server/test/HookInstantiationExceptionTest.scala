@@ -10,10 +10,8 @@ import com.variant.core.lce.TestParsedLifecycleEvent
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.CommonError._
 import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.core.schema.parser.ParserError
 import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.schema.SchemaDeployerString

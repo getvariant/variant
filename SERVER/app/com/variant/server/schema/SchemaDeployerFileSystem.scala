@@ -5,7 +5,7 @@ import scala.io.Source
 import scala.collection.mutable
 import play.api.Logger
 import com.variant.server.api.ConfigKeys._
-import com.variant.core.CommonError
+import com.variant.core.RuntimeError._
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.VariantServer
@@ -36,7 +36,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
     
     if (dirName.isEmpty) {
       if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
-        throw new ServerException.User(CommonError.CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
+        throw new ServerException.User(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
       dirName = Option(VariantServer.instance.config.getString(SCHEMATA_DIR))
     }
 

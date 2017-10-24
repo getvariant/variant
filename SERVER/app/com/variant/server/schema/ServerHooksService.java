@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.ConfigException;
-import com.variant.core.CommonError;
+import com.variant.core.RuntimeError;
 import com.variant.core.UserHook;
 import com.variant.core.lce.LifecycleEvent;
 import com.variant.core.lce.StateAwareLifecycleEvent;
@@ -220,8 +220,8 @@ public class ServerHooksService implements HooksService {
 			throw e;
 		
 		} catch (Exception e) {
-			LOG.error(CommonError.HOOK_UNHANDLED_EXCEPTION.asMessage(hookDef.getClassName(), e.getMessage()), e);
-			throw new ServerException.User(CommonError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
+			LOG.error(RuntimeError.HOOK_UNHANDLED_EXCEPTION.asMessage(hookDef.getClassName(), e.getMessage()), e);
+			throw new ServerException.User(RuntimeError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
 		}				
 
 	}

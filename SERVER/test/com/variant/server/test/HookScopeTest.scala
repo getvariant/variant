@@ -7,10 +7,9 @@ import com.variant.core.UserError.Severity._
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.CommonError._
+import com.variant.core.RuntimeError._
 import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.core.schema.parser.ParserError
 import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.test.hooks.TestParsedHook
@@ -148,19 +147,19 @@ class HookScopeTest extends BaseSpecWithServer {
    		// Confirm parse time hooks were posted. Note that compile time hooks fire for off tests.
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state1")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state2")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test2")))
    		msg = response.getMessages.get(4)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test3")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test3")))
 
    		server.schemata.get(schemaName).isDefined mustBe true
    		
@@ -259,13 +258,13 @@ class HookScopeTest extends BaseSpecWithServer {
    		// Confirm parse time hooks were posted. Note that compile time hooks fire for off tests.
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedS1", "state1")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedS1", "state1")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS1", "state1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ServerErrorLocal.HOOK_TEST_SCOPE_VIOLATION.asMessage("stateParsed", "test1", "com.variant.core.lce.StateParsedLifecycleEvent"))
@@ -352,13 +351,13 @@ class HookScopeTest extends BaseSpecWithServer {
    		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testParsed", "state2", "com.variant.core.lce.TestParsedLifecycleEvent"))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT1", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT1", "test1")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT1", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT1", "test1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT1", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT1", "test1")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
    		

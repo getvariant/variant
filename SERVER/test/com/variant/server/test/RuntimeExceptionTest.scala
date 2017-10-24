@@ -1,7 +1,7 @@
 package com.variant.server.test
 
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.CommonError._
+import com.variant.core.RuntimeError._
 import com.variant.server.api.Session
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerSuite

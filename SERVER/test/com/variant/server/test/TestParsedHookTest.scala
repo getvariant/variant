@@ -7,10 +7,10 @@ import com.variant.core.UserError.Severity._
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.CommonError._
+import com.variant.core.RuntimeError._
 import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.core.schema.parser.ParserError
+import com.variant.core.schema.parser.error.SemanticError
 import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.test.hooks.TestParsedHook
@@ -112,31 +112,31 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		response.getMessages(INFO).size() mustBe 9
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state1")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed", "state1")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test1")))
    		msg = response.getMessages.get(4)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsed", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsed", "test1")))
    		msg = response.getMessages.get(5)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsed", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsed", "test1")))
    		msg = response.getMessages.get(6)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test2")))
    		msg = response.getMessages.get(7)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsed", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsed", "test2")))
    		msg = response.getMessages.get(8)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsed", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsed", "test2")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
    		server.isUp mustBe true
@@ -255,49 +255,49 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		response.getMessages(INFO).size() mustBe 15
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT11", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT11", "test1")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT11", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT11", "test1")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT11", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT11", "test1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT12", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT12", "test1")))
    		msg = response.getMessages.get(4)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT12", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT12", "test1")))
    		msg = response.getMessages.get(5)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT12", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT12", "test1")))
    		msg = response.getMessages.get(6)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT21", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT21", "test2")))
    		msg = response.getMessages.get(7)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT21", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT21", "test2")))
    		msg = response.getMessages.get(8)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT21", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT21", "test2")))
    		msg = response.getMessages.get(9)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT22", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT22", "test2")))
    		msg = response.getMessages.get(10)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT22", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT22", "test2")))
    		msg = response.getMessages.get(11)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT22", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT22", "test2")))
    		msg = response.getMessages.get(12)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedS1", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedS1", "test2")))
    		msg = response.getMessages.get(13)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedS1", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedS1", "test2")))
    		msg = response.getMessages.get(14)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_MESSAGE.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedS1", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedS1", "test2")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
    		server.isUp mustBe true
@@ -438,13 +438,13 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		response.getMessages(INFO).size() mustBe 3
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.TEST_NAME_INVALID.asMessage())
+   		msg.getText must include (SemanticError.NAME_INVALID.asMessage("blah"))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.CONTROL_EXPERIENCE_MISSING.asMessage("test1"))
+   		msg.getText must include (SemanticError.CONTROL_EXPERIENCE_MISSING.asMessage())
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ParserError.HOOK_NAME_DUPE.asMessage("testParsed"))
+   		msg.getText must include (SemanticError.DUPE_OBJECT.asMessage("testParsed"))
 
    		server.schemata.get(schemaName).isDefined mustBe false
    		server.isUp mustBe true

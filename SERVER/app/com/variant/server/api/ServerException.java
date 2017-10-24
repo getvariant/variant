@@ -85,11 +85,6 @@ public class ServerException extends VariantException {
 			return "[" + error.getCode() + "] " + error.asMessage((Object[])args);
 		}
 
-		/**
-		 */
-		public String getComment() {
-			return error.getComment();
-		}
 	}
 	
 	/**

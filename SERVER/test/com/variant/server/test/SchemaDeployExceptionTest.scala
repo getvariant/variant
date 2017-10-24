@@ -15,7 +15,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import org.scalatest.TestData
 import play.api.Configuration
 import com.variant.server.boot.VariantApplicationLoader
-import com.variant.core.CommonError._
+import com.variant.core.RuntimeError._
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.api.ServerException
 import org.apache.commons.io.FileUtils

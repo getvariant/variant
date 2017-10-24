@@ -1,6 +1,6 @@
 package com.variant.server.api;
 
-import com.variant.core.CommonError;
+import com.variant.core.RuntimeError;
 
 /**
  * Thrown when a user operation requests a combination of state and test that is not
@@ -13,7 +13,7 @@ import com.variant.core.CommonError;
 public class StateNotInstrumentedException extends ServerException.User {
 	
 	public StateNotInstrumentedException(ServerException.User e) {
-		super(CommonError.STATE_NOT_INSTRUMENTED_BY_TEST, e, e.args);
+		super(RuntimeError.STATE_NOT_INSTRUMENTED_BY_TEST, e, e.args);
 	}
 
 }
