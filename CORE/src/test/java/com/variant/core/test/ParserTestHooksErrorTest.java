@@ -68,7 +68,6 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(schema);
-		printMessages(response);
 
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));

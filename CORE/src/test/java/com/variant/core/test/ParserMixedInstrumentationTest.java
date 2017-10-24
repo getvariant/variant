@@ -190,17 +190,17 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(3);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[0]/variants[0]/isDefined/"), 
+				new Location("/tests[2]/onStates[0]/variants[0]/isDefined"), 
 				PROPERTY_NOT_BOOLEAN, "isDefined");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(4);
 		expected = new ParserMessageImpl(
-				new Location("/tests[3]/onStates[0]/variants[0]/isDefined/"), 
+				new Location("/tests[3]/onStates[0]/variants[0]/isDefined"), 
 				PROPERTY_NOT_BOOLEAN, "isDefined");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(5);
 		expected = new ParserMessageImpl(
-				new Location("/tests[3]/onStates[0]/variants[1]/experienceRef/"), 
+				new Location("/tests[3]/onStates[0]/variants[1]/experienceRef"), 
 				EXPERIENCEREF_ISCONTROL, "A");
 		assertMessageEqual(expected, actual);
 	}

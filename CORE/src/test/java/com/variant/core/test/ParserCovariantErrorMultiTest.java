@@ -771,7 +771,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[1]/variants[14]/covariantExperienceRefs[1]/experienceRef/"), 
+				new Location("/tests[2]/onStates[1]/variants[14]/covariantExperienceRefs[1]/experienceRef"), 
 				COVARIANT_EXPERIENCE_DUPE, "test1", "B");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
@@ -1039,17 +1039,17 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[1]/variants[4]/covariantExperienceRefs[1]/experienceRef/"), 
+				new Location("/tests[2]/onStates[1]/variants[4]/covariantExperienceRefs[1]/experienceRef"), 
 				COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test2", "C");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(2);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[1]/variants[5]/covariantExperienceRefs[0]/experienceRef/"), 
+				new Location("/tests[2]/onStates[1]/variants[5]/covariantExperienceRefs[0]/experienceRef"), 
 				COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(3);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[1]/variants[6]/covariantExperienceRefs[0]/experienceRef/"), 
+				new Location("/tests[2]/onStates[1]/variants[6]/covariantExperienceRefs[0]/experienceRef"), 
 				COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C");
 		assertMessageEqual(expected, actual);
 	}
