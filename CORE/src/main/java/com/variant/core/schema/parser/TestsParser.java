@@ -133,7 +133,7 @@ public class TestsParser implements Keywords {
 
 		if (name == null) {
 			if (!nameFound) {
-				response.addMessage(testLocation, PROPERTY_MISSING, KEYWORD_NAME);
+				response.addMessage(testLocation, NAME_MISSING);
 			}
 			return null;
 		}
@@ -148,7 +148,7 @@ public class TestsParser implements Keywords {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_EXPERIENCES)) {
 				Object experiencesObject = entry.getValue();
 				if (! (experiencesObject instanceof List)) {
-					response.addMessage(testLocation.plusObj(KEYWORD_EXPERIENCES), PROPERTY_NOT_LIST);
+					response.addMessage(testLocation.plusObj(KEYWORD_EXPERIENCES), PROPERTY_NOT_LIST, KEYWORD_EXPERIENCES);
 					return null;
 				}
 				else {
@@ -194,7 +194,7 @@ public class TestsParser implements Keywords {
 			}
 		}
 		if (!controlExperienceFound) 
-			response.addMessage(testLocation.plusObj(KEYWORD_EXPERIENCES), CONTROL_EXPERIENCE_MISSING, name);
+			response.addMessage(testLocation, CONTROL_EXPERIENCE_MISSING, name);
 		
 		result.setExperiences(experiences);
 		
@@ -407,7 +407,7 @@ public class TestsParser implements Keywords {
 	 */
 	@SuppressWarnings("unchecked")
 	private static TestOnStateImpl parseTestOnState(Object testOnStateObject, TestImpl test, Location tosLocation, ParserResponse response) {
-		
+
 		Map<String, Object> rawTestOnState = null;
 		
 		try {
@@ -479,7 +479,7 @@ public class TestsParser implements Keywords {
 				int index = 0;
 				for (Object variantObject: rawVariants) {
 					
-					Location variantLocation = tosLocation.plusProp(KEYWORD_VARIANTS).plusIx(index++);
+					Location variantLocation = tosLocation.plusObj(KEYWORD_VARIANTS).plusIx(index++);
 					
 					StateVariantImpl variant = VariantParser.parseVariant(variantObject, variantLocation, tos, response);					
 					
@@ -516,12 +516,12 @@ public class TestsParser implements Keywords {
 				return tos;
 			}
 			else {
-				response.addMessage(tosLocation.plusProp(KEYWORD_IS_NONVARIANT), VARIANTS_ISNONVARIANT_INCOMPATIBLE);
+				response.addMessage(tosLocation, VARIANTS_ISNONVARIANT_INCOMPATIBLE);
 				return null;
 			}
 		}
 		else if (rawVariants == null || rawVariants.size() == 0) {
-			response.addMessage(tosLocation.plusProp(KEYWORD_IS_NONVARIANT), VARIANTS_ISNONVARIANT_XOR);
+			response.addMessage(tosLocation, VARIANTS_ISNONVARIANT_XOR);
 			return null;
 		}
 		

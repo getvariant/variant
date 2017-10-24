@@ -276,10 +276,10 @@ public class SemanticError extends ParserError {
 			new SemanticError(84, Severity.ERROR, "Unsupported property 'tests/onStates/variants/[%s]' (Test [%s], StateRef [%s])"); 
 */
 	public static final SemanticError VARIANTS_ISNONVARIANT_INCOMPATIBLE =
-			new SemanticError(85, Severity.ERROR, "Property 'onStates' cannot be nonvariant and have variants"); 
+			new SemanticError(85, Severity.ERROR, "Non-variant state variant cannot have variants"); 
 	
 	public static final SemanticError VARIANTS_ISNONVARIANT_XOR =
-			new SemanticError(86, Severity.ERROR, "Property 'tests/onStates' must specify one of: 'isNonvariant' or 'variants'"); 
+			new SemanticError(86, Severity.ERROR, "An 'onStates' element must either be non-variant or have state variants"); 
 /*	
 	public static final SemanticError VARIANT_NOT_OBJECT =
 			new SemanticError(87, Severity.ERROR, "'tests/onStates/variants' list element must be an object (Test [%s], StateRef [%s])"); 

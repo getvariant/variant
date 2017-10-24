@@ -48,7 +48,7 @@ public class VariantParser implements Keywords {
 	 */
 	@SuppressWarnings("unchecked")
 	public static StateVariantImpl parseVariant(Object variantObject, Location variantLocation, TestOnStateImpl tov, ParserResponse response) {
-		
+
 		TestImpl test = (TestImpl) tov.getTest();
 		StateImpl state = (StateImpl) tov.getState();
 		
