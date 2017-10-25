@@ -17,6 +17,7 @@ import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_ST
 import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -241,7 +242,9 @@ public class VariantParser implements Keywords {
 
 		
 		// Pass 3. Parse the rest of experience element.
-		Map<String,String> params = null;
+		
+		Map<String,String> params = new LinkedHashMap<String, String>();
+		
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
 			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_EXPERIENCE_REF, KEYWORD_IS_DEFINED, KEYWORD_COVARIANT_EXPERIENCE_REFS)) 
