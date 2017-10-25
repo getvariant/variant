@@ -112,31 +112,31 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		response.getMessages(INFO).size() mustBe 9
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state1")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsed", "state1")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsed", "state1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test1")))
    		msg = response.getMessages.get(4)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsed", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsed", "test1")))
    		msg = response.getMessages.get(5)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsed", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsed", "test1")))
    		msg = response.getMessages.get(6)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test2")))
    		msg = response.getMessages.get(7)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsed", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsed", "test2")))
    		msg = response.getMessages.get(8)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsed", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsed", "test2")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
    		server.isUp mustBe true
@@ -255,49 +255,49 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		response.getMessages(INFO).size() mustBe 15
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT11", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT11", "test1")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT11", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT11", "test1")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT11", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT11", "test1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT12", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT12", "test1")))
    		msg = response.getMessages.get(4)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT12", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT12", "test1")))
    		msg = response.getMessages.get(5)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT12", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT12", "test1")))
    		msg = response.getMessages.get(6)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT21", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT21", "test2")))
    		msg = response.getMessages.get(7)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT21", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT21", "test2")))
    		msg = response.getMessages.get(8)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT21", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT21", "test2")))
    		msg = response.getMessages.get(9)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT22", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT22", "test2")))
    		msg = response.getMessages.get(10)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT22", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT22", "test2")))
    		msg = response.getMessages.get(11)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT22", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT22", "test2")))
    		msg = response.getMessages.get(12)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedS1", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedS1", "test2")))
    		msg = response.getMessages.get(13)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedS1", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedS1", "test2")))
    		msg = response.getMessages.get(14)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedS1", "test2")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedS1", "test2")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
    		server.isUp mustBe true
@@ -343,19 +343,16 @@ class TestParsedHookTest extends BaseSpecWithServer {
 				     'weight':20                                             
 				  }                                                          
 	      ],                                                            
-			'onStates':[                                                   
-				  {                                                          
+      	'onStates':[                                                   
+      	     {                                                          
 				     'stateRef':'state1',                                     
-				    	'variants':[                                            
-				    	   {                                                    
-				    	      'experienceRef':'B',                              
-							   'parameters':{                                    
-				    	      'path':'/path/to/state1/test1.B'               
-				         }                                                 
-				     }                                                    
-			     ]                                                       
-	        }                                                          
-	     ]                                                             
+				     'variants':[                                            
+				        {                                                    
+				           'experienceRef':'B'
+                    }
+                 ]
+              }                                                          
+	      ]                                                             
 	  },
 	   {                                                                
 		   'name':'test1',
@@ -373,16 +370,13 @@ class TestParsedHookTest extends BaseSpecWithServer {
 			'onStates':[                                                   
 				  {                                                          
 				     'stateRef':'state1',                                     
-				    	'variants':[                                            
+				     'variants':[                                            
 				    	   {                                                    
-				    	      'experienceRef':'B',               
-							      'parameters':{                                    
-				    	      'path':'/path/to/state1/test1.B'               
-				         }                                                 
-				     }                                                    
-			     ]                                                       
-	        }                                                          
-	     ]                                                             
+				    	      'experienceRef':'B'
+				         }
+                  ]                                                 
+				  }                                                    
+			]                                                       
     },
 	   {                                                                
 		   'name':'test2',
@@ -412,16 +406,13 @@ class TestParsedHookTest extends BaseSpecWithServer {
 			'onStates':[                                                   
 				  {                                                          
 				     'stateRef':'state1',                                     
-				    	'variants':[                                            
+				     'variants':[                                            
 				    	   {                                                    
-				    	      'experienceRef':'B',                              
-							   'parameters':{                                    
-				    	      'path':'/path/to/state1/test1.B'               
-				         }                                                 
-				     }                                                    
-			     ]                                                       
-	        }                                                          
-	     ]                                                             
+				    	      'experienceRef':'B'
+                     }                                                    
+			         ]                                                       
+	           }                                                          
+	      ]                                                             
     }
 
   ]                                                                   
@@ -441,7 +432,7 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		msg.getText must include (SemanticError.NAME_INVALID.asMessage("blah"))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (SemanticError.CONTROL_EXPERIENCE_MISSING.asMessage())
+   		msg.getText must include (SemanticError.CONTROL_EXPERIENCE_MISSING.asMessage("test1"))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (SemanticError.DUPE_OBJECT.asMessage("testParsed"))

@@ -37,6 +37,9 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    */
    implicit override def newAppForTest(testData: TestData): Application = {
 
+      // Petclinic schema will no parse without this.
+      sys.props +=("variant.ext.dir" -> "distr/ext")
+      
       if (testData.name.contains("EVENT_FLUSHER_CLASS_NAME")) 
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.event.flusher.class")))
@@ -47,6 +50,15 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
             .build()
    }
 
+   /**
+    * Above built server should deploy 2 schemas with not errors.
+    */
+   "Server should come up with a valid schema" in {
+      val server = app.injector.instanceOf[VariantServer]
+      server.schemata.size mustBe 2 
+      server.schemaDeployer.parserResponses.size mustBe 2
+      server.schemaDeployer.parserResponses.foreach { _.getMessages.size() mustBe 0 }
+   }
 
   /*
    * 

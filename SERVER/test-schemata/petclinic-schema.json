@@ -14,18 +14,24 @@
    'states':[                                                
      { 
        // The New Owner page used to add owner at /petclinic/owners/new 
-       'name':'newOwner',                                     
-       'parameters': {
-           'path':'/petclinic/owners/new'
-        }                                                    
+       'name':'newOwner',
+       'parameters': [
+            {
+               'name':'path',
+               'value':'/petclinic/owners/new'
+            }
+        ]
      },                                                    
      {  
        // The Owner Detail page. Note that owner ID is in the path,
         // so we have to use regular expression to match.
        'name':'ownerDetail',          
-       'parameters': {
-           'path':'/petclinic/owners/~\\d+/'
-        }                                                    
+       'parameters': [
+            {
+               'name':'path',
+               'value':'/petclinic/owners/~\\d+/'
+            }
+        ]
      }                                                     
    ],                                                        
    'tests':[                                                 
@@ -53,15 +59,21 @@
                'variants':[                                  
                   {                                          
                      'experienceRef': 'tosCheckbox',                   
-                   'parameters': {
-                        'path':'/owners/new/variant/newOwnerTest.tosCheckbox'         
-                     }                                          
+                     'parameters': [
+                        {
+                           'name':'path',
+                           'value':'/owners/new/variant/newOwnerTest.tosCheckbox'
+                        }
+                     ]
                   },                                         
                   {                                          
                      'experienceRef': 'tosAndMailCheckbox',                   
-                   'parameters': {
-                        'path':'/owners/new/variant/newOwnerTest.tosAndMailCheckbox'         
-                     }                                          
+                     'parameters': [
+                        {
+                           'name':'path',
+                           'value':'/owners/new/variant/newOwnerTest.tosAndMailCheckbox'
+                        }
+                     ]
                   }                                          
                ]                                             
             },

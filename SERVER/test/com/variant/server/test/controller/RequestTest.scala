@@ -196,7 +196,7 @@ class RequestTest extends BaseSpecWithServer {
          coreSsn2.getDisqualifiedTests.toSeq(0).getName mustBe "NewOwnerTest"         
          // Resolved parameter must always be from the state def because we're disqualified
          stateReq2.getResolvedParameters.size mustBe 1
-         stateReq2.getResolvedParameters.get("path") mustBe schema.getState("newOwner").getParameter("path")
+         stateReq2.getResolvedParameters.get("path") mustBe schema.getState("newOwner").getParameters().get("path")
          stateReq2.getSession.getId mustBe sid
          stateReq2.getState mustBe schema.getState("newOwner")
          stateReq2.getStateVisitedEvent mustBe null
@@ -217,7 +217,7 @@ class RequestTest extends BaseSpecWithServer {
          coreSsn2.getDisqualifiedTests.toSeq(0).getName mustBe "NewOwnerTest"         
          // Resolved parameter must always be from the state def because we're disqualified
          stateReq2.getResolvedParameters.size mustBe 1
-         stateReq2.getResolvedParameters.get("path") mustBe schema.getState("newOwner").getParameter("path")
+         stateReq2.getResolvedParameters.get("path") mustBe schema.getState("newOwner").getParameters().get("path")
          stateReq2.getSession.getId mustBe sid
          stateReq2.getState mustBe schema.getState("newOwner")
          stateReq2.getStateVisitedEvent mustBe null

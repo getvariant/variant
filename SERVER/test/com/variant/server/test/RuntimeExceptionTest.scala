@@ -43,10 +43,7 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
    			   'stateRef':'state1',
    			   'variants':[
    			      {
-   			    	   'experienceRef':'B',
-   						'parameters':{
-   			    	      'path':'/path/to/state1/test1.B'
-   			    	   }
+   			    	   'experienceRef':'B'
    			      }
    			   ]
    			}
@@ -72,10 +69,7 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
                'stateRef':'state1',
    			   'variants':[
    			      {
-   			    	   'experienceRef':'D',
-   						'parameters':{
-   			    	      'path':'/path/to/state1/test2.D'
-   			    	   }
+   			    	   'experienceRef':'D'
    			      }
                ]
    			},
@@ -84,10 +78,7 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
    			   'isNonvariant':false,
    			   'variants':[
    			      {    
-   			    	   'experienceRef':'D',
-   						'parameters':{  
-   			    	      'path':'/path/to/state2/test2.D'
-   			    	   } 
+   			    	   'experienceRef':'D'
    			    	} 
    			   ] 
    			},  

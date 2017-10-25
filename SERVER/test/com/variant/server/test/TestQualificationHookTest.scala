@@ -38,7 +38,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             "test6-hooks"->test6HooksList)
    }
 
-   val schemaName = "parser_ovariant_okay_big_test"
+   val schemaName = "parser_covariant_okay_big_test"
    
   	"TestQualificationHook" should {
 	   

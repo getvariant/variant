@@ -40,23 +40,23 @@ class HookScopeTest extends BaseSpecWithServer {
       'name':'$schemaName',
       'hooks':[
          {                                                              
-   		     'name':'testParsed',                                       
-   			   'class':'com.variant.server.test.hooks.TestParsedHook',
-           'init':{'hookName':'testParsed', 'infoOnly':true}
-   	     },
-        {                                                              
+            'name':'testParsed',                                       
+            'class':'com.variant.server.test.hooks.TestParsedHook',
+            'init':{'hookName':'testParsed', 'infoOnly':true}
+   	   },
+         {                                                              
    		     'name':'stateParsed',                                       
    			   'class':'com.variant.server.test.hooks.StateParsedHook',    
            'init':{'hookName':'stateParsed', 'infoOnly':true}
-   	     },                                                             
-        {                                                              
+   	   },                                                             
+         {                                                              
    		     'name':'testQualifier',                                       
    			   'class':'com.variant.server.test.hooks.TestQualificationHookNil'
-   	     },                                                             
-        {                                                              
+   	   },                                                             
+         {                                                              
    		     'name':'testTargeter',                                       
    			   'class':'com.variant.server.test.hooks.TestTargetingHookNil'
-   	     }                                                              
+          }                                                              
       ]                                                                
    },                                                                   
 	'states':[ 
@@ -171,14 +171,15 @@ class HookScopeTest extends BaseSpecWithServer {
          val ssn = SessionImpl.empty(newSid(), schema)
    		ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
    		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
+
    		ssn.targetForState(state1)
    		// Only test1 is instrumented on state1
    		ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
    		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
    		
-   		// Test3 is instrumented on state3
+   		// Test3 is instrumented on state2
    		ssn.targetForState(state2)
-      ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1 test3"
+         ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1 test3"
    		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test3"	   
    		
 	   }
@@ -258,13 +259,13 @@ class HookScopeTest extends BaseSpecWithServer {
    		// Confirm parse time hooks were posted. Note that compile time hooks fire for off tests.
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedS1", "state1")))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedS1", "state1")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS1", "state1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS1", "state1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ServerErrorLocal.HOOK_TEST_SCOPE_VIOLATION.asMessage("stateParsed", "test1", "com.variant.core.lce.StateParsedLifecycleEvent"))
@@ -351,13 +352,13 @@ class HookScopeTest extends BaseSpecWithServer {
    		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testParsed", "state2", "com.variant.core.lce.TestParsedLifecycleEvent"))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(INFO, String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT1", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT1", "test1")))
    		msg = response.getMessages.get(2)
    		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(WARN, String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT1", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT1", "test1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(ERROR, String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT1", "test1")))
+   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT1", "test1")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
    		

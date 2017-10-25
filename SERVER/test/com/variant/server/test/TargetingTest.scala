@@ -20,16 +20,10 @@ class TargetingTest extends BaseSpecWithServerAsync {
    },
    'states':[
       {
-         'name':'state1',
-         'parameters':{
-            'path':'/path/to/state1'
-         }
+         'name':'state1'
       },
       {
-         'name':'state2',
-         'parameters':{
-            'path':'/path/to/state2'
-         }
+         'name':'state2'
       } 
    ],
    'tests':[
@@ -56,16 +50,10 @@ class TargetingTest extends BaseSpecWithServerAsync {
                'stateRef':'state1',
                'variants':[ 
                   {
-                     'experienceRef': 'B',
-                     'parameters':{
-                        'path':'/path/to/state1/test1.B'
-                     }
+                     'experienceRef': 'B'
                   },
                   { 
-                     'experienceRef': 'C',
-                     'parameters':{ 
-                        'path':'/path/to/state1/test1.C'
-                     }
+                     'experienceRef': 'C'
                   }
                ] 
             }
@@ -93,16 +81,10 @@ class TargetingTest extends BaseSpecWithServerAsync {
                'stateRef':'state1',
                'variants':[ 
                   {
-                     'experienceRef': 'B',
-                     'parameters':{
-                        'path':'/path/to/state1/test2.B'
-                     }
+                     'experienceRef': 'B'
                   },
                   { 
-                     'experienceRef': 'C',
-                     'parameters':{ 
-                        'path':'/path/to/state1/test2.C'
-                     }
+                     'experienceRef': 'C'
                   }
                ] 
             }

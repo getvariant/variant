@@ -1,5 +1,6 @@
 package com.variant.server.test
 
+import scala.collection.JavaConversions._
 import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
@@ -49,8 +50,13 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
    
    // Custom applicaiton builder uses test specific config in front of the regular one.  
    implicit override lazy val app: Application = {
+      logger.info("Rebuilding application...")
+
+      // in case some other test set it.
+      sys.props -= "variant.schemata.dir"
       // hook in the ext directory from the distribution dir.
       sys.props +=("variant.ext.dir" -> "distr/ext")
+
       new GuiceApplicationBuilder()
          .configure(new Configuration(VariantApplicationLoader.config))
          .build()
@@ -86,11 +92,19 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
    protected val ssnStore = app.injector.instanceOf[SessionStore]
    
    "Server must come up with a valid schema" in {
-      server.schemata.size > 0 mustBe true 
+      
+      // Print deployment errors, if any
+      server.schemaDeployer.parserResponses.foreach { 
+         _.getMessages.foreach(msg => {println("*** UNEXPECTED ***" + msg)})
+      }
+      
+      //server.schemata.size mustBe 2 
+      //server.schemaDeployer.parserResponses.size mustBe 2
+      server.schemaDeployer.parserResponses.foreach { _.getMessages.size() mustBe 0 }
    }
    
     /**
-	 * Each case runs in its own JVM. Each test runs in its
+	 * Each test case runs in its own JVM. Each test runs in its
 	 * own instance of the test case. We want the jdbc schema
 	 * created only once per jvm, but the api be instance scoped.
 	 * 
@@ -105,7 +119,7 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
 			}
 		}
 	}
-      
+   
    /**
     * Parse an 400 error body
     */

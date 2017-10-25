@@ -94,7 +94,7 @@ class RuntimeTest extends BaseSpecWithServer {
 				)
 		   )
 		   resolution._1 mustBe true
-		   resolution._2.getParameter("path") mustBe "/path/to/state1/test4.B"
+		   resolution._2.getParameters.get("path") mustBe "/path/to/state1/test4.B"
 
          caughtEx = intercept[ServerException.Internal] {
 				runtime.resolveState(
@@ -122,7 +122,7 @@ class RuntimeTest extends BaseSpecWithServer {
 				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state1/test4.B+test6.C"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state1/test4.B+test6.C"
             
    		resolution = runtime.resolveState(
    				state1, 
@@ -134,7 +134,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state1/test4.B+test6.B"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state1/test4.B+test6.B"
    
    		resolution = runtime.resolveState(
    				state1, 
@@ -146,7 +146,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state1/test4.C+test5.C"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state1/test4.C+test5.C"
    
    		resolution = runtime.resolveState(
    				state1, 
@@ -159,7 +159,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state1/test4.C+test5.C+test6.B"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state1/test4.C+test5.C+test6.B"
    		
 	   }
 	   
@@ -182,8 +182,8 @@ class RuntimeTest extends BaseSpecWithServer {
 				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state2/test2.B"
-   		resolution._2.getParameter("PATH") mustBe "/path/to/state2/test2.B"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state2/test2.B"
+   		resolution._2.getParameters().get("PATH") mustBe null // path is case sensitive.
 
        	resolution = runtime.resolveState(
    				state2, 
@@ -192,8 +192,8 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state2/test1.B"
-   		resolution._2.getParameter("PaTh") mustBe "/path/to/state2/test1.B"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state2/test1.B"
+   		resolution._2.getParameters().get("PaTh") mustBe null // path is case sensitive.
    
    		resolution = runtime.resolveState(
    				state2, 
@@ -203,7 +203,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state2/test2.B"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state2/test2.B"
    		
          var caughtEx = intercept[ServerException.Internal] {
  				runtime.resolveState(
@@ -229,7 +229,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state2/test1.C+test4.B"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state2/test1.C+test4.B"
    
    		resolution = runtime.resolveState(
    				state2, 
@@ -269,7 +269,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state2/test4.C+test5.C"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state2/test4.C+test5.C"
    
    		resolution = runtime.resolveState(
    				state2, 
@@ -322,7 +322,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state3/test2.B"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B"
       
          var caughtEx = intercept[ServerException.Internal] {
    				runtime.resolveState(
@@ -353,7 +353,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state3/test2.B"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B"
    
    		resolution = runtime.resolveState(
    				state3, 
@@ -373,7 +373,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state3/test2.B"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B"
    
          caughtEx = intercept[ServerException.Internal] {
    					runtime.resolveState(
@@ -424,7 +424,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state3/test2.B"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B"
       		
          caughtEx = intercept[ServerException.Internal] {
    				runtime.resolveState(
@@ -462,7 +462,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		)
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state3/test2.B"
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B"
    
    		resolution = runtime.resolveState(
    				state3, 
@@ -484,7 +484,7 @@ class RuntimeTest extends BaseSpecWithServer {
    				)
    		);
    		resolution._1 mustBe true
-   		resolution._2.getParameter("path") mustBe "/path/to/state3/test2.B+test6.B"   
+   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B+test6.B"   
 	   }
 
 	   "resolve these coordinate vectors" in {
