@@ -142,7 +142,10 @@ class EventWriter (private val flushService: ServerFlusherService) {
       	}
    			catch {
    			   case _ : InterruptedException => interruptedExceptionThrown = true
-   			   case t : Throwable => logger.error("Unhandled exception in event writer", t)
+   			   case t : Throwable => {
+   			      logger.error("bufferQueue = " + bufferQueue);
+   			      logger.error("Unhandled exception in event writer", t)
+   			   }
    			}
    			
    			if (interruptedExceptionThrown || isInterrupted()) {
