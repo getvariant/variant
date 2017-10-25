@@ -127,7 +127,7 @@ public class StateSelectorByRequestPath  {
 	 */
 	public static State select(Schema schema, String path) {
 		for (State state: schema.getStates()) {
-			if (match(state.getParameter("path"), path)) return state;
+			if (match(state.getParameters().get("path"), path)) return state;
 		}
 		return null;
 	}

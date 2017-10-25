@@ -112,13 +112,5 @@ public class ClientException extends VariantException {
 			return error == null ? super.getMessage() :
 				"[" + error.getCode() + "] " + error.asMessage(args);
 		}
-
-		/**
-		 * 
-		 * @return
-		 */
-		public String getComment() {
-			return error.getComment();
-		}
 	}
 }
