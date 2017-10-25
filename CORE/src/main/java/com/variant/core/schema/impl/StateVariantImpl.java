@@ -70,8 +70,8 @@ public class StateVariantImpl implements StateVariant {
 	/**
 	 */
 	@Override
-	public String getParameter(String name) {
-		return params.get(name);
+	public Map<String,String> getParameters() {
+		return Collections.unmodifiableMap(params);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -97,9 +97,6 @@ public class StateVariantImpl implements StateVariant {
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
-	public Map<String, String> getParameters() {
-		return params;
-	}
 	
 	@Override
 	public String toString() {

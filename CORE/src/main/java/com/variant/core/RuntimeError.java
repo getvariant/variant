@@ -30,13 +30,13 @@ public class RuntimeError extends UserError {
 			new RuntimeError(241, Severity.ERROR, "User hook class [%s] threw an exception [%s]. See logs for details.");
 
 	public static final RuntimeError HOOK_USER_MESSAGE_INFO =
-			new RuntimeError(242, Severity.INFO, "User hook generated the following message: [%s] [%s]");
+			new RuntimeError(242, Severity.INFO, "User hook generated the following message: [%s]");
 
 	public static final RuntimeError HOOK_USER_MESSAGE_WARN =
-			new RuntimeError(243, Severity.WARN, "User hook generated the following message: [%s] [%s]");
+			new RuntimeError(243, Severity.WARN, "User hook generated the following message: [%s]");
 
 	public static final RuntimeError HOOK_USER_MESSAGE_ERROR =
-			new RuntimeError(244, Severity.ERROR, "User hook generated the following message: [%s] [%s]");
+			new RuntimeError(244, Severity.ERROR, "User hook generated the following message: [%s]");
 
 	//
 	// 251-270              Common runtime, shared btwn client and server.

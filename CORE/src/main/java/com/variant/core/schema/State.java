@@ -1,6 +1,7 @@
 package com.variant.core.schema;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Representation of State XDM element.
@@ -27,12 +28,12 @@ public interface State {
 	public String getName();	
 	
 	/**
-	 * Value of a state parameter.
+	 * State parameter.
 	 * 
-	 * @return The value of a state parameter, if declared by this state, null otherwise.
+	 * @return Immutable map containing all parameters defined by this state.
 	 * @since 0.6
 	 */
-	public String getParameter(String name);
+	public Map<String,String> getParameters();
 
 	/**
 	 * <p>All tests instrumented on this state. Comprises all declared instrumentations.

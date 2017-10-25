@@ -1,6 +1,7 @@
 package com.variant.core.schema;
 
 import java.util.List;
+import java.util.Map;
 
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.Test.OnState;
@@ -74,9 +75,9 @@ public interface StateVariant {
 	/**
 	 * This variant's declared state parameter.
 	 * 
-	 * @return The value of a state parameter, if declared by this state variant, null otherwise.
+	 * @return Immutable map containing all parameters defined by this state variant.
 	 * @since 0.5
 	 */
-	public String getParameter(String name);
+	public Map<String, String> getParameters();
 
 }	

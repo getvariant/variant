@@ -169,11 +169,11 @@ public class CoreStateRequest implements Serializable {
 	public void setResolvedStateVariant(StateVariantImpl variant) {
 		this.resolvedStateVariant = variant;
 		if (variant == null) {
-			resolvedParameterMap = state.getParameterMap();
+			resolvedParameterMap = state.getParameters();
 		}
 		else {
 			resolvedParameterMap = new CaseInsensitiveMap<String>();
-			VariantCollectionsUtils.mapMerge(resolvedParameterMap, state.getParameterMap(), variant.getParameters());
+			VariantCollectionsUtils.mapMerge(resolvedParameterMap, state.getParameters(), variant.getParameters());
 		}
 	}
 		

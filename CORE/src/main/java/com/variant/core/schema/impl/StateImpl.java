@@ -54,8 +54,8 @@ public class StateImpl implements State {
 	}
 	
 	@Override
-	public String getParameter(String name) {
-		return parameters.get(name);
+	public Map<String,String> getParameters() {
+		return Collections.unmodifiableMap(parameters);
 	}
 
 	@Override
@@ -109,14 +109,7 @@ public class StateImpl implements State {
 	public void setParameterMap(Map<String, String> params) {
 		this.parameters.putAll(params);
 	}
-	
-	/**
-	 * Entire state param map
-	 */
-	public Map<String, String> getParameterMap() {
-		return parameters;
-	}
-	
+		
 	/**
 	 * Add user hook to this test
 	 * @param hook

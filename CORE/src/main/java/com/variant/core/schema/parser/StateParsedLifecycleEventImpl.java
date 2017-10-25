@@ -34,10 +34,10 @@ public class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent 
 	public void addMessage(Severity severity, String message) {
 		RuntimeError error = null;
 		switch (severity) {
-		case INFO: error = RuntimeError.HOOK_USER_MESSAGE_INFO;
-		case WARN: error = RuntimeError.HOOK_USER_MESSAGE_INFO;
-		case ERROR: error = RuntimeError.HOOK_USER_MESSAGE_ERROR;
-		case FATAL: error = RuntimeError.HOOK_USER_MESSAGE_ERROR;
+		case INFO: error = RuntimeError.HOOK_USER_MESSAGE_INFO; break; 
+		case WARN: error = RuntimeError.HOOK_USER_MESSAGE_WARN; break;
+		case ERROR: error = RuntimeError.HOOK_USER_MESSAGE_ERROR; break;
+		case FATAL: error = RuntimeError.HOOK_USER_MESSAGE_ERROR; break;
 		}
 		
 		response.addMessage(error, message);
