@@ -24,12 +24,9 @@ import com.typesafe.config.ConfigObject;
  * <ul>
  * <li>{@code variant.event.writer.buffer.size}: The maximum number of pending events that can be
  * be held in event buffer by the asynchronous event writer. (Default = 20,000).
- * <li>{@code variant.event.writer.percent.full}: How full is the event buffer allowed to fill up
- * before it is flushed.(Default = 50, i.e. event writer will flush
- * when the event buffer becomes half-full.) ,
- * <li>{@code variant.event.writer.max.delay.millis}: The maximum delay a pending event will be
+ * <li>{@code variant.event.writer.max.delay}: The maximum delay a pending event will be
  * held in memory. Event writer will flush pending events even if their number has not reached
- * percent full, if the last flush completed this many milliseconds ago. (Default = 30,000).
+ * percent full, if the last flush completed this many milliseconds ago. (Default = 30).
  *  </ul>
  * 
  * <p>An implementation must provide at least one public constructor: 
