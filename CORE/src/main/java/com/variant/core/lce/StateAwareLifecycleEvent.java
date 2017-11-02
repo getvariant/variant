@@ -3,7 +3,7 @@ package com.variant.core.lce;
 import com.variant.core.schema.State;
 
 /**
- * <p>p>Super-interface for all life cycle event types, whose scope is limited to a particular test.
+ * <p>Super-interface for all life cycle event types, whose scope is limited to a particular state.
  * 
  * @author Igor Urisman.
  * @since 0.7
