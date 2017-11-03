@@ -91,26 +91,10 @@ public class ParamsParser implements Keywords {
 						response.addMessage(paramLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
 					}
 				}
-				break;
 			}
-		}
-
-		if (name == null) {
-			if (!nameFound) {
-				response.addMessage(paramLocation, NAME_MISSING);
-			}
-			return null;
-		}
-
-		// Pass 2: figure out the value.
-		for(Map.Entry<String, ?> entry: rawMap.entrySet()) {
-
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
-				continue;
-			} 
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_VALUE)) {
 				Object valueObject = entry.getValue();
-				if (! (valueObject instanceof String)) {
+				if (valueObject != null && ! (valueObject instanceof String)) {
 					response.addMessage(paramLocation.plusProp(KEYWORD_VALUE), PROPERTY_NOT_STRING, KEYWORD_VALUE);
 				}
 				else {
@@ -120,6 +104,14 @@ public class ParamsParser implements Keywords {
 			else {
 				response.addMessage(paramLocation.plusProp(entry.getKey()), UNSUPPORTED_PROPERTY, entry.getKey());
 			}
+
+		}
+
+		if (name == null) {
+			if (!nameFound) {
+				response.addMessage(paramLocation, NAME_MISSING);
+			}
+			return null;
 		}
 	
 		return new Pair<String,String>(name, value);
