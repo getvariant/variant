@@ -69,7 +69,7 @@ public class ServerHooksService implements HooksService {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initHook(Hook hookDef, ParserResponse parserResponse) {
-		
+
 		try {
 			// Create the hook object for the supplied UserHook implementation.
 			Object hookObj = server.classloader().instantiate(hookDef.getClassName(), hookDef.getInit());
@@ -102,7 +102,7 @@ public class ServerHooksService implements HooksService {
 			}
 
 						
-			// AOK. Add to apropriate hook list.
+			// AOK. Add to the appropriate hook list.
 			HookListEntry hle = new HookListEntry(hookImpl.getLifecycleEventClass(), hookDef);
 
 			if (hookDef instanceof Hook.Schema) {
