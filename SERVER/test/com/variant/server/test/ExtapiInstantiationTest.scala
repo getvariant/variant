@@ -271,4 +271,133 @@ class ExtapiInstantiationTest extends BaseSpecWithServer {
 	   }
 
 	}
+   
+  /*
+   * 
+   */
+	"Stateful Hook" should {
+	   
+	   ////////////////
+	   "initialize from one-arg constructors" in {
+	      
+   	    val schema = s"""
+{                                                                              
+   'meta':{                                                             		    	    
+      'name':'$schemaName',
+      'hooks':[
+         {                                                              
+   		   'name':'soleOneArgConstructor',                                       
+   			'class':'com.variant.server.test.hooks.StateParsedHookSingleArgOnly',
+            'init':{}            
+   	   },
+         {                                                              
+   		   'name':'bothConstructors',
+   			'class':'com.variant.server.test.hooks.StateParsedHook2Constructors',    
+            'init': {}
+   	   }                                                         
+      ]                                                                
+   },                                                                   
+	'states':[                                                          
+	   {'name':'state1'}                                                 
+   ],                                                                   
+	'tests':[
+	   {                                                                
+		   'name':'test1',
+	      'experiences':[                                               
+            {                                                          
+				   'name':'A',                                             
+				   'weight':10,                                            
+				   'isControl':true                                        
+	         },                                                         
+		      {                                                          
+		         'name':'B',                                             
+				   'weight':20                                             
+				}                                                          
+	      ],                                                            
+			'onStates':[                                                   
+			   {                                                          
+				   'stateRef':'state1',                                     
+				   'variants':[                                            
+				      {'experienceRef':'B'}
+			      ]                                                       
+	         }                                                          
+	      ]                                                             
+	   }
+   ]                                                                   
+}"""
+
+         val schemaDeployer = SchemaDeployerString(schema)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponses(0)
+         response.getMessages.size mustBe 1
+
+         server.schemata.get(schemaName).isDefined mustBe true
+   	   server.isUp mustBe true
+   	   
+         var msg = response.getMessages.get(0)
+   		msg.getSeverity mustBe INFO
+   		msg.getText must include (StateParsedHook2Constructors.MSG_SINGLE_ARG)
+
+      }
+	   
+	   ////////////////
+	   "fail if no one-arg constructor" in {
+	      
+   	    val schema = s"""
+{                                                                              
+   'meta':{                                                             		    	    
+      'name':'$schemaName',
+      'hooks':[
+         {                                                              
+   		   'name':'soleOneArgConstructor',                                       
+   			'class':'com.variant.server.test.hooks.StateParsedHookNullaryOnly',
+            'init':{'foo':'bar'}            
+   	   }
+      ]                                                                
+   },                                                                   
+	'states':[                                                          
+	   {'name':'state1'}                                                 
+   ],                                                                   
+	'tests':[
+	   {                                                                
+		   'name':'test1',
+	      'experiences':[                                               
+            {                                                          
+				   'name':'A',                                             
+				   'weight':10,                                            
+				   'isControl':true                                        
+	         },                                                         
+		      {                                                          
+		         'name':'B',                                             
+				   'weight':20                                             
+				}                                                          
+	      ],                                                            
+			'onStates':[                                                   
+			   {                                                          
+				   'stateRef':'state1',                                     
+				   'variants':[                                            
+				      {'experienceRef':'B'}
+			      ]                                                       
+	         }                                                          
+	      ]                                                             
+	   }
+   ]                                                                   
+}"""
+
+         val schemaDeployer = SchemaDeployerString(schema)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponses(0)
+         response.getMessages.size mustBe 1
+
+         server.schemata.get(schemaName).isDefined mustBe false
+   	   server.isUp mustBe true
+   	   
+         var msg = response.getMessages.get(0)
+         msg.getSeverity mustBe ERROR
+         msg.getText mustBe ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.StateParsedHookNullaryOnly")
+         msg.getLocation mustBe null  // This should not be null -- bug 99
+
+      }
+
+	}
 }
