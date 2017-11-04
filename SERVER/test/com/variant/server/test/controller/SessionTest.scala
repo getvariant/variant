@@ -138,7 +138,7 @@ class SessionTest extends BaseSpecWithServer {
       "return SessionExpired on GET expired session" in {
          
          val timeout = server.config.getLong(ConfigKeys.SESSION_TIMEOUT)
-         val vacuumInterval = server.config.getLong(ConfigKeys.SESSION_STORE_VACUUM_INTERVAL)
+         val vacuumInterval = server.config.getLong(ConfigKeys.SESSION_VACUUM_INTERVAL)
          timeout  mustEqual 1
          vacuumInterval  mustEqual 1
       
