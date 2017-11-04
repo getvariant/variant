@@ -72,12 +72,13 @@ public class VariantClassLoader extends URLClassLoader {
 	 *         or the single arg constructor of type ConfigObject otherwise.
 	 */
 	public Object instantiate(String className, String initArg) throws Exception {
-		
+
 		Class<?> cls = super.loadClass(className);
 
 		Object result = null;
 		
-		if (initArg == null) {
+		// No init property or 'init':null
+		if (initArg == null || initArg.equals("null")) {
 			
 			// First look for the nullary constructor
 			Constructor<?> constructor = null;
@@ -94,7 +95,7 @@ public class VariantClassLoader extends URLClassLoader {
 				try {
 					constructor = cls.getConstructor(Config.class);
 					result = constructor.newInstance((Object)null);
-		}
+		        }
 				catch (NoSuchMethodException e) {
 					return null;
 				}
@@ -102,7 +103,8 @@ public class VariantClassLoader extends URLClassLoader {
 		
 		}
 		else {
-			// If we were given the init argument, wrap it as a proper Config object rooted in "init"
+
+			// If we were given the init argument, parse it as Config.
 			Config config  = ConfigFactory.parseString(initArg); 
 			
 			// and pass it to the constructor that takes it (must be provided)
