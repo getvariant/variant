@@ -17,8 +17,7 @@ import com.variant.server.jdbc.JdbcService.Vendor;
  * instance of PostgreSQL database. Requires database schema, as created by the
  * {@code create-schema.sql} SQL script, included in the distribution. The database
  * server URL and login credentials must be supplied in the
- * {@code event.flasher.class.init} system property as a JSON string of the following
- * format:
+ * {@code /meta/flusher/init} property as the following object:
  * <pre>
  * {@code
  *  {"url":pg-server-url,"user":database-user,"password":database-password}
