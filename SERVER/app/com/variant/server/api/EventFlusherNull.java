@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Null event flusher. All Variant events are discarded. 
- * Useful, for instance, when instrumenting a feature toggle, instead of an experiment.
+ * Useful for toggle experiments when persistence of Variant events is not needed.
  * 
  * 
  * @since 0.8
