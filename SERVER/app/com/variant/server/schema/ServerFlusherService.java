@@ -48,7 +48,8 @@ public class ServerFlusherService implements FlusherService {
 					}
 					
 					@Override public String getInit() {
-						return config.getObject(EVENT_FLUSHER_CLASS_INIT).render();
+						return config.getIsNull(EVENT_FLUSHER_CLASS_INIT) ? "null" :
+								config.getObject(EVENT_FLUSHER_CLASS_INIT).render();
 					}			
 		};
 	}
