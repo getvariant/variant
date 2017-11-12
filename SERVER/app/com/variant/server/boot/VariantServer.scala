@@ -56,7 +56,7 @@ object VariantServer {
 @Singleton
 class VariantServerImpl @Inject() (
       playConfig: Configuration, 
-      appLifecycle: ApplicationLifecycle
+      lifecycle: ApplicationLifecycle
       // We ask for the provider instead of the application, because application itself won't be available until
       // all eager singletons are constructed, including this class.
       //appProvider: Provider[Application] 
@@ -95,7 +95,8 @@ class VariantServerImpl @Inject() (
 	else {
 		logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
 		startupErrorLog.foreach { (e: ServerException) => logger.error(e.getMessage(), e) }
-	  shutdown()
+	   shutdown()
+	   System.exit(0)
 	}
 		
   /**
@@ -136,7 +137,7 @@ class VariantServerImpl @Inject() (
    // When the application starts, register a stop hook with the
    // ApplicationLifecycle object. The code inside the stop hook will
    // be run when the application stops.
-   appLifecycle.addStopHook { () =>
+   lifecycle.addStopHook { () =>
        shutdown()
        Future.successful(())
    }
