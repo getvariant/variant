@@ -14,7 +14,7 @@
     </properties>
 
     <groupId>com.variant</groupId>
-    <artifactId>java-client</artifactId>
+    <artifactId>variant-java-client</artifactId>
     <name>Variant Java Client</name>
     <packaging>jar</packaging>
     <version>0.8.0</version>
