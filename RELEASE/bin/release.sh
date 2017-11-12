@@ -19,7 +19,8 @@ if [[ x != "x$1" ]]; then
 fi
 
 variant_root=$(cd $(dirname $0)/../..; pwd)
-server_extapi_root=$(cd ${variant_root}/../variant-server-extapi; pwd)
+variant_pub_root=$(cd $variant_root/../variant-pub; pwd)
+server_extapi_root=$variant_pub_root/variant-server-extapi
 release_dir=${variant_root}/RELEASE
 stage_dir=${release_dir}/stage
 target_dir=${release_dir}/target
