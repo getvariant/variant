@@ -12,6 +12,7 @@
          • run RELEASE/bin/release.sh
            this will make variant-core-<release>.jar and server-extapi-demo-<release>.jar
            and copy them to variant-server-extapi/lib as dependencies for ExtAPI.
+   *** improvement: have release.sh also copy core and java client jars to variant-pub/variant-java-servlet-adapter/lib ***
          • cd variant-pub/VARIANT-SERVER-EXTAPI
          • install the extAPI jar into local maven:
            $ mvn install:install-file -Dfile=lib/variant-server-extapi-0.8.0.jar -DgroupId=com.variant \
@@ -34,32 +35,37 @@
            variant-java-<release>.zip    - Java Client
            variant-server-<release>.zip  - Server
 
-3. Javadoc
+3. Servlet Adapter
 
-    3.1. Generate javadoc by running bin/javadoc.sh
+    3.1. Create new release branch in variant-java-servlet-adapter
+    3.2. Update version in pom.xml and make code changes
+    3.3. Test/Build and copy /target/variant-java-client-servlet-adapter-<release>.jar to /lib.
+    3.4. Copy latest variant-core.jar and variant-java-client.jar to /lib
+    3.5. Build javadoc by running bin/javadoc.sh. Will install it in /docs, which is where github pages will look for it.
+    3.6. Commit and merge back to main.
+
+4. Demo Application
+    4.1. Checkout variant-pub/VARIANT-JAVA-DEMO
+    4.2. Update dependency versions in pom.xml.
+    4.3. Make code changes if needed.
+    4.4. Deploy server in /tmp
+    4.5. $ mvn tomcat7:run
+    4.6. Manually check-out demo.
+    4.7. Commit back to main.
+    
+5. Javadoc
+
+    5.1. Generate javadoc by running bin/javadoc.sh
          this will create the javadoc files in javadoc.
          
-    3.2. Over an ssh client, create new directory javadoc/<release>
+    5.2. Over an ssh client, create new directory javadoc/<release>
          and copy there the content of the RELEASE/javadoc directory.
     
-4. Website.
+6. Website.
 
-    4.1. Copy current live site to staging.
-    4.2. Update all javadoc links to the new release.
-    4.3. Ensure no dead links with http://www.brokenlinkcheck.com
+    6.1. Copy current live site to staging.
+    6.2. Update all javadoc links to the new release.
+    6.3. Ensure no dead links with http://www.brokenlinkcheck.com
          (there are currently two dead links to old typesave Config repo in 0.7.x javadoc,
           which we won't fix.)
-          
-5. Servlet Adapter
-
-    5.1. Create new release branch in variant-java-servlet-adapter
-    5.2. Update version in pom.xml and make code changes
-    5.2. Test/Build and copy /target/variant-java-client-servlet-adapter-<release>.jar to /lib.
-    5.3. Copy latest variant-core.jar and variant-java-client.jar to /lib
-    5.4. Build javadoc by running bin/javadoc.sh. Will install it in /docs, which is where github pages will look for it.
-    5.5. Commit and merge back to main.
-    
-6. Demo Application
-    6.1. Update dependency versions in pom.xml.
-    6.2. Make code changes if needed.
-    6.2. Commit back to main.
+              
