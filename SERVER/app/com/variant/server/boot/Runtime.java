@@ -62,7 +62,7 @@ public class Runtime {
 	 *    the test, remove it from the ATL. If client code also requested removal from targeting tracker (TT), 
 	 *    remove this test from TT, if present.
 	 *    
-	 * 3. Remaining tests are active and must be targeted, if not yet targeted. Each active test is one of:
+	 * 3. Remaining tests are active and qualified and may have to be targeted. Each active test is one of:
 	 *      *) Already targeted in this session, if it's in the TT and on the traversed tests list (TTL).
 	 *      *) Pre-targeted, if it's in TT only, but not in TTL. Need to confirm targeting,
 	 *         see step 4 below.
@@ -256,6 +256,7 @@ public class Runtime {
 	 * Is a vector resolvable? I.e., does the current schema contain a variant def for every state 
 	 * where it is relevant. A vector is relevant to a state if at least one of its tests is 
 	 * instrumented in a variantful fashion.
+ 	 * NB: See bug #102.
 	 * @param vector
 	 * @return
 	 */
