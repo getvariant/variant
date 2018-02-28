@@ -66,6 +66,23 @@ public class VariantStringUtils {
 	}
 	
 	/**
+	 * Clone of apache lang3 StringUtils.join
+	 * @param array
+	 * @param separator
+	 * @return
+	 */
+	public static String join(Object[] array, String separator) {
+		StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (Object next: array) {
+			if (first) first = false;
+			else result.append(separator);
+			result.append(next);
+		}
+		return result.toString();
+	}
+
+	/**
 	 * Pull a region matching the regex out of the input string.
 	 * @param input
 	 * @param regex
