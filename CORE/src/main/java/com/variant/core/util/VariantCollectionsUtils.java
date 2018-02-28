@@ -114,4 +114,57 @@ public class VariantCollectionsUtils {
 		return result;
 	}
 
+	/**
+	 * Object[] toString();
+	 * @param c
+	 * @param separator
+	 * @return
+	 */
+	public static String toString(Object[] objectArray, String separator) {
+
+		StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (Object o: objectArray) {
+			if (first) first = false;
+			else result.append(separator);
+			result.append(o);
+		}
+		return result.toString();
+	}
+
+	/**
+	 * Collection toString();
+	 * @param c
+	 * @param separator
+	 * @return
+	 */
+	public static String toString(Collection<?> c, String separator) {
+		
+		StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (Object o: c) {
+			if (first) first = false;
+			else result.append(separator);
+			result.append(o);
+		}
+		return result.toString();
+	}
+	/**
+	 * Collection toString();
+	 * @param c
+	 * @param separator
+	 * @return
+	 */
+	public static String toString(Map<?,?> map, String separator) {
+		
+		StringBuilder result = new StringBuilder();
+		boolean first = true;
+		for (Map.Entry<?, ?> e: map.entrySet()) {
+			if (first) first = false;
+			else result.append(separator);
+			result.append(e.getKey()).append("->").append(e.getValue());
+		}
+		return result.toString();
+	}
+
 }

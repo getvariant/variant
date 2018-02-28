@@ -230,7 +230,7 @@ public class VariantParser implements Keywords {
 							response.addMessage(
 									covarExpRefLocation,
 									COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, 
-									VariantStringUtils.toString(VariantCollectionsUtils.list(e.getTest(), covarExperience.getTest()), ", "));
+									VariantCollectionsUtils.toString(VariantCollectionsUtils.list(e.getTest(), covarExperience.getTest()), ", "));
 							return null;
 						}
 					}

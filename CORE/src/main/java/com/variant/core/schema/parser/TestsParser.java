@@ -1,15 +1,37 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
+import static com.variant.core.schema.parser.error.SemanticError.ALL_PROPER_EXPERIENCES_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_TESTREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_TEST_DISJOINT;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_COVARIANT_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_PROPER_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.DUPE_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_EMPTY_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_NUMBER;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPER_VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.STATEREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_INCOMPATIBLE;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_XOR;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-
-import com.variant.core.RuntimeError;
 import com.variant.core.CoreException;
+import com.variant.core.RuntimeError;
 import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
 import com.variant.core.impl.VariantSpace;
@@ -26,6 +48,7 @@ import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;
 import com.variant.core.util.MutableInteger;
+import com.variant.core.util.VariantCollectionsUtils;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -495,7 +518,7 @@ public class TestsParser implements Keywords {
 								}
 								else if (!v.isProper() && !variant.isProper() && v.getCovariantExperiences().equals(variant.getCovariantExperiences())){
 									// Dupe local and covariant list.  Note that for this predicate relies on proper ordering. 
-									response.addMessage(variantLocation, COVARIANT_VARIANT_DUPE, StringUtils.join(v.getCovariantExperiences(), ", "));
+									response.addMessage(variantLocation, COVARIANT_VARIANT_DUPE, VariantStringUtils.join(v.getCovariantExperiences(), ", "));
 									dupe = true;
 									break;
 								}
@@ -554,7 +577,7 @@ public class TestsParser implements Keywords {
 							tosLocation.plusObj(KEYWORD_VARIANTS),
 							COVARIANT_VARIANT_MISSING,
 							point.getExperience().getName(),
-							VariantStringUtils.toString(point.getCovariantExperiences(),  ","));
+							VariantCollectionsUtils.toString(point.getCovariantExperiences(),  ","));
 				}
 			}
 			else if (point.getVariant() != null && !point.isDefinedOn(tos.getState())) {

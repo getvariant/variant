@@ -1,7 +1,5 @@
 package com.variant.core.util;
 
-import java.util.Collection;
-import java.util.Map;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,58 +36,35 @@ public class VariantStringUtils {
 	}
 
 	/**
-	 * Object[] toString();
-	 * @param c
-	 * @param separator
+	 * Clone of apache lang3 StringUtils.repeat
+	 * @param str
+	 * @param repeat
 	 * @return
 	 */
-	public static String toString(Object[] objectArray, String separator) {
-
+	public static String repeat(String str, int repeat) {
+		if (repeat < 0) throw new IllegalArgumentException("repeat cannot be negative");
 		StringBuilder result = new StringBuilder();
-		boolean first = true;
-		for (Object o: objectArray) {
-			if (first) first = false;
-			else result.append(separator);
-			result.append(o);
-		}
+		for (int i = 0; i < repeat; i++) result.append(str);
 		return result.toString();
 	}
-
+	
 	/**
-	 * Collection toString();
-	 * @param c
+	 * Clone of apache lang3 StringUtils.join
+	 * @param iterable
 	 * @param separator
 	 * @return
 	 */
-	public static String toString(Collection<?> c, String separator) {
-		
+	public static String join(Iterable<?> iterable, String separator) {
 		StringBuilder result = new StringBuilder();
 		boolean first = true;
-		for (Object o: c) {
+		for (Object next: iterable) {
 			if (first) first = false;
 			else result.append(separator);
-			result.append(o);
+			result.append(next);
 		}
 		return result.toString();
 	}
-	/**
-	 * Collection toString();
-	 * @param c
-	 * @param separator
-	 * @return
-	 */
-	public static String toString(Map<?,?> map, String separator) {
-		
-		StringBuilder result = new StringBuilder();
-		boolean first = true;
-		for (Map.Entry<?, ?> e: map.entrySet()) {
-			if (first) first = false;
-			else result.append(separator);
-			result.append(e.getKey()).append("->").append(e.getValue());
-		}
-		return result.toString();
-	}
-
+	
 	/**
 	 * Pull a region matching the regex out of the input string.
 	 * @param input

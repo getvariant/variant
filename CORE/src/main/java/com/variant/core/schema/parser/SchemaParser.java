@@ -8,8 +8,6 @@ import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +16,7 @@ import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.error.SemanticError;
 import com.variant.core.schema.parser.error.SyntaxError;
+import com.variant.core.util.VariantIoUtils;
 import com.variant.core.util.VariantStringUtils;
 
 /**
@@ -115,7 +114,7 @@ public abstract class SchemaParser implements Keywords {
 	 */
 	public ParserResponse parse(InputStream annotatedJsonStream) {
 		try {
-			String input = IOUtils.toString(annotatedJsonStream);
+			String input = VariantIoUtils.toString(annotatedJsonStream);
 			return parse(input);
 		} catch (IOException e) {
 			throw new CoreException.Internal("Unable to read input from stream", e);

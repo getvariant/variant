@@ -3,12 +3,11 @@ package com.variant.core.schema.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections4.list.UnmodifiableList;
-
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
+import com.variant.core.util.immutable.ImmutableList;
 
 /**
  * An element of the onState array of the test definition.
@@ -61,7 +60,7 @@ public class TestOnStateImpl implements Test.OnState {
 	 */
 	@Override
 	public List<StateVariant> getVariants() {
-		return variants == null ? null : new UnmodifiableList<StateVariant>(variants);
+		return variants == null ? null : new ImmutableList<StateVariant>(variants);
 	}
 	
 	//---------------------------------------------------------------------------------------------//

@@ -1,7 +1,5 @@
 package com.variant.core.util;
 
-import org.apache.commons.collections4.FunctorException;
-
 /**
  * An anticipation of Java 8's Predicate.
  * 

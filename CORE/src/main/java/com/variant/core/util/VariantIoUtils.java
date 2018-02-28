@@ -1,5 +1,6 @@
 package com.variant.core.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,4 +39,19 @@ public class VariantIoUtils {
 		}
 	}
 
+	/**
+	 * Clone of apache commons io toString(InputStream)
+	 * @param is
+	 * @return
+	 * @throws IOException 
+	 */
+	public static String toString(InputStream is) throws IOException {
+		ByteArrayOutputStream result = new ByteArrayOutputStream();
+		byte[] buffer = new byte[2048];
+		int length;
+		while ((length = is.read(buffer)) != -1) {
+		    result.write(buffer, 0, length);
+		}
+		return result.toString("UTF-8");
+	}
 }

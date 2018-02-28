@@ -12,7 +12,7 @@ import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.TestOnStateImpl;
-import com.variant.core.util.VariantStringUtils;
+import com.variant.core.util.VariantCollectionsUtils;
 
 /**
  * Variant Space is a cartesian space with the basis given by a list of tests,
@@ -98,7 +98,7 @@ public class VariantSpace {
 		 */
 		@Override
 		public String toString() {
-			return VariantStringUtils.toString(coordinates, ",");
+			return VariantCollectionsUtils.toString(coordinates, ",");
 		}
 	}
 
@@ -184,7 +184,7 @@ public class VariantSpace {
 			Point p = table.get(coordinates);
 			if (p == null) {
 				throw new CoreException.Internal(
-						"No point for coordinates [" + VariantStringUtils.toString(coordinateExperiences, ", ") + 
+						"No point for coordinates [" + VariantCollectionsUtils.toString(coordinateExperiences, ", ") + 
 						"] in test [" + variant.getTest().getName() + "] and view [" + variant.getOnState().getState().getName() + "]");
 			}
 			if (p.variant != null)
