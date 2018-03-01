@@ -8,7 +8,7 @@ import com.variant.server.test.util.ParameterizedString
 import com.variant.server.api.ConfigKeys
 import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.ServerError._
-import com.variant.core.util.VariantStringUtils
+import com.variant.core.util.StringUtils
 import play.api.libs.json._
 import com.variant.server.impl.SessionImpl
 
@@ -85,8 +85,8 @@ class SessionTest extends BaseSpecWithServer {
          val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
-         VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
-            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo").toString())
+         StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
+            StringUtils.digest(sessionJson.expand("sid" -> "foo").toString())
       }
 
       "return OK and replace existing session on PUT" in {
@@ -104,8 +104,8 @@ class SessionTest extends BaseSpecWithServer {
          val respGet = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(respGet) mustBe OK
          val respAsJson = contentAsJson(respGet)
-         VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
-            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo"))
+         StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
+            StringUtils.digest(sessionJson.expand("sid" -> "foo"))
       }
 
       "return OK and create session on PUT" in {
@@ -122,8 +122,8 @@ class SessionTest extends BaseSpecWithServer {
          val respGet = route(app, FakeRequest(GET, endpoint + "/bar1")).get
          status(respGet) mustBe OK
          val respAsJson = contentAsJson(respGet)
-         VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
-            VariantStringUtils.digest(sessionJson.expand("sid" -> "bar1"))
+         StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
+            StringUtils.digest(sessionJson.expand("sid" -> "bar1"))
       }
 
      "not lose existing session with different key" in {
@@ -131,8 +131,8 @@ class SessionTest extends BaseSpecWithServer {
          val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
-         VariantStringUtils.digest((respAsJson \ "session").as[String]) mustBe 
-            VariantStringUtils.digest(sessionJson.expand("sid" -> "foo"))
+         StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
+            StringUtils.digest(sessionJson.expand("sid" -> "foo"))
       }
 
       "return SessionExpired on GET expired session" in {

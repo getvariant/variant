@@ -29,8 +29,8 @@ import com.variant.core.schema.impl.TestExperienceImpl;
 import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;
-import com.variant.core.util.VariantCollectionsUtils;
-import com.variant.core.util.VariantStringUtils;
+import com.variant.core.util.CollectionsUtils;
+import com.variant.core.util.StringUtils;
 
 /**
  * Parse the element of the tests/onViews/variants list.
@@ -230,7 +230,7 @@ public class VariantParser implements Keywords {
 							response.addMessage(
 									covarExpRefLocation,
 									COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, 
-									VariantCollectionsUtils.toString(VariantCollectionsUtils.list(e.getTest(), covarExperience.getTest()), ", "));
+									CollectionsUtils.toString(CollectionsUtils.list(e.getTest(), covarExperience.getTest()), ", "));
 							return null;
 						}
 					}
@@ -247,7 +247,7 @@ public class VariantParser implements Keywords {
 		
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
-			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_EXPERIENCE_REF, KEYWORD_IS_DEFINED, KEYWORD_COVARIANT_EXPERIENCE_REFS)) 
+			if (StringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_EXPERIENCE_REF, KEYWORD_IS_DEFINED, KEYWORD_COVARIANT_EXPERIENCE_REFS)) 
 				continue;
 		
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_PARAMETERS)) {

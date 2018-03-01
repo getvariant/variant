@@ -10,7 +10,7 @@ import java.net.URL;
 
 import com.variant.core.util.Tuples.Pair;
 
-public class VariantIoUtils {
+public class IoUtils {
 
 	/**
 	 * Open one at a time, until found.

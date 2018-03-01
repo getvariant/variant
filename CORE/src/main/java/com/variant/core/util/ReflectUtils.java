@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class VariantReflectUtils {
+public class ReflectUtils {
 
 	/**
 	 * List all static fields of a given type declared in a class or any of its superclasses.

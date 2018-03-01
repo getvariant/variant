@@ -9,8 +9,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.util.VariantCollectionsUtils;
-import com.variant.core.util.VariantStringUtils;
+import com.variant.core.util.CollectionsUtils;
+import com.variant.core.util.StringUtils;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.schema.State;
@@ -182,7 +182,7 @@ public class Runtime {
 				}
 				LOG.info(
 						"Targeting tracker not resolvable for session [" + session.getId() + "]. " +
-						"Discarded experiences [" + VariantStringUtils.join(minUnresolvableSubvector.toArray(), ",") + "].");
+						"Discarded experiences [" + StringUtils.join(minUnresolvableSubvector.toArray(), ",") + "].");
 			}
 		}
 
@@ -226,7 +226,7 @@ public class Runtime {
 		// If all went well, we must be resolvable.
 		Pair<Boolean, StateVariantImpl> resolution = resolveState(state, vector);
 		if (!resolution._1()) throw new ServerException.Internal(
-				"Vector [" + VariantCollectionsUtils.toString(vector, ",") + "] is unresolvable");
+				"Vector [" + CollectionsUtils.toString(vector, ",") + "] is unresolvable");
 		
 		newReq.setResolvedStateVariant(resolution._2());
 	}
@@ -302,7 +302,7 @@ public class Runtime {
 		// V must be resolvable.
 		if (!isResolvable(v))
 			throw new ServerException.Internal(
-					String.format("Input vector [%s] must be resolvable, but is not", VariantCollectionsUtils.toString(v, ",")));
+					String.format("Input vector [%s] must be resolvable, but is not", CollectionsUtils.toString(v, ",")));
 
 		// W must not contain experiences that contradict those in V
 		for (Experience ew: w) {
@@ -353,7 +353,7 @@ public class Runtime {
 
 		if (!isResolvable(alreadyTargetedExperiences))
 			throw new ServerException.Internal(
-					"Input vector [" + VariantStringUtils.join(alreadyTargetedExperiences, ",") + "] is already unresolvable");
+					"Input vector [" + StringUtils.join(alreadyTargetedExperiences, ",") + "] is already unresolvable");
 		
 		// Find some non-control, defined experience. Untargetable if none.
 		ArrayList<Experience> vector = new ArrayList<Experience>();
@@ -482,7 +482,7 @@ public class Runtime {
 				else sb.append(",");
 				sb.append(e.getValue());
 			}
-			sb.append("] for experience vector [").append(VariantStringUtils.join(targetingStabile.getAll().toArray(), ",")).append("]");
+			sb.append("] for experience vector [").append(StringUtils.join(targetingStabile.getAll().toArray(), ",")).append("]");
 			LOG.trace(sb.toString());
 		}   
 			

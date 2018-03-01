@@ -25,7 +25,7 @@ import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.CoreSession;
-import com.variant.core.util.VariantStringUtils;
+import com.variant.core.util.StringUtils;
 
 /**
  * A connection to the server.
@@ -92,7 +92,7 @@ public class ConnectionImpl implements Connection {
 		String sessionId = sidTracker.get();
 		if (sessionId == null) {
 			if (create) {
-				sessionId = VariantStringUtils.random64BitString(RAND);
+				sessionId = StringUtils.random64BitString(RAND);
 				sidTracker.set(sessionId);
 			}
 			else {

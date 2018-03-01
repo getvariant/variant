@@ -15,7 +15,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.util.VariantStringUtils;
+import com.variant.core.util.StringUtils;
 import com.variant.server.event.EventWriter;
 
 
@@ -80,10 +80,10 @@ public class JdbcService {
 
 		String[] tokens = statement.split(" ");
 
-		if (VariantStringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_DOES_NOT_EXIST)) {
+		if (StringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_DOES_NOT_EXIST)) {
 			LOG.error(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Object Does Not Exist.");
 		}
-		else if (VariantStringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_ALREADY_EXIST)) {
+		else if (StringUtils.equalsIgnoreCase(e.getSQLState(), SQL_STATES_OBJECT_ALREADY_EXIST)) {
 			LOG.error(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... Object Already Exists.");
 		}
 		else {

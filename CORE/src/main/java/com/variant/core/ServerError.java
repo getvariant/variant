@@ -2,7 +2,7 @@ package com.variant.core;
 
 import java.lang.reflect.Field;
 
-import com.variant.core.util.VariantReflectUtils;
+import com.variant.core.util.ReflectUtils;
 
 
 /**
@@ -95,7 +95,7 @@ public class ServerError extends UserError {
 	 */
 	public static ServerError byCode(int code) {
 		try {
-			for (Field f: VariantReflectUtils.getStaticFields(ServerError.class, ServerError.class)) {
+			for (Field f: ReflectUtils.getStaticFields(ServerError.class, ServerError.class)) {
 				ServerError e = (ServerError) f.get(null);
 				if (e.getCode() == code) return e;
 			}

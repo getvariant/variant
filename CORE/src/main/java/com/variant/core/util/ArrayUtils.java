@@ -2,7 +2,7 @@ package com.variant.core.util;
 
 import java.lang.reflect.Array;
 
-public class VariantArrayUtils {
+public class ArrayUtils {
 
 	/**
 	 * Append an element to an array

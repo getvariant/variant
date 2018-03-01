@@ -4,7 +4,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class VariantStringUtils {
+public class StringUtils {
 	
 	/**
 	 * Does the first string equal (ignore case) to any of the subsequent strings?

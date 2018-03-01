@@ -3,12 +3,12 @@ package com.variant.client.session;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.Session;
 import com.variant.client.impl.SessionImpl;
+import com.variant.core.util.TimeUtils;
 
 /**
  * Keep track of all sessions in a client instance in order to provide idempotency of the getSession() call.
@@ -104,7 +104,7 @@ public class SessionCache {
 		this.sessionTimeoutMillis = sessionTimeoutMillis;
 		// Vacuum therad wakes up no less frequently than 30 seconds, but more frequently for tests,
 		// when the timeout is set low, e.g. 1 sec.
-		this.vacuumInterval = Math.min(sessionTimeoutMillis / 2, DateUtils.MILLIS_PER_SECOND * 30);
+		this.vacuumInterval = Math.min(sessionTimeoutMillis / 2, TimeUtils.MILLIS_PER_SECOND * 30);
 		vacuumThread = new VacuumThread();
 		vacuumThread.setDaemon(false);
 		vacuumThread.setName(VacuumThread.class.getSimpleName());

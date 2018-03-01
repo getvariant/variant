@@ -57,7 +57,7 @@ public class VariantConfigLoader {
 		Pair<InputStream, String> defaultConfig = null;
 		
 		try{
-			defaultConfig = VariantIoUtils.openResourceAsStream(defaultResourceName);		
+			defaultConfig = IoUtils.openResourceAsStream(defaultResourceName);		
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(String.format(FORMAT_EXCEPTION, defaultResourceName), e);
@@ -83,7 +83,7 @@ public class VariantConfigLoader {
 		
 		if (resName != null) {
 			try {
-				Pair<InputStream, String> res = VariantIoUtils.openResourceAsStream(resName);
+				Pair<InputStream, String> res = IoUtils.openResourceAsStream(resName);
 				if (res == null) {
 					throw new CoreException.User(CONFIG_RESOURCE_NOT_FOUND, resName);				
 				}
@@ -101,7 +101,7 @@ public class VariantConfigLoader {
 		   InputStream is = null;
 		   
 			try {
-				is = VariantIoUtils.openFileAsStream(fileName);
+				is = IoUtils.openFileAsStream(fileName);
 				if (is == null) {
 					throw new CoreException.User(CONFIG_FILE_NOT_FOUND, fileName);
 				}
@@ -116,7 +116,7 @@ public class VariantConfigLoader {
 		}
 		else {
 			try {
-				Pair<InputStream, String> res = VariantIoUtils.openResourceAsStream(resourceName);
+				Pair<InputStream, String> res = IoUtils.openResourceAsStream(resourceName);
 				if (res == null) {
 					LOG.info(String.format(FORMAT_RESOURCE_NOT_FOUND, "", resourceName));
 				}

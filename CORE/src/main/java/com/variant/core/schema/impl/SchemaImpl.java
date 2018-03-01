@@ -11,14 +11,14 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Hook;
-import com.variant.core.util.VariantStringUtils;
+import com.variant.core.util.StringUtils;
 
 /**
  * @author Igor
  */
 public class SchemaImpl implements Schema {
 
-	private final String ID = VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()));
+	private final String ID = StringUtils.random64BitString(new Random(System.currentTimeMillis()));
 	
 	// Meta
 	private String name = null;

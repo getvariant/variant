@@ -27,7 +27,7 @@ import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.util.CaseInsensitiveImmutableMap;
 import com.variant.core.util.CaseInsensitiveMap;
-import com.variant.core.util.VariantCollectionsUtils;
+import com.variant.core.util.CollectionsUtils;
 
 /**
  * 
@@ -173,7 +173,7 @@ public class CoreStateRequest implements Serializable {
 		}
 		else {
 			resolvedParameterMap = new CaseInsensitiveMap<String>();
-			VariantCollectionsUtils.mapMerge(resolvedParameterMap, state.getParameters(), variant.getParameters());
+			CollectionsUtils.mapMerge(resolvedParameterMap, state.getParameters(), variant.getParameters());
 		}
 	}
 		

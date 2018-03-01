@@ -20,7 +20,7 @@ import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.util.VariantStringUtils;
+import com.variant.core.util.StringUtils;
 
 
 /**
@@ -56,7 +56,7 @@ abstract public class VariantBaseTest {
      * Generate a new random session ID.
      */
     protected String newSid() { 
-    	return VariantStringUtils.random64BitString(rand);
+    	return StringUtils.random64BitString(rand);
     }
 
 	/**

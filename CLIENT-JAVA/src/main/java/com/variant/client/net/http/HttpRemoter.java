@@ -1,6 +1,5 @@
 package com.variant.client.net.http;
 
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -13,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.ClientException;
+import com.variant.core.util.TimeUtils;
 
 /**
  * The very bottom of the HTTP Stack. 
@@ -44,7 +44,7 @@ public class HttpRemoter {
 						"+++ %s %s : %s (%s):", 
 						req.getMethod(), req.getURI(), 
 						resp.getStatusLine().getStatusCode(), 
-						DurationFormatUtils.formatDuration(System.currentTimeMillis() - start, "mm:ss.SSS")));
+						TimeUtils.formatDuration(System.currentTimeMillis() - start)));
 				if (req instanceof HttpEntityEnclosingRequestBase) {
 					HttpEntity entity = ((HttpEntityEnclosingRequestBase)req).getEntity();
 					String body = entity == null ? "null" : EntityUtils.toString(entity);

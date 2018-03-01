@@ -18,7 +18,7 @@ import com.variant.server.api.Session
 import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.core.schema.Schema
 import java.util.Random
-import com.variant.core.util.VariantStringUtils
+import com.variant.core.util.StringUtils
 import com.typesafe.config.ConfigFactory
 import java.io.File
 import com.variant.server.boot.VariantApplicationLoader
@@ -152,7 +152,7 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
     * Generate a new random session ID.
     */
    protected def newSid() = 
-      VariantStringUtils.random64BitString(new Random(System.currentTimeMillis()))
+      StringUtils.random64BitString(new Random(System.currentTimeMillis()))
    
    /**
     * Normalize a JSON string by removing any white space.

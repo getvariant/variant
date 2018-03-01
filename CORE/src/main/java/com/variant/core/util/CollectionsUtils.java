@@ -11,7 +11,7 @@ import static com.variant.core.util.Tuples.*;
  * @author Igor
  *
  */
-public class VariantCollectionsUtils {
+public class CollectionsUtils {
 
 	public static final List<?> EMPTY_LIST = list();
 	

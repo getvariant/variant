@@ -1,6 +1,6 @@
 package com.variant.core.schema.parser.error;
 
-import com.variant.core.util.VariantStringUtils;
+import com.variant.core.util.StringUtils;
 
 public class SyntaxError extends ParserError {
 
@@ -58,7 +58,7 @@ public class SyntaxError extends ParserError {
 				result.append("\n     >").append(lines[line - 2]);
 			}
 			result.append("\n     >").append(lines[line - 1]);
-			result.append("\n      ").append(VariantStringUtils.repeat(" ", column - 2)).append("^");
+			result.append("\n      ").append(StringUtils.repeat(" ", column - 2)).append("^");
 			if (line < lines.length) {
 				result.append("\n     >").append(lines[line]);
 			}

@@ -1,7 +1,7 @@
 package com.variant.server.conn
 
 import com.variant.server.schema.ServerSchema
-import com.variant.core.util.VariantStringUtils
+import com.variant.core.util.StringUtils
 import play.api.libs.json._
 import com.variant.server.boot.VariantServer
 import com.variant.server.api.ConfigKeys
@@ -33,7 +33,7 @@ class Connection(val schema: ServerSchema) {
    
    private[this] var _isClosed = false
    
-   val id = VariantStringUtils.random64BitString(random)   
+   val id = StringUtils.random64BitString(random)   
    val timestamp = System.currentTimeMillis()
    
    

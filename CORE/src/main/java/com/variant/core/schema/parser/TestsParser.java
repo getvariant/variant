@@ -48,8 +48,8 @@ import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;
 import com.variant.core.util.MutableInteger;
-import com.variant.core.util.VariantCollectionsUtils;
-import com.variant.core.util.VariantStringUtils;
+import com.variant.core.util.CollectionsUtils;
+import com.variant.core.util.StringUtils;
 
 /**
  * Parse the TESTS clause.
@@ -284,7 +284,7 @@ public class TestsParser implements Keywords {
 		if (controlExperienceFound) {
 			for(Map.Entry<String, ?> entry: test.entrySet()) {
 				
-				if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), 
+				if (StringUtils.equalsIgnoreCase(entry.getKey(), 
 						KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS, KEYWORD_IS_ON, KEYWORD_HOOKS)) continue;
 	
 				if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_STATES)) {
@@ -518,7 +518,7 @@ public class TestsParser implements Keywords {
 								}
 								else if (!v.isProper() && !variant.isProper() && v.getCovariantExperiences().equals(variant.getCovariantExperiences())){
 									// Dupe local and covariant list.  Note that for this predicate relies on proper ordering. 
-									response.addMessage(variantLocation, COVARIANT_VARIANT_DUPE, VariantStringUtils.join(v.getCovariantExperiences(), ", "));
+									response.addMessage(variantLocation, COVARIANT_VARIANT_DUPE, StringUtils.join(v.getCovariantExperiences(), ", "));
 									dupe = true;
 									break;
 								}
@@ -577,7 +577,7 @@ public class TestsParser implements Keywords {
 							tosLocation.plusObj(KEYWORD_VARIANTS),
 							COVARIANT_VARIANT_MISSING,
 							point.getExperience().getName(),
-							VariantCollectionsUtils.toString(point.getCovariantExperiences(),  ","));
+							CollectionsUtils.toString(point.getCovariantExperiences(),  ","));
 				}
 			}
 			else if (point.getVariant() != null && !point.isDefinedOn(tos.getState())) {

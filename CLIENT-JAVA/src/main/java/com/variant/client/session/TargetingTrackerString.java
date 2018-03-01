@@ -3,7 +3,6 @@ package com.variant.client.session;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +11,7 @@ import com.variant.client.Session;
 import com.variant.client.TargetingTracker;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
+import com.variant.core.util.TimeUtils;
 
 /**
  * Targeting tracker trait that knows how to marshal a collection of experience entries
@@ -74,7 +74,7 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 						// ignore if user hasn't seen this experience for TEST_MAX_IDLE_DAYS_TO_TARGET days,
 						// unless it is set to 0, which means we honor it for life of experiment. 
 						int idleDaysToTarget = getSession().getConfig().getInt(ConfigKeys.TARGETING_STABILITY_DAYS);
-						if (idleDaysToTarget > 0 && System.currentTimeMillis() - timestamp > idleDaysToTarget * DateUtils.MILLIS_PER_DAY) {
+						if (idleDaysToTarget > 0 && System.currentTimeMillis() - timestamp > idleDaysToTarget * TimeUtils.MILLIS_PER_DAY) {
 							if (LOG.isDebugEnabled()) {
 								LOG.debug("Ignored idle experience [" + tokens[1] + "." + tokens[2] + "]");
 							}

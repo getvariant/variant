@@ -16,7 +16,7 @@ import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.core.util.VariantCollectionsUtils;
+import com.variant.core.util.CollectionsUtils;
 
 
 /**
@@ -65,10 +65,10 @@ public class ParserCovariantOkayBigTest extends BaseTestCore {
 		//
 		assertNull(test1.getCovariantTests());
 		assertNull(test2.getCovariantTests());
-		assertEquals(VariantCollectionsUtils.list(test2), test3.getCovariantTests());
-		assertEquals(VariantCollectionsUtils.list(test1), test4.getCovariantTests());
-		assertEquals(VariantCollectionsUtils.list(test2, test4), test5.getCovariantTests());
-		assertEquals(VariantCollectionsUtils.list(test1, test2, test4, test5), test6.getCovariantTests());
+		assertEquals(CollectionsUtils.list(test2), test3.getCovariantTests());
+		assertEquals(CollectionsUtils.list(test1), test4.getCovariantTests());
+		assertEquals(CollectionsUtils.list(test2, test4), test5.getCovariantTests());
+		assertEquals(CollectionsUtils.list(test1, test2, test4, test5), test6.getCovariantTests());
 
 		//
 		// Test disjointness. 
@@ -491,42 +491,42 @@ public class ParserCovariantOkayBigTest extends BaseTestCore {
 
 		variant = variants.get(2);
 		assertEquals(variant.getExperience(), test5.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state2/test2.B+test5.B", variant.getParameters().get("path"));
 
 		variant = variants.get(3);
 		assertEquals(variant.getExperience(), test5.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state2/test2.C+test5.B", variant.getParameters().get("path"));
 
 		variant = variants.get(4);
 		assertEquals(variant.getExperience(), test5.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state2/test2.B+test5.C", variant.getParameters().get("path"));
 
 		variant = variants.get(5);
 		assertEquals(variant.getExperience(), test5.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state2/test2.C+test5.C", variant.getParameters().get("path"));
 
 		variant = variants.get(6);
 		assertEquals(variant.getExperience(), test5.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state2/test4.B+test5.B", variant.getParameters().get("path"));
 
 		variant = variants.get(7);
 		assertEquals(variant.getExperience(), test5.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state2/test4.C+test5.B", variant.getParameters().get("path"));
 
 		variant = variants.get(8);
 		assertEquals(variant.getExperience(), test5.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state2/test4.B+test5.C", variant.getParameters().get("path"));
 
 		variant = variants.get(9);
 		assertEquals(variant.getExperience(), test5.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state2/test4.C+test5.C", variant.getParameters().get("path"));
 		
 		// state3
@@ -556,22 +556,22 @@ public class ParserCovariantOkayBigTest extends BaseTestCore {
 
 		variant = variants.get(2);
 		assertEquals(variant.getExperience(), test5.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state4/test2.B+test5.B", variant.getParameters().get("path"));
 
 		variant = variants.get(3);
 		assertEquals(variant.getExperience(), test5.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state4/test2.C+test5.B", variant.getParameters().get("path"));
 
 		variant = variants.get(4);
 		assertEquals(variant.getExperience(), test5.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state4/test2.B+test5.C", variant.getParameters().get("path"));
 
 		variant = variants.get(5);
 		assertEquals(variant.getExperience(), test5.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state4/test2.C+test5.C", variant.getParameters().get("path"));
 				
 		// state5
@@ -607,82 +607,82 @@ public class ParserCovariantOkayBigTest extends BaseTestCore {
 
 		variant = variants.get(2);
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.B+test6.B", variant.getParameters().get("path"));
 
 		variant = variants.get(3);
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.C+test6.B", variant.getParameters().get("path"));
 
 		variant = variants.get(4);
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.B+test6.C", variant.getParameters().get("path"));
 
 		variant = variants.get(5);
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.C+test6.C", variant.getParameters().get("path"));
 
 		variant = variants.get(6);
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test5.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test5.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test5.B+test6.B", variant.getParameters().get("path"));
 
 		variant = variants.get(7);
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test5.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test5.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test5.C+test6.B", variant.getParameters().get("path"));
 
 		variant = variants.get(8);
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test5.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test5.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test5.B+test6.C", variant.getParameters().get("path"));
 
 		variant = variants.get(9);
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test5.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test5.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test5.C+test6.C", variant.getParameters().get("path"));
 
 		variant = variants.get(10);
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("B"), test5.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("B"), test5.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.B+test5.B+test6.B", variant.getParameters().get("path"));
 		
 		variant = variants.get(11);
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("B"), test5.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("B"), test5.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.B+test5.C+test6.B", variant.getParameters().get("path"));
 
 		variant = variants.get(12);
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("C"), test5.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("C"), test5.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.C+test5.B+test6.B", variant.getParameters().get("path"));
 
 		variant = variants.get(13);		
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("C"), test5.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("C"), test5.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.C+test5.C+test6.B", variant.getParameters().get("path"));
 		
 		variant = variants.get(14);
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("B"), test5.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("B"), test5.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.B+test5.B+test6.C", variant.getParameters().get("path"));
 		
 		variant = variants.get(15);
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("B"), test5.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("B"), test5.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.B+test5.C+test6.C", variant.getParameters().get("path"));
 
 		variant = variants.get(16);
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("C"), test5.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("C"), test5.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.C+test5.B+test6.C", variant.getParameters().get("path"));
 
 		variant = variants.get(17);		
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test4.getExperience("C"), test5.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test4.getExperience("C"), test5.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state1/test4.C+test5.C+test6.C", variant.getParameters().get("path"));		
 
 		// state2
@@ -712,42 +712,42 @@ public class ParserCovariantOkayBigTest extends BaseTestCore {
 
 		variant = variants.get(2);
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test1.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test1.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state3/test1.B+test6.B", variant.getParameters().get("path"));
 
 		variant = variants.get(3);
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test1.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test1.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state3/test1.C+test6.B", variant.getParameters().get("path"));
 
 		variant = variants.get(4);
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test1.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test1.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state3/test1.B+test6.C", variant.getParameters().get("path"));
 
 		variant = variants.get(5);
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test1.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test1.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state3/test1.C+test6.C", variant.getParameters().get("path"));
 
 		variant = variants.get(6);
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state3/test2.B+test6.B", variant.getParameters().get("path"));
 
 		variant = variants.get(7);
 		assertEquals(variant.getExperience(), test6.getExperience("B"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state3/test2.C+test6.B", variant.getParameters().get("path"));
 
 		variant = variants.get(8);
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("B")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state3/test2.B+test6.C", variant.getParameters().get("path"));
 
 		variant = variants.get(9);
 		assertEquals(variant.getExperience(), test6.getExperience("C"));
-		assertEquals(VariantCollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
+		assertEquals(CollectionsUtils.list(test2.getExperience("C")), variant.getCovariantExperiences());
 		assertEquals("/path/to/state3/test2.C+test6.C", variant.getParameters().get("path"));
 		
 		

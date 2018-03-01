@@ -16,8 +16,8 @@ import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.error.SemanticError;
 import com.variant.core.schema.parser.error.SyntaxError;
-import com.variant.core.util.VariantIoUtils;
-import com.variant.core.util.VariantStringUtils;
+import com.variant.core.util.IoUtils;
+import com.variant.core.util.StringUtils;
 
 /**
  * Client and Server side parsers will extend this. The principal difference is that 
@@ -45,7 +45,7 @@ public abstract class SchemaParser implements Keywords {
 
 		// Pull out line and column info from exception message.
 		// Message starts with the repeat of the entire input, so skip that.
-		String tail = VariantStringUtils.splice(parseException.getMessage(), "line\\: \\d*\\, column\\: \\d*");
+		String tail = StringUtils.splice(parseException.getMessage(), "line\\: \\d*\\, column\\: \\d*");
 
 		// the remainder is something like '; line: 33, column: 4]'
 		tail = tail.replaceAll("[^0-9,]","");
@@ -114,7 +114,7 @@ public abstract class SchemaParser implements Keywords {
 	 */
 	public ParserResponse parse(InputStream annotatedJsonStream) {
 		try {
-			String input = VariantIoUtils.toString(annotatedJsonStream);
+			String input = IoUtils.toString(annotatedJsonStream);
 			return parse(input);
 		} catch (IOException e) {
 			throw new CoreException.Internal("Unable to read input from stream", e);
@@ -169,7 +169,7 @@ public abstract class SchemaParser implements Keywords {
 		
 		// Pass 1.
 		for (Map.Entry<String, ?> entry: mappedJson.entrySet()) {
-			if (VariantStringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_META, KEYWORD_STATES, KEYWORD_TESTS)) {
+			if (StringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_META, KEYWORD_STATES, KEYWORD_TESTS)) {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {

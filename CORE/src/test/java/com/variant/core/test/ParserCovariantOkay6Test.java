@@ -14,7 +14,7 @@ import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.core.util.VariantCollectionsUtils;
+import com.variant.core.util.CollectionsUtils;
 
 
 /**
@@ -809,8 +809,8 @@ public class ParserCovariantOkay6Test extends BaseTestCore {
 		assertTrue(test3.isCovariantWith(test2));
 
 		assertNull(test1.getCovariantTests());
-		assertEquals(VariantCollectionsUtils.list(test1), test2.getCovariantTests());
-		assertEquals(VariantCollectionsUtils.list(test1, test2), test3.getCovariantTests());
+		assertEquals(CollectionsUtils.list(test1), test2.getCovariantTests());
+		assertEquals(CollectionsUtils.list(test1, test2), test3.getCovariantTests());
 
 		// 
 		// test1 onState objects
