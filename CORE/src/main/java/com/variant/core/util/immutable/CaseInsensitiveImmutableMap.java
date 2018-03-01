@@ -1,6 +1,8 @@
-package com.variant.core.util;
+package com.variant.core.util.immutable;
 
 import java.util.Map;
+
+import com.variant.core.util.CaseInsensitiveMap;
 
 public class CaseInsensitiveImmutableMap<V> extends CaseInsensitiveMap<V> {
 

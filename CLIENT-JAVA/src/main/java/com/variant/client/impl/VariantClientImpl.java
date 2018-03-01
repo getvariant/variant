@@ -7,7 +7,7 @@ import com.variant.client.Connection;
 import com.variant.client.VariantClient;
 import com.variant.client.conn.ConnectionFactory;
 import com.variant.client.conn.ConnectionImpl;
-import com.variant.core.util.VariantConfigLoader;
+import com.variant.core.conf.VariantConfigLoader;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 

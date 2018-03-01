@@ -1,4 +1,4 @@
-package com.variant.core.util;
+package com.variant.core.conf;
 
 import static com.variant.core.RuntimeError.CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
 import static com.variant.core.RuntimeError.CONFIG_FILE_NOT_FOUND;
@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.variant.core.CoreException;
+import com.variant.core.util.IoUtils;
+import com.variant.core.util.Tuples;
 import com.variant.core.util.Tuples.Pair;
 
 /**

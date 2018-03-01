@@ -25,9 +25,9 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
-import com.variant.core.util.CaseInsensitiveImmutableMap;
 import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.util.CollectionsUtils;
+import com.variant.core.util.immutable.CaseInsensitiveImmutableMap;
 
 /**
  * 
