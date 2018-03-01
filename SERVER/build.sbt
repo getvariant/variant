@@ -2,7 +2,7 @@
 // Variant Server build config
 //
 
-val coreVersion = "0.8.0"
+val coreVersion = "0.8.1"
 name := "Variant"
 version := coreVersion
 
