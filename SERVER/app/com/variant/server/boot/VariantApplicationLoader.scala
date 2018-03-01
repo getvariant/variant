@@ -7,7 +7,7 @@ import play.api.inject.guice._
 import play.api.Logger
 
 import com.typesafe.config.ConfigFactory
-import com.variant.core.util.VariantConfigLoader
+import com.variant.core.conf.VariantConfigLoader
 
 import java.io.InputStreamReader
 
