@@ -7,7 +7,7 @@ import com.variant.client.Connection;
 import com.variant.client.VariantClient;
 import com.variant.client.conn.ConnectionFactory;
 import com.variant.client.conn.ConnectionImpl;
-import com.variant.core.conf.VariantConfigLoader;
+import com.variant.core.conf.ConfigLoader;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
@@ -18,7 +18,7 @@ import com.variant.core.conf.VariantConfigLoader;
  */
 public class VariantClientImpl implements VariantClient {
 		
-	private final Config config = new VariantConfigLoader("/variant.conf", "/com/variant/client/variant-default.conf").load();
+	private final Config config = new ConfigLoader("/variant.conf", "/com/variant/client/variant-default.conf").load();
 	private final ConnectionFactory connFactory = new ConnectionFactory();
 	private final ConcurrentHashMap<String, Connection> connMap = new ConcurrentHashMap<String, Connection>();
 	

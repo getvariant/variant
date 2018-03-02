@@ -1,6 +1,0 @@
-#
-# Command line override.  CLEANUP MOVE TO SERVER?
-# see <code>CorePropertiesTest.java</code>
-#
-
-event.writer.buffer.size = 12345678
