@@ -7,7 +7,7 @@ import play.api.inject.guice._
 import play.api.Logger
 
 import com.typesafe.config.ConfigFactory
-import com.variant.core.conf.VariantConfigLoader
+import com.variant.core.conf.ConfigLoader
 
 import java.io.InputStreamReader
 
@@ -23,7 +23,7 @@ import java.io.InputStreamReader
  */
 object VariantApplicationLoader { 
       
-   val config = new VariantConfigLoader("/variant.conf", "/com/variant/server/boot/variant-default.conf").load();
+   val config = ConfigLoader.load("/variant.conf", "/com/variant/server/boot/variant-default.conf");
 }
 
 /**

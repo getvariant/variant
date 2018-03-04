@@ -1,7 +1,7 @@
 package com.variant.server.schema
 
 import com.variant.server.api.ServerException
-import org.apache.commons.io.IOUtils
+import com.variant.core.util.IoUtils
 
 /**
  * 
@@ -20,7 +20,7 @@ object SchemaDeployerClasspath {
     val stream = getClass.getResourceAsStream(resource)
     if (stream == null)
       throw new ServerException.Internal("Unable to open classpath resource [%s]".format(resource))
-    IOUtils.toString(stream)
+    IoUtils.toString(stream)
   }
 }
 

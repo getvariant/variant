@@ -14,6 +14,8 @@ public class ConfigTest extends ClientBaseTest {
 	@Test
 	public void alternateConfigFileTest() throws Exception {
 				
+		System.clearProperty(TARGETING_STABILITY_DAYS);
+
 		// Regular startup: variant.conf overrides the defaults
 		Config config = VariantClient.Factory.getInstance().getConfig();
 		assertEquals(0, config.getInt(TARGETING_STABILITY_DAYS));
@@ -25,7 +27,7 @@ public class ConfigTest extends ClientBaseTest {
 		config = VariantClient.Factory.getInstance().getConfig();
 		assertEquals(0, config.getInt(TARGETING_STABILITY_DAYS));
 		assertEquals("I'm from variant-ConfigTest1.conf", config.getString(SESSION_ID_TRACKER_CLASS_NAME));
-		assertEquals("no default", config.getString(TARGETING_TRACKER_CLASS_NAME));
+		assertEquals("com.variant.client.session.TargetingTrackerSimple", config.getString(TARGETING_TRACKER_CLASS_NAME));
 
 		// Override with file and resource - error
 		System.setProperty("variant.config.file", "src/test/resources/variant-ConfigTest2.conf");
@@ -41,15 +43,16 @@ public class ConfigTest extends ClientBaseTest {
 		config = VariantClient.Factory.getInstance().getConfig();				
 		assertEquals(0, config.getInt(TARGETING_STABILITY_DAYS));
 		assertEquals("I'm from variant-ConfigTest2.conf", config.getString(SESSION_ID_TRACKER_CLASS_NAME));
-		assertEquals("no default", config.getString(TARGETING_TRACKER_CLASS_NAME));
+		assertEquals("com.variant.client.session.TargetingTrackerSimple", config.getString(TARGETING_TRACKER_CLASS_NAME));
 	}
 
-	// TODO: TICKET 
-	//@Test
+	@Test
 	public void propOnCommandLineOverrideTest() throws Exception {
 
-		System.setProperty("variant.targeting.stability.days", "456");
+		System.clearProperty("variant.config.resource");
+		System.clearProperty("variant.config.file");
+		System.setProperty(TARGETING_STABILITY_DAYS, "456");
 		Config config = VariantClient.Factory.getInstance().getConfig();
-		assertEquals(456, config.getNumber(TARGETING_STABILITY_DAYS));
+		assertEquals(456L, config.getNumber(TARGETING_STABILITY_DAYS));
 	}
 }

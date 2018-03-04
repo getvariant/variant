@@ -18,7 +18,7 @@ import com.variant.core.conf.ConfigLoader;
  */
 public class VariantClientImpl implements VariantClient {
 		
-	private final Config config = new ConfigLoader("/variant.conf", "/com/variant/client/variant-default.conf").load();
+	private final Config config = ConfigLoader.load("/variant.conf", "/com/variant/client/variant-default.conf");
 	private final ConnectionFactory connFactory = new ConnectionFactory();
 	private final ConcurrentHashMap<String, Connection> connMap = new ConcurrentHashMap<String, Connection>();
 	
