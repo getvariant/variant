@@ -12,6 +12,8 @@ import com.variant.server.boot.VariantServer
 import com.variant.core.UserError.Severity
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
+import com.variant.server.util.DirectoryWatcher
+import java.nio.file.Path
 
 /**
  * Deploy schemata from a directory on the file system.
@@ -30,8 +32,9 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
   /**
    * Read content of schemata dir and deploy.
    */
-  override def bootstrap: Unit = {
+  override def bootstrap {
 
+    // Get hold of the schemata directory.
     var dirName = sys.props.get(SCHEMATA_DIR)  // Shouldn't this work automatically for Config?
     
     if (dirName.isEmpty) {
@@ -46,11 +49,14 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
     if (!dir.isDirectory)
       throw new ServerException.User(ServerErrorLocal.SCHEMATA_DIR_NOT_DIR, dirName.get)
 
+    // Start the directory watch service.
+    
     logger.info("File system deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
     
+    // Parse the files in the schemata directory.
     val schemaFiles = dir.listFiles()
 
-    if (schemaFiles.length == 0) logger.info("No schemata detected in " + dirName)
+    if (schemaFiles.length == 0) logger.warn("No schemata detected in " + dirName)
     
     schemaFiles.foreach { (file) => 
       
@@ -69,4 +75,17 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       }    
     }
   }
+}
+
+/**
+ * Schemata directory watcher
+ */
+
+class SchemataDirectoryWatcher(path: Path) extends DirectoryWatcher(path) {
+
+   override def onCreate(file: java.nio.file.Path): Unit = ???
+
+   override def onDelete(file: java.nio.file.Path): Unit = ???
+
+   override def onModify(file: java.nio.file.Path): Unit = ???
 }

@@ -1,4 +1,4 @@
-package com.variant.server.boot;
+package com.variant.server.util;
 
 import java.io.File;
 import java.io.FileFilter;

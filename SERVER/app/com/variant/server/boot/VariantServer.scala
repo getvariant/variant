@@ -3,24 +3,34 @@ package com.variant.server.boot
 import scala.concurrent.Future
 import scala.collection.JavaConversions._
 import scala.collection.mutable
+
 import org.apache.commons.lang3.time.DurationFormatUtils
+
 import com.variant.server.event.EventWriter
+
 import javax.inject._
 import javax.inject.Singleton
+
 import play.api.Configuration
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 import play.api.routing.Router
+
 import com.variant.core.schema.Schema
 import com.variant.server.schema.ServerSchema
+
 import play.api.Application
+
 import com.variant.core.schema.parser.ParserResponse
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.variant.core.UserError.Severity._
 import com.variant.server.api.ServerException
+
 import play.api.ApplicationLoader
+
 import com.variant.server.schema.SchemaDeployer
+import com.variant.server.util.VariantClassLoader;
 
 
 /**
