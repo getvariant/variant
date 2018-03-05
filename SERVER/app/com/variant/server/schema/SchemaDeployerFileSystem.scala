@@ -33,15 +33,11 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
    * Read content of schemata dir and deploy.
    */
   override def bootstrap {
-
-    // Get hold of the schemata directory.
-    var dirName = sys.props.get(SCHEMATA_DIR)  // Shouldn't this work automatically for Config?
     
-    if (dirName.isEmpty) {
-      if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
-        throw new ServerException.User(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
-      dirName = Option(VariantServer.instance.config.getString(SCHEMATA_DIR))
-    }
+    if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
+       throw new ServerException.User(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
+      
+    val dirName = Option(VariantServer.instance.config.getString(SCHEMATA_DIR))
 
     val dir = new File(dirName.get)
     if (!dir.exists)
@@ -50,6 +46,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       throw new ServerException.User(ServerErrorLocal.SCHEMATA_DIR_NOT_DIR, dirName.get)
 
     // Start the directory watch service.
+    val schemataDirWatcher = new SchemataDirectoryWatcher(dir);
     
     logger.info("File system deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
     
@@ -80,8 +77,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
 /**
  * Schemata directory watcher
  */
-
-class SchemataDirectoryWatcher(path: Path) extends DirectoryWatcher(path) {
+class SchemataDirectoryWatcher(dir: File) extends DirectoryWatcher(dir.toPath()) {
 
    override def onCreate(file: java.nio.file.Path): Unit = ???
 
