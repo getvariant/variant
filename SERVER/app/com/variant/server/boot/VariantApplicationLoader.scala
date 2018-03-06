@@ -22,7 +22,7 @@ import java.io.InputStreamReader
  * Statically accessible configuration logic that is accessible in any mode.
  */
 object VariantApplicationLoader { 
-      
+
    val config = ConfigLoader.load("/variant.conf", "/com/variant/server/boot/variant-default.conf");
 }
 
@@ -33,8 +33,6 @@ class VariantApplicationLoader extends GuiceApplicationLoader() {
 
    import VariantApplicationLoader._
 
-   
-   
    private[this] val logger = Logger(this.getClass)
    private[this] val extra = new Configuration(config)
    

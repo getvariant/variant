@@ -19,7 +19,7 @@ import com.variant.server.boot.VariantApplicationLoader
 /**
  * Test various schema deployment scenarios
  */
-class SchemaDeployTest extends PlaySpec with OneAppPerTest {
+class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
    
    implicit override def newAppForTest(testData: TestData): Application = {
       

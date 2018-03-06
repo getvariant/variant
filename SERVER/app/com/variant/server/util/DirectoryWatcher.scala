@@ -25,12 +25,9 @@ abstract class DirectoryWatcher(val path: Path) extends Thread {
    )
    
    val watchService = path.getFileSystem.newWatchService()
- 
-   /**
-    * 
-    */
-   override def run() = Iterator.continually(watchService.take()).foreach {
+   path.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
 
+   override def run() = Iterator.continually(watchService.take()).foreach {
       key => {
          key.pollEvents() foreach {
             case event: WatchEvent[_] =>
@@ -63,6 +60,7 @@ abstract class DirectoryWatcher(val path: Path) extends Thread {
    
    override def start() = {
     super.start()
+    logger.debug(this.getClass.getSimpleName + " thread started for directory " + path)
   }
 
    /**

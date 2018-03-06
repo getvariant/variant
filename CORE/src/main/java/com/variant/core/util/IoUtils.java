@@ -7,6 +7,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 import com.variant.core.util.Tuples.Pair;
 
@@ -54,4 +57,29 @@ public class IoUtils {
 		}
 		return result.toString("UTF-8");
 	}
+	
+	/**
+	 * Copy file.
+	 * @param from
+	 * @param to
+	 * @throws IOException 
+	 */
+	public static void fileCopy(String from, String to) throws IOException {
+		Path in = new File(from).toPath();
+		Path out = new File(to).toPath();
+		Files.createDirectories(out.getParent());
+		Files.copy(in, out, StandardCopyOption.REPLACE_EXISTING);
+	}
+	
+	/**
+	 * Delete a file. If file is a directory, recursively deletes the contents.
+	 * @param name
+	 * @return
+	 */
+	public static void delete(String name) throws IOException {
+		File file = new File(name);
+		if (file.isDirectory()) for (File f: file.listFiles()) Files.delete(f.toPath());
+		Files.delete(file.toPath());
+	}
+	
 }

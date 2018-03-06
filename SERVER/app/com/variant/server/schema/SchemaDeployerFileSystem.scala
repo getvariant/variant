@@ -23,37 +23,42 @@ import java.nio.file.Path
  */
 class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
 
-  private val logger = Logger(this.getClass)
-  private val _schemata = HashMap[String, ServerSchema]()
+  private[this] val logger = Logger(this.getClass)
+  private[this] val _schemata = HashMap[String, ServerSchema]()
   
   // Convert internal mutable map to an immutable one for the world
   override def schemata = _schemata.toMap  
 
+  val dir = {
+     
+     if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
+        throw new ServerException.User(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
+      
+     val dirName = Option(VariantServer.instance.config.getString(SCHEMATA_DIR))
+
+     val result = new File(dirName.get)
+     if (!result.exists)
+        throw new ServerException.User(ServerErrorLocal.SCHEMATA_DIR_MISSING, dirName.get)
+     if (!result.isDirectory)
+        throw new ServerException.User(ServerErrorLocal.SCHEMATA_DIR_NOT_DIR, dirName.get)
+     result
+  }
+  
   /**
    * Read content of schemata dir and deploy.
    */
   override def bootstrap {
     
-    if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
-       throw new ServerException.User(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
-      
-    val dirName = Option(VariantServer.instance.config.getString(SCHEMATA_DIR))
-
-    val dir = new File(dirName.get)
-    if (!dir.exists)
-      throw new ServerException.User(ServerErrorLocal.SCHEMATA_DIR_MISSING, dirName.get)
-    if (!dir.isDirectory)
-      throw new ServerException.User(ServerErrorLocal.SCHEMATA_DIR_NOT_DIR, dirName.get)
-
     // Start the directory watch service.
     val schemataDirWatcher = new SchemataDirectoryWatcher(dir);
+    schemataDirWatcher.start()
     
     logger.info("File system deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
     
     // Parse the files in the schemata directory.
     val schemaFiles = dir.listFiles()
 
-    if (schemaFiles.length == 0) logger.warn("No schemata detected in " + dirName)
+    if (schemaFiles.length == 0) logger.warn("No schemata detected in " + dir.getAbsolutePath)
     
     schemaFiles.foreach { (file) => 
       
@@ -79,9 +84,15 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
  */
 class SchemataDirectoryWatcher(dir: File) extends DirectoryWatcher(dir.toPath()) {
 
-   override def onCreate(file: java.nio.file.Path): Unit = ???
+   override def onCreate(file: Path): Unit = {
+       println("***************** File created: " + file)
+   }
 
-   override def onDelete(file: java.nio.file.Path): Unit = ???
-
-   override def onModify(file: java.nio.file.Path): Unit = ???
+   override def onDelete(file: Path): Unit = {
+      println("***************** File deleted: " + file)
+   }
+   
+   override def onModify(file: Path): Unit = {
+      println("***************** File modified: " + file)
+   }
 }

@@ -48,13 +48,13 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
    
    private val logger = Logger(this.getClass)
    
-   // Custom applicaiton builder uses test specific config in front of the regular one.  
+   // Custom application builder uses test specific config in front of the regular one.  
    implicit override lazy val app: Application = {
       logger.info("Rebuilding application...")
 
       // in case some other test set it.
       sys.props -= "variant.schemata.dir"
-      // hook in the ext directory from the distribution dir.
+      // hook in the ext directory from the distribution dir to make the petclinic schema parse.
       sys.props +=("variant.ext.dir" -> "distr/ext")
 
       new GuiceApplicationBuilder()
