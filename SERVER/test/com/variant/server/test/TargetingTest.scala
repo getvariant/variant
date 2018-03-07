@@ -6,7 +6,8 @@ import com.variant.server.test.hooks.TestTargetingHookNil
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
-import com.variant.server.schema.SchemaDeployerString
+import com.variant.server.schema.SchemaDeployer.fromString
+import com.variant.server.schema.SchemaDeployer
 
 class TargetingTest extends BaseSpecWithServerAsync {
 
@@ -156,7 +157,7 @@ class TargetingTest extends BaseSpecWithServerAsync {
 	"Runtime" should {
 
 	   "deploy multiple schemata from strings" in {
-         val schemaDeployer = SchemaDeployerString(schemaSrc0, schemaSrc1, schemaSrc2, schemaSrc3, schemaSrc4)
+         val schemaDeployer = SchemaDeployer.fromString(schemaSrc0, schemaSrc1, schemaSrc2, schemaSrc3, schemaSrc4)
          server.useSchemaDeployer(schemaDeployer)
          schemaDeployer.parserResponses.size mustBe schemaNames.size
          schemaDeployer.parserResponses.foreach { _.getMessages.size() mustBe 0 }
@@ -312,7 +313,7 @@ class TargetingTest extends BaseSpecWithServerAsync {
                    }
                """)
                
-         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponses(0)
          

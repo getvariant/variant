@@ -13,6 +13,7 @@ import com.variant.server.boot.RuntimeTestFacade
 import com.variant.server.api.ServerException
 import scala.collection.mutable.ArrayBuffer
 import com.variant.server.schema.SchemaDeployerClasspath
+import com.variant.server.schema.SchemaDeployer
 
 /**
  * TODO: Need to also test annotations.
@@ -23,7 +24,7 @@ class RuntimeTest extends BaseSpecWithServer {
    
 	"Runtime" should {
 	   
-       val schemaDeployer = SchemaDeployerClasspath("/ParserCovariantOkayBigTestNoHooks.json")
+       val schemaDeployer = SchemaDeployer.fromClasspath("/ParserCovariantOkayBigTestNoHooks.json")
        server.useSchemaDeployer(schemaDeployer)
        val response = schemaDeployer.parserResponses(0)
        response.hasMessages() mustBe false		

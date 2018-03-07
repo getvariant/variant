@@ -14,7 +14,8 @@ import com.variant.core.schema.parser.error.SemanticError
 import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.test.hooks.TestParsedHook
-import com.variant.server.schema.SchemaDeployerString
+import com.variant.server.schema.SchemaDeployer.fromString
+import com.variant.server.schema.SchemaDeployer
 
 /**
  * TODO: Need to also test annotations.
@@ -102,7 +103,7 @@ class TestParsedHookTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-      val schemaDeployer = SchemaDeployerString(schema)
+      val schemaDeployer = SchemaDeployer.fromString(schema)
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
    		response.getMessages.size mustBe 9
@@ -244,7 +245,7 @@ class TestParsedHookTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-      val schemaDeployer = SchemaDeployerString(schema)
+      val schemaDeployer = SchemaDeployer.fromString(schema)
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
    		
@@ -418,7 +419,7 @@ class TestParsedHookTest extends BaseSpecWithServer {
   ]                                                                   
 }"""
 
-      val schemaDeployer = SchemaDeployerString(schema)
+      val schemaDeployer = SchemaDeployer.fromString(schema)
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
    		response.getMessages.foreach(println(_))

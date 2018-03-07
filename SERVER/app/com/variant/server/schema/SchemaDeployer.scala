@@ -38,7 +38,7 @@ object SchemaDeployer {
   /**
    * Factory method returns a deployer that reads schema from a memory string once.
    */
-  def fromString(schemaSrc: String): SchemaDeployer = new SchemaDeployerString(schemaSrc)
+  def fromString(schemaSrc: String*): SchemaDeployer = new SchemaDeployerString(schemaSrc:_*)
 
   /**
    * Factory method returns a deployer that reads schema from a classpath resource once.

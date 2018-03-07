@@ -16,7 +16,8 @@ import com.variant.server.test.hooks.TestParsedHook
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.hooks.TestTargetingHookNil
 import com.variant.server.test.hooks.TestQualificationHookNil
-import com.variant.server.schema.SchemaDeployerString
+import com.variant.server.schema.SchemaDeployer.fromString
+import com.variant.server.schema.SchemaDeployer
 
 /**
  * TODO: Need to also test annotations.
@@ -134,7 +135,7 @@ class HookScopeTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-      val schemaDeployer = SchemaDeployerString(schemaSrc)
+      val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
       //response.getMessages.foreach(println _)
@@ -246,7 +247,7 @@ class HookScopeTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-      val schemaDeployer = SchemaDeployerString(schemaSrc)
+      val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
    		//response.getMessages.foreach(println(_))
@@ -336,7 +337,7 @@ class HookScopeTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-      val schemaDeployer = SchemaDeployerString(schemaSrc)
+      val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
    		//response.getMessages.foreach(println(_))
@@ -428,7 +429,7 @@ class HookScopeTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponses(0)
   
@@ -513,7 +514,7 @@ class HookScopeTest extends BaseSpecWithServer {
    ]                                                                   
 }"""
 
-      val schemaDeployer = SchemaDeployerString(schemaSrc)
+      val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
 

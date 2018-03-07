@@ -6,8 +6,9 @@ import com.variant.server.impl.SessionImpl
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.hooks.TestQualificationHookNil
 import com.variant.core.schema.Hook
-import com.variant.server.schema.SchemaDeployerString
+import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.api.Session
+import com.variant.server.schema.SchemaDeployer
 
 class TestQualificationHookTest extends BaseSpecWithServer {
       
@@ -69,7 +70,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             )
          )
          
-       val schemaDeployer = SchemaDeployerString(schemaSrc)
+       val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
        server.useSchemaDeployer(schemaDeployer)
        val response = schemaDeployer.parserResponses(0)
        
@@ -187,7 +188,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             )
          )
          
-       val schemaDeployer = SchemaDeployerString(schemaSrc)
+       val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
        server.useSchemaDeployer(schemaDeployer)
        val response = schemaDeployer.parserResponses(0)
 
@@ -266,7 +267,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             )
          )
 
-       val schemaDeployer = SchemaDeployerString(schemaSrc)
+       val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
        server.useSchemaDeployer(schemaDeployer)
        val response = schemaDeployer.parserResponses(0)
 
@@ -345,7 +346,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             )
          )
 
-       val schemaDeployer = SchemaDeployerString(schemaSrc)
+       val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
        server.useSchemaDeployer(schemaDeployer)
        val response = schemaDeployer.parserResponses(0)
 

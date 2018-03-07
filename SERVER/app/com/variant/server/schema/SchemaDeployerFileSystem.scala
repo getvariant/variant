@@ -60,7 +60,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
 
     if (schemaFiles.length == 0) logger.warn("No schemata detected in " + dir.getAbsolutePath)
     
-    schemaFiles.foreach { (file) => 
+    schemaFiles.foreach { file => 
       
       logger.debug("Deploying schema from file [%s]".format(file.getAbsolutePath))
       
@@ -85,7 +85,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
 class SchemataDirectoryWatcher(dir: File) extends DirectoryWatcher(dir.toPath()) {
 
    override def onCreate(file: Path): Unit = {
-       println("***************** File created: " + file)
+      
    }
 
    override def onDelete(file: Path): Unit = {

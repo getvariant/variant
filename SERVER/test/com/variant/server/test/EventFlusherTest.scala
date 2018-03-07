@@ -15,7 +15,7 @@ import com.variant.server.test.hooks.TestParsedHook
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.hooks.TestTargetingHookNil
 import com.variant.server.test.hooks.TestQualificationHookNil
-import com.variant.server.schema.SchemaDeployerString
+import com.variant.server.schema.SchemaDeployer.fromString
 import play.api.Application
 import org.scalatest.TestData
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -24,6 +24,7 @@ import com.variant.server.boot.VariantApplicationLoader
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerTest
 import com.variant.server.boot.VariantServer
+import com.variant.server.schema.SchemaDeployer
 
 /**
  * TODO: Need to also test annotations.
@@ -102,7 +103,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
 	   //-\\
     "default to one defined in conf." in {    
 
-      val schemaDeployer = SchemaDeployerString(schemaNoFlusherSrc)
+      val schemaDeployer = SchemaDeployer.fromString(schemaNoFlusherSrc)
       val server = VariantServer.instance
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
@@ -119,7 +120,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
     //-\\
     "emit EVENT_FLUSHER_CLASS_NAME if none defined in conf." in {    
 
-      val schemaDeployer = SchemaDeployerString(schemaNoFlusherSrc)
+      val schemaDeployer = SchemaDeployer.fromString(schemaNoFlusherSrc)
       val server = VariantServer.instance
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
@@ -179,7 +180,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
 	   //-\\
     "Override the default" in {    
 
-      val schemaDeployer = SchemaDeployerString(schemaNoFlusherSrc)
+      val schemaDeployer = SchemaDeployer.fromString(schemaNoFlusherSrc)
       val server = VariantServer.instance
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)

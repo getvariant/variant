@@ -8,7 +8,8 @@ import org.scalatestplus.play.OneAppPerSuite
 import com.variant.server.api.ServerException
 import com.variant.core.CoreException
 import com.variant.server.impl.SessionImpl
-import com.variant.server.schema.SchemaDeployerString
+import com.variant.server.schema.SchemaDeployer.fromString
+import com.variant.server.schema.SchemaDeployer
 
 class RuntimeExceptionTest extends BaseSpecWithServer {
 
@@ -97,7 +98,7 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
 
       "throw STATE_NOT_INSTRUMENTED_BY_TEST" in  {
 
-         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponses(0)
          server.schemata.get(schemaName).isDefined mustBe true
@@ -126,7 +127,7 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
 
       "throw WEIGHT_MISSING" in {
 
-         val schemaDeployer = SchemaDeployerString(schemaSrc)
+         val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponses(0)
          server.schemata.get(schemaName).isDefined mustBe true

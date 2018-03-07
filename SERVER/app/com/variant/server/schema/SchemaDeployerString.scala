@@ -4,16 +4,8 @@ import scala.collection.JavaConversions._
 import play.api.Logger
 import com.variant.core.UserError.Severity
 import com.variant.core.schema.ParserMessage
+import com.variant.core.util.IoUtils
 import scala.collection.mutable.HashMap
-
-/**
- * 
- */
-object SchemaDeployerString {
-
-  def apply(schemaStrings: String*) = new SchemaDeployerString(schemaStrings:_*)
-  
-}
 
 /**
  * Deploy single schema from a string in memory.
@@ -43,3 +35,9 @@ class SchemaDeployerString(schemaStrings: String*) extends AbstractSchemaDeploye
    }
 
 }
+
+/**
+ * Deploy single schema from classpath.
+ */
+class SchemaDeployerClasspath(resource: String)
+   extends SchemaDeployerString(IoUtils.toString(IoUtils.openFileAsStream(resource)))
