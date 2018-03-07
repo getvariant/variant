@@ -78,8 +78,10 @@ public class IoUtils {
 	 */
 	public static void delete(String name) throws IOException {
 		File file = new File(name);
-		if (file.isDirectory()) for (File f: file.listFiles()) Files.delete(f.toPath());
-		Files.delete(file.toPath());
+		if (file.exists()) {
+			if (file.isDirectory()) for (File f: file.listFiles()) Files.delete(f.toPath());
+			Files.delete(file.toPath());
+		}
 	}
 	
 }

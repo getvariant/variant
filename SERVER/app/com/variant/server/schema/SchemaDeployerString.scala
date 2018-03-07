@@ -13,8 +13,6 @@ import scala.collection.mutable.HashMap
 class SchemaDeployerString(schemaStrings: String*) extends AbstractSchemaDeployer {
 
    private val logger = Logger(this.getClass)
-
-   private val _schemata = HashMap[String, ServerSchema]()
   
    // Convert internal mutable map to an immutable one for the world
    override def schemata = _schemata.toMap  
@@ -28,12 +26,9 @@ class SchemaDeployerString(schemaStrings: String*) extends AbstractSchemaDeploye
          logger.error("Schema was not deployed due to previous parser error(s)")
       }
       else {
-         val schema = deploy(parserResponse)
-         _schemata += schema.getName -> schema
+         deploy(parserResponse)
       }   
-      
    }
-
 }
 
 /**

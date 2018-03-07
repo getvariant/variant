@@ -26,7 +26,11 @@ object ServerSchema {
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (val response: ParserResponse, val hookService: ServerHooksService, val flushService: ServerFlusherService) extends Schema {
+class ServerSchema (
+      val response: ParserResponse, 
+      val hookService: ServerHooksService, 
+      val flushService: ServerFlusherService
+   ) extends Schema {
   
    import State._
    
@@ -34,7 +38,7 @@ class ServerSchema (val response: ParserResponse, val hookService: ServerHooksSe
    
    private var coreSchema =  response.getSchema
 
-   var state: State = Deployed  
+   var state: State = New  
       
    /**
     * 
@@ -48,12 +52,10 @@ class ServerSchema (val response: ParserResponse, val hookService: ServerHooksSe
    /*------------------------------------ Public Implementations ------------------------------------*/
 
    override def getName = {
-	   checkState
 	   coreSchema.getName
 	}
 
    override def getComment = {
-	   checkState
 	   coreSchema.getComment
 	}
 
@@ -108,5 +110,5 @@ class ServerSchema (val response: ParserResponse, val hookService: ServerHooksSe
  */
 object State extends Enumeration {
    type State = Value
-   val Deployed, Undeployed, Gone = Value
+   val New, Deployed, Gone = Value
 }

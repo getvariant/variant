@@ -12,7 +12,7 @@ import com.variant.server.api.ServerException
 import com.variant.core.ServerError
 
 /**
- * 
+ * Instantiated by Play as an eager singleton in Module
  */
 trait SessionStore {
 

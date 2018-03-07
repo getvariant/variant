@@ -19,7 +19,7 @@ abstract class DirectoryWatcher(val path: Path) extends Thread {
    setUncaughtExceptionHandler (
       new Thread.UncaughtExceptionHandler {
          override def uncaughtException(t: Thread, e: Throwable): Unit = {
-          logger.error("Ignored uncaught ${e.getClass.getSimpleName} in directory watcher", e)
+          logger.error(s"Ignored uncaught ${e.getClass.getSimpleName} in directory watcher", e)
         }
       }
    )
@@ -70,17 +70,5 @@ abstract class DirectoryWatcher(val path: Path) extends Thread {
       watchService.close()
       super.interrupt()
    }
-     
-  /* 
-   private[this] def watch(file: Path, recursive: Boolean = true): Unit = {
-    if (Files.isDirectory(file)) {
-      file.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)
-      if (recursive) {
-        Files.list(file).iterator() foreach {f => watch(f, recursive)}
-      } 
-    }
-  }
-  * 
-  */
-   
+        
 }

@@ -41,6 +41,14 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
          .build()
    }
 
+   /**
+    * Cleanup
+    */
+   override def beforeAll() {
+      IoUtils.delete(tmpDir)
+      super.beforeAll();
+   }
+
    "Server" should {
 	   
 	   "startup with two schemata" in {
@@ -63,11 +71,4 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
 	   }
    }
    
-   /**
-    * Cleanup
-    */
-   override def afterAll() {
-      IoUtils.delete(tmpDir)
-      super.beforeAll();
-   }
 }

@@ -19,8 +19,13 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
   private var flusher: ServerFlusherService = _
 
   private val _parserResponses = mutable.ArrayBuffer[ParserResponse]()
+  
   override lazy val parserResponses = _parserResponses.toSeq
   
+  protected val _schemata = new Schemata()
+  // Callers get an immutable snapshot.
+  override def schemata = _schemata.toMap
+
   /**
    * Parse a schema.
    */
@@ -50,6 +55,11 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
   protected def deploy(parserResp: ParserResponse): ServerSchema = {
 
     val schema = ServerSchema(parserResp, hooker, flusher)
+    schema.state = State.Deployed
+    _schemata.replace(schema) match {
+       case Some(schema) => schema.state = State.Gone
+       case None => // There wasn't a schema by this name already.
+    }
 
     // Write log message
     val msg = new StringBuilder()
@@ -68,7 +78,7 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
     }
 
     logger.info(msg.toString())
-  
+    
     schema
   }
 

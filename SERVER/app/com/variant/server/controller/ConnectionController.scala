@@ -11,7 +11,10 @@ import javax.inject.Inject
 import play.api.Logger
 
 //@Singleton -- Is this for non-shared state controllers?
-class ConnectionController @Inject() (override val connStore: ConnectionStore, override val ssnStore: SessionStore) extends VariantController  {
+class ConnectionController @Inject() (
+      override val connStore: ConnectionStore, 
+      override val ssnStore: SessionStore
+      ) extends VariantController  {
    
    private val logger = Logger(this.getClass)	
 
@@ -22,7 +25,7 @@ curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
     */
    def post(name: String) = VariantAction {
      
-      schema(name) match {
+      server.schemata.get(name) match {
         
          case Some(schema) => {
            

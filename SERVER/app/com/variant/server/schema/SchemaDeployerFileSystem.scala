@@ -14,7 +14,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 import com.variant.server.util.DirectoryWatcher
 import java.nio.file.Path
-
+   
 /**
  * Deploy schemata from a directory on the file system.
  * Multiple schema files in directory are not yet supported,
@@ -24,11 +24,7 @@ import java.nio.file.Path
 class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
 
   private[this] val logger = Logger(this.getClass)
-  private[this] val _schemata = HashMap[String, ServerSchema]()
   
-  // Convert internal mutable map to an immutable one for the world
-  override def schemata = _schemata.toMap  
-
   val dir = {
      
      if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
@@ -44,26 +40,32 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
      result
   }
   
-  /**
-   * Read content of schemata dir and deploy.
-   */
-  override def bootstrap {
+   /**
+    * Read content of schemata dir and deploy.
+    */
+   override def bootstrap {
     
-    // Start the directory watch service.
-    val schemataDirWatcher = new SchemataDirectoryWatcher(dir);
-    schemataDirWatcher.start()
+      // Start the directory watch service.
+      val schemataDirWatcher = new SchemataDirectoryWatcher();
+      schemataDirWatcher.start()
     
-    logger.info("File system deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
+      logger.info("File system deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
     
-    // Parse the files in the schemata directory.
-    val schemaFiles = dir.listFiles()
+      // Parse the files in the schemata directory.
+      val schemaFiles = dir.listFiles()
 
-    if (schemaFiles.length == 0) logger.warn("No schemata detected in " + dir.getAbsolutePath)
+      if (schemaFiles.length == 0) logger.warn("No schemata detected in " + dir.getAbsolutePath)
     
-    schemaFiles.foreach { file => 
+      schemaFiles.foreach { deployFromFile(_) }
+   }
+  
+   /**
+    * Deploy a single schema from a FS file.
+    */
+   private def deployFromFile(file: File) = {
       
       logger.debug("Deploying schema from file [%s]".format(file.getAbsolutePath))
-      
+         
       // Parse
       val parserResp = parse(Source.fromFile(file).mkString)
                
@@ -73,26 +75,29 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       }
       else {
          val schema = deploy(parserResp)
-        _schemata += (schema.getName -> schema)
+         schema.state = State.Deployed
+         _schemata.replace(schema) match {
+            case Some(schema) => schema.state = State.Gone
+            case None => // There wasn't a schema by this name already.
+         }
       }    
-    }
-  }
-}
-
-/**
- * Schemata directory watcher
- */
-class SchemataDirectoryWatcher(dir: File) extends DirectoryWatcher(dir.toPath()) {
-
-   override def onCreate(file: Path): Unit = {
-      
    }
 
-   override def onDelete(file: Path): Unit = {
-      println("***************** File deleted: " + file)
-   }
+   private class SchemataDirectoryWatcher extends DirectoryWatcher(dir.toPath()) {
+
+      override def onCreate(file: Path): Unit = {
+         val inFile = dir.toPath.resolve(file).toFile()
+         logger.debug(s"Detected new file [${inFile}] in schemata directory")
+         deployFromFile(inFile)
+      }
    
-   override def onModify(file: Path): Unit = {
-      println("***************** File modified: " + file)
+      override def onDelete(file: Path): Unit = {
+         println("***************** File deleted: " + file)
+      }
+      
+      override def onModify(file: Path): Unit = {
+         println("***************** File modified: " + file)
+      }
    }
 }
+

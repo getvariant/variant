@@ -62,5 +62,5 @@ unmanagedClasspath in Runtime += baseDirectory.value / "conf-test"
 javaOptions in Test += "-Dvariant.config.file=conf-test/variant.conf"
 javaOptions in Runtime += "-Dvariant.config.file=conf-test/variant.conf"
 
-// If you want to debug, uncomment and connect with eclipse after the VM is suspended.
+// To debug, uncomment and connect with eclipse after the VM is suspended.
 // javaOptions in Test ++= Seq("-Xdebug",  "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000")

@@ -27,11 +27,5 @@ abstract class VariantController extends Controller {
     * An alias for the server
     */
    val server = VariantServer.instance
-   
-   /**
-    * Find schema by name
-    */
-   def schema(name:String): Option[ServerSchema] = {
-      server.schemata.get(name)
-   }
+     
 }
