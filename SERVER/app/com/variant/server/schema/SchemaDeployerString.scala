@@ -35,4 +35,4 @@ class SchemaDeployerString(schemaStrings: String*) extends AbstractSchemaDeploye
  * Deploy single schema from classpath.
  */
 class SchemaDeployerClasspath(resource: String)
-   extends SchemaDeployerString(IoUtils.toString(IoUtils.openFileAsStream(resource)))
+   extends SchemaDeployerString(IoUtils.toString(IoUtils.openResourceAsStream(resource)._1()))

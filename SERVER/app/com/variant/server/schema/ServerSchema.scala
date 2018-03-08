@@ -96,13 +96,23 @@ class ServerSchema (
 
 	/*------------------------------------ Public Extensions ------------------------------------*/
 	
-  val runtime = new Runtime(this)
+   val runtime = new Runtime(this)
 	val source = response.getSchemaSrc
 	val eventWriter = new EventWriter(flushService)
 	
+   /**
+    * Undeploy this schema.
+    */
 	def undeploy(): Unit = {
+      state = Gone
 	   logger.info("Undeployed schema [%s], ID [%s]".format(getName, getId))
 	}
+   
+   /**
+    * 
+    */
+   override def toString() = s"{ServerSchema=[$getName], ID=[$getId]}"
+   
 }
 
 /**

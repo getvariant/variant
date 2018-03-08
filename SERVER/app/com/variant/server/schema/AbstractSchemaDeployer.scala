@@ -57,7 +57,8 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
     val schema = ServerSchema(parserResp, hooker, flusher)
     schema.state = State.Deployed
     _schemata.replace(schema) match {
-       case Some(schema) => schema.state = State.Gone
+       // Gone schemas are cleaned out by the vacuum thread.
+       case Some(oldSchema) => oldSchema.undeploy
        case None => // There wasn't a schema by this name already.
     }
 

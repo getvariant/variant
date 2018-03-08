@@ -49,7 +49,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       val schemataDirWatcher = new SchemataDirectoryWatcher();
       schemataDirWatcher.start()
     
-      logger.info("File system deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
+      logger.info("File system schema deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
     
       // Parse the files in the schemata directory.
       val schemaFiles = dir.listFiles()
@@ -75,11 +75,6 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       }
       else {
          val schema = deploy(parserResp)
-         schema.state = State.Deployed
-         _schemata.replace(schema) match {
-            case Some(schema) => schema.state = State.Gone
-            case None => // There wasn't a schema by this name already.
-         }
       }    
    }
 

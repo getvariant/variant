@@ -42,23 +42,9 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
             .configure(new Configuration(VariantApplicationLoader.config))
             .build()
       }
-      else if (testData.name.startsWith("3.")) {
-         // Both application and system property
-         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/test-schemata-override/test-schema.json"))
-         sys.props -= ("variant.schemata.dir")
-         sys.props.contains("variant.schemata.dir") must be (false)
-         sys.props += (("variant.schemata.dir","/tmp/test-schemata-override"))
-         new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.config))
-            .configure(
-               Map("variant.schemata.dir" -> "test-schemata")) 
-            .build()
-      }
       else {
          // All defaults.
-         new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.config))
-            .build()
+         throw new RuntimeException("Dunno what to do")
       }
 
    }
@@ -82,15 +68,6 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
       server.schemata.size mustBe 1
       server.schemata.get("petclinic").isDefined mustBe true
       server.schemata.get("petclinic").get.getName mustEqual "petclinic"
-   }
-
-   "3. Schema should deploy from system property variant.schemata.dir" in {
-      
-      val server = app.injector.instanceOf[VariantServer]
-      server.isUp mustBe true
-      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-      server.startupErrorLog.size mustEqual 0
-      server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
    }
 
 }
