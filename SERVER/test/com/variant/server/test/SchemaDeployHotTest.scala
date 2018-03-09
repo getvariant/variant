@@ -11,16 +11,13 @@ import com.variant.server.conn.SessionStore
 import com.variant.server.boot.VariantServer
 import play.api.inject.guice.GuiceApplicationBuilder
 import org.scalatest.TestData
-import org.apache.commons.io.FileUtils
 import java.io.File
 import play.api.Configuration
 import com.variant.server.boot.VariantApplicationLoader
-import java.nio.file.Files
-import java.nio.file.Path
 import com.variant.core.util.IoUtils
 import org.scalatest.BeforeAndAfterAll
 import play.api.Logger
-
+import com.variant.server.schema.State
 /**
  * Test various schema deployment scenarios
  */
@@ -29,10 +26,13 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
    val tmpDir = "/tmp/test-schemata"
    
    private val logger = Logger(this.getClass)   
-
+   private val server = app.injector.instanceOf[VariantServer]
+   private val DirWatcherLatencyMsecs = 10000   // takes this long for the directory watcher service to be notified.
+	
    // Custom application builder.  
    implicit override lazy val app: Application = {
-      IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${tmpDir}/big-test-schema.json");
+      IoUtils.delete(tmpDir)
+      IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${tmpDir}/ParserCovariantOkayBigTestNoHooks.json");
       IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${tmpDir}/petclinic-schema.json");
       sys.props +=("variant.schemata.dir" -> tmpDir)
       sys.props +=("variant.ext.dir" -> "distr/ext") // petclinic needs this.
@@ -44,30 +44,61 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
    /**
     * Cleanup
     */
-   override def beforeAll() {
+   override def afterAll() {
       IoUtils.delete(tmpDir)
-      super.beforeAll();
+      super.afterAll();
    }
 
    "Server" should {
 	   
 	   "startup with two schemata" in {
 	      
-         val server = app.injector.instanceOf[VariantServer]
-	      server.schemata.size mustBe 2
+         server.schemata.size mustBe 2
 	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
          server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
+         server.schemata.get("petclinic").get.state mustEqual State.Deployed
 	   }
 	   
-	   "parse 3rd schema" in {
+	   "parse a new schema" in {
+	      // Let the directory watcher thread to start before copying the file.
 	      Thread.sleep(100)
-         IoUtils.fileCopy("test-schemata/big-covar-schema.json", s"${tmpDir}/another-big-test-schema.json");
+
+	      // Add a 3rd schema
+	      IoUtils.fileCopy("test-schemata/big-covar-schema.json", s"${tmpDir}/another-big-test-schema.json");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
-	      // There is no way to force more frequent polling.
-	      Thread.sleep(20000);
+	      // Takes about 10 sec to detect a FS event and there is no way to force more frequent polling.
+	      Thread.sleep(DirWatcherLatencyMsecs);
+	      
+	      server.schemata.size mustBe 3
+	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+         server.schemata.get("petclinic").isDefined mustBe true
+         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
+         server.schemata.get("petclinic").get.state mustEqual State.Deployed
+         server.schemata.get("big_covar_schema").isDefined mustBe true
+         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
+         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+
+	      // Replace petclikc
+         IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${tmpDir}/petclinic-schema.json");
+         Thread.sleep(DirWatcherLatencyMsecs);
+         
+	      server.schemata.size mustBe 3
+	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+         server.schemata.get("petclinic").isDefined mustBe true
+         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
+         server.schemata.get("petclinic").get.state mustEqual State.Deployed
+         server.schemata.get("big_covar_schema").isDefined mustBe true
+         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
+         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+
 	   }
    }
    

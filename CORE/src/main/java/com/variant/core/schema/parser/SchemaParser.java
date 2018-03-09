@@ -95,8 +95,8 @@ public abstract class SchemaParser implements Keywords {
 	 * in the core library..
 	 * @return
 	 */
-	protected abstract HooksService getHooksService();
-	protected abstract FlusherService getFlusherService();
+	public abstract HooksService getHooksService();
+	public abstract FlusherService getFlusherService();
 	
 	private static SemanticError.Location rootLocation = new SemanticError.Location("/");
 
@@ -137,7 +137,7 @@ public abstract class SchemaParser implements Keywords {
 		String cleanJsonString = preParse(annotatedJsonString);
 		
 		// 2. Syntactical phase.
-		response = new ParserResponse();
+		response = new ParserResponse(this);
 		
 		response.setSchemaSrc(annotatedJsonString);
 		
@@ -157,7 +157,7 @@ public abstract class SchemaParser implements Keywords {
 			throw new CoreException.Internal(e);
 		}
 		
-		// Don't attempt to parse if JSON failed.
+		// Don't attempt to parse if bad JSON syntax.
 		if (response.hasMessages()) {
 			response.clearSchema();
 			return response;

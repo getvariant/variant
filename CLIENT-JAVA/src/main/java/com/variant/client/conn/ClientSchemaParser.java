@@ -15,14 +15,13 @@ import com.variant.core.schema.parser.HooksService;
 public class ClientSchemaParser extends SchemaParser {
 
 	@Override
-	protected HooksService getHooksService() {
+	public HooksService getHooksService() {
 		return HooksService.NULL;
 	}
 
 	@Override
-	protected FlusherService getFlusherService() {
+	public FlusherService getFlusherService() {
 		return FlusherService.NULL;
 	}
 
-	
 }

@@ -74,7 +74,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
         logger.error("Schema [%s] was not deployed due to previous parser error(s)".format(file.getAbsolutePath));
       }
       else {
-         val schema = deploy(parserResp)
+         deploy(parserResp)
       }    
    }
 
@@ -95,4 +95,5 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       }
    }
 }
+
 

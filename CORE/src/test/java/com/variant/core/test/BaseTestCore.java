@@ -26,12 +26,12 @@ public class BaseTestCore extends VariantBaseTest {
 	protected SchemaParser getSchemaParser() {
 		return new SchemaParser() {
 			@Override
-			protected HooksService getHooksService() {
+			public HooksService getHooksService() {
 				return HooksService.NULL;
 			}
 
 			@Override
-			protected FlusherService getFlusherService() {
+			public FlusherService getFlusherService() {
 				return FlusherService.NULL;
 			}
 		};

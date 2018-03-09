@@ -15,8 +15,8 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
 
   private val logger = Logger(this.getClass)
   
-  private var hooker: ServerHooksService = _
-  private var flusher: ServerFlusherService = _
+  //private lazy val hooker: ServerHooksService = 
+  //private lazy val flusher: ServerFlusherService
 
   private val _parserResponses = mutable.ArrayBuffer[ParserResponse]()
   
@@ -31,9 +31,9 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
    */
   protected def parse(schemaSrc: String): ParserResponse = {
 
-    val parser = new ServerSchemaParser()
-    hooker = parser.getHooksService.asInstanceOf[ServerHooksService]
-    flusher = parser.getFlusherService.asInstanceOf[ServerFlusherService]
+    val parser = ServerSchemaParser()
+    //val hooker = parser.getHooksService.asInstanceOf[ServerHooksService]
+    //val flusher = parser.getFlusherService.asInstanceOf[ServerFlusherService]
     
     // Parser the schema.
     val resp = parser.parse(schemaSrc)
@@ -52,9 +52,10 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
   /**
    * Deploy a parsed schema.
    */
-  protected def deploy(parserResp: ParserResponse): ServerSchema = {
+  protected def deploy(parserResp: ParserResponse, src: Option[String] = None) {
 
-    val schema = ServerSchema(parserResp, hooker, flusher)
+    val schema = ServerSchema(parserResp)
+    
     schema.state = State.Deployed
     _schemata.replace(schema) match {
        // Gone schemas are cleaned out by the vacuum thread.
@@ -80,7 +81,6 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
 
     logger.info(msg.toString())
     
-    schema
   }
 
   /**

@@ -75,6 +75,8 @@ import com.variant.core.schema.parser.error.SyntaxError;
 
 public class ParserResponse {
 
+	private final SchemaParser parser; // The parser that created this response.
+	
 	private ArrayList<ParserMessage> messages = new ArrayList<ParserMessage>();
 	private SchemaImpl schema = new SchemaImpl();
 	private String schemaSrc = null;
@@ -97,7 +99,17 @@ public class ParserResponse {
 		void messageAdded(ParserMessage message);
 	}
 
-	public ParserResponse() {}
+	public ParserResponse(SchemaParser parser) {
+		this.parser = parser;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public SchemaParser getParser() {
+		return parser;
+	}
 	
    /**
 	 * @return
@@ -161,16 +173,6 @@ public class ParserResponse {
 		return result;
 	}
 
-	/**
-	 * Collateral messages, emitted or caused by user code.
-	 * @param error
-	 *
-	public ParserMessage addMessage(CollateralMessage error, String...args) {
-		ParserMessage result = new ParserMessageImpl(null, error, args);
-		addMessageCommon(result);
-		return result;
-	}
-*/
 	/**
 	 * Runtime user errors which are not emitted by the parser,
 	 * but are reported with the ParserResponse.

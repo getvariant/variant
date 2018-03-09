@@ -19,18 +19,13 @@ import com.variant.server.event.EventWriter
  * 
  */
 object ServerSchema {
-   def apply(response: ParserResponse, hookService: ServerHooksService, flushService: ServerFlusherService) = 
-     new ServerSchema(response, hookService, flushService)
+   def apply(response: ParserResponse) = new ServerSchema(response)
 }
 
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (
-      val response: ParserResponse, 
-      val hookService: ServerHooksService, 
-      val flushService: ServerFlusherService
-   ) extends Schema {
+class ServerSchema (val response: ParserResponse) extends Schema {
   
    import State._
    
@@ -98,7 +93,9 @@ class ServerSchema (
 	
    val runtime = new Runtime(this)
 	val source = response.getSchemaSrc
-	val eventWriter = new EventWriter(flushService)
+	val hooksService = response.getParser.getHooksService.asInstanceOf[ServerHooksService]
+   val flusherService = response.getParser.getFlusherService.asInstanceOf[ServerFlusherService]
+	val eventWriter = new EventWriter(flusherService)
 	
    /**
     * Undeploy this schema.

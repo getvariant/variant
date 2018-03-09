@@ -88,6 +88,11 @@ class VariantServerImpl @Inject() (
 	
    override def isUp = {startupErrorLog.size == 0}
 
+	// Echo all config keys if debug
+	if (logger.isDebugEnabled) {
+     config.entrySet().filter(x => x.getKey.startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
+   }
+
 	// Default schema deployer is from file system, but may be overridded by tests.
    useSchemaDeployer(SchemaDeployer.fromFileSystem())
 	   	
@@ -96,11 +101,7 @@ class VariantServerImpl @Inject() (
             productName,
             config.getString("http.port"),
             config.getString("play.http.context"),
-   			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))
-   	
-     if (logger.isDebugEnabled) {
-        config.entrySet().filter(x => x.getKey.startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
-     }
+   			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))   	
 	}
 	else {
 		logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))

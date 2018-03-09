@@ -199,7 +199,7 @@ public class Runtime {
 			if (isTargetable(ft, state, vector)) {
 				// Target this test. First post targeting hooks.
 				TestTargetingLifecycleEventImpl event = new TestTargetingLifecycleEventImpl(session, ft, state);
-				TestTargetingLifecycleEventPostResultImpl hookResult = (TestTargetingLifecycleEventPostResultImpl) schema.hookService().post(event);
+				TestTargetingLifecycleEventPostResultImpl hookResult = (TestTargetingLifecycleEventPostResultImpl) schema.hooksService().post(event);
 				Experience targetedExperience = hookResult.getTargetedExperience();
 
 				if (LOG.isTraceEnabled()) {
@@ -242,7 +242,7 @@ public class Runtime {
 		
 
 		TestQualificationLifecycleEvent event = new TestQualificationLifecycleEventImpl(session, test);
-		TestQualificationLifecycleEventPostResultImpl hookResult = (TestQualificationLifecycleEventPostResultImpl) schema.hookService().post(event);
+		TestQualificationLifecycleEventPostResultImpl hookResult = (TestQualificationLifecycleEventPostResultImpl) schema.hooksService().post(event);
 
 		if (!hookResult.isQualified()) {
 			session.addDisqualifiedTest(test);

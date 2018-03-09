@@ -16,7 +16,7 @@ object ServerSchemaParser {
 /**
  * Server side implementation of schema parser, complete with server side services.
  */
-class ServerSchemaParser () extends SchemaParser {
+class ServerSchemaParser extends SchemaParser {
       
    override val getHooksService: HooksService = new ServerHooksService()
    override val getFlusherService: FlusherService = new ServerFlusherService(this)
