@@ -6,6 +6,8 @@ import com.variant.core.UserError.Severity
 import com.variant.core.schema.ParserMessage
 import com.variant.core.util.IoUtils
 import scala.collection.mutable.HashMap
+import com.variant.core.util.StringUtils
+import java.util.Random
 
 /**
  * Deploy single schema from a string in memory.
@@ -26,7 +28,9 @@ class SchemaDeployerString(schemaStrings: String*) extends AbstractSchemaDeploye
          logger.error("Schema was not deployed due to previous parser error(s)")
       }
       else {
-         deploy(parserResponse)
+         // memory deployments are for tests only and will all have random origin
+         // to avoid schema replacement errors in tests.
+         deploy(parserResponse, StringUtils.random64BitString(new Random(System.currentTimeMillis())))
       }   
    }
 }

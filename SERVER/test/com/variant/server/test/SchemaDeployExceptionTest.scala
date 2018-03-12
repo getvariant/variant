@@ -139,7 +139,7 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          resp2.getMessages().size() mustBe 1
          val msg = resp2.getMessages().get(0)
          msg.getSeverity mustBe Severity.ERROR
-   		msg.getText must include (ServerErrorLocal.SCHEMA_NAME_DUPE.asMessage("ParserCovariantOkayBigTestNoHooks"))
+   		msg.getText must include (ServerErrorLocal.SCHEMA_CANNOT_REPLACE.asMessage("ParserCovariantOkayBigTestNoHooks", "foo", "bar"))
       }
       
    }

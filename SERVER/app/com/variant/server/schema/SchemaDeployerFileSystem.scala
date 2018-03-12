@@ -56,13 +56,13 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
 
       if (schemaFiles.length == 0) logger.warn("No schemata detected in " + dir.getAbsolutePath)
     
-      schemaFiles.foreach { deployFromFile(_) }
+      schemaFiles.foreach { deployFrom(_) }
    }
   
    /**
     * Deploy a single schema from a FS file.
     */
-   private def deployFromFile(file: File) = {
+   private def deployFrom(file: File) = {
       
       logger.debug("Deploying schema from file [%s]".format(file.getAbsolutePath))
          
@@ -74,7 +74,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
         logger.error("Schema [%s] was not deployed due to previous parser error(s)".format(file.getAbsolutePath));
       }
       else {
-         deploy(parserResp)
+         deploy(parserResp, file.getName)
       }    
    }
 
@@ -83,7 +83,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       override def onCreate(file: Path): Unit = {
          val inFile = dir.toPath.resolve(file).toFile()
          logger.debug(s"Detected new file [${inFile}] in schemata directory")
-         deployFromFile(inFile)
+         deployFrom(inFile)
       }
    
       override def onDelete(file: Path): Unit = {

@@ -9,15 +9,11 @@ import com.variant.core.schema.parser.FlusherService
 import com.variant.core.schema.parser.HooksService
 import com.variant.core.UserError.Severity
 import com.variant.core.schema.ParserMessage
-import com.variant.server.boot.ServerErrorLocal
 
 abstract class AbstractSchemaDeployer() extends SchemaDeployer {
 
   private val logger = Logger(this.getClass)
   
-  //private lazy val hooker: ServerHooksService = 
-  //private lazy val flusher: ServerFlusherService
-
   private val _parserResponses = mutable.ArrayBuffer[ParserResponse]()
   
   override lazy val parserResponses = _parserResponses.toSeq
@@ -32,15 +28,9 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
   protected def parse(schemaSrc: String): ParserResponse = {
 
     val parser = ServerSchemaParser()
-    //val hooker = parser.getHooksService.asInstanceOf[ServerHooksService]
-    //val flusher = parser.getFlusherService.asInstanceOf[ServerFlusherService]
     
     // Parser the schema.
     val resp = parser.parse(schemaSrc)
-
-    // Only check for duplicate schema name if no parse errors.
-    if (!resp.hasMessages(Severity.ERROR) &&  schemata.contains(resp.getSchema.getName))
-         resp.addMessage(ServerErrorLocal.SCHEMA_NAME_DUPE, resp.getSchema.getName)
 
     // Log all parser messages.
     resp.getMessages(Severity.ERROR).foreach { logParserMessage(_) }
@@ -52,16 +42,11 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
   /**
    * Deploy a parsed schema.
    */
-  protected def deploy(parserResp: ParserResponse, src: Option[String] = None) {
+  protected def deploy(parserResp: ParserResponse, origin: String) {
 
-    val schema = ServerSchema(parserResp)
+     val schema = ServerSchema(parserResp, origin)
     
-    schema.state = State.Deployed
-    _schemata.replace(schema) match {
-       // Gone schemas are cleaned out by the vacuum thread.
-       case Some(oldSchema) => oldSchema.undeploy
-       case None => // There wasn't a schema by this name already.
-    }
+     _schemata.put(schema)
 
     // Write log message
     val msg = new StringBuilder()

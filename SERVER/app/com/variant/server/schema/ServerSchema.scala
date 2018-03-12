@@ -19,13 +19,13 @@ import com.variant.server.event.EventWriter
  * 
  */
 object ServerSchema {
-   def apply(response: ParserResponse) = new ServerSchema(response)
+   def apply(response: ParserResponse, origin: String) = new ServerSchema(response, origin)
 }
 
 /**
  * Server side schema adds some server specific semantics.
  */
-class ServerSchema (val response: ParserResponse) extends Schema {
+class ServerSchema (val response: ParserResponse, val origin: String) extends Schema {
   
    import State._
    

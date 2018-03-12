@@ -23,8 +23,8 @@ public class ServerErrorLocal extends RuntimeError {
 	//
 	// 421-440 Schema deployment
 	//
-	public final static ServerErrorLocal SCHEMA_NAME_DUPE = 
-			new ServerErrorLocal(421, Severity.ERROR, "Duplicate schema name [%s]");
+	public final static ServerErrorLocal SCHEMA_CANNOT_REPLACE = 
+			new ServerErrorLocal(421, Severity.ERROR, "Cannot replace existing schema [%s] defined in file [%s] with one defined in file [%s]");
 
 	public final static ServerErrorLocal OBJECT_CONSTRUCTOR_ERROR = 
 			new ServerErrorLocal(422, Severity.ERROR, "Unable to instantiate class [%s] becuase no suitable constructor was found");
