@@ -37,6 +37,21 @@ class Schemata() {
    }
    
    /**
+    * Delete by origin.
+    */
+   def delete(origin: String) {
+      // There should be at most one existing schema with the given origin.
+      val schemaToRemove = _schemata.filter ( e => { e._2.origin == origin } )
+      if (schemaToRemove.size > 1)
+         throw new ServerException.Internal(s"Found ${schemaToRemove.size} schemata with origin ${origin}")
+      
+      schemaToRemove.foreach { e => 
+         _schemata -= e._1
+         e._2.undeploy()
+      }
+   }
+   
+   /**
     * Contents as an immutable map
     */
    def toMap = synchronized { _schemata.toMap }

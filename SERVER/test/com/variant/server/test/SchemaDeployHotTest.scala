@@ -49,7 +49,7 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
       super.afterAll();
    }
 
-   "Server" should {
+   "Schema deployer" should {
 	   
 	   "startup with two schemata" in {
 	      
@@ -60,17 +60,17 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
+         
+         // Let the directory watcher thread start before copying any files.
+	      Thread.sleep(100)
 	   }
 	   
-	   "parse a new schema" in {
-	      // Let the directory watcher thread to start before copying the file.
-	      Thread.sleep(100)
+	   "parse a third schema" in {
 
 	      // Add a 3rd schema
 	      IoUtils.fileCopy("test-schemata/big-covar-schema.json", s"${tmpDir}/another-big-test-schema.json");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
-	      // Takes about 10 sec to detect a FS event and there is no way to force more frequent polling.
 	      Thread.sleep(DirWatcherLatencyMsecs);
 	      
 	      server.schemata.size mustBe 3
@@ -83,10 +83,16 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
          server.schemata.get("big_covar_schema").isDefined mustBe true
          server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
          server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
-
-	      // Replace petclinic from different origin.
+	   }
+	   
+	   "replace petclinic from same origin" in {
+	      
+	      val currentSchema = server.schemata.get("petclinic").get
+	      
          IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${tmpDir}/petclinic-schema.json");
-         Thread.sleep(DirWatcherLatencyMsecs);
+         Thread.sleep(DirWatcherLatencyMsecs)
+    
+         currentSchema.state mustBe State.Gone
          
 	      server.schemata.size mustBe 3
 	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
@@ -95,11 +101,33 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
+         server.schemata.get("petclinic").get.getId mustNot equal (currentSchema.getId())
          server.schemata.get("big_covar_schema").isDefined mustBe true
          server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
          server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
 
 	   }
+	   
+	   "undeploy another-big-test-schema.json" in {
+	      
+	      val currentSchema = server.schemata.get("big_covar_schema").get
+
+	      IoUtils.delete(s"${tmpDir}/another-big-test-schema.json");
+         Thread.sleep(DirWatcherLatencyMsecs)
+    
+         currentSchema.state mustBe State.Gone
+         
+	      server.schemata.size mustBe 2
+	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+         server.schemata.get("petclinic").isDefined mustBe true
+         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
+         server.schemata.get("petclinic").get.state mustEqual State.Deployed
+         server.schemata.get("big_covar_schema").isDefined mustBe false
+
+	   }
+
    }
    
 }

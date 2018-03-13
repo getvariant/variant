@@ -99,7 +99,7 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
     */
 	def undeploy() {
       state = Gone
-	   logger.info("Undeployed schema [%s], from [%s]".format(getName, origin))
+	   logger.info("Undeployed schema [%s] ID [%s], from [%s]".format(getName, getId, origin))
 	}
    
    /**
