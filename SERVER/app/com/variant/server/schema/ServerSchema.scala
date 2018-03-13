@@ -65,17 +65,14 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
 	}
 
    override def getId = {
-	   checkState
 	   coreSchema.getId
 	}
 
 	override def getStates = {
-	   checkState
 	   coreSchema.getStates
 	}
 
 	override def getState(name: String) = {
-	   checkState
 	   coreSchema.getState(name)	   
 	}
 
@@ -100,9 +97,9 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
    /**
     * Undeploy this schema.
     */
-	def undeploy(): Unit = {
+	def undeploy() {
       state = Gone
-	   logger.info("Undeployed schema [%s], ID [%s]".format(getName, getId))
+	   logger.info("Undeployed schema [%s], from [%s]".format(getName, origin))
 	}
    
    /**

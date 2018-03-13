@@ -11,8 +11,8 @@ import com.variant.server.boot.ServerErrorRemote
 
 /**
  * Custom error handler
- */
-/*
+ *
+
 @Singleton
 class ErrorHandler @Inject() (
     env: Environment,
@@ -54,7 +54,6 @@ class ErrorHandler @Inject() (
 
 }
 */
-
 @Singleton
 class ErrorHandler extends HttpErrorHandler {
 

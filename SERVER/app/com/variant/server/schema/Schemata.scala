@@ -24,11 +24,10 @@ class Schemata() {
       // If already have a schema with that name, only replace if origins match.
       _schemata.get(newSchema.getName) match {   
          case Some(oldSchema) => {
-            if (oldSchema.origin != oldSchema.origin) {
-              throw new ServerException.User(ServerErrorLocal.SCHEMA_CANNOT_REPLACE)
+            if (oldSchema.origin != newSchema.origin) {
+              throw new ServerException.User(ServerErrorLocal.SCHEMA_CANNOT_REPLACE, newSchema.getName(), oldSchema.origin, newSchema.origin)
            }
-           // Gone schemas are cleaned out by the vacuum thread.
-           oldSchema.state = State.Gone
+           oldSchema.undeploy()
          }
          case None => // There wasn't a schema by this name already.
       }

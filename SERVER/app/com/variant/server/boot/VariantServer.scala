@@ -3,34 +3,27 @@ package com.variant.server.boot
 import scala.concurrent.Future
 import scala.collection.JavaConversions._
 import scala.collection.mutable
-
 import org.apache.commons.lang3.time.DurationFormatUtils
-
 import com.variant.server.event.EventWriter
-
 import javax.inject._
 import javax.inject.Singleton
-
 import play.api.Configuration
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 import play.api.routing.Router
-
 import com.variant.core.schema.Schema
 import com.variant.server.schema.ServerSchema
-
 import play.api.Application
-
 import com.variant.core.schema.parser.ParserResponse
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.variant.core.UserError.Severity._
 import com.variant.server.api.ServerException
-
 import play.api.ApplicationLoader
-
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.util.VariantClassLoader;
+import com.variant.server.util.VariantClassLoader
+import com.variant.core.RuntimeError
+import com.variant.core.UserError.Severity
 
 
 /**
@@ -40,9 +33,9 @@ trait VariantServer {
    
    val config: Config // Do not expose Play's Configuration
    val classloader: VariantClassLoader
+   val startupErrorLog = mutable.ArrayBuffer[ServerException]()
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
-   val startupErrorLog = mutable.ArrayBuffer[ServerException]()
    def schemata: Map[String, ServerSchema]
    def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
    def isUp: Boolean
@@ -53,11 +46,12 @@ trait VariantServer {
  * 
  */
 object VariantServer {
+
+   // Static instance location.
    private [boot] var _instance: VariantServer = _
-   
    // This must be a method because some tests will rebuild the server, so the content of _instance will be changing.
    def instance = _instance
-
+ 
 }
 
 /**
@@ -72,11 +66,13 @@ class VariantServerImpl @Inject() (
       //appProvider: Provider[Application] 
    ) extends VariantServer {
    
+   import VariantServer._
+   
 	private[this] val logger = Logger(this.getClass)
    private[this] var _schemaDeployer: SchemaDeployer = null
   
 	// Make this instance statically discoverable
-	VariantServer._instance = this	
+	_instance = this	
 	
 	override val config = playConfig.underlying
 	
@@ -86,52 +82,55 @@ class VariantServerImpl @Inject() (
 	
 	override def schemaDeployer = _schemaDeployer
 	
-   override def isUp = {startupErrorLog.size == 0}
+   override def isUp = ! startupErrorLog.exists { _.getSeverity == Severity.FATAL }
+	
+   bootup()
 
-	// Echo all config keys if debug
-	if (logger.isDebugEnabled) {
-     config.entrySet().filter(x => x.getKey.startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
+	/**
+	 * Application startup.
+	 */
+   def bootup() {
+
+      try {
+         // Echo all config keys if debug
+      	if (logger.isDebugEnabled) {
+           config.entrySet().filter(x => x.getKey.startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
+         }
+      
+      	// Default schema deployer is from file system, but may be overridden by tests.
+         useSchemaDeployer(SchemaDeployer.fromFileSystem())
+      }
+      catch {
+         case se: ServerException => startupErrorLog += se
+         case e: Throwable => throw new RuntimeException("Uncaught exception", e) // This will be uncaught and crash the server.
+      }
+      
+      if (isUp) {
+         logger.info("%s bootstrapped on :%s%s in %s.".format(
+               productName,
+               config.getString("http.port"),
+               config.getString("play.http.context"),
+      			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))   	
+   	}
+   	else {
+   		logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
+   		startupErrorLog.foreach { e => logger.error(e.getMessage(), e) }
+   	   shutdown()
+   	   //System.exit(0)
+   	}      
+
    }
 
-	// Default schema deployer is from file system, but may be overridded by tests.
-   useSchemaDeployer(SchemaDeployer.fromFileSystem())
-	   	
-	if (isUp) {
-      logger.info("%s bootstrapped on :%s%s in %s.".format(
-            productName,
-            config.getString("http.port"),
-            config.getString("play.http.context"),
-   			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))   	
-	}
-	else {
-		logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
-		startupErrorLog.foreach { (e: ServerException) => logger.error(e.getMessage(), e) }
-	   shutdown()
-	   System.exit(0)
-	}
-		
   /**
 	 * Tests can override the default schema deployer to be able to deploy from a memory string.
 	 */
    override def useSchemaDeployer (newDeployer: SchemaDeployer): Unit = {
-	    try {
-   	     _schemaDeployer = newDeployer
-   	     _schemaDeployer.bootstrap()
-      }
-	    catch {
-	       case e: ServerException.User => {
-	          logger.error("Failed to install schema deployer", e)
-	          startupErrorLog += e
-	       }
-	       case t: Throwable => {
-	         startupErrorLog += new ServerException.Internal("Unhandled exception", t)
-	       }
-	    }
+      _schemaDeployer = newDeployer
+   	_schemaDeployer.bootstrap()
 	 }
-
-
+   
    /**
-    * One time application shutdown.
+    * Application shutdown hook called by Play.
     */
    def shutdown() {
       

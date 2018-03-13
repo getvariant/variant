@@ -35,10 +35,11 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
    */
    implicit override def newAppForTest(testData: TestData): Application = {
 
-      if (testData.name.contains("CONFIG_PROPERTY_NOT_SET")) 
-         new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.schemata.dir")))
-            .build() 
+      if (testData.name.contains("CONFIG_PROPERTY_NOT_SET"))  {
+            new GuiceApplicationBuilder()
+               .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.schemata.dir")))
+               .build()
+      }
       else if (testData.name.contains("SCHEMATA_DIR_MISSING")) 
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
@@ -68,17 +69,17 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
             .build()
    }
 
-   
    "Missing variant.schemata.dir property" should {
+      
       "throw CONFIG_PROPERTY_NOT_SET" in {
          val server = app.injector.instanceOf[VariantServer]
          server.isUp mustBe false
          server.schemata.size mustBe 0
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
-         //ex.getSeverity mustEqual FATAL
-         ex.getMessage mustEqual 
+         ex.getMessage mustEqual
             new ServerException.User(CONFIG_PROPERTY_NOT_SET, ConfigKeys.SCHEMATA_DIR).getMessage
+
       }
    }
 
@@ -132,16 +133,17 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          val server = app.injector.instanceOf[VariantServer]
          server.schemata.size mustBe 1
          server.isUp mustBe true
-         server.startupErrorLog.size mustEqual 0
+         server.startupErrorLog.size mustEqual 1
+         val se = server.startupErrorLog(0)
+         se.getSeverity mustBe Severity.ERROR
+   		se.getMessage must include (ServerErrorLocal.SCHEMA_CANNOT_REPLACE.asMessage("ParserCovariantOkayBigTestNoHooks", "schema1.json", "schema2.json"))
+         server.schemaDeployer.parserResponses.size mustBe 2
          val resp1 = server.schemaDeployer.parserResponses(0)
          resp1.hasMessages() mustBe false
          val resp2 = server.schemaDeployer.parserResponses(1)
-         resp2.getMessages().size() mustBe 1
-         val msg = resp2.getMessages().get(0)
-         msg.getSeverity mustBe Severity.ERROR
-   		msg.getText must include (ServerErrorLocal.SCHEMA_CANNOT_REPLACE.asMessage("ParserCovariantOkayBigTestNoHooks", "foo", "bar"))
-      }
-      
+         resp2.getMessages().size() mustBe 0
+         
+      }  
    }
 
 }

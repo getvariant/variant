@@ -84,7 +84,7 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
          server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
          server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
 
-	      // Replace petclikc
+	      // Replace petclinic from different origin.
          IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${tmpDir}/petclinic-schema.json");
          Thread.sleep(DirWatcherLatencyMsecs);
          

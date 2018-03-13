@@ -10,7 +10,7 @@ import play.api.Logger
 /**
  * Watch a directory for create/modify/delete events.
  */
-abstract class DirectoryWatcher(val path: Path) extends Thread {
+abstract class AsyncDirectoryWatcher(val path: Path) extends Thread {
   
    private val logger = Logger(this.getClass)
    

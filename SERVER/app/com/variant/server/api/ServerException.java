@@ -12,7 +12,7 @@ import com.variant.core.ServerError;
  * @since 0.7
  */
 @SuppressWarnings("serial")
-public class ServerException extends VariantException {
+abstract public class ServerException extends VariantException {
 
 	private ServerException() {
 		super();
@@ -31,6 +31,16 @@ public class ServerException extends VariantException {
 	}
 	
 	/**
+	 * @return
+	 */
+	abstract public Severity getSeverity();
+
+	@Override
+	public String toString() {
+		return String.format("[%s] %s", getSeverity(), getMessage());
+	}
+	
+	/**
 	 * Server internal exceptions. These are not the result of an invalid user action, but are due to an internal problem.
 	 * 
 	 * @since 0.7
@@ -44,6 +54,12 @@ public class ServerException extends VariantException {
 		public Internal(String msg, Throwable t) {
 			super(msg, t);
 		}
+		
+		@Override
+		public Severity getSeverity() {
+			return Severity.FATAL;
+		}
+
 	}
 	
 	/**
@@ -74,6 +90,7 @@ public class ServerException extends VariantException {
 
 		/**
 		 */
+		@Override
 		public Severity getSeverity() {
 			return error.getSeverity();
 		}
@@ -107,6 +124,12 @@ public class ServerException extends VariantException {
 			this.error = error;
 			this.args = args;
 		}
+		
+		@Override
+		public Severity getSeverity() {
+			return Severity.ERROR;
+		}
+
 	}
 
 }

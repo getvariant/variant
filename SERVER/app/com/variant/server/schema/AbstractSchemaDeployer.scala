@@ -50,7 +50,7 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
 
     // Write log message
     val msg = new StringBuilder()
-    msg.append("Deployed schema [%s], ID [%s]:".format(schema.getName, schema.getId));
+    msg.append("Deployed schema [%s], from [%s]:".format(schema.getName, origin));
     for (test <- schema.getTests) {
       msg.append("\n   ").append(test.getName()).append(":[");
       var first = true;

@@ -12,7 +12,7 @@ import com.variant.server.boot.VariantServer
 import com.variant.core.UserError.Severity
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
-import com.variant.server.util.DirectoryWatcher
+import com.variant.server.util.AsyncDirectoryWatcher
 import java.nio.file.Path
    
 /**
@@ -25,7 +25,9 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
 
   private[this] val logger = Logger(this.getClass)
   
-  val dir = {
+  // Don't evaluate during instantiation because this singleton class is instantiated
+  // by Play during application startup and we don't want a user error to derail that.
+  lazy val dir = {
      
      if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
         throw new ServerException.User(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
@@ -51,7 +53,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
     
       logger.info("File system schema deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
     
-      // Parse the files in the schemata directory.
+      // Parse the files in the schemata directory: the first reference of lazy dir.
       val schemaFiles = dir.listFiles()
 
       if (schemaFiles.length == 0) logger.warn("No schemata detected in " + dir.getAbsolutePath)
@@ -64,7 +66,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
     */
    private def deployFrom(file: File) = {
       
-      logger.debug("Deploying schema from file [%s]".format(file.getAbsolutePath))
+      logger.info("Deploying schema from file [%s]".format(file.getAbsolutePath))
          
       // Parse
       val parserResp = parse(Source.fromFile(file).mkString)
@@ -78,7 +80,10 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       }    
    }
 
-   private class SchemataDirectoryWatcher extends DirectoryWatcher(dir.toPath()) {
+   /**
+    * Directory watcher receives events form the file system and processes them asynchronously.
+    */
+   private class SchemataDirectoryWatcher extends AsyncDirectoryWatcher(dir.toPath()) {
 
       override def onCreate(file: Path): Unit = {
          val inFile = dir.toPath.resolve(file).toFile()

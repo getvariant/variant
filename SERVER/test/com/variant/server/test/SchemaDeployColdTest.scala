@@ -50,9 +50,10 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
    }
  
    "1. Schema should deploy from config property variant.schemata.dir" in {
+   
       val server = app.injector.instanceOf[VariantServer]
-      server.isUp mustBe true
       server.startupErrorLog.size mustEqual 0
+      server.isUp mustBe true
       server.schemata.size mustBe 2
       server.schemata.get("big_covar_schema").isDefined mustBe true
       server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema"
@@ -63,8 +64,8 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
    "2. Schema should deploy from system property variant.schemata.dir" in {
       
       val server = app.injector.instanceOf[VariantServer]
-      server.isUp mustBe true
       server.startupErrorLog.size mustEqual 0
+      server.isUp mustBe true
       server.schemata.size mustBe 1
       server.schemata.get("petclinic").isDefined mustBe true
       server.schemata.get("petclinic").get.getName mustEqual "petclinic"
