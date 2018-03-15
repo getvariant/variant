@@ -76,7 +76,13 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
         logger.error("Schema [%s] was not deployed due to previous parser error(s)".format(file.getAbsolutePath));
       }
       else {
-         deploy(parserResp, file.getName)
+         try {
+            deploy(parserResp, file.getName)
+         } catch {
+            case ue: ServerException.User => 
+               logger.error(ue.getMessage)
+               logger.error("Schema [%s] was not deployed due to previous error(s)".format(file.getAbsolutePath));
+         }
       }
    }
 

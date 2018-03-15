@@ -18,6 +18,9 @@ import com.variant.core.util.IoUtils
 import org.scalatest.BeforeAndAfterAll
 import play.api.Logger
 import com.variant.server.schema.State
+import scala.sys.process._
+import com.variant.server.test.util.LogSniffer
+
 /**
  * Test various schema deployment scenarios
  */
@@ -50,21 +53,21 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
    }
 
    "Schema deployer" should {
-	   
+      
 	   "startup with two schemata" in {
 	      
-         server.schemata.size mustBe 2
+	      server.schemata.size mustBe 2
 	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
          server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
          server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         
+                  
          // Let the directory watcher thread start before copying any files.
 	      Thread.sleep(100)
 	   }
-	   
+
 	   "parse a third schema" in {
 
 	      // Add a 3rd schema
@@ -107,10 +110,39 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
          server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
 
 	   }
-	   
+
+	   "refuse to replace petclinic from different origin" in {
+	      
+	      val currentSchema = server.schemata.get("petclinic").get
+	      
+         IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${tmpDir}/petclinic-schema2.json");
+         Thread.sleep(DirWatcherLatencyMsecs)
+    
+         currentSchema.state mustBe State.Deployed
+         
+	      server.schemata.size mustBe 3
+	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+         server.schemata.get("petclinic").isDefined mustBe true
+         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
+         server.schemata.get("petclinic").get.state mustEqual State.Deployed
+         server.schemata.get("petclinic").get.getId must equal (currentSchema.getId())
+         server.schemata.get("big_covar_schema").isDefined mustBe true
+         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
+         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+
+         val logLines = LogSniffer.last(5)
+         println("*******************")
+         logLines.foreach(println _)
+         println("*******************")
+
+	   }
+
 	   "undeploy another-big-test-schema.json" in {
 	      
 	      val currentSchema = server.schemata.get("big_covar_schema").get
+         currentSchema.state mustBe State.Deployed
 
 	      IoUtils.delete(s"${tmpDir}/another-big-test-schema.json");
          Thread.sleep(DirWatcherLatencyMsecs)
