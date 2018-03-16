@@ -20,6 +20,8 @@ import play.api.Logger
 import com.variant.server.schema.State
 import scala.sys.process._
 import com.variant.server.test.util.LogSniffer
+import com.variant.core.UserError.Severity
+import com.variant.server.boot.ServerErrorLocal
 
 /**
  * Test various schema deployment scenarios
@@ -132,10 +134,11 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
          server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
          server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
 
-         val logLines = LogSniffer.last(5)
-         println("*******************")
-         logLines.foreach(println _)
-         println("*******************")
+         val logLines = LogSniffer.last(2)
+         logLines(0).severity mustBe Severity.ERROR
+         logLines(0).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
+         logLines(1).severity mustBe Severity.ERROR
+         logLines(1).message must startWith (s"[${ServerErrorLocal.SCHEMA_CANNOT_REPLACE.getCode}]")
 
 	   }
 

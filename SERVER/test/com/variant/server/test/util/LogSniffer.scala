@@ -47,7 +47,7 @@ object LogSniffer {
     */
    class Entry private[util] (line: String) {
       
-      private[this] val tokens = line.split(" ", 8)
+      private[this] val tokens = line.split(" ", 9)
       
       println("parsing [" + line + "]")
       
@@ -57,7 +57,7 @@ object LogSniffer {
          UserError.Severity.valueOf(tokens(2).substring(1, tokens(2).length - 1))
       }
       
-      val message = tokens(7)
+      val message = tokens(8)
       
       override def toString = s"${Entry.format.format(date)} [${severity}] ${message}"
    }

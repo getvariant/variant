@@ -99,7 +99,7 @@ abstract public class ServerException extends VariantException {
 		 */
 		@Override
 		public String getMessage() {
-			return "[" + error.getCode() + "] " + error.asMessage((Object[])args);
+			return error.asMessage((Object[])args);
 		}
 
 	}

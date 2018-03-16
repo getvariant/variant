@@ -47,6 +47,9 @@ public class ServerErrorLocal extends RuntimeError {
 	public final static ServerErrorLocal FLUSHER_CLASS_NO_INTERFACE = 
 			new ServerErrorLocal(428, Severity.ERROR, "Event flusher class [%s] must implement interface [%s]");
 
+	public final static ServerErrorLocal SCHEMA_FAILED = 
+			new ServerErrorLocal(429, Severity.ERROR, "Schema [%s] was not deployedd from [%s] due to previous errors");
+
 	//
 	// 461-480 Server API
 	//
