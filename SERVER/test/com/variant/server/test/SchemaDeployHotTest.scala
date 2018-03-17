@@ -145,7 +145,31 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
 
 	   }
 
-	   "undeploy deleted another-big-test-schema.json" in {
+   	"re-deploy a schema with parse warnings" in {
+
+   	   val currentSchema = server.schemata.get("big_covar_schema").get
+         currentSchema.state mustBe State.Deployed
+
+	      IoUtils.fileCopy("test-schemata-with-errors/big-covar-schema-warning.json", s"${tmpDir}/another-big-test-schema.json")
+         Thread.sleep(DirWatcherLatencyMsecs)
+             
+         currentSchema.state mustBe State.Gone
+
+	      server.schemata.size mustBe 3
+	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+         server.schemata.get("petclinic").isDefined mustBe true
+         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
+         server.schemata.get("petclinic").get.state mustEqual State.Deployed
+         server.schemata.get("big_covar_schema").isDefined mustBe true
+         server.schemata.get("big_covar_schema").get.getId mustNot equal (currentSchema.getId)
+         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
+         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+
+	   }
+
+   	"undeploy deleted another-big-test-schema.json" in {
 	      
 	      val currentSchema = server.schemata.get("big_covar_schema").get
          currentSchema.state mustBe State.Deployed
@@ -162,7 +186,6 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_covar_schema").isDefined mustBe false
 
 	   }
 
@@ -184,7 +207,6 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_covar_schema").isDefined mustBe false
 
 	   }
 
@@ -207,7 +229,6 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_covar_schema").isDefined mustBe false
 
 	   }
 
