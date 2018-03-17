@@ -78,6 +78,6 @@ public class SyntaxError extends ParserError {
 	// 171-180 Schema parser Syntax
 	//
 	public static final SyntaxError JSON_SYNTAX_ERROR =
-			new SyntaxError(171, Severity.FATAL, "Invalid JSON syntax: [%s]");
+			new SyntaxError(171, Severity.ERROR, "Invalid JSON syntax: [%s]");
 
 }

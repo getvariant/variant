@@ -38,7 +38,6 @@ trait VariantServer {
    val startTs = System.currentTimeMillis
    def schemata: Map[String, ServerSchema]
    def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
-   def isUp: Boolean
    def schemaDeployer: SchemaDeployer
 }
 
@@ -81,9 +80,7 @@ class VariantServerImpl @Inject() (
 	override def schemata = _schemaDeployer.schemata 
 	
 	override def schemaDeployer = _schemaDeployer
-	
-   override def isUp = ! startupErrorLog.exists { _.getSeverity == Severity.FATAL }
-	
+		
    bootup()
 
 	/**
@@ -105,18 +102,18 @@ class VariantServerImpl @Inject() (
          case e: Throwable => throw new RuntimeException("Uncaught exception", e) // This will be uncaught and crash the server.
       }
       
-      if (isUp) {
+      if (startupErrorLog.exists { _.getSeverity == Severity.FATAL }) {
+   		logger.error("%s failed to bootstrap due to following errors:".format(productName))
+   		startupErrorLog.foreach { e => logger.error(e.getMessage(), e) }
+   	   shutdown()
+   	   System.exit(0)
+   	}
+   	else {
          logger.info("%s bootstrapped on :%s%s in %s.".format(
                productName,
                config.getString("http.port"),
                config.getString("play.http.context"),
       			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))   	
-   	}
-   	else {
-   		logger.error("%s failed to bootstrap due to following ERRORS:".format(productName))
-   		startupErrorLog.foreach { e => logger.error(e.getMessage(), e) }
-   	   shutdown()
-   	   //System.exit(0)
    	}      
 
    }

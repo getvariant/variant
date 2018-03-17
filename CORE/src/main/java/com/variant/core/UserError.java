@@ -103,13 +103,13 @@ abstract public class UserError {
 		 */
 		WARN,
 		/**
-		 * Error. If received at parse time, parser will proceed, but Variant will not deploy the schema.
+		 * Error. If received at parse time, parser may proceed, but Variant will not deploy the schema.
 		 * If received at run time, current operation will fail. 
 		 * @since 0.5
 		 */
 		ERROR,
 		/**
-		 * Fatal Error. Variant environment is not usable.
+		 * Fatal Error. Variant server is not functional and will shutdown.
 		 * @since 0.5
 		 */
 		FATAL;

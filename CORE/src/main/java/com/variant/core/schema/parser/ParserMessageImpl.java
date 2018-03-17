@@ -78,8 +78,7 @@ public class ParserMessageImpl implements ParserMessage {
 	 */
 	@Override
 	public String toString() {
-		StringBuilder result = new StringBuilder();
-		result.append("[").append(getCode()).append("] [").append(getSeverity().name()).append("] ").append(getText());
+		StringBuilder result = new StringBuilder(getText());
 		if (location != null) result.append("\nLocation: ").append(location);
 		return result.toString();
 	}

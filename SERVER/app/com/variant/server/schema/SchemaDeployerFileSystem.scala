@@ -73,7 +73,8 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
                
       // If failed parsing, print errors and no schema.
       if (parserResp.hasMessages(Severity.ERROR)) {
-        logger.error(ServerErrorLocal.SCHEMA_FAILED.asMessage(parserResp.getSchema.getName, file.getAbsolutePath))
+         val schemaName = try { parserResp.getSchema.getName} catch {case _: NullPointerException => "?" }
+         logger.warn(ServerErrorLocal.SCHEMA_FAILED.asMessage(schemaName, file.getAbsolutePath))
       }
       else {
          try {
@@ -81,7 +82,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
          } catch {
             case ue: ServerException.User => 
                logger.error(ue.getMessage)
-               logger.error(ServerErrorLocal.SCHEMA_FAILED.asMessage( parserResp.getSchema.getName, file.getAbsolutePath))
+               logger.warn(ServerErrorLocal.SCHEMA_FAILED.asMessage( parserResp.getSchema.getName, file.getAbsolutePath))
          }
       }
    }

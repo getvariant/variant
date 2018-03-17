@@ -34,12 +34,7 @@ class RootController @Inject() (
     * Print server status message
     */
    def status() = VariantAction { req =>
-      Ok(server.productName + ", " +
-         {
-            if (server.isUp) "Uptime %s.".format(DurationFormatUtils.formatDuration(System.currentTimeMillis() - server.startTs, "HH:mm:ss")) 
-            else "Down."
-         }   
-      )
+      Ok(server.productName + ", Uptime %s.".format(DurationFormatUtils.formatDuration(System.currentTimeMillis() - server.startTs, "HH:mm:ss")))
    }
 
 }

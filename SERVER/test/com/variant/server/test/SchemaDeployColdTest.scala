@@ -53,7 +53,6 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
    
       val server = app.injector.instanceOf[VariantServer]
       server.startupErrorLog.size mustEqual 0
-      server.isUp mustBe true
       server.schemata.size mustBe 2
       server.schemata.get("big_covar_schema").isDefined mustBe true
       server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema"
@@ -65,7 +64,6 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
       
       val server = app.injector.instanceOf[VariantServer]
       server.startupErrorLog.size mustEqual 0
-      server.isUp mustBe true
       server.schemata.size mustBe 1
       server.schemata.get("petclinic").isDefined mustBe true
       server.schemata.get("petclinic").get.getName mustEqual "petclinic"

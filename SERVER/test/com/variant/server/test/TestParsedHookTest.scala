@@ -140,7 +140,6 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsed", "test2")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
-   		server.isUp mustBe true
 	   }
    }
 
@@ -301,7 +300,6 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedS1", "test2")))
 
    		server.schemata.get(schemaName).isDefined mustBe false
-   		server.isUp mustBe true
 	   }
    }
 
@@ -439,7 +437,6 @@ class TestParsedHookTest extends BaseSpecWithServer {
    		msg.getText must include (SemanticError.DUPE_OBJECT.asMessage("testParsed"))
 
    		server.schemata.get(schemaName).isDefined mustBe false
-   		server.isUp mustBe true
 	   }
    }
 

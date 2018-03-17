@@ -23,26 +23,19 @@ object VariantAction extends ActionBuilder[Request] with Results {
     */
    def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
 
-      if (!VariantServer.instance.isUp) {
-         // If the server didn't come up, regurn 503
-         logger.warn("Server unavailable");
-         Future.successful(ServiceUnavailable)
+      val req = request.method + " " + request.path
+      
+      // Delegate to the actual action
+      logger.trace("Delegated request [%s]".format(req))
+      try {
+         block(request)
       }
-      else {
-         val req = request.method + " " + request.path
-         
-         // Delegate to the actual action
-         logger.trace("Delegated request [%s]".format(req))
-         try {
-            block(request)
-         }
-         catch {
-            case sre: ServerException.Remote => 
-               Future.successful(ServerErrorRemote(sre.error).asResult(sre.args:_*))
-            case t: Throwable => 
-               logger.error("Unexpected Internal Error in [%s]".format(req), t);
-               Future.successful(ServerErrorRemote(ServerError.InternalError).asResult(t.getMessage))            
-         }
+      catch {
+         case sre: ServerException.Remote => 
+            Future.successful(ServerErrorRemote(sre.error).asResult(sre.args:_*))
+         case t: Throwable => 
+            logger.error("Unexpected Internal Error in [%s]".format(req), t);
+            Future.successful(ServerErrorRemote(ServerError.InternalError).asResult(t.getMessage))            
       }
    }
     

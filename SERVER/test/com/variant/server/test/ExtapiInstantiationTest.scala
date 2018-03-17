@@ -87,7 +87,6 @@ class ExtapiInstantiationTest extends BaseSpecWithServer {
       response.getMessages.size mustBe 0
 
    	server.schemata.get(schemaName).isDefined mustBe true
-   	server.isUp mustBe true
 	}
 	   
    	////////////////
@@ -145,7 +144,6 @@ class ExtapiInstantiationTest extends BaseSpecWithServer {
       response.getMessages.size mustBe 0
 
    	server.schemata.get(schemaName).isDefined mustBe true
-   	server.isUp mustBe true
 	   }
 	   
 	   ////////////////
@@ -203,7 +201,6 @@ class ExtapiInstantiationTest extends BaseSpecWithServer {
          response.getMessages.size mustBe 2
 
          server.schemata.get(schemaName).isDefined mustBe true
-         server.isUp mustBe true
          
          var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
@@ -263,7 +260,6 @@ class ExtapiInstantiationTest extends BaseSpecWithServer {
          response.getMessages.size mustBe 1
 
          server.schemata.get(schemaName).isDefined mustBe false
-         server.isUp mustBe true
          
          var msg = response.getMessages.get(0)
          msg.getSeverity mustBe ERROR
@@ -333,7 +329,6 @@ class ExtapiInstantiationTest extends BaseSpecWithServer {
          response.getMessages.size mustBe 1
 
          server.schemata.get(schemaName).isDefined mustBe true
-   	   server.isUp mustBe true
    	   
          var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
@@ -391,7 +386,6 @@ class ExtapiInstantiationTest extends BaseSpecWithServer {
          response.getMessages.size mustBe 1
 
          server.schemata.get(schemaName).isDefined mustBe false
-   	   server.isUp mustBe true
    	   
          var msg = response.getMessages.get(0)
          msg.getSeverity mustBe ERROR

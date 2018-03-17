@@ -48,9 +48,7 @@ object LogSniffer {
    class Entry private[util] (line: String) {
       
       private[this] val tokens = line.split(" ", 9)
-      
-      println("parsing [" + line + "]")
-      
+            
       val date = Entry.format.parse(tokens(0) + ' ' + tokens(1))
       
       val severity = {

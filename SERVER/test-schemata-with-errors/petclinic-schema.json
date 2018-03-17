@@ -8,8 +8,8 @@
 
 {
    'meta':{
-      'name':'petclinicNoHooks',
-      'comment':'Experiment schema for the Pet Clinic demo application w/o the hooks'
+      'name':'petclinicNoHooksWithErrors',
+      'comment':'Experiment schema for the Pet Clinic demo application w/o the hooks and with semantic errors'
    },
    'states':[                                                
      { 
@@ -35,8 +35,8 @@
          'experiences':[                                     
             {                                                
                'name':'outOfTheBox',                                   
-               'weight':1,                                  
-               'isControl':true                              
+               'weight':1                              
+               // 'isControl':true  <- No control experience                              
             },                                               
             {                                                
                'name':'tosCheckbox',                                   
