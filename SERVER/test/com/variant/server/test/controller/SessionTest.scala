@@ -142,6 +142,20 @@ class SessionTest extends BaseSpecWithServer {
             StringUtils.digest(sessionJson.expand("sid" -> "foo"))
       }
 
+      "keep an existing session alive" in {
+      
+         val halfExp = sessionTimeoutMillis / 2
+         halfExp mustBe 500   
+         for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
+            Thread.sleep(wait)
+            val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
+            status(resp) mustBe OK
+            val respAsJson = contentAsJson(resp)
+            StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
+               StringUtils.digest(sessionJson.expand("sid" -> "foo").toString())
+         }
+      }
+
       "return SessionExpired on GET expired session" in {
          
          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);

@@ -37,7 +37,6 @@ import com.variant.core.schema.parser.error.SemanticError
 object SchemaDeployHotTest {
    val sessionTimeoutSecs = 15
    val schemataDir = "/tmp/test-schemata"  
-
 }
 
 
@@ -71,9 +70,10 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
       IoUtils.delete(schemataDir)
       super.afterAll();
    }
-   
+
+   /*
    "Schema deployer" should {
-      
+ 
 	   "startup with two schemata" in {
 	      
 	      server.schemata.size mustBe 2
@@ -247,7 +247,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
 	   }
 
    }
-   
+   */
    /**
     * Start with new server.
     */
@@ -303,7 +303,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
 	   
 	   val sessionJson = ParameterizedString(SessionTest.sessionJsonProto.format(System.currentTimeMillis()))
 	   val rand = new java.util.Random()
-	   val sid = StringUtils.random64BitString(rand)
+	   var sid = StringUtils.random64BitString(rand)
 	   
 	   "create a new session in schema ParserCovariantOkayBigTestNoHooks" in {
          
@@ -332,7 +332,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
 
 
 	   "keep existing session alive" in {
-
+	      
          val resp = route(app, FakeRequest(GET, context + "/session" + "/" + sid)).get
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
@@ -343,10 +343,10 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
 
 	   "refuse to create a new session in the undeployed schema" in {
          
-	      val sid2 = StringUtils.random64BitString(rand)
+	      sid = StringUtils.random64BitString(rand)
          val body = Json.obj(
             "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> sid2)
+            "ssn" -> sessionJson.expand("sid" -> sid)
             )
          val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(body)).get
          status(resp) mustBe BAD_REQUEST
@@ -356,6 +356,19 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          args mustBe Seq(connId)
 
       }
+	   
+	   "expire existing session as normal in the undeployed schema" in {
+         
+         Thread.sleep(sessionTimeoutSecs * 1000);    
+
+         val resp = route(app, FakeRequest(GET, context + "/session" + "/" + sid)).get
+         status(resp) mustBe BAD_REQUEST
+         val (isInternal, error, args) = parseError(contentAsJson(resp))
+         isInternal mustBe false 
+         error mustBe ServerError.SessionExpired
+         args mustBe Seq(sid)
+
+	   }
 
    }
 
