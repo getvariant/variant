@@ -35,7 +35,14 @@ class SessionTest extends BaseSpecWithServer {
    import SessionTest._
    
    val endpoint = context + "/session"
-   lazy val sessionJson = ParameterizedString(sessionJsonProto.format(System.currentTimeMillis()))
+   val sessionJson = ParameterizedString(sessionJsonProto.format(System.currentTimeMillis()))
+   
+   val sessionTimeoutMillis = server.config.getLong(ConfigKeys.SESSION_TIMEOUT) * 1000
+   sessionTimeoutMillis mustEqual 1000
+   
+   val vacuumIntervalMillis = server.config.getLong(ConfigKeys.SESSION_VACUUM_INTERVAL) * 1000
+   vacuumIntervalMillis  mustEqual 1000
+
 
    "SessionController" should {
 
@@ -137,15 +144,11 @@ class SessionTest extends BaseSpecWithServer {
 
       "return SessionExpired on GET expired session" in {
          
-         val timeout = server.config.getLong(ConfigKeys.SESSION_TIMEOUT)
-         val vacuumInterval = server.config.getLong(ConfigKeys.SESSION_VACUUM_INTERVAL)
-         timeout  mustEqual 1
-         vacuumInterval  mustEqual 1
-      
-         Thread.sleep((timeout * 1000 * 2).asInstanceOf[Long]);
+         Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
       
          ("foo" :: "bar" :: Nil).foreach { sid =>
               val resp = route(app, FakeRequest(GET, endpoint + "/" + sid)).get
+              status(resp) mustBe BAD_REQUEST
               val (isInternal, error, args) = parseError(contentAsJson(resp))
               isInternal mustBe SessionExpired.isInternal() 
               error mustBe SessionExpired
@@ -193,7 +196,31 @@ class SessionTest extends BaseSpecWithServer {
 
       }
 
-      "return SessionExpired on GET session after connection close" in {
+      "deserialize payload into session object" in {
+       
+         val sid = newSid()
+         val ts = System.currentTimeMillis()
+         val body = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> sid, "ts" -> ts)
+            )
+         val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
+         val respPut = route(app, reqPut).get
+         status(respPut) mustBe OK
+         contentAsString(respPut) mustBe empty
+         val ssnJson = ssnStore.get(sid).get.asInstanceOf[SessionImpl].toJson
+         
+         ssnJson mustBe normalJson(sessionJson.expand("sid" -> sid, "ts" -> ts))
+         val ssn = ssnStore.get(sid).get
+         ssn.getCreateDate.getTime mustBe ts
+         ssn.getId mustBe sid
+      
+         Thread.sleep(2000);
+         ssnStore.get(sid) mustBe empty
+         
+      }
+
+      "return OK on GET session after connection close" in {
 
          // Obtain a new connection.
          val connResp = route(app, FakeRequest(POST, context + "/connection/big_covar_schema")).get
@@ -219,38 +246,22 @@ class SessionTest extends BaseSpecWithServer {
          status(respDel) mustBe OK
          contentAsString(respDel) mustBe empty
 
-         // Attempt to get the session the session on the closed connection.
+         // Session should be alive after connection closed.
          val respGet = route(app, FakeRequest(GET, endpoint + "/" + sid)).get
-         status(respGet) mustBe BAD_REQUEST
-         val (isInternal, error, args) = parseError(contentAsJson(respGet))
+         status(respGet) mustBe OK
+
+         // Session should be expired as normal.
+         
+         Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
+
+         // Session should be expired as normal.
+         val respGet2 = route(app, FakeRequest(GET, endpoint + "/" + sid)).get
+         status(respGet2) mustBe BAD_REQUEST
+         val (isInternal, error, args) = parseError(contentAsJson(respGet2))
          isInternal mustBe false 
          error mustBe SessionExpired
          args mustBe Seq(sid)
-                  
       }
 
-      "deserialize payload into session object" in {
-       
-         val sid = newSid()
-         val ts = System.currentTimeMillis()
-         val body = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> sid, "ts" -> ts)
-            )
-         val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
-         val respPut = route(app, reqPut).get
-         status(respPut) mustBe OK
-         contentAsString(respPut) mustBe empty
-         val ssnJson = ssnStore.get(sid).get.asInstanceOf[SessionImpl].toJson
-         
-         ssnJson mustBe normalJson(sessionJson.expand("sid" -> sid, "ts" -> ts))
-         val ssn = ssnStore.get(sid).get
-         ssn.getCreateDate.getTime mustBe ts
-         ssn.getId mustBe sid
-      
-         Thread.sleep(2000);
-         ssnStore.get(sid) mustBe empty
-         
-      }
    }
 }

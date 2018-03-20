@@ -37,13 +37,13 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
       
    /**
     * 
-    */
+    *
    private def checkState {
       if (state != Deployed)
          throw new ServerException.Internal(
                "Schema [%s] cannot be accessed due to state [%s]".format(getName, state))
    }
-
+   */
    /*------------------------------------ Public Implementations ------------------------------------*/
 
    override def getName = {
@@ -55,12 +55,10 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
 	}
 
    override def getHooks = {
-	   checkState
 	   coreSchema.getHooks
 	}
 
    override def getFlusher = {
-	   checkState
 	   coreSchema.getFlusher
 	}
 
@@ -77,12 +75,10 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
 	}
 
 	override def getTests() = {
-      checkState
 	   coreSchema.getTests
 	}
 	
 	override def getTest(name: String) = {
-      checkState
 	   coreSchema.getTest(name)	   
 	}
 
@@ -99,6 +95,7 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
     */
 	def undeploy() {
       state = Gone
+      VariantServer.instance.connectionStore.closeAll { _.schema.getId() == getId }
 	   logger.info("Undeployed schema [%s] ID [%s], from [%s]".format(getName, getId, origin))
 	}
    

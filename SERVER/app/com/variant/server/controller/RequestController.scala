@@ -36,7 +36,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
      -d '{"sid":"SID","state":"STATE"}' \
      http://localhost:9000/variant/target
     */
-   def create() = VariantAction { req =>
+   def post() = VariantAction { req =>
 
       val bodyJson = req.body.asJson.getOrElse {
          throw new ServerException.Remote(EmptyBody)

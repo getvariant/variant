@@ -47,11 +47,11 @@ trait SessionStore {
       private val sessionTimeoutMillis = VariantServer.instance.config.getInt(SESSION_TIMEOUT) * 1000
       
       /**
-       * An entry is dead if its session's connection is gone
-       * or it has been idle longer than configured max idle interval.
+       * An entry is not dead if its session's connection is gone,
+       * only if it has been idle longer than configured max idle interval.
        */
       def isExpired = {
-         session.asInstanceOf[SessionImpl].connection.isClosed ||
+         // session.asInstanceOf[SessionImpl].connection.isClosed ||
          sessionTimeoutMillis > 0 && (System.currentTimeMillis() - lastTouchTs) > sessionTimeoutMillis
       }
       

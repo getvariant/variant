@@ -31,7 +31,7 @@ class SessionController @Inject() (
     * is the same as non-existent. 
     * @param cid Connection ID
     */
-   def save() = VariantAction { req =>
+   def put() = VariantAction { req =>
 
       val bodyJson = req.body.asJson.getOrElse {
          throw new ServerException.Remote(EmptyBody)

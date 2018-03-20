@@ -40,17 +40,27 @@ trait ConnectionStore {
 	def getOrBust(cid: String): Connection
 	
    /**
-	 * Delete a connection from this store or throw an exception if it doesn't exist.
+	 * Hang-up a connection. Client requested closure of a connection by ID.
+	 * Connection must exist, or a client side error is thrown.
+	 * Removed from this store.
 	 */
-	def deleteOrBust(cid: String): Connection
+	def closeOrBust(cid: String): Connection
+	
+	/**
+	 * Close all connections satisfying a given predicate.
+	 * Server-side operation so we don't check for the existence of
+	 * the connection. Removes connections from this store. This is
+	 * useful when a schema is undeployed.
+	 */
+	def closeAll(p: (Connection) => Boolean)
 
 }
 
 @Singleton
-class ConnectionStoreImpl @Inject() (server: VariantServer) extends ConnectionStore {
+class ConnectionStoreImpl () extends ConnectionStore {
 
    private val logger = Logger(this.getClass)
-	private lazy val maxSize = server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
+	private lazy val maxSize = VariantServer.instance.config.getInt(MAX_CONCURRENT_CONNECTIONS)
    private val connMap = new TrieMap[String, Connection]()
    
 	/**
@@ -74,17 +84,19 @@ class ConnectionStoreImpl @Inject() (server: VariantServer) extends ConnectionSt
    /**
 	 */
 	override def getOrBust(cid: String): Connection = {
-      val result	= get(cid).getOrElse {
+      
+	   val result	= get(cid).getOrElse {
          logger.debug(s"Not found connection [${cid}]")      
          throw new ServerException.Remote(ServerError.UnknownConnection, cid)
       }
+      
       logger.debug(s"Found connection [${cid}]")            
       result
 	}
 
    /**
 	 */
-	override def deleteOrBust(cid: String): Connection = {
+	override def closeOrBust(cid: String): Connection = {
       val conn = connMap.remove(cid).getOrElse {
          logger.debug(s"Not found connection [${cid}]")      
          throw new ServerException.Remote(ServerError.UnknownConnection, cid)
@@ -94,4 +106,14 @@ class ConnectionStoreImpl @Inject() (server: VariantServer) extends ConnectionSt
       conn
 	}
 
+	/**
+	 * Close connections satisfying given predicate 
+	 */
+	def closeAll(p: (Connection) => Boolean) {
+	   val removed = connMap.retain { (id, conn) => ! p(conn) }
+	   removed.foreach { e => 
+	      e._2.close() 
+	      logger.debug("Closed connection ID [%s] to schema [%s]".format(e._2.id, e._2.schema.getName()))
+	   }
+	}
 }

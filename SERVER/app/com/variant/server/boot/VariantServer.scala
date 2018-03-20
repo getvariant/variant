@@ -24,6 +24,7 @@ import com.variant.server.schema.SchemaDeployer
 import com.variant.server.util.VariantClassLoader
 import com.variant.core.RuntimeError
 import com.variant.core.UserError.Severity
+import com.variant.server.conn.ConnectionStore
 
 
 /**
@@ -36,7 +37,9 @@ trait VariantServer {
    val startupErrorLog = mutable.ArrayBuffer[ServerException]()
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
+   // Read-only snapshot
    def schemata: Map[String, ServerSchema]
+   val connectionStore: ConnectionStore
    def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
    def schemaDeployer: SchemaDeployer
 }
@@ -59,10 +62,11 @@ object VariantServer {
 @Singleton
 class VariantServerImpl @Inject() (
       playConfig: Configuration, 
-      lifecycle: ApplicationLifecycle
+      lifecycle: ApplicationLifecycle,
       // We ask for the provider instead of the application, because application itself won't be available until
       // all eager singletons are constructed, including this class.
       //appProvider: Provider[Application] 
+      connStore: ConnectionStore
    ) extends VariantServer {
    
    import VariantServer._
@@ -76,6 +80,8 @@ class VariantServerImpl @Inject() (
 	override val config = playConfig.underlying
 	
 	override val classloader = new VariantClassLoader()
+   
+   override val connectionStore = connStore
   
 	override def schemata = _schemaDeployer.schemata 
 	

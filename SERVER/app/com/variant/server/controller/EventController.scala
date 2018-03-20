@@ -33,7 +33,7 @@ class EventController @Inject() (
    /**
     * Trigger a remote event, i.e. write it off to external storage.
     */
-   def trigger() = VariantAction { req =>
+   def post() = VariantAction { req =>
 
       val bodyJson = req.body.asJson.getOrElse {
          throw new ServerException.Remote(EmptyBody)

@@ -19,9 +19,8 @@ class ConnectionController @Inject() (
    private val logger = Logger(this.getClass)	
 
    /**
-    * POST a new connection to a schema.
-    * test with:
-curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
+    * POST
+    * Open a new connection to a schema by name.
     */
    def post(name: String) = VariantAction {
      
@@ -49,12 +48,11 @@ curl -v -X POST http://localhost:9000/variant/connection/SCHEMA-NAME
    }
   
    /**
-    * Close a connection.
-    * test with:
-curl -v -X DELETE http://localhost:9000/variant/connection/CID
+    * DELETE
+    * Close an existing connection.
     */
    def delete(cid: String) = VariantAction {
-      val conn = connStore.deleteOrBust(cid)
+      val conn = connStore.closeOrBust(cid)
       logger.info("Closed connection [%s] to schema [%s]".format(cid, conn.schema.getName))
       Ok
    }

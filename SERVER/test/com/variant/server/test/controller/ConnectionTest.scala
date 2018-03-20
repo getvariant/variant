@@ -86,7 +86,7 @@ import EventTest._
 
       var connId: String = null
       
-      "open connection on POST with valid schema name and ID" in {
+      "open connection on POST with valid schema name" in {
          val resp = route(app, FakeRequest(POST, endpoint + "/big_covar_schema").withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe OK
          val body = contentAsString(resp)
@@ -116,7 +116,7 @@ import EventTest._
          contentAsString(resp) mustBe empty
       }
 
-      "return 400 on DELETE of connection that no longer exists" in {
+      "return 400 on DELETE of connection which no longer exists" in {
          val resp = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))

@@ -60,7 +60,9 @@ class ErrorHandler extends HttpErrorHandler {
    private val logger = Logger(this.getClass)
    
    def onClientError(request: RequestHeader, statusCode: Int, message: String) = {
-      //logger.debug("Returning error to client: [%d] [%s]".format(statusCode, message))
+      
+      logger.trace("Returning error to client: [%d] [%s]".format(statusCode, message))
+      
       Future.successful({
          if (message.startsWith("Invalid Json"))
             ServerErrorRemote(ServerError.JsonParseError).asResult(message.substring(0,message.indexOf('\n')))

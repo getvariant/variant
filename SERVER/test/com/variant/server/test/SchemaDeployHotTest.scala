@@ -1,51 +1,66 @@
 package com.variant.server.test
 
-import scala.util.Random
-import org.scalatestplus.play._
-import play.api.Application
-import play.api.test._
-import play.api.test.Helpers._
-import scala.collection.JavaConversions._
-import com.variant.server.test.util.EventReader
-import com.variant.server.conn.SessionStore
-import com.variant.server.boot.VariantServer
-import play.api.inject.guice.GuiceApplicationBuilder
-import org.scalatest.TestData
-import java.io.File
-import play.api.Configuration
-import com.variant.server.boot.VariantApplicationLoader
-import com.variant.core.util.IoUtils
 import org.scalatest.BeforeAndAfterAll
-import play.api.Logger
+import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.play.PlaySpec
+import com.variant.core.util.IoUtils
+import com.variant.core.util.StringUtils
+import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.boot.VariantServer
 import com.variant.server.schema.State
-import scala.sys.process._
+import com.variant.server.test.controller.SessionTest
+import com.variant.server.test.util.ParameterizedString
+import play.api.Application
+import play.api.Configuration
+import play.api.Logger
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.JsValue.jsValueToJsLookup
+import play.api.libs.json.Json
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import play.api.test.Helpers.contentAsJson
+import play.api.test.Helpers.contentAsString
+import play.api.test.Helpers.defaultAwaitTimeout
+import play.api.test.Helpers.route
+import play.api.test.Helpers.status
+import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
+import play.api.test.Helpers.writeableOf_AnyContentAsJson
+import com.variant.core.ServerError
 import com.variant.server.test.util.LogSniffer
 import com.variant.core.UserError.Severity
 import com.variant.server.boot.ServerErrorLocal
-import com.variant.core.schema.parser.error.ParserError
 import com.variant.core.schema.parser.error.SyntaxError
 import com.variant.core.schema.parser.error.SemanticError
+
+
+object SchemaDeployHotTest {
+   val sessionTimeoutSecs = 15
+   val schemataDir = "/tmp/test-schemata"  
+
+}
+
 
 /**
  * Test various schema deployment scenarios
  */
-class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
+class SchemaDeployHotTest extends BaseSpecWithServer {
       
-   val tmpDir = "/tmp/test-schemata"
+   import SchemaDeployHotTest._
    
-   private val logger = Logger(this.getClass)   
-   private val server = app.injector.instanceOf[VariantServer]
-   private val DirWatcherLatencyMsecs = 10000   // takes this long for the directory watcher service to be notified.
-	
+   private val logger = Logger(this.getClass)
+   private val dirWatcherLatencyMsecs = 10000   // takes this long for FS to notify the directory watcher service.
+
    // Custom application builder.  
    implicit override lazy val app: Application = {
-      IoUtils.delete(tmpDir)
-      IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${tmpDir}/ParserCovariantOkayBigTestNoHooks.json");
-      IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${tmpDir}/petclinic-schema.json");
-      sys.props +=("variant.schemata.dir" -> tmpDir)
-      sys.props +=("variant.ext.dir" -> "distr/ext") // petclinic needs this.
+      IoUtils.delete(schemataDir)
+      IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
+      IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${schemataDir}/petclinic-schema.json");
+      sys.props +=("variant.ext.dir" -> "distr/ext")
       new GuiceApplicationBuilder()
          .configure(new Configuration(VariantApplicationLoader.config))
+         .configure("variant.schemata.dir" -> schemataDir)
+         .configure("variant.session.timeout" -> sessionTimeoutSecs)
          .build()
    }
 
@@ -53,10 +68,10 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
     * Cleanup
     */
    override def afterAll() {
-      IoUtils.delete(tmpDir)
+      IoUtils.delete(schemataDir)
       super.afterAll();
    }
-
+   
    "Schema deployer" should {
       
 	   "startup with two schemata" in {
@@ -72,14 +87,13 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
          // Let the directory watcher thread start before copying any files.
 	      Thread.sleep(100)
 	   }
+      
+      "deploy a third schema" in {
 
-	   "parse a third schema" in {
-
-	      // Add a 3rd schema
-	      IoUtils.fileCopy("test-schemata/big-covar-schema.json", s"${tmpDir}/another-big-test-schema.json");
+	      IoUtils.fileCopy("test-schemata/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
-	      Thread.sleep(DirWatcherLatencyMsecs);
+	      Thread.sleep(dirWatcherLatencyMsecs);
 	      
 	      server.schemata.size mustBe 3
 	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
@@ -97,8 +111,8 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
 	      
 	      val currentSchema = server.schemata.get("petclinic").get
 	      
-         IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${tmpDir}/petclinic-schema.json");
-         Thread.sleep(DirWatcherLatencyMsecs)
+         IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${schemataDir}/petclinic-schema.json");
+         Thread.sleep(dirWatcherLatencyMsecs)
     
          currentSchema.state mustBe State.Gone
          
@@ -120,8 +134,8 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
 	      
 	      val currentSchema = server.schemata.get("petclinic").get
 	      
-         IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${tmpDir}/petclinic-schema2.json")
-         Thread.sleep(DirWatcherLatencyMsecs)
+         IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${schemataDir}/petclinic-schema2.json")
+         Thread.sleep(dirWatcherLatencyMsecs)
     
          currentSchema.state mustBe State.Deployed
          
@@ -150,8 +164,8 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
    	   val currentSchema = server.schemata.get("big_covar_schema").get
          currentSchema.state mustBe State.Deployed
 
-	      IoUtils.fileCopy("test-schemata-with-errors/big-covar-schema-warning.json", s"${tmpDir}/another-big-test-schema.json")
-         Thread.sleep(DirWatcherLatencyMsecs)
+	      IoUtils.fileCopy("test-schemata-with-errors/big-covar-schema-warning.json", s"${schemataDir}/another-big-test-schema.json")
+         Thread.sleep(dirWatcherLatencyMsecs)
              
          currentSchema.state mustBe State.Gone
 
@@ -174,8 +188,8 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
 	      val currentSchema = server.schemata.get("big_covar_schema").get
          currentSchema.state mustBe State.Deployed
 
-	      IoUtils.delete(s"${tmpDir}/another-big-test-schema.json");
-         Thread.sleep(DirWatcherLatencyMsecs)
+	      IoUtils.delete(s"${schemataDir}/another-big-test-schema.json");
+         Thread.sleep(dirWatcherLatencyMsecs)
     
          currentSchema.state mustBe State.Gone
          
@@ -191,8 +205,8 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
 
 	   "refuse to deploy a schema with syntax errors" in {
 	      
-	      IoUtils.fileCopy("test-schemata-with-errors/big-covar-schema-error.json", s"${tmpDir}/another-big-test-schema.json")
-         Thread.sleep(DirWatcherLatencyMsecs)
+	      IoUtils.fileCopy("test-schemata-with-errors/big-covar-schema-error.json", s"${schemataDir}/another-big-test-schema.json")
+         Thread.sleep(dirWatcherLatencyMsecs)
              
          val logLines = LogSniffer.last(2)
          logLines(0).severity mustBe Severity.WARN
@@ -213,8 +227,8 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
 
    	"refuse to re-deploy a schema with semantic errors" in {
 	      
-	      IoUtils.fileCopy("test-schemata-with-errors/petclinic-schema.json", s"${tmpDir}/petclinic-schema2.json")
-         Thread.sleep(DirWatcherLatencyMsecs)
+	      IoUtils.fileCopy("test-schemata-with-errors/petclinic-schema.json", s"${schemataDir}/petclinic-schema2.json")
+         Thread.sleep(dirWatcherLatencyMsecs)
              
          val logLines = LogSniffer.last(2)
          logLines(0).severity mustBe Severity.WARN
@@ -234,4 +248,115 @@ class SchemaDeployHotTest extends PlaySpec with OneAppPerSuite with BeforeAndAft
 
    }
    
+   /**
+    * Start with new server.
+    */
+   "Server" should {
+      
+	   "startup with two schemata" in {
+	      
+	      server.schemata.size mustBe 2
+	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+         server.schemata.get("petclinic").isDefined mustBe true
+         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
+         server.schemata.get("petclinic").get.state mustEqual State.Deployed
+                  
+         server.config.getNumber("variant.session.timeout") mustBe sessionTimeoutSecs
+         
+         // Let the directory watcher thread start before copying any files.
+	      Thread.sleep(100)
+	   }
+
+      "deploy a third schema" in {
+
+	      IoUtils.fileCopy("test-schemata/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
+
+	      // Sleep awhile to let WatcherService.take() have a chance to detect.
+	      Thread.sleep(dirWatcherLatencyMsecs);
+	      
+	      server.schemata.size mustBe 3
+	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+         server.schemata.get("petclinic").isDefined mustBe true
+         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
+         server.schemata.get("petclinic").get.state mustEqual State.Deployed
+         server.schemata.get("big_covar_schema").isDefined mustBe true
+         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
+         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+	   }
+
+      var connId: String = null
+	   
+      "open connection to petclinic" in {
+            
+         val resp = route(app, FakeRequest(POST, context + "/connection/ParserCovariantOkayBigTestNoHooks").withHeaders("Content-Type" -> "text/plain")).get
+         status(resp) mustBe OK
+         val body = contentAsString(resp)
+         body mustNot be (empty)
+         val json = Json.parse(body)
+         (json \ "id").asOpt[String].isDefined mustBe true
+         connId = (json \ "id").as[String]
+   	}
+	   
+	   val sessionJson = ParameterizedString(SessionTest.sessionJsonProto.format(System.currentTimeMillis()))
+	   val rand = new java.util.Random()
+	   val sid = StringUtils.random64BitString(rand)
+	   
+	   "create a new session in schema ParserCovariantOkayBigTestNoHooks" in {
+         
+         val body = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> sid)
+            )
+         val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(body)).get
+         status(resp) mustBe OK
+         contentAsString(resp) mustBe empty
+      }
+
+	   "delete schema ParserCovariantOkayBigTestNoHooks" in {
+
+	      val currentSchema = server.schemata.get("ParserCovariantOkayBigTestNoHooks").get
+         currentSchema.state mustBe State.Deployed
+
+	      IoUtils.delete(s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
+         Thread.sleep(dirWatcherLatencyMsecs)
+    
+         // Schema is gone
+         currentSchema.state mustBe State.Gone
+         server.schemata.get("ParserCovariantOkayBigTestNoHooks") mustBe None
+         
+	   }
+
+
+	   "keep existing session alive" in {
+
+         val resp = route(app, FakeRequest(GET, context + "/session" + "/" + sid)).get
+         status(resp) mustBe OK
+         val respAsJson = contentAsJson(resp)
+         StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
+            StringUtils.digest(sessionJson.expand("sid" -> sid).toString())
+
+	   }
+
+	   "refuse to create a new session in the undeployed schema" in {
+         
+	      val sid2 = StringUtils.random64BitString(rand)
+         val body = Json.obj(
+            "cid" -> connId,
+            "ssn" -> sessionJson.expand("sid" -> sid2)
+            )
+         val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(body)).get
+         status(resp) mustBe BAD_REQUEST
+         val (isInternal, error, args) = parseError(contentAsJson(resp))
+         isInternal mustBe false 
+         error mustBe ServerError.UnknownConnection
+         args mustBe Seq(connId)
+
+      }
+
+   }
+
 }
