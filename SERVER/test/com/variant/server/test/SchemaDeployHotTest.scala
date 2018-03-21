@@ -77,8 +77,8 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
 
    /**
     * 
-    * 
-   "Schema deployer" should {
+    */
+   "File System Schema Deployer" should {
  
 	   "startup with two schemata" in {
 	      
@@ -251,36 +251,13 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
 
 	   }
-
-   }
-   */
-   /**
-    * Start with new server.
-    *
-   "Schema Deployer, in the case of a deleted schema, --" should {
       
-	   "startup with two schemata" in {
-	      
-	      server.schemata.size mustBe 2
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
-                  
-         server.config.getNumber("variant.session.timeout") mustBe sessionTimeoutSecs
-         
-         // Let the directory watcher thread start before copying any files.
-	      Thread.sleep(100)
-	   }
-
-      "deploy a third schema" in {
+      "redeploy the third schema" in {
 
 	      IoUtils.fileCopy("test-schemata/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
-	      Thread.sleep(dirWatcherLatencyMsecs);
+	      Thread.sleep(dirWatcherLatencyMsecs)
 	      
 	      server.schemata.size mustBe 3
 	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
@@ -307,7 +284,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          connId = (json \ "id").as[String]
    	}
 	   
-	   val sessionJson = ParameterizedString(SessionTest.sessionJsonProto.format(System.currentTimeMillis()))
+	   val sessionJson = ParameterizedString(SessionTest.sessionJsonProtoBigCovar.format(System.currentTimeMillis()))
 	   var sid = StringUtils.random64BitString(rand)
 	   
 	   "create a new session in schema ParserCovariantOkayBigTestNoHooks" in {
@@ -374,33 +351,30 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          args mustBe Seq(sid)
 
 	   }
-
-   }
-*/
-   /**
-    * Start with new server.
-    */
-   "Schema Deployer, in the case of a redeployed schema, --" should {
-      
-	   "startup with two schemata" in {
+     	   
+	   "confirm the 3 schemata" in {
 	      
-	      server.schemata.size mustBe 2
+         IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
+         IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${schemataDir}/petclinic-schema.json");
+
+         Thread.sleep(dirWatcherLatencyMsecs)
+         
+	      server.schemata.size mustBe 3
 	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
          server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
          server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
-                  
-         server.config.getNumber("variant.session.timeout") mustBe sessionTimeoutSecs
+         server.schemata.get("big_covar_schema").isDefined mustBe true
+         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
+         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
          
-         // Let the directory watcher thread start before copying any files.
-	      Thread.sleep(100)
 	   }
 
       var connId1, connId2, connId3: String = null
 	   
-      "open connection to ParserCovariantOkayBigTestNoHooks" in {
+      "open new connection to ParserCovariantOkayBigTestNoHooks" in {
             
          val resp = route(app, FakeRequest(POST, context + "/connection/ParserCovariantOkayBigTestNoHooks").withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe OK
@@ -437,9 +411,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          contentAsString(resp) mustBe empty
       }
 
-	   "redeploy ParserCovariantOkayBigTestNoHooks and deploy a third schema at once" in {
-
-	      server.schemata.size mustBe 2
+	   "redeploy schemata at once" in {
 	      
 	      val oldBigSchema = server.schemata.get("ParserCovariantOkayBigTestNoHooks").get
          oldBigSchema.state mustBe State.Deployed

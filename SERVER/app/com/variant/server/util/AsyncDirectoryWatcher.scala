@@ -23,6 +23,8 @@ abstract class AsyncDirectoryWatcher(val path: Path) extends Thread {
         }
       }
    )
+
+   logger.debug(s"Starting directory watcher in [${path.toAbsolutePath()}]")
    
    val watchService = path.getFileSystem.newWatchService()
    path.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY)

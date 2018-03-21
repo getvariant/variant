@@ -54,7 +54,6 @@ class ErrorHandler @Inject() (
 
 }
 */
-@Singleton
 class ErrorHandler extends HttpErrorHandler {
 
    private val logger = Logger(this.getClass)

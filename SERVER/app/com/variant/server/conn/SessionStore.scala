@@ -141,7 +141,7 @@ class VacuumThread(store: SessionStore) extends Thread {
 
    private val logger = Logger(this.getClass)
    private val vacuumingFrequencyMillis = VariantServer.instance.config.getInt(SESSION_VACUUM_INTERVAL) * 1000
-	 setName("SsnVacThread");
+	setName("SsnVacThread");
    setDaemon(true); // JVM will kill it when on non-daemon threads exit.
 
 

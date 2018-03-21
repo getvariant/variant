@@ -130,6 +130,7 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
       val args = (body \ "args").as[Seq[String]]
       (isInternal, ServerError.byCode(code), args)
    }
+   
    /**
     * Create and add a targeting stabile to a session.
     */
