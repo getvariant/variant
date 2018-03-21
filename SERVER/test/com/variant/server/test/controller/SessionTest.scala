@@ -17,7 +17,7 @@ import com.variant.server.impl.SessionImpl
  * Session Controller Tests
  */
 object SessionTest {
-   val sessionJsonProto = """
+   val sessionJsonProtoBigCovar = """
       {"sid":"${sid:SID}",
        "ts": ${ts:%d}, 
        "request": {"state": "state1","status": "OK","committed": true, 
@@ -28,6 +28,15 @@ object SessionTest {
         "tests": ["test1","test2"]
       }
    """
+   val sessionJsonProtoPetclinic = """
+      {"sid":"${sid:SID}",
+       "ts": ${ts:%d}, 
+       "request": {"state": "newOwner","status": "OK","committed": false, 
+                  "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}]},
+        "attrList": [{"name": "NAME1","val": "VALUE1"}, {"name": "NAME2","val": "VALUE2"}]
+      }
+   """
+
 }
 
 class SessionTest extends BaseSpecWithServer {
@@ -35,7 +44,7 @@ class SessionTest extends BaseSpecWithServer {
    import SessionTest._
    
    val endpoint = context + "/session"
-   val sessionJson = ParameterizedString(sessionJsonProto.format(System.currentTimeMillis()))
+   val sessionJson = ParameterizedString(sessionJsonProtoBigCovar.format(System.currentTimeMillis()))
    
    val sessionTimeoutMillis = server.config.getLong(ConfigKeys.SESSION_TIMEOUT) * 1000
    sessionTimeoutMillis mustEqual 1000
