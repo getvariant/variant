@@ -50,6 +50,18 @@ public class ServerErrorLocal extends RuntimeError {
 	public final static ServerErrorLocal SCHEMA_FAILED = 
 			new ServerErrorLocal(429, Severity.WARN, "Schema [%s] was not deployedd from [%s] due to previous errors");
 
+	public final static ServerErrorLocal EMPTY_SCHEMATA = 
+			new ServerErrorLocal(430, Severity.INFO, "No schemata found in [%s]");
+
+	public final static ServerErrorLocal SERVER_BOOT_OK = 
+			new ServerErrorLocal(431, Severity.INFO, "%s bootstrapped on :%s%s in %s");
+
+	public final static ServerErrorLocal SERVER_BOOT_FAILED = 
+			new ServerErrorLocal(432, Severity.INFO, "%s failed to bootstrap due to following errors:");
+
+	public final static ServerErrorLocal SERVER_SHUTDOWN = 
+			new ServerErrorLocal(433, Severity.INFO, "%s shutdown on :%s%s, uptime %s.");
+
 	//
 	// 461-480 Server API
 	//

@@ -52,15 +52,15 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
             .build()
       else if (testData.name.contains("SCHEMA_NAME_DUPE")) {
          // Delete directory
-         val path: Path = Path ("/tmp/test-schemata")
+         val path: Path = Path ("/tmp/schemata-test")
          Try(path.deleteRecursively())
          
-         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/test-schemata/schema1.json"))
-         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/test-schemata/schema2.json"))
+         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/schemata-test/schema1.json"))
+         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/schemata-test/schema2.json"))
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .configure(
-               Map("variant.schemata.dir" -> "/tmp/test-schemata")) 
+               Map("variant.schemata.dir" -> "/tmp/schemata-test")) 
             .build()
       }
       else 

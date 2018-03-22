@@ -109,13 +109,13 @@ class VariantServerImpl @Inject() (
       }
       
       if (startupErrorLog.exists { _.getSeverity == Severity.FATAL }) {
-   		logger.error("%s failed to bootstrap due to following errors:".format(productName))
+   		logger.error(ServerErrorLocal.SERVER_BOOT_FAILED.asMessage(productName))
    		startupErrorLog.foreach { e => logger.error(e.getMessage(), e) }
    	   shutdown()
    	   System.exit(0)
    	}
    	else {
-         logger.info("%s bootstrapped on :%s%s in %s.".format(
+         logger.info(ServerErrorLocal.SERVER_BOOT_OK.asMessage(
                productName,
                config.getString("http.port"),
                config.getString("play.http.context"),
@@ -140,7 +140,7 @@ class VariantServerImpl @Inject() (
       // Undeploy all schemata
       schemata.foreach { case (name: String, schema: ServerSchema) => schema.undeploy() }
       
-      logger.info("%s shutdown on :%s%s. Uptime %s.".format(
+      logger.info(ServerErrorLocal.SERVER_SHUTDOWN.asMessage(
             productName,
             config.getString("http.port"),
             config.getString("play.http.context"),

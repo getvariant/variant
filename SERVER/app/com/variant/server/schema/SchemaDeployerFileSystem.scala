@@ -56,7 +56,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       // Parse the files in the schemata directory: the first reference of lazy dir.
       val schemaFiles = dir.listFiles()
 
-      if (schemaFiles.length == 0) logger.warn("No schemata detected in " + dir.getAbsolutePath)
+      if (schemaFiles.length == 0) logger.info(ServerErrorLocal.EMPTY_SCHEMATA.asMessage(dir.getAbsolutePath))
     
       schemaFiles.foreach { deployFrom(_) }
    }

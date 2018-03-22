@@ -14,7 +14,7 @@ import com.variant.core.UserError
 object LogSniffer {
    
    /**
-    * Get last n messages.
+    * Get last n messages in chronological order.
     * For simplicity, we ignore lines that don't parse, because they are
     * multi-line continuations of previous lines and so far we don't need that.
     * 
@@ -27,7 +27,7 @@ object LogSniffer {
       var i = 0
       while (line != null && i < n) {
          try {
-            result += new Entry(line)
+            new Entry(line) +=: result
             i += 1
          }
          catch {

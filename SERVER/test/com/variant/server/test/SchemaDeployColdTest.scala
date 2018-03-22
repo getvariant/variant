@@ -29,7 +29,7 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .configure(
-               Map("variant.schemata.dir" -> "test-schemata")) 
+               Map("variant.schemata.dir" -> "schemata-test")) 
             .build()
       }
       else if (testData.name.startsWith("2.")) {

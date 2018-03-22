@@ -72,7 +72,18 @@ public class IoUtils {
 	}
 	
 	/**
+	 * Create an empty directory.  Drop if first if exists.
+	 * @param name
+	 * @throws IOException 
+	 */
+	public static void emptyDir(String name) throws IOException {
+		delete(name);
+		Files.createDirectories(new File(name).toPath());
+	}
+	
+	/**
 	 * Delete a file. If file is a directory, recursively deletes the contents.
+	 * No-op if doesn't exist.
 	 * @param name
 	 * @return
 	 */

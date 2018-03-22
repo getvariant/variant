@@ -37,7 +37,7 @@ import com.variant.server.api.ConfigKeys
 
 object SchemaDeployHotTest {
    val sessionTimeoutSecs = 15
-   val schemataDir = "/tmp/test-schemata"  
+   val schemataDir = "/tmp/schemata"  
    val rand = new java.util.Random()
    
 
@@ -96,7 +96,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
       
       "deploy a third schema" in {
 
-	      IoUtils.fileCopy("test-schemata/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
+	      IoUtils.fileCopy("schemata-test/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
 	      Thread.sleep(dirWatcherLatencyMsecs);
@@ -170,7 +170,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
    	   val currentSchema = server.schemata.get("big_covar_schema").get
          currentSchema.state mustBe State.Deployed
 
-	      IoUtils.fileCopy("test-schemata-with-errors/big-covar-schema-warning.json", s"${schemataDir}/another-big-test-schema.json")
+	      IoUtils.fileCopy("schemata-test-with-errors/big-covar-schema-warning.json", s"${schemataDir}/another-big-test-schema.json")
          Thread.sleep(dirWatcherLatencyMsecs)
              
          currentSchema.state mustBe State.Gone
@@ -211,7 +211,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
 
 	   "refuse to deploy a schema with syntax errors" in {
 	      
-	      IoUtils.fileCopy("test-schemata-with-errors/big-covar-schema-error.json", s"${schemataDir}/another-big-test-schema.json")
+	      IoUtils.fileCopy("schemata-test-with-errors/big-covar-schema-error.json", s"${schemataDir}/another-big-test-schema.json")
          Thread.sleep(dirWatcherLatencyMsecs)
              
          val logLines = LogSniffer.last(2)
@@ -233,7 +233,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
 
    	"refuse to re-deploy a schema with semantic errors" in {
 	      
-	      IoUtils.fileCopy("test-schemata-with-errors/petclinic-schema.json", s"${schemataDir}/petclinic-schema2.json")
+	      IoUtils.fileCopy("schemata-test-with-errors/petclinic-schema.json", s"${schemataDir}/petclinic-schema2.json")
          Thread.sleep(dirWatcherLatencyMsecs)
              
          val logLines = LogSniffer.last(2)
@@ -254,7 +254,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
       
       "redeploy the third schema" in {
 
-	      IoUtils.fileCopy("test-schemata/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
+	      IoUtils.fileCopy("schemata-test/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
 	      Thread.sleep(dirWatcherLatencyMsecs)
@@ -419,7 +419,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
 	      // Override
 	      IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
 	      // New file
-	      IoUtils.fileCopy("test-schemata/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
+	      IoUtils.fileCopy("schemata-test/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
 
 	      // While we wait for the FS system to notify directory watcher, make sure
 	      // the existing session is kept alive
