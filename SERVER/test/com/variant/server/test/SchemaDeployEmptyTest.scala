@@ -24,14 +24,14 @@ import com.variant.server.boot.VariantServer
 import com.variant.server.test.util.LogSniffer
 import com.variant.core.UserError.Severity
 import com.variant.server.boot.ServerErrorLocal
+import com.variant.core.schema.parser.error.SyntaxError
 
 
 object SchemaDeployEmptyTest {
    val sessionTimeoutSecs = 15
    val schemataDir = "/tmp/schemata-test"  
    val rand = new java.util.Random()
-   
-
+  
 }
 
 
@@ -81,15 +81,38 @@ class SchemaDeployEmptyTest extends PlaySpec with OneAppPerSuite with BeforeAndA
          lastTwoLines(1).message must  startWith("[" + ServerErrorLocal.SERVER_BOOT_OK.getCode + "]")
 	   }
 
-	   "startup with two schemata" in {
-	    /*
-         server.schemata.size mustBe 2
-         server.schemata.get("big_covar_schema").isDefined mustBe true
-         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema"
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic"
-*/
+	   "refuse deploy schema with errors" in {
+
+         IoUtils.fileCopy("schemata-test-with-errors/big-covar-schema-error.json", s"${schemataDir}/big-covar-schema-error.json");
+
+	      // Sleep awhile to let WatcherService.take() have a chance to detect.
+	      Thread.sleep(dirWatcherLatencyMsecs);
+
+         server.schemata.size mustBe 0
+
+         val lastTwoLines = LogSniffer.last(2)
+         lastTwoLines(0).severity mustBe Severity.ERROR
+         lastTwoLines(0).message must startWith("[" + SyntaxError.JSON_SYNTAX_ERROR.getCode + "]")
+         lastTwoLines(1).severity mustBe Severity.WARN
+         lastTwoLines(1).message must  startWith("[" + ServerErrorLocal.SCHEMA_FAILED.getCode + "]")
+
 	   }
+	   
+	   "process deletion of a faulty schema file" in {
+
+         IoUtils.delete( s"${schemataDir}/big-covar-schema-error.json");
+         Thread.sleep(dirWatcherLatencyMsecs);
+         server.schemata.size mustBe 0
+
+	   }
+
+	   "deply a good schema" in {
+
+         IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
+	      Thread.sleep(dirWatcherLatencyMsecs);
+         server.schemata.size mustBe 1
+	   }
+
    }
    
 }

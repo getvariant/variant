@@ -24,7 +24,7 @@ public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 	 */
 	protected static void startServer(String serverConfig) throws Exception {
 		String sysVar = System.getProperty("variant.server.project.dir");
-		String exec = (sysVar == null ? defaultPathToServerProject : sysVar) + "/mbin/startServer.sh";
+		String exec = (sysVar == null ? defaultPathToServerProject : sysVar) + "/mbin/remoteServerStart.sh";
 		String[] procArgs = serverConfig == null ? new String[] {exec} : new String[] {exec, serverConfig};
 		server = new ServerProcess(procArgs);
 		server.start();
