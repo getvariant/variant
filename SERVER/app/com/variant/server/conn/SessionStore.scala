@@ -10,6 +10,7 @@ import com.variant.server.boot.VariantServer
 import com.variant.core.session.CoreSession
 import com.variant.server.api.ServerException
 import com.variant.core.ServerError
+import javax.inject.Inject
 
 /**
  * Instantiated by Play as an eager singleton in Module
@@ -61,26 +62,16 @@ trait SessionStore {
    }
 
 }   
-   
-/**
- * @author Igor
- */
-object SessionStoreImpl {
-      
-}
 
 /**
  * 
  */
 @Singleton
-class SessionStoreImpl() extends SessionStore {
-
-
-import SessionStoreImpl._
+class SessionStoreImpl @Inject() (private val server: VariantServer) extends SessionStore {
    
    private val logger = Logger(this.getClass)	
 	private val sessionMap = new TrieMap[String, Entry]();
-   private val vacuumThread = new VacuumThread(this).start()
+   private val vacuumThread = new VacuumThread(server, this).start()
 
    /**
 	 */
@@ -137,10 +128,10 @@ import SessionStoreImpl._
 /**
  * Background vacuum thread disposes of expired session entries.
  */
-class VacuumThread(store: SessionStore) extends Thread {
+class VacuumThread(server: VariantServer, store: SessionStore) extends Thread {
 
    private val logger = Logger(this.getClass)
-   private val vacuumingFrequencyMillis = VariantServer.instance.config.getInt(SESSION_VACUUM_INTERVAL) * 1000
+   private val vacuumingFrequencyMillis = server.config.getInt(SESSION_VACUUM_INTERVAL) * 1000
 	setName("SsnVacThread");
    setDaemon(true); // JVM will kill it when on non-daemon threads exit.
 
