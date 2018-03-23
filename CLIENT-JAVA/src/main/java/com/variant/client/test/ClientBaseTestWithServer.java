@@ -3,6 +3,8 @@ package com.variant.client.test;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
+import com.variant.core.util.IoUtils;
+
 /**
  * Base class for all Core JUnit tests.
  */
@@ -16,7 +18,11 @@ public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 	// the java servlet project will have to override it.
 	final private static String defaultPathToServerProject = "../SERVER";
 	
-	//final private static String defaultServerConfig = "conf-test/variant-testProd.conf";
+	// Server should have initialized this schemata dir
+	public final static String SCHEMATA_DIR = "/tmp/schemata-remote";
+	
+	// Takes this long for the new schema to be detected.
+	public final static long dirWatcherLatencyMsecs = 10000;
 	
 	/**
 	 * Start the server once for test case
@@ -31,7 +37,12 @@ public abstract class ClientBaseTestWithServer extends ClientBaseTest {
 	}
 
 	protected static void startServer() throws Exception {
-	   startServer(null);
+		
+		IoUtils.emptyDir(SCHEMATA_DIR);
+		//Deploy the schemata
+	    IoUtils.fileCopy("schemata-remote/big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
+	    IoUtils.fileCopy("schemata-remote/petclinic-schema.json", SCHEMATA_DIR + "/petclinic-schema.json");
+		startServer(null);
 	}
 	
 	/**

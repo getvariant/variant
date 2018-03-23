@@ -14,8 +14,9 @@ import com.variant.core.ServerError;
 
 public class ConnectionTest extends ClientBaseTestWithServer {
 	
-	private VariantClient client = VariantClient.Factory.getInstance();
-
+	// Sole client
+	private VariantClient client = VariantClient.Factory.getInstance();		
+	
 	/**
 	 */
 	@org.junit.Test
@@ -28,6 +29,7 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 			}
 			@Override public void onThrown(ClientException.User e) {
 				assertNull(conn);
+				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 		}.assertThrown();
 	
@@ -37,7 +39,7 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 	 */
 	@org.junit.Test
 	public void connectToExistingSchemataTest() throws Exception {
-		
+			    
 		// Connection to a schema
 		Connection conn1 = client.getConnection("big_covar_schema");		
 		assertNotNull(conn1);
@@ -122,7 +124,7 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				Connection conn = client.getConnection("big_covar_schema");		
+				client.getConnection("big_covar_schema");		
 			}
 			
 		}.assertThrown(ServerError.TooManyConnections);
@@ -136,7 +138,7 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void closedByClientTest() throws Exception {
 		
 		final Connection conn = client.getConnection("big_covar_schema");		

@@ -109,8 +109,7 @@ public class ClientException extends VariantException {
 		 */
 		@Override
 		public String getMessage() {
-			return error == null ? super.getMessage() :
-				"[" + error.getCode() + "] " + error.asMessage(args);
+			return error == null ? super.getMessage() : error.asMessage(args);
 		}
 	}
 }
