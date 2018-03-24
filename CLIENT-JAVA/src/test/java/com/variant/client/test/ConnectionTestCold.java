@@ -12,7 +12,11 @@ import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.core.ServerError;
 
-public class ConnectionTest extends ClientBaseTestWithServer {
+/**
+ * Test connections of a cold-deployed schemata.
+ *
+ */
+public class ConnectionTestCold extends ClientBaseTestWithServer {
 	
 	// Sole client
 	private VariantClient client = VariantClient.Factory.getInstance();		
@@ -137,6 +141,7 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 	}
 
 	/**
+	 * Connection closed by client.
 	 */
 	@org.junit.Test
 	public void closedByClientTest() throws Exception {
@@ -180,10 +185,10 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 	}	
 
 	/**
-	 * This does not work because the session expires while the server restarts. 
+	 * Server restarted with the same schema. 
 	 */
 	@org.junit.Test
-	public void closedByServerTest() throws Exception {
+	public void closedByServerRestartTest() throws Exception {
 		
 		final Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
@@ -215,5 +220,5 @@ public class ConnectionTest extends ClientBaseTestWithServer {
 
 		assertEquals(Status.CLOSED_BY_SERVER, conn.getStatus());
 	}	
-	
+
 }

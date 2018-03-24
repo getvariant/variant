@@ -86,7 +86,6 @@ public class ServerError extends UserError {
 			new ServerError(741, "No state request in session. Target this session for a state first");
 
 
-	
 	/**
 	 * Get the error by its code.
 	 * 

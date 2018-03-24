@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
@@ -12,8 +11,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 
-import com.variant.core.RuntimeError;
 import com.variant.core.CoreException;
+import com.variant.core.RuntimeError;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Test.Experience;
@@ -69,19 +68,6 @@ abstract public class VariantBaseTest {
 	}
 	
 	/**
-	 * 
-	 * @param name
-	 * @return
-	 */
-	protected InputStream openResourceAsInputStream(String name) {
-		InputStream result = VariantBaseTest.class.getResourceAsStream(name);
-		if (result == null) {
-			throw new RuntimeException("Classpath resource '" + name + "' does not exist.");
-		}
-		return result;
-	}
-	
-	/**
 	 * Pull experience from schema
 	 * @param name
 	 * @return
@@ -94,7 +80,15 @@ abstract public class VariantBaseTest {
 	//---------------------------------------------------------------------------------------------//
 	//                                        ASSERTION                                            //
 	//---------------------------------------------------------------------------------------------//
-
+	/**
+	 * Why Junit doesn't provide this is anyone's guess.
+	 * @param o1
+	 * @param o2
+	 */
+	protected static void assertNotEquals(Object o1, Object o2) {
+		assertTrue(!o1.equals(o2));
+	}
+	
 	/**
 	 * 
 	 * @param pattern

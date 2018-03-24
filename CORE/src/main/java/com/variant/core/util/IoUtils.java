@@ -16,8 +16,8 @@ import com.variant.core.util.Tuples.Pair;
 public class IoUtils {
 
 	/**
-	 * Open one at a time, until found.
-	 * @param resourceName always treated as absolute path, even if does not start with a /. 
+	 * Open a resource as an InputStream.
+	 * @param resourceName is always treated as absolute path, even if does not start with a /. 
 	 * @return A pair of input stream and the underlying file's fully qualified OS name.
 	 */
 	public static Pair<InputStream, String> openResourceAsStream(String resName) throws IOException {

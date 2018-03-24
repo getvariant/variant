@@ -13,6 +13,7 @@ import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
+import com.variant.core.util.IoUtils;
 
 public class TargetingStabileTest extends BaseTestCore {
 		
@@ -26,7 +27,7 @@ public class TargetingStabileTest extends BaseTestCore {
 	public void targetingTrackerStringTest() throws Exception {
 				
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(openResourceAsInputStream("/schema/ParserCovariantOkayBigTest.json"));
+		ParserResponse response = parser.parse(IoUtils.openResourceAsStream("/schema/ParserCovariantOkayBigTest.json")._1());
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		schema = response.getSchema();
