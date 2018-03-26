@@ -17,7 +17,7 @@ import com.variant.core.util.IoUtils;
  * Test connections of a cold-deployed schemata.
  *
  */
-public class ConnectionTestRedeploy extends ClientBaseTestWithServer {
+public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 	
 	// Sole client
 	private VariantClient client = VariantClient.Factory.getInstance();		
@@ -41,6 +41,7 @@ public class ConnectionTestRedeploy extends ClientBaseTestWithServer {
 	    IoUtils.fileCopy("schemata-remote/big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
 		Thread.sleep(dirWatcherLatencyMsecs);
 
+		// Connection doesn't know yet the server is gone.
 		assertEquals(Status.OPEN, conn1.getStatus());
 
 		assertNull(conn1.getSession("foo"));        

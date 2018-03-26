@@ -17,7 +17,7 @@ import com.variant.core.util.IoUtils;
  * Test connections of a cold-deployed schemata.
  *
  */
-public class ConnectionTestUndeploy extends ClientBaseTestWithServer {
+public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 	
 	// Sole client
 	private VariantClient client = VariantClient.Factory.getInstance();		

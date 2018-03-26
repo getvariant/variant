@@ -16,7 +16,7 @@ import com.variant.core.ServerError;
  * Test connections of a cold-deployed schemata.
  *
  */
-public class ConnectionTestCold extends ClientBaseTestWithServer {
+public class ConnectionColdTest extends ClientBaseTestWithServer {
 	
 	// Sole client
 	private VariantClient client = VariantClient.Factory.getInstance();		
