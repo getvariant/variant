@@ -158,8 +158,6 @@ public interface Session {
 	 * @since 0.6
 	 */
 	public boolean isExpired();
-
-	public void addExpirationListener(ExpirationListener listener);
 	
 	/**
 	 * <p>Set a session-scoped attribute.
@@ -184,19 +182,4 @@ public interface Session {
 	 * @since 0.7
 	 */
 	public String clearAttribute(String name);
-
-	/**
-	 * Interface to be implemented by a class whose instance may be passed to {@link Session#addExpirationListener(ExpirationListener)}.
-	 * 
-	 * @since 0.7
-	 */
-	public interface ExpirationListener {
-	   /**
-	    * The callback function to be invoked when Variant Client is about to expire the session
-	    * with which it has been registered.
-	    * 
-	    * @since 0.7
-	    */
-	   public void exec();
-	}
 }

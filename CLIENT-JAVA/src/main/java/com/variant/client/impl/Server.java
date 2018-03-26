@@ -1,4 +1,4 @@
-package com.variant.client.conn;
+package com.variant.client.impl;
 
 import java.io.StringWriter;
 
@@ -12,7 +12,6 @@ import com.variant.client.ConfigKeys;
 import com.variant.client.Connection.Status;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
-import com.variant.client.impl.SessionImpl;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpRemoter;

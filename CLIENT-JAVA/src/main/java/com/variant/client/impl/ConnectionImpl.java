@@ -1,8 +1,9 @@
-package com.variant.client.conn;
+package com.variant.client.impl;
 
 import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
 
+import java.util.LinkedHashSet;
 import java.util.Random;
 
 import org.slf4j.Logger;
@@ -15,8 +16,6 @@ import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.VariantClient;
-import com.variant.client.impl.SessionImpl;
-import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
 import com.variant.core.UserError.Severity;
@@ -35,7 +34,10 @@ import com.variant.core.util.StringUtils;
 public class ConnectionImpl implements Connection {
 
 	final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
-	
+
+	// Listeners
+	final protected LinkedHashSet<ExpirationListener> expirationListeners = new LinkedHashSet<ExpirationListener>();
+
 	/**
 	 * Is this connection still valid?
 	 * @return
@@ -243,6 +245,12 @@ public class ConnectionImpl implements Connection {
 	@Override
 	public Status getStatus() {
 		return status;
+	}
+
+	@Override
+	public void registerExpirationListener(ExpirationListener listener) {
+		preChecks();
+		expirationListeners.add(listener);
 	}
 
 	@Override

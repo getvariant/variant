@@ -115,7 +115,31 @@ public interface Connection {
 	 * @since 0.7
 	 */
 	void close();
-	
+
+	/**
+	 * Register a session expiration listener. If multiple listeners have been registered with a
+	 * connection, they are posted in the order they were registered. 
+	 * @param listener
+	 */
+	public void registerExpirationListener(ExpirationListener listener);
+
+	/**
+	 * Interface to be implemented by a session expiration listener class, whose instance can
+	 * be passed to {@link Connection#registerExpirationListener(ExpirationListener)}.
+	 * 
+	 * @since 0.8
+	 */
+	public interface ExpirationListener {
+	   /**
+	    * The callback function to be called by Variant Client right after the session,
+	    * passed to this method, is expired.
+	    * 
+	    * @since 0.8
+	    * @param session: The expired Variant session.
+	    */
+	   public void expired(Session session);
+	}
+
 	/**
 	 * Status of a Variant {@link Connection}.
 	 * 

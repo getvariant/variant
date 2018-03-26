@@ -7,7 +7,6 @@ import java.util.Set;
 import com.variant.client.Session;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
-import com.variant.client.conn.ConnectionImpl;
 import com.variant.client.net.Payload;
 import com.variant.core.RuntimeError;
 import com.variant.core.CoreException;

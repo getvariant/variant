@@ -71,7 +71,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	/**
 	 */
 	@org.junit.Test
-	public void sessionExpireTest() throws Exception {
+	public void sessionExpiredTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
@@ -115,22 +115,26 @@ public class SessionTest extends ClientBaseTestWithServer {
       Connection conn = client.getConnection("big_covar_schema");    
       assertNotNull(conn);
       assertEquals(Status.OPEN, conn.getStatus());
-      Session ssn = conn.getOrCreateSession(newSid());
+      final Session ssn = conn.getOrCreateSession(newSid());
       assertNotNull(ssn);
       final LinkedList<Integer> listenersRan = new LinkedList<Integer>();
       
       // Add two listeners, both of which should fire in the order added;
-      ssn.addExpirationListener(
-            new Session.ExpirationListener() {
-               @Override public void exec() {
+      conn.registerExpirationListener(
+            new Connection.ExpirationListener() {
+               @Override public void expired(Session session) {
+            	  assertEquals(session, ssn);
+            	  assertTrue(session.isExpired());
                   listenersRan.add(1);
                }
             }
       );
 
-      ssn.addExpirationListener(
-            new Session.ExpirationListener() {
-               @Override public void exec() {
+      conn.registerExpirationListener(
+            new Connection.ExpirationListener() {
+               @Override public void expired(Session session) {
+             	  assertEquals(session, ssn);
+             	  assertTrue(session.isExpired());
                   listenersRan.add(2);
                }
             }

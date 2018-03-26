@@ -7,20 +7,19 @@ import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTER
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
 import com.typesafe.config.Config;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
+import com.variant.client.Connection.ExpirationListener;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
-import com.variant.client.conn.ConnectionImpl;
 import com.variant.client.net.Payload;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.VariantEvent;
@@ -44,7 +43,7 @@ public class SessionImpl implements Session {
 	private SessionIdTracker sessionIdTracker;
 	private TargetingTracker targetingTracker;
 	private StateRequestImpl stateRequest;
-	private LinkedHashSet<ExpirationListener> expirationListeners = new LinkedHashSet<ExpirationListener>();
+
 	/**
 	 * 
 	 * @param tt
@@ -242,12 +241,6 @@ public class SessionImpl implements Session {
 		return coreSession.clearAttribute(name);
 	}
 
-   @Override
-   public void addExpirationListener(ExpirationListener listener) {
-      checkState();
-      expirationListeners.add(listener);
-   }
-
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
@@ -290,13 +283,16 @@ public class SessionImpl implements Session {
 	 * Expire this session object.
 	 */
 	public void expire() {
-	   // Run listeners first, before expiring the session.
-      for (ExpirationListener el: expirationListeners) el.exec();
 		isExpired = true;
-		expirationListeners = null;
 		coreSession = null;
 		sessionIdTracker = null;
 		targetingTracker = null;
+		
+		// Ignore exception thrown by user code.
+		try {
+			for (ExpirationListener el: conn.expirationListeners) el.expired(this);
+		}
+		catch (Throwable t) {}
 	}
 
 }

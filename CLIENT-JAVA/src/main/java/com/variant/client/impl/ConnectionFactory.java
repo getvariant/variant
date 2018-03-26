@@ -1,4 +1,4 @@
-package com.variant.client.conn;
+package com.variant.client.impl;
 
 import com.variant.client.VariantClient;
 

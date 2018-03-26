@@ -1,4 +1,4 @@
-package com.variant.client.conn;
+package com.variant.client.impl;
 
 import com.variant.core.schema.parser.FlusherService;
 import com.variant.core.schema.parser.SchemaParser;
