@@ -51,7 +51,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       val schemataDirWatcher = new SchemataDirectoryWatcher();
       schemataDirWatcher.start()
     
-      logger.info("File system schema deployer bootstrapped on directory [%s]".format(dir.getAbsolutePath))
+      logger.info("Mounted schemata directory [%s]".format(dir.getAbsolutePath))
     
       // Parse the files in the schemata directory: the first reference of lazy dir.
       val schemaFiles = dir.listFiles()
@@ -92,7 +92,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
     */
    private def undeployFrom(file: File) = {
       logger.info("Undeploying schema from file [%s]".format(file.getAbsolutePath))
-      _schemata.delete(file.getName)
+      _schemata.undeploy(file.getName)
    }
 
    /**

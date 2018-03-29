@@ -40,19 +40,22 @@ trait ConnectionStore {
 	def getOrBust(cid: String): Connection
 	
    /**
-	 * Hang-up a connection. Client requested closure of a connection by ID.
-	 * Connection must exist, or a client side error is thrown.
-	 * Removed from this store.
+	 * Close a connection. Client-side op, so we can't assume the connection
+	 * to exist. Rather, if it does not, throw a client side error.
+	 * If exists, connection is removed from this store, though references to it
+	 * may still exist in sessions opened via it, which continue to be valid until
+	 * they expire. Once the last session is expired and garbage collected, so will
+	 * be the closed connection object.
 	 */
 	def closeOrBust(cid: String): Connection
 	
 	/**
-	 * Close all connections satisfying a given predicate.
-	 * Server-side operation so we don't check for the existence of
-	 * the connection. Removes connections from this store. This is
-	 * useful when a schema is undeployed.
+	 * Close all connection to a given schema. 
+	 * Server-side operation so we don't check existence.
+	 * Attempts to close a connection that's already closed are noops.
+	 * See comments above.
 	 */
-	def closeAll(p: (Connection) => Boolean)
+	def closeAll(schid: String)
 
 }
 
@@ -107,13 +110,19 @@ class ConnectionStoreImpl () extends ConnectionStore {
 	}
 
 	/**
-	 * Close connections satisfying given predicate 
+	 * Close all connections to a schema, by schema id.  
 	 */
-	def closeAll(p: (Connection) => Boolean) {
-	   val removed = connMap.retain { (id, conn) => ! p(conn) }
-	   removed.foreach { e => 
-	      e._2.close() 
-	      logger.debug("Closed connection ID [%s] to schema [%s]".format(e._2.id, e._2.schema.getName()))
-	   }
+	override def closeAll(schid: String) {
+	   
+	   connMap
+	      .filter { e => 
+	         e._2.schema.getId == schid 
+	      }
+	      .foreach { e => 
+	         e._2.close()
+	         connMap -= e._1
+	         logger.debug("Closed connection ID [%s] to schema [%s]".format(e._2.id, e._2.schema.getName()))
+	      }
+	 
 	}
 }

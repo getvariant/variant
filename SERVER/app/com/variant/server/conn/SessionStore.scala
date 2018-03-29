@@ -17,20 +17,27 @@ import javax.inject.Inject
  */
 trait SessionStore {
 
+   // Session timeout interval.
+	val sessionTimeoutMillis = VariantServer.instance.config.getInt(SESSION_TIMEOUT) * 1000
+
    /**
-    * Add or replace a session. If a server session with this session ID exists,
-    * its core session component is replaced. Otherwise, a new server session is
-    * created with this core session on the supplied connection. 
+    * Add or replace a session. 
+    * If the session exists, the supplied connection ID must be
+    * open and parallel to the original connection. 
+    * Otherwise, the new session will be created in the supplied connection, 
+    * so long as it's open. 
 	 */
-	def put(coreSession: CoreSession, connection: Connection);
+	def put(session: SessionImpl);
 	
 	/**
 	 * Get session by session ID, if exists
+	 * cid: connection ID which is touching the session.
 	 */
 	def get(sid: String): Option[SessionImpl]
 
 	/**
 	 * Get session by session ID or throw session expired user error
+	 * cid: connection ID which is touching the session.
 	 */
 	def getOrBust(sid: String): SessionImpl
 
@@ -44,8 +51,10 @@ trait SessionStore {
     */
    class Entry (val session: SessionImpl) {
       
-   	private var lastTouchTs = System.currentTimeMillis();
-      private val sessionTimeoutMillis = VariantServer.instance.config.getInt(SESSION_TIMEOUT) * 1000
+	   // Timestamp the session was last touched. Init with creation.
+   	private var lastTouchTs = System.currentTimeMillis()
+   	// Connection ID, which touched this session last. Init with creation.
+   	// private var lastTouchConnId = session.connection.id
       
       /**
        * An entry is not dead if its session's connection is gone,
@@ -58,7 +67,9 @@ trait SessionStore {
       
       /**
        */
-      def touch() { lastTouchTs = System.currentTimeMillis }
+      def touch() { 
+         lastTouchTs = System.currentTimeMillis
+      }
    }
 
 }   
@@ -75,20 +86,19 @@ class SessionStoreImpl @Inject() (private val server: VariantServer) extends Ses
 
    /**
 	 */
-	override def put(coreSession: CoreSession, connection: Connection) {
+	override def put(session: SessionImpl) {
       
-      val existingSession = get(coreSession.getId)
-      
-      if (existingSession.isDefined) {
-         // if session already exists, make sure the connection on which we're saving it
-         // matches the connection on which it was originally created.
-         if (!existingSession.get.connection.equals(connection))
-            throw new ServerException.Remote(ServerError.SessionExpired, coreSession.getId)
-         
-         existingSession.get.coreSession = coreSession
-      }
-      else {
-   	   sessionMap.put(coreSession.getId, new Entry(SessionImpl(coreSession, connection)))
+      get(session.getId) match {
+         case Some(ssn) =>
+            if (!ssn.connection.isParallelTo(session.connection))
+               throw new ServerException.Remote(
+                     ServerError.CannotReplaceSession, 
+                     ssn.getId, ssn.connection.id, ssn.connection.schema.getName(), 
+                     session.connection.id, session.connection.schema.getName)
+            
+            ssn.coreSession = session.coreSession
+         case None =>
+   	      sessionMap.put(session.getId, new Entry(session))
       }
 	}
 	
@@ -96,8 +106,11 @@ class SessionStoreImpl @Inject() (private val server: VariantServer) extends Ses
 	 */
 	override def get(sid: String): Option[SessionImpl] = {
 	
-		sessionMap.get(sid).flatMap { e =>
+	   // flatMap deals with the case when get returns None
+		sessionMap.get(sid) match { 
 		   
+		case None => None
+		case Some(e) =>
 		   if (e.isExpired) None
 		   else {
 		      e.touch()
@@ -126,14 +139,16 @@ class SessionStoreImpl @Inject() (private val server: VariantServer) extends Ses
 }
 
 /**
- * Background vacuum thread disposes of expired session entries.
+ * Background vacuum thread.
+ * Wakes up every configurable interval and takes a pass over all sessions in the store,
+ * deleting the expired ones.
  */
 class VacuumThread(server: VariantServer, store: SessionStore) extends Thread {
 
    private val logger = Logger(this.getClass)
    private val vacuumingFrequencyMillis = server.config.getInt(SESSION_VACUUM_INTERVAL) * 1000
 	setName("SsnVacThread");
-   setDaemon(true); // JVM will kill it when on non-daemon threads exit.
+   setDaemon(true); // Daemonize.
 
 
 	override def run() {
@@ -150,14 +165,14 @@ class VacuumThread(server: VariantServer, store: SessionStore) extends Thread {
 				store.deleteIf { entry => 
 			      if (entry.isExpired) {
 			         count += 1
-   			      logger.trace(String.format("Vacuumed expired session ID [%s]", entry.session.getId));
+   			      logger.trace(String.format("Vacuumed expired session ID [%s]", entry.session.getId)) 
 			         true
 			      }
 			      else false
 			   }
 							
-				if (logger.isDebugEnabled && count > 0) logger.debug(s"Vacuumed $count session(s)");
 				if (logger.isTraceEnabled) logger.trace(s"Vacuumed $count session(s)");
+				else if (logger.isDebugEnabled && count > 0) logger.debug(s"Vacuumed $count session(s)");
 
 				Thread.sleep(vacuumingFrequencyMillis)
 				logger.trace("Vacuum thread woke up after %s millis".format(System.currentTimeMillis() - now))

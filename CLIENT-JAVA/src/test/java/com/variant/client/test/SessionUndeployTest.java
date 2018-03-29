@@ -4,10 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.LinkedList;
+
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Connection.Status;
 import com.variant.client.ConnectionClosedException;
+import com.variant.client.Session;
+import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.core.ServerError;
@@ -17,7 +21,7 @@ import com.variant.core.util.IoUtils;
  * Test connections of a cold-deployed schemata.
  *
  */
-public class ConnectionUndeployTest extends ClientBaseTestWithServer {
+public class SessionUndeployTest extends ClientBaseTestWithServer {
 	
 	// Sole client
 	private VariantClient client = VariantClient.Factory.getInstance();		
@@ -27,7 +31,8 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 	 */
 	@org.junit.Test
 	public void closedByServerUndeployTest() throws Exception {
-	
+
+		// Open connection
 		final Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
 		assertEquals(Status.OPEN, conn.getStatus());
@@ -36,20 +41,36 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 		assertEquals("big_covar_schema", conn.getSchema().getName());
 		assertEquals(5, conn.getSchema().getStates().size());
 		assertEquals(6, conn.getSchema().getTests().size());
+		
+		// Register session expiration listener.
+		final LinkedList<Session> expiredSessions = new LinkedList<Session>();
+		
+		conn.registerExpirationListener(
+				new Connection.ExpirationListener() {
+					@Override
+					public void expired(Session session) {
+						expiredSessions.add(session);
+					}
+				});
+		
+		// Create session
+		final String sid1 = newSid();
+		final String sid2 = newSid();
+		Session ssn1 = conn.getOrCreateSession(sid1);
+		assertEquals(sid1, ssn1.getId());
+		Session ssn2 = conn.getOrCreateSession(sid2);
+		assertEquals(sid2, ssn2.getId());
 
-	    IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
+		StateRequest req1 = ssn1.targetForState(conn.getSchema().getState("state1"));
+		assertNotNull(req1);
+		
+		IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
 		Thread.sleep(dirWatcherLatencyMsecs);
 
-		assertEquals(Status.OPEN, conn.getStatus());
-
-		assertNull(conn.getSession("foo"));        
-		assertNull(conn.getSessionById("foo"));
-
-		// Connection must go after schema undeployed.
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				conn.getOrCreateSession("foo");
+				conn.getSessionById(sid1);
 			}
 			
 			@Override public void onThrown(ClientException.User e) {
@@ -60,19 +81,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 
 		assertEquals(Status.CLOSED_BY_SERVER, conn.getStatus());
 		
-		// Confirm the schema is gone.
-		new ClientUserExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				client.getConnection("big_covar_schema");
-			}
-			
-			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ServerError.UnknownSchema, e.getError());
-			}
-			
-		}.assertThrown();
-
+		
 	}	
 
 }

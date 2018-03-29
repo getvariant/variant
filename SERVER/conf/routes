@@ -9,13 +9,14 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET     /*path/                     com.variant.server.controller.RootController.untrail(path)
 
 # Variant Controllers
-POST    /connection/:schema      com.variant.server.controller.ConnectionController.post(schema: String)
-DELETE  /connection/:cid         com.variant.server.controller.ConnectionController.delete(cid: String)
+POST    /connection/:schema      com.variant.server.controller.ConnectionController.open(schema: String)
+DELETE  /connection/:cid         com.variant.server.controller.ConnectionController.close(cid: String)
+GET     /connection/:cid         com.variant.server.controller.ConnectionController.ping(cid: String)
 
 POST    /event                   com.variant.server.controller.EventController.post()
 
 GET     /session/:id             com.variant.server.controller.SessionController.get(id: String)
-PUT     /session                 com.variant.server.controller.SessionController.put()
+PUT     /session                 com.variant.server.controller.SessionController.save()
 
 POST    /request                 com.variant.server.controller.RequestController.post()
 PUT     /request                 com.variant.server.controller.RequestController.commit()

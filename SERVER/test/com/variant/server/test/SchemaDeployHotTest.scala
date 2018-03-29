@@ -284,7 +284,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          connId = (json \ "id").as[String]
    	}
 	   
-	   val sessionJson = ParameterizedString(SessionTest.sessionJsonProtoBigCovar.format(System.currentTimeMillis()))
+	   val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
 	   var sid = StringUtils.random64BitString(rand)
 	   
 	   "create a new session in schema ParserCovariantOkayBigTestNoHooks" in {
@@ -396,7 +396,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          connId2 = (json \ "id").as[String]
    	}
 
-      val sessionJsonBigCovar = ParameterizedString(SessionTest.sessionJsonProtoBigCovar.format(System.currentTimeMillis()))
+      val sessionJsonBigCovar = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
 	   
 	   var sid1 = StringUtils.random64BitString(rand)
 	   
@@ -464,7 +464,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          args mustBe Seq(connId1)
       }
 
-      val sessionJsonPetclinic = ParameterizedString(SessionTest.sessionJsonProtoPetclinic.format(System.currentTimeMillis()))
+      val sessionJsonPetclinic = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
 
 	   "create new session in the unaffected schema petclinic" in {
          

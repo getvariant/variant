@@ -40,7 +40,8 @@ class Schemata () {
    /**
     * Delete a schema by origin.
     */
-   def delete(origin: String) = synchronized {
+   def undeploy(origin: String) = synchronized {
+      
       // There should be at most one existing schema with the given origin.
       val schemaToRemove = _schemaMap.filter ( e => { e._2.origin == origin } )
       if (schemaToRemove.size > 1)

@@ -56,10 +56,13 @@ import EventTest._
 
    "ConnectionController" should {
 
-      "return 404 on GET" in {
+      "return 702 Unknown connection on GET with bad connection ID" in {
          val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
-         status(resp) mustBe NOT_FOUND
-         contentAsString(resp) mustBe empty
+         status(resp) mustBe BAD_REQUEST
+         val (isInternal, error, args) = parseError(contentAsJson(resp))
+         isInternal mustBe UnknownConnection.isInternal() 
+         error mustBe UnknownConnection
+         args mustBe Seq("foo")
       }
 
       "return 404 on PUT" in {
@@ -68,13 +71,12 @@ import EventTest._
          contentAsString(resp) mustBe empty
       }
 
-
       "return  404 on POST with no schema name" in {
          val resp = route(app, FakeRequest(POST, endpoint).withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe NOT_FOUND
          contentAsString(resp) mustBe empty        
       }
-      
+
       "return  400 and error on POST to non-existent schema" in {
          val resp = route(app, FakeRequest(POST, endpoint + "/foo").withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe BAD_REQUEST

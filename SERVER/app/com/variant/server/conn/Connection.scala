@@ -38,12 +38,19 @@ class Connection(val schema: ServerSchema) {
    
    
    /**
-    * Lookup session.
+    * Is this connection closed?
     */
    def isClosed = _isClosed
 
    /**
-    * Invoke function on each session store entry in this connection.
+    * Two connections are parallel if they name the same schema ID.
+    */
+   def isParallelTo(other: Connection) = {
+      other.schema.getId == this.schema.getId   
+   }
+   
+   /**
+    * Close connection.
     */
    def close() {
       _isClosed = true;

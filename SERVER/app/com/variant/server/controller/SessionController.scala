@@ -15,6 +15,7 @@ import com.variant.server.api.ServerException
 import com.variant.server.api.ConfigKeys
 import com.variant.server.conn.Connection
 import play.api.mvc.MultipartFormData.ParseError
+import com.variant.server.impl.SessionImpl
 
 //@Singleton -- Is this for non-shared state controllers?
 class SessionController @Inject() (
@@ -25,13 +26,14 @@ class SessionController @Inject() (
       private val logger = Logger(this.getClass)	
        
    /**
-    * Save a new session in the store. If the session exists, the supplied connection
-    * ID must match that with which it was created. Otherwise, the new session will be
-    * created in the supplied connection, so long as it's active. An expired session
-    * is the same as non-existent. 
-    * @param cid Connection ID
+    * PUT
+    * Save or replace a new session in the store. 
+    * If the session exists, the supplied connection ID must be
+    * open and parallel to the original connection. 
+    * Otherwise, the new session will be created in the supplied connection, 
+    * so long as it's open. 
     */
-   def put() = VariantAction { req =>
+   def save() = VariantAction { req =>
 
       val bodyJson = req.body.asJson.getOrElse {
          throw new ServerException.Remote(EmptyBody)
@@ -51,7 +53,7 @@ class SessionController @Inject() (
       logger.debug(s"Found connection [$cid]")      
 
       val coreSession = CoreSession.fromJson(ssnJson, conn.schema);
-      ssnStore.put(coreSession, conn)
+      ssnStore.put(SessionImpl(coreSession, conn))
       Ok
    }
  

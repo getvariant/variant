@@ -45,15 +45,14 @@ public class ServerError extends UserError {
 	public static final ServerError MissingParamName = 
 			new ServerError(616, "Parameter name is missing");
 
-	public static final ServerError InvalidSCID = 
-			new ServerError(617, "Invalid SCID [%s]");
-
 //	public static final ServerError StateRequestAlreadyCommitted = 
 //			new ServerError(618, "State request already committed");
 
 	//
 	// 631-700 Internal, other internal errors.
 	//	
+	public static final ServerError CannotReplaceSession = 
+			new ServerError(631, "Invalid attempt to replace existing session ID [%s], original connection ID [%s] to schema [%s] on connection ID [%s] to schema [%s]");
 
 	/**
 	 */

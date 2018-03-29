@@ -22,8 +22,7 @@ class ConnectionController @Inject() (
     * POST
     * Open a new connection to a schema by name.
     */
-   def post(name: String) = VariantAction {
-     
+   def open(name: String) = VariantAction {
       server.schemata.get(name) match {
         
          case Some(schema) => {
@@ -51,9 +50,26 @@ class ConnectionController @Inject() (
     * DELETE
     * Close an existing connection.
     */
-   def delete(cid: String) = VariantAction {
+   def close(cid: String) = VariantAction {
       val conn = connStore.closeOrBust(cid)
       logger.info("Closed connection [%s] to schema [%s]".format(cid, conn.schema.getName))
       Ok
    }
+   
+   /**
+    * GET
+    * Keep-alive ping.
+    * If connection has been closed by the server return
+    *   Status: 400
+    * Content: 702 Unknown Connection
+    * If connection is alive, send list updates sessions:
+    *   Status: 200
+    *   Content: { "exp":[sid,sid...], "upd":[{<session1>},{<session2>}...]}
+    */
+   def ping(cid: String) = VariantAction {
+      val conn = connStore.getOrBust(cid)
+      logger.trace(s"Connection [${conn.id}] found")
+      Ok
+   }
+
 }

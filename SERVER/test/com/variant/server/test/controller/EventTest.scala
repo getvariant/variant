@@ -130,7 +130,7 @@ class EventTest extends BaseSpecWithServer {
       "obtain a session" in {
          val sid = newSid()
          // PUT session.
-         val sessionJson = ParameterizedString(SessionTest.sessionJsonProtoBigCovar.format(System.currentTimeMillis(), schema.getId)).expand("sid" -> sid)
+         val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis(), schema.getId)).expand("sid" -> sid)
          val ssnBody = Json.obj(
             "cid" -> connId,
             "ssn" -> sessionJson
