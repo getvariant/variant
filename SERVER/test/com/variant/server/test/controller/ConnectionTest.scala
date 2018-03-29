@@ -56,7 +56,7 @@ import EventTest._
 
    "ConnectionController" should {
 
-      "return 702 Unknown connection on GET with bad connection ID" in {
+      "return 702 Unknown connection on GET bad connection ID" in {
          val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
@@ -89,6 +89,7 @@ import EventTest._
       var connId: String = null
       
       "open connection on POST with valid schema name" in {
+         
          val resp = route(app, FakeRequest(POST, endpoint + "/big_covar_schema").withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe OK
          val body = contentAsString(resp)
@@ -112,10 +113,25 @@ import EventTest._
          schema.getName mustEqual "big_covar_schema"
       }
       
+      "return OK on GET open connection" in {
+         val resp = route(app, FakeRequest(GET, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
+         status(resp) mustBe OK
+         contentAsString(resp) mustBe empty
+      }
+      
       "close connection on DELETE with valid id" in {
          val resp = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
+      }
+
+      "return 702 Unknown connection on GET closed connection ID" in {
+         val resp = route(app, FakeRequest(GET, endpoint + "/" + connId)).get
+         status(resp) mustBe BAD_REQUEST
+         val (isInternal, error, args) = parseError(contentAsJson(resp))
+         isInternal mustBe UnknownConnection.isInternal() 
+         error mustBe UnknownConnection
+         args mustBe Seq(connId)
       }
 
       "return 400 on DELETE of connection which no longer exists" in {
@@ -187,5 +203,6 @@ import EventTest._
          val schema = parserResp.getSchema
          schema.getName mustEqual "big_covar_schema"
       }
+      
    }
 }

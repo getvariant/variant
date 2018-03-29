@@ -58,13 +58,13 @@ class ConnectionController @Inject() (
    
    /**
     * GET
-    * Keep-alive ping.
+    * Check-alive ping.
     * If connection has been closed by the server return
     *   Status: 400
     * Content: 702 Unknown Connection
-    * If connection is alive, send list updates sessions:
+    * If connection is alive, no content is returned:
     *   Status: 200
-    *   Content: { "exp":[sid,sid...], "upd":[{<session1>},{<session2>}...]}
+    *   Content: none
     */
    def ping(cid: String) = VariantAction {
       val conn = connStore.getOrBust(cid)
