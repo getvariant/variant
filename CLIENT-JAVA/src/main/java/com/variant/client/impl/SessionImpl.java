@@ -97,7 +97,7 @@ public class SessionImpl implements Session {
 			throw new ClientException.Internal("Unable to instantiate targeting tracker class [" + className +"]", e);
 		}
 	}
-
+	
 	/**
 	 * Sill ok to use this object?
 	 */
@@ -111,12 +111,13 @@ public class SessionImpl implements Session {
 	}
 
 	// ---------------------------------------------------------------------------------------------//
-	//                                       PUBLIC AUGMENTED                                       //
+	//                                            PUBLIC                                            //
 	// ---------------------------------------------------------------------------------------------//
 	/**
-	 * 
+	 * Original session creator.
 	 */
-	public SessionImpl(Connection conn,
+	public SessionImpl(
+			Connection conn,
 			CoreSession coreSession,
 			SessionIdTracker sessionIdTracker,
 			Object...userData) {
@@ -126,6 +127,19 @@ public class SessionImpl implements Session {
 		this.sessionIdTracker = sessionIdTracker;
 		this.targetingTracker = initTargetingTracker(userData);
 		this.coreSession.setTargetingStabile(toTargetingStabile(targetingTracker));
+	}
+
+	/**
+	 * Parallel session creator.
+	 */
+	public SessionImpl(
+			Connection conn,
+			CoreSession coreSession) {
+		
+		this.conn = (ConnectionImpl) conn;
+		this.coreSession = coreSession;
+		this.sessionIdTracker = null;
+		this.targetingTracker = null;
 	}
 
 	/**
@@ -149,77 +163,107 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * 
+	 * Mutable. But don't go to the server if already expired.
 	 */
 	@Override
 	public boolean isExpired() {
+		if (isExpired) return true;
+		conn.refreshSession(this);
 		return isExpired;
 	}
 	
-	// ---------------------------------------------------------------------------------------------//
-	//                                      PUBLIC PASS-THRU                                        //
-	// ---------------------------------------------------------------------------------------------//
-
+	/**
+	 * Immutable
+	 */
 	@Override
 	public String getId() {
 		checkState(); 
 		return coreSession.getId();
 	}
 
+	/**
+	 * Immutable
+	 */
 	@Override
 	public Date getCreateDate() {
 		checkState();
 		return coreSession.createDate();
 	}
 
+	/**
+	 * Mutable, but local because we let connection to update itself via connection ping.
+	 */
 	@Override
 	public Connection getConnection() {
 		checkState();
 		return conn;
 	}
 
+	/**
+	 * Immutable
+	 */
 	@Override
 	public Config getConfig() {
 		checkState();
 		return conn.getConfig();
 	}
 
+	/**
+	 * Mutable
+	 */
 	@Override
 	public Map<State, Integer> getTraversedStates() {
 		checkState();
 		return coreSession.getTraversedStates();
 	}
 
+	/**
+	 * Mutable
+	 */
 	@Override
 	public Set<Test> getTraversedTests() {
 		checkState();
 		return coreSession.getTraversedTests();
 	}
 
+	/**
+	 * Mutable
+	 */
 	@Override
 	public Set<Test> getDisqualifiedTests() {
 		checkState();
 		return coreSession.getDisqualifiedTests();
 	}
 
-
+	/**
+	 * Mutable
+	 */
 	@Override
 	public void triggerEvent(VariantEvent event) {
 		checkState();
 		conn.getServer().eventSave(this, event);
 	}
 	
+	/**
+	 * Immutable
+	 */
 	@Override
 	public long getTimeoutMillis() {
 		return conn.getSessionTimeoutMillis();
 	}
 
+	/**
+	 * Mutable
+	 */
 	@Override
 	public StateRequest getStateRequest() {
 		checkState();
 		return stateRequest;
 	}
 
+	/**
+	 * Mutable
+	 */
 	@Override
 	public String setAttribute(String name, String value) {
 		checkState();
@@ -228,12 +272,18 @@ public class SessionImpl implements Session {
 		return result;
 	}    
 
+	/**
+	 * Mutable
+	 */
 	@Override
 	public String getAttribute(String name) {
 		checkState();
 		return coreSession.getAttribute(name);
 	}
 
+	/**
+	 * Mutable
+	 */
 	@Override
 	public String clearAttribute(String name) {
 		checkState();

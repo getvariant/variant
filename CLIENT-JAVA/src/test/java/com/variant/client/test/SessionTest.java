@@ -33,7 +33,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void noSessionIdInTrackerTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -70,26 +70,27 @@ public class SessionTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
 		assertEquals(Status.OPEN, conn.getStatus());
 		
-		Session[] sessions = new Session[100];
+		Session[] sessions = new Session[10];
 		for (int i = 0; i < sessions.length; i++) {
 			String sid = newSid();
 			sessions[i] = conn.getOrCreateSession(sid);
 			assertNotNull(sessions[i]);
+			assertEquals(1000, sessions[i].getTimeoutMillis());
 		}
 		
 		for (int i = 0; i < sessions.length; i++) {
 			assertFalse(sessions[i].isExpired());
 		}
 
-		assertEquals(1000, sessions[0].getTimeoutMillis());
-		// Let vacuum thread a chance to run.
+		// Let sessions a chance to expire on the server.
+		
 		Thread.sleep(2000);
 		
 		final State state2 = conn.getSchema().getState("state2");
@@ -109,7 +110,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 
    /**
     */
-   @org.junit.Test
+   //@org.junit.Test
    public void sessionExpirationListenerTest() throws Exception {
       
       Connection conn = client.getConnection("big_covar_schema");    
@@ -140,9 +141,13 @@ public class SessionTest extends ClientBaseTestWithServer {
             }
       );
 
+      assertFalse(ssn.isExpired());
+      
       assertEquals(1000, ssn.getTimeoutMillis());
       // Let vacuum thread a chance to run.
       Thread.sleep(2000);
+
+      assertTrue(ssn.isExpired());
 
       assertEquals(2, listenersRan.size());
       assertTrue(listenersRan.get(0) == 1);
@@ -151,7 +156,7 @@ public class SessionTest extends ClientBaseTestWithServer {
    
 	/**
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void connectionClosedLocallyTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -175,7 +180,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	 * Session expires too soon. See bug https://github.com/getvariant/variant/issues/67
 	 * + bug 82, probably a dupe.
 	 */
-	//@org.junit.Test
+    @org.junit.Test
 	public void connectionClosedRemotelyTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -202,7 +207,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 
 	/**
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void attributesTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		

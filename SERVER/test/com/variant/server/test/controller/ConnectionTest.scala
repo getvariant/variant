@@ -1,14 +1,11 @@
 package com.variant.server.test.controller
 
 import scala.util.Random
-
 import org.scalatestplus.play._
-
 import play.api.test._
 import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.collection.JavaConversions._
-
 import com.variant.core.ServerError._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.EventReader
@@ -16,6 +13,7 @@ import com.variant.server.api.ConfigKeys._
 import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.schema.ServerSchemaParser
+import com.variant.server.test.util.VariantRequest
 
 /*
  * Reusable event JSON objects. 
@@ -56,6 +54,7 @@ import EventTest._
 
    "ConnectionController" should {
 
+      /* GET connection is off
       "return 702 Unknown connection on GET bad connection ID" in {
          val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
          status(resp) mustBe BAD_REQUEST
@@ -64,13 +63,8 @@ import EventTest._
          error mustBe UnknownConnection
          args mustBe Seq("foo")
       }
-
-      "return 404 on PUT" in {
-         val resp = route(app, FakeRequest(PUT, endpoint + "/foo")).get
-         status(resp) mustBe NOT_FOUND
-         contentAsString(resp) mustBe empty
-      }
-
+	   */
+   
       "return  404 on POST with no schema name" in {
          val resp = route(app, FakeRequest(POST, endpoint).withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe NOT_FOUND
@@ -87,6 +81,16 @@ import EventTest._
       }
 
       var connId: String = null
+      
+      "throw intenal exception on POST with Connection ID header" in {
+
+         val resp = route(app, VariantRequest(POST, endpoint + "/big_covar_schema", "foo")).get
+         status(resp) mustBe BAD_REQUEST
+         val (isInternal, error, args) = parseError(contentAsJson(resp))
+         isInternal mustBe ConnectionIdNotExpected.isInternal() 
+         error mustBe ConnectionIdNotExpected
+         args mustBe Seq("foo", "big_covar_schema")
+      }
       
       "open connection on POST with valid schema name" in {
          
@@ -113,18 +117,21 @@ import EventTest._
          schema.getName mustEqual "big_covar_schema"
       }
       
+      /* GET connection is off
       "return OK on GET open connection" in {
          val resp = route(app, FakeRequest(GET, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
+      */
       
-      "close connection on DELETE with valid id" in {
-         val resp = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
+      "close connection on DELETE with valid connection ID" in {
+         val resp = route(app, VariantRequest(DELETE, endpoint, connId)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
 
+      /*
       "return 702 Unknown connection on GET closed connection ID" in {
          val resp = route(app, FakeRequest(GET, endpoint + "/" + connId)).get
          status(resp) mustBe BAD_REQUEST
@@ -133,9 +140,10 @@ import EventTest._
          error mustBe UnknownConnection
          args mustBe Seq(connId)
       }
-
+      */
+      
       "return 400 on DELETE of connection which no longer exists" in {
-         val resp = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
+         val resp = route(app, VariantRequest(DELETE, endpoint, connId)).get
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe UnknownConnection.isInternal() 
@@ -177,7 +185,7 @@ import EventTest._
          args mustBe empty
          
          // Close one
-         val resp2 = route(app, FakeRequest(DELETE, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
+         val resp2 = route(app, VariantRequest(DELETE, endpoint, connId)).get
          status(resp2) mustBe OK
          contentAsString(resp2) mustBe empty
 

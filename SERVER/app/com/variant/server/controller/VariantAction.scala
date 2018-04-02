@@ -7,6 +7,8 @@ import play.api.Logger
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.core.ServerError
+import com.variant.core.util.TimeUtils
+import com.variant.core.util.Constants
 
 /**
  * Common actions logic chains to concrete action.
@@ -16,19 +18,21 @@ import com.variant.core.ServerError
  */
 object VariantAction extends ActionBuilder[Request] with Results {
       
-   private val logger = Logger(this.getClass)
+   private[this] val logger = Logger(this.getClass)
    
    /**
     * Play's wrapper around the code in the concrete action. 
     */
-   def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
+   override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
 
-      val req = request.method + " " + request.path
+      val start = System.currentTimeMillis
+      val req = request.method + " " + request.path      
       
       // Delegate to the actual action
-      logger.trace("Delegated request [%s]".format(req))
       try {
-         block(request)
+         val future = block(request)
+         logger.trace("Request [%s] completed in %s".format(req, TimeUtils.formatDuration(System.currentTimeMillis - start)))
+         future
       }
       catch {
          case sre: ServerException.Remote => 
@@ -37,6 +41,5 @@ object VariantAction extends ActionBuilder[Request] with Results {
             logger.error("Unexpected Internal Error in [%s]".format(req), t);
             Future.successful(ServerErrorRemote(ServerError.InternalError).asResult(t.getMessage))            
       }
-   }
-    
+   }   
 }

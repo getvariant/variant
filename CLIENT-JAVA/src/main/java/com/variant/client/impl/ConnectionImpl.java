@@ -6,9 +6,6 @@ import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTE
 import java.util.LinkedHashSet;
 import java.util.Random;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.typesafe.config.Config;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
@@ -33,7 +30,7 @@ import com.variant.core.util.StringUtils;
  */
 public class ConnectionImpl implements Connection {
 
-	final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
+	//final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
 
 	// Listeners
 	final protected LinkedHashSet<ExpirationListener> expirationListeners = new LinkedHashSet<ExpirationListener>();
@@ -45,12 +42,16 @@ public class ConnectionImpl implements Connection {
 	private void preChecks() {
 		
 		switch (status) {
+
+		case CONNECTING:
+			throw new ClientException.Internal("Connection is not yet open");
 		
-		case OPEN: break;
+		case OPEN:
+			break;
 		
 		case CLOSED_BY_CLIENT: 
 		case CLOSED_BY_SERVER:
-			throw new ConnectionClosedException();
+			throw new ConnectionClosedException();		
 		}
 	}
 	
@@ -103,7 +104,7 @@ public class ConnectionImpl implements Connection {
 			}
 		}
 		
-		SessionImpl result = getSessionFromServer(sessionId);
+		SessionImpl result = fetchSession(sessionId, null);
 		
 		if (result == null && create) {
 			// Session expired locally, recreate OK.  Don't bother with the server.
@@ -115,39 +116,48 @@ public class ConnectionImpl implements Connection {
 
 		return result;
 	}
+	
 	/**
-	 * Get an existing session by session ID from the server.
+	 * Refresh an existing session from the server.
+	 * @param session
+	 */
+	void refreshSession(SessionImpl session) {
+		fetchSession(session.getId(), session);
+	}
+	
+	/**
+	 * Get an existing session by session ID from the server, or null if
+	 * the session does not exist on the server.
 	 * @param create
 	 * @param userData
 	 * @return
 	 */
-	private SessionImpl getSessionFromServer(String sid) {
+	private SessionImpl fetchSession(String sid, SessionImpl localSession) {
 
-		// Local cache first.
-		SessionImpl clientSsn = (SessionImpl) cache.get(sid);
-		if (clientSsn == null) {
-			if (LOG.isTraceEnabled()) {
-				LOG.trace(String.format("Local cache miss for SID [%s] in connection [%s]", sid, id));
-			}
-			return null;
-		}
-		
-		if (LOG.isTraceEnabled()) {
-			LOG.trace(String.format("Local cache hit for SID [%s] in connection [%s]", sid, id));
-		}
+		// Go straight to the server as we may not have it in the client-local cache,
+		// e.g. when we get it from a parallel connection.
 		Payload.Session payload = server.sessionGet(sid);
 		
 		if (payload == null) {
-			// Session expired on server => expire it here too.
+			// Session expired on server, expire it here too.
 			cache.expire(sid);
 			return null;			
 		}
+
+		CoreSession serverSsn =  payload.session;
 		
-		CoreSession remoteSsn =  payload.session;			
-		// Local and remote hits. 
-		// Replace remote in local, as it may have been changed by another client,
-		// update local timeout, and return the existing local object.
-		clientSsn.rewrap(remoteSsn);
+		// Have server session. If no client-side session object, create it
+		// otherwise, rewrap the core session from the server in the existing
+		// client-side object.
+		
+		SessionImpl clientSsn = localSession == null ? (SessionImpl) cache.get(sid) : localSession;
+		
+		if (clientSsn == null) {
+			clientSsn = new SessionImpl(this, serverSsn);
+		}
+		else {
+			clientSsn.rewrap(serverSsn);
+		}
 		return clientSsn;	
 	}
 
@@ -161,7 +171,7 @@ public class ConnectionImpl implements Connection {
 	private final Server server;
 	private final VariantClientImpl client; 
 	private final Schema schema;
-	private Status status = Status.OPEN;
+	private Status status = Status.CONNECTING;
 
 	/**
 	 * 
@@ -178,7 +188,7 @@ public class ConnectionImpl implements Connection {
 		id = payload.id;
 		timestamp = payload.timestamp;
 		sessionTimeoutMillis = payload.sessionTimeout * 1000;
-		cache = new SessionCache(sessionTimeoutMillis);
+		cache = new SessionCache();
 		
 		ParserResponse resp = new ClientSchemaParser().parse(payload.schemaSrc);
 		if (resp.hasMessages(Severity.ERROR)) {
@@ -187,6 +197,8 @@ public class ConnectionImpl implements Connection {
 			throw new VariantException(buff.toString());
 		}
 		schema = resp.getSchema();
+		
+		status = Status.OPEN;
 	}
 	
 	// ---------------------------------------------------------------------------------------------//
@@ -197,10 +209,13 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public String getId() {
+		preChecks();
 		return id;
 	}
 
 	/**
+	 * ID is meaningless until connected.
+	 * Irrelevant to client code though.
 	 */
 	@Override
 	public VariantClient getClient() {
@@ -233,7 +248,7 @@ public class ConnectionImpl implements Connection {
 	@Override
 	public Session getSessionById(String sessionId) {
 		preChecks();
-		return getSessionFromServer(sessionId);
+		return fetchSession(sessionId, null);
 	}
 	
 	@Override
@@ -255,7 +270,7 @@ public class ConnectionImpl implements Connection {
 
 	@Override
 	public void close() {
-		close(Status.CLOSED_BY_CLIENT);
+		if (status == Status.OPEN) close(Status.CLOSED_BY_CLIENT);
 	}
 
 	// ---------------------------------------------------------------------------------------------//

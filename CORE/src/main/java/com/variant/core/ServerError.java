@@ -54,6 +54,12 @@ public class ServerError extends UserError {
 	public static final ServerError CannotReplaceSession = 
 			new ServerError(631, "Invalid attempt to replace existing session ID [%s], original connection ID [%s] to schema [%s] on connection ID [%s] to schema [%s]");
 
+	public static final ServerError ConnectionIdNotExpected = 
+			new ServerError(632, "Unexpected connection ID [%s] at opening connection to schema [%s]");
+
+	public static final ServerError ConnectionIdMissing = 
+			new ServerError(633, "Missing connection  ID [%s]");
+	
 	/**
 	 */
 	public boolean isInternal() {

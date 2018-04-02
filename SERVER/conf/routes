@@ -8,17 +8,21 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 # If a path ends in a slash, redirect to the same path without the trailing /.
 GET     /*path/                     com.variant.server.controller.RootController.untrail(path)
 
-# Variant Controllers
+# Connection Controller
 POST    /connection/:schema      com.variant.server.controller.ConnectionController.open(schema: String)
-DELETE  /connection/:cid         com.variant.server.controller.ConnectionController.close(cid: String)
-GET     /connection/:cid         com.variant.server.controller.ConnectionController.ping(cid: String)
+DELETE  /connection              com.variant.server.controller.ConnectionController.close()
+#GET     /connection/          com.variant.server.controller.ConnectionController.ping(cid: String)
 
+# Event Controller
 POST    /event                   com.variant.server.controller.EventController.post()
 
+# Session Controller
 GET     /session/:id             com.variant.server.controller.SessionController.get(id: String)
 PUT     /session                 com.variant.server.controller.SessionController.save()
 
+# Request Controller
 POST    /request                 com.variant.server.controller.RequestController.post()
 PUT     /request                 com.variant.server.controller.RequestController.commit()
 
+# Health page at root
 GET     /                        com.variant.server.controller.RootController.status()

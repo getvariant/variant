@@ -31,11 +31,11 @@ public class Server {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Server.class);
 
-	private final String serverUrl;
+	private final ConnectionImpl connection;
 	private final String schemaName;
-	private HttpRemoter remoter = new HttpRemoter();
-	private final HttpAdapter adapter = new HttpAdapter(remoter);
-	private ConnectionImpl connection;
+	private final String serverUrl;
+	private final HttpRemoter remoter;
+	private final HttpAdapter adapter;
 	private boolean isConnected = false;
 	
 	/**
@@ -50,6 +50,11 @@ public class Server {
 		
 	}
 
+	/**
+	 * All outbound operations which expect a return type.
+	 *
+	 * @param <T>
+	 */
 	private abstract class CommonExceptionHandler<T> {
 		
 		abstract T code() throws Exception;
@@ -70,7 +75,7 @@ public class Server {
 				else throw ce;
 			}
 
-			// Pass through properly formatted internal exceptions
+			// Pass through internal exceptions
 			catch (ClientException.Internal ce) { 
 				throw ce;
 			}
@@ -82,6 +87,11 @@ public class Server {
 		}
 	}
 
+	/**
+	 * All outbound operations which do not expect a return type.
+	 *
+	 * @param <T>
+	 */
 	private abstract class CommonExceptionHandlerVoid extends CommonExceptionHandler<Object> {
 		
 		final Object code() throws Exception {codeVoid(); return null;}
@@ -94,7 +104,6 @@ public class Server {
 	private void destroy() {
 		if (remoter != null) {
 			remoter.destroy();
-			remoter = null;
 		}
 		isConnected = false;
 	}
@@ -105,6 +114,8 @@ public class Server {
 	 */
 	Server(ConnectionImpl connection, String schemaName) {
 		this.connection = connection;
+		this.remoter = new HttpRemoter(connection);
+		this.adapter = new HttpAdapter(remoter);
 		String url = connection.getClient().getConfig().getString(ConfigKeys.SERVER_URL);
 		this.serverUrl =  url.endsWith("/") ? url : url + "/";
 		this.schemaName = schemaName;
@@ -160,7 +171,7 @@ public class Server {
 
 	/**
 	 * GET /session
-	 * Get or create session by ID.
+	 * Get an existing session by ID or null if does not exist on the server.
 	 */
 	public Payload.Session sessionGet(final String sid) {
 
@@ -171,14 +182,22 @@ public class Server {
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session code() throws Exception {
-				HttpResponse resp = adapter.get(serverUrl + "session/" + sid);
-				return Payload.Session.fromResponse(connection, resp);
+				try {
+					HttpResponse resp = adapter.get(serverUrl + "session/" + sid);
+					return Payload.Session.fromResponse(connection, resp);
+				}
+				catch (ClientException.User ue) {
+					// If the server is saying the session wasn't there, this method
+					// should simply return null.
+					if (ue.getError() == ServerError.SessionExpired) return null;
+					else throw ue;
+				}
 			}
 		}.run();
 	}
 
 	/**
-	 * Save foreground session on server.
+	 * Save or replace session on server.
 	 */
 	public void sessionSave(final Session ssn) {
 		

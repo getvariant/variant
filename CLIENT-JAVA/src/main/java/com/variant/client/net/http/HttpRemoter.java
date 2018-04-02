@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.ClientException;
+import com.variant.client.Connection.Status;
+import com.variant.client.impl.ConnectionImpl;
+import com.variant.core.util.Constants;
 import com.variant.core.util.TimeUtils;
 
 /**
@@ -23,14 +26,25 @@ public class HttpRemoter {
 	final private static Logger LOG = LoggerFactory.getLogger(HttpRemoter.class);
 	final private static String CONTENT_TYPE = "application/json; charset=utf-8";
 
+	// All requests 
+	final ConnectionImpl connection;
+	
 	/**
 	 * Public construction.
 	 */
-	public HttpRemoter(){};
+	public HttpRemoter(ConnectionImpl connection) {
+		this.connection = connection;
+	};
 	
 	// The only HTTP client per Variant Client. Has built-in connection pool.
 	private CloseableHttpClient client = HttpClients.createDefault();
 
+	/**
+	 * Single Entry point to all calls to the server.
+	 * 
+	 * @param requestable
+	 * @return
+	 */
 	HttpResponse call(Requestable requestable) {
 		
 		long start = System.currentTimeMillis();
@@ -38,6 +52,12 @@ public class HttpRemoter {
 		try {
 			HttpUriRequest req = requestable.requestOp();
 			req.setHeader("Content-Type", CONTENT_TYPE);
+			if (connection.getStatus() == Status.OPEN) {
+				req.setHeader(Constants.HTTP_HEADER_CONNID, connection.getId());
+			}
+			else if (connection.getStatus() != Status.CONNECTING) {
+				throw new ClientException.Internal(String.format("Unexpected status %s", connection.getStatus()));
+			}
 			resp = client.execute(req);
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(String.format(

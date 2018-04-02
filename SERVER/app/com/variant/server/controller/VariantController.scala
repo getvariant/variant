@@ -14,6 +14,7 @@ import play.api.mvc.Request
 import play.api.mvc.AnyContent
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.schema.ServerSchema
+import com.variant.core.util.Constants
 
 /**
  * All Variant controllers inherit from this.
@@ -26,6 +27,19 @@ abstract class VariantController extends Controller {
    /**
     * An alias for the server
     */
-   val server = VariantServer.instance
+   protected val server = VariantServer.instance
      
+   /**
+    * 
+    */
+   protected def getConnection(req: Request[AnyContent]) = req.headers.get(Constants.HTTP_HEADER_CONNID)
+   
+   /**
+    * 
+    */
+   protected def getConnectionOrBust(req: Request[AnyContent]) = getConnection(req).getOrElse {
+      throw new ServerException.Internal("Missing Connection ID header")
+   }
+   
+   
 }

@@ -63,8 +63,9 @@ public interface Connection {
 	 *                 and {@link TargetingTracker#init(Connection, Object...)}.
      *
 	 * @since 0.7
-	 * @return An object of type {@link Session}, or <code>null</code>.
-	 *         This method is guaranteed to be idempotent, i.e. a subsequent
+	 * @return An object of type {@link Session}, if the session represented by <code>userData</code> exists,
+	 *         or <code>null</code> otherwise.
+	 *         This method is idempotent, i.e. a subsequent
 	 *         invocation with the same arguments will return the same object or <code>null</code>.
 	 */
 	Session getSession(Object... userData);
@@ -146,6 +147,13 @@ public interface Connection {
 	 * @since 0.7
 	 */
 	public enum Status {
+
+		/**
+		 * Open and usable.
+		 * 
+		 * @since 0.8
+		 */
+		CONNECTING, 
 
 		/**
 		 * Open and usable.

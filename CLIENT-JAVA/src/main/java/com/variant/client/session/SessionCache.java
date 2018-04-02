@@ -33,19 +33,20 @@ public class SessionCache {
 			this.session = session;
 			this.accessTimestamp = System.currentTimeMillis();
 		}
-		
+		/*
 		boolean isIdle() {
 			return accessTimestamp + sessionTimeoutMillis < System.currentTimeMillis();
 		}
+		*/
 	}
 	
 	/**
 	 * Vacuum thread.
 	 * Expires and removes idle or stale sessions. 
-	 * 
+	 * NOT NEEDED AFTER #114 (0.8.1)
 	 * @author Igor.
 	 *
-	 */
+	 *
 	private class VacuumThread extends Thread {
 				
 		@Override
@@ -85,12 +86,13 @@ public class SessionCache {
 			}
 		}
 	}
+	*/
 
-	private final long sessionTimeoutMillis;
-	private final long vacuumInterval;
+	//private final long sessionTimeoutMillis;
+	//private final long vacuumInterval;
 	
 	private ConcurrentHashMap<String, Entry> cache = new ConcurrentHashMap<String, Entry>();
-	private VacuumThread vacuumThread;
+	// private VacuumThread vacuumThread;
 
 	// ---------------------------------------------------------------------------------------------//
 	//                                             PUBLIC                                           //
@@ -99,8 +101,8 @@ public class SessionCache {
 	/**
 	 * 
 	 */
-	public SessionCache(long sessionTimeoutMillis) {
-	
+	public SessionCache() {
+	/*
 		this.sessionTimeoutMillis = sessionTimeoutMillis;
 		// Vacuum therad wakes up no less frequently than 30 seconds, but more frequently for tests,
 		// when the timeout is set low, e.g. 1 sec.
@@ -109,6 +111,7 @@ public class SessionCache {
 		vacuumThread.setDaemon(false);
 		vacuumThread.setName(VacuumThread.class.getSimpleName());
 		vacuumThread.start();
+	 */
 	}
 	
 	/**
@@ -147,7 +150,7 @@ public class SessionCache {
 	 * Mark all sessions as expired and release underlying memory.
 	 */
 	public void destroy() {
-		vacuumThread.interrupt();
+		//vacuumThread.interrupt();
 		for (Entry e: cache.values()) {e.session.expire();}
 		cache = null;
 	}
