@@ -24,7 +24,6 @@ import com.variant.core.util.TimeUtils;
 public class HttpRemoter {
 
 	final private static Logger LOG = LoggerFactory.getLogger(HttpRemoter.class);
-	final private static String CONTENT_TYPE = "application/json; charset=utf-8";
 
 	// All requests 
 	final ConnectionImpl connection;
@@ -51,7 +50,7 @@ public class HttpRemoter {
 		CloseableHttpResponse resp = null;
 		try {
 			HttpUriRequest req = requestable.requestOp();
-			req.setHeader("Content-Type", CONTENT_TYPE);
+			req.setHeader("Content-Type", Constants.HTTP_HEADER_CONTENT_TYPE);
 			if (connection.getStatus() == Status.OPEN) {
 				req.setHeader(Constants.HTTP_HEADER_CONNID, connection.getId());
 			}

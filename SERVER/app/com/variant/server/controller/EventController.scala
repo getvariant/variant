@@ -35,10 +35,7 @@ class EventController @Inject() (
     */
    def post() = VariantAction { req =>
 
-      val bodyJson = req.body.asJson.getOrElse {
-         throw new ServerException.Remote(EmptyBody)
-      }
-      
+      val bodyJson = getBody(req)      
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "sid")            
       }
@@ -55,7 +52,7 @@ class EventController @Inject() (
       
       val params = (bodyJson \ "params").asOpt[List[JsObject]].getOrElse(List[JsObject]())
 
-      val ssn = ssnStore.getOrBust(sid, getCIDOrBust(req))
+      val ssn = ssnStore.getOrBust(sid, getConnectionId(req))
       
       if (ssn.getStateRequest == null)
          throw new ServerException.Remote(UnknownState)   

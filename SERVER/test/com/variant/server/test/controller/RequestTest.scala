@@ -39,8 +39,8 @@ class RequestTest extends BaseSpecWithServer {
       }
 
       "obtain a connection" in {
-         // POST new connection
-         val connResp = route(app, FakeRequest(POST, context + "/connection/big_covar_schema")).get
+         // Open new connection
+         val connResp = route(app, connectionRequest("big_covar_schema")).get
          status(connResp) mustBe OK
          val json = contentAsJson(connResp) 
          json mustNot be (null)
@@ -50,11 +50,8 @@ class RequestTest extends BaseSpecWithServer {
 
       "create new session" in {
          
-         val reqBody = Json.obj(
-            "cid" -> cid,
-            "ssn" -> SessionImpl.empty(sid, schema).toJson
-            )
-         val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(reqBody)).get
+         val body = SessionImpl.empty(sid, schema).toJson
+         val resp = route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(body)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
          
@@ -63,7 +60,7 @@ class RequestTest extends BaseSpecWithServer {
       "create and commit new state request" in {
 
          // Get the session.
-         var resp = route(app, FakeRequest(GET, context + "/session/" + sid)).get
+         var resp = route(app, connectedRequest(GET, context + "/session/" + sid, cid)).get
          status(resp) mustBe OK
          var respAsJson = contentAsJson(resp)
          val coreSsn1 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
@@ -74,10 +71,10 @@ class RequestTest extends BaseSpecWithServer {
          val reqBody1 = Json.obj(
             "sid" -> sid,
             "state" -> "state2"
-            )
+            ).toString
 
          // Target and get the request.
-         resp = route(app, FakeRequest(POST, context + "/request").withJsonBody(reqBody1)).get
+         resp = route(app, connectedRequest(POST, context + "/request", cid).withTextBody(reqBody1)).get
          status(resp) mustBe OK
          respAsJson = contentAsJson(resp)
          val coreSsn2 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
@@ -94,8 +91,9 @@ class RequestTest extends BaseSpecWithServer {
          // Commit the request.
          val reqBody2 = Json.obj(
             "sid" -> sid
-            )    
-         resp = route(app, FakeRequest(PUT, context + "/request").withJsonBody(reqBody2)).get
+            ).toString
+            
+         resp = route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)).get
          status(resp) mustBe OK
          respAsJson = contentAsJson(resp)
          val coreSsn3 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
@@ -109,10 +107,7 @@ class RequestTest extends BaseSpecWithServer {
  
          // Try committing again... Should work because we don't actually check for this on the server.
          // and trust that the client will check before sending the request and check again after receiving.
-         val reqBody3 = Json.obj(
-            "sid" -> sid
-            )  
-         resp = route(app, FakeRequest(PUT, context + "/request").withJsonBody(reqBody3)).get
+         resp = route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)).get
          status(resp) mustBe OK
 
          // Wait for event writer to flush and confirm we wrote 1 state visit event.
@@ -133,7 +128,7 @@ class RequestTest extends BaseSpecWithServer {
       }
 
    }
-   
+
    "Schema petclinic" should {
 
       val schema = server.schemata("petclinic")
@@ -145,7 +140,7 @@ class RequestTest extends BaseSpecWithServer {
 
       "obtain a connection" in {
          // POST new connection
-         val connResp = route(app, FakeRequest(POST, context + "/connection/petclinic")).get
+         val connResp = route(app, connectionRequest("petclinic")).get
          status(connResp) mustBe OK
          val json = contentAsJson(connResp) 
          json mustNot be (null)
@@ -157,11 +152,9 @@ class RequestTest extends BaseSpecWithServer {
          
          val ssn = SessionImpl.empty(sid, schema)
          ssn.setAttribute("user-agent", "Firefox")
-         val reqBody = Json.obj(
-            "cid" -> cid,
-            "ssn" -> ssn.toJson
-            )
-         val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(reqBody)).get
+         val reqBody = ssn.toJson
+
+         val resp = route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(reqBody)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
@@ -169,7 +162,7 @@ class RequestTest extends BaseSpecWithServer {
       "Disqualify session from test" in {
 
          // Get the session.
-         var resp = route(app, FakeRequest(GET, context + "/session/" + sid)).get
+         var resp = route(app, connectedRequest(GET, context + "/session/" + sid, cid)).get
          status(resp) mustBe OK
          var respAsJson = contentAsJson(resp)
          val coreSsn1 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
@@ -180,10 +173,10 @@ class RequestTest extends BaseSpecWithServer {
          val reqBody1 = Json.obj(
             "sid" -> sid,
             "state" -> "newOwner"
-            )
+            ).toString
 
          // Target and get the request.
-         resp = route(app, FakeRequest(POST, context + "/request").withJsonBody(reqBody1)).get
+         resp = route(app, connectedRequest(POST, context + "/request", cid).withTextBody(reqBody1)).get
          status(resp) mustBe OK
          respAsJson = contentAsJson(resp)
          val coreSsn2 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
@@ -203,8 +196,8 @@ class RequestTest extends BaseSpecWithServer {
          // Commit the request.
          val reqBody2 = Json.obj(
             "sid" -> sid
-            )    
-         resp = route(app, FakeRequest(PUT, context + "/request").withJsonBody(reqBody2)).get
+            ).toString
+         resp = route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)).get
          status(resp) mustBe OK
          respAsJson = contentAsJson(resp)
          val coreSsn3 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
@@ -223,7 +216,7 @@ class RequestTest extends BaseSpecWithServer {
 
          // Send custom event.
          val eventBody = EventTest.body.expand("sid" -> sid, "name" -> "eventName", "value" -> "eventValue")
-         val eventResp = route(app, FakeRequest(POST, context + "/event").withJsonBody(Json.parse(eventBody))).get
+         val eventResp = route(app, connectedRequest(POST, context + "/event", cid).withTextBody(eventBody)).get
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          status(eventResp) mustBe OK
          contentAsString(eventResp) mustBe empty

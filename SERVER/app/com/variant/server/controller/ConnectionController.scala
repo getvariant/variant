@@ -60,7 +60,7 @@ class ConnectionController @Inject() (
     */
    def close() = VariantAction { req =>
 
-      val cid = getCIDOrBust(req)
+      val cid = getConnectionId(req)
       val conn = connStore.closeOrBust(cid)
       logger.info("Closed connection [%s] to schema [%s]".format(cid, conn.schema.getName))
       Ok

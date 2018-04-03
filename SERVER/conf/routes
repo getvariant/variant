@@ -21,7 +21,7 @@ GET     /session/:id             com.variant.server.controller.SessionController
 PUT     /session                 com.variant.server.controller.SessionController.save()
 
 # Request Controller
-POST    /request                 com.variant.server.controller.RequestController.post()
+POST    /request                 com.variant.server.controller.RequestController.create()
 PUT     /request                 com.variant.server.controller.RequestController.commit()
 
 # Health page at root

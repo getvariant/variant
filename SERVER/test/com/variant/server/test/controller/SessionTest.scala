@@ -94,8 +94,8 @@ class SessionTest extends BaseSpecWithServer {
       
       "return OK on PUT non-existent session with valid schema ID" in {
          
-         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> "foo"))
-         val resp = route(app, connectedRequest(PUT, endpoint, connId).withJsonBody(body)).get
+         val body = sessionJsonBigCovar.expand("sid" -> "foo")
+         val resp = route(app, connectedRequest(PUT, endpoint, connId).withTextBody(body)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
@@ -111,8 +111,8 @@ class SessionTest extends BaseSpecWithServer {
 
       "return OK and replace existing session on PUT" in {
        
-         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> "foo"))
-         val reqPut = connectedRequest(PUT, endpoint, connId).withJsonBody(body)
+         val body = sessionJsonBigCovar.expand("sid" -> "foo")
+         val reqPut = connectedRequest(PUT, endpoint, connId).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
@@ -126,9 +126,8 @@ class SessionTest extends BaseSpecWithServer {
 
       "return OK and create session on PUT" in {
        
-         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> "bar1")
-            )
-         val reqPut = connectedRequest(PUT, endpoint, connId).withJsonBody(body)
+         val body = sessionJsonBigCovar.expand("sid" -> "bar1")
+         val reqPut = connectedRequest(PUT, endpoint, connId).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
@@ -181,8 +180,8 @@ class SessionTest extends BaseSpecWithServer {
 
          // Create a session
          val sid = newSid()
-         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> sid))
-         val reqPut = connectedRequest(PUT, endpoint, connId).withJsonBody(body)
+         val body = sessionJsonBigCovar.expand("sid" -> sid)
+         val reqPut = connectedRequest(PUT, endpoint, connId).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
@@ -198,8 +197,8 @@ class SessionTest extends BaseSpecWithServer {
          conn2Schid mustBe connSchid
          
          // Save the session on the parallel connection.
-         val body2 = Json.parse(sessionJsonBigCovar.expand("sid" -> sid, "attrValue" -> "something else"))
-         val reqPut2 = connectedRequest(PUT, endpoint, conn2Id).withJsonBody(body2)
+         val body2 = sessionJsonBigCovar.expand("sid" -> sid, "attrValue" -> "something else")
+         val reqPut2 = connectedRequest(PUT, endpoint, conn2Id).withTextBody(body2)
          val respPut2 = route(app, reqPut2).get
          status(respPut2) mustBe OK
          contentAsString(respPut) mustBe empty
@@ -217,8 +216,8 @@ class SessionTest extends BaseSpecWithServer {
 
          // Create a new session on the existing big_covar_schema connection
          val sid = newSid()
-         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> sid))
-         val respPut = route(app, connectedRequest(PUT, endpoint, connId).withJsonBody(body)).get
+         val body = sessionJsonBigCovar.expand("sid" -> sid)
+         val respPut = route(app, connectedRequest(PUT, endpoint, connId).withTextBody(body)).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
 
@@ -232,8 +231,8 @@ class SessionTest extends BaseSpecWithServer {
          conn2Id mustNot be (connId)
             
          // Attempt to save the session on the new connection should throw internal error.
-         val body2 = Json.parse(sessionJsonPetclinic.expand("sid" -> sid))
-         val respPut2 = route(app, connectedRequest(PUT, endpoint, conn2Id).withJsonBody(body2)).get
+         val body2 = sessionJsonPetclinic.expand("sid" -> sid)
+         val respPut2 = route(app, connectedRequest(PUT, endpoint, conn2Id).withTextBody(body2)).get
          status(respPut2) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(respPut2))
          isInternal mustBe false 
@@ -246,8 +245,8 @@ class SessionTest extends BaseSpecWithServer {
        
          val sid = newSid()
          val ts = System.currentTimeMillis()
-         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts))
-         val reqPut = connectedRequest(PUT, endpoint, connId).withJsonBody(body)
+         val body = sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts)
+         val reqPut = connectedRequest(PUT, endpoint, connId).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
@@ -275,8 +274,8 @@ class SessionTest extends BaseSpecWithServer {
          
          // Create a session on it
          val sid = newSid()
-         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> sid))
-         val reqPut = connectedRequest(PUT, endpoint, connId).withJsonBody(body)
+         val body = sessionJsonBigCovar.expand("sid" -> sid)
+         val reqPut = connectedRequest(PUT, endpoint, connId).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty

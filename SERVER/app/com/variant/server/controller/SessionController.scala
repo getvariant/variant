@@ -39,7 +39,7 @@ class SessionController @Inject() (
          throw new ServerException.Remote(EmptyBody)
       }
             
-      val conn = connStore.getOrBust(getCIDOrBust(req))        
+      val conn = connStore.getOrBust(getConnectionId(req))        
       ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
       Ok
    }
@@ -51,7 +51,7 @@ class SessionController @Inject() (
     */
    def get(sid: String) = VariantAction { req =>
 
-      val cid = getCIDOrBust(req)
+      val cid = getConnectionId(req)
       val ssn = ssnStore.getOrBust(sid, cid)
       
       val response = JsObject(Seq(

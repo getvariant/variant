@@ -1,39 +1,35 @@
 package com.variant.server.test
 
-import scala.collection.JavaConversions._
-import org.scalatestplus.play._
-import play.api.test._
-import play.api.test.Helpers._
-import play.api.libs.json._
-import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.Application
-import javax.inject.Inject
-import com.variant.server.conn.SessionStore
-import org.scalatest.BeforeAndAfterAll
-import com.variant.server.jdbc.JdbcService
-import com.variant.server.event.EventWriter
-import com.variant.server.event.EventWriter
-import com.variant.server.boot.VariantServer
-import com.variant.server.api.Session
-import com.variant.core.session.SessionScopedTargetingStabile
-import com.variant.core.schema.Schema
 import java.util.Random
-import com.variant.core.util.StringUtils
-import com.typesafe.config.ConfigFactory
-import java.io.File
-import com.variant.server.boot.VariantApplicationLoader
-import play.api.Mode
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-import play.api.Configuration
-import com.variant.server.conn.ConnectionStore
-import play.api.libs.json.JsValue
+
+import scala.collection.JavaConversions.asScalaBuffer
+
+import org.scalatest.BeforeAndAfterAll
+import org.scalatestplus.play.OneAppPerSuite
+import org.scalatestplus.play.PlaySpec
+
 import com.variant.core.ServerError
+import com.variant.core.schema.Schema
+import com.variant.core.session.SessionScopedTargetingStabile
+import com.variant.core.util.Constants._
+import com.variant.core.util.StringUtils
+import com.variant.server.api.Session
+import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.boot.VariantServer
+import com.variant.server.conn.ConnectionStore
+import com.variant.server.conn.SessionStore
 import com.variant.server.impl.SessionImpl
-import com.variant.server.test.util.ParameterizedString
-import org.apache.commons.io.IOUtils
+import com.variant.server.jdbc.JdbcService
+
+import play.api.Application
+import play.api.Configuration
 import play.api.Logger
-import com.variant.core.util.Constants
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.JsValue
+import play.api.libs.json.JsValue.jsValueToJsLookup
+import play.api.libs.json.Json
+import play.api.test.FakeRequest
+import play.api.test.Helpers.POST
 
 /**
  * Common to all tests.
@@ -166,7 +162,7 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
     * that does not have connection id in X-Connection-ID header.
     */
    protected def connectionRequest(schemaName: String) = {
-      FakeRequest(POST, context + "/connection/" + schemaName).withHeaders("Content-Type" -> "text/plain")
+      FakeRequest(POST, context + "/connection/" + schemaName).withHeaders("Content-Type" -> HTTP_HEADER_CONTENT_TYPE)
    }
    
    /**
@@ -174,7 +170,7 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
     */
    protected def connectedRequest(method: String, uri: String, connId: String) = {
       FakeRequest(method, uri)
-         .withHeaders("Content-Type" -> "text/plain", Constants.HTTP_HEADER_CONNID -> connId)
+         .withHeaders("Content-Type" -> HTTP_HEADER_CONTENT_TYPE, HTTP_HEADER_CONNID -> connId)
    }
 
 }

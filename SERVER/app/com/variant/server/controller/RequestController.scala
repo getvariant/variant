@@ -29,19 +29,12 @@ class RequestController @Inject() (
    private val logger = Logger(this.getClass)	
    
    /**
-    * POST: Create state request by targeting a session.
-    * test with:
-curl -v -H "Content-Type: text/plain; charset=utf-8" \
-     -X POST \
-     -d '{"sid":"SID","state":"STATE"}' \
-     http://localhost:9000/variant/target
+    * POST
+    * Create state request by targeting a session.
     */
-   def post() = VariantAction { req =>
-
-      val bodyJson = req.body.asJson.getOrElse {
-         throw new ServerException.Remote(EmptyBody)
-      }      
+   def create() = VariantAction { req =>
       
+      val bodyJson = getBody(req)
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "sid")         
       }
@@ -49,7 +42,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          throw new ServerException.Remote(MissingProperty, "state")         
       }
 
-      val ssn = ssnStore.getOrBust(sid, getCIDOrBust(req))
+      val ssn = ssnStore.getOrBust(sid, getConnectionId(req))
       val schema = ssn.connection.schema
       val state = schema.getState(stateName)
 
@@ -71,15 +64,12 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
     */
    def commit() = VariantAction { req =>
 
-      val bodyJson = req.body.asJson.getOrElse {
-         throw new ServerException.Remote(EmptyBody)
-      }
-   
+      val bodyJson = getBody(req)
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "sid")         
       }
       
-      val ssn = ssnStore.getOrBust(sid, getCIDOrBust(req))
+      val ssn = ssnStore.getOrBust(sid, getConnectionId(req))
       val stateReq = ssn.getStateRequest
       val sve = stateReq.getStateVisitedEvent
       

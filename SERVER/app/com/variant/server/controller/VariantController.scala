@@ -33,9 +33,19 @@ abstract class VariantController extends Controller {
    protected val server = VariantServer.instance
      
    /**
+    * Parse body as JSON.
+    */
+   protected def getBody(req: Request[AnyContent]) = {
+      val bodyText = req.body.asText.getOrElse {
+         throw new ServerException.Remote(EmptyBody)
+      }      
+      Json.parse(bodyText)
+   }
+   
+   /**
     * 
     */
-   protected def getCIDOrBust(req: Request[AnyContent]): String = {
+   protected def getConnectionId(req: Request[AnyContent]): String = {
       req.headers.get(Constants.HTTP_HEADER_CONNID) match {
          case Some(cid) => cid
          case None => throw new ServerException.Remote(ServerError.ConnectionIdMissing)
