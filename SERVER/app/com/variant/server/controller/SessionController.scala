@@ -28,43 +28,31 @@ class SessionController @Inject() (
    /**
     * PUT
     * Save or replace a new session in the store. 
-    * If the session exists, the supplied connection ID must be
+    * If the session exists, the current connection ID must be
     * open and parallel to the original connection. 
     * Otherwise, the new session will be created in the supplied connection, 
     * so long as it's open. 
     */
    def save() = VariantAction { req =>
 
-      val bodyJson = req.body.asJson.getOrElse {
+      val ssnJson = req.body.asText.getOrElse {
          throw new ServerException.Remote(EmptyBody)
       }
             
-      val cid = (bodyJson \ "cid").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "cid")         
-      }
-      
-      val ssnJson = (bodyJson \ "ssn").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "ssn")
-      }
-      
-      // Lookup connection
-      val conn = connStore.getOrBust(cid)
-
-      logger.debug(s"Found connection [$cid]")      
-
-      val coreSession = CoreSession.fromJson(ssnJson, conn.schema);
-      ssnStore.put(SessionImpl(coreSession, conn))
+      val conn = connStore.getOrBust(getCIDOrBust(req))        
+      ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
       Ok
    }
  
    /**
-    * GET a session by ID.
-    * test with:
-curl -v -X GET http://localhost:9000/variant/session/SID
+    * GET 
+    * Get a session by ID, if exists and was open in the current
+    * or parallel connection.
     */
-   def get(sid: String) = VariantAction {
-      
-      val ssn = ssnStore.getOrBust(sid)
+   def get(sid: String) = VariantAction { req =>
+
+      val cid = getCIDOrBust(req)
+      val ssn = ssnStore.getOrBust(sid, cid)
       
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson)

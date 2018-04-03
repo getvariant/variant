@@ -49,7 +49,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          throw new ServerException.Remote(MissingProperty, "state")         
       }
 
-      val ssn = ssnStore.getOrBust(sid)
+      val ssn = ssnStore.getOrBust(sid, getCIDOrBust(req))
       val schema = ssn.connection.schema
       val state = schema.getState(stateName)
 
@@ -79,7 +79,7 @@ curl -v -H "Content-Type: text/plain; charset=utf-8" \
          throw new ServerException.Remote(MissingProperty, "sid")         
       }
       
-      val ssn = ssnStore.getOrBust(sid)
+      val ssn = ssnStore.getOrBust(sid, getCIDOrBust(req))
       val stateReq = ssn.getStateRequest
       val sve = stateReq.getStateVisitedEvent
       

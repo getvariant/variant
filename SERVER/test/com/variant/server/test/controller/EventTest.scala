@@ -138,7 +138,7 @@ class EventTest extends BaseSpecWithServer {
          val ssnResp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(ssnBody)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
-         ssn = ssnStore.get(sid).get
+         ssn = ssnStore.get(sid, connId).get
       }
       
       "return  400 and error on POST with non-existent session" in {

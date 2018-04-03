@@ -13,7 +13,6 @@ import com.variant.server.api.ConfigKeys._
 import com.variant.server.test.BaseSpecWithServer
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.schema.ServerSchemaParser
-import com.variant.server.test.util.VariantRequest
 
 /*
  * Reusable event JSON objects. 
@@ -66,13 +65,13 @@ import EventTest._
 	   */
    
       "return  404 on POST with no schema name" in {
-         val resp = route(app, FakeRequest(POST, endpoint).withHeaders("Content-Type" -> "text/plain")).get
+         val resp = route(app, connectionRequest("")).get
          status(resp) mustBe NOT_FOUND
          contentAsString(resp) mustBe empty        
       }
 
       "return  400 and error on POST to non-existent schema" in {
-         val resp = route(app, FakeRequest(POST, endpoint + "/foo").withHeaders("Content-Type" -> "text/plain")).get
+         val resp = route(app, connectionRequest("foo")).get
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe UnknownSchema.isInternal() 
@@ -84,7 +83,7 @@ import EventTest._
       
       "throw intenal exception on POST with Connection ID header" in {
 
-         val resp = route(app, VariantRequest(POST, endpoint + "/big_covar_schema", "foo")).get
+         val resp = route(app, connectedRequest(POST, endpoint + "/big_covar_schema", "foo")).get
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe ConnectionIdNotExpected.isInternal() 
@@ -94,7 +93,7 @@ import EventTest._
       
       "open connection on POST with valid schema name" in {
          
-         val resp = route(app, FakeRequest(POST, endpoint + "/big_covar_schema").withHeaders("Content-Type" -> "text/plain")).get
+         val resp = route(app, connectionRequest("big_covar_schema")).get
          status(resp) mustBe OK
          val body = contentAsString(resp)
          body mustNot be (empty)
@@ -126,7 +125,7 @@ import EventTest._
       */
       
       "close connection on DELETE with valid connection ID" in {
-         val resp = route(app, VariantRequest(DELETE, endpoint, connId)).get
+         val resp = route(app, connectedRequest(DELETE, endpoint, connId)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
@@ -143,7 +142,7 @@ import EventTest._
       */
       
       "return 400 on DELETE of connection which no longer exists" in {
-         val resp = route(app, VariantRequest(DELETE, endpoint, connId)).get
+         val resp = route(app, connectedRequest(DELETE, endpoint, connId)).get
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe UnknownConnection.isInternal() 
@@ -154,7 +153,7 @@ import EventTest._
       "return 400 when attempting to open one too many connections" in {
          val max = server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
          for (i <- 1 to max) {
-            val resp = route(app, FakeRequest(POST, endpoint + "/big_covar_schema").withHeaders("Content-Type" -> "text/plain")).get
+            val resp = route(app, connectionRequest("big_covar_schema")).get
             status(resp) mustBe OK
             val body = contentAsString(resp)
             body mustNot be (empty)
@@ -177,7 +176,7 @@ import EventTest._
          }
          
          // One over
-         val resp1 = route(app, FakeRequest(POST, endpoint + "/big_covar_schema").withHeaders("Content-Type" -> "text/plain")).get
+         val resp1 = route(app, connectionRequest("big_covar_schema")).get
          status(resp1) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp1))
          isInternal mustBe TooManyConnections.isInternal() 
@@ -185,12 +184,12 @@ import EventTest._
          args mustBe empty
          
          // Close one
-         val resp2 = route(app, VariantRequest(DELETE, endpoint, connId)).get
+         val resp2 = route(app, connectedRequest(DELETE, endpoint, connId)).get
          status(resp2) mustBe OK
          contentAsString(resp2) mustBe empty
 
          // Now should work
-         val resp3 = route(app, FakeRequest(POST, endpoint + "/big_covar_schema").withHeaders("Content-Type" -> "text/plain")).get
+         val resp3 = route(app, connectionRequest("big_covar_schema")).get
          status(resp3) mustBe OK
          val body = contentAsString(resp3)
          body mustNot be (empty)

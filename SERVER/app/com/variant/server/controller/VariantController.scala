@@ -15,11 +15,14 @@ import play.api.mvc.AnyContent
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.schema.ServerSchema
 import com.variant.core.util.Constants
+import com.variant.core.ServerError
 
 /**
  * All Variant controllers inherit from this.
  */
 abstract class VariantController extends Controller {
+
+   private val logger = Logger(this.getClass)	
 
    val connStore: ConnectionStore
    val ssnStore: SessionStore
@@ -32,14 +35,10 @@ abstract class VariantController extends Controller {
    /**
     * 
     */
-   protected def getConnection(req: Request[AnyContent]) = req.headers.get(Constants.HTTP_HEADER_CONNID)
-   
-   /**
-    * 
-    */
-   protected def getConnectionOrBust(req: Request[AnyContent]) = getConnection(req).getOrElse {
-      throw new ServerException.Internal("Missing Connection ID header")
+   protected def getCIDOrBust(req: Request[AnyContent]): String = {
+      req.headers.get(Constants.HTTP_HEADER_CONNID) match {
+         case Some(cid) => cid
+         case None => throw new ServerException.Remote(ServerError.ConnectionIdMissing)
+      }
    }
-   
-   
 }

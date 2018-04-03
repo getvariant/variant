@@ -30,16 +30,17 @@ trait SessionStore {
 	def put(session: SessionImpl);
 	
 	/**
-	 * Get session by session ID, if exists
-	 * cid: connection ID which is touching the session.
+	 * Get session by session ID, if exists and current connection ID
+	 * matches or is parallel to the original connection ID.
 	 */
-	def get(sid: String): Option[SessionImpl]
+	def get(sid: String, cid: String): Option[SessionImpl]
 
 	/**
-	 * Get session by session ID or throw session expired user error
-	 * cid: connection ID which is touching the session.
+	 * Get session by session ID, if exists and current connection ID
+	 * matches or is parallel to the original connection ID,
+	 * or throw session expired user error.
 	 */
-	def getOrBust(sid: String): SessionImpl
+	def getOrBust(sid: String, cid: String): SessionImpl
 
 	/**
    * Delete every sessions if predicate p applied to entry, is true.
@@ -87,42 +88,47 @@ class SessionStoreImpl @Inject() (private val server: VariantServer) extends Ses
    /**
 	 */
 	override def put(session: SessionImpl) {
-      
-      get(session.getId) match {
-         case Some(ssn) =>
-            if (!ssn.connection.isParallelTo(session.connection))
-               throw new ServerException.Remote(
-                     ServerError.CannotReplaceSession, 
-                     ssn.getId, ssn.connection.id, ssn.connection.schema.getName(), 
-                     session.connection.id, session.connection.schema.getName)
-            
-            ssn.coreSession = session.coreSession
-         case None =>
-   	      sessionMap.put(session.getId, new Entry(session))
-      }
+
+      sessionMap.get(session.getId) match { 
+		
+      // No current entry for this session id
+		case None => sessionMap.put(session.getId, new Entry(session))
+		
+		// Have entry for this session id: only replace if not expired and open
+		// by this or parallel connection.
+		case Some(e) =>
+		   if (e.isExpired || ! e.session.connection.isParallelTo(session.connection)) {
+		      throw new ServerException.Remote(ServerError.SessionExpired, session.getId)
+		   }
+		   else   {
+		      e.touch()
+		      sessionMap.put(session.getId, new Entry(session))
+		   }
+		}
 	}
 	
 	/**
 	 */
-	override def get(sid: String): Option[SessionImpl] = {
+	override def get(sid: String, cid: String): Option[SessionImpl] = {
 	
-	   // flatMap deals with the case when get returns None
 		sessionMap.get(sid) match { 
 		   
 		case None => None
 		case Some(e) =>
-		   if (e.isExpired) None
-		   else {
+		   if (!e.isExpired && e.session.connection.id == cid) {
 		      e.touch()
 		      Some(e.session)
+		   }
+		   else {
+		      None
 		   }
 		}
 	}
 
 	/**
 	 */
-	override def getOrBust(sid: String): SessionImpl = {
-      val result	= get(sid).getOrElse {
+	override def getOrBust(sid: String, cid: String): SessionImpl = {
+      val result	= get(sid, cid).getOrElse {
          logger.debug(s"Not found session [${sid}]")      
          throw new ServerException.Remote(ServerError.SessionExpired, sid)
       }

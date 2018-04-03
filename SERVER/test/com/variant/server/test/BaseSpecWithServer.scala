@@ -33,6 +33,7 @@ import com.variant.server.impl.SessionImpl
 import com.variant.server.test.util.ParameterizedString
 import org.apache.commons.io.IOUtils
 import play.api.Logger
+import com.variant.core.util.Constants
 
 /**
  * Common to all tests.
@@ -159,5 +160,21 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
     * Normalize a JSON string by removing any white space.
     */
    protected def normalJson(jsonIn: String):String = Json.stringify(Json.parse(jsonIn))
+
+   /**
+    * All connect route calls should use this. This is the only request
+    * that does not have connection id in X-Connection-ID header.
+    */
+   protected def connectionRequest(schemaName: String) = {
+      FakeRequest(POST, context + "/connection/" + schemaName).withHeaders("Content-Type" -> "text/plain")
+   }
    
+   /**
+    * All route calls, emulating a connected API call.
+    */
+   protected def connectedRequest(method: String, uri: String, connId: String) = {
+      FakeRequest(method, uri)
+         .withHeaders("Content-Type" -> "text/plain", Constants.HTTP_HEADER_CONNID -> connId)
+   }
+
 }

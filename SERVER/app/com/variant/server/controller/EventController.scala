@@ -55,7 +55,7 @@ class EventController @Inject() (
       
       val params = (bodyJson \ "params").asOpt[List[JsObject]].getOrElse(List[JsObject]())
 
-      val ssn = ssnStore.getOrBust(sid)
+      val ssn = ssnStore.getOrBust(sid, getCIDOrBust(req))
       
       if (ssn.getStateRequest == null)
          throw new ServerException.Remote(UnknownState)   

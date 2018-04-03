@@ -72,7 +72,7 @@ class SessionTest extends BaseSpecWithServer {
       
       "obtain a connection" in {
          // POST new connection
-         val connResp = route(app, FakeRequest(POST, context + "/connection/big_covar_schema")).get
+         val connResp = route(app, connectionRequest("big_covar_schema")).get
          status(connResp) mustBe OK
          val json = contentAsJson(connResp) 
          json mustNot be (null)
@@ -83,7 +83,7 @@ class SessionTest extends BaseSpecWithServer {
 
       "return SessionExpired on GET non-existent session" in {  
          
-         val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
+         val resp = route(app, connectedRequest(GET, endpoint + "/foo", connId)).get
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe false 
@@ -94,18 +94,15 @@ class SessionTest extends BaseSpecWithServer {
       
       "return OK on PUT non-existent session with valid schema ID" in {
          
-         val body = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJsonBigCovar.expand("sid" -> "foo")
-            )
-         val resp = route(app, FakeRequest(PUT, endpoint).withJsonBody(body)).get
+         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> "foo"))
+         val resp = route(app, connectedRequest(PUT, endpoint, connId).withJsonBody(body)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
-      
+
       "return OK and existing session on GET" in {
        
-         val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
+         val resp = route(app, connectedRequest(GET, endpoint + "/foo", connId)).get
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
          StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
@@ -114,17 +111,13 @@ class SessionTest extends BaseSpecWithServer {
 
       "return OK and replace existing session on PUT" in {
        
-         val body = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJsonBigCovar.expand("sid" -> "foo2")
-            )
-
-         val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
+         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> "foo"))
+         val reqPut = connectedRequest(PUT, endpoint, connId).withJsonBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
          
-         val respGet = route(app, FakeRequest(GET, endpoint + "/foo")).get
+         val respGet = route(app, connectedRequest(GET, endpoint + "/foo", connId)).get
          status(respGet) mustBe OK
          val respAsJson = contentAsJson(respGet)
          StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
@@ -133,16 +126,14 @@ class SessionTest extends BaseSpecWithServer {
 
       "return OK and create session on PUT" in {
        
-         val body = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJsonBigCovar.expand("sid" -> "bar1")
+         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> "bar1")
             )
-         val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
+         val reqPut = connectedRequest(PUT, endpoint, connId).withJsonBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
          
-         val respGet = route(app, FakeRequest(GET, endpoint + "/bar1")).get
+         val respGet = route(app, connectedRequest(GET, endpoint + "/bar1", connId)).get
          status(respGet) mustBe OK
          val respAsJson = contentAsJson(respGet)
          StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
@@ -151,7 +142,7 @@ class SessionTest extends BaseSpecWithServer {
 
      "not lose existing session with different key" in {
 
-         val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
+         val resp = route(app, connectedRequest(GET, endpoint + "/foo", connId)).get
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
          StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
@@ -164,7 +155,7 @@ class SessionTest extends BaseSpecWithServer {
          halfExp mustBe 500   
          for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
             Thread.sleep(wait)
-            val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
+            val resp = route(app, connectedRequest(GET, endpoint + "/foo", connId)).get
             status(resp) mustBe OK
             val respAsJson = contentAsJson(resp)
             StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
@@ -177,7 +168,7 @@ class SessionTest extends BaseSpecWithServer {
          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
       
          ("foo" :: "bar" :: Nil).foreach { sid =>
-              val resp = route(app, FakeRequest(GET, endpoint + "/" + sid)).get
+              val resp = route(app, connectedRequest(GET, endpoint + "/" + sid, connId)).get
               status(resp) mustBe BAD_REQUEST
               val (isInternal, error, args) = parseError(contentAsJson(resp))
               isInternal mustBe SessionExpired.isInternal() 
@@ -190,17 +181,14 @@ class SessionTest extends BaseSpecWithServer {
 
          // Create a session
          val sid = newSid()
-         val body = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJsonBigCovar.expand("sid" -> sid)
-            )
-         val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
+         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> sid))
+         val reqPut = connectedRequest(PUT, endpoint, connId).withJsonBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
 
          // Obtain a parallel connection.
-         val connResp = route(app, FakeRequest(POST, context + "/connection/big_covar_schema")).get
+         val connResp = route(app, connectionRequest("big_covar_schema")).get
          status(connResp) mustBe OK
          val json = contentAsJson(connResp) 
          json mustNot be (null)
@@ -210,17 +198,14 @@ class SessionTest extends BaseSpecWithServer {
          conn2Schid mustBe connSchid
          
          // Save the session on the parallel connection.
-         val body2 = Json.obj(
-            "cid" -> conn2Id,
-            "ssn" -> sessionJsonBigCovar.expand("sid" -> sid, "attrValue" -> "something else")
-         )
-         val reqPut2 = FakeRequest(PUT, endpoint).withJsonBody(body2)
+         val body2 = Json.parse(sessionJsonBigCovar.expand("sid" -> sid, "attrValue" -> "something else"))
+         val reqPut2 = connectedRequest(PUT, endpoint, conn2Id).withJsonBody(body2)
          val respPut2 = route(app, reqPut2).get
          status(respPut2) mustBe OK
          contentAsString(respPut) mustBe empty
 
          // Get the session on the parallel connection.
-         val respGet = route(app, FakeRequest(GET, endpoint + "/" + sid)).get
+         val respGet = route(app, connectedRequest(GET, endpoint + "/" + sid, conn2Id)).get
          status(respGet) mustBe OK
          val ssnJson = contentAsJson(respGet) 
          StringUtils.digest((ssnJson \ "session").as[String]) mustBe 
@@ -232,34 +217,28 @@ class SessionTest extends BaseSpecWithServer {
 
          // Create a new session on the existing big_covar_schema connection
          val sid = newSid()
-         val body = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJsonBigCovar.expand("sid" -> sid)
-            )
-         val respPut = route(app, FakeRequest(PUT, endpoint).withJsonBody(body)).get
+         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> sid))
+         val respPut = route(app, connectedRequest(PUT, endpoint, connId).withJsonBody(body)).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
 
          // Obtain a connection to a different schema
-         val connResp = route(app, FakeRequest(POST, context + "/connection/petclinic")).get
+         val connResp = route(app, connectionRequest("petclinic")).get
          status(connResp) mustBe OK
          val json = contentAsJson(connResp) 
          json mustNot be (null)
          val conn2Id = (json \ "id").as[String]
          conn2Id mustNot be (null)
+         conn2Id mustNot be (connId)
             
          // Attempt to save the session on the new connection should throw internal error.
-         val body2 = Json.obj(
-            "cid" -> conn2Id,
-            "ssn" -> sessionJsonPetclinic.expand("sid" -> sid)  
-         )
-         
-         val respPut2 = route(app, FakeRequest(PUT, endpoint).withJsonBody(body2)).get
+         val body2 = Json.parse(sessionJsonPetclinic.expand("sid" -> sid))
+         val respPut2 = route(app, connectedRequest(PUT, endpoint, conn2Id).withJsonBody(body2)).get
          status(respPut2) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(respPut2))
-         isInternal mustBe true 
-         error mustBe CannotReplaceSession
-         args mustBe Seq(sid, connId, "big_covar_schema", conn2Id, "petclinic")
+         isInternal mustBe false 
+         error mustBe SessionExpired
+         args mustBe Seq(sid)
 
       }
 
@@ -267,30 +246,27 @@ class SessionTest extends BaseSpecWithServer {
        
          val sid = newSid()
          val ts = System.currentTimeMillis()
-         val body = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts)
-            )
-         val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
+         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts))
+         val reqPut = connectedRequest(PUT, endpoint, connId).withJsonBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
-         val ssnJson = ssnStore.get(sid).get.asInstanceOf[SessionImpl].toJson
+         val ssnJson = ssnStore.get(sid, connId).get.asInstanceOf[SessionImpl].toJson
          
          ssnJson mustBe normalJson(sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts))
-         val ssn = ssnStore.get(sid).get
+         val ssn = ssnStore.get(sid, connId).get
          ssn.getCreateDate.getTime mustBe ts
          ssn.getId mustBe sid
       
          Thread.sleep(2000);
-         ssnStore.get(sid) mustBe empty
+         ssnStore.get(sid, connId) mustBe empty
          
       }
-            
+
       "return OK on GET session after connection close" in {
 
          // Obtain a new connection.
-         val connResp = route(app, FakeRequest(POST, context + "/connection/big_covar_schema")).get
+         val connResp = route(app, connectionRequest("big_covar_schema")).get
          status(connResp) mustBe OK
          val json = contentAsJson(connResp) 
          json mustNot be (null)
@@ -299,30 +275,25 @@ class SessionTest extends BaseSpecWithServer {
          
          // Create a session on it
          val sid = newSid()
-         val body = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJsonBigCovar.expand("sid" -> sid)
-            )
-         val reqPut = FakeRequest(PUT, endpoint).withJsonBody(body)
+         val body = Json.parse(sessionJsonBigCovar.expand("sid" -> sid))
+         val reqPut = connectedRequest(PUT, endpoint, connId).withJsonBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
          contentAsString(respPut) mustBe empty
 
          // Close the connection
-         val respDel = route(app, FakeRequest(DELETE, context + "/connection/" + connId).withHeaders("Content-Type" -> "text/plain")).get
+         val respDel = route(app, connectedRequest(DELETE, context + "/connection", connId)).get
          status(respDel) mustBe OK
          contentAsString(respDel) mustBe empty
 
          // Session should be alive after connection closed.
-         val respGet = route(app, FakeRequest(GET, endpoint + "/" + sid)).get
+         val respGet = route(app, connectedRequest(GET, endpoint + "/" + sid, connId)).get
          status(respGet) mustBe OK
 
          // Session should be expired as normal.
-         
          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
 
-         // Session should be expired as normal.
-         val respGet2 = route(app, FakeRequest(GET, endpoint + "/" + sid)).get
+         val respGet2 = route(app, connectedRequest(GET, endpoint + "/" + sid, connId)).get
          status(respGet2) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(respGet2))
          isInternal mustBe false 
