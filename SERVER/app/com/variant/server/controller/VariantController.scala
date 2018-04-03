@@ -16,6 +16,7 @@ import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.schema.ServerSchema
 import com.variant.core.util.Constants
 import com.variant.core.ServerError
+import com.fasterxml.jackson.core.JsonParseException
 
 /**
  * All Variant controllers inherit from this.
@@ -35,11 +36,25 @@ abstract class VariantController extends Controller {
    /**
     * Parse body as JSON.
     */
-   protected def getBody(req: Request[AnyContent]) = {
-      val bodyText = req.body.asText.getOrElse {
-         throw new ServerException.Remote(EmptyBody)
+   protected def getBody(req: Request[AnyContent]): Option[JsValue] = {
+      
+      req.body.asText match {
+         case Some(body) => 
+            if (body.length() == 0) {
+               None
+            }
+            else {
+               try {
+                  Some(Json.parse(body))
+               } catch {
+                  case t: JsonParseException =>
+                     throw new ServerException.Remote(ServerError.JsonParseError, t.getMessage)
+               }
+               
+            }
+         case None => None
       }      
-      Json.parse(bodyText)
+      
    }
    
    /**

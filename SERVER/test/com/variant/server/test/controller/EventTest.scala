@@ -71,30 +71,44 @@ class EventTest extends BaseSpecWithServer {
       }
 
 
-      "return  400 and error on POST with no body" in {
-         val resp = route(app, FakeRequest(POST, endpoint)).get
+      var cid: String = null 
+      var schid: String = null
+      
+      "obtain a connection" in {
+         // POST new connection
+         val connResp = route(app, connectionRequest("big_covar_schema")).get
+         status(connResp) mustBe OK
+         val json = contentAsJson(connResp) 
+         json mustNot be (null)
+         cid = (json \ "id").as[String]
+         cid mustNot be (null)
+         schid = (json \ "schema" \ "id").as[String]
+      }
+
+      "return 400 and error on POST with no body" in {
+         val resp = route(app, connectedRequest(POST, endpoint, cid)).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
-         (respJson \ "isInternal").as[Boolean] mustBe JsonParseError.isInternal() 
+         (respJson \ "isInternal").as[Boolean] mustBe EmptyBody.isInternal() 
          (respJson \ "code").as[Int] mustBe EmptyBody.getCode 
          val args = (respJson \ "args").as[Seq[String]]
          args mustBe empty
      }
       
       "return  400 and error on POST with invalid JSON" in {
-         val resp = route(app, FakeRequest(POST, endpoint).withBody("bad json").withHeaders("Content-Type" -> "application/json")).get
+         val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody("bad json")).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe JsonParseError.isInternal() 
          (respJson \ "code").as[Int] mustBe JsonParseError.getCode 
          val args = (respJson \ "args").as[Seq[String]]
-         args(0) must startWith ("Invalid Json: Unrecognized token 'bad'")
+         args(0) must startWith ("Unrecognized token 'bad'")
      }
 
       "return  400 and error on POST with no sid" in {
-         val resp = route(app, FakeRequest(POST, endpoint).withJsonBody(Json.parse(bodyNoSid))).get
+         val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(bodyNoSid)).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
@@ -104,7 +118,7 @@ class EventTest extends BaseSpecWithServer {
       }
 
       "return 400 and error on POST with no name" in {
-         val resp = route(app, FakeRequest(POST, endpoint).withJsonBody(Json.parse(bodyNoName))).get
+         val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(bodyNoName)).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
@@ -113,7 +127,8 @@ class EventTest extends BaseSpecWithServer {
          (respJson \ "args").as[Seq[String]] mustBe Seq("name") 
       }
 
-      var connId: String = null
+/*
+       var connId: String = null
       
       "obtain a connection" in {
          // POST new connection
@@ -124,27 +139,23 @@ class EventTest extends BaseSpecWithServer {
          connId = (json \ "id").as[String]
          connId mustNot be (null)
       }
-
+*/
       var ssn: Session = null;
       
       "obtain a session" in {
          val sid = newSid()
          // PUT session.
          val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis(), schema.getId)).expand("sid" -> sid)
-         val ssnBody = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJson
-            )
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(ssnBody)).get
+         val ssnResp = route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(sessionJson)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
-         ssn = ssnStore.get(sid, connId).get
+         ssn = ssnStore.get(sid, cid).get
       }
       
       "return  400 and error on POST with non-existent session" in {
          
          val eventBody = body.expand("sid" -> "foo")
-         val resp = route(app, FakeRequest(POST, endpoint).withJsonBody(Json.parse(eventBody))).get
+         val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(eventBody)).get
          status(resp) mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
@@ -156,7 +167,7 @@ class EventTest extends BaseSpecWithServer {
       "return 400 and error on POST with missing param name" in {
 
          val eventBody = bodyNoParamName.expand("sid" -> ssn.getId)
-         val resp = route(app, FakeRequest(POST, endpoint).withJsonBody(Json.parse(eventBody))).get
+         val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(eventBody)).get
          status(resp)mustBe BAD_REQUEST
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
@@ -171,7 +182,7 @@ class EventTest extends BaseSpecWithServer {
          val eventName = Random.nextString(5)
          val eventValue = Random.nextString(5)
          val eventBody = body.expand("sid" -> ssn.getId, "ts" -> timestamp, "name" -> eventName, "value" -> eventValue)
-         val eventResp = route(app, FakeRequest(POST, endpoint).withJsonBody(Json.parse(eventBody))).get
+         val eventResp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(eventBody)).get
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          status(eventResp) mustBe OK
          contentAsString(eventResp) mustBe empty

@@ -31,11 +31,15 @@ class EventController @Inject() (
    private val logger = Logger(this.getClass)	
  
    /**
-    * Trigger a remote event, i.e. write it off to external storage.
+    * POST
+    * Trigger an event.
     */
    def post() = VariantAction { req =>
 
-      val bodyJson = getBody(req)      
+      val bodyJson = getBody(req).getOrElse {
+         throw new ServerException.Remote(EmptyBody)
+      }
+      
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "sid")            
       }

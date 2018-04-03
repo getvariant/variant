@@ -34,7 +34,10 @@ class RequestController @Inject() (
     */
    def create() = VariantAction { req =>
       
-      val bodyJson = getBody(req)
+      val bodyJson = getBody(req).getOrElse {
+         throw new ServerException.Remote(EmptyBody)
+      }
+      
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "sid")         
       }
@@ -64,7 +67,10 @@ class RequestController @Inject() (
     */
    def commit() = VariantAction { req =>
 
-      val bodyJson = getBody(req)
+      val bodyJson = getBody(req).getOrElse {
+         throw new ServerException.Remote(EmptyBody)   
+      }
+      
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "sid")         
       }

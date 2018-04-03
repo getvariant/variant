@@ -62,18 +62,15 @@ class ErrorHandler extends HttpErrorHandler {
       
       logger.trace("Returning error to client: [%d] [%s]".format(statusCode, message))
       
-      Future.successful({
-         if (message.startsWith("Invalid Json"))
-            ServerErrorRemote(ServerError.JsonParseError).asResult(message.substring(0,message.indexOf('\n')))
-         else
-            Status(statusCode)(message)
-      })
+      Future.successful {
+         Status(statusCode)(message) 
+      }
    }
 
    def onServerError(request: RequestHeader, exception: Throwable) = {
       //logger.error("Unhandled Server Error", exception)
       Future.successful({
-         InternalServerError("A server error occurred: " + exception.getMessage)
+         InternalServerError("Server exception thrown: " + exception.getMessage)
       })
    }
 }
