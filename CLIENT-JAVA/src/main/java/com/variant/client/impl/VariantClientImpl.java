@@ -58,7 +58,7 @@ public class VariantClientImpl implements VariantClient {
 	//---------------------------------------------------------------------------------------------//
 	//                                      PUBLIC EXT                                             //
 	//---------------------------------------------------------------------------------------------//
-	public void freeConnection(Connection conn) {
-		connMap.remove(conn.getId());
+	public void freeConnection(String cid) {
+		connMap.remove(cid);
 	}
 }

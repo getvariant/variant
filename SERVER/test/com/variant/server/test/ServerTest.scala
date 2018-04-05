@@ -4,6 +4,7 @@ import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
 import com.variant.server.boot.VariantServer
+import com.variant.server.test.spec.BaseSpecWithServer
 
 /**
  * Add your spec here.

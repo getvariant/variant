@@ -8,6 +8,7 @@ import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
+import com.variant.server.test.spec.BaseSpecWithServerAsync
 
 class TargetingTest extends BaseSpecWithServerAsync {
 

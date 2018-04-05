@@ -15,7 +15,7 @@ public class ClientInternalError extends RuntimeError {
 			new ClientInternalError(301, Severity.ERROR, "Internal Variant client error [%s]");
 
 	public static final ClientInternalError INTERNAL_SERVER_ERROR =
-			new ClientInternalError(302, Severity.ERROR, "Internal Variant server error [%s] [%s]");
+			new ClientInternalError(302, Severity.ERROR, "Internal Variant server error [%s]");
 
 	public static final ClientInternalError NET_PAYLOAD_ELEMENT_MISSING =
 			new ClientInternalError(303, Severity.ERROR, "Element [%s] is missing in payload [%s]");

@@ -10,7 +10,7 @@ import com.variant.core.ServerError._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.EventReader
 import com.variant.server.api.ConfigKeys._
-import com.variant.server.test.BaseSpecWithServer
+import com.variant.server.test.spec.BaseSpecWithServer
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.schema.ServerSchemaParser
 
@@ -129,17 +129,6 @@ import EventTest._
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
-
-      /*
-      "return 702 Unknown connection on GET closed connection ID" in {
-         val resp = route(app, FakeRequest(GET, endpoint + "/" + connId)).get
-         status(resp) mustBe BAD_REQUEST
-         val (isInternal, error, args) = parseError(contentAsJson(resp))
-         isInternal mustBe UnknownConnection.isInternal() 
-         error mustBe UnknownConnection
-         args mustBe Seq(connId)
-      }
-      */
       
       "return 400 on DELETE of connection which no longer exists" in {
          val resp = route(app, connectedRequest(DELETE, endpoint, connId)).get
@@ -210,6 +199,6 @@ import EventTest._
          val schema = parserResp.getSchema
          schema.getName mustEqual "big_covar_schema"
       }
-      
    }
 }
+

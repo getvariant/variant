@@ -17,7 +17,6 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.JsValue.jsValueToJsLookup
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.test.Helpers.contentAsJson
 import play.api.test.Helpers.contentAsString
@@ -33,47 +32,18 @@ import com.variant.server.boot.ServerErrorLocal
 import com.variant.core.schema.parser.error.SyntaxError
 import com.variant.core.schema.parser.error.SemanticError
 import com.variant.server.api.ConfigKeys
+import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.TempSchemataDir
+import com.variant.server.test.spec.TempSchemataDir._
 
-
-object SchemaDeployHotTest {
-   val sessionTimeoutSecs = 15
-   val schemataDir = "/tmp/schemata"  
-   val rand = new java.util.Random()
-   
-
-}
 
 
 /**
  * Test various schema deployment scenarios
  */
-class SchemaDeployHotTest extends BaseSpecWithServer {
+class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
       
-   import SchemaDeployHotTest._
-   
    private val logger = Logger(this.getClass)
-   private val dirWatcherLatencyMsecs = 10000   // takes this long for FS to notify the directory watcher service.
-
-   // Custom application builder.  
-   implicit override lazy val app: Application = {
-      IoUtils.delete(schemataDir)
-      IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
-      IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${schemataDir}/petclinic-schema.json");
-      sys.props +=("variant.ext.dir" -> "distr/ext")
-      new GuiceApplicationBuilder()
-         .configure(new Configuration(VariantApplicationLoader.config))
-         .configure("variant.schemata.dir" -> schemataDir)
-         .configure("variant.session.timeout" -> sessionTimeoutSecs)
-         .build()
-   }
-
-   /**
-    * Cleanup
-    */
-   override def afterAll() {
-      IoUtils.delete(schemataDir)
-      super.afterAll();
-   }
 
    /**
     * 
@@ -158,10 +128,10 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
 
          val logLines = LogSniffer.last(2)
-         logLines(0).severity mustBe Severity.WARN
-         logLines(0).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
-         logLines(1).severity mustBe Severity.ERROR
-         logLines(1).message must startWith (s"[${ServerErrorLocal.SCHEMA_CANNOT_REPLACE.getCode}]")
+         logLines(0).severity mustBe Severity.ERROR
+         logLines(0).message must startWith (s"[${ServerErrorLocal.SCHEMA_CANNOT_REPLACE.getCode}]")
+         logLines(1).severity mustBe Severity.WARN
+         logLines(1).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
 
 	   }
 
@@ -215,10 +185,10 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          Thread.sleep(dirWatcherLatencyMsecs)
              
          val logLines = LogSniffer.last(2)
-         logLines(0).severity mustBe Severity.WARN
-         logLines(0).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
-         logLines(1).severity mustBe Severity.ERROR
-         logLines(1).message must startWith (s"[${SyntaxError.JSON_SYNTAX_ERROR.getCode}]")
+         logLines(0).severity mustBe Severity.ERROR
+         logLines(0).message must startWith (s"[${SyntaxError.JSON_SYNTAX_ERROR.getCode}]")
+         logLines(1).severity mustBe Severity.WARN
+         logLines(1).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
 
 	      server.schemata.size mustBe 2
 	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
@@ -237,10 +207,10 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          Thread.sleep(dirWatcherLatencyMsecs)
              
          val logLines = LogSniffer.last(2)
-         logLines(0).severity mustBe Severity.WARN
-         logLines(0).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
-         logLines(1).severity mustBe Severity.ERROR
-         logLines(1).message must startWith (s"[${SemanticError.CONTROL_EXPERIENCE_MISSING.getCode}]")
+         logLines(0).severity mustBe Severity.ERROR
+         logLines(0).message must startWith (s"[${SemanticError.CONTROL_EXPERIENCE_MISSING.getCode}]")
+         logLines(1).severity mustBe Severity.WARN
+         logLines(1).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
 
 	      server.schemata.size mustBe 2
 	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
@@ -271,29 +241,26 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
 	   }
 
-      var connId: String = null
+      var cid: String = null
 	   
       "open connection to ParserCovariantOkayBigTestNoHooks" in {
             
-         val resp = route(app, FakeRequest(POST, context + "/connection/ParserCovariantOkayBigTestNoHooks").withHeaders("Content-Type" -> "text/plain")).get
+         val resp = route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")).get
          status(resp) mustBe OK
          val body = contentAsString(resp)
          body mustNot be (empty)
          val json = Json.parse(body)
          (json \ "id").asOpt[String].isDefined mustBe true
-         connId = (json \ "id").as[String]
+         cid = (json \ "id").as[String]
    	}
 	   
 	   val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
-	   var sid = StringUtils.random64BitString(rand)
+	   var sid = newSid()
 	   
 	   "create a new session in schema ParserCovariantOkayBigTestNoHooks" in {
          
-         val body = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> sid)
-            )
-         val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(body)).get
+         val body = sessionJson.expand("sid" -> sid)
+         val resp = route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
@@ -315,7 +282,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
 
 	   "keep existing session alive" in {
 	      
-         val resp = route(app, FakeRequest(GET, context + "/session" + "/" + sid)).get
+         val resp = route(app, connectedRequest(GET, context + "/session" + "/" + sid, cid)).get
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
          StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
@@ -325,17 +292,14 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
 
 	   "refuse to create a new session in the undeployed schema" in {
          
-	      sid = StringUtils.random64BitString(rand)
-         val body = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> sid)
-            )
-         val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(body)).get
+	      sid = newSid()
+         val body = sessionJson.expand("sid" -> sid)
+         val resp = route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)).get
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe false 
          error mustBe ServerError.UnknownConnection
-         args mustBe Seq(connId)
+         args mustBe Seq(cid)
 
       }
 	   
@@ -343,7 +307,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          
          Thread.sleep(sessionTimeoutSecs * 1000);    
 
-         val resp = route(app, FakeRequest(GET, context + "/session" + "/" + sid)).get
+         val resp = route(app, connectedRequest(GET, context + "/session" + "/" + sid, cid)).get
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe false 
@@ -372,41 +336,38 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          
 	   }
 
-      var connId1, connId2, connId3: String = null
+      var cid1, cid2, cid3: String = null
 	   
       "open new connection to ParserCovariantOkayBigTestNoHooks" in {
             
-         val resp = route(app, FakeRequest(POST, context + "/connection/ParserCovariantOkayBigTestNoHooks").withHeaders("Content-Type" -> "text/plain")).get
+         val resp = route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")).get
          status(resp) mustBe OK
          val body = contentAsString(resp)
          body mustNot be (empty)
          val json = Json.parse(body)
          (json \ "id").asOpt[String].isDefined mustBe true
-         connId1 = (json \ "id").as[String]
+         cid1 = (json \ "id").as[String]
    	}
 	   
       "open connection to petclinic" in {
             
-         val resp = route(app, FakeRequest(POST, context + "/connection/petclinic").withHeaders("Content-Type" -> "text/plain")).get
+         val resp = route(app, connectionRequest("petclinic")).get
          status(resp) mustBe OK
          val body = contentAsString(resp)
          body mustNot be (empty)
          val json = Json.parse(body)
          (json \ "id").asOpt[String].isDefined mustBe true
-         connId2 = (json \ "id").as[String]
+         cid2 = (json \ "id").as[String]
    	}
 
       val sessionJsonBigCovar = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
 	   
-	   var sid1 = StringUtils.random64BitString(rand)
+	   var sid1 = newSid()
 	   
 	   "create a session in schema ParserCovariantOkayBigTestNoHooks" in {
          
-         val body = Json.obj(
-            "cid" -> connId1,
-            "ssn" -> sessionJsonBigCovar.expand("sid" -> sid1)
-            )
-         val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(body)).get
+         val body = sessionJsonBigCovar.expand("sid" -> sid1)
+         val resp = route(app, connectedRequest(PUT, context + "/session", cid1).withBody(body)).get
          status(resp) mustBe OK
          contentAsString(resp) mustBe empty
       }
@@ -426,7 +387,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          val halfExp = sessionTimeoutSecs * 500
          for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
             Thread.sleep(wait)
-            val resp = route(app, FakeRequest(GET, context + "/session" + "/" + sid1)).get
+            val resp = route(app, connectedRequest(GET, context + "/session" + "/" + sid1, cid1)).get
             status(resp) mustBe OK
             val respAsJson = contentAsJson(resp)
             StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
@@ -448,55 +409,46 @@ class SchemaDeployHotTest extends BaseSpecWithServer {
          server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
 	   }
 
-	   var sid2 = StringUtils.random64BitString(rand)
+	   var sid2 = newSid()
 	   
 	   "refuse to create new session in the redeployed schema ParserCovariantOkayBigTestNoHooks" in {
          
-         val body = Json.obj(
-            "cid" -> connId1,
-            "ssn" -> sessionJsonBigCovar.expand("sid" -> sid2)
-            )
-         val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(body)).get
+         val body = sessionJsonBigCovar.expand("sid" -> sid2)
+         val resp = route(app, connectedRequest(PUT, context + "/session", cid1).withBody(body)).get
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe false 
          error mustBe ServerError.UnknownConnection
-         args mustBe Seq(connId1)
+         args mustBe Seq(cid1)
       }
 
       val sessionJsonPetclinic = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
 
 	   "create new session in the unaffected schema petclinic" in {
          
-         val body = Json.obj(
-            "cid" -> connId2,
-            "ssn" -> sessionJsonPetclinic.expand("sid" -> sid2)
-            )
-         val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(body)).get
+         val body = sessionJsonPetclinic.expand("sid" -> sid2)
+         val resp = route(app, connectedRequest(PUT, context + "/session", cid2).withBody(body)).get
          println(contentAsString(resp))
          status(resp) mustBe OK
       }
 
 	   "open connection to the new big_covar_schema" in {
             
-         val resp = route(app, FakeRequest(POST, context + "/connection/big_covar_schema").withHeaders("Content-Type" -> "text/plain")).get
+         val resp = route(app, connectionRequest("big_covar_schema")).get
          status(resp) mustBe OK
          val body = contentAsString(resp)
          body mustNot be (empty)
          val json = Json.parse(body)
          (json \ "id").asOpt[String].isDefined mustBe true
-         connId3 = (json \ "id").as[String]
+         cid3 = (json \ "id").as[String]
    	}
 
-	   var sid3 = StringUtils.random64BitString(rand)
+	   var sid3 = newSid()
 	   
 	   "create new session in the new schema" in {
          
-         val body = Json.obj(
-            "cid" -> connId3,
-            "ssn" -> sessionJsonBigCovar.expand("sid" -> sid3)
-            )
-         val resp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(body)).get
+         val body = sessionJsonBigCovar.expand("sid" -> sid3)
+         val resp = route(app, connectedRequest(PUT, context + "/session", cid3).withBody(body)).get
          status(resp) mustBe OK
       }
 

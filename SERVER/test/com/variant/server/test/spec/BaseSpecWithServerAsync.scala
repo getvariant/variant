@@ -1,4 +1,4 @@
-package com.variant.server.test
+package com.variant.server.test.spec
 
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit

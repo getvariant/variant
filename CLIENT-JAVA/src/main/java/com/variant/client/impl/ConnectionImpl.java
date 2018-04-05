@@ -214,12 +214,10 @@ public class ConnectionImpl implements Connection {
 	}
 
 	/**
-	 * ID is meaningless until connected.
-	 * Irrelevant to client code though.
+	 * Should always be safe. We call this during open connection..
 	 */
 	@Override
 	public VariantClient getClient() {
-		preChecks();
 		return client;
 	}
 
@@ -287,8 +285,8 @@ public class ConnectionImpl implements Connection {
 		if (this.status == Status.OPEN) {
 			cache.destroy();
 			server.disconnect(id);
+			client.freeConnection(id);
 			this.status = status;
-			client.freeConnection(this);
 		}
 	}
 	

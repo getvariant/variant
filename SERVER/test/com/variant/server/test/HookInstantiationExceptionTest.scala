@@ -16,6 +16,7 @@ import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
+import com.variant.server.test.spec.BaseSpecWithServer
 
 /**
  * TODO: Need to also test annotations.

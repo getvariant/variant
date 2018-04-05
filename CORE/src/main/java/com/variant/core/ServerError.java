@@ -79,7 +79,7 @@ public class ServerError extends UserError {
 	// 721-740 User, Session
 	//
 	public static final ServerError SessionExpired = 
-			new ServerError(721, "Requested session ID [%s] has expired");
+			new ServerError(721, "Session ID [%s] does not exist");
 
 	//
 	// 741-760 User, Event

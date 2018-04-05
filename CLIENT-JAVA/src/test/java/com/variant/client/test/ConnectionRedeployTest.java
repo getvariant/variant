@@ -1,9 +1,6 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
@@ -44,9 +41,23 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 		// Connection doesn't know yet the server is gone.
 		assertEquals(Status.OPEN, conn1.getStatus());
 
-		assertNull(conn1.getSession("foo"));        
-		assertNull(conn1.getSessionById("foo"));
+		// Attempts to get or a non-existent session should fail. 
+		new ClientUserExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn1.getSession("foo");
+			}
+			
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
+		}.assertThrown(ConnectionClosedException.class);
 
+		assertEquals(Status.CLOSED_BY_SERVER, conn1.getStatus());
+
+		assertNull(conn1.getSessionById("foo"));
+		
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
@@ -59,7 +70,20 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 			
 		}.assertThrown(ConnectionClosedException.class);
 
+		new ClientUserExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn1.getId();
+			}
+			
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
+		}.assertThrown(ConnectionClosedException.class);
+
 		assertEquals(Status.CLOSED_BY_SERVER, conn1.getStatus());
+		
 		
 		// Open new connection to the redeployed schema
 		final Connection conn2 = client.getConnection("big_covar_schema");
@@ -70,7 +94,7 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 		assertEquals("big_covar_schema", conn2.getSchema().getName());
 		assertEquals(5, conn2.getSchema().getStates().size());
 		assertEquals(6, conn2.getSchema().getTests().size());
-		assertTrue(!conn1.getId().equals(conn2.getId()));
+		assertFalse(conn1.equals(conn2));
 	}	
 
 }

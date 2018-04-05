@@ -14,6 +14,7 @@ import com.variant.server.api.ServerException
 import scala.collection.mutable.ArrayBuffer
 import com.variant.server.schema.SchemaDeployerClasspath
 import com.variant.server.schema.SchemaDeployer
+import com.variant.server.test.spec.BaseSpecWithServer
 
 /**
  * TODO: Need to also test annotations.

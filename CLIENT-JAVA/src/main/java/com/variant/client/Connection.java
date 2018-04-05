@@ -90,7 +90,7 @@ public interface Connection {
 	 * 
 	 * @since 0.7
 	 */
-	public Schema getSchema();
+	Schema getSchema();
 
 	/**
 	 * The status of this connection.
@@ -108,7 +108,7 @@ public interface Connection {
 	 * 
 	 * @since 0.7
 	 */
-	public Config getConfig();
+	Config getConfig();
 
 	/**
 	 * Close this connection. No-op if this connection has already been closed.
@@ -122,7 +122,7 @@ public interface Connection {
 	 * connection, they are posted in the order they were registered. 
 	 * @param listener
 	 */
-	public void registerExpirationListener(ExpirationListener listener);
+	void registerExpirationListener(ExpirationListener listener);
 
 	/**
 	 * Interface to be implemented by a session expiration listener class, whose instance can
@@ -149,7 +149,7 @@ public interface Connection {
 	public enum Status {
 
 		/**
-		 * Open and usable.
+		 * Internal state. Should never be returned by {@link Connection#getStatus()}.
 		 * 
 		 * @since 0.8
 		 */
@@ -163,7 +163,7 @@ public interface Connection {
 		OPEN, 
 		
 		/**
-		 * Connection has been closed by the client with a call to {@link Connection#close()}
+		 * Connection has been closed by the client with a call to {@link Connection#close()()}
 		 * 
 		 * @since 0.7
 		 */

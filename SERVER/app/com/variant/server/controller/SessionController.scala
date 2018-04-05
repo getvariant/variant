@@ -1,21 +1,17 @@
 package com.variant.server.controller
 
-import javax.inject.Inject
-import play.api.mvc.Controller
-import play.api.mvc.Request
-import com.variant.server.conn.SessionStore
-import play.api.Logger
-import com.variant.core.ServerError._
-import play.api.libs.json._
-import com.variant.server.boot.VariantServer
-import com.variant.server.boot.ServerErrorRemote
+import com.variant.core.ServerError.EmptyBody
 import com.variant.core.session.CoreSession
-import com.variant.server.conn.ConnectionStore
 import com.variant.server.api.ServerException
-import com.variant.server.api.ConfigKeys
-import com.variant.server.conn.Connection
-import play.api.mvc.MultipartFormData.ParseError
+import com.variant.server.boot.VariantServer
+import com.variant.server.conn.ConnectionStore
+import com.variant.server.conn.SessionStore
 import com.variant.server.impl.SessionImpl
+
+import javax.inject.Inject
+import play.api.Logger
+import play.api.libs.json.JsObject
+import play.api.libs.json.JsString
 
 //@Singleton -- Is this for non-shared state controllers?
 class SessionController @Inject() (

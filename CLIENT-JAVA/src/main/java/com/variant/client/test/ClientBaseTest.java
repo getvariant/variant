@@ -70,7 +70,6 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 		final public void assertThrown(Class<? extends ClientException.User> uex) throws Exception {
 			ClientException.User result = super.run();
 			assertNotNull("Expected exception not thrown", result);
-			System.out.println("************* " + result.getMessage());
 			assertEquals(uex, result.getClass());
 		}
 	}

@@ -10,6 +10,7 @@ import com.variant.core.CoreException
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
+import com.variant.server.test.spec.BaseSpecWithServer
 
 class RuntimeExceptionTest extends BaseSpecWithServer {
 

@@ -9,7 +9,7 @@ import scala.collection.JavaConversions._
 import com.variant.core.ServerError._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.EventReader
-import com.variant.server.test.BaseSpecWithServer
+import com.variant.server.test.spec.BaseSpecWithServer
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.ConnectionStore
 import javax.inject.Inject

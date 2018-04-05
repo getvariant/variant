@@ -144,7 +144,7 @@ public class Server {
 		if (LOG.isTraceEnabled()) LOG.trace("disconnect()");
 
 		if (isConnected) {
-			adapter.delete(serverUrl + "connection/" + id);
+			adapter.delete(serverUrl + "connection");
 			destroy();
 		}
 	}
@@ -208,14 +208,8 @@ public class Server {
 
 		new CommonExceptionHandlerVoid() {
 			@Override void codeVoid() throws Exception {
-				StringWriter body = new StringWriter();
-				JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
-				jsonGen.writeStartObject();
-				jsonGen.writeStringField("cid", connection.getId());
-				jsonGen.writeStringField("ssn", ((SessionImpl)ssn).getCoreSession().toJson());
-				jsonGen.writeEndObject();
-				jsonGen.flush();
-				adapter.put(serverUrl + "session", body.toString());
+				String body = ((SessionImpl)ssn).getCoreSession().toJson();
+				adapter.put(serverUrl + "session", body);
 			}
 		}.run();
 		

@@ -1,18 +1,25 @@
 package com.variant.server.test
 
-import scala.collection.JavaConversions._
-import org.scalatestplus.play._
-import play.api.test._
-import play.api.test.Helpers._
-import com.variant.server.event.ServerEvent
 import java.util.Date
-import com.variant.server.test.util.EventReader
-import com.variant.server.test.controller.SessionTest
-import com.variant.server.conn.Connection
-import com.variant.server.test.util.ParameterizedString
-import play.api.libs.json.Json
+
+import scala.collection.JavaConversions.collectionAsScalaIterable
 import scala.util.Random
+
+import com.variant.server.event.ServerEvent
 import com.variant.server.impl.SessionImpl
+import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.util.EventReader
+import com.variant.server.test.util.ParameterizedString
+
+import play.api.libs.json.JsValue.jsValueToJsLookup
+import play.api.test.Helpers.OK
+import play.api.test.Helpers.PUT
+import play.api.test.Helpers.contentAsJson
+import play.api.test.Helpers.contentAsString
+import play.api.test.Helpers.defaultAwaitTimeout
+import play.api.test.Helpers.route
+import play.api.test.Helpers.status
+import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
 		
 class EventWriterTest extends BaseSpecWithServer {
 
@@ -40,32 +47,29 @@ class EventWriterTest extends BaseSpecWithServer {
 
       }
     
-      var connId: String = null
+      var cid: String = null
       
       "obtain a connection" in {
          // POST new connection
-         val connResp = route(app, FakeRequest(POST, context + "/connection/big_covar_schema")).get
+         val connResp = route(app, connectionRequest("big_covar_schema")).get
          status(connResp) mustBe OK
          val json = contentAsJson(connResp) 
          json mustNot be (null)
-         connId = (json \ "id").as[String]
-         connId mustNot be (null)
+         cid = (json \ "id").as[String]
+         cid mustNot be (null)
       }
       
       "flush an event after EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS" in {
          
-         // PUT session.
+         // Save session.
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
-         val ssnBody = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> sid)
-            )
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(ssnBody)).get
+         val body = sessionJson.expand("sid" -> sid)
+         val ssnResp = route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
          
-         val ssn = ssnStore.get(sid, connId).get
+         val ssn = ssnStore.get(sid, cid).get
          
          val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
          val se = new ServerEvent(name, value, new Date(timestamp));
@@ -104,15 +108,12 @@ class EventWriterTest extends BaseSpecWithServer {
          
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
-         val ssnBody = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> sid)
-            )
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(ssnBody)).get
+         val body = sessionJson.expand("sid" -> sid)
+         val ssnResp = route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
 
-         val ssn = ssnStore.get(sid, connId).get
+         val ssn = ssnStore.get(sid, cid).get
 
          // Ensure the writer buffer is empty.
          eventWriter.flush()
@@ -142,15 +143,12 @@ class EventWriterTest extends BaseSpecWithServer {
          
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
-         val ssnBody = Json.obj(
-            "cid" -> connId,
-            "ssn" -> sessionJson.expand("sid" -> sid)
-            )
-         val ssnResp = route(app, FakeRequest(PUT, context + "/session").withJsonBody(ssnBody)).get
+         val body = sessionJson.expand("sid" -> sid)
+         val ssnResp = route(app,connectedRequest(PUT, context + "/session", cid).withBody(body)).get
          status(ssnResp) mustBe OK
          contentAsString(ssnResp) mustBe empty
 
-         val ssn = ssnStore.get(sid, connId).get
+         val ssn = ssnStore.get(sid, cid).get
          
          val startOfWrite = System.currentTimeMillis()
 

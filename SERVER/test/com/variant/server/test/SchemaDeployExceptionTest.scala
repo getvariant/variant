@@ -24,11 +24,13 @@ import scala.util.Try
 import scala.reflect.io.Path
 import com.variant.core.UserError.Severity
 import com.variant.server.boot.ServerErrorLocal
+import com.variant.server.test.spec.BaseSpec
+import com.variant.server.test.util.LogSniffer
 
 /**
  * Test various schema deployment error scenarios
  */
-class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
+class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
    
   /**
    * This will implicitly rebuild the server before each test.
@@ -36,20 +38,25 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
    implicit override def newAppForTest(testData: TestData): Application = {
 
       if (testData.name.contains("CONFIG_PROPERTY_NOT_SET"))  {
-            new GuiceApplicationBuilder()
+            _app = new GuiceApplicationBuilder()
                .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.schemata.dir")))
                .build()
+            _app
       }
-      else if (testData.name.contains("SCHEMATA_DIR_MISSING")) 
-         new GuiceApplicationBuilder()
+      else if (testData.name.contains("SCHEMATA_DIR_MISSING")) {
+         _app = new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .configure(Map("variant.schemata.dir" -> "non-existent"))
             .build()
-      else if (testData.name.contains("SCHEMATA_DIR_NOT_DIR")) 
-         new GuiceApplicationBuilder()
+            _app
+      }
+      else if (testData.name.contains("SCHEMATA_DIR_NOT_DIR")) {
+         _app = new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
-            .configure(Map("variant.schemata.dir" -> "test-schemata-file"))
+            .configure("variant.schemata.dir" -> "test-schemata-file")
             .build()
+         _app
+      }
       else if (testData.name.contains("SCHEMA_NAME_DUPE")) {
          // Delete directory
          val path: Path = Path ("/tmp/schemata-test")
@@ -57,17 +64,23 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          
          FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/schemata-test/schema1.json"))
          FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/schemata-test/schema2.json"))
-         new GuiceApplicationBuilder()
+         _app = new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
-            .configure(
-               Map("variant.schemata.dir" -> "/tmp/schemata-test")) 
+            .configure("variant.schemata.dir" -> "/tmp/schemata-test")
             .build()
+         _app
       }
-      else 
-         new GuiceApplicationBuilder()
+      else {
+         _app = new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .build()
+         _app
+      }
    }
+
+   private var _app: Application = null
+   
+   override protected def application = _app
 
    "Missing variant.schemata.dir property" should {
       
@@ -78,66 +91,65 @@ class SchemaDeployExceptionTest extends PlaySpec with OneAppPerTest {
          val ex = server.startupErrorLog.head
          ex.getMessage mustEqual
             new ServerException.User(CONFIG_PROPERTY_NOT_SET, ConfigKeys.SCHEMATA_DIR).getMessage
-
+   		server.isUp mustBe false
       }
    }
 
    "Missing schemata dir" should {
       
       "cause server to throw SCHEMATA_DIR_MISSING" in {
-         val server = app.injector.instanceOf[VariantServer]
          server.schemata.size mustBe 0
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
-         //ex.getSeverity mustEqual FATAL
+         ex.getSeverity mustEqual SCHEMATA_DIR_MISSING.getSeverity
          ex.getMessage mustEqual new ServerException.User(SCHEMATA_DIR_MISSING, "non-existent").getMessage
+   		server.isUp mustBe false
       }
       
       "return 503 in every http request after SCHEMATA_DIR_MISSING" in {
-         val context = app.configuration.getString("play.http.context").get
-         val server = app.injector.instanceOf[VariantServer]
-         val resp = route(app, FakeRequest(GET, context + "/session/foo")).get
-         status(resp) mustBe SERVICE_UNAVAILABLE
-         contentAsString(resp) mustBe empty
+
+         val resp1 = route(app, connectionRequest("schema")).get
+         status(resp1) mustBe SERVICE_UNAVAILABLE
+         contentAsString(resp1) mustBe empty
+
+         val resp2 = route(app, connectedRequest(PUT, context + "/session", "cid")).get
+         status(resp2) mustBe SERVICE_UNAVAILABLE
+         contentAsString(resp2) mustBe empty
+   		server.isUp mustBe false
       }
-   }
-   
+}
+
    "Schemata dir which is not a dir" should {
       
       "cause server to throw SCHEMATA_DIR_NOT_DIR" in {
-         val server = app.injector.instanceOf[VariantServer]
+
          server.schemata.size mustBe 0
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
-         //ex.getSeverity mustEqual FATAL
+         ex.getSeverity mustEqual FATAL
          ex.getMessage mustEqual new ServerException.User(SCHEMATA_DIR_NOT_DIR, "test-schemata-file").getMessage
+   		server.isUp mustBe false
       }
       
       "return 503 in every http request after SCHEMATA_DIR_NOT_DIR" in {
-         val context = app.configuration.getString("play.http.context").get
-         val server = app.injector.instanceOf[VariantServer]
+
          val resp = route(app, FakeRequest(GET, context + "/session/foo")).get
          status(resp) mustBe SERVICE_UNAVAILABLE
          contentAsString(resp) mustBe empty
+   		server.isUp mustBe false
       }
    }
 
    "Multiple schemata with duplicate schema name" should {
       
       "cause server to throw SCHEMA_NAME_DUPE" in {
-         val server = app.injector.instanceOf[VariantServer]
+
+         val logTail = LogSniffer.last(3)
          server.schemata.size mustBe 1
-         server.startupErrorLog.size mustEqual 1
-         val se = server.startupErrorLog(0)
-         se.getSeverity mustBe Severity.ERROR
-   		se.getMessage must include (ServerErrorLocal.SCHEMA_CANNOT_REPLACE.asMessage("ParserCovariantOkayBigTestNoHooks", "schema1.json", "schema2.json"))
-         server.schemaDeployer.parserResponses.size mustBe 2
-         val resp1 = server.schemaDeployer.parserResponses(0)
-         resp1.hasMessages() mustBe false
-         val resp2 = server.schemaDeployer.parserResponses(1)
-         resp2.getMessages().size() mustBe 0
-         
+         val errLine = logTail(0)
+         errLine.severity mustBe Severity.ERROR
+   		errLine.message must include (ServerErrorLocal.SCHEMA_CANNOT_REPLACE.asMessage("ParserCovariantOkayBigTestNoHooks", "schema1.json", "schema2.json"))
+   		server.isUp mustBe true         
       }  
    }
-
 }

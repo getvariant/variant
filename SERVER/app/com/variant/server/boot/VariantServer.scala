@@ -25,6 +25,7 @@ import com.variant.server.util.VariantClassLoader
 import com.variant.core.RuntimeError
 import com.variant.core.UserError.Severity
 import com.variant.server.conn.ConnectionStore
+import play.api.Play
 
 
 /**
@@ -32,6 +33,7 @@ import com.variant.server.conn.ConnectionStore
  */
 trait VariantServer {
    
+   val isUp: Boolean 
    val config: Config // Do not expose Play's Configuration
    val classloader: VariantClassLoader
    val startupErrorLog = mutable.ArrayBuffer[ServerException]()
@@ -65,7 +67,7 @@ class VariantServerImpl @Inject() (
       lifecycle: ApplicationLifecycle,
       // We ask for the provider instead of the application, because application itself won't be available until
       // all eager singletons are constructed, including this class.
-      //appProvider: Provider[Application] 
+      //application: Application, 
       connStore: ConnectionStore
    ) extends VariantServer {
    
@@ -73,9 +75,12 @@ class VariantServerImpl @Inject() (
    
 	private[this] val logger = Logger(this.getClass)
    private[this] var _schemaDeployer: SchemaDeployer = null
+   private[this] var _isUp = false
   
 	// Make this instance statically discoverable
 	_instance = this	
+	
+	override lazy val isUp = _isUp
 	
 	override val config = playConfig.underlying
 	
@@ -112,7 +117,14 @@ class VariantServerImpl @Inject() (
    		logger.error(ServerErrorLocal.SERVER_BOOT_FAILED.asMessage(productName))
    		startupErrorLog.foreach { e => logger.error(e.getMessage(), e) }
    	   shutdown()
-   	   System.exit(0)
+   	   
+
+   	   // System.exit(0)  << DO NOT DO THIS! Messes up tests.
+   	   // Ideally, we want to exit in Prod to make the application quit and come back to the
+   	   // OS prompt here, while simply return in Test, in order not to crash the test executor.
+   	   // Figuring out the Mode seems tricky as I keep running into circular dependency in DI.
+   	   // Perhaps not worth wasting time on, because we should drop Play in favor of direct
+   	   // Akka HTTP anyway.
    	}
    	else {
          logger.info(ServerErrorLocal.SERVER_BOOT_OK.asMessage(
@@ -120,6 +132,8 @@ class VariantServerImpl @Inject() (
                config.getString("http.port"),
                config.getString("play.http.context"),
       			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))   	
+
+         _isUp = true
    	}      
 
    }
@@ -147,9 +161,10 @@ class VariantServerImpl @Inject() (
    			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "HH:mm:ss")))
    }
    
-   // When the application starts, register a stop hook with the
-   // ApplicationLifecycle object. The code inside the stop hook will
-   // be run when the application stops.
+  /** When the application starts, register a stop hook with the
+    * ApplicationLifecycle object. The code inside the stop hook will
+    * be run when the application stops.
+    */
    lifecycle.addStopHook { () =>
        shutdown()
        Future.successful(())

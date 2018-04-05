@@ -1,13 +1,10 @@
-package com.variant.server.test
+package com.variant.server.test.spec
 
 import java.util.Random
-
-import scala.collection.JavaConversions.asScalaBuffer
-
+import scala.collection.JavaConversions._
 import org.scalatest.BeforeAndAfterAll
 import org.scalatestplus.play.OneAppPerSuite
 import org.scalatestplus.play.PlaySpec
-
 import com.variant.core.ServerError
 import com.variant.core.schema.Schema
 import com.variant.core.session.SessionScopedTargetingStabile
@@ -20,7 +17,6 @@ import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.SessionStore
 import com.variant.server.impl.SessionImpl
 import com.variant.server.jdbc.JdbcService
-
 import play.api.Application
 import play.api.Configuration
 import play.api.Logger
@@ -29,7 +25,7 @@ import play.api.libs.json.JsValue
 import play.api.libs.json.JsValue.jsValueToJsLookup
 import play.api.libs.json.Json
 import play.api.test.FakeRequest
-import play.api.test.Helpers.POST
+import play.api.test.Helpers._
 
 /**
  * Common to all tests.
@@ -39,7 +35,7 @@ object BaseSpecWithServer {
    private var sqlSchemaCreated = false
 }
 
-class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
+class BaseSpecWithServer extends BaseSpec with OneAppPerSuite with BeforeAndAfterAll {
 
    import BaseSpecWithServer._
    
@@ -82,11 +78,8 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
 		   case e: Throwable => throw e		
 		}
 	}
-
-   protected val context = app.configuration.getString("play.http.context").get
-   protected val server = app.injector.instanceOf[VariantServer]
-   protected val connStore = app.injector.instanceOf[ConnectionStore]
-   protected val ssnStore = app.injector.instanceOf[SessionStore]
+	
+	override protected def application = app
    
    "Server must come up with a valid schema" in {
       
@@ -117,6 +110,7 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
 		}
 	}
    
+/*
    /**
     * Parse an 400 error body
     */
@@ -172,5 +166,5 @@ class BaseSpecWithServer extends PlaySpec with OneAppPerSuite with BeforeAndAfte
       FakeRequest(method, uri)
          .withHeaders("Content-Type" -> HTTP_HEADER_CONTENT_TYPE, HTTP_HEADER_CONNID -> connId)
    }
-
+*/
 }

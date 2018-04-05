@@ -93,6 +93,5 @@ public class IoUtils {
 			if (file.isDirectory()) for (File f: file.listFiles()) Files.delete(f.toPath());
 			Files.delete(file.toPath());
 		}
-	}
-	
+	}	
 }

@@ -6,7 +6,7 @@ import play.api.test.Helpers._
 import scala.collection.JavaConversions._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.api.ConfigKeys
-import com.variant.server.test.BaseSpecWithServer
+import com.variant.server.test.spec.BaseSpecWithServer
 import com.variant.core.ServerError._
 import com.variant.core.util.StringUtils
 import play.api.libs.json._
@@ -299,6 +299,6 @@ class SessionTest extends BaseSpecWithServer {
          error mustBe SessionExpired
          args mustBe Seq(sid)
       }
-
    }
+
 }

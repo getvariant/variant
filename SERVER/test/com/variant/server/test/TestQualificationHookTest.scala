@@ -9,6 +9,7 @@ import com.variant.core.schema.Hook
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.api.Session
 import com.variant.server.schema.SchemaDeployer
+import com.variant.server.test.spec.BaseSpecWithServer
 
 class TestQualificationHookTest extends BaseSpecWithServer {
       
