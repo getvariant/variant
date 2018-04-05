@@ -79,6 +79,7 @@ public class HttpRemoter {
 			case HttpStatus.SC_OK:
 				return result;
 			case HttpStatus.SC_BAD_REQUEST:
+				
 				if (LOG.isDebugEnabled()) {
 					LOG.debug("Server status " + result.status + ": " + result.body);
 				}

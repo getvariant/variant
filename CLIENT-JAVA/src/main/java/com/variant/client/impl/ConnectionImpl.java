@@ -6,7 +6,6 @@ import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTE
 import java.util.LinkedHashSet;
 import java.util.Random;
 
-import com.typesafe.config.Config;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
@@ -219,12 +218,6 @@ public class ConnectionImpl implements Connection {
 	@Override
 	public VariantClient getClient() {
 		return client;
-	}
-
-	@Override
-	public Config getConfig() {
-		preChecks();
-		return client.getConfig();
 	}
 
 	/**

@@ -205,7 +205,7 @@ public class SessionImpl implements Session {
 	@Override
 	public Config getConfig() {
 		checkState();
-		return conn.getConfig();
+		return conn.getClient().getConfig();
 	}
 
 	/**

@@ -39,7 +39,7 @@ import com.variant.server.test.spec.TempSchemataDir._
 
 
 /**
- * Test various schema deployment scenarios
+ * Test session drainage.
  */
 class SessionDrainingTest extends BaseSpecWithServer with TempSchemataDir {
       

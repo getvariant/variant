@@ -1,6 +1,5 @@
 package com.variant.client;
 
-import com.typesafe.config.Config;
 import com.variant.core.schema.Schema;
 
 
@@ -36,45 +35,84 @@ public interface Connection {
 	String getId();
 
 	/**
-	 * Get or create caller's current Variant session. If the session ID exists in the underlying implementation 
-	 * of {@link SessionIdTracker} and the session with this session ID has not expired on the server,
-	 * this session is returned. Otherwise, a new session is created.
+	 * Get, if exists, or create, if does not exist, the Variant session with the externally tracked ID.
 	 * 
+	 * Under normal circumstances, when this connection is {@link Status#OPEN}, the following behavior
+	 * is expected. If the session with the ID provided by the effective implementation 
+	 * of {@link SessionIdTracker} has not yet expired on the server, it is returned. 
+	 * Otherwise, a new session with this ID is created.
+	 * 
+	 * This method is idempotent, i.e. a subsequent calls with the same parameters
+	 * will return the same object, unless the session has expired between the calls,
+	 * in which case a brand new object will be returned.
+	 * 
+	 * However, if this connection is {@link Status#DRAINING}, no new sessions can be created. Therefore, 
+	 * If the session with the ID provided by the effective implementation 
+	 * of {@link SessionIdTracker} has not yet expired on the server, it is returned, but if the
+	 * session with this ID has expired, {@link ConnectionClosedException} is thrown.
+	 * 
+	 * Finally, if this connection is {@link Status#CLOSED_BY_CLIENT} or {@link Status#CLOSED_BY_SERVER}, 
+	 * {@link ConnectionClosedException} is thrown.
 	 * 
 	 * @param userData An array of zero or more opaque objects which will be passed, without interpretation,
 	 *                 to the implementations of {@link SessionIdTracker#init(Connection, Object...)}
 	 *                 and {@link TargetingTracker#init(Connection, Object...)}.
      *
 	 * @since 0.7
-	 * @return An object of type {@link Session}. This method is guaranteed to be idempotent, i.e. a subsequent
-	 *         invocation with the same arguments will return the same object, unless the session expired between the
-	 *         invocations, in which case a new object will be returned. Never returns <code>null</code>.
+	 * @return An object of type {@link Session}. Never returns <code>null</code>.
 	 */
 	Session getOrCreateSession(Object... userData);
 
 	/**
-	 * Get caller's current Variant session. If the session ID exists in the underlying implementation 
-	 * of {@link SessionIdTracker} and the session with this session ID has not expired on the server,
-	 * this session is returned.
+	 * Get, if exists, the Variant session with the externally tracked ID.
 	 * 
+	 * Under normal circumstances, when this connection is {@link Status#OPEN}, the following behavior
+	 * is expected. If the session with the ID provided by the effective implementation 
+	 * of {@link SessionIdTracker} has not yet expired on the server, it is returned. 
+	 * Otherwise, this method returns <code>null</code>.
+	 * 
+	 * This method is idempotent, i.e. a subsequent calls with the same parameters
+	 * will return the same object, unless the session has expired between the calls,
+	 * in which case a brand new object will be returned.
+	 * 
+	 * However, if this connection is {@link Status#DRAINING}, and the session with the ID 
+	 * provided by the effective implementation of {@link SessionIdTracker} has not yet expired on the server, 
+	 * it is returned. Otherwise, if the session with this ID has expired, {@link ConnectionClosedException}
+	 * is thrown.
+	 * 
+	 * Finally, if this connection is {@link Status#CLOSED_BY_CLIENT} or {@link Status#CLOSED_BY_SERVER}, 
+	 * {@link ConnectionClosedException} is thrown.
 	 * 
 	 * @param userData An array of zero or more opaque objects which will be passed without interpretation
 	 *                 to the implementations of {@link SessionIdTracker#init(Connection, Object...)}
 	 *                 and {@link TargetingTracker#init(Connection, Object...)}.
      *
 	 * @since 0.7
-	 * @return An object of type {@link Session}, if the session represented by <code>userData</code> exists,
-	 *         or <code>null</code> otherwise.
-	 *         This method is idempotent, i.e. a subsequent
-	 *         invocation with the same arguments will return the same object or <code>null</code>.
+	 * @return An object of type {@link Session}, if the session exists, or <code>null</code> otherwise.
 	 */
 	Session getSession(Object... userData);
 
 	/**
-	 * Get caller's current Variant session by session ID.
+	 * Get, if exists, the Variant session with the externally tracked ID.
 	 * 
+	 * Under normal circumstances, when this connection is {@link Status#OPEN}, the following behavior
+	 * is expected. If the session with the ID provided by the effective implementation 
+	 * of {@link SessionIdTracker} has not yet expired on the server, it is returned. 
+	 * Otherwise, this method returns <code>null</code>.
 	 * 
-	 * @param sessionId The session ID of the session we're trying to retrieve.
+	 * This method is idempotent, i.e. a subsequent calls with the same parameters
+	 * will return the same object, unless the session has expired between the calls,
+	 * in which case a brand new object will be returned.
+	 * 
+	 * However, if this connection is {@link Status#DRAINING}, and the session with the ID 
+	 * provided by the effective implementation of {@link SessionIdTracker} has not yet expired on the server, 
+	 * it is returned. Otherwise, if the session with this ID has expired, {@link ConnectionClosedException}
+	 * is thrown.
+	 * 
+	 * Finally, if this connection is {@link Status#CLOSED_BY_CLIENT} or {@link Status#CLOSED_BY_SERVER}, 
+	 * {@link ConnectionClosedException} is thrown.
+	 * 
+	 * @param sessionId The ID of the session you are looking to retrieve from the server.
      *
 	 * @since 0.7
 	 * @return An object of type {@link Session}, if session exists, or {@code null} if no session with this ID
@@ -84,7 +122,8 @@ public interface Connection {
 	Session getSessionById(String sessionId);
 
 	/**
-	 * <p>Get the XDM schema, associated with this connection.
+	 * Get the XDM schema, associated with this connection.
+	 * Does not throw {@link ConnectionClosedException} if the connection is closed.
 	 * 
 	 * @return An object of type {@link Schema}
 	 * 
@@ -93,23 +132,13 @@ public interface Connection {
 	Schema getSchema();
 
 	/**
-	 * The status of this connection.
+	 * The current {@link Status} of this connection.
 	 * 
 	 * @since 0.7
 	 * @return An object of type {@link Status}..
 	 */
 	Status getStatus();
 	
-	/**
-	 * Externally supplied configuration.
-	 * See https://github.com/typesafehub/config for details on Typesafe Config.
-	 * A shortcut for {@code getClient().getConfig()}
-	 * @return An instance of the {@link Config} type.
-	 * 
-	 * @since 0.7
-	 */
-	Config getConfig();
-
 	/**
 	 * Close this connection. No-op if this connection has already been closed.
 	 * 
@@ -142,7 +171,7 @@ public interface Connection {
 	}
 
 	/**
-	 * Status of a Variant {@link Connection}.
+	 * Status of a Variant {@link Connection}, as returned by {@link Connection#getStatus()}.
 	 * 
 	 * @since 0.7
 	 */
@@ -156,14 +185,22 @@ public interface Connection {
 		CONNECTING, 
 
 		/**
-		 * Open and usable.
+		 * Open without restrictions. New sessions can be created.
 		 * 
 		 * @since 0.7
 		 */
 		OPEN, 
 		
 		/**
-		 * Connection has been closed by the client with a call to {@link Connection#close()()}
+		 * Open, but only existing sessions can be retrieved. No new sessions can be created.
+		 * 
+		 * @since 0.8
+		 */
+		DRAINING, 
+
+		/**
+		 * Connection has been closed by the client with a call to {@link Connection#close()()}.
+		 * No sessions can be retrieved or created.
 		 * 
 		 * @since 0.7
 		 */
@@ -171,6 +208,7 @@ public interface Connection {
 		
 		/**
 		 * Connection has been closed by the server as the result of a schema reload or server restart.
+		 * No sessions can be retrieved or created.
 		 * 
 		 * @since 0.7
 		 */

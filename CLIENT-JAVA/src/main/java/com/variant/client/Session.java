@@ -41,7 +41,7 @@ import com.variant.core.schema.Test;
 public interface Session {
 
 	/**
-     * <p>This session's ID. 
+     * <p>This session's ID.
      *  
 	 * @return Session ID.  
 	 *
