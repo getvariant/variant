@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.client.ClientException;
 import com.variant.client.ConfigKeys;
-import com.variant.client.Connection.Status;
+import com.variant.core.ConnectionStatus;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.net.Payload;
@@ -69,7 +69,7 @@ public class Server {
 				if (ce.getError() == ServerError.UnknownConnection) {
 					// The server has hung up on this connection.
 					destroy();
-					connection.close(Status.CLOSED_BY_SERVER);
+					connection.close(ConnectionStatus.CLOSED_BY_SERVER);
 					throw new ConnectionClosedException(ce);
 				}
 				else throw ce;

@@ -13,8 +13,6 @@ public interface Constants {
 	final public static String HTTP_HEADER_CONNID = "X-Connection-ID";
 	
 	// Server responds with the status of the connection with each response.
-	// Note that some client calls on a closed connection will result in explicit exception
-	// while some will succeed, but 
-	// final public static String HTTP_HEADER_CONN_STATUS = "X-Connection-Status";
+	final public static String HTTP_HEADER_CONN_STATUS = "X-Connection-Status";
 
 }

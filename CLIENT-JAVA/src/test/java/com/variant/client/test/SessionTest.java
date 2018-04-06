@@ -5,12 +5,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static com.variant.core.ConnectionStatus.*;
 
 import java.util.LinkedList;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.Connection.Status;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
@@ -38,7 +38,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 		String sid = newSid();
 		
 		// By session ID
@@ -75,7 +75,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 		
 		Session[] sessions = new Session[10];
 		for (int i = 0; i < sessions.length; i++) {
@@ -115,7 +115,7 @@ public class SessionTest extends ClientBaseTestWithServer {
       
       Connection conn = client.getConnection("big_covar_schema");    
       assertNotNull(conn);
-      assertEquals(Status.OPEN, conn.getStatus());
+      assertEquals(OPEN, conn.getStatus());
       final Session ssn = conn.getOrCreateSession(newSid());
       assertNotNull(ssn);
       final LinkedList<Integer> listenersRan = new LinkedList<Integer>();
@@ -161,13 +161,13 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 		
 		String sid = newSid();
 		final Session ssn = conn.getOrCreateSession(sid);
 		final State state2 = conn.getSchema().getState("state2");
 		conn.close();
-		assertEquals(Connection.Status.CLOSED_BY_CLIENT, conn.getStatus());
+		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
 		new ClientUserExceptionInterceptor() {
 			@Override public void toRun() {
 				ssn.targetForState(state2);
@@ -185,7 +185,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 		
 		String sid = newSid();
 		final Session ssn = conn.getOrCreateSession(sid);
@@ -193,14 +193,14 @@ public class SessionTest extends ClientBaseTestWithServer {
 
 		server.restart();
 
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 		
 		new ClientUserExceptionInterceptor() {
 			@Override public void toRun() {
 				ssn.targetForState(state2);
 			}
 		}.assertThrown(SessionExpiredException.class);
-		assertEquals(Status.CLOSED_BY_SERVER, conn.getStatus());
+		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 		
 		//ssn.targetForState(state2);
 	}
@@ -212,7 +212,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 
 		// Via SID tracker, create.
 		String sid = newSid();

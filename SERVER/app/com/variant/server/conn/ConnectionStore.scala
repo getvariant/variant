@@ -50,12 +50,14 @@ trait ConnectionStore {
 	def closeOrBust(cid: String): Connection
 	
 	/**
-	 * Close all connection to a given schema. 
+	 * Switch all connection to a given schema into the drain mode.
+	 * Draining connections refuse creation of new sessions, but will
+	 * continue to operate against the undeployed schema until all existing
+	 * sessions have expired. 
+	 * 
 	 * Server-side operation so we don't check existence.
-	 * Attempts to close a connection that's already closed are noops.
-	 * See comments above.
 	 */
-	def closeAll(schid: String)
+	def drainConnectionsToSchema(schid: String)
 
 }
 
@@ -98,6 +100,7 @@ class ConnectionStoreImpl () extends ConnectionStore {
 	}
 
    /**
+    * Client side connection close. 
 	 */
 	override def closeOrBust(cid: String): Connection = {
       val conn = connMap.remove(cid).getOrElse {
@@ -110,18 +113,18 @@ class ConnectionStoreImpl () extends ConnectionStore {
 	}
 
 	/**
-	 * Close all connections to a schema, by schema id.  
+	 * Start draining all connections to a schema, by schema id.  
 	 */
-	override def closeAll(schid: String) {
+	override def drainConnectionsToSchema(schid: String) {
 	   
 	   connMap
 	      .filter { e => 
 	         e._2.schema.getId == schid 
 	      }
 	      .foreach { e => 
-	         e._2.close()
+	         e._2.drain()
 	         connMap -= e._1
-	         logger.debug("Closed connection ID [%s] to schema [%s]".format(e._2.id, e._2.schema.getName()))
+	         logger.debug("Put connection ID [%s] to schema [%s] into DRAIN mode".format(e._2.id, e._2.schema.getName()))
 	      }
 	 
 	}

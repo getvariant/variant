@@ -7,6 +7,8 @@ import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.collection.JavaConversions._
 import com.variant.core.ServerError._
+import com.variant.core.ConnectionStatus._
+import com.variant.core.util.Constants._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.spec.BaseSpecWithServer
@@ -61,12 +63,14 @@ class EventTest extends BaseSpecWithServer {
       "return 404 on GET" in {
          val resp = route(app, FakeRequest(GET, endpoint)).get
          status(resp) mustBe NOT_FOUND
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe None
          contentAsString(resp) mustBe empty
       }
 
       "return 404 on PUT" in {
          val resp = route(app, FakeRequest(PUT, endpoint)).get
          status(resp) mustBe NOT_FOUND
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe None
          contentAsString(resp) mustBe empty
       }
 
@@ -76,18 +80,20 @@ class EventTest extends BaseSpecWithServer {
       
       "obtain a connection" in {
          // POST new connection
-         val connResp = route(app, connectionRequest("big_covar_schema")).get
-         status(connResp) mustBe OK
-         val json = contentAsJson(connResp) 
+         val resp = route(app, connectionRequest("big_covar_schema")).get
+         status(resp) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
+         val json = contentAsJson(resp) 
          json mustNot be (null)
          cid = (json \ "id").as[String]
          cid mustNot be (null)
          schid = (json \ "schema" \ "id").as[String]
       }
-
+      
       "return 400 and error on POST with no body" in {
          val resp = route(app, connectedRequest(POST, endpoint, cid)).get
          status(resp) mustBe BAD_REQUEST
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe EmptyBody.isInternal() 
@@ -95,7 +101,7 @@ class EventTest extends BaseSpecWithServer {
          val args = (respJson \ "args").as[Seq[String]]
          args mustBe empty
      }
-      
+      /*
       "return  400 and error on POST with invalid JSON" in {
          val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody("bad json")).get
          status(resp) mustBe BAD_REQUEST
@@ -216,5 +222,7 @@ class EventTest extends BaseSpecWithServer {
             }
          })
       }
+      * 
+      */
    }
 }

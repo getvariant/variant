@@ -1,10 +1,14 @@
 package com.variant.server.api;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.variant.core.UserError;
 import com.variant.core.VariantException;
 import com.variant.core.UserError.Severity;
 import com.variant.core.ServerError;
-
+import com.variant.core.util.Tuples.Pair;
 /**
  * The super-type for of Variant server exception. 
  * 
@@ -114,6 +118,7 @@ abstract public class ServerException extends VariantException {
 		public final ServerError error;
 		public final String[] args;
 		
+		private final HashMap<String,String> headers = new HashMap<String,String>();
 		/**
 		 * 
 		 * @param template
@@ -124,10 +129,35 @@ abstract public class ServerException extends VariantException {
 			this.error = error;
 			this.args = args;
 		}
+
+		/**
+		 * Attache headers to the response that this exception will
+		 * be eventually converted to
+		 * @param headers
+		 * @return this object for ease of chaining.
+		 */
+		public Remote withHeaders(Map<String, String> headers) {
+			this.headers.putAll(headers);
+			return this;
+		}
+
+		/**
+		 * Currently attached headers
+		 */
+		public Map<String, String> getHeaders() {
+			return headers;
+		}
 		
 		@Override
 		public Severity getSeverity() {
 			return Severity.ERROR;
+		}
+
+		/**
+		 */
+		@Override
+		public String getMessage() {
+			return error.asMessage((Object[])args);
 		}
 
 	}

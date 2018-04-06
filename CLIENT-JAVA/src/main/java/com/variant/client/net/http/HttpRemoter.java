@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.ClientException;
-import com.variant.client.Connection.Status;
+import com.variant.core.ConnectionStatus;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.core.util.Constants;
 import com.variant.core.util.TimeUtils;
@@ -51,10 +51,10 @@ public class HttpRemoter {
 		try {
 			HttpUriRequest req = requestable.requestOp();
 			req.setHeader("Content-Type", Constants.HTTP_HEADER_CONTENT_TYPE);
-			if (connection.getStatus() == Status.OPEN) {
+			if (connection.getStatus() == ConnectionStatus.OPEN) {
 				req.setHeader(Constants.HTTP_HEADER_CONNID, connection.getId());
 			}
-			else if (connection.getStatus() != Status.CONNECTING) {
+			else if (connection.getStatus() != ConnectionStatus.CONNECTING) {
 				throw new ClientException.Internal(String.format("Unexpected status %s", connection.getStatus()));
 			}
 			resp = client.execute(req);

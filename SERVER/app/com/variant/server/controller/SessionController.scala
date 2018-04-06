@@ -35,7 +35,7 @@ class SessionController @Inject() (
          throw new ServerException.Remote(EmptyBody)
       }
             
-      val conn = connStore.getOrBust(getConnectionId(req))        
+      val conn = connStore.getOrBust(getConnIdOrBust(req))        
       ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
       Ok
    }
@@ -47,7 +47,7 @@ class SessionController @Inject() (
     */
    def get(sid: String) = VariantAction { req =>
 
-      val cid = getConnectionId(req)
+      val cid = getConnIdOrBust(req)
       val ssn = ssnStore.getOrBust(sid, cid)
       
       val response = JsObject(Seq(
@@ -56,11 +56,4 @@ class SessionController @Inject() (
       Ok(response.toString)
    }
  
-   def post(id: String) = VariantAction {
-      NotImplemented
-   }
- 
-   def delete(id: String) = VariantAction {
-      NotImplemented
-   }
 }

@@ -22,6 +22,7 @@ import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
 import com.variant.client.net.Payload;
 import com.variant.client.session.TargetingTrackerEntryImpl;
+import com.variant.core.ConnectionStatus;
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -103,7 +104,7 @@ public class SessionImpl implements Session {
 	 */
 	void checkState() {
 		if (isExpired) {
-			if (conn.getStatus() != Connection.Status.OPEN)
+			if (conn.getStatus() != ConnectionStatus.OPEN)
 				throw new ConnectionClosedException();
 			else
 				throw new SessionExpiredException();

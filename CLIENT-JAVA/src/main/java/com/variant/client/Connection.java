@@ -1,5 +1,6 @@
 package com.variant.client;
 
+import com.variant.core.ConnectionStatus;
 import com.variant.core.schema.Schema;
 
 
@@ -132,15 +133,17 @@ public interface Connection {
 	Schema getSchema();
 
 	/**
-	 * The current {@link Status} of this connection.
+	 * The current {@link ConnectionStatus} of this connection.
 	 * 
 	 * @since 0.7
-	 * @return An object of type {@link Status}..
+	 * @return An element of enum {@link ConnectionStatus}.
 	 */
-	Status getStatus();
+	ConnectionStatus getStatus();
 	
 	/**
-	 * Close this connection. No-op if this connection has already been closed.
+	 * Close this connection. 
+	 * All sessions opened in this connection are destroyed and will not be available 
+	 * for retrieval from parallel connections. No-op if this connection has already been closed.
 	 * 
 	 * @since 0.7
 	 */
@@ -170,48 +173,4 @@ public interface Connection {
 	   public void expired(Session session);
 	}
 
-	/**
-	 * Status of a Variant {@link Connection}, as returned by {@link Connection#getStatus()}.
-	 * 
-	 * @since 0.7
-	 */
-	public enum Status {
-
-		/**
-		 * Internal state. Should never be returned by {@link Connection#getStatus()}.
-		 * 
-		 * @since 0.8
-		 */
-		CONNECTING, 
-
-		/**
-		 * Open without restrictions. New sessions can be created.
-		 * 
-		 * @since 0.7
-		 */
-		OPEN, 
-		
-		/**
-		 * Open, but only existing sessions can be retrieved. No new sessions can be created.
-		 * 
-		 * @since 0.8
-		 */
-		DRAINING, 
-
-		/**
-		 * Connection has been closed by the client with a call to {@link Connection#close()()}.
-		 * No sessions can be retrieved or created.
-		 * 
-		 * @since 0.7
-		 */
-		CLOSED_BY_CLIENT,
-		
-		/**
-		 * Connection has been closed by the server as the result of a schema reload or server restart.
-		 * No sessions can be retrieved or created.
-		 * 
-		 * @since 0.7
-		 */
-		CLOSED_BY_SERVER
-	}
 }

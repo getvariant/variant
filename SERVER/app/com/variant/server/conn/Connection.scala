@@ -8,6 +8,7 @@ import com.variant.server.api.ConfigKeys
 import scala.math.BigDecimal.int2bigDecimal
 import scala.math.BigDecimal.long2bigDecimal
 import com.variant.server.api.Session
+import com.variant.core.ConnectionStatus._
 
 /**
  * Represents client connection
@@ -31,16 +32,22 @@ class Connection(val schema: ServerSchema) {
   
    import Connection._
    
-   private[this] var _isClosed = false
+   private[this] var _status = OPEN
    
    val id = StringUtils.random64BitString(random)   
    val timestamp = System.currentTimeMillis()
    
+   /**
+    * Are operations permitted on this connection?
+    */
+   def areOpsPermitted = {
+       Seq(OPEN, DRAINING) contains _status 
+   }
    
    /**
     * Is this connection closed?
     */
-   def isClosed = _isClosed
+   def status = _status
 
    /**
     * Two connections are parallel if they name the same schema ID.
@@ -50,10 +57,16 @@ class Connection(val schema: ServerSchema) {
    }
    
    /**
+    * Set connection to draining mode.
+    */
+   def drain() {
+      _status = DRAINING
+   }
+   /**
     * Close connection.
     */
    def close() {
-      _isClosed = true;
+      _status = CLOSED_BY_CLIENT;
    }
 
    /**

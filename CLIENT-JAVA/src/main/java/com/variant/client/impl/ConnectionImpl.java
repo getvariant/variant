@@ -14,6 +14,7 @@ import com.variant.client.SessionIdTracker;
 import com.variant.client.VariantClient;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
+import com.variant.core.ConnectionStatus;
 import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
 import com.variant.core.schema.ParserMessage;
@@ -170,7 +171,7 @@ public class ConnectionImpl implements Connection {
 	private final Server server;
 	private final VariantClientImpl client; 
 	private final Schema schema;
-	private Status status = Status.CONNECTING;
+	private ConnectionStatus status = ConnectionStatus.CONNECTING;
 
 	/**
 	 * 
@@ -197,7 +198,7 @@ public class ConnectionImpl implements Connection {
 		}
 		schema = resp.getSchema();
 		
-		status = Status.OPEN;
+		status = ConnectionStatus.OPEN;
 	}
 	
 	// ---------------------------------------------------------------------------------------------//
@@ -249,7 +250,7 @@ public class ConnectionImpl implements Connection {
 	}
 
 	@Override
-	public Status getStatus() {
+	public ConnectionStatus getStatus() {
 		return status;
 	}
 
@@ -261,7 +262,7 @@ public class ConnectionImpl implements Connection {
 
 	@Override
 	public void close() {
-		if (status == Status.OPEN) close(Status.CLOSED_BY_CLIENT);
+		if (status == ConnectionStatus.OPEN) close(ConnectionStatus.CLOSED_BY_CLIENT);
 	}
 
 	// ---------------------------------------------------------------------------------------------//
@@ -274,8 +275,8 @@ public class ConnectionImpl implements Connection {
 		return sessionTimeoutMillis;
 	}
 
-	public void close(Status status) {
-		if (this.status == Status.OPEN) {
+	public void close(ConnectionStatus status) {
+		if (this.status == ConnectionStatus.OPEN) {
 			cache.destroy();
 			server.disconnect(id);
 			client.freeConnection(id);

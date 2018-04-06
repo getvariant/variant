@@ -58,12 +58,21 @@ abstract class VariantController extends Controller {
    }
    
    /**
-    * 
+    * Get connection ID from header as an Option
     */
-   protected def getConnectionId(req: Request[AnyContent]): String = {
-      req.headers.get(Constants.HTTP_HEADER_CONNID) match {
+   protected def getConnId(req: Request[AnyContent]): Option[String] = {
+      req.headers.get(Constants.HTTP_HEADER_CONNID)
+   }
+
+   /**
+    * Get connection ID from HTTP header as String, or throw internal
+    * remote exception if the header wasn't sent.
+    */
+   protected def getConnIdOrBust(req: Request[AnyContent]): String = {
+      getConnId(req) match {
          case Some(cid) => cid
          case None => throw new ServerException.Remote(ServerError.ConnectionIdMissing)
       }
    }
+   
 }

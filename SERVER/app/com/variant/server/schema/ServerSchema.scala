@@ -95,7 +95,7 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
     */
 	def undeploy() {
       state = Gone
-      VariantServer.instance.connectionStore.closeAll(getId)
+      VariantServer.instance.connectionStore.drainConnectionsToSchema(getId)
 	   logger.info("Undeployed schema [%s] ID [%s], from [%s]".format(getName, getId, origin))
 	}
    

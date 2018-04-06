@@ -1,20 +1,19 @@
 package com.variant.client.test;
 
+import static com.variant.core.ConnectionStatus.CLOSED_BY_SERVER;
+import static com.variant.core.ConnectionStatus.OPEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.util.LinkedList;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.Connection.Status;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
-import com.variant.core.ServerError;
 import com.variant.core.util.IoUtils;
 
 /**
@@ -35,7 +34,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServer {
 		// Open connection
 		final Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 		assertNotNull(conn.getClient());
 		assertNotNull(conn.getSchema());
 		assertEquals("big_covar_schema", conn.getSchema().getName());
@@ -79,7 +78,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServer {
 			
 		}.assertThrown(ConnectionClosedException.class);
 
-		assertEquals(Status.CLOSED_BY_SERVER, conn.getStatus());
+		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 		
 		
 	}	

@@ -3,10 +3,10 @@ package com.variant.client.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static com.variant.core.ConnectionStatus.*;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.Connection.Status;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
@@ -30,7 +30,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 	
 		final Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 		assertNotNull(conn.getClient());
 		assertNotNull(conn.getSchema());
 		assertEquals("big_covar_schema", conn.getSchema().getName());
@@ -40,7 +40,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 	    IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
 		Thread.sleep(dirWatcherLatencyMsecs);
 
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 
 		assertNull(conn.getSession("foo"));        
 		assertNull(conn.getSessionById("foo"));
@@ -58,7 +58,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 			
 		}.assertThrown(ConnectionClosedException.class);
 
-		assertEquals(Status.CLOSED_BY_SERVER, conn.getStatus());
+		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 		
 		// Confirm the schema is gone.
 		new ClientUserExceptionInterceptor() {

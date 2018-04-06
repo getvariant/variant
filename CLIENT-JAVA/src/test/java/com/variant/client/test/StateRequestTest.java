@@ -5,10 +5,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static com.variant.core.ConnectionStatus.*;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.Connection.Status;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
@@ -44,7 +44,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 
 		// Via SID tracker, create.
 		String sid = newSid();
@@ -127,7 +127,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		schema = conn.getSchema();
 		
 		assertNotNull(conn);
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 
 		// Via SID tracker, create.
 		String sid = newSid();
@@ -177,7 +177,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		schema = conn.getSchema();
 		
 		assertNotNull(conn);
-		assertEquals(Status.OPEN, conn.getStatus());
+		assertEquals(OPEN, conn.getStatus());
 
 		// Via SID tracker, create.
 		String sid = newSid();
@@ -266,7 +266,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	
 	   	conn.close();
 	   	
-	   	assertEquals(Status.CLOSED_BY_CLIENT, conn.getStatus());
+	   	assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
 	   	assertFalse(ssn.isExpired());
 		
 	   	new ClientUserExceptionInterceptor() {
@@ -278,7 +278,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			}
 		}.assertThrown(SessionExpiredException.class);
 		
-		assertEquals(Status.CLOSED_BY_CLIENT, conn.getStatus());
+		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
 	}
 
 }
