@@ -1,7 +1,10 @@
 package com.variant.server.controller
 
+import scala.collection.JavaConversions._
 import com.variant.core.ServerError.EmptyBody
 import com.variant.core.session.CoreSession
+import com.variant.core.util.Constants._
+import com.variant.core.ConnectionStatus._
 import com.variant.server.api.ServerException
 import com.variant.server.boot.VariantServer
 import com.variant.server.conn.ConnectionStore
@@ -31,13 +34,22 @@ class SessionController @Inject() (
     */
    def save() = VariantAction { req =>
 
-      val ssnJson = req.body.asText.getOrElse {
-         throw new ServerException.Remote(EmptyBody)
+      val conn = connStore.getOrBust(getConnIdOrBust(req))        
+
+      try {
+         val ssnJson = req.body.asText.getOrElse {
+            throw new ServerException.Remote(EmptyBody)
+         }
+         
+         ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
+      }
+      // If we're going out with an exception, don't forget to attach the connection status header.
+      catch {
+         case rex: ServerException.Remote => 
+            throw rex.withHeaders(Map(HTTP_HEADER_CONN_STATUS -> conn.status.toString))
       }
             
-      val conn = connStore.getOrBust(getConnIdOrBust(req))        
-      ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
-      Ok
+      Ok.withHeaders(HTTP_HEADER_CONN_STATUS -> conn.status.toString())         
    }
  
    /**

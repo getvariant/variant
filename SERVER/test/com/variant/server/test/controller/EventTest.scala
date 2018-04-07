@@ -101,10 +101,11 @@ class EventTest extends BaseSpecWithServer {
          val args = (respJson \ "args").as[Seq[String]]
          args mustBe empty
      }
-      /*
+
       "return  400 and error on POST with invalid JSON" in {
          val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody("bad json")).get
          status(resp) mustBe BAD_REQUEST
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe JsonParseError.isInternal() 
@@ -116,6 +117,7 @@ class EventTest extends BaseSpecWithServer {
       "return  400 and error on POST with no sid" in {
          val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(bodyNoSid)).get
          status(resp) mustBe BAD_REQUEST
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe MissingProperty.isInternal() 
@@ -126,6 +128,7 @@ class EventTest extends BaseSpecWithServer {
       "return 400 and error on POST with no name" in {
          val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(bodyNoName)).get
          status(resp) mustBe BAD_REQUEST
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe MissingProperty.isInternal() 
@@ -145,24 +148,14 @@ class EventTest extends BaseSpecWithServer {
          connId = (json \ "id").as[String]
          connId mustNot be (null)
       }
-*/
-      var ssn: Session = null;
-      
-      "obtain a session" in {
-         val sid = newSid()
-         // PUT session.
-         val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis(), schema.getId)).expand("sid" -> sid)
-         val ssnResp = route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(sessionJson)).get
-         status(ssnResp) mustBe OK
-         contentAsString(ssnResp) mustBe empty
-         ssn = ssnStore.get(sid, cid).get
-      }
-      
+
+*/      
       "return  400 and error on POST with non-existent session" in {
          
          val eventBody = body.expand("sid" -> "foo")
          val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(eventBody)).get
          status(resp) mustBe BAD_REQUEST
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe SessionExpired.isInternal() 
@@ -170,11 +163,25 @@ class EventTest extends BaseSpecWithServer {
          (respJson \ "args").as[Seq[String]] mustBe Seq("foo") 
       }
 
+      var ssn: Session = null;
+
+      "obtain a session" in {
+         val sid = newSid()
+         // PUT session.
+         val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis(), schema.getId)).expand("sid" -> sid)
+         val resp = route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(sessionJson)).get
+         status(resp) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
+         contentAsString(resp) mustBe empty
+         ssn = ssnStore.get(sid, cid).get
+      }
+      
       "return 400 and error on POST with missing param name" in {
 
          val eventBody = bodyNoParamName.expand("sid" -> ssn.getId)
          val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(eventBody)).get
          status(resp)mustBe BAD_REQUEST
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
          val respJson = contentAsJson(resp)
          respJson mustNot be (null)
          (respJson \ "isInternal").as[Boolean] mustBe MissingParamName.isInternal() 
@@ -191,6 +198,7 @@ class EventTest extends BaseSpecWithServer {
          val eventResp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(eventBody)).get
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          status(eventResp) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, eventResp) mustBe Some(OPEN.toString())
          contentAsString(eventResp) mustBe empty
          
          // Read events back from the db, but must wait for the asych flusher.
@@ -222,7 +230,5 @@ class EventTest extends BaseSpecWithServer {
             }
          })
       }
-      * 
-      */
    }
 }

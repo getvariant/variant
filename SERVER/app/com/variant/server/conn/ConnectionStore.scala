@@ -11,6 +11,8 @@ import scala.collection.concurrent.TrieMap
 import com.typesafe.config.Config
 import com.variant.server.api.ServerException
 import com.variant.core.ServerError
+import com.variant.core.ConnectionStatus._
+
 
 /**
  * Connection Store.
@@ -95,6 +97,9 @@ class ConnectionStoreImpl () extends ConnectionStore {
          throw new ServerException.Remote(ServerError.UnknownConnection, cid)
       }
       
+	   if (Seq(CLOSED_BY_CLIENT, CLOSED_BY_SERVER) contains result.status)
+            throw new ServerException.Remote(ServerError.UnknownConnection, cid)
+
       logger.debug(s"Found connection [${cid}]")            
       result
 	}

@@ -36,14 +36,7 @@ class Connection(val schema: ServerSchema) {
    
    val id = StringUtils.random64BitString(random)   
    val timestamp = System.currentTimeMillis()
-   
-   /**
-    * Are operations permitted on this connection?
-    */
-   def areOpsPermitted = {
-       Seq(OPEN, DRAINING) contains _status 
-   }
-   
+      
    /**
     * Is this connection closed?
     */

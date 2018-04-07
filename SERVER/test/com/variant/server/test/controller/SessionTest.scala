@@ -11,7 +11,8 @@ import com.variant.core.ServerError._
 import com.variant.core.util.StringUtils
 import play.api.libs.json._
 import com.variant.server.impl.SessionImpl
-
+import com.variant.core.util.Constants._
+import com.variant.core.ConnectionStatus._
 
 /**
  * Session Controller Tests
@@ -64,6 +65,7 @@ class SessionTest extends BaseSpecWithServer {
          
          val resp = route(app, FakeRequest(GET, endpoint)).get
          status(resp) mustBe NOT_FOUND
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe None
          contentAsString(resp) mustBe empty
       }
 
@@ -72,9 +74,10 @@ class SessionTest extends BaseSpecWithServer {
       
       "obtain a connection" in {
          // POST new connection
-         val connResp = route(app, connectionRequest("big_covar_schema")).get
-         status(connResp) mustBe OK
-         val json = contentAsJson(connResp) 
+         val resp = route(app, connectionRequest("big_covar_schema")).get
+         status(resp) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
+         val json = contentAsJson(resp) 
          json mustNot be (null)
          connId = (json \ "id").as[String]
          connId mustNot be (null)
@@ -85,6 +88,7 @@ class SessionTest extends BaseSpecWithServer {
          
          val resp = route(app, connectedRequest(GET, endpoint + "/foo", connId)).get
          status(resp) mustBe BAD_REQUEST
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe false 
          error mustBe SessionExpired
@@ -97,6 +101,7 @@ class SessionTest extends BaseSpecWithServer {
          val body = sessionJsonBigCovar.expand("sid" -> "foo")
          val resp = route(app, connectedRequest(PUT, endpoint, connId).withTextBody(body)).get
          status(resp) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
          contentAsString(resp) mustBe empty
       }
 
@@ -104,6 +109,7 @@ class SessionTest extends BaseSpecWithServer {
        
          val resp = route(app, connectedRequest(GET, endpoint + "/foo", connId)).get
          status(resp) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
          val respAsJson = contentAsJson(resp)
          StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
             StringUtils.digest(sessionJsonBigCovar.expand("sid" -> "foo").toString())
@@ -115,10 +121,12 @@ class SessionTest extends BaseSpecWithServer {
          val reqPut = connectedRequest(PUT, endpoint, connId).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, respPut) mustBe Some("OPEN")
          contentAsString(respPut) mustBe empty
          
          val respGet = route(app, connectedRequest(GET, endpoint + "/foo", connId)).get
          status(respGet) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, respGet) mustBe Some("OPEN")
          val respAsJson = contentAsJson(respGet)
          StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
             StringUtils.digest(sessionJsonBigCovar.expand("sid" -> "foo"))
@@ -130,10 +138,12 @@ class SessionTest extends BaseSpecWithServer {
          val reqPut = connectedRequest(PUT, endpoint, connId).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, respPut) mustBe Some("OPEN")
          contentAsString(respPut) mustBe empty
          
          val respGet = route(app, connectedRequest(GET, endpoint + "/bar1", connId)).get
          status(respGet) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, respGet) mustBe Some("OPEN")
          val respAsJson = contentAsJson(respGet)
          StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
             StringUtils.digest(sessionJsonBigCovar.expand("sid" -> "bar1"))
@@ -143,6 +153,7 @@ class SessionTest extends BaseSpecWithServer {
 
          val resp = route(app, connectedRequest(GET, endpoint + "/foo", connId)).get
          status(resp) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
          val respAsJson = contentAsJson(resp)
          StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
             StringUtils.digest(sessionJsonBigCovar.expand("sid" -> "foo"))
@@ -156,6 +167,7 @@ class SessionTest extends BaseSpecWithServer {
             Thread.sleep(wait)
             val resp = route(app, connectedRequest(GET, endpoint + "/foo", connId)).get
             status(resp) mustBe OK
+            header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
             val respAsJson = contentAsJson(resp)
             StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
                StringUtils.digest(sessionJsonBigCovar.expand("sid" -> "foo").toString())
@@ -169,6 +181,7 @@ class SessionTest extends BaseSpecWithServer {
          ("foo" :: "bar" :: Nil).foreach { sid =>
               val resp = route(app, connectedRequest(GET, endpoint + "/" + sid, connId)).get
               status(resp) mustBe BAD_REQUEST
+              header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
               val (isInternal, error, args) = parseError(contentAsJson(resp))
               isInternal mustBe SessionExpired.isInternal() 
               error mustBe SessionExpired
@@ -184,11 +197,13 @@ class SessionTest extends BaseSpecWithServer {
          val reqPut = connectedRequest(PUT, endpoint, connId).withTextBody(body)
          val respPut = route(app, reqPut).get
          status(respPut) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, respPut) mustBe Some("OPEN")
          contentAsString(respPut) mustBe empty
 
          // Obtain a parallel connection.
          val connResp = route(app, connectionRequest("big_covar_schema")).get
          status(connResp) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, connResp) mustBe Some("OPEN")
          val json = contentAsJson(connResp) 
          json mustNot be (null)
          val conn2Id = (json \ "id").as[String]
@@ -201,11 +216,13 @@ class SessionTest extends BaseSpecWithServer {
          val reqPut2 = connectedRequest(PUT, endpoint, conn2Id).withTextBody(body2)
          val respPut2 = route(app, reqPut2).get
          status(respPut2) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, respPut2) mustBe Some("OPEN")
          contentAsString(respPut) mustBe empty
 
          // Get the session on the parallel connection.
          val respGet = route(app, connectedRequest(GET, endpoint + "/" + sid, conn2Id)).get
          status(respGet) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, respGet) mustBe Some("OPEN")
          val ssnJson = contentAsJson(respGet) 
          StringUtils.digest((ssnJson \ "session").as[String]) mustBe 
             StringUtils.digest(sessionJsonBigCovar.expand("sid" -> sid, "attrValue" -> "something else"))
@@ -219,11 +236,13 @@ class SessionTest extends BaseSpecWithServer {
          val body = sessionJsonBigCovar.expand("sid" -> sid)
          val respPut = route(app, connectedRequest(PUT, endpoint, connId).withTextBody(body)).get
          status(respPut) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, respPut) mustBe Some("OPEN")
          contentAsString(respPut) mustBe empty
 
          // Obtain a connection to a different schema
          val connResp = route(app, connectionRequest("petclinic")).get
          status(connResp) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, connResp) mustBe Some("OPEN")
          val json = contentAsJson(connResp) 
          json mustNot be (null)
          val conn2Id = (json \ "id").as[String]
@@ -234,6 +253,7 @@ class SessionTest extends BaseSpecWithServer {
          val body2 = sessionJsonPetclinic.expand("sid" -> sid)
          val respPut2 = route(app, connectedRequest(PUT, endpoint, conn2Id).withTextBody(body2)).get
          status(respPut2) mustBe BAD_REQUEST
+         header(HTTP_HEADER_CONN_STATUS, respPut2) mustBe Some("OPEN")
          val (isInternal, error, args) = parseError(contentAsJson(respPut2))
          isInternal mustBe false 
          error mustBe SessionExpired

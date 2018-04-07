@@ -41,10 +41,7 @@ class EventController @Inject() (
 
       val conn = connStore.getOrBust(getConnIdOrBust(req))
       
-      try {
-         if (! conn.areOpsPermitted)
-            throw new ServerException.Remote(EmptyBody)
-         
+      try {         
          val bodyJson = getBody(req).getOrElse {
             throw new ServerException.Remote(EmptyBody)
          }
@@ -87,8 +84,7 @@ class EventController @Inject() (
          case rex: ServerException.Remote => 
             throw rex.withHeaders(Map(HTTP_HEADER_CONN_STATUS -> conn.status.toString))
       }
-      
-      
+            
       Ok.withHeaders(HTTP_HEADER_CONN_STATUS -> conn.status.toString())
          
    }  
