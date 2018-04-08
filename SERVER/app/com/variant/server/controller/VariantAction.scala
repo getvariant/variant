@@ -16,22 +16,32 @@ import com.variant.server.boot.VariantServer
 import com.variant.core.util.Constants._
 import com.variant.core.ConnectionStatus._
 import javax.inject.Inject
+import com.variant.server.conn.Connection
+import com.variant.server.conn.ConnectionStore
 
 /**
  * Common actions logic chains to concrete action.
  * All concrete actions must extend this.
  *  
  * @author Igor
- */
-class VariantAction @Inject() (parser: BodyParsers.Default)(implicit ec: ExecutionContext) extends ActionBuilderImpl(parser) with Results {
+ *
+abstract class AbstractVariantAction @Inject()
+      (parser: BodyParsers.Default)
+      (implicit ec: ExecutionContext,
+       connStore: ConnectionStore) 
+      extends ActionBuilderImpl(parser) with Results {
       
    private[this] val logger = Logger(this.getClass)
+   
+   def connection: Connection
+   def preBlock[A]: (Request[A]) => Unit
    
    /**
     * Play's wrapper around the code in the concrete action. 
     */
    override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
 
+      
       val start = System.currentTimeMillis
       val req = request.method + " " + request.path      
       
@@ -40,6 +50,7 @@ class VariantAction @Inject() (parser: BodyParsers.Default)(implicit ec: Executi
       if (VariantServer.instance.isUp) {
          // Delegate to the actual action
          try {
+            preBlock(request)
             future = block(request)
          }
          catch {
@@ -61,3 +72,28 @@ class VariantAction @Inject() (parser: BodyParsers.Default)(implicit ec: Executi
       }
    }
 }
+*/
+/**
+ * 
+ *
+class ConnectedAction @Inject()
+      (parser: BodyParsers.Default)
+      (implicit ec: ExecutionContext,
+       connStore: ConnectionStore) 
+      extends AbstractVariantAction(parser, ec, connStore) {
+
+   private[this] var _conn = connStore.getOrBust(getConnIdOrBust(req))
+
+         def connection = _conn
+
+         
+         override def preBlock[A]: (Request[A]) => Unit {
+            val connId = req.headers.get(Constants.HTTP_HEADER_CONNID) match {
+               case Some(cid) => cid
+               case None => throw new ServerException.Remote(ServerError.ConnectionIdMissing)
+            }
+
+            _conn = connStore.getOrBust(connId)
+         }
+ }
+*/

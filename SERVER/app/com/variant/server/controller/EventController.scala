@@ -30,9 +30,9 @@ import play.api.mvc.ControllerComponents
 class EventController @Inject() (
       override val connStore: ConnectionStore, 
       override val ssnStore: SessionStore,
-      val variantAction: VariantAction,
+      val connectedAction: ConnectedAction,
       val cc: ControllerComponents
-      ) extends VariantController(variantAction, cc)  {
+      ) extends VariantController(connStore, ssnStore, cc)  {
    
    private val logger = Logger(this.getClass)	
  
@@ -40,7 +40,7 @@ class EventController @Inject() (
     * POST
     * Trigger an event.
     */
-   def post() = variantAction { req =>
+   def post() = connectedAction { req =>
 
       val conn = connStore.getOrBust(getConnIdOrBust(req))
       

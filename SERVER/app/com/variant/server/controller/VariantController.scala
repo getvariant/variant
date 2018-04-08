@@ -25,14 +25,12 @@ import play.api.mvc.AbstractController
  * All Variant controllers inherit from this.
  */
 abstract class VariantController @Inject() (
-      variantAction: VariantAction,
+      val connStore: ConnectionStore, 
+      val ssnStore: SessionStore,
       cc: ControllerComponents)
    extends AbstractController(cc) {
    
    private val logger = Logger(this.getClass)	
-
-   val connStore: ConnectionStore
-   val ssnStore: SessionStore
    
    /**
     * An alias for the server

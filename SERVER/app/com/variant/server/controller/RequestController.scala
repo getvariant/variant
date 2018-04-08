@@ -26,9 +26,9 @@ import play.api.mvc.ControllerComponents
 class RequestController @Inject() (
       override val connStore: ConnectionStore, 
       override val ssnStore: SessionStore,
-      val variantAction: VariantAction,
+      val connectedAction: ConnectedAction,
       val cc: ControllerComponents
-      ) extends VariantController(variantAction, cc)  {
+      ) extends VariantController(connStore, ssnStore, cc)  {
    
    private val logger = Logger(this.getClass)	
    
@@ -36,7 +36,7 @@ class RequestController @Inject() (
     * POST
     * Create state request by targeting a session.
     */
-   def create() = variantAction { req =>
+   def create() = connectedAction { req =>
       
       val bodyJson = getBody(req).getOrElse {
          throw new ServerException.Remote(EmptyBody)
@@ -69,7 +69,7 @@ class RequestController @Inject() (
     * We override the default parser because Play sets it to ignore for the DELETE operation.
     * (More discussion: https://github.com/playframework/playframework/issues/4606)
     */
-   def commit() = variantAction { req =>
+   def commit() = connectedAction { req =>
 
       val bodyJson = getBody(req).getOrElse {
          throw new ServerException.Remote(EmptyBody)   

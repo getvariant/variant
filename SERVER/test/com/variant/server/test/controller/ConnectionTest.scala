@@ -150,6 +150,7 @@ import EventTest._
          val max = server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
          for (i <- 1 to max) {
             val resp = route(app, connectionRequest("big_covar_schema")).get
+            println("******************* " + contentAsString(resp))
             status(resp) mustBe OK
             header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
             val body = contentAsString(resp)

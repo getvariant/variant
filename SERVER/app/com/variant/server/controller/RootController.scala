@@ -24,20 +24,19 @@ import play.api.mvc.ControllerComponents
 class RootController @Inject() (
       override val connStore: ConnectionStore, 
       override val ssnStore: SessionStore,
-      val variantAction: VariantAction,
+      val unconnectedAction: UnconnectedAction,
       val cc: ControllerComponents
-   ) extends VariantController(variantAction, cc)  {
+      ) extends VariantController(connStore, ssnStore, cc)  {
       
   /**
    *  If a path ends in a slash, redirect to the same path without the trailing /.
    */
-
-   def untrail(path:String) = variantAction { MovedPermanently("/" + path) }
+   def untrail(path:String) = unconnectedAction { MovedPermanently("/" + path) }
 
    /**
     * Print server status message
     */
-   def status() = variantAction { req =>
+   def status() = unconnectedAction { req =>
       Ok(server.productName + ", Uptime %s.".format(DurationFormatUtils.formatDuration(System.currentTimeMillis() - server.startTs, "HH:mm:ss")))
    }
 
