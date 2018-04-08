@@ -10,17 +10,19 @@ import com.variant.server.boot.VariantServer
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.SessionStore
 import com.variant.server.impl.SessionImpl
-
 import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
+import play.api.mvc.ControllerComponents
 
 //@Singleton -- Is this for non-shared state controllers?
 class SessionController @Inject() (
       override val connStore: ConnectionStore, 
-      override val ssnStore: SessionStore, 
-      server: VariantServer) extends VariantController  {
+      override val ssnStore: SessionStore,
+      val variantAction: VariantAction,
+      val cc: ControllerComponents
+      ) extends VariantController(variantAction, cc)  {
    
       private val logger = Logger(this.getClass)	
        
@@ -32,7 +34,7 @@ class SessionController @Inject() (
     * Otherwise, the new session will be created in the supplied connection, 
     * so long as it's open. 
     */
-   def save() = VariantAction { req =>
+   def save() = variantAction { req =>
 
       val conn = connStore.getOrBust(getConnIdOrBust(req))        
 
@@ -57,7 +59,7 @@ class SessionController @Inject() (
     * Get a session by ID, if exists and was open in the current
     * or parallel connection.
     */
-   def get(sid: String) = VariantAction { req =>
+   def get(sid: String) = variantAction { req =>
 
       val cid = getConnIdOrBust(req)
       val ssn = ssnStore.getOrBust(sid, cid)

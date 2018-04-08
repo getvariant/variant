@@ -1,6 +1,5 @@
 package com.variant.server.boot
 
-import org.apache.http.HttpStatus
 import play.api.mvc.Result
 import play.api.mvc.ResponseHeader
 import play.api.http.HttpEntity
@@ -8,6 +7,7 @@ import play.api.libs.json._
 import akka.util.ByteString
 import com.variant.core.ServerError
 import com.variant.server.api.ServerException
+import play.api.mvc.Results
 
 /**
  * Wrap the core ServerError type with some server side semantics.
@@ -17,7 +17,7 @@ object ServerErrorRemote {
    def apply(error: ServerError) = new ServerErrorRemote(error)
 }
 
-class ServerErrorRemote(error: ServerError) {
+class ServerErrorRemote(error: ServerError) extends Results {
    
    import play.api.Logger
    
@@ -42,10 +42,10 @@ class ServerErrorRemote(error: ServerError) {
          "code" -> error.getCode,
          "args" -> JsArray(args.map {JsString(_)}))
      
-      Result(
-          header = ResponseHeader(HttpStatus.SC_BAD_REQUEST, Map.empty),
-          body = HttpEntity.Strict(ByteString(bodyJson.toString()), Some("application/json"))
-        )   
+      BadRequest(bodyJson.toString())
+//          header = ResponseHeader(HttpStatus.SC_BAD_REQUEST, Map.empty),
+//          body = HttpEntity.Strict(ByteString(bodyJson.toString()), Some("application/json"))
+//        )   
 
     }
    

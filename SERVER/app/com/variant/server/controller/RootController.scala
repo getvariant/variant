@@ -18,22 +18,26 @@ import com.variant.server.api.ServerException
 import com.variant.core.schema.State
 import com.variant.core.session.CoreStateRequest
 import play.api.mvc.AnyContent
+import play.api.mvc.ControllerComponents
 
 //@Singleton -- Is this for non-shared state controllers?
 class RootController @Inject() (
       override val connStore: ConnectionStore, 
-      override val ssnStore: SessionStore) extends VariantController  {
+      override val ssnStore: SessionStore,
+      val variantAction: VariantAction,
+      val cc: ControllerComponents
+   ) extends VariantController(variantAction, cc)  {
       
   /**
    *  If a path ends in a slash, redirect to the same path without the trailing /.
    */
 
-   def untrail(path:String) = VariantAction { MovedPermanently("/" + path) }
+   def untrail(path:String) = variantAction { MovedPermanently("/" + path) }
 
    /**
     * Print server status message
     */
-   def status() = VariantAction { req =>
+   def status() = variantAction { req =>
       Ok(server.productName + ", Uptime %s.".format(DurationFormatUtils.formatDuration(System.currentTimeMillis() - server.startTs, "HH:mm:ss")))
    }
 

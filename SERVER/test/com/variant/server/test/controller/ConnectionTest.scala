@@ -84,7 +84,7 @@ import EventTest._
 
       var connId: String = null
       
-      "throw intenal exception on POST with no connection ID header" in {
+      "throw intenal exception on POST with a connection ID header" in {
 
          val resp = route(app, connectedRequest(POST, endpoint + "/big_covar_schema", "foo")).get
          status(resp) mustBe BAD_REQUEST

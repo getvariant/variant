@@ -15,6 +15,7 @@ import play.api.mvc._
 import com.variant.server.boot.VariantServer
 import com.variant.core.util.Constants._
 import com.variant.core.ConnectionStatus._
+import javax.inject.Inject
 
 /**
  * Common actions logic chains to concrete action.
@@ -22,7 +23,7 @@ import com.variant.core.ConnectionStatus._
  *  
  * @author Igor
  */
-object VariantAction extends ActionBuilder[Request] with Results {
+class VariantAction @Inject() (parser: BodyParsers.Default)(implicit ec: ExecutionContext) extends ActionBuilderImpl(parser) with Results {
       
    private[this] val logger = Logger(this.getClass)
    

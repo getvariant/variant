@@ -12,12 +12,22 @@ scalaVersion := "2.11.7"
 // Add local Maven repo for com.variant artifacts built with Maven.
 resolvers += Resolver.mavenLocal
 
+// This 
+//resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
+
 libraryDependencies ++= Seq(
   
   // Required by Play!
   jdbc,
-  cache,
+  //cache,
   ws,
+  guice,  // Separate dependency as of Play 2.6
+  openId,  // Separate dependency as of Play 2.6
+  openId,  // Separate dependency as of Play 2.6
+  
+  "com.typesafe.play"      %% "play-json"          % "2.6.0",
+  "com.typesafe.play"      %% "play-iteratees"     % "2.6.1",
+  
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   
   // Variant Core
@@ -32,7 +42,7 @@ libraryDependencies ++= Seq(
 
   // Need to install CORS filter
   filters
-)
+  )
 
 // Capture SBT build info in a source file available at compile time.
 sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { (d, v, n) =>
@@ -50,7 +60,7 @@ sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { 
 // ScalaTest related settings
 //
 
-fork := true  // without this JVM options won't hold
+//fork := true  // without this JVM options won't hold
 
 //testOptions += Tests.Argument(TestFrameworks.JUnit); Do we need this?
 

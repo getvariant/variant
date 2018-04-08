@@ -17,12 +17,18 @@ import com.variant.server.schema.ServerSchema
 import com.variant.core.util.Constants
 import com.variant.core.ServerError
 import com.fasterxml.jackson.core.JsonParseException
+import javax.inject.Inject
+import play.api.mvc.ControllerComponents
+import play.api.mvc.AbstractController
 
 /**
  * All Variant controllers inherit from this.
  */
-abstract class VariantController extends Controller {
-
+abstract class VariantController @Inject() (
+      variantAction: VariantAction,
+      cc: ControllerComponents)
+   extends AbstractController(cc) {
+   
    private val logger = Logger(this.getClass)	
 
    val connStore: ConnectionStore

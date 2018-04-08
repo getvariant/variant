@@ -24,12 +24,15 @@ import com.variant.server.api.Session
 import com.variant.server.impl.SessionImpl
 import com.variant.core.util.Constants._
 import com.variant.core.ConnectionStatus._
+import play.api.mvc.ControllerComponents
 
 //@Singleton -- Is this for non-shared state controllers?
 class EventController @Inject() (
       override val connStore: ConnectionStore, 
-      override val ssnStore: SessionStore) 
-      extends VariantController  {
+      override val ssnStore: SessionStore,
+      val variantAction: VariantAction,
+      val cc: ControllerComponents
+      ) extends VariantController(variantAction, cc)  {
    
    private val logger = Logger(this.getClass)	
  
@@ -37,7 +40,7 @@ class EventController @Inject() (
     * POST
     * Trigger an event.
     */
-   def post() = VariantAction { req =>
+   def post() = variantAction { req =>
 
       val conn = connStore.getOrBust(getConnIdOrBust(req))
       
