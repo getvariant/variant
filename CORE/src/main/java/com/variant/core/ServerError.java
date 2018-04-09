@@ -53,9 +53,6 @@ public class ServerError extends UserError {
 	//	
 	public static final ServerError ConnectionIdMissing = 
 			new ServerError(631, "Missing connection ID header");
-
-	public static final ServerError ConnectionIdNotExpected = 
-			new ServerError(632, "Unexpected connection ID [%s] at opening connection to schema [%s]");
 	
 	/**
 	 */

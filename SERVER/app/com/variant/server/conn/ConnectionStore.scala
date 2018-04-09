@@ -73,7 +73,7 @@ class ConnectionStoreImpl () extends ConnectionStore {
 	/**
 	 */
 	override def put(conn: Connection): Boolean = {
-      if (connMap.size >= maxSize) {
+      if (connMap.filter(e => e._2.status == OPEN).size >= maxSize) {
          false
       }
       else {

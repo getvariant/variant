@@ -81,25 +81,46 @@ import EventTest._
          error mustBe UnknownSchema
          args mustBe Seq("foo")
       }
-
-      var connId: String = null
       
-      "throw intenal exception on POST with a connection ID header" in {
+      "ignore connection ID header on connection" in {
 
          val resp = route(app, connectedRequest(POST, endpoint + "/big_covar_schema", "foo")).get
-         status(resp) mustBe BAD_REQUEST
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe None
-         val (isInternal, error, args) = parseError(contentAsJson(resp))
-         isInternal mustBe ConnectionIdNotExpected.isInternal() 
-         error mustBe ConnectionIdNotExpected
-         args mustBe Seq("foo", "big_covar_schema")
+         status(resp) mustBe OK
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
+         val body = contentAsString(resp)
+         body mustNot be (empty)
+         val json = Json.parse(body)
+         (json \ "id").asOpt[String].isDefined mustBe true
+         val cid = (json \ "id").as[String]
+         (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
+         (json \ "ts").asOpt[Long].isDefined mustBe true
+         val schemaSrc = (json \ "schema" \ "src").as[String]
+         val schemaId = (json \ "schema" \ "id").as[String]
+         schemaSrc mustBe server.schemata("big_covar_schema").source
+         schemaId mustBe server.schemata("big_covar_schema").getId
+         val parser = ServerSchemaParser()
+         val parserResp = parser.parse(schemaSrc)
+         parserResp.hasMessages() mustBe false
+   		parserResp.getSchema() mustNot be (null)
+	   	parserResp.getSchemaSrc() mustNot be (null)
+	   	
+         val schema = parserResp.getSchema
+         schema.getName mustEqual "big_covar_schema"
+         
+         // close this connection. 
+         val respClose = route(app, connectedRequest(DELETE, endpoint, cid)).get
+         header(HTTP_HEADER_CONN_STATUS, respClose) mustBe Some("CLOSED_BY_CLIENT")
+         status(respClose) mustBe OK
+         contentAsString(respClose) mustBe empty
       }
       
+      var connId: String = null
+
       "open connection on POST with valid schema name" in {
          
          val resp = route(app, connectionRequest("big_covar_schema")).get
          status(resp) mustBe OK
-         header(HTTP_HEADER_CONN_STATUS, resp) // we don't send conn status header on connection request.
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
          val body = contentAsString(resp)
          body mustNot be (empty)
          val json = Json.parse(body)
@@ -138,7 +159,7 @@ import EventTest._
       
       "return 400 on DELETE of connection which no longer exists" in {
          val resp = route(app, connectedRequest(DELETE, endpoint, connId)).get
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe None
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("CLOSED_BY_CLIENT")
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe UnknownConnection.isInternal() 
@@ -146,11 +167,12 @@ import EventTest._
          args mustBe Seq(connId.toString())
       }
 
+      // At this point, we should have no open connections.
       "return 400 when attempting to open one too many connections" in {
          val max = server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
          for (i <- 1 to max) {
             val resp = route(app, connectionRequest("big_covar_schema")).get
-            println("******************* " + contentAsString(resp))
+            //println("***** " + i + ", " + contentAsString(resp))
             status(resp) mustBe OK
             header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
             val body = contentAsString(resp)

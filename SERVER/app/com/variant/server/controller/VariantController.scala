@@ -61,6 +61,7 @@ abstract class VariantController @Inject() (
       
    }
    
+/*
    /**
     * Get connection ID from header as an Option
     */
@@ -78,5 +79,5 @@ abstract class VariantController @Inject() (
          case None => throw new ServerException.Remote(ServerError.ConnectionIdMissing)
       }
    }
-   
+*/   
 }

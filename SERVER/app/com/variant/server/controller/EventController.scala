@@ -42,54 +42,45 @@ class EventController @Inject() (
     */
    def post() = connectedAction { req =>
 
-      val conn = connStore.getOrBust(getConnIdOrBust(req))
+      val bodyJson = getBody(req).getOrElse {
+         throw new ServerException.Remote(EmptyBody)
+      }
       
-      try {         
-         val bodyJson = getBody(req).getOrElse {
-            throw new ServerException.Remote(EmptyBody)
-         }
-         
-         val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
-            throw new ServerException.Remote(MissingProperty, "sid")            
-         }
-         
-         val name = (bodyJson \ "name").asOpt[String].getOrElse {
-            throw new ServerException.Remote(MissingProperty, "name")         
-         }
-         
-         val value = (bodyJson \ "value").asOpt[String].getOrElse {
-            throw new ServerException.Remote(MissingProperty, "value")         
-         }
-         
-         val timestamp = (bodyJson \ "ts").asOpt[Long].getOrElse(System.currentTimeMillis())
-         
-         val params = (bodyJson \ "params").asOpt[List[JsObject]].getOrElse(List[JsObject]())
-   
-         val ssn = ssnStore.getOrBust(sid, conn.id)
-         
-         if (ssn.getStateRequest == null)
-            throw new ServerException.Remote(UnknownState)   
-   
-         val event = new ServerEvent(name, value, new Date(timestamp));  
-         
-         params.foreach(p => {
-            val name = (p \ "name").asOpt[String].getOrElse {
-               throw new ServerException.Remote(MissingParamName)
-            }
-            val value = (p \ "value").asOpt[String].getOrElse("")
-            event.setParameter(name, value)
-         })
-         
-         ssn.asInstanceOf[SessionImpl].triggerEvent(event)            
+      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "sid")            
       }
-      // If we're going out with an exception, don't forget to attach the connection status header.
-      catch {
-         case rex: ServerException.Remote => 
-            throw rex.withHeaders(Map(HTTP_HEADER_CONN_STATUS -> conn.status.toString))
+      
+      val name = (bodyJson \ "name").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "name")         
       }
+      
+      val value = (bodyJson \ "value").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "value")         
+      }
+      
+      val timestamp = (bodyJson \ "ts").asOpt[Long].getOrElse(System.currentTimeMillis())
+      
+      val params = (bodyJson \ "params").asOpt[List[JsObject]].getOrElse(List[JsObject]())
+
+      val ssn = ssnStore.getOrBust(sid, connectedAction.connection.id)
+      
+      if (ssn.getStateRequest == null)
+         throw new ServerException.Remote(UnknownState)   
+
+      val event = new ServerEvent(name, value, new Date(timestamp));  
+      
+      params.foreach(p => {
+         val name = (p \ "name").asOpt[String].getOrElse {
+            throw new ServerException.Remote(MissingParamName)
+         }
+         val value = (p \ "value").asOpt[String].getOrElse("")
+         event.setParameter(name, value)
+      })
+      
+      ssn.asInstanceOf[SessionImpl].triggerEvent(event)            
             
-      Ok.withHeaders(HTTP_HEADER_CONN_STATUS -> conn.status.toString())
-         
+      Ok
+ 
    }  
 }
 

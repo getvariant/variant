@@ -1,6 +1,7 @@
 package com.variant.server.controller
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -32,27 +33,33 @@ abstract class VariantActionAbstract
    (implicit ec: ExecutionContext) 
    extends ActionBuilderImpl(parser) with Results {
   
-      private[this] val logger = Logger(this.getClass)
+   private[this] val logger = Logger(this.getClass)
 
-      protected def preBlock[A](request: Request[A]): Unit
-      
-      override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
-      
+   // Subclasses can inject code to be run before and after the action block.
+   protected def beforeBlock[A](request: Request[A]): Unit = {}
+
+   protected def afterBlock[A](request: Request[A]): Unit = {}
+
+   // Subclasses will add headers here.
+   protected val headers = mutable.ListBuffer[(String,String)]()
+
+   override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
+   
       val start = System.currentTimeMillis
       val req = request.method + " " + request.path      
-      
+            
       var future: Future[Result] = null
       
       if (VariantServer.instance.isUp) {
          // Delegate to the actual action
          try {
-            preBlock(request)
+            beforeBlock(request)
             future = block(request)
+            afterBlock(request)
          }
          catch {
             case sre: ServerException.Remote =>
                val result = ServerErrorRemote(sre.error).asResult(sre.args:_*)
-                  .withHeaders(sre.getHeaders().entrySet().map{e => (e.getKey, e.getValue)}.toArray:_*)
                future = Future.successful(result)
             case t: Throwable => 
                logger.error("Unexpected Internal Error in [%s]".format(req), t);
@@ -60,28 +67,30 @@ abstract class VariantActionAbstract
          }
          
          logger.trace("Request [%s] completed in %s".format(req, TimeUtils.formatDuration(System.currentTimeMillis - start)))
-         future
+
+         // Attach headers, if any.
+         future.map { res => res.withHeaders(headers:_*) }
       }
       else {
          // The server has fatal errors and cannot service requests.
          Future.successful(ServiceUnavailable)
       }
-  }
+   }
 }
 
 /**
- * An unconnected action. preBlock does nothing.
+ * A disconnected action:
+ * Starts and ends without a connection.
  */
-class UnconnectedAction @Inject() 
+class DisconnectedAction @Inject() 
    (parser: BodyParsers.Default)
    (implicit ec: ExecutionContext) 
-extends VariantActionAbstract (parser) (ec) {
-   
-   override def preBlock[A](request: Request[A]) = {  }
- }
+extends VariantActionAbstract (parser) (ec) {}
+            
 
 /**
- * A connected action. preBlock fetches the connection.
+ * A connected action.
+ * Starts and ends with a connection.
  */
 class ConnectedAction @Inject() 
    (parser: BodyParsers.Default)
@@ -92,106 +101,19 @@ extends VariantActionAbstract (parser) (ec) {
     
    def connection = _conn
          
-   override def preBlock[A](request: Request[A]) = {      
+   override def beforeBlock[A](request: Request[A]) = {      
       
       _conn = request.headers.get(HTTP_HEADER_CONNID) match {
          case Some(cid) => VariantServer.instance.connectionStore.getOrBust(cid)
          case None => throw new ServerException.Remote(ServerError.ConnectionIdMissing)
       }
+      
    }
+   
+   override def afterBlock[A](request: Request[A]) = {      
+            
+      headers += (HTTP_HEADER_CONN_STATUS -> _conn.status.toString())
+   }
+
  }
 
-/*
-case class VariantActionAbstract (action: Action[AnyContent]) extends Action[AnyContent] with Results {
-
-   private[this] val logger = Logger(this.getClass)
-   
-   def preBlock[A]: (Request[A]) => Unit
-   
-   def apply(request: Request[AnyContent]): Future[Result] = {
-
-      val start = System.currentTimeMillis
-      val req = request.method + " " + request.path      
-      
-      var future: Future[Result] = null
-      
-      if (VariantServer.instance.isUp) {
-         // Delegate to the actual action
-         try {
-            preBlock(request)
-            future = action(request)
-         }
-         catch {
-            case sre: ServerException.Remote =>
-               val result = ServerErrorRemote(sre.error).asResult(sre.args:_*)
-                  .withHeaders(sre.getHeaders().entrySet().map{e => (e.getKey, e.getValue)}.toArray:_*)
-               future = Future.successful(result)
-            case t: Throwable => 
-               logger.error("Unexpected Internal Error in [%s]".format(req), t);
-               future = Future.successful(ServerErrorRemote(ServerError.InternalError).asResult(t.getMessage))            
-         }
-         
-         logger.trace("Request [%s] completed in %s".format(req, TimeUtils.formatDuration(System.currentTimeMillis - start)))
-         future
-      }
-      else {
-         // The server has fatal errors and cannot service requests.
-         Future.successful(ServiceUnavailable)
-      }
-
-  }
-
-  override def parser = action.parser
-  override def executionContext = action.executionContext
-}
-*/
-
-/*
-abstract class AbstractVariantAction @Inject()
-      (parser: BodyParsers.Default)
-      (implicit ec: ExecutionContext,
-       connStore: ConnectionStore) 
-      extends ActionBuilderImpl(parser) with Results {
-      
-   private[this] val logger = Logger(this.getClass)
-   
-   def connection: Connection
-   def preBlock[A]: (Request[A]) => Unit
-   
-   /**
-    * Play's wrapper around the code in the concrete action. 
-    */
-   override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
-
-      
-      val start = System.currentTimeMillis
-      val req = request.method + " " + request.path      
-      
-      var future: Future[Result] = null
-      
-      if (VariantServer.instance.isUp) {
-         // Delegate to the actual action
-         try {
-            preBlock(request)
-            future = block(request)
-         }
-         catch {
-            case sre: ServerException.Remote =>
-               val result = ServerErrorRemote(sre.error).asResult(sre.args:_*)
-                  .withHeaders(sre.getHeaders().entrySet().map{e => (e.getKey, e.getValue)}.toArray:_*)
-               future = Future.successful(result)
-            case t: Throwable => 
-               logger.error("Unexpected Internal Error in [%s]".format(req), t);
-               future = Future.successful(ServerErrorRemote(ServerError.InternalError).asResult(t.getMessage))            
-         }
-         
-         logger.trace("Request [%s] completed in %s".format(req, TimeUtils.formatDuration(System.currentTimeMillis - start)))
-         future
-      }
-      else {
-         // The server has fatal errors and cannot service requests.
-         Future.successful(ServiceUnavailable)
-      }
-   }
-}
-*/

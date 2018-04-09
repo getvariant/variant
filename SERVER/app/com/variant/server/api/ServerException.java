@@ -129,24 +129,6 @@ abstract public class ServerException extends VariantException {
 			this.error = error;
 			this.args = args;
 		}
-
-		/**
-		 * Attache headers to the response that this exception will
-		 * be eventually converted to
-		 * @param headers
-		 * @return this object for ease of chaining.
-		 */
-		public Remote withHeaders(Map<String, String> headers) {
-			this.headers.putAll(headers);
-			return this;
-		}
-
-		/**
-		 * Currently attached headers
-		 */
-		public Map<String, String> getHeaders() {
-			return headers;
-		}
 		
 		@Override
 		public Severity getSeverity() {
