@@ -12,7 +12,6 @@ import com.variant.core.util.Constants._
 import com.variant.core.ConnectionStatus._
 import play.api.mvc.ControllerComponents
 
-//@Singleton -- Is this for non-shared state controllers?
 class ConnectionController @Inject() (
       override val connStore: ConnectionStore, 
       override val ssnStore: SessionStore,
@@ -60,8 +59,9 @@ class ConnectionController @Inject() (
     */
    def close() = connectedAction { req =>
 
-      val conn = connStore.closeOrBust(connectedAction.connection.id)
-      logger.info("Closed connection [%s] to schema [%s]".format(connectedAction.connection.id, conn.schema.getName))
+      val conn = req.attrs.get(connectedAction.ConnKey).get
+      connStore.closeOrBust(conn.id)
+      logger.info("Closed connection [%s] to schema [%s]".format(conn.id, conn.schema.getName))
       Ok
    }
    

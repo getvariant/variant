@@ -113,7 +113,7 @@ import EventTest._
          status(respClose) mustBe OK
          contentAsString(respClose) mustBe empty
       }
-      
+
       var connId: String = null
 
       "open connection on POST with valid schema name" in {
@@ -159,7 +159,7 @@ import EventTest._
       
       "return 400 on DELETE of connection which no longer exists" in {
          val resp = route(app, connectedRequest(DELETE, endpoint, connId)).get
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("CLOSED_BY_CLIENT")
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe None
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe UnknownConnection.isInternal() 

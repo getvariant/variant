@@ -1,23 +1,18 @@
 package com.variant.server.controller
 
-import scala.collection.JavaConversions._
 import com.variant.core.ServerError.EmptyBody
 import com.variant.core.session.CoreSession
-import com.variant.core.util.Constants._
-import com.variant.core.ConnectionStatus._
 import com.variant.server.api.ServerException
-import com.variant.server.boot.VariantServer
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.SessionStore
 import com.variant.server.impl.SessionImpl
+
 import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
-import play.api.mvc._
-import scala.concurrent.Future
+import play.api.mvc.ControllerComponents
 
-//@Singleton -- Is this for non-shared state controllers?
 class SessionController @Inject() (
       override val connStore: ConnectionStore, 
       override val ssnStore: SessionStore,
@@ -25,8 +20,8 @@ class SessionController @Inject() (
       val cc: ControllerComponents
       ) extends VariantController(connStore, ssnStore, cc)  {
    
-      private val logger = Logger(this.getClass)	
-       
+   private val logger = Logger(this.getClass)	
+
    /**
     * PUT
     * Save or replace a new session in the store. 
@@ -41,7 +36,7 @@ class SessionController @Inject() (
          throw new ServerException.Remote(EmptyBody)
       }
 
-      val conn = connectedAction.connection
+      val conn = req.attrs.get(connectedAction.ConnKey).get
       ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
             
       Ok      
@@ -54,8 +49,8 @@ class SessionController @Inject() (
     */
    def get(sid: String) = connectedAction { req =>
 
-      val ssn = ssnStore.getOrBust(sid, connectedAction.connection.id)
-      
+      val conn = req.attrs.get(connectedAction.ConnKey).get
+      val ssn = ssnStore.getOrBust(sid, conn.id)
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson)
       ))

@@ -283,6 +283,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   "keep existing session alive" in {
 	      
          val resp = route(app, connectedRequest(GET, context + "/session" + "/" + sid, cid)).get
+         println("******** " + contentAsString(resp))
          status(resp) mustBe OK
          val respAsJson = contentAsJson(resp)
          StringUtils.digest((respAsJson \ "session").as[String]) mustBe 

@@ -84,7 +84,7 @@ class SessionTest extends BaseSpecWithServer {
          connSchid = (json \ "schema" \ "id").as[String]
       }
 
-      "return SessionExpired on GET non-existent session" in {  
+      "return SessionExpired on GET non-existent session on valid CID" in {  
          
          val resp = route(app, connectedRequest(GET, endpoint + "/foo", connId)).get
          status(resp) mustBe BAD_REQUEST
@@ -96,7 +96,20 @@ class SessionTest extends BaseSpecWithServer {
       }
 
       
-      "return OK on PUT non-existent session with valid schema ID" in {
+      "return UnknownConnection on PUT non-existent session with invalid conn ID" in {
+         
+         val body = sessionJsonBigCovar.expand("sid" -> "foo")
+         val resp = route(app, connectedRequest(PUT, endpoint, "invalid").withTextBody(body)).get
+         status(resp) mustBe BAD_REQUEST
+         header(HTTP_HEADER_CONN_STATUS, resp) mustBe None
+         val (isInternal, error, args) = parseError(contentAsJson(resp))
+         isInternal mustBe false 
+         error mustBe UnknownConnection
+         args mustBe Seq("invalid")
+      }
+
+
+      "return OK on PUT non-existent session with valid conn ID" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> "foo")
          val resp = route(app, connectedRequest(PUT, endpoint, connId).withTextBody(body)).get
@@ -305,20 +318,14 @@ class SessionTest extends BaseSpecWithServer {
          status(respDel) mustBe OK
          contentAsString(respDel) mustBe empty
 
-         // Session should be alive after connection closed.
+         // Session should be dead after connection closed. by the client.
          val respGet = route(app, connectedRequest(GET, endpoint + "/" + sid, connId)).get
-         status(respGet) mustBe OK
-
-         // Session should be expired as normal.
-         Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
-
-         val respGet2 = route(app, connectedRequest(GET, endpoint + "/" + sid, connId)).get
-         status(respGet2) mustBe BAD_REQUEST
-         val (isInternal, error, args) = parseError(contentAsJson(respGet2))
+         status(respGet) mustBe BAD_REQUEST
+         val (isInternal, error, args) = parseError(contentAsJson(respGet))
          isInternal mustBe false 
-         error mustBe SessionExpired
-         args mustBe Seq(sid)
-      }
-   }
+         error mustBe UnknownConnection
+         args mustBe Seq(connId)
 
+       }
+   }
 }

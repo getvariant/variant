@@ -1,7 +1,7 @@
 package com.variant.server.controller
 
 import play.api.Logger
-import play.api.mvc.Controller
+import play.api.mvc._
 import play.api.libs.json._
 import com.variant.server.api.ServerException
 import com.variant.core.ServerError._
@@ -20,6 +20,7 @@ import com.fasterxml.jackson.core.JsonParseException
 import javax.inject.Inject
 import play.api.mvc.ControllerComponents
 import play.api.mvc.AbstractController
+import com.variant.core.util.TimeUtils
 
 /**
  * All Variant controllers inherit from this.
@@ -61,7 +62,6 @@ abstract class VariantController @Inject() (
       
    }
    
-/*
    /**
     * Get connection ID from header as an Option
     */
@@ -72,7 +72,7 @@ abstract class VariantController @Inject() (
    /**
     * Get connection ID from HTTP header as String, or throw internal
     * remote exception if the header wasn't sent.
-    */
+    *
    protected def getConnIdOrBust(req: Request[AnyContent]): String = {
       getConnId(req) match {
          case Some(cid) => cid

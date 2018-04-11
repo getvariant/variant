@@ -49,7 +49,8 @@ class RequestController @Inject() (
          throw new ServerException.Remote(MissingProperty, "state")         
       }
 
-      val ssn = ssnStore.getOrBust(sid, connectedAction.connection.id)
+      val conn = req.attrs.get(connectedAction.ConnKey).get
+      val ssn = ssnStore.getOrBust(sid, conn.id)
       val schema = ssn.connection.schema
       val state = schema.getState(stateName)
 
@@ -80,7 +81,8 @@ class RequestController @Inject() (
          throw new ServerException.Remote(MissingProperty, "sid")         
       }
       
-      val ssn = ssnStore.getOrBust(sid, connectedAction.connection.id)
+      val conn = req.attrs.get(connectedAction.ConnKey).get
+      val ssn = ssnStore.getOrBust(sid, conn.id)
       val stateReq = ssn.getStateRequest
       val sve = stateReq.getStateVisitedEvent
       
