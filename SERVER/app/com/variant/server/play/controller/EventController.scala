@@ -1,4 +1,4 @@
-package com.variant.server.controller
+package com.variant.server.play.controller
 
 import scala.collection.JavaConversions._
 import javax.inject.Inject
@@ -25,6 +25,7 @@ import com.variant.server.impl.SessionImpl
 import com.variant.core.util.Constants._
 import com.variant.core.ConnectionStatus._
 import play.api.mvc.ControllerComponents
+import com.variant.server.play.action.ConnectedAction
 
 //@Singleton -- Is this for non-shared state controllers?
 class EventController @Inject() (

@@ -97,8 +97,8 @@ class ConnectionStoreImpl () extends ConnectionStore {
          throw new ServerException.Remote(ServerError.UnknownConnection, cid)
       }
       
-	   if (Seq(CLOSED_BY_CLIENT, CLOSED_BY_SERVER) contains result.status)
-            throw new ServerException.Remote(ServerError.UnknownConnection, cid)
+	   if (result.status == CLOSED_BY_CLIENT)
+            throw new ServerException.Internal("Closed by client connection found in store")
 
       logger.debug(s"Found connection [${cid}]")            
       result
@@ -118,7 +118,8 @@ class ConnectionStoreImpl () extends ConnectionStore {
 	}
 
 	/**
-	 * Start draining all connections to a schema, by schema id.  
+	 * Start draining all connections to a schema, by schema id.
+	 * Do not remove from the store until all sessions are gone.
 	 */
 	override def drainConnectionsToSchema(schid: String) {
 	   
@@ -128,8 +129,7 @@ class ConnectionStoreImpl () extends ConnectionStore {
 	      }
 	      .foreach { e => 
 	         e._2.drain()
-	         connMap -= e._1
-	         logger.debug("Put connection ID [%s] to schema [%s] into DRAIN mode".format(e._2.id, e._2.schema.getName()))
+	         // connMap -= e._1
 	      }
 	 
 	}

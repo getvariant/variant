@@ -1,12 +1,10 @@
-package com.variant.server.controller
+package com.variant.server.play.action
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.Failure
-import scala.util.Success
 import com.variant.core.ServerError
 import com.variant.core.util.TimeUtils
 import com.variant.server.api.ServerException
@@ -18,8 +16,6 @@ import com.variant.core.util.Constants._
 import com.variant.core.ConnectionStatus._
 import javax.inject.Inject
 import com.variant.server.conn.Connection
-import com.variant.server.conn.ConnectionStore
-import javax.inject.Scope
 import play.api.libs.typedmap.TypedKey
 
 /**
@@ -29,7 +25,7 @@ import play.api.libs.typedmap.TypedKey
  * @author Igor
  */
 
-
+/*
 abstract class VariantActionAbstract
    (parser: BodyParsers.Default)
    (implicit ec: ExecutionContext) 
@@ -129,4 +125,4 @@ extends VariantActionAbstract (parser) (ec) {
    }
    
  }
-
+*/

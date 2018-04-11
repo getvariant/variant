@@ -6,23 +6,23 @@
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 # If a path ends in a slash, redirect to the same path without the trailing /.
-GET     /*path/                     com.variant.server.controller.RootController.untrail(path)
+GET     /*path/                     com.variant.server.play.controller.RootController.untrail(path)
 
 # Connection Controller
-POST    /connection/:schema      com.variant.server.controller.ConnectionController.open(schema: String)
-DELETE  /connection              com.variant.server.controller.ConnectionController.close()
+POST    /connection/:schema      com.variant.server.play.controller.ConnectionController.open(schema: String)
+DELETE  /connection              com.variant.server.play.controller.ConnectionController.close()
 #GET     /connection/          com.variant.server.controller.ConnectionController.ping(cid: String)
 
 # Event Controller
-POST    /event                   com.variant.server.controller.EventController.post()
+POST    /event                   com.variant.server.play.controller.EventController.post()
 
 # Session Controller
-GET     /session/:id             com.variant.server.controller.SessionController.get(id: String)
-PUT     /session                 com.variant.server.controller.SessionController.save()
+GET     /session/:id             com.variant.server.play.controller.SessionController.get(id: String)
+PUT     /session                 com.variant.server.play.controller.SessionController.save()
 
 # Request Controller
-POST    /request                 com.variant.server.controller.RequestController.create()
-PUT     /request                 com.variant.server.controller.RequestController.commit()
+POST    /request                 com.variant.server.play.controller.RequestController.create()
+PUT     /request                 com.variant.server.play.controller.RequestController.commit()
 
 # Health page at root
-GET     /                        com.variant.server.controller.RootController.status()
+GET     /                        com.variant.server.play.controller.RootController.status()

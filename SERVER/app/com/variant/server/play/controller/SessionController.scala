@@ -1,4 +1,4 @@
-package com.variant.server.controller
+package com.variant.server.play.controller
 
 import com.variant.core.ServerError.EmptyBody
 import com.variant.core.session.CoreSession
@@ -6,12 +6,12 @@ import com.variant.server.api.ServerException
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.SessionStore
 import com.variant.server.impl.SessionImpl
-
 import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import play.api.mvc.ControllerComponents
+import com.variant.server.play.action.ConnectedAction
 
 class SessionController @Inject() (
       override val connStore: ConnectionStore, 

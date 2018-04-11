@@ -1,4 +1,4 @@
-package com.variant.server.controller
+package com.variant.server.play.controller
 
 import com.variant.core.ServerError._
 import com.variant.server.boot.ServerErrorRemote
@@ -11,6 +11,8 @@ import com.variant.server.api.ServerException
 import com.variant.core.util.Constants._
 import com.variant.core.ConnectionStatus._
 import play.api.mvc.ControllerComponents
+import com.variant.server.play.action.ConnectedAction
+import com.variant.server.play.action.DisconnectedAction
 
 class ConnectionController @Inject() (
       override val connStore: ConnectionStore, 

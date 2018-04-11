@@ -9,6 +9,7 @@ import scala.math.BigDecimal.int2bigDecimal
 import scala.math.BigDecimal.long2bigDecimal
 import com.variant.server.api.Session
 import com.variant.core.ConnectionStatus._
+import play.api.Logger
 
 /**
  * Represents client connection
@@ -31,7 +32,9 @@ object Connection {
 class Connection(val schema: ServerSchema) {
   
    import Connection._
-   
+
+   private[this] val logger = Logger(this.getClass)
+
    private[this] var _status = OPEN
    
    val id = StringUtils.random64BitString(random)   
@@ -53,13 +56,15 @@ class Connection(val schema: ServerSchema) {
     * Set connection to draining mode.
     */
    def drain() {
-      _status = DRAINING
+      _status = CLOSED_BY_SERVER
+      logger.debug(s"Put connection ID [${id}] to schema [${schema.getName}] into CLOSED_BY_SERVER mode")
    }
    /**
     * Close connection.
     */
    def close() {
       _status = CLOSED_BY_CLIENT;
+      logger.debug(s"Put connection ID [${id}] to schema [${schema.getName}] into CLOSED_BY_CLIENT mode")
    }
 
    /**

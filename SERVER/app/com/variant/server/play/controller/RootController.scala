@@ -1,4 +1,4 @@
-package com.variant.server.controller
+package com.variant.server.play.controller
 
 import javax.inject.Inject
 import org.apache.commons.lang3.time.DurationFormatUtils
@@ -19,6 +19,7 @@ import com.variant.core.schema.State
 import com.variant.core.session.CoreStateRequest
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
+import com.variant.server.play.action.DisconnectedAction
 
 //@Singleton -- Is this for non-shared state controllers?
 class RootController @Inject() (

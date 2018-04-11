@@ -39,6 +39,7 @@ class Schemata () {
    
    /**
     * Delete a schema by origin.
+    * Remove schema from this map
     */
    def undeploy(origin: String) = synchronized {
       
