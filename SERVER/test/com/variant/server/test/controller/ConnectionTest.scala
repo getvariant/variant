@@ -67,79 +67,74 @@ import EventTest._
 	   */
    
       "return  404 on POST with no schema name" in {
-         val resp = route(app, connectionRequest("")).get
-         status(resp) mustBe NOT_FOUND
-         contentAsString(resp) mustBe empty        
+         assertResp(route(app, connectionRequest("")))
+            .is(NOT_FOUND)
+            .withNoBody
       }
 
       "return  400 and error on POST to non-existent schema" in {
-         val resp = route(app, connectionRequest("foo")).get
-         status(resp) mustBe BAD_REQUEST
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe None
-         val (isInternal, error, args) = parseError(contentAsJson(resp))
-         isInternal mustBe UnknownSchema.isInternal() 
-         error mustBe UnknownSchema
-         args mustBe Seq("foo")
+         assertResp(route(app, connectionRequest("foo")))
+            .isError(UnknownSchema, "foo")
+            .withNoConnStatusHeader
       }
       
       "ignore connection ID header on connection" in {
-
-         val resp = route(app, connectedRequest(POST, endpoint + "/big_covar_schema", "foo")).get
-         status(resp) mustBe OK
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
-         val body = contentAsString(resp)
-         body mustNot be (empty)
-         val json = Json.parse(body)
-         (json \ "id").asOpt[String].isDefined mustBe true
-         val cid = (json \ "id").as[String]
-         (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
-         (json \ "ts").asOpt[Long].isDefined mustBe true
-         val schemaSrc = (json \ "schema" \ "src").as[String]
-         val schemaId = (json \ "schema" \ "id").as[String]
-         schemaSrc mustBe server.schemata("big_covar_schema").source
-         schemaId mustBe server.schemata("big_covar_schema").getId
-         val parser = ServerSchemaParser()
-         val parserResp = parser.parse(schemaSrc)
-         parserResp.hasMessages() mustBe false
-   		parserResp.getSchema() mustNot be (null)
-	   	parserResp.getSchemaSrc() mustNot be (null)
-	   	
-         val schema = parserResp.getSchema
-         schema.getName mustEqual "big_covar_schema"
+         
+         var cid: String = null
+         
+         assertResp(route(app, connectedRequest(POST, endpoint + "/big_covar_schema", "foo")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               (json \ "id").asOpt[String].isDefined mustBe true
+               cid = (json \ "id").as[String]
+               (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
+               (json \ "ts").asOpt[Long].isDefined mustBe true
+               val schemaSrc = (json \ "schema" \ "src").as[String]
+               val schemaId = (json \ "schema" \ "id").as[String]
+               schemaSrc mustBe server.schemata("big_covar_schema").source
+               schemaId mustBe server.schemata("big_covar_schema").getId
+               val parser = ServerSchemaParser()
+               val parserResp = parser.parse(schemaSrc)
+               parserResp.hasMessages() mustBe false
+         		parserResp.getSchema() mustNot be (null)
+      	   	parserResp.getSchemaSrc() mustNot be (null)      	   	
+               val schema = parserResp.getSchema
+               schema.getName mustEqual "big_covar_schema"
+            }
          
          // close this connection. 
-         val respClose = route(app, connectedRequest(DELETE, endpoint, cid)).get
-         header(HTTP_HEADER_CONN_STATUS, respClose) mustBe Some("CLOSED_BY_CLIENT")
-         status(respClose) mustBe OK
-         contentAsString(respClose) mustBe empty
+         assertResp(route(app, connectedRequest(DELETE, endpoint, cid)))
+            .isOk
+            .withNoBody
+            .withConnStatusHeader(CLOSED_BY_CLIENT)
       }
 
       var connId: String = null
 
       "open connection on POST with valid schema name" in {
          
-         val resp = route(app, connectionRequest("big_covar_schema")).get
-         status(resp) mustBe OK
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
-         val body = contentAsString(resp)
-         body mustNot be (empty)
-         val json = Json.parse(body)
-         (json \ "id").asOpt[String].isDefined mustBe true
-         connId = (json \ "id").as[String]
-         (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
-         (json \ "ts").asOpt[Long].isDefined mustBe true
-         val schemaSrc = (json \ "schema" \ "src").as[String]
-         val schemaId = (json \ "schema" \ "id").as[String]
-         schemaSrc mustBe server.schemata("big_covar_schema").source
-         schemaId mustBe server.schemata("big_covar_schema").getId
-         val parser = ServerSchemaParser()
-         val parserResp = parser.parse(schemaSrc)
-         parserResp.hasMessages() mustBe false
-   		parserResp.getSchema() mustNot be (null)
-	   	parserResp.getSchemaSrc() mustNot be (null)
-	   	
-         val schema = parserResp.getSchema
-         schema.getName mustEqual "big_covar_schema"
+         assertResp(route(app, connectionRequest("big_covar_schema")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json =>
+               (json \ "id").asOpt[String].isDefined mustBe true
+               connId = (json \ "id").as[String]
+               (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
+               (json \ "ts").asOpt[Long].isDefined mustBe true
+               val schemaSrc = (json \ "schema" \ "src").as[String]
+               val schemaId = (json \ "schema" \ "id").as[String]
+               schemaSrc mustBe server.schemata("big_covar_schema").source
+               schemaId mustBe server.schemata("big_covar_schema").getId
+               val parser = ServerSchemaParser()
+               val parserResp = parser.parse(schemaSrc)
+               parserResp.hasMessages() mustBe false
+         		parserResp.getSchema() mustNot be (null)
+      	   	parserResp.getSchemaSrc() mustNot be (null)
+      	   	
+               val schema = parserResp.getSchema
+               schema.getName mustEqual "big_covar_schema"
+            }
       }
       
       /* GET connection is off
@@ -151,10 +146,10 @@ import EventTest._
       */
       
       "close connection on DELETE with valid connection ID" in {
-         val resp = route(app, connectedRequest(DELETE, endpoint, connId)).get
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("CLOSED_BY_CLIENT")
-         status(resp) mustBe OK
-         contentAsString(resp) mustBe empty
+         assertResp(route(app, connectedRequest(DELETE, endpoint, connId)))
+            .isOk
+            .withConnStatusHeader(CLOSED_BY_CLIENT)
+            .withNoBody
       }
       
       "return 400 on DELETE of connection which no longer exists" in {
@@ -171,67 +166,60 @@ import EventTest._
       "return 400 when attempting to open one too many connections" in {
          val max = server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
          for (i <- 1 to max) {
-            val resp = route(app, connectionRequest("big_covar_schema")).get
-            //println("***** " + i + ", " + contentAsString(resp))
-            status(resp) mustBe OK
-            header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
-            val body = contentAsString(resp)
-            body mustNot be (empty)
-            val json = Json.parse(body)
-            connId = (json \ "id").as[String]
-            (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
-            (json \ "ts").asOpt[Long].isDefined mustBe true
-            val schemaSrc = (json \ "schema" \ "src").as[String]
-            val schemaId = (json \ "schema" \ "id").as[String]
-            schemaSrc mustBe server.schemata("big_covar_schema").source
-            schemaId mustBe server.schemata("big_covar_schema").getId
-            val parser = ServerSchemaParser()
-            val parserResp = parser.parse(schemaSrc)
-            parserResp.hasMessages() mustBe false
-      		parserResp.getSchema() mustNot be (null)
-   	   	parserResp.getSchemaSrc() mustNot be (null)
-   	   	
-            val schema = parserResp.getSchema
-            schema.getName mustEqual "big_covar_schema"
+            assertResp(route(app, connectionRequest("big_covar_schema")))
+               .isOk
+               .withConnStatusHeader(OPEN)
+               .withBodyJson { json =>
+                  connId = (json \ "id").as[String]
+                  (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
+                  (json \ "ts").asOpt[Long].isDefined mustBe true
+                  val schemaSrc = (json \ "schema" \ "src").as[String]
+                  val schemaId = (json \ "schema" \ "id").as[String]
+                  schemaSrc mustBe server.schemata("big_covar_schema").source
+                  schemaId mustBe server.schemata("big_covar_schema").getId
+                  val parser = ServerSchemaParser()
+                  val parserResp = parser.parse(schemaSrc)
+                  parserResp.hasMessages() mustBe false
+            		parserResp.getSchema() mustNot be (null)
+         	   	parserResp.getSchemaSrc() mustNot be (null)
+         	   	
+                  val schema = parserResp.getSchema
+                  schema.getName mustEqual "big_covar_schema"                  
+               }
          }
          
          // One over
-         val resp1 = route(app, connectionRequest("big_covar_schema")).get
-         status(resp1) mustBe BAD_REQUEST
-         header(HTTP_HEADER_CONN_STATUS, resp1) mustBe None
-         val (isInternal, error, args) = parseError(contentAsJson(resp1))
-         isInternal mustBe TooManyConnections.isInternal() 
-         error mustBe TooManyConnections
-         args mustBe empty
+         assertResp(route(app, connectionRequest("big_covar_schema")))
+            .isError(TooManyConnections)
+            .withNoConnStatusHeader
          
          // Close one
-         val resp2 = route(app, connectedRequest(DELETE, endpoint, connId)).get
-         status(resp2) mustBe OK
-         header(HTTP_HEADER_CONN_STATUS, resp2) mustBe Some("CLOSED_BY_CLIENT")
-         contentAsString(resp2) mustBe empty
+         assertResp(route(app, connectedRequest(DELETE, endpoint, connId)))
+            .isOk
+            .withNoBody
+            .withConnStatusHeader(CLOSED_BY_CLIENT)
 
          // Now should work
-         val resp3 = route(app, connectionRequest("big_covar_schema")).get
-         status(resp3) mustBe OK
-         header(HTTP_HEADER_CONN_STATUS, resp3) mustBe Some("OPEN")
-         val body = contentAsString(resp3)
-         body mustNot be (empty)
-         val json = Json.parse(body)
-         connId = (json \ "id").as[String]
-         (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
-         (json \ "ts").asOpt[Long].isDefined mustBe true
-         val schemaSrc = (json \ "schema" \ "src").as[String]
-         val schemaId = (json \ "schema" \ "id").as[String]
-         schemaSrc mustBe server.schemata("big_covar_schema").source
-         schemaId mustBe server.schemata("big_covar_schema").getId
-         val parser = ServerSchemaParser()
-         val parserResp = parser.parse(schemaSrc)
-         parserResp.hasMessages() mustBe false
-   		parserResp.getSchema() mustNot be (null)
-	   	parserResp.getSchemaSrc() mustNot be (null)
-	   	
-         val schema = parserResp.getSchema
-         schema.getName mustEqual "big_covar_schema"
+         assertResp(route(app, connectionRequest("big_covar_schema")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json =>
+               connId = (json \ "id").as[String]
+               (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
+               (json \ "ts").asOpt[Long].isDefined mustBe true
+               val schemaSrc = (json \ "schema" \ "src").as[String]
+               val schemaId = (json \ "schema" \ "id").as[String]
+               schemaSrc mustBe server.schemata("big_covar_schema").source
+               schemaId mustBe server.schemata("big_covar_schema").getId
+               val parser = ServerSchemaParser()
+               val parserResp = parser.parse(schemaSrc)
+               parserResp.hasMessages() mustBe false
+         		parserResp.getSchema() mustNot be (null)
+      	   	parserResp.getSchemaSrc() mustNot be (null)
+      	   	
+               val schema = parserResp.getSchema
+               schema.getName mustEqual "big_covar_schema"
+            }
       }
    }
 }

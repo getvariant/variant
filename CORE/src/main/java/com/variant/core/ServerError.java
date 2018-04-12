@@ -50,10 +50,10 @@ public class ServerError extends UserError {
 
 	//
 	// 631-700 Internal, other internal errors.
-	//	
+	//
 	public static final ServerError ConnectionIdMissing = 
 			new ServerError(631, "Missing connection ID header");
-	
+
 	/**
 	 */
 	public boolean isInternal() {

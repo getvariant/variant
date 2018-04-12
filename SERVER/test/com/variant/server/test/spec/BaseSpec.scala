@@ -17,6 +17,9 @@ import play.api.Application
 import com.variant.server.boot.VariantServer
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.SessionStore
+import scala.concurrent.Future
+import play.api.mvc._
+import com.variant.core.ConnectionStatus
 
 /**
  * 
@@ -30,10 +33,127 @@ trait BaseSpec extends PlaySpec {
     */
    protected def application: Application
    
-   protected def context = application.configuration.getString("play.http.context").get
+   protected def context = application.configuration.get[String]("play.http.context")
    protected def server = application.injector.instanceOf[VariantServer]
    protected def connStore = application.injector.instanceOf[ConnectionStore]
    protected def ssnStore = application.injector.instanceOf[SessionStore]
+
+   protected def assertResp(resp: Option[Future[Result]]) = {
+      new ResultWrap(resp.get)
+   }
+
+   /**
+    * Response wrapper class used by assertResp()
+    */
+   protected class ResultWrap(val res: Future[Result]) {
+
+      val actCode = status(res)
+      val actError: Option[(Boolean, ServerError, Seq[String])] =
+         if (actCode == BAD_REQUEST)  Some(parseError(contentAsJson(res)))
+         else None
+          
+    /**
+     * 
+     */
+     private[this] def stackLine = {
+        val stackLine = Thread.currentThread().getStackTrace.apply(3)
+        " (" + stackLine.getFileName + " " + stackLine.getLineNumber + ")"            
+     }
+      
+     /**
+       * 
+       */
+      def is(code: Int): ResultWrap = {         
+         if (actCode != code) {
+            fail {
+               s"Status ${actCode} was not equal ${code}" + {
+                  if (actCode == BAD_REQUEST) {
+                     val (isInternal, error, args) = actError.get
+                     "\n  Unexpected error " + error.asMessage(args:_*)
+                  }
+                  else ""
+               } + stackLine
+            }
+         }                                 
+         this
+      }
+
+     /**
+       * 
+       */
+      def isOk: ResultWrap = {         
+         is(OK)
+      }
+      
+      def isError(error: ServerError, args: String*) = {
+         if (actCode == BAD_REQUEST) {
+            val msg = error.asMessage(args:_*)
+            val actMsg = actError.get._2.asMessage(actError.get._3:_*)
+            if (msg != actMsg)
+               fail {
+                  s"Error ${actMsg} was not equal ${msg} " + stackLine 
+            }
+         }
+         else 
+            fail {
+               s"Status ${actCode} was not 400 " + stackLine  
+            }
+         this
+      }
+            
+     /**
+       * 
+       */
+      def withConnStatusHeader(status: ConnectionStatus) = {
+         header(HTTP_HEADER_CONN_STATUS, res) match {
+            case Some(h) => {
+               val act = ConnectionStatus.valueOf(h)
+               if (act != status) fail {
+                  s"Connection status ${act} in header was not equal ${status} " + stackLine
+               }
+            }
+            case None => {
+               fail {
+                  s"No connection status in header was not equal ${status} " + stackLine
+               }
+            }
+         }
+         this
+      }
+      
+      /**
+       * 
+       */
+      def withNoConnStatusHeader = {
+         header(HTTP_HEADER_CONN_STATUS, res) mustBe None
+         this
+      }
+
+      /**
+       * 
+       */
+      def withNoBody = {
+         contentAsString(res) mustBe empty
+         this
+      }
+
+      /**
+       * 
+       */
+      def withBody(content: String) = {
+         contentAsString(res) mustBe content
+         this
+      }
+
+      /**
+       * 
+       */
+      def withBodyJson(p: JsValue => Unit) = {
+         p(contentAsJson(res))         
+         this
+      }
+
+   }      
 
    /**
     * Parse an 400 error body

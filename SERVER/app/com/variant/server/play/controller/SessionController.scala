@@ -12,11 +12,13 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import play.api.mvc.ControllerComponents
 import com.variant.server.play.action.ConnectedAction
+import com.variant.server.play.action.PrivilegedAction
 
 class SessionController @Inject() (
       override val connStore: ConnectionStore, 
       override val ssnStore: SessionStore,
       val connectedAction: ConnectedAction,
+      val privilegedAction: PrivilegedAction,
       val cc: ControllerComponents
       ) extends VariantController(connStore, ssnStore, cc)  {
    
@@ -30,13 +32,13 @@ class SessionController @Inject() (
     * Otherwise, the new session will be created in the supplied connection, 
     * so long as it's open. 
     */
-   def save() = connectedAction { req =>
+   def save() = privilegedAction { req =>
 
       val ssnJson = req.body.asText.getOrElse {
          throw new ServerException.Remote(EmptyBody)
       }
 
-      val conn = req.attrs.get(connectedAction.ConnKey).get
+      val conn = req.attrs.get(privilegedAction.ConnKey).get
       ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
             
       Ok      

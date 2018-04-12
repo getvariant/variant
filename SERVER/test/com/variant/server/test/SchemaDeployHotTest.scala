@@ -1,40 +1,35 @@
 package com.variant.server.test
 
-import org.scalatest.BeforeAndAfterAll
-import org.scalatestplus.play.OneAppPerSuite
-import org.scalatestplus.play.PlaySpec
+import com.variant.core.ServerError._
+import com.variant.core.UserError.Severity
+import com.variant.core.schema.parser.error.SemanticError
+import com.variant.core.schema.parser.error.SyntaxError
 import com.variant.core.util.IoUtils
 import com.variant.core.util.StringUtils
-import com.variant.server.boot.VariantApplicationLoader
-import com.variant.server.boot.VariantServer
+import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.schema.State
 import com.variant.server.test.controller.SessionTest
+import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.TempSchemataDir
+import com.variant.server.test.spec.TempSchemataDir.dirWatcherLatencyMsecs
+import com.variant.server.test.spec.TempSchemataDir.schemataDir
+import com.variant.server.test.spec.TempSchemataDir.sessionTimeoutSecs
+import com.variant.server.test.util.LogSniffer
 import com.variant.server.test.util.ParameterizedString
-import play.api.Application
-import play.api.Configuration
 import play.api.Logger
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.JsValue.jsValueToJsLookup
 import play.api.libs.json.Json
-import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.test.Helpers._
+import play.api.test.Helpers.BAD_REQUEST
+import play.api.test.Helpers.GET
+import play.api.test.Helpers.OK
+import play.api.test.Helpers.PUT
 import play.api.test.Helpers.contentAsJson
 import play.api.test.Helpers.contentAsString
 import play.api.test.Helpers.defaultAwaitTimeout
 import play.api.test.Helpers.route
 import play.api.test.Helpers.status
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
-import play.api.test.Helpers.writeableOf_AnyContentAsJson
-import com.variant.core.ServerError
-import com.variant.server.test.util.LogSniffer
-import com.variant.core.UserError.Severity
-import com.variant.server.boot.ServerErrorLocal
-import com.variant.core.schema.parser.error.SyntaxError
-import com.variant.core.schema.parser.error.SemanticError
-import com.variant.server.api.ConfigKeys
-import com.variant.server.test.spec.BaseSpecWithServer
-import com.variant.server.test.spec.TempSchemataDir
-import com.variant.server.test.spec.TempSchemataDir._
+import com.variant.core.ConnectionStatus._
 
 
 
@@ -245,13 +240,13 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   
       "open connection to ParserCovariantOkayBigTestNoHooks" in {
             
-         val resp = route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")).get
-         status(resp) mustBe OK
-         val body = contentAsString(resp)
-         body mustNot be (empty)
-         val json = Json.parse(body)
-         (json \ "id").asOpt[String].isDefined mustBe true
-         cid = (json \ "id").as[String]
+         assertResp(route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               (json \ "id").asOpt[String].isDefined mustBe true
+               cid = (json \ "id").as[String]
+            }
    	}
 	   
 	   val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
@@ -260,9 +255,10 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   "create a new session in schema ParserCovariantOkayBigTestNoHooks" in {
          
          val body = sessionJson.expand("sid" -> sid)
-         val resp = route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)).get
-         status(resp) mustBe OK
-         contentAsString(resp) mustBe empty
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
+            .is(OK)
+            .withConnStatusHeader(OPEN)
+            .withNoBody
       }
 
 	   "delete schema ParserCovariantOkayBigTestNoHooks" in {
@@ -294,13 +290,9 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          
 	      sid = newSid()
          val body = sessionJson.expand("sid" -> sid)
-         val resp = route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)).get
-         status(resp) mustBe BAD_REQUEST
-         val (isInternal, error, args) = parseError(contentAsJson(resp))
-         isInternal mustBe false 
-         error mustBe ServerError.UnknownConnection
-         args mustBe Seq(cid)
-
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
+            .isError(UnknownConnection, cid)
+            .withConnStatusHeader(CLOSED_BY_SERVER)
       }
 	   
 	   "expire existing session as normal in the undeployed schema" in {
@@ -311,7 +303,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe false 
-         error mustBe ServerError.SessionExpired
+         error mustBe SessionExpired
          args mustBe Seq(sid)
 
 	   }
@@ -418,7 +410,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          status(resp) mustBe BAD_REQUEST
          val (isInternal, error, args) = parseError(contentAsJson(resp))
          isInternal mustBe false 
-         error mustBe ServerError.UnknownConnection
+         error mustBe UnknownConnection
          args mustBe Seq(cid1)
       }
 
@@ -428,7 +420,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          
          val body = sessionJsonPetclinic.expand("sid" -> sid2)
          val resp = route(app, connectedRequest(PUT, context + "/session", cid2).withBody(body)).get
-         println(contentAsString(resp))
+         //(contentAsString(resp))
          status(resp) mustBe OK
       }
 
