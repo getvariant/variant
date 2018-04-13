@@ -153,13 +153,9 @@ import EventTest._
       }
       
       "return 400 on DELETE of connection which no longer exists" in {
-         val resp = route(app, connectedRequest(DELETE, endpoint, connId)).get
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe None
-         status(resp) mustBe BAD_REQUEST
-         val (isInternal, error, args) = parseError(contentAsJson(resp))
-         isInternal mustBe UnknownConnection.isInternal() 
-         error mustBe UnknownConnection
-         args mustBe Seq(connId.toString())
+         assertResp(route(app, connectedRequest(DELETE, endpoint, connId)))
+            .isError(UnknownConnection, connId)
+            .withNoConnStatusHeader
       }
 
       // At this point, we should have no open connections.

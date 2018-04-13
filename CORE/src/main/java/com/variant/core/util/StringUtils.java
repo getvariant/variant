@@ -12,6 +12,16 @@ public class StringUtils {
 	 * @param args
 	 * @return
 	 */
+	public static boolean equalsIgnoreWhiteSpace(String s1, String s2) {
+		return s1.replaceAll("\\s+","").equalsIgnoreCase(s2.replaceAll("\\s+",""));
+	}
+	
+	/**
+	 * Does the first string equal (ignore case) to any of the subsequent strings?
+	 * @param arg1
+	 * @param args
+	 * @return
+	 */
 	public static boolean equalsIgnoreCase(String arg1, String...args) {
 		for (String s: args) if (arg1.equalsIgnoreCase(s)) return true;
 		return false;

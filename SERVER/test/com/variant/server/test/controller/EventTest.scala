@@ -61,17 +61,17 @@ class EventTest extends BaseSpecWithServer {
       val eventWriter = schema.eventWriter
 
       "return 404 on GET" in {
-         val resp = route(app, FakeRequest(GET, endpoint)).get
-         status(resp) mustBe NOT_FOUND
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe None
-         contentAsString(resp) mustBe empty
+         assertResp(route(app, FakeRequest(GET, endpoint)))
+            .is(NOT_FOUND)
+            .withNoBody
+            .withNoConnStatusHeader
       }
 
       "return 404 on PUT" in {
-         val resp = route(app, FakeRequest(PUT, endpoint)).get
-         status(resp) mustBe NOT_FOUND
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe None
-         contentAsString(resp) mustBe empty
+         assertResp(route(app, FakeRequest(PUT, endpoint)))
+            .is(NOT_FOUND)
+            .withNoBody
+            .withNoConnStatusHeader
       }
 
 
@@ -79,114 +79,67 @@ class EventTest extends BaseSpecWithServer {
       var schid: String = null
       
       "obtain a connection" in {
-         // POST new connection
-         val resp = route(app, connectionRequest("big_covar_schema")).get
-         status(resp) mustBe OK
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some("OPEN")
-         val json = contentAsJson(resp) 
-         json mustNot be (null)
-         cid = (json \ "id").as[String]
-         cid mustNot be (null)
-         schid = (json \ "schema" \ "id").as[String]
+         assertResp(route(app, connectionRequest("big_covar_schema")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json =>
+               cid = (json \ "id").as[String]
+               cid mustNot be (null)
+               schid = (json \ "schema" \ "id").as[String]
+            }
       }
       
       "return 400 and error on POST with no body" in {
-         val resp = route(app, connectedRequest(POST, endpoint, cid)).get
-         status(resp) mustBe BAD_REQUEST
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "isInternal").as[Boolean] mustBe EmptyBody.isInternal() 
-         (respJson \ "code").as[Int] mustBe EmptyBody.getCode 
-         val args = (respJson \ "args").as[Seq[String]]
-         args mustBe empty
+         assertResp(route(app, connectedRequest(POST, endpoint, cid)))
+            .isError(EmptyBody)
+            .withConnStatusHeader(OPEN)
      }
 
       "return  400 and error on POST with invalid JSON" in {
-         val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody("bad json")).get
-         status(resp) mustBe BAD_REQUEST
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "isInternal").as[Boolean] mustBe JsonParseError.isInternal() 
-         (respJson \ "code").as[Int] mustBe JsonParseError.getCode 
-         val args = (respJson \ "args").as[Seq[String]]
-         args(0) must startWith ("Unrecognized token 'bad'")
+         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody("bad json")))
+            .isError(JsonParseError, "Unrecognized token 'bad': was expecting ('true', 'false' or 'null') at [Source: bad json; line: 1, column: 4]")
+            .withConnStatusHeader(OPEN)
      }
 
       "return  400 and error on POST with no sid" in {
-         val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(bodyNoSid)).get
-         status(resp) mustBe BAD_REQUEST
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "isInternal").as[Boolean] mustBe MissingProperty.isInternal() 
-         (respJson \ "code").as[Int] mustBe MissingProperty.getCode 
-         (respJson \ "args").as[Seq[String]] mustBe Seq("sid") 
+         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody(bodyNoSid)))
+            .isError(MissingProperty, "sid")
+            .withConnStatusHeader(OPEN)
       }
 
       "return 400 and error on POST with no name" in {
-         val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(bodyNoName)).get
-         status(resp) mustBe BAD_REQUEST
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "isInternal").as[Boolean] mustBe MissingProperty.isInternal() 
-         (respJson \ "code").as[Int] mustBe MissingProperty.getCode 
-         (respJson \ "args").as[Seq[String]] mustBe Seq("name") 
+         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody(bodyNoName)))
+            .isError(MissingProperty, "name")
+            .withConnStatusHeader(OPEN)
       }
 
-/*
-       var connId: String = null
-      
-      "obtain a connection" in {
-         // POST new connection
-         val connResp = route(app, FakeRequest(POST, context + "/connection/big_covar_schema")).get
-         status(connResp) mustBe OK
-         val json = contentAsJson(connResp) 
-         json mustNot be (null)
-         connId = (json \ "id").as[String]
-         connId mustNot be (null)
-      }
-
-*/      
       "return  400 and error on POST with non-existent session" in {
          
          val eventBody = body.expand("sid" -> "foo")
-         val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(eventBody)).get
-         status(resp) mustBe BAD_REQUEST
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "isInternal").as[Boolean] mustBe SessionExpired.isInternal() 
-         (respJson \ "code").as[Int] mustBe SessionExpired.getCode 
-         (respJson \ "args").as[Seq[String]] mustBe Seq("foo") 
+         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody(eventBody)))
+            .isError(SessionExpired, "foo")
+            .withConnStatusHeader(OPEN)
       }
 
       var ssn: Session = null;
 
       "obtain a session" in {
          val sid = newSid()
-         // PUT session.
          val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis(), schema.getId)).expand("sid" -> sid)
-         val resp = route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(sessionJson)).get
-         status(resp) mustBe OK
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
-         contentAsString(resp) mustBe empty
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(sessionJson)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withNoBody
+
          ssn = ssnStore.get(sid, cid).get
       }
       
       "return 400 and error on POST with missing param name" in {
 
          val eventBody = bodyNoParamName.expand("sid" -> ssn.getId)
-         val resp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(eventBody)).get
-         status(resp)mustBe BAD_REQUEST
-         header(HTTP_HEADER_CONN_STATUS, resp) mustBe Some(OPEN.toString())
-         val respJson = contentAsJson(resp)
-         respJson mustNot be (null)
-         (respJson \ "isInternal").as[Boolean] mustBe MissingParamName.isInternal() 
-         (respJson \ "code").as[Int] mustBe MissingParamName.getCode 
-         (respJson \ "args").as[Seq[String]] mustBe empty 
+         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody(eventBody)))
+            .isError(MissingParamName)
+            .withConnStatusHeader(OPEN)
       }
 
       "flush the event with explicit timestamp" in {
@@ -195,11 +148,11 @@ class EventTest extends BaseSpecWithServer {
          val eventName = Random.nextString(5)
          val eventValue = Random.nextString(5)
          val eventBody = body.expand("sid" -> ssn.getId, "ts" -> timestamp, "name" -> eventName, "value" -> eventValue)
-         val eventResp = route(app, connectedRequest(POST, endpoint, cid).withTextBody(eventBody)).get
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
-         status(eventResp) mustBe OK
-         header(HTTP_HEADER_CONN_STATUS, eventResp) mustBe Some(OPEN.toString())
-         contentAsString(eventResp) mustBe empty
+         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody(eventBody)))
+            .isOk
+            .withNoBody
+            .withConnStatusHeader(OPEN)
          
          // Read events back from the db, but must wait for the asych flusher.
          eventWriter.maxDelayMillis  mustEqual 2000

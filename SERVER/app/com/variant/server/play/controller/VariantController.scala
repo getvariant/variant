@@ -53,7 +53,8 @@ abstract class VariantController @Inject() (
                   Some(Json.parse(body))
                } catch {
                   case t: JsonParseException =>
-                     throw new ServerException.Remote(ServerError.JsonParseError, t.getMessage)
+                     // Lose new lines that Jackson inserts into messages.
+                     throw new ServerException.Remote(ServerError.JsonParseError, t.getMessage.replaceAll("\\s+"," "))
                }
                
             }

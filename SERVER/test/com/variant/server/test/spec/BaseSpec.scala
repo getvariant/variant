@@ -89,9 +89,9 @@ trait BaseSpec extends PlaySpec {
          if (actCode == BAD_REQUEST) {
             val msg = error.asMessage(args:_*)
             val actMsg = actError.get._2.asMessage(actError.get._3:_*)
-            if (msg != actMsg)
+            if (actMsg != msg)
                fail {
-                  s"Error ${actMsg} was not equal ${msg} " + stackLine 
+                  s"Error [${actMsg}] was not equal [${msg}] " + stackLine 
             }
          }
          else 
