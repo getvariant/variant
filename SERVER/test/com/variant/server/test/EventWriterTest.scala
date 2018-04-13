@@ -5,6 +5,7 @@ import java.util.Date
 import scala.collection.JavaConversions.collectionAsScalaIterable
 import scala.util.Random
 
+import com.variant.core.ConnectionStatus._
 import com.variant.server.event.ServerEvent
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.spec.BaseSpecWithServer
@@ -51,12 +52,13 @@ class EventWriterTest extends BaseSpecWithServer {
       
       "obtain a connection" in {
          // POST new connection
-         val connResp = route(app, connectionRequest("big_covar_schema")).get
-         status(connResp) mustBe OK
-         val json = contentAsJson(connResp) 
-         json mustNot be (null)
-         cid = (json \ "id").as[String]
-         cid mustNot be (null)
+         assertResp(route(app, connectionRequest("big_covar_schema")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               cid = (json \ "id").as[String]
+               cid mustNot be (null)
+            }
       }
       
       "flush an event after EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS" in {
@@ -65,9 +67,10 @@ class EventWriterTest extends BaseSpecWithServer {
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         val ssnResp = route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)).get
-         status(ssnResp) mustBe OK
-         contentAsString(ssnResp) mustBe empty
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
+            .isOk
+            .withNoBody
+            .withConnStatusHeader(OPEN)
          
          val ssn = ssnStore.get(sid, cid).get
          
@@ -109,9 +112,10 @@ class EventWriterTest extends BaseSpecWithServer {
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         val ssnResp = route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)).get
-         status(ssnResp) mustBe OK
-         contentAsString(ssnResp) mustBe empty
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
+            .isOk
+            .withNoBody
+            .withConnStatusHeader(OPEN)
 
          val ssn = ssnStore.get(sid, cid).get
 
@@ -144,9 +148,10 @@ class EventWriterTest extends BaseSpecWithServer {
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         val ssnResp = route(app,connectedRequest(PUT, context + "/session", cid).withBody(body)).get
-         status(ssnResp) mustBe OK
-         contentAsString(ssnResp) mustBe empty
+         assertResp(route(app,connectedRequest(PUT, context + "/session", cid).withBody(body)))
+            .isOk
+            .withNoBody
+            .withConnStatusHeader(OPEN)
 
          val ssn = ssnStore.get(sid, cid).get
          

@@ -12,13 +12,14 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import play.api.mvc.ControllerComponents
 import com.variant.server.play.action.ConnectedAction
-import com.variant.server.play.action.PrivilegedAction
+import com.variant.core.ServerError
+import com.variant.core.ConnectionStatus._
 
 class SessionController @Inject() (
       override val connStore: ConnectionStore, 
       override val ssnStore: SessionStore,
       val connectedAction: ConnectedAction,
-      val privilegedAction: PrivilegedAction,
+//      val privilegedAction: PrivilegedAction,
       val cc: ControllerComponents
       ) extends VariantController(connStore, ssnStore, cc)  {
    
@@ -26,19 +27,31 @@ class SessionController @Inject() (
 
    /**
     * PUT
-    * Save or replace a new session in the store. 
-    * If the session exists, the current connection ID must be
-    * open and parallel to the original connection. 
-    * Otherwise, the new session will be created in the supplied connection, 
-    * so long as it's open. 
+    *
+    * Save or replace a new session.
+    *
+    * If connection is OPEN: 
+    *   If the session exists:
+    *     The current connection ID must match or be parallel 
+    *     to the session's last modifying connection. 
+    *   If the session does not exist:
+    *     The new session will be created in the supplied connection. 
+    *
+    * If connection is CLOSED_BY_SERVER, throw UnknownConnection error.
+    *   
     */
-   def save() = privilegedAction { req =>
+   def save() = connectedAction { req =>
 
       val ssnJson = req.body.asText.getOrElse {
          throw new ServerException.Remote(EmptyBody)
       }
 
-      val conn = req.attrs.get(privilegedAction.ConnKey).get
+      val conn = req.attrs.get(connectedAction.ConnKey).get
+      
+      if (conn.status == CLOSED_BY_SERVER)  // ConnectedAction enforces that it's
+                                            // either OPEN or CLOSED_BY_SERVER
+         throw new ServerException.Remote(ServerError.UnknownConnection, conn.id)
+
       ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
             
       Ok      
@@ -46,8 +59,7 @@ class SessionController @Inject() (
  
    /**
     * GET 
-    * Get a session by ID, if exists and was open in the current
-    * or parallel connection.
+    * Get a session by ID, if exists and was open in the current or parallel connection.
     */
    def get(sid: String) = connectedAction { req =>
 

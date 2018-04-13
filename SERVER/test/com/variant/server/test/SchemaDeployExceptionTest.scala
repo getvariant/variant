@@ -108,14 +108,17 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
       
       "return 503 in every http request after SCHEMATA_DIR_MISSING" in {
 
-         val resp1 = route(app, connectionRequest("schema")).get
-         status(resp1) mustBe SERVICE_UNAVAILABLE
-         contentAsString(resp1) mustBe empty
+         server.isUp mustBe false
 
-         val resp2 = route(app, connectedRequest(PUT, context + "/session", "cid")).get
-         status(resp2) mustBe SERVICE_UNAVAILABLE
-         contentAsString(resp2) mustBe empty
-   		server.isUp mustBe false
+         assertResp(route(app, connectionRequest("schema")))
+            .is(SERVICE_UNAVAILABLE)
+            .withNoConnStatusHeader
+            .withNoBody
+
+         assertResp(route(app, connectedRequest(PUT, context + "/session", "cid")))
+            .is(SERVICE_UNAVAILABLE)
+            .withNoConnStatusHeader
+            .withNoBody
       }
 }
 
@@ -133,9 +136,11 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
       
       "return 503 in every http request after SCHEMATA_DIR_NOT_DIR" in {
 
-         val resp = route(app, FakeRequest(GET, context + "/session/foo")).get
-         status(resp) mustBe SERVICE_UNAVAILABLE
-         contentAsString(resp) mustBe empty
+         assertResp(route(app, FakeRequest(GET, context + "/session/foo")))
+            .is(SERVICE_UNAVAILABLE)
+            .withNoConnStatusHeader
+            .withNoBody
+
    		server.isUp mustBe false
       }
    }

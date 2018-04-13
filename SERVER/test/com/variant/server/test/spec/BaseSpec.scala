@@ -148,8 +148,16 @@ trait BaseSpec extends PlaySpec {
       /**
        * 
        */
-      def withBodyJson(p: JsValue => Unit) = {
-         p(contentAsJson(res))         
+      def withBodyText(func: String => Unit) = {
+         func(contentAsString(res))
+         this
+      }
+
+      /**
+       * 
+       */
+      def withBodyJson(func: JsValue => Unit) = {
+         func(contentAsJson(res))         
          this
       }
 

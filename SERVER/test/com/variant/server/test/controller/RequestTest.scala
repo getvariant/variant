@@ -13,6 +13,8 @@ import com.variant.core.session.CoreSession
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.util.EventExperienceFromDatabase
 import com.variant.core.impl.StateVisitedEvent
+import com.variant.core.ConnectionStatus._
+import com.variant.core.session.CoreStateRequest
 
 
 /**
@@ -39,33 +41,36 @@ class RequestTest extends BaseSpecWithServer {
       }
 
       "obtain a connection" in {
-         // Open new connection
-         val connResp = route(app, connectionRequest("big_covar_schema")).get
-         status(connResp) mustBe OK
-         val json = contentAsJson(connResp) 
-         json mustNot be (null)
-         cid = (json \ "id").as[String]
-         cid mustNot be (null)
+
+         assertResp(route(app, connectionRequest("big_covar_schema")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               cid = (json \ "id").as[String]
+               cid mustNot be (null)
+           }
       }
 
       "create new session" in {
          
          val body = SessionImpl.empty(sid, schema).toJson
-         val resp = route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(body)).get
-         status(resp) mustBe OK
-         contentAsString(resp) mustBe empty
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(body)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withNoBody
          
       }
 
       "create and commit new state request" in {
 
-         // Get the session.
-         var resp = route(app, connectedRequest(GET, context + "/session/" + sid, cid)).get
-         status(resp) mustBe OK
-         var respAsJson = contentAsJson(resp)
-         val coreSsn1 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
-         val stateReq1 = coreSsn1.getStateRequest
-         stateReq1 mustBe (null)
+         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               val coreSsn1 = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn1.getStateRequest
+               stateReq mustBe (null)
+         }
          
          // Create state request object.
          val reqBody1 = Json.obj(
@@ -74,41 +79,46 @@ class RequestTest extends BaseSpecWithServer {
             ).toString
 
          // Target and get the request.
-         resp = route(app, connectedRequest(POST, context + "/request", cid).withTextBody(reqBody1)).get
-         status(resp) mustBe OK
-         respAsJson = contentAsJson(resp)
-         val coreSsn2 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
-         val stateReq2 = coreSsn2.getStateRequest
-         stateReq2 mustNot be (null)
-         stateReq2.isCommitted() mustBe false
-         stateReq2.getLiveExperiences.size mustBe 6
-         stateReq2.getResolvedParameters.size mustBe 1
-         stateReq2.getSession.getId mustBe sid
-         stateReq2.getState mustBe schema.getState("state2")
-         stateReq2.getStateVisitedEvent mustNot be (null)
-
+         assertResp(route(app, connectedRequest(POST, context + "/request", cid).withTextBody(reqBody1)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe false
+               stateReq.getLiveExperiences.size mustBe 6
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state2")
+               stateReq.getStateVisitedEvent mustNot be (null)
+            }
 
          // Commit the request.
          val reqBody2 = Json.obj(
             "sid" -> sid
             ).toString
             
-         resp = route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)).get
-         status(resp) mustBe OK
-         respAsJson = contentAsJson(resp)
-         val coreSsn3 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
-         val stateReq3 = coreSsn3.getStateRequest
-         stateReq3 mustNot be (null)
-         stateReq3.isCommitted() mustBe true
-         stateReq3.getLiveExperiences.size mustBe 6
-         stateReq3.getResolvedParameters.size mustBe 1
-         stateReq3.getSession.getId mustBe sid
-         stateReq3.getState mustBe schema.getState("state2")
- 
+         var stateReq: CoreStateRequest = null
+         assertResp(route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe true
+               stateReq.getLiveExperiences.size mustBe 6
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state2")
+         }
+         
          // Try committing again... Should work because we don't actually check for this on the server.
          // and trust that the client will check before sending the request and check again after receiving.
-         resp = route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)).get
-         status(resp) mustBe OK
+         assertResp(route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)))
+            .isOk
+            .withConnStatusHeader(OPEN)
 
          // Wait for event writer to flush and confirm we wrote 1 state visit event.
          Thread.sleep(2000)
@@ -117,9 +127,9 @@ class RequestTest extends BaseSpecWithServer {
             e.getSessionId mustBe sid
             e.getName mustBe StateVisitedEvent.EVENT_NAME
             e.getValue mustBe "state2"
-            e.getCreatedOn.getTime mustBe stateReq3.createDate().getTime +- 100
+            e.getCreatedOn.getTime mustBe stateReq.createDate().getTime +- 100
             (e.getEventExperiences.toSet[EventExperienceFromDatabase].map {x => schema.getTest(x.getTestName).getExperience(x.getExperienceName)} 
-               mustBe stateReq3.getLiveExperiences.toSet)
+               mustBe stateReq.getLiveExperiences.toSet)
          }
          
          // should not have produced a new event, i.e. still 1.
@@ -139,13 +149,14 @@ class RequestTest extends BaseSpecWithServer {
       var cid: String = null
 
       "obtain a connection" in {
-         // POST new connection
-         val connResp = route(app, connectionRequest("petclinic")).get
-         status(connResp) mustBe OK
-         val json = contentAsJson(connResp) 
-         json mustNot be (null)
-         cid = (json \ "id").as[String]
-         cid mustNot be (null)
+
+         assertResp(route(app, connectionRequest("petclinic")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               cid = (json \ "id").as[String]
+               cid mustNot be (null)
+         }
       }
 
       "create new session" in {
@@ -154,20 +165,23 @@ class RequestTest extends BaseSpecWithServer {
          ssn.setAttribute("user-agent", "Firefox")
          val reqBody = ssn.toJson
 
-         val resp = route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(reqBody)).get
-         status(resp) mustBe OK
-         contentAsString(resp) mustBe empty
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(reqBody)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withNoBody
       }
 
       "Disqualify session from test" in {
 
          // Get the session.
-         var resp = route(app, connectedRequest(GET, context + "/session/" + sid, cid)).get
-         status(resp) mustBe OK
-         var respAsJson = contentAsJson(resp)
-         val coreSsn1 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
-         coreSsn1.getAttribute("user-agent") mustBe "Firefox"
-         coreSsn1.getStateRequest mustBe (null)
+         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               val coreSsn1 = CoreSession.fromJson((json \ "session").as[String], schema)
+               coreSsn1.getAttribute("user-agent") mustBe "Firefox"
+               coreSsn1.getStateRequest mustBe (null)
+             } 
          
          // Create state request object.
          val reqBody1 = Json.obj(
@@ -176,50 +190,55 @@ class RequestTest extends BaseSpecWithServer {
             ).toString
 
          // Target and get the request.
-         resp = route(app, connectedRequest(POST, context + "/request", cid).withTextBody(reqBody1)).get
-         status(resp) mustBe OK
-         respAsJson = contentAsJson(resp)
-         val coreSsn2 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
-         val stateReq2 = coreSsn2.getStateRequest
-         stateReq2 mustNot be (null)
-         stateReq2.isCommitted() mustBe false
-         stateReq2.getLiveExperiences.size mustBe 0
-         coreSsn2.getDisqualifiedTests.size mustBe 1
-         coreSsn2.getDisqualifiedTests.toSeq(0).getName mustBe "NewOwnerTest"         
-         // Resolved parameter must always be from the state def because we're disqualified
-         stateReq2.getResolvedParameters.size mustBe 1
-         stateReq2.getResolvedParameters.get("path") mustBe schema.getState("newOwner").getParameters().get("path")
-         stateReq2.getSession.getId mustBe sid
-         stateReq2.getState mustBe schema.getState("newOwner")
-         stateReq2.getStateVisitedEvent mustBe null
-
+         assertResp(route(app, connectedRequest(POST, context + "/request", cid).withTextBody(reqBody1)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe false
+               stateReq.getLiveExperiences.size mustBe 0
+               coreSsn.getDisqualifiedTests.size mustBe 1
+               coreSsn.getDisqualifiedTests.toSeq(0).getName mustBe "NewOwnerTest"         
+               // Resolved parameter must always be from the state def because we're disqualified
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getResolvedParameters.get("path") mustBe schema.getState("newOwner").getParameters().get("path")
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("newOwner")
+               stateReq.getStateVisitedEvent mustBe null
+         }
+         
          // Commit the request.
          val reqBody2 = Json.obj(
             "sid" -> sid
             ).toString
-         resp = route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)).get
-         status(resp) mustBe OK
-         respAsJson = contentAsJson(resp)
-         val coreSsn3 = CoreSession.fromJson((respAsJson \ "session").as[String], schema)
-         val stateReq3 = coreSsn3.getStateRequest
-         stateReq3 mustNot be (null)
-         stateReq2.isCommitted() mustBe false
-         stateReq2.getLiveExperiences.size mustBe 0
-         coreSsn2.getDisqualifiedTests.size mustBe 1
-         coreSsn2.getDisqualifiedTests.toSeq(0).getName mustBe "NewOwnerTest"         
-         // Resolved parameter must always be from the state def because we're disqualified
-         stateReq2.getResolvedParameters.size mustBe 1
-         stateReq2.getResolvedParameters.get("path") mustBe schema.getState("newOwner").getParameters().get("path")
-         stateReq2.getSession.getId mustBe sid
-         stateReq2.getState mustBe schema.getState("newOwner")
-         stateReq2.getStateVisitedEvent mustBe null
-
+         assertResp(route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe true
+               stateReq.getLiveExperiences.size mustBe 0
+               coreSsn.getDisqualifiedTests.size mustBe 1
+               coreSsn.getDisqualifiedTests.toSeq(0).getName mustBe "NewOwnerTest"         
+               // Resolved parameter must always be from the state def because we're disqualified
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getResolvedParameters.get("path") mustBe schema.getState("newOwner").getParameters().get("path")
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("newOwner")
+               stateReq.getStateVisitedEvent mustBe null
+            }
+         
          // Send custom event.
          val eventBody = EventTest.body.expand("sid" -> sid, "name" -> "eventName", "value" -> "eventValue")
-         val eventResp = route(app, connectedRequest(POST, context + "/event", cid).withTextBody(eventBody)).get
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
-         status(eventResp) mustBe OK
-         contentAsString(eventResp) mustBe empty
+         assertResp(route(app, connectedRequest(POST, context + "/event", cid).withTextBody(eventBody)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withNoBody
 
          // Wait for event writer to flush and confirm all event were discarded.
          Thread.sleep(2000)

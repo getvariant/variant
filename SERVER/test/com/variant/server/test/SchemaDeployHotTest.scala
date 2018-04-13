@@ -278,11 +278,13 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 
 	   "keep existing session alive" in {
 	      
-         val resp = route(app, connectedRequest(GET, context + "/session" + "/" + sid, cid)).get
-         status(resp) mustBe OK
-         val respAsJson = contentAsJson(resp)
-         StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
-            StringUtils.digest(sessionJson.expand("sid" -> sid).toString())
+         assertResp(route(app, connectedRequest(GET, context + "/session" + "/" + sid, cid)))
+            .isOk
+            .withConnStatusHeader(CLOSED_BY_SERVER)
+            .withBodyJson { json => 
+               StringUtils.digest((json \ "session").as[String]) mustBe 
+                  StringUtils.digest(sessionJson.expand("sid" -> sid).toString())
+            }
 
 	   }
 
@@ -298,13 +300,9 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   "expire existing session as normal in the undeployed schema" in {
          
          Thread.sleep(sessionTimeoutSecs * 1000);    
-
-         val resp = route(app, connectedRequest(GET, context + "/session" + "/" + sid, cid)).get
-         status(resp) mustBe BAD_REQUEST
-         val (isInternal, error, args) = parseError(contentAsJson(resp))
-         isInternal mustBe false 
-         error mustBe SessionExpired
-         args mustBe Seq(sid)
+         assertResp(route(app, connectedRequest(GET, context + "/session" + "/" + sid, cid)))
+            .isError(SessionExpired, sid)
+            .withConnStatusHeader(OPEN)
 
 	   }
      	   
@@ -332,24 +330,24 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   
       "open new connection to ParserCovariantOkayBigTestNoHooks" in {
             
-         val resp = route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")).get
-         status(resp) mustBe OK
-         val body = contentAsString(resp)
-         body mustNot be (empty)
-         val json = Json.parse(body)
-         (json \ "id").asOpt[String].isDefined mustBe true
-         cid1 = (json \ "id").as[String]
+         assertResp(route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               (json \ "id").asOpt[String].isDefined mustBe true
+               cid1 = (json \ "id").as[String]
+         }
    	}
 	   
       "open connection to petclinic" in {
             
-         val resp = route(app, connectionRequest("petclinic")).get
-         status(resp) mustBe OK
-         val body = contentAsString(resp)
-         body mustNot be (empty)
-         val json = Json.parse(body)
-         (json \ "id").asOpt[String].isDefined mustBe true
-         cid2 = (json \ "id").as[String]
+         assertResp(route(app, connectionRequest("petclinic")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               (json \ "id").asOpt[String].isDefined mustBe true
+               cid2 = (json \ "id").as[String]
+            }
    	}
 
       val sessionJsonBigCovar = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
@@ -359,9 +357,10 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   "create a session in schema ParserCovariantOkayBigTestNoHooks" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> sid1)
-         val resp = route(app, connectedRequest(PUT, context + "/session", cid1).withBody(body)).get
-         status(resp) mustBe OK
-         contentAsString(resp) mustBe empty
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid1).withBody(body)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withNoBody
       }
 
 	   "redeploy schemata at once" in {
@@ -379,11 +378,13 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          val halfExp = sessionTimeoutSecs * 500
          for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
             Thread.sleep(wait)
-            val resp = route(app, connectedRequest(GET, context + "/session" + "/" + sid1, cid1)).get
-            status(resp) mustBe OK
-            val respAsJson = contentAsJson(resp)
-            StringUtils.digest((respAsJson \ "session").as[String]) mustBe 
-               StringUtils.digest(sessionJsonBigCovar.expand("sid" -> sid1).toString())
+            assertResp(route(app, connectedRequest(GET, context + "/session" + "/" + sid1, cid1)))
+               .isOk
+               .withConnStatusHeader(OPEN)
+               .withBodyJson { json => 
+                  StringUtils.digest((json \ "session").as[String]) mustBe 
+                     StringUtils.digest(sessionJsonBigCovar.expand("sid" -> sid1).toString())
+               }
          }
 
          oldBigSchema.state mustBe State.Gone
@@ -403,15 +404,12 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 
 	   var sid2 = newSid()
 	   
-	   "refuse to create new session in the redeployed schema ParserCovariantOkayBigTestNoHooks" in {
+	   "refuse to create new session in the draining connection to ParserCovariantOkayBigTestNoHooks" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> sid2)
-         val resp = route(app, connectedRequest(PUT, context + "/session", cid1).withBody(body)).get
-         status(resp) mustBe BAD_REQUEST
-         val (isInternal, error, args) = parseError(contentAsJson(resp))
-         isInternal mustBe false 
-         error mustBe UnknownConnection
-         args mustBe Seq(cid1)
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid1).withBody(body)))
+            .isError(UnknownConnection, cid1)
+            .withConnStatusHeader(CLOSED_BY_SERVER)
       }
 
       val sessionJsonPetclinic = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
@@ -419,31 +417,32 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   "create new session in the unaffected schema petclinic" in {
          
          val body = sessionJsonPetclinic.expand("sid" -> sid2)
-         val resp = route(app, connectedRequest(PUT, context + "/session", cid2).withBody(body)).get
-         //(contentAsString(resp))
-         status(resp) mustBe OK
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid2).withBody(body)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withNoBody
       }
 
 	   "open connection to the new big_covar_schema" in {
             
-         val resp = route(app, connectionRequest("big_covar_schema")).get
-         status(resp) mustBe OK
-         val body = contentAsString(resp)
-         body mustNot be (empty)
-         val json = Json.parse(body)
-         (json \ "id").asOpt[String].isDefined mustBe true
-         cid3 = (json \ "id").as[String]
+         assertResp(route(app, connectionRequest("big_covar_schema")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json => 
+               (json \ "id").asOpt[String].isDefined mustBe true
+               cid3 = (json \ "id").as[String]
+            }
    	}
 
-	   var sid3 = newSid()
+      var sid3 = newSid()
 	   
 	   "create new session in the new schema" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> sid3)
-         val resp = route(app, connectedRequest(PUT, context + "/session", cid3).withBody(body)).get
-         status(resp) mustBe OK
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid3).withBody(body)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withNoBody
       }
-
    }
-   
 }

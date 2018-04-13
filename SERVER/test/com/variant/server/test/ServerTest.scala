@@ -16,17 +16,20 @@ class ServerTest extends BaseSpecWithServer {
    "Routes" should {
 
       "send 404 on a bad request" in  {
-         val resp = route(app, FakeRequest(GET, context + "/bad")).get
-         status(resp) mustBe NOT_FOUND
-         contentAsString(resp) mustBe empty
+         assertResp(route(app, FakeRequest(GET, context + "/bad")))
+            .is(NOT_FOUND)
+            .withNoBody
+            .withNoConnStatusHeader
       }
     
       "send splash on a root request" in  {
-         val resp = route(app, FakeRequest(GET, context)).get
-         status(resp) mustBe OK
-         println(contentAsString(resp))
-         contentAsString(resp) must startWith (VariantServer.instance.productName)
-         contentAsString(resp) must include ("Uptime")
+         assertResp(route(app, FakeRequest(GET, context)))
+            .isOk
+            .withNoConnStatusHeader
+            .withBodyText { body =>
+               body must startWith (VariantServer.instance.productName)
+               body must include ("Uptime")
+         }
       }
       
    }
