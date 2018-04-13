@@ -35,8 +35,6 @@ trait BaseSpec extends PlaySpec {
    
    protected def context = application.configuration.get[String]("play.http.context")
    protected def server = application.injector.instanceOf[VariantServer]
-   protected def connStore = application.injector.instanceOf[ConnectionStore]
-   protected def ssnStore = application.injector.instanceOf[SessionStore]
 
    protected def assertResp(resp: Option[Future[Result]]) = {
       new ResultWrap(resp.get)

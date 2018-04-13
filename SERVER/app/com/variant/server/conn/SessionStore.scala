@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 /**
  * Instantiated by Play as an eager singleton in Module
- */
+ *
 trait SessionStore {
 
    // Session timeout interval.
@@ -47,6 +47,17 @@ trait SessionStore {
 	*/
    def deleteIf(p: (Entry) => Boolean): Unit
    
+
+}   
+*/
+/**
+ * 
+ */
+class SessionStore (private val server: VariantServer) {
+   
+   // Session timeout interval.
+	val sessionTimeoutMillis = server.config.getInt(SESSION_TIMEOUT) * 1000
+
    /**
     * Store entry
     */
@@ -73,21 +84,12 @@ trait SessionStore {
       }
    }
 
-}   
-
-/**
- * 
- */
-@Singleton
-class SessionStoreImpl @Inject() (private val server: VariantServer) extends SessionStore {
-   
    private val logger = Logger(this.getClass)	
 	private val sessionMap = new TrieMap[String, Entry]();
-   private val vacuumThread = new VacuumThread(server, this).start()
 
    /**
 	 */
-	override def put(session: SessionImpl) {
+	def put(session: SessionImpl) {
 
       sessionMap.get(session.getId) match { 
 		
@@ -109,7 +111,7 @@ class SessionStoreImpl @Inject() (private val server: VariantServer) extends Ses
 	
 	/**
 	 */
-	override def get(sid: String, cid: String): Option[SessionImpl] = {
+	def get(sid: String, cid: String): Option[SessionImpl] = {
 	
 		sessionMap.get(sid) match { 
 		   
@@ -127,7 +129,7 @@ class SessionStoreImpl @Inject() (private val server: VariantServer) extends Ses
 
 	/**
 	 */
-	override def getOrBust(sid: String, cid: String): SessionImpl = {
+	def getOrBust(sid: String, cid: String): SessionImpl = {
       val result	= get(sid, cid).getOrElse {
          logger.debug(s"Not found session [${sid}]")      
          throw new ServerException.Remote(ServerError.SessionExpired, sid)
@@ -142,57 +144,5 @@ class SessionStoreImpl @Inject() (private val server: VariantServer) extends Ses
       sessionMap.retain((id, entry) => !f(entry))
    }
 
-}
-
-/**
- * Background vacuum thread.
- * Wakes up every configurable interval and takes a pass over all sessions in the store,
- * deleting the expired ones.
- */
-class VacuumThread(server: VariantServer, store: SessionStore) extends Thread {
-
-   private val logger = Logger(this.getClass)
-   private val vacuumingFrequencyMillis = server.config.getInt(SESSION_VACUUM_INTERVAL) * 1000
-	setName("SsnVacThread");
-   setDaemon(true); // Daemonize.
-
-
-	override def run() {
-
-      logger.debug(s"Vacuum thread $getName started")		
-		var interrupted = false
-		
-		while (!interrupted) {			
-			
-			try {
-				val now = System.currentTimeMillis();
-				var count = 0;
-				
-				store.deleteIf { entry => 
-			      if (entry.isExpired) {
-			         count += 1
-   			      logger.trace(String.format("Vacuumed expired session ID [%s]", entry.session.getId)) 
-			         true
-			      }
-			      else false
-			   }
-							
-				if (logger.isTraceEnabled) logger.trace(s"Vacuumed $count session(s)");
-				else if (logger.isDebugEnabled && count > 0) logger.debug(s"Vacuumed $count session(s)");
-
-				Thread.sleep(vacuumingFrequencyMillis)
-				logger.trace("Vacuum thread woke up after %s millis".format(System.currentTimeMillis() - now))
-			}
-			catch {
-			   case _: InterruptedException => interrupted = true;
-			   case t: Throwable =>	logger.error("Unexpected exception in vacuuming thread.", t);
-			}
-			
-			if (interrupted || isInterrupted()) {
-				logger.debug("Vacuum thread " + Thread.currentThread().getName() + " interrupted and exited.");
-				interrupted = true;
-			}
-		}
-	}
 }
 

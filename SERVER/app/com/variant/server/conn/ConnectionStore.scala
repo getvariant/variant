@@ -13,7 +13,7 @@ import com.variant.server.api.ServerException
 import com.variant.core.ServerError
 import com.variant.core.ConnectionStatus._
 
-
+/*
 /**
  * Connection Store.
  * Connections are not expired, unless explicitely closed by the client.
@@ -62,17 +62,17 @@ trait ConnectionStore {
 	def drainConnectionsToSchema(schid: String)
 
 }
-
-@Singleton
-class ConnectionStoreImpl () extends ConnectionStore {
+*/
+//@Singleton
+class ConnectionStore(private var server: VariantServer) {
 
    private val logger = Logger(this.getClass)
-	private lazy val maxSize = VariantServer.instance.config.getInt(MAX_CONCURRENT_CONNECTIONS)
+	private lazy val maxSize = server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
    private val connMap = new TrieMap[String, Connection]()
    
 	/**
 	 */
-	override def put(conn: Connection): Boolean = {
+	def put(conn: Connection): Boolean = {
       if (connMap.filter(e => e._2.status == OPEN).size >= maxSize) {
          false
       }
@@ -84,13 +84,13 @@ class ConnectionStoreImpl () extends ConnectionStore {
 	
 	/**
 	 */
-   override def get(cid: String): Option[Connection] = {
+   def get(cid: String): Option[Connection] = {
       connMap.get(cid)
    }
    
    /**
 	 */
-	override def getOrBust(cid: String): Connection = {
+	def getOrBust(cid: String): Connection = {
       
 	   val result	= get(cid).getOrElse {
          logger.debug(s"Not found connection [${cid}]")      
@@ -107,7 +107,7 @@ class ConnectionStoreImpl () extends ConnectionStore {
    /**
     * Client side connection close. 
 	 */
-	override def closeOrBust(cid: String): Connection = {
+    def closeOrBust(cid: String): Connection = {
       val conn = connMap.remove(cid).getOrElse {
          logger.debug(s"Not found connection [${cid}]")      
          throw new ServerException.Remote(ServerError.UnknownConnection, cid)
@@ -121,7 +121,7 @@ class ConnectionStoreImpl () extends ConnectionStore {
 	 * Start draining all connections to a schema, by schema id.
 	 * Do not remove from the store until all sessions are gone.
 	 */
-	override def drainConnectionsToSchema(schid: String) {
+	def drainConnectionsToSchema(schid: String) {
 	   
 	   connMap
 	      .filter { e => 
@@ -131,6 +131,5 @@ class ConnectionStoreImpl () extends ConnectionStore {
 	         e._2.drain()
 	         // connMap -= e._1
 	      }
-	 
 	}
 }

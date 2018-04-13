@@ -16,12 +16,9 @@ import com.variant.core.ServerError
 import com.variant.core.ConnectionStatus._
 
 class SessionController @Inject() (
-      override val connStore: ConnectionStore, 
-      override val ssnStore: SessionStore,
       val connectedAction: ConnectedAction,
-//      val privilegedAction: PrivilegedAction,
       val cc: ControllerComponents
-      ) extends VariantController(connStore, ssnStore, cc)  {
+      ) extends VariantController(cc)  {
    
    private val logger = Logger(this.getClass)	
 
@@ -52,7 +49,7 @@ class SessionController @Inject() (
                                             // either OPEN or CLOSED_BY_SERVER
          throw new ServerException.Remote(ServerError.UnknownConnection, conn.id)
 
-      ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
+      server.ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
             
       Ok      
    }
@@ -64,7 +61,7 @@ class SessionController @Inject() (
    def get(sid: String) = connectedAction { req =>
 
       val conn = req.attrs.get(connectedAction.ConnKey).get
-      val ssn = ssnStore.getOrBust(sid, conn.id)
+      val ssn = server.ssnStore.getOrBust(sid, conn.id)
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson)
       ))

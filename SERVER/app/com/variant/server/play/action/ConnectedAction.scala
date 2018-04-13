@@ -23,7 +23,7 @@ extends AbstractAction (parser) (ec) {
    override def beforeBlock[A](request: Request[A]): Request[A] = {      
       
       val conn = request.headers.get(HTTP_HEADER_CONNID) match {
-         case Some(cid) => VariantServer.instance.connectionStore.getOrBust(cid)
+         case Some(cid) => VariantServer.instance.connStore.getOrBust(cid)
          case None => throw new ServerException.Remote(ConnectionIdMissing)
       }
 

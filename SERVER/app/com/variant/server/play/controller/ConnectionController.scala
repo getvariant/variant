@@ -15,12 +15,10 @@ import com.variant.server.play.action.ConnectedAction
 import com.variant.server.play.action.DisconnectedAction
 
 class ConnectionController @Inject() (
-      override val connStore: ConnectionStore, 
-      override val ssnStore: SessionStore,
       val connectedAction: ConnectedAction,
       val disconnectedAction: DisconnectedAction,
       val cc: ControllerComponents
-      ) extends VariantController(connStore, ssnStore, cc)  {
+      ) extends VariantController(cc)  {
    
    private val logger = Logger(this.getClass)	
 
@@ -39,7 +37,7 @@ class ConnectionController @Inject() (
             logger.debug("Schema [%s] found".format(name))
             val conn = Connection(schema)
             
-            if (connStore.put(conn)) {
+            if (server.connStore.put(conn)) {
                logger.info("Opened connection [%s] to schema [%s]".format(conn.id, name))
                Ok(conn.asJson).withHeaders(HTTP_HEADER_CONN_STATUS -> OPEN.toString())
             }
@@ -62,7 +60,7 @@ class ConnectionController @Inject() (
    def close() = connectedAction { req =>
 
       val conn = req.attrs.get(connectedAction.ConnKey).get
-      connStore.closeOrBust(conn.id)
+      server.connStore.closeOrBust(conn.id)
       logger.info("Closed connection [%s] to schema [%s]".format(conn.id, conn.schema.getName))
       Ok
    }

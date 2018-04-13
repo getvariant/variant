@@ -271,14 +271,14 @@ class SessionTest extends BaseSpecWithServer {
             .isOk
             .withNoBody
 
-         val ssnJson = ssnStore.get(sid, connId).get.asInstanceOf[SessionImpl].toJson
+         val ssnJson = server.ssnStore.get(sid, connId).get.asInstanceOf[SessionImpl].toJson
          ssnJson mustBe normalJson(sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts))
-         val ssn = ssnStore.get(sid, connId).get
+         val ssn = server.ssnStore.get(sid, connId).get
          ssn.getCreateDate.getTime mustBe ts
          ssn.getId mustBe sid
       
          Thread.sleep(2000);
-         ssnStore.get(sid, connId) mustBe empty
+         server.ssnStore.get(sid, connId) mustBe empty
          
       }
 

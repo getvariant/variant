@@ -1,35 +1,24 @@
 package com.variant.server.play.controller
 
-import play.api.Logger
-import play.api.mvc._
-import play.api.libs.json._
-import com.variant.server.api.ServerException
-import com.variant.core.ServerError._
-import com.variant.server.conn.ConnectionStore
-import com.variant.server.conn.Connection
-import com.variant.server.impl.SessionImpl
-import com.variant.server.boot.VariantServer
-import com.variant.server.conn.SessionStore
-import play.api.mvc.Request
-import play.api.mvc.AnyContent
-import com.variant.server.boot.ServerErrorRemote
-import com.variant.server.schema.ServerSchema
-import com.variant.core.util.Constants
-import com.variant.core.ServerError
 import com.fasterxml.jackson.core.JsonParseException
+import com.variant.core.ServerError
+import com.variant.core.util.Constants
+import com.variant.server.api.ServerException
+import com.variant.server.boot.VariantServer
+
 import javax.inject.Inject
-import play.api.mvc.ControllerComponents
+import play.api.Logger
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
 import play.api.mvc.AbstractController
-import com.variant.core.util.TimeUtils
+import play.api.mvc.AnyContent
+import play.api.mvc.ControllerComponents
+import play.api.mvc.Request
 
 /**
  * All Variant controllers inherit from this.
  */
-abstract class VariantController @Inject() (
-      val connStore: ConnectionStore, 
-      val ssnStore: SessionStore,
-      cc: ControllerComponents)
-   extends AbstractController(cc) {
+abstract class VariantController @Inject() (cc: ControllerComponents) extends AbstractController(cc) {
    
    private val logger = Logger(this.getClass)	
    

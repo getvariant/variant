@@ -23,11 +23,9 @@ import com.variant.server.play.action.DisconnectedAction
 
 //@Singleton -- Is this for non-shared state controllers?
 class RootController @Inject() (
-      override val connStore: ConnectionStore, 
-      override val ssnStore: SessionStore,
       val disconnectedAction: DisconnectedAction,
       val cc: ControllerComponents
-      ) extends VariantController(connStore, ssnStore, cc)  {
+      ) extends VariantController(cc)  {
       
   /**
    *  If a path ends in a slash, redirect to the same path without the trailing /.

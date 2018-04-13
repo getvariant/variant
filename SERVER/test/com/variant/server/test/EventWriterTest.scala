@@ -72,7 +72,7 @@ class EventWriterTest extends BaseSpecWithServer {
             .withNoBody
             .withConnStatusHeader(OPEN)
          
-         val ssn = ssnStore.get(sid, cid).get
+         val ssn = server.ssnStore.get(sid, cid).get
          
          val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
          val se = new ServerEvent(name, value, new Date(timestamp));
@@ -117,7 +117,7 @@ class EventWriterTest extends BaseSpecWithServer {
             .withNoBody
             .withConnStatusHeader(OPEN)
 
-         val ssn = ssnStore.get(sid, cid).get
+         val ssn = server.ssnStore.get(sid, cid).get
 
          // Ensure the writer buffer is empty.
          eventWriter.flush()
@@ -153,7 +153,7 @@ class EventWriterTest extends BaseSpecWithServer {
             .withNoBody
             .withConnStatusHeader(OPEN)
 
-         val ssn = ssnStore.get(sid, cid).get
+         val ssn = server.ssnStore.get(sid, cid).get
          
          val startOfWrite = System.currentTimeMillis()
 

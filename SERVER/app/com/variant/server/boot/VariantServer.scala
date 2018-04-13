@@ -26,6 +26,7 @@ import com.variant.core.RuntimeError
 import com.variant.core.UserError.Severity
 import com.variant.server.conn.ConnectionStore
 import play.api.Play
+import com.variant.server.conn.SessionStore
 
 
 /**
@@ -41,7 +42,8 @@ trait VariantServer {
    val startTs = System.currentTimeMillis
    // Read-only snapshot
    def schemata: Map[String, ServerSchema]
-   val connectionStore: ConnectionStore
+   val connStore: ConnectionStore
+   val ssnStore: SessionStore
    def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
    def schemaDeployer: SchemaDeployer
 }
@@ -64,11 +66,10 @@ object VariantServer {
 @Singleton
 class VariantServerImpl @Inject() (
       playConfig: Configuration, 
-      lifecycle: ApplicationLifecycle,
+      lifecycle: ApplicationLifecycle
       // We ask for the provider instead of the application, because application itself won't be available until
       // all eager singletons are constructed, including this class.
-      //application: Application, 
-      connStore: ConnectionStore
+      //application: Application
    ) extends VariantServer {
    
    import VariantServer._
@@ -76,6 +77,9 @@ class VariantServerImpl @Inject() (
 	private[this] val logger = Logger(this.getClass)
    private[this] var _schemaDeployer: SchemaDeployer = null
    private[this] var _isUp = false
+   private[this] var _connStore: ConnectionStore = null
+   private[this] var _ssnStore: SessionStore = null
+   private[this] var _vacThread: VacuumThread = null
   
 	// Make this instance statically discoverable
 	_instance = this	
@@ -86,7 +90,9 @@ class VariantServerImpl @Inject() (
 	
 	override val classloader = new VariantClassLoader()
    
-   override val connectionStore = connStore
+   override lazy val connStore  = _connStore
+
+   override lazy val ssnStore  = _ssnStore
   
 	override def schemata = _schemaDeployer.schemata 
 	
@@ -104,9 +110,17 @@ class VariantServerImpl @Inject() (
       	if (logger.isDebugEnabled) {
            config.entrySet().filter(x => x.getKey.startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
          }
-      
+            	
+      	_connStore = new ConnectionStore(this)
+      	
+      	_ssnStore = new SessionStore(this)
+
       	// Default schema deployer is from file system, but may be overridden by tests.
          useSchemaDeployer(SchemaDeployer.fromFileSystem())
+
+       	_vacThread = new VacuumThread(this)
+      	_vacThread.start()
+
       }
       catch {
          case se: ServerException => startupErrorLog += se

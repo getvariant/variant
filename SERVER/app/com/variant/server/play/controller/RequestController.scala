@@ -25,11 +25,9 @@ import com.variant.server.play.action.ConnectedAction
 
 //@Singleton -- Is this for non-shared state controllers?
 class RequestController @Inject() (
-      override val connStore: ConnectionStore, 
-      override val ssnStore: SessionStore,
       val connectedAction: ConnectedAction,
       val cc: ControllerComponents
-      ) extends VariantController(connStore, ssnStore, cc)  {
+      ) extends VariantController(cc)  {
    
    private val logger = Logger(this.getClass)	
    
@@ -51,7 +49,7 @@ class RequestController @Inject() (
       }
 
       val conn = req.attrs.get(connectedAction.ConnKey).get
-      val ssn = ssnStore.getOrBust(sid, conn.id)
+      val ssn = server.ssnStore.getOrBust(sid, conn.id)
       val schema = ssn.connection.schema
       val state = schema.getState(stateName)
 
@@ -84,7 +82,7 @@ class RequestController @Inject() (
       }
       
       val conn = req.attrs.get(connectedAction.ConnKey).get
-      val ssn = ssnStore.getOrBust(sid, conn.id)
+      val ssn = server.ssnStore.getOrBust(sid, conn.id)
       val stateReq = ssn.getStateRequest
       val sve = stateReq.getStateVisitedEvent
       

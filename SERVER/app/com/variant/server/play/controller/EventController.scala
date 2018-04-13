@@ -29,11 +29,9 @@ import com.variant.server.play.action.ConnectedAction
 
 //@Singleton -- Is this for non-shared state controllers?
 class EventController @Inject() (
-      override val connStore: ConnectionStore, 
-      override val ssnStore: SessionStore,
       val connectedAction: ConnectedAction,
       val cc: ControllerComponents
-      ) extends VariantController(connStore, ssnStore, cc)  {
+      ) extends VariantController(cc)  {
    
    private val logger = Logger(this.getClass)	
  
@@ -65,7 +63,7 @@ class EventController @Inject() (
 
       val conn = req.attrs.get(connectedAction.ConnKey).get
 
-      val ssn = ssnStore.getOrBust(sid, conn.id)
+      val ssn = server.ssnStore.getOrBust(sid, conn.id)
       
       if (ssn.getStateRequest == null)
          throw new ServerException.Remote(UnknownState)   

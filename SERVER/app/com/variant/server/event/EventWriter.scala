@@ -33,18 +33,18 @@ class EventWriter (private val flushService: ServerFlusherService) {
 	 // Force flush after this long, even if still empty.
 	 val maxDelayMillis = config.getInt(EVENT_WRITER_MAX_DELAY) * 1000
 
-	 // The flusher thread.
-   private val flusherThread = new FlusherThread();
-	 // Not a daemon. Intercept interrupt and flush the buffer before exiting.
-	 flusherThread.setDaemon(false)
-	 flusherThread.setName("Event Flusher For Schema " + flushService.getSchema().getName())
-	 flusherThread.start() 
-
  	 // The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
 	 // refusing inserts that will put the queue size over the limit, but not worrying about
 	 // a possible overage due to concurrency.
 	 private val bufferQueue = new ConcurrentLinkedQueue[FlushableEvent]()
 	
+	 // The flusher thread.
+    private val flusherThread = new FlusherThread();
+	 // Not a daemon. Intercept interrupt and flush the buffer before exiting.
+	 flusherThread.setDaemon(false)
+	 flusherThread.setName("Event Flusher For Schema " + flushService.getSchema().getName())
+	 flusherThread.start() 
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
