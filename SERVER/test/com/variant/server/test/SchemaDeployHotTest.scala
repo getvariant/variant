@@ -302,7 +302,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          Thread.sleep(sessionTimeoutSecs * 1000);    
          assertResp(route(app, connectedRequest(GET, context + "/session" + "/" + sid, cid)))
             .isError(SessionExpired, sid)
-            .withConnStatusHeader(OPEN)
+            .withConnStatusHeader(CLOSED_BY_SERVER)
 
 	   }
      	   
@@ -380,7 +380,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
             Thread.sleep(wait)
             assertResp(route(app, connectedRequest(GET, context + "/session" + "/" + sid1, cid1)))
                .isOk
-               .withConnStatusHeader(OPEN)
+               .withConnStatusHeader(CLOSED_BY_SERVER)
                .withBodyJson { json => 
                   StringUtils.digest((json \ "session").as[String]) mustBe 
                      StringUtils.digest(sessionJsonBigCovar.expand("sid" -> sid1).toString())
