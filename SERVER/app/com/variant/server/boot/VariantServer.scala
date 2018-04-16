@@ -165,6 +165,8 @@ class VariantServerImpl @Inject() (
     */
    def shutdown() {
       
+      logger.info(s"${productName} is shutting down")
+      
       // Undeploy all schemata
       schemata.foreach { case (name: String, schema: ServerSchema) => schema.undeploy() }
       

@@ -276,7 +276,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   }
 
 
-	   "keep existing session alive" in {
+	   "permit session read over draining connection" in {
 	      
          assertResp(route(app, connectedRequest(GET, context + "/session" + "/" + sid, cid)))
             .isOk
@@ -285,10 +285,18 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
                StringUtils.digest((json \ "session").as[String]) mustBe 
                   StringUtils.digest(sessionJson.expand("sid" -> sid).toString())
             }
-
 	   }
 
-	   "refuse to create a new session in the undeployed schema" in {
+	   "permit session update over draining connection" in {
+	      
+         val body = sessionJson.expand("sid" -> sid)
+         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
+            .isOk
+            .withConnStatusHeader(CLOSED_BY_SERVER)
+            .withNoBody
+	   }
+
+	   "refuse to create a new session in the draining connection" in {
          
 	      sid = newSid()
          val body = sessionJson.expand("sid" -> sid)

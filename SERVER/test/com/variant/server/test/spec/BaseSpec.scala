@@ -26,6 +26,7 @@ import com.variant.core.ConnectionStatus
  */
 trait BaseSpec extends PlaySpec {
       
+   private val rand = new Random(System.currentTimeMillis)
    /**
     * Upstream will define the application.
     * note, that its value is not stable, so dependencies
@@ -51,10 +52,25 @@ trait BaseSpec extends PlaySpec {
          else None
           
     /**
-     * 
+     * Print the stack line that's just below this class.
      */
      private[this] def stackLine = {
-        val stackLine = Thread.currentThread().getStackTrace.apply(3)
+        val stackLine = {
+           val stackTrace = Thread.currentThread().getStackTrace
+           var found = false
+           var i = 3
+           var line = stackTrace.apply(i)
+           while (!found) {
+              if (line.getClassName.contains(this.getClass.getSimpleName)) {
+                 i += 1
+                 line = stackTrace.apply(i)
+              }
+              else {
+                 found = true
+              }       
+           }
+           line
+        }
         " (" + stackLine.getFileName + " " + stackLine.getLineNumber + ")"            
      }
       
@@ -155,7 +171,13 @@ trait BaseSpec extends PlaySpec {
        * 
        */
       def withBodyJson(func: JsValue => Unit) = {
-         func(contentAsJson(res))         
+         try {
+            func(contentAsJson(res)) 
+         } catch {
+            case t: Throwable => 
+               fail(t.getMessage + stackLine) 
+         }
+         
          this
       }
 
@@ -194,7 +216,7 @@ trait BaseSpec extends PlaySpec {
     * Generate a new random session ID.
     */
    protected def newSid() = 
-      StringUtils.random64BitString(new Random(System.currentTimeMillis()))
+      StringUtils.random64BitString(rand)
    
    /**
     * Normalize a JSON string by removing any white space.

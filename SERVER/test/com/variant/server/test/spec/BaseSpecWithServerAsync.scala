@@ -1,32 +1,59 @@
 package com.variant.server.test.spec
 
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.Future
 import scala.collection.mutable.ArrayBuffer
+import scala.concurrent._
+import scala.concurrent.duration._
+import java.util.concurrent.atomic.AtomicInteger
 
 
 class BaseSpecWithServerAsync extends BaseSpecWithServer {
   
-   private val pool = Executors.newFixedThreadPool(4)
-   private val futures = ArrayBuffer[Future[_]]()
+   implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(4))
+
+   // private val pool = Executors.newFixedThreadPool(4)
+   //private val futures = ArrayBuffer[Future[_]]()
+   val taskCount = new AtomicInteger(0)
+   //private val futures = ArrayBuffer[Future[_]]()
    
    /**
     * Execute a function on the pool
     */
-   protected def async(bloc: => Unit) = {
+   protected def async(block: => Unit) = {
 
-      futures += pool.submit (
-            new Runnable {
-               def run() = bloc
-            }
-      )
+      taskCount.addAndGet(1)
+
+      val future = Future {
+         block
+         taskCount.decrementAndGet()
+      }
+      
+      future.onFailure {
+        case t => {
+           taskCount.decrementAndGet()
+           throw new Exception(s"Async block crashed: ${t.getMessage}")
+        }
+      }
+
    }
-
+   
+   /**
+    * Async doesnt work somehow, so this for now.
+    *
+   protected def async(bloc: => Unit) = bloc
+   */
+   
    /**
     * Block for all functions to complete.
+    * TODO: replace with java.util.concurrent.CountDownLatch
     */
    protected def joinAll() = {
-      futures.foreach(_.get) 
+      val timeout = 20000
+      var wated = 0
+      while (taskCount.get > 0 && wated < timeout) {
+         Thread.sleep(200)
+         wated += 200
+      }
+      if (wated >= timeout) fail("Unexpected timeout waiting for background threads.")
    }
 }

@@ -54,6 +54,9 @@ public class ServerError extends UserError {
 	public static final ServerError ConnectionIdMissing = 
 			new ServerError(631, "Missing connection ID header");
 
+	public static final ServerError InvalidConnectionStatus = 
+			new ServerError(632, "Invalid connection status [%s]");
+
 	/**
 	 */
 	public boolean isInternal() {

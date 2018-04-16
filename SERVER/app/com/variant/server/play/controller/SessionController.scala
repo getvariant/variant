@@ -27,14 +27,16 @@ class SessionController @Inject() (
     *
     * Save or replace a new session.
     *
-    * If connection is OPEN: 
-    *   If the session exists:
-    *     The current connection ID must match or be parallel 
-    *     to the session's last modifying connection. 
-    *   If the session does not exist:
-    *     The new session will be created in the supplied connection. 
-    *
-    * If connection is CLOSED_BY_SERVER, throw UnknownConnection error.
+    * IF the session exists THEN
+    *   IF the current connection ID matches or is parallel 
+    *   to the session's original connection
+    *   THEN Replace the session.
+    *   ELSE SessionExpired
+    * 
+    * ELSE (the session does not exist)
+    *   IF connection is OPEN, create new session.
+    *   ELSE IF connection is CLOSED_BY_SERVER THEN UnknownConnection
+    *   ELSE InternalError
     *   
     */
    def save() = connectedAction { req =>
@@ -44,13 +46,7 @@ class SessionController @Inject() (
       }
 
       val conn = req.attrs.get(connectedAction.ConnKey).get
-      
-      if (conn.status == CLOSED_BY_SERVER)  // ConnectedAction enforces that it's
-                                            // either OPEN or CLOSED_BY_SERVER
-         throw new ServerException.Remote(ServerError.UnknownConnection, conn.id)
-
       server.ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
-            
       Ok      
    }
  

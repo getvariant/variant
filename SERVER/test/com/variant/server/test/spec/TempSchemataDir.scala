@@ -8,12 +8,14 @@ import com.variant.core.util.IoUtils
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.Configuration
 import com.variant.server.boot.VariantApplicationLoader
+import com.typesafe.config.Config
+import com.typesafe.config.ConfigFactory
 
 /**
  * 
  */
 object TempSchemataDir {
-   val sessionTimeoutSecs = 15          // Override test default of 1
+   val sessionTimeoutSecs = 15         // Override test default of 1
    val dirWatcherLatencyMsecs = 10000   // takes this long for FS to notify the directory watcher service.
    val schemataDir = "/tmp/schemata"  
 }
@@ -27,7 +29,7 @@ trait TempSchemataDir extends PlaySpec with OneAppPerSuite with BeforeAndAfterAl
       
    import TempSchemataDir._
    
-   //val schemaFiles: Seq[String]
+   val config: String = "{}"
    
    // Custom application builder.  
    implicit override lazy val app: Application = {
@@ -39,6 +41,7 @@ trait TempSchemataDir extends PlaySpec with OneAppPerSuite with BeforeAndAfterAl
          .configure(new Configuration(VariantApplicationLoader.config))
          .configure("variant.schemata.dir" -> schemataDir)
          .configure("variant.session.timeout" -> sessionTimeoutSecs)
+         .configure(new Configuration(ConfigFactory.parseString(config)))
          .build()
    }
 

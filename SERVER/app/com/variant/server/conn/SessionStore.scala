@@ -10,6 +10,7 @@ import com.variant.server.boot.VariantServer
 import com.variant.core.session.CoreSession
 import com.variant.server.api.ServerException
 import com.variant.core.ServerError
+import com.variant.core.ConnectionStatus._
 import javax.inject.Inject
 
 /**
@@ -94,10 +95,14 @@ class SessionStore (private val server: VariantServer) {
       sessionMap.get(session.getId) match { 
 		
       // No current entry for this session id
-		case None => sessionMap.put(session.getId, new Entry(session))
+		case None => 
+		   session.connection.status match {
+		      case OPEN => sessionMap.put(session.getId, new Entry(session))
+		      case CLOSED_BY_SERVER => throw new ServerException.Remote(ServerError.UnknownConnection, session.connection.id)
+		      case _ => throw new ServerException.Remote(ServerError.InvalidConnectionStatus, session.connection.id)
+		   }		   
 		
-		// Have entry for this session id: only replace if not expired and open
-		// by this or parallel connection.
+      // Have entry for this session id:
 		case Some(e) =>
 		   if (e.isExpired || ! e.session.connection.isParallelTo(session.connection)) {
 		      throw new ServerException.Remote(ServerError.SessionExpired, session.getId)
