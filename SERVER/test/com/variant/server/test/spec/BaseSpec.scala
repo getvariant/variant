@@ -118,17 +118,17 @@ trait BaseSpec extends PlaySpec {
      /**
        * 
        */
-      def withConnStatusHeader(status: ConnectionStatus) = {
+      def withConnStatusHeader(expected: ConnectionStatus*) = {
          header(HTTP_HEADER_CONN_STATUS, res) match {
             case Some(h) => {
                val act = ConnectionStatus.valueOf(h)
-               if (act != status) fail {
-                  s"Connection status ${act} in header was not equal ${status} " + stackLine
+               if (!expected.contains(act)) fail {
+                  s"Connection status ${act} in header was not equal ${expected.mkString(",")} " + stackLine
                }
             }
             case None => {
                fail {
-                  s"No connection status in header was not equal ${status} " + stackLine
+                  s"No connection status in header was not equal ${expected.mkString(",")} " + stackLine
                }
             }
          }

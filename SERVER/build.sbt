@@ -62,7 +62,7 @@ sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { 
 
 //fork := true  // without this JVM options won't hold
 
-//testOptions += Tests.Argument(TestFrameworks.JUnit); Do we need this?
+testOptions in Test += Tests.Argument("-oF")  // Full stack traces (truncagted by default)
 
 // Test scoped classpath directory - need this for tests that deploy schema from classpath.
 unmanagedClasspath in Test += baseDirectory.value / "conf-test"

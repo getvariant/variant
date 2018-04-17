@@ -57,7 +57,7 @@ class SessionController @Inject() (
    def get(sid: String) = connectedAction { req =>
 
       val conn = req.attrs.get(connectedAction.ConnKey).get
-      val ssn = server.ssnStore.getOrBust(sid, conn.id)
+      val ssn = server.ssnStore.getOrBust(sid, conn)
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson)
       ))

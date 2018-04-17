@@ -49,7 +49,7 @@ class RequestController @Inject() (
       }
 
       val conn = req.attrs.get(connectedAction.ConnKey).get
-      val ssn = server.ssnStore.getOrBust(sid, conn.id)
+      val ssn = server.ssnStore.getOrBust(sid, conn)
       val schema = ssn.connection.schema
       val state = schema.getState(stateName)
 
@@ -82,7 +82,7 @@ class RequestController @Inject() (
       }
       
       val conn = req.attrs.get(connectedAction.ConnKey).get
-      val ssn = server.ssnStore.getOrBust(sid, conn.id)
+      val ssn = server.ssnStore.getOrBust(sid, conn)
       val stateReq = ssn.getStateRequest
       val sve = stateReq.getStateVisitedEvent
       

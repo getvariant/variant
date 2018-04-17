@@ -115,14 +115,16 @@ class SessionStore (private val server: VariantServer) {
 	}
 	
 	/**
+	 * Retrieve a session by its ID as an Option.
+	 * Requestor's connection must be parallel to the session's.
 	 */
-	def get(sid: String, cid: String): Option[SessionImpl] = {
+	def get(sid: String, conn: Connection): Option[SessionImpl] = {
 	
 		sessionMap.get(sid) match { 
 		   
 		case None => None
 		case Some(e) =>
-		   if (!e.isExpired && e.session.connection.id == cid) {
+		   if (!e.isExpired && e.session.connection.isParallelTo(conn)) {
 		      e.touch()
 		      Some(e.session)
 		   }
@@ -133,9 +135,10 @@ class SessionStore (private val server: VariantServer) {
 	}
 
 	/**
+	 * Retrieve a session by its ID, or throw SessionExpired if does not exist.
 	 */
-	def getOrBust(sid: String, cid: String): SessionImpl = {
-      val result	= get(sid, cid).getOrElse {
+	def getOrBust(sid: String, conn: Connection): SessionImpl = {
+      val result	= get(sid, conn).getOrElse {
          logger.debug(s"Not found session [${sid}]")      
          throw new ServerException.Remote(ServerError.SessionExpired, sid)
       }

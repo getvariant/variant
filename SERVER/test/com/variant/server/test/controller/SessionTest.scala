@@ -33,7 +33,8 @@ object SessionTest {
       {"sid":"${sid:SID}",
        "ts": ${ts:%d}, 
        "request": {"state": "newOwner","status": "OK","committed": false, 
-                  "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}]},
+                  "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}],
+                  "exps": ["NewOwnerTest.tosCheckbox.false"]},
         "attrList": [{"name": "NAME1","val": "VALUE1"}, {"name": "NAME2","val": "VALUE2"}]
       }
    """
@@ -271,14 +272,15 @@ class SessionTest extends BaseSpecWithServer {
             .isOk
             .withNoBody
 
-         val ssnJson = server.ssnStore.get(sid, connId).get.asInstanceOf[SessionImpl].toJson
+         val conn = server.connStore.get(connId).get
+         val ssnJson = server.ssnStore.get(sid, conn).get.asInstanceOf[SessionImpl].toJson
          ssnJson mustBe normalJson(sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts))
-         val ssn = server.ssnStore.get(sid, connId).get
+         val ssn = server.ssnStore.get(sid, conn).get
          ssn.getCreateDate.getTime mustBe ts
          ssn.getId mustBe sid
       
          Thread.sleep(2000);
-         server.ssnStore.get(sid, connId) mustBe empty
+         server.ssnStore.get(sid, conn) mustBe empty
          
       }
 

@@ -294,7 +294,7 @@ class TargetingTest extends BaseSpecWithServerAsync {
 		}
 		
      "join all" in {
-         joinAll()
+         joinAll(60000)  
       }
 		
 	   "Throw exception if targeting hook sets bad experience" in {

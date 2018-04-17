@@ -63,7 +63,7 @@ class EventController @Inject() (
 
       val conn = req.attrs.get(connectedAction.ConnKey).get
 
-      val ssn = server.ssnStore.getOrBust(sid, conn.id)
+      val ssn = server.ssnStore.getOrBust(sid, conn)
       
       if (ssn.getStateRequest == null)
          throw new ServerException.Remote(UnknownState)   

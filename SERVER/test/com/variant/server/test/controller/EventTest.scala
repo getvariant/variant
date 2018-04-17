@@ -131,7 +131,7 @@ class EventTest extends BaseSpecWithServer {
             .withConnStatusHeader(OPEN)
             .withNoBody
 
-         ssn = server.ssnStore.get(sid, cid).get
+         ssn = server.ssnStore.get(sid, server.connStore.get(cid).get).get
       }
       
       "return 400 and error on POST with missing param name" in {

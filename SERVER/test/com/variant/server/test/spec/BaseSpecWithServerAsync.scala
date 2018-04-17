@@ -31,7 +31,7 @@ class BaseSpecWithServerAsync extends BaseSpecWithServer {
       future.onFailure {
         case t => {
            taskCount.decrementAndGet()
-           throw new Exception(s"Async block crashed: ${t.getMessage}")
+           throw new Exception(s"Async block crashed: ${t.getMessage}", t)
         }
       }
 
@@ -47,8 +47,7 @@ class BaseSpecWithServerAsync extends BaseSpecWithServer {
     * Block for all functions to complete.
     * TODO: replace with java.util.concurrent.CountDownLatch
     */
-   protected def joinAll() = {
-      val timeout = 20000
+   protected def joinAll(timeout: Long) {
       var wated = 0
       while (taskCount.get > 0 && wated < timeout) {
          Thread.sleep(200)
@@ -56,4 +55,10 @@ class BaseSpecWithServerAsync extends BaseSpecWithServer {
       }
       if (wated >= timeout) fail("Unexpected timeout waiting for background threads.")
    }
+
+   /**
+    * Block for all functions to complete.
+    * TODO: replace with java.util.concurrent.CountDownLatch
+    */
+   protected def joinAll() { joinAll(20000) }
 }
