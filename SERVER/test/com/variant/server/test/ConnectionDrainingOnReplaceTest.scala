@@ -20,7 +20,7 @@ import scala.util.Random
 /**
  * Test session drainage.
  */
-class ConnectionDrainingTest extends BaseSpecWithServerAsync with TempSchemataDir {
+class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempSchemataDir {
       
    private val logger = Logger(this.getClass)
    private val random = new Random(System.currentTimeMillis())
@@ -46,7 +46,7 @@ class ConnectionDrainingTest extends BaseSpecWithServerAsync with TempSchemataDi
    /**
     * 
     */
-   "File System Schema Deployer on schema DELETE" should {
+   "File System Schema Deployer on schema ADD" should {
  
 	   "startup with two schemata" in {
 	      
@@ -56,13 +56,12 @@ class ConnectionDrainingTest extends BaseSpecWithServerAsync with TempSchemataDi
                   
          // Let the directory watcher thread start before copying any files.
    	   Thread.sleep(100)
+   
 	   }
-
-	   //val connId2Big = new java.util.concurrent.ConcurrentLinkedQueue[String]
-	   //val connId2Pet = new java.util.concurrent.ConcurrentLinkedQueue[String]
 
 	   val connId2Big = new Array[String](CONNECTIONS)
 	   val connId2Pet = new Array[String](CONNECTIONS)
+
 
 	   "obtain CONNECTIONS connections to ParserCovariantOkayBigTestNoHooks" in {
 
@@ -131,7 +130,7 @@ class ConnectionDrainingTest extends BaseSpecWithServerAsync with TempSchemataDi
             }
 	      }
 	      
-	      joinAll // blocks until all sessions are created by async blocks above
+	      joinAll // blocks until all sessions are created
 	   }
 
       "all sessions must be readable over all connections" in {
@@ -165,19 +164,26 @@ class ConnectionDrainingTest extends BaseSpecWithServerAsync with TempSchemataDi
 	      joinAll
    	}
 
-      "delete schema ParserCovariantOkayBigTestNoHooks" in {
+      "replace schema ParserCovariantOkayBigTestNoHooks" in {
 
-	      val schema = server.schemata.get("ParserCovariantOkayBigTestNoHooks").get
-         schema.state mustBe State.Deployed
+	      val oldSchema = server.schemata.get("ParserCovariantOkayBigTestNoHooks").get
+         oldSchema.state mustBe State.Deployed
 
          async {
    	      
-	         IoUtils.delete(s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
+            IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
             Thread.sleep(dirWatcherLatencyMsecs)
+            
+            oldSchema.state mustBe State.Gone
+            val newSchema = server.schemata.get("ParserCovariantOkayBigTestNoHooks").get
+            newSchema.state mustBe State.Deployed
+            newSchema mustNot be (oldSchema)
+            server.schemata.size mustBe 2
+
 	      }
 	   }
 
-      "permit session reads over parallel connections, while schema is being deleted" in {
+      "permit session reads over parallel connections, while schema is being replaced" in {
 
          // pick connection randomly to emulate parallel connections.
          val i = random.nextInt(CONNECTIONS)
@@ -207,13 +213,9 @@ class ConnectionDrainingTest extends BaseSpecWithServerAsync with TempSchemataDi
          
          joinAll
 
-         // Confirm the schema is gone.
-         server.schemata.size mustBe 1
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks") mustBe None
-
    	}
 
-      "permit session updates over both connections, after schema was deleted" in {
+      "permit session updates over draining connections, after schema was replaced" in {
      
          // pick connection randomly to emulate parallel connections.
          val i = random.nextInt(CONNECTIONS)
@@ -226,19 +228,10 @@ class ConnectionDrainingTest extends BaseSpecWithServerAsync with TempSchemataDi
                .withNoBody
          }
 
-         val cidPet = connId2Pet(i)
-         for (j <- 0 until SESSIONS) {
-	         val body = sessionJsonPet.expand("sid" -> ssnId2Pet(i)(j))
-            assertResp(route(app, connectedRequest(PUT, context + "/session", cidPet).withBody(body)))
-               .is(OK)
-               .withConnStatusHeader(OPEN)
-               .withNoBody
-         }
-
          joinAll
    	}
 
-      "permit session create in live connection" in {
+      "allow session create in old live connection" in {
          
          val i = random.nextInt(CONNECTIONS)
          val cid = connId2Pet(i)
@@ -276,6 +269,56 @@ class ConnectionDrainingTest extends BaseSpecWithServerAsync with TempSchemataDi
 
       }
 
+      var newcid: String = null
+      val newsid = newSid
+      
+      "open a new connection to the new schema and create a session in it" in {
+
+         // Connection
+         assertResp(route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")))
+           .isOk
+           .withConnStatusHeader(OPEN)
+           .withBodyJson { json =>
+               newcid = (json \ "id").as[String]
+               newcid mustNot be (null)
+            }
+
+         // Session in it
+         val body = sessionJsonBig.expand("sid" -> newsid)
+         assertResp(route(app, connectedRequest(PUT, context + "/session", newcid).withBody(body)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+      }
+
+      "session in the new connection should not be accessible via draining connection" in {
+         
+         val i = random.nextInt(CONNECTIONS)
+         val cid = connId2Big(i)
+         for (j <- 0 until SESSIONS) async {
+            val sid = ssnId2Big(i)(j)
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + newsid, cid)))
+               .isError(SessionExpired, newsid)
+               .withConnStatusHeader(CLOSED_BY_SERVER) 
+               .withNoBody
+         }
+         
+         joinAll
+      }
+      
+      "sessions in the draining connections should not be accessible via the new connection" in {
+         
+         for (i <- 0 until CONNECTIONS) {
+            for (j <- 0 until SESSIONS) async {
+               val sid = ssnId2Big(i)(j)
+               assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, newcid)))
+                  .isError(SessionExpired, sid)
+                  .withConnStatusHeader(OPEN) 
+                  .withNoBody
+            }
+         }         
+         joinAll
+      }
+
       "expire all sessions and dispose of all draining connections after session timeout period" in {
        
          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis)
@@ -298,6 +341,12 @@ class ConnectionDrainingTest extends BaseSpecWithServerAsync with TempSchemataDi
                .withConnStatusHeader(OPEN)
                .withNoBody
          }
+         
+         assertResp(route(app, connectedRequest(GET, context + "/session/" + newsid, newcid)))
+            .isError(SessionExpired, newsid)
+            .withConnStatusHeader(OPEN)
+            .withNoBody
+      
       }
    }
 }

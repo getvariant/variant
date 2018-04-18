@@ -5,6 +5,7 @@ import scala.collection.mutable.ArrayBuffer
 import scala.concurrent._
 import scala.concurrent.duration._
 import java.util.concurrent.atomic.AtomicInteger
+import org.scalatest.concurrent.ScalaFutures
 
 
 class BaseSpecWithServerAsync extends BaseSpecWithServer {
@@ -16,6 +17,8 @@ class BaseSpecWithServerAsync extends BaseSpecWithServer {
    val taskCount = new AtomicInteger(0)
    //private val futures = ArrayBuffer[Future[_]]()
    
+   var unexpectedException: Option[Throwable] = None
+   
    /**
     * Execute a function on the pool
     */
@@ -24,17 +27,15 @@ class BaseSpecWithServerAsync extends BaseSpecWithServer {
       taskCount.addAndGet(1)
 
       val future = Future {
-         block
-         taskCount.decrementAndGet()
-      }
-      
-      future.onFailure {
-        case t => {
-           taskCount.decrementAndGet()
-           throw new Exception(s"Async block crashed: ${t.getMessage}", t)
-        }
-      }
-
+         try {
+            block
+         } catch {
+            case t: Throwable => 
+               unexpectedException = Some(t)
+         } finally {
+            taskCount.decrementAndGet()
+         }
+      }      
    }
    
    /**
@@ -54,6 +55,10 @@ class BaseSpecWithServerAsync extends BaseSpecWithServer {
          wated += 200
       }
       if (wated >= timeout) fail("Unexpected timeout waiting for background threads.")
+      
+      unexpectedException.foreach { t => 
+         unexpectedException = None
+         throw new Exception(s"Async block crashed: ${t.getMessage}", t) }
    }
 
    /**

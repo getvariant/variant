@@ -331,7 +331,7 @@ class SessionTest extends BaseSpecWithServer {
 
        "expire session as normal" in {
 
-          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
+         Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
 
          // Same error over the closed connection
          assertResp(route(app, connectedRequest(GET, endpoint + "/" + sid, connId)))
