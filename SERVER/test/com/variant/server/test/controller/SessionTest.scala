@@ -194,6 +194,8 @@ class SessionTest extends BaseSpecWithServer {
          }
       }
 
+      var conn2Id: String = null
+
       "return OK on GET or PUT session on a parallel connection" in {
 
          // Create a session
@@ -203,8 +205,6 @@ class SessionTest extends BaseSpecWithServer {
             .isOk
             .withConnStatusHeader(OPEN)
             .withNoBody
-
-         var conn2Id: String = null
          
          // Obtain a parallel connection.
          assertResp(route(app, connectionRequest("big_covar_schema")))
@@ -245,7 +245,6 @@ class SessionTest extends BaseSpecWithServer {
             .withNoBody
             .withConnStatusHeader(OPEN)
 
-         var conn2Id: String = null
          // Obtain a connection to a different schema
          assertResp(route(app, connectionRequest("petclinic")))
             .isOk
@@ -284,36 +283,67 @@ class SessionTest extends BaseSpecWithServer {
          
       }
 
-      "return OK on GET session after connection close" in {
+      var sid: String = null
 
-         var connId: String = null
-         
-         // Obtain a new connection.
+      "allow access to a session after connection close on a parallel connection" in {
+
          assertResp(route(app, connectionRequest("big_covar_schema")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json =>
                connId = (json \ "id").as[String]
                connId mustNot be (null)
-         }         
-         // Create a session on it
-         val sid = newSid()
+         }     
+
+        assertResp(route(app, connectionRequest("big_covar_schema")))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson { json =>
+               conn2Id = (json \ "id").as[String]
+               conn2Id mustNot be (null)
+         }     
+
+         // Create a session in cid1
+         sid = newSid
          val body = sessionJsonBigCovar.expand("sid" -> sid)
          assertResp(route(app, connectedRequest(PUT, endpoint, connId).withBody(body)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withNoBody
 
-         // Close the connection
+         // Close connection cid1
          assertResp(route(app, connectedRequest(DELETE, context + "/connection", connId)))
             .isOk
             .withNoBody
             .withConnStatusHeader(CLOSED_BY_CLIENT)
 
-         // Session should be dead after connection closed. by the client.
+         // Cannot get to session over closed connection.
          assertResp(route(app, connectedRequest(GET, endpoint + "/" + sid, connId)))
             .isError(UnknownConnection, connId)
             .withNoConnStatusHeader
+
+         // OK getting to session over open connection.
+         assertResp(route(app, connectedRequest(GET, endpoint + "/" + sid, conn2Id)))
+            .isOk
+            .withConnStatusHeader(OPEN)
+
        }
+
+       "expire session as normal" in {
+
+          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
+
+         // Same error over the closed connection
+         assertResp(route(app, connectedRequest(GET, endpoint + "/" + sid, connId)))
+            .isError(UnknownConnection, connId)
+            .withNoConnStatusHeader
+
+         // Session Expired over live connection.
+         assertResp(route(app, connectedRequest(GET, endpoint + "/" + sid, conn2Id)))
+            .isError(SessionExpired, sid)
+            .withConnStatusHeader(OPEN)
+
+       }
+
    }
 }
