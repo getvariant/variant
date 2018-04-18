@@ -147,7 +147,8 @@ trait BaseSpec extends PlaySpec {
        * 
        */
       def withNoBody = {
-         contentAsString(res) mustBe empty
+         if (contentAsString(res) == Some)
+            fail { "Response body was not empty " + stackLine }
          this
       }
 

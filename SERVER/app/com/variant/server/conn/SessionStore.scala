@@ -146,6 +146,17 @@ class SessionStore (private val server: VariantServer) {
       result
 	}
 	
+	/**
+	 * Number of sessions in a given connection.
+	 */
+	def sessionCount(conn: Connection) = {
+	   var result = 0
+	   for ((id, entry) <- sessionMap if (entry.session.connection == conn)) { 
+	      result += 1 
+	   }
+	   result
+	}
+	
   /**
 	*/
    def deleteIf(f: (Entry) => Boolean) {

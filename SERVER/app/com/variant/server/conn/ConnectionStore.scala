@@ -89,6 +89,13 @@ class ConnectionStore(private var server: VariantServer) {
    }
    
    /**
+    * 
+    */
+   def disposeOf(cid: String) = {
+      connMap.remove(cid)
+   }
+   
+   /**
 	 */
 	def getOrBust(cid: String): Connection = {
       

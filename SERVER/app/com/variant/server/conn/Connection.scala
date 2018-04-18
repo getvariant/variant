@@ -67,6 +67,11 @@ class Connection(val schema: ServerSchema) {
       logger.debug(s"Put connection ID [${id}] to schema [${schema.getName}] into CLOSED_BY_CLIENT mode")
    }
 
+   def isDisposable = {
+      Seq(CLOSED_BY_SERVER, CLOSED_BY_CLIENT).contains(_status) &&
+      VariantServer.instance.ssnStore.sessionCount(this) == 0
+   }
+   
    /**
     * Serialize as JSON. Schema source is shipped over as a string
     * to be parsed by client.

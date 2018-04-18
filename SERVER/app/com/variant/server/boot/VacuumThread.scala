@@ -1,7 +1,10 @@
 package com.variant.server.boot
 
+import scala.collection.mutable
 import play.api.Logger
+import com.variant.core.ConnectionStatus._
 import com.variant.server.api.ConfigKeys._
+import com.variant.server.conn.Connection
 
 /**
  * Background vacuum thread.
@@ -26,10 +29,13 @@ class VacuumThread(server: VariantServer) extends Thread {
 			try {
 				val now = System.currentTimeMillis();
 				var count = 0;
+				val connectionsToTry = new mutable.HashSet[Connection]()
 				
+				// Sessions sweep
 				server.ssnStore.deleteIf { entry => 
 			      if (entry.isExpired) {
 			         count += 1
+			         connectionsToTry += entry.session.connection
    			      logger.trace(String.format("Vacuumed expired session ID [%s]", entry.session.getId)) 
 			         true
 			      }
@@ -39,6 +45,14 @@ class VacuumThread(server: VariantServer) extends Thread {
 				if (logger.isTraceEnabled) logger.trace(s"Vacuumed $count session(s)");
 				else if (logger.isDebugEnabled && count > 0) logger.debug(s"Vacuumed $count session(s)");
 
+				// Connections sweep
+				connectionsToTry.foreach { conn => 
+				   if (conn.isDisposable ) {
+				      server.connStore.disposeOf(conn.id)
+   			      logger.info(s"Disposed of ${conn.status} connection ID [${conn.id}]") 
+				   }
+				}
+				
 				Thread.sleep(vacuumingFrequencyMillis)
 				logger.trace("Vacuum thread woke up after %s millis".format(System.currentTimeMillis() - now))
 			}
