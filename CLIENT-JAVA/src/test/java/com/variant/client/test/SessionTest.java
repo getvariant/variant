@@ -33,7 +33,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void noSessionIdInTrackerTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -70,7 +70,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -110,7 +110,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 
    /**
     */
-   //@org.junit.Test
+   @org.junit.Test
    public void sessionExpirationListenerTest() throws Exception {
       
       Connection conn = client.getConnection("big_covar_schema");    
@@ -156,7 +156,7 @@ public class SessionTest extends ClientBaseTestWithServer {
    
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void connectionClosedLocallyTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -207,7 +207,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void attributesTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		

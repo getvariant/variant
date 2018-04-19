@@ -1,5 +1,8 @@
 package com.variant.server.api;
 
+import static com.variant.core.RuntimeError.CONFIG_PROPERTY_NOT_SET;
+import static com.variant.server.api.ConfigKeys.EVENT_FLUSHER_CLASS_INIT;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -21,8 +24,16 @@ public class EventFlusherAppLogger implements EventFlusher {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(EventFlusherAppLogger.class);
 
+	private String level = null;
+
 	public EventFlusherAppLogger(Config config) {
-		LOG.debug("Bootstrapped");
+		level = config.getString("level");
+		
+		if (level == null) {
+			level = "INFO";
+			LOG.info("No level specified. Will use INFO.");
+		}
+
 	}
 
 	@Override
@@ -68,7 +79,12 @@ public class EventFlusherAppLogger implements EventFlusher {
 
 	      msg.append("}");
 
-			LOG.info(msg.toString());
+	      switch (level.toUpperCase()) {
+	      case "TRACE": LOG.trace(msg.toString()); break;
+	      case "DEBUG": LOG.debug(msg.toString()); break;
+	      case "INFO": LOG.info(msg.toString()); break;
+	      case "ERROR": LOG.error(msg.toString()); break;
+	      }
 		}
 								
 	}

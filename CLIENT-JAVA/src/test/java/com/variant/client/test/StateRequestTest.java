@@ -10,6 +10,7 @@ import static com.variant.core.ConnectionStatus.*;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.impl.ClientUserError;
+import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.StateNotInstrumentedException;
@@ -253,7 +254,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	/**
 	 * Session expires too soon. See bug https://github.com/getvariant/variant/issues/67
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void connectionClosedLocallyTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -267,7 +268,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	conn.close();
 	   	
 	   	assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
-	   	assertFalse(ssn.isExpired());
+	   	assertTrue(ssn.isExpired());
 		
 	   	new ClientUserExceptionInterceptor() {
 			@Override public void toRun() {
@@ -276,7 +277,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			@Override public void onThrown(ClientException.User e) {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
-		}.assertThrown(SessionExpiredException.class);
+		}.assertThrown(ConnectionClosedException.class);
 		
 		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
 	}
