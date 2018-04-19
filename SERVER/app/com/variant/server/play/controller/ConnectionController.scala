@@ -13,12 +13,14 @@ import com.variant.core.ConnectionStatus._
 import play.api.mvc.ControllerComponents
 import com.variant.server.play.action.ConnectedAction
 import com.variant.server.play.action.DisconnectedAction
+import com.variant.server.boot.VariantServer
 
 class ConnectionController @Inject() (
       val connectedAction: ConnectedAction,
       val disconnectedAction: DisconnectedAction,
-      val cc: ControllerComponents
-      ) extends VariantController(cc)  {
+      val cc: ControllerComponents,
+      val server: VariantServer
+      ) extends VariantController(cc, server)  {
    
    private val logger = Logger(this.getClass)	
 

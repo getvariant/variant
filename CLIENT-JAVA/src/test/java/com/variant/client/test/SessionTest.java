@@ -199,10 +199,10 @@ public class SessionTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 				ssn.targetForState(state2);
 			}
-		}.assertThrown(SessionExpiredException.class);
+		}.assertThrown(ConnectionClosedException.class);
+		
 		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 		
-		//ssn.targetForState(state2);
 	}
 
 	/**

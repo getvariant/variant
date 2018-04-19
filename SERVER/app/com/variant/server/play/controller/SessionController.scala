@@ -14,11 +14,13 @@ import play.api.mvc.ControllerComponents
 import com.variant.server.play.action.ConnectedAction
 import com.variant.core.ServerError
 import com.variant.core.ConnectionStatus._
+import com.variant.server.boot.VariantServer
 
 class SessionController @Inject() (
       val connectedAction: ConnectedAction,
-      val cc: ControllerComponents
-      ) extends VariantController(cc)  {
+      val cc: ControllerComponents,
+      val server: VariantServer
+      ) extends VariantController(cc, server)  {
    
    private val logger = Logger(this.getClass)	
 

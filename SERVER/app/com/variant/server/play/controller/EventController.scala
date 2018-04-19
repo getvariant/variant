@@ -30,8 +30,9 @@ import com.variant.server.play.action.ConnectedAction
 //@Singleton -- Is this for non-shared state controllers?
 class EventController @Inject() (
       val connectedAction: ConnectedAction,
-      val cc: ControllerComponents
-      ) extends VariantController(cc)  {
+      val cc: ControllerComponents,
+      val server: VariantServer
+      ) extends VariantController(cc, server)  {
    
    private val logger = Logger(this.getClass)	
  

@@ -22,13 +22,6 @@ public enum ConnectionStatus {
 	OPEN, 
 	
 	/**
-	 * Open, but only existing sessions can be retrieved. No new sessions can be created.
-	 * 
-	 * @since 0.8
-	 *
-	DRAINING, 
-*/
-	/**
 	 * Connection has been closed by the client with a call to {@link Connection#close()()}.
 	 * No sessions can be retrieved or created.
 	 * 

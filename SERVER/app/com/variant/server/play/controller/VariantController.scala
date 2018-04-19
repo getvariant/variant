@@ -18,14 +18,17 @@ import play.api.mvc.Request
 /**
  * All Variant controllers inherit from this.
  */
-abstract class VariantController @Inject() (cc: ControllerComponents) extends AbstractController(cc) {
+abstract class VariantController @Inject() (
+      cc: ControllerComponents,
+      server: VariantServer
+      ) extends AbstractController(cc) {
    
    private val logger = Logger(this.getClass)	
-   
+
    /**
     * An alias for the server
     */
-   protected val server = VariantServer.instance
+   //protected val server = VariantServer.instance
      
    /**
     * Parse body as JSON.

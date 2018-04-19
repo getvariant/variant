@@ -6,7 +6,9 @@ import static org.junit.Assert.assertNull;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
+
 import static com.variant.core.ConnectionStatus.*;
+
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
@@ -201,10 +203,36 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 
 		server.restart();
 
+		// The connection doesn't yet know it's gone.
 		assertEquals(OPEN, conn.getStatus());
 
-		assertNull(conn.getSession("foo"));        
-		assertNull(conn.getSessionById("foo"));
+		new ClientUserExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn.getSession("foo");
+			}
+			
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
+		}.assertThrown(ConnectionClosedException.class);       
+
+		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
+
+		new ClientUserExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn.getSessionById("foo");
+			}
+			
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
+		}.assertThrown(ConnectionClosedException.class);       
+		
+		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 
 		new ClientUserExceptionInterceptor() {
 			

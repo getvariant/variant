@@ -133,7 +133,7 @@ public interface Connection {
 	Schema getSchema();
 
 	/**
-	 * The current {@link ConnectionStatus} of this connection.
+	 * Most recent known {@link ConnectionStatus} of this connection.
 	 * 
 	 * @since 0.7
 	 * @return An element of enum {@link ConnectionStatus}.
