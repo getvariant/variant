@@ -156,7 +156,7 @@ public class SessionImpl implements Session {
 			throw new ClientException.User(ACTIVE_REQUEST);
 		}
 		
-		Payload.Session payload = conn.getServer().requestCreate(getId(), state.getName());
+		Payload.Session payload = conn.client.server.requestCreate(getId(), state.getName(), conn);
 		rewrap(payload.session);
 		stateRequest = new StateRequestImpl(this);
 		
@@ -242,7 +242,7 @@ public class SessionImpl implements Session {
 	@Override
 	public void triggerEvent(VariantEvent event) {
 		checkState();
-		conn.getServer().eventSave(this, event);
+		conn.client.server.eventSave(this, event);
 	}
 	
 	/**
@@ -296,7 +296,7 @@ public class SessionImpl implements Session {
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
 	public void save() {
-		conn.getServer().sessionSave(this);
+		conn.client.server.sessionSave(this);
 	}
 	
 	/**

@@ -8,13 +8,6 @@ package com.variant.core;
 public enum ConnectionStatus {
 
 	/**
-	 * Internal state. Should never be returned by {@link Connection#getStatus()}.
-	 * 
-	 * @since 0.8
-	 */
-	CONNECTING, 
-
-	/**
 	 * Open without restrictions. New sessions can be created.
 	 * 
 	 * @since 0.7

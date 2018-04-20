@@ -37,15 +37,39 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 		assertEquals(5, conn.getSchema().getStates().size());
 		assertEquals(6, conn.getSchema().getTests().size());
 
-	    IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
+		assertNull(conn.getSession("foo"));        
+		IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
 		Thread.sleep(dirWatcherLatencyMsecs);
 
 		assertEquals(OPEN, conn.getStatus());
 
-		assertNull(conn.getSession("foo"));        
-		assertNull(conn.getSessionById("foo"));
+		// Can't do anything over the connection
+		new ClientUserExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn.getSession("foo");
+			}
+			
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
+		}.assertThrown(ConnectionClosedException.class);
 
-		// Connection must go after schema undeployed.
+		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
+
+		new ClientUserExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn.getSessionById("foo");
+			}
+			
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
+		}.assertThrown(ConnectionClosedException.class);
+
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
@@ -57,21 +81,9 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 			}
 			
 		}.assertThrown(ConnectionClosedException.class);
-
-		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 		
 		// Confirm the schema is gone.
-		new ClientUserExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				client.getConnection("big_covar_schema");
-			}
-			
-			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ServerError.UnknownSchema, e.getError());
-			}
-			
-		}.assertThrown();
+		assertNull(client.getConnection("big_covar_schema"));
 
 	}	
 

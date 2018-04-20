@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.client.ClientException;
 import com.variant.client.ConfigKeys;
+import com.variant.client.Connection;
 import com.variant.core.ConnectionStatus;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
@@ -31,24 +32,8 @@ public class Server {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Server.class);
 
-	private final ConnectionImpl connection;
-	private final String schemaName;
 	private final String serverUrl;
-	private final HttpRemoter remoter;
 	private final HttpAdapter adapter;
-	private boolean isConnected = false;
-	
-	/**
-	 * Consistency checks.
-	 * @param conn
-	 */
-	private void checkState() {
-		
-	}
-	
-	private void checkState(Session ssn) {
-		
-	}
 
 	/**
 	 * All outbound operations which expect a return type.
@@ -57,19 +42,18 @@ public class Server {
 	 */
 	private abstract class CommonExceptionHandler<T> {
 		
-		abstract T code() throws Exception;
+		abstract T block() throws Exception;
 		
-		T run() {
+		T run(Connection conn) {
 			
 			try { 
-				return code(); 
+				return block(); 
 			}
 			// Intercept certain user exceptions.
 			catch (ClientException.User ce) {
 				if (ce.getError() == ServerError.UnknownConnection) {
 					// The server has hung up on this connection.
-					destroy();
-					connection.close(ConnectionStatus.CLOSED_BY_SERVER);
+					((ConnectionImpl)conn).setStatus(ConnectionStatus.CLOSED_BY_SERVER);
 					throw new ConnectionClosedException(ce);
 				}
 				else throw ce;
@@ -94,75 +78,63 @@ public class Server {
 	 */
 	private abstract class CommonExceptionHandlerVoid extends CommonExceptionHandler<Object> {
 		
-		final Object code() throws Exception {codeVoid(); return null;}
-		abstract void codeVoid() throws Exception;
+		final Object block() throws Exception {voidBlock(); return null;}
+		abstract void voidBlock() throws Exception;
 	}
 
-	/**
-	 * Destroy this server.
-	 */
-	private void destroy() {
-		if (remoter != null) {
-			remoter.destroy();
-		}
-		isConnected = false;
-	}
+	final VariantClientImpl client;
 	
 	/**
 	 * Bootstrapping 
 	 * Package visibility as we only want ConnectionImpl to call this.
 	 */
-	Server(ConnectionImpl connection, String schemaName) {
-		this.connection = connection;
-		this.remoter = new HttpRemoter(connection);
-		this.adapter = new HttpAdapter(remoter);
-		String url = connection.getClient().getConfig().getString(ConfigKeys.SERVER_URL);
+	Server(VariantClientImpl client) {
+		this.client = client;
+		this.adapter = new HttpAdapter();
+		String url = client.getConfig().getString(ConfigKeys.SERVER_URL);
 		this.serverUrl =  url.endsWith("/") ? url : url + "/";
-		this.schemaName = schemaName;
 	}
 	
+	//---------------------------------------------------------------------------------------------//
+	//                                        /CONNECTION                                          //
+	//---------------------------------------------------------------------------------------------//
+
 	/**
 	 * Connect this server to a schema.
 	 * @return
 	 */
-	Payload.Connection connect() {
+	Payload.Connection connect(String schema) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace("connect()");
 
-		if (isConnected) throw new ClientException.Internal("Already connected");
-
-		HttpResponse resp = adapter.post(serverUrl + "connection/" + schemaName);
-		isConnected = true;
+		HttpResponse resp = adapter.post(serverUrl + "connection/" + schema);
 		return Payload.Connection.fromResponse(resp);
 	}
 	
 	/**
-	 * Close this server connection.
+	 * Close this server connection (client side operation).
 	 */
-	void disconnect(String id) {
+	void disconnect(ConnectionImpl conn) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace("disconnect()");
 
-		if (isConnected) {
-			adapter.delete(serverUrl + "connection");
-			destroy();
-		}
+		adapter.delete(serverUrl + "connection", conn);
 	}
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                           /EVENT                                            //
 	//---------------------------------------------------------------------------------------------//
 
-	public void eventSave(Session ssn, VariantEvent event) {
+	public void eventSave(final Session ssn, final VariantEvent event) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("eventSave(%s,%s)", ssn.getId(), event.getName()));
 
-		checkState(ssn);
-		
-		// Remote
-		adapter.post(serverUrl + "event/", ((VariantEventSupport)event).toJson());
-		
+		new CommonExceptionHandlerVoid() {
+			@Override void voidBlock() throws Exception {
+				adapter.post(serverUrl + "event/", ((VariantEventSupport)event).toJson(), ssn.getConnection());
+			}
+		}.run(ssn.getConnection());
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -173,18 +145,17 @@ public class Server {
 	 * GET /session
 	 * Get an existing session by ID or null if does not exist on the server.
 	 */
-	public Payload.Session sessionGet(final String sid) {
+	public Payload.Session sessionGet(final String sid, final ConnectionImpl conn) {
 
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionGet(%s)", sid));
-
-		checkState();
+		
 		return new CommonExceptionHandler<Payload.Session>() {
 			
-			@Override Payload.Session code() throws Exception {
+			@Override Payload.Session block() throws Exception {
 				try {
-					HttpResponse resp = adapter.get(serverUrl + "session/" + sid);
-					return Payload.Session.fromResponse(connection, resp);
+					HttpResponse resp = adapter.get(serverUrl + "session/" + sid, conn);
+					return Payload.Session.fromResponse(conn, resp);
 				}
 				catch (ClientException.User ue) {
 					// If the server is saying the session wasn't there, this method
@@ -193,7 +164,7 @@ public class Server {
 					else throw ue;
 				}
 			}
-		}.run();
+		}.run(conn);
 	}
 
 	/**
@@ -204,14 +175,12 @@ public class Server {
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionSave(%s)", ssn.getId()));
 
-		checkState(ssn);
-
 		new CommonExceptionHandlerVoid() {
-			@Override void codeVoid() throws Exception {
+			@Override void voidBlock() throws Exception {
 				String body = ((SessionImpl)ssn).getCoreSession().toJson();
-				adapter.put(serverUrl + "session", body);
+				adapter.put(serverUrl + "session", body, ssn.getConnection());
 			}
-		}.run();
+		}.run(ssn.getConnection());
 		
 	}
 
@@ -223,37 +192,33 @@ public class Server {
 	 * POST /request.
      * Create a state request by targeting session for a state
 	 */
-	public Payload.Session requestCreate(String sid, String state) {
+	public Payload.Session requestCreate(String sid, String state, final ConnectionImpl conn) {
 
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("requestCreate(%s,%s)", sid, state));
-
-		checkState();
 
 		final String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", sid, state);
 		
 		return new CommonExceptionHandler<Payload.Session>() {
 			
-			@Override Payload.Session code() throws Exception {
-				HttpResponse resp = adapter.post(serverUrl + "request", body); 
-				return Payload.Session.fromResponse(connection, resp);
+			@Override Payload.Session block() throws Exception {
+				HttpResponse resp = adapter.post(serverUrl + "request", body, conn); 
+				return Payload.Session.fromResponse(conn, resp);
 			}
-		}.run();
+		}.run(conn);
 	}
 
 	/**
 	 * PUT /request.
 	 * Commit a state request and trigger the state visited event.
 	 */
-	public Payload.Session requestCommit(final CoreSession ssn) {
+	public Payload.Session requestCommit(final CoreSession ssn, final ConnectionImpl conn) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("requestCommit(%s)", ssn.getId()));
 
-		checkState();
-
 		return new CommonExceptionHandler<Payload.Session>() {
-			@Override Payload.Session code() throws Exception {
+			@Override Payload.Session block() throws Exception {
 				StringWriter body = new StringWriter();
 				JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 				jsonGen.writeStartObject();
@@ -262,10 +227,10 @@ public class Server {
 				//jsonGen.writeStringField("ssn", ssn.toJson());
 				jsonGen.writeEndObject();
 				jsonGen.flush();
-				HttpResponse resp = adapter.put(serverUrl + "request", body.toString());
-				return Payload.Session.fromResponse(connection, resp);
+				HttpResponse resp = adapter.put(serverUrl + "request", body.toString(), conn);
+				return Payload.Session.fromResponse(conn, resp);
 			}
-		}.run();
+		}.run(conn);
 
 	}
 

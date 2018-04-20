@@ -28,16 +28,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void connectToNonExistentSchemaTest() throws Exception {
 		
-		new ClientUserExceptionInterceptor() {
-			Connection conn = null;
-			@Override public void toRun() {
-				conn = client.getConnection("bad_schema");
-			}
-			@Override public void onThrown(ClientException.User e) {
-				assertNull(conn);
-				assertEquals(ServerError.UnknownSchema, e.getError());
-			}
-		}.assertThrown();
+		assertNull(client.getConnection("bad_schema"));
 	
 	}	
 	
@@ -79,11 +70,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		// Close first connection
 		conn1.close();
 		assertEquals(CLOSED_BY_CLIENT, conn1.getStatus());
-		
-		// Noop on subsequent close.
-		conn1.close();
-		assertEquals(CLOSED_BY_CLIENT, conn1.getStatus());		
-		
+				
 		// Other 2 connections should not be affected.
 		assertEquals(OPEN, conn2.getStatus());
 		assertEquals("big_covar_schema", conn2.getSchema().getName());
@@ -162,12 +149,24 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		assertNotNull(conn.getOrCreateSession("foo"));  // Creates the session.
 		assertNotNull(conn.getSession("foo"));
 		assertNotNull(conn.getSessionById("foo"));
-
+		
 		conn.close();
 		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
 		
-		// Noop on subsequent close.
-		conn.close();
+		// Exception on a subsequent close.
+		// Throw user error exception when trying to use this connection.
+		new ClientUserExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn.close();
+			}
+			
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
+		}.assertThrown(ConnectionClosedException.class);
+
 		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
 
 		// Throw user error exception when trying to use this connection.

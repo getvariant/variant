@@ -16,7 +16,6 @@ import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.UserError.Severity;
-import com.variant.core.VariantException;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
@@ -42,9 +41,6 @@ public class ConnectionImpl implements Connection {
 	private void preChecks() {
 		
 		switch (status) {
-
-		case CONNECTING:
-			throw new ClientException.Internal("Connection is not yet open");
 		
 		case OPEN:
 			break;
@@ -110,7 +106,7 @@ public class ConnectionImpl implements Connection {
 			// Session expired locally, recreate OK.  Don't bother with the server.
 			CoreSession coreSession = new CoreSession(sessionId);
 			result = new SessionImpl(this, coreSession, sidTracker, userData);
-			server.sessionSave(result);
+			client.server.sessionSave(result);
 			cache.add(result);
 		}
 
@@ -136,7 +132,7 @@ public class ConnectionImpl implements Connection {
 
 		// Go straight to the server as we may not have it in the client-local cache,
 		// e.g. when we get it from a parallel connection.
-		Payload.Session payload = server.sessionGet(sid);
+		Payload.Session payload = client.server.sessionGet(sid, this);
 		
 		if (payload == null) {
 			// Session expired on server, expire it here too.
@@ -168,22 +164,17 @@ public class ConnectionImpl implements Connection {
 	private final long sessionTimeoutMillis;
 	private final long timestamp;
 	private final SessionCache cache;
-	private final Server server;
-	private final VariantClientImpl client; 
 	private final Schema schema;
-	private ConnectionStatus status = ConnectionStatus.CONNECTING;
+	private ConnectionStatus status = null;
+
+	final VariantClientImpl client;
 
 	/**
 	 * 
 	 */
-	ConnectionImpl(VariantClient client, String schemaName) {
-		this.client = (VariantClientImpl) client;
+	ConnectionImpl(VariantClientImpl client, Payload.Connection payload) {
 		
-		// This connection's server object.
-		this.server = new Server(this, schemaName);
-		
-		// Get the schema from the server, if exists.
-		Payload.Connection payload = server.connect();
+		this.client = client;
 		
 		id = payload.id;
 		timestamp = payload.timestamp;
@@ -194,12 +185,13 @@ public class ConnectionImpl implements Connection {
 		if (resp.hasMessages(Severity.ERROR)) {
 			StringBuilder buff = new StringBuilder("Unable to parse schema:\n");
 			for (ParserMessage msg: resp.getMessages()) buff.append("    ").append(msg.toString()).append("\n");
-			throw new VariantException(buff.toString());
+			throw new ClientException.Internal(buff.toString());
 		}
-		schema = resp.getSchema();
-		
 		status = ConnectionStatus.OPEN;
+		schema = resp.getSchema();
 	}
+	
+	
 	
 	// ---------------------------------------------------------------------------------------------//
 	//                                             PUBLIC                                           //
@@ -262,7 +254,8 @@ public class ConnectionImpl implements Connection {
 
 	@Override
 	public void close() {
-		if (status == ConnectionStatus.OPEN) close(ConnectionStatus.CLOSED_BY_CLIENT);
+		preChecks();
+		client.server.disconnect(this);
 	}
 
 	// ---------------------------------------------------------------------------------------------//
@@ -275,19 +268,26 @@ public class ConnectionImpl implements Connection {
 		return sessionTimeoutMillis;
 	}
 
-	public void close(ConnectionStatus status) {
-		if (this.status == ConnectionStatus.OPEN) {
-			cache.destroy();
-			server.disconnect(id);
-			client.freeConnection(id);
-			this.status = status;
-		}
-	}
-	
 	/**
-	 * This connection's unerlying server.
 	 */
-	public Server getServer() {
-		return server;
-	}	
+	public void setStatus(ConnectionStatus status) {
+	
+		if (status == this.status) return;
+	
+		if (status == ConnectionStatus.OPEN) {
+			throw new ClientException.Internal("Cannot reopen a connection (currently " + this.status + ")");				
+		}
+		else if (status == ConnectionStatus.CLOSED_BY_SERVER) {
+			this.status = status;
+			cache.destroy();
+			throw new ConnectionClosedException();
+		}
+		else if (status == ConnectionStatus.CLOSED_BY_CLIENT) {
+			this.status = status;
+			cache.destroy();
+		}
+		else
+			throw new ClientException.Internal("Unexpected connection status from server " + status + ")");	
+	}
+		
 }

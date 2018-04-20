@@ -1,11 +1,13 @@
 package com.variant.client.test;
 
 import static com.variant.core.ConnectionStatus.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
+import com.variant.client.ClientException;
 import com.variant.client.Connection;
+import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
+import com.variant.client.impl.ClientUserError;
 import com.variant.core.util.IoUtils;
 
 /**
@@ -36,12 +38,10 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 	    IoUtils.fileCopy("schemata-remote/big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
 		Thread.sleep(dirWatcherLatencyMsecs);
 
-		// Should return closed by server since no active sessions.
+		// Connection doesn't know its' gone.
 		assertEquals(OPEN, conn1.getStatus());
 
-		conn1.getSession("foo");
-/*		
-		// Attempts to get or a non-existent session should fail. 
+		// Any attempts to use the connection should throw an exception. 		
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
@@ -56,7 +56,18 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 
 		assertEquals(CLOSED_BY_SERVER, conn1.getStatus());
 
-		assertNull(conn1.getSessionById("foo"));
+		// Now attempts to use the connection should throw an exception. 
+		new ClientUserExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn1.getSessionById("foo");
+			}
+			
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
+		}.assertThrown(ConnectionClosedException.class);
 		
 		new ClientUserExceptionInterceptor() {
 			
@@ -95,7 +106,7 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 		assertEquals(5, conn2.getSchema().getStates().size());
 		assertEquals(6, conn2.getSchema().getTests().size());
 		assertFalse(conn1.equals(conn2));
-		*/
+		
 	}	
 
 }

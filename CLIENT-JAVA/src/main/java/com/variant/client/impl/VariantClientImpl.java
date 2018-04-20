@@ -17,18 +17,11 @@ import com.variant.core.conf.ConfigLoader;
 public class VariantClientImpl implements VariantClient {
 		
 	private final Config config = ConfigLoader.load("/variant.conf", "/com/variant/client/variant-default.conf");
-	private final ConnectionFactory connFactory = new ConnectionFactory();
+	private final ConnectionFactory connFactory = new ConnectionFactory(this);
 	private final ConcurrentHashMap<String, Connection> connMap = new ConcurrentHashMap<String, Connection>();
 	
-	/**
-	 * Handshake with the server.
-	 * @param payloadReader
-	 *
-	private void handshake(Payload payloadReader) {
-		// Nothing for now.
-	}
-	*/
-	
+	public final Server server;
+		
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -36,15 +29,15 @@ public class VariantClientImpl implements VariantClient {
 	/**
 	 */
 	public VariantClientImpl() {
-		
+		server = new Server(this);
 	}
 
 	/**
 	 */
 	@Override
 	public Connection getConnection(String schema) {
-		ConnectionImpl result = connFactory.connectTo(this, schema);
-		connMap.put(result.getId(), result);
+		ConnectionImpl result = connFactory.connectTo(schema);
+		if (result != null) connMap.put(result.getId(), result);
 		return result;
 	}
 	
@@ -60,5 +53,14 @@ public class VariantClientImpl implements VariantClient {
 	//---------------------------------------------------------------------------------------------//
 	public void freeConnection(String cid) {
 		connMap.remove(cid);
+	}
+	
+	/**
+	 * Tests use this to confirm connetion's gone.
+	 * @param id
+	 * @return
+	 */
+	public Connection byId(String id) {
+		return connMap.get(id);
 	}
 }

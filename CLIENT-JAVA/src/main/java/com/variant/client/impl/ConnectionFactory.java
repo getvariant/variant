@@ -1,6 +1,9 @@
 package com.variant.client.impl;
 
-import com.variant.client.VariantClient;
+import com.variant.client.ClientException;
+import com.variant.client.net.Payload;
+import com.variant.core.ServerError;
+
 
 
 /**
@@ -10,13 +13,27 @@ import com.variant.client.VariantClient;
  * 
  * @author Igor.
  */
-public class ConnectionFactory {
+class ConnectionFactory {
 	
+	private final VariantClientImpl client;
+
+	ConnectionFactory(VariantClientImpl client) {
+		this.client = client;
+	}
+
 	/**
 	 */
-	public ConnectionImpl connectTo(VariantClient client, String schema) {
-		ConnectionImpl conn = new ConnectionImpl(client, schema);
-		return conn;
+	public ConnectionImpl connectTo(String schema) {
+		
+		try {
+			Payload.Connection payload = client.server.connect(schema);
+			return new ConnectionImpl(client, payload);
+		}
+		catch (ClientException.User ue) {
+			if (ue.getError() == ServerError.UnknownSchema) 
+				return null;
+			throw ue;
+		}		
 	}
 	
 }
