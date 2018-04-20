@@ -12,6 +12,7 @@ import static com.variant.core.ConnectionStatus.*;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
+import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.ServerError;
 
 /**
@@ -70,6 +71,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		// Close first connection
 		conn1.close();
 		assertEquals(CLOSED_BY_CLIENT, conn1.getStatus());
+		assertNull(((VariantClientImpl)client).byId(conn1.getId()));
 				
 		// Other 2 connections should not be affected.
 		assertEquals(OPEN, conn2.getStatus());
@@ -83,6 +85,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 
 		// Close second connection
 		conn2.close();
+		assertNull(((VariantClientImpl)client).byId(conn2.getId()));
 		assertEquals(CLOSED_BY_CLIENT, conn1.getStatus());
 		assertEquals(CLOSED_BY_CLIENT, conn2.getStatus());		
 
@@ -94,6 +97,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 
 		// Close last connection
 		conn3.close();
+		assertNull(((VariantClientImpl)client).byId(conn3.getId()));
 		assertEquals(CLOSED_BY_CLIENT, conn1.getStatus());
 		assertEquals(CLOSED_BY_CLIENT, conn2.getStatus());
 		assertEquals(CLOSED_BY_CLIENT, conn3.getStatus());

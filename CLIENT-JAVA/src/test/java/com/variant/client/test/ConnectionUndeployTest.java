@@ -10,6 +10,7 @@ import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
+import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.ServerError;
 import com.variant.core.util.IoUtils;
 
@@ -42,6 +43,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 		Thread.sleep(dirWatcherLatencyMsecs);
 
 		assertEquals(OPEN, conn.getStatus());
+		assertEquals(conn, ((VariantClientImpl)client).byId(conn.getId()));
 
 		// Can't do anything over the connection
 		new ClientUserExceptionInterceptor() {
@@ -57,6 +59,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 		}.assertThrown(ConnectionClosedException.class);
 
 		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
+		assertNull(((VariantClientImpl)client).byId(conn.getId()));
 
 		new ClientUserExceptionInterceptor() {
 			

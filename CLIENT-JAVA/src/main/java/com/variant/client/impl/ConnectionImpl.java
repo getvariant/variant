@@ -192,6 +192,10 @@ public class ConnectionImpl implements Connection {
 	}
 	
 	
+	private void destroy() {
+		cache.destroy();
+		client.freeConnection(id);
+	}
 	
 	// ---------------------------------------------------------------------------------------------//
 	//                                             PUBLIC                                           //
@@ -201,7 +205,6 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public String getId() {
-		preChecks();
 		return id;
 	}
 
@@ -210,6 +213,7 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public VariantClient getClient() {
+		preChecks();
 		return client;
 	}
 
@@ -279,12 +283,12 @@ public class ConnectionImpl implements Connection {
 		}
 		else if (status == ConnectionStatus.CLOSED_BY_SERVER) {
 			this.status = status;
-			cache.destroy();
+			destroy();
 			throw new ConnectionClosedException();
 		}
 		else if (status == ConnectionStatus.CLOSED_BY_CLIENT) {
 			this.status = status;
-			cache.destroy();
+			destroy();
 		}
 		else
 			throw new ClientException.Internal("Unexpected connection status from server " + status + ")");	
