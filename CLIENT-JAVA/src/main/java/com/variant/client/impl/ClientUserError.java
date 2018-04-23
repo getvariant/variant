@@ -36,6 +36,9 @@ public class ClientUserError extends RuntimeError {
 	public static final ClientUserError ACTIVE_REQUEST =
 			new ClientUserError(336, "Commit current state request first");
 
+	public static final ClientUserError CONNECTION_LIFECYCLE_LISTENER_EXCEPTION =
+			new ClientUserError(337, "Unhandled exception in connection lifecycle listener [%s]");
+
    /**
     * 
     */

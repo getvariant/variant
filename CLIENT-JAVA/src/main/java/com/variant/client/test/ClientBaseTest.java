@@ -58,7 +58,7 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 		/**
 		 * Client side errors: we have access to them at comp time.
 		 */
-		final public void assertThrown(UserError error, Object...args) throws Exception {
+		final public void assertThrown(UserError error, Object...args) {
 			ClientException.User result = super.run();
 			assertNotNull("Expected exception not thrown", result);
 			assertEquals(result.getError(), error);
@@ -67,7 +67,7 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 		/**
 		 * Server side errors: We don't have access to them at comp time
 		 */
-		final public void assertThrown(Class<? extends ClientException.User> uex) throws Exception {
+		final public void assertThrown(Class<? extends ClientException.User> uex) {
 			ClientException.User result = super.run();
 			assertNotNull("Expected exception not thrown", result);
 			assertEquals(uex, result.getClass());

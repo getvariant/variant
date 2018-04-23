@@ -234,7 +234,7 @@ abstract public class VariantBaseTest {
 		 * Call this if you want to analyse both thrown and unthrown cases.
 		 * @return
 		 */
-		final protected E run() throws Exception {
+		final protected E run() {
 			E result = null;
 			try {
 				toRun();
@@ -256,7 +256,7 @@ abstract public class VariantBaseTest {
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
-		final public void assertThrown() throws Exception {
+		final public void assertThrown() {
 			assertTrue("Assertion of type [" + getExceptionClass().getName() + "] was not thrown when expected", run() != null);
 		}
 
@@ -277,7 +277,7 @@ abstract public class VariantBaseTest {
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
-		final public void assertThrown(RuntimeError template, Object...args) throws Exception {
+		final public void assertThrown(RuntimeError template, Object...args) {
 			CoreException.User result = super.run();
 			assertNotNull("Expected exception not thrown", result);
 			assertEquals(new CoreException.User(template, args).getMessage(), result.getMessage());
@@ -300,7 +300,7 @@ abstract public class VariantBaseTest {
 		/**
 		 * Call this if you want assertion always thrown.
 		 */
-		final public void assertThrown(String format, Object...args) throws Exception {
+		final public void assertThrown(String format, Object...args) {
 			CoreException.Internal result = super.run();
 			assertNotNull("Expected exception not thrown", result);
 			assertEquals(String.format(format, args), result.getMessage());

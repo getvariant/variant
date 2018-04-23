@@ -6,6 +6,9 @@ import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTE
 import java.util.LinkedHashSet;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
@@ -29,10 +32,11 @@ import com.variant.core.util.StringUtils;
  */
 public class ConnectionImpl implements Connection {
 
-	//final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
+	final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
 
 	// Listeners
-	final protected LinkedHashSet<ExpirationListener> expirationListeners = new LinkedHashSet<ExpirationListener>();
+	final private LinkedHashSet<LifecycleListener> lifecycleListeners = 
+			new LinkedHashSet<LifecycleListener>();
 
 	/**
 	 * Is this connection still valid?
@@ -191,7 +195,30 @@ public class ConnectionImpl implements Connection {
 		schema = resp.getSchema();
 	}
 	
+	/**
+	 * TODO. Move this out to an asynchronous thread so no forground process
+	 * pays the toll.
+	 */
+	private void postListeners() {
+		final Connection target = this;
+		new Runnable() {
+			
+			@Override public void run() {
+				try {
+					for (LifecycleListener l: lifecycleListeners) {
+						l.onClosed(target);
+					}
+				}
+				catch (Throwable t) {
+					LOG.error(ClientUserError.CONNECTION_LIFECYCLE_LISTENER_EXCEPTION.asMessage(t.getMessage()), t);
+				}
+			}
+		};
+	}
 	
+	/**
+	 * 
+	 */
 	private void destroy() {
 		cache.destroy();
 		client.freeConnection(id);
@@ -251,9 +278,9 @@ public class ConnectionImpl implements Connection {
 	}
 
 	@Override
-	public void registerExpirationListener(ExpirationListener listener) {
+	public void registerLifecycleListener(LifecycleListener listener) {
 		preChecks();
-		expirationListeners.add(listener);
+		lifecycleListeners.add(listener);
 	}
 
 	@Override
@@ -283,11 +310,13 @@ public class ConnectionImpl implements Connection {
 		}
 		else if (status == ConnectionStatus.CLOSED_BY_SERVER) {
 			this.status = status;
+			postListeners();
 			destroy();
 			throw new ConnectionClosedException();
 		}
 		else if (status == ConnectionStatus.CLOSED_BY_CLIENT) {
 			this.status = status;
+			postListeners();
 			destroy();
 		}
 		else

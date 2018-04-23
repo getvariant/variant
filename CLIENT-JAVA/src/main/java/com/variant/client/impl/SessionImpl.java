@@ -13,7 +13,6 @@ import java.util.Set;
 import com.typesafe.config.Config;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.Connection.ExpirationListener;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
@@ -151,6 +150,9 @@ public class SessionImpl implements Session {
 
 		checkState();
 
+		if (state == null) 
+			throw new ClientException.User("State cannot be null");
+		
 		// Can't have two requests at one time
 		if (coreSession.getStateRequest() != null && !coreSession.getStateRequest().isCommitted()) {
 			throw new ClientException.User(ACTIVE_REQUEST);
@@ -192,7 +194,7 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * Mutable, but local because we let connection to update itself via connection ping.
+	 * Immutable.
 	 */
 	@Override
 	public Connection getConnection() {
@@ -279,6 +281,7 @@ public class SessionImpl implements Session {
 	@Override
 	public String getAttribute(String name) {
 		checkState();
+		conn.refreshSession(this);
 		return coreSession.getAttribute(name);
 	}
 
@@ -337,13 +340,7 @@ public class SessionImpl implements Session {
 		isExpired = true;
 		coreSession = null;
 		sessionIdTracker = null;
-		targetingTracker = null;
-		
-		// Ignore exception thrown by user code.
-		try {
-			for (ExpirationListener el: conn.expirationListeners) el.expired(this);
-		}
-		catch (Throwable t) {}
+		targetingTracker = null;		
 	}
 
 }

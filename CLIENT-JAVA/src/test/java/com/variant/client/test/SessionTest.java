@@ -107,52 +107,6 @@ public class SessionTest extends ClientBaseTestWithServer {
 			}.assertThrown(SessionExpiredException.class);
 		}
 	}
-
-   /**
-    */
-   @org.junit.Test
-   public void sessionExpirationListenerTest() throws Exception {
-      
-      Connection conn = client.getConnection("big_covar_schema");    
-      assertNotNull(conn);
-      assertEquals(OPEN, conn.getStatus());
-      final Session ssn = conn.getOrCreateSession(newSid());
-      assertNotNull(ssn);
-      final LinkedList<Integer> listenersRan = new LinkedList<Integer>();
-      
-      // Add two listeners, both of which should fire in the order added;
-      conn.registerExpirationListener(
-            new Connection.ExpirationListener() {
-               @Override public void expired(Session session) {
-            	  assertEquals(session, ssn);
-            	  assertTrue(session.isExpired());
-                  listenersRan.add(1);
-               }
-            }
-      );
-
-      conn.registerExpirationListener(
-            new Connection.ExpirationListener() {
-               @Override public void expired(Session session) {
-             	  assertEquals(session, ssn);
-             	  assertTrue(session.isExpired());
-                  listenersRan.add(2);
-               }
-            }
-      );
-
-      assertFalse(ssn.isExpired());
-      
-      assertEquals(1000, ssn.getTimeoutMillis());
-      // Let vacuum thread a chance to run.
-      Thread.sleep(2000);
-
-      assertTrue(ssn.isExpired());
-
-      assertEquals(2, listenersRan.size());
-      assertTrue(listenersRan.get(0) == 1);
-      assertTrue(listenersRan.get(1) == 2);
-   }
    
 	/**
 	 */

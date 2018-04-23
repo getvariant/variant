@@ -24,7 +24,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 	private VariantClient client = VariantClient.Factory.getInstance();		
 	
 	/**
-	 * Schema undeployed. 
+	 * Schema redeployed. 
 	 */
 	@org.junit.Test
 	public void closedByServerUndeployTest() throws Exception {
@@ -38,7 +38,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 		assertEquals(5, conn.getSchema().getStates().size());
 		assertEquals(6, conn.getSchema().getTests().size());
 
-		assertNull(conn.getSession("foo"));        
+		assertNull(conn.getSession("foo"));
 		IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
 		Thread.sleep(dirWatcherLatencyMsecs);
 

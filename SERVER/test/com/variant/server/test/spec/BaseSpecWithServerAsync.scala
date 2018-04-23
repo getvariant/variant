@@ -11,11 +11,7 @@ import org.scalatest.concurrent.ScalaFutures
 class BaseSpecWithServerAsync extends BaseSpecWithServer {
   
    implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(4))
-
-   // private val pool = Executors.newFixedThreadPool(4)
-   //private val futures = ArrayBuffer[Future[_]]()
    val taskCount = new AtomicInteger(0)
-   //private val futures = ArrayBuffer[Future[_]]()
    
    var unexpectedException: Option[Throwable] = None
    
@@ -37,13 +33,7 @@ class BaseSpecWithServerAsync extends BaseSpecWithServer {
          }
       }      
    }
-   
-   /**
-    * Async doesnt work somehow, so this for now.
-    *
-   protected def async(bloc: => Unit) = bloc
-   */
-   
+      
    /**
     * Block for all functions to complete.
     * TODO: replace with java.util.concurrent.CountDownLatch

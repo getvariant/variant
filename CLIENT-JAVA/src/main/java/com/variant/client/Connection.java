@@ -135,8 +135,8 @@ public interface Connection {
 	/**
 	 * Most recent known {@link ConnectionStatus} of this connection.
 	 * 
-	 * @since 0.7
 	 * @return An element of enum {@link ConnectionStatus}.
+	 * @since 0.7
 	 */
 	ConnectionStatus getStatus();
 	
@@ -151,26 +151,29 @@ public interface Connection {
 
 	/**
 	 * Register a session expiration listener. If multiple listeners have been registered with a
-	 * connection, they are posted in the order they were registered. 
+	 * connection, they will be posted serially, but the order of their invocation is undefined. 
+	 * 
 	 * @param listener
+	 * @since 0.8
 	 */
-	void registerExpirationListener(ExpirationListener listener);
+	void registerLifecycleListener(LifecycleListener listener);
 
 	/**
-	 * Interface to be implemented by a session expiration listener class, whose instance can
-	 * be passed to {@link Connection#registerExpirationListener(ExpirationListener)}.
+	 * Interface to be implemented by a connection life cycle listener class, whose instance can
+	 * be passed to {@link Connection#registerLifecycleListener(LifecycleListener)}.
 	 * 
 	 * @since 0.8
 	 */
-	public interface ExpirationListener {
+	public interface LifecycleListener {
 	   /**
-	    * The callback function to be called by Variant Client right after the session,
-	    * passed to this method, is expired.
+	    * Variant will call this method whenever the status of the target connection goes from
+	    * OPEN to either CLOSED_BY_CLIENT, or CLOSED_BY_SERVER. If this code throws an exception,
+	    * it will be reported in the application log only. 
 	    * 
 	    * @since 0.8
-	    * @param session: The expired Variant session.
+	    * @param connection: The target connection object.
 	    */
-	   public void expired(Session session);
+	   public void onClosed(Connection connection);
 	}
 
 }

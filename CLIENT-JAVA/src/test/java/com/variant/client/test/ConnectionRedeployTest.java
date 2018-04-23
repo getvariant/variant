@@ -8,6 +8,7 @@ import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
+import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.util.IoUtils;
 
 /**
@@ -40,6 +41,7 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 
 		// Connection doesn't know its' gone.
 		assertEquals(OPEN, conn1.getStatus());
+		assertEquals(conn1, ((VariantClientImpl)client).byId(conn1.getId()));
 
 		// Any attempts to use the connection should throw an exception. 		
 		new ClientUserExceptionInterceptor() {
@@ -55,6 +57,7 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 		}.assertThrown(ConnectionClosedException.class);
 
 		assertEquals(CLOSED_BY_SERVER, conn1.getStatus());
+		assertNull(((VariantClientImpl)client).byId(conn1.getId()));
 
 		// Now attempts to use the connection should throw an exception. 
 		new ClientUserExceptionInterceptor() {
@@ -73,18 +76,6 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 			
 			@Override public void toRun() {
 				conn1.getOrCreateSession("foo");
-			}
-			
-			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
-			}
-			
-		}.assertThrown(ConnectionClosedException.class);
-
-		new ClientUserExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				conn1.getId();
 			}
 			
 			@Override public void onThrown(ClientException.User e) {

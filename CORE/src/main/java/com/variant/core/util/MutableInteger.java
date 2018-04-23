@@ -26,4 +26,12 @@ public class MutableInteger {
 	public void add(Number arg) {
 		value = new Integer(value.intValue() + arg.intValue());
 	}
+	
+	/*
+	 * 
+	 */
+	public void increment() {
+		add(1);
+	}
+
 }
