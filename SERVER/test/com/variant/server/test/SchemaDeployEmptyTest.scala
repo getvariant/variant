@@ -2,28 +2,20 @@ package com.variant.server.test
 
 import org.scalatest.BeforeAndAfterAll
 import org.scalatestplus.play.OneAppPerSuite
-import org.scalatestplus.play.OneAppPerTest
 import org.scalatestplus.play.PlaySpec
+
+import com.variant.core.UserError.Severity
+import com.variant.core.schema.parser.error.SyntaxError
 import com.variant.core.util.IoUtils
+import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.boot.VariantServer
+import com.variant.server.test.util.ServerLogTailer
+
 import play.api.Application
 import play.api.Configuration
 import play.api.Logger
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.JsValue.jsValueToJsLookup
-import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.test.Helpers._
-import play.api.test.Helpers.contentAsJson
-import play.api.test.Helpers.contentAsString
-import play.api.test.Helpers.defaultAwaitTimeout
-import play.api.test.Helpers.status
-import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
-import play.api.test.Helpers.writeableOf_AnyContentAsJson
-import com.variant.server.boot.VariantServer
-import com.variant.server.test.util.LogSniffer
-import com.variant.core.UserError.Severity
-import com.variant.server.boot.ServerErrorLocal
-import com.variant.core.schema.parser.error.SyntaxError
 
 
 object SchemaDeployEmptyTest {
@@ -73,7 +65,11 @@ class SchemaDeployEmptyTest extends PlaySpec with OneAppPerSuite with BeforeAndA
 	   "startup with empty schemata" in {
 	      server.schemata mustBe empty
          server.startupErrorLog.size mustEqual 0
-         val lastTwoLines = LogSniffer.last(2)
+         val lastTwoLines = ServerLogTailer.last(2, "logs/application.log")
+         println("****")
+         println("'" + lastTwoLines(0) + "'")
+         println("'" + lastTwoLines(1) + "'")
+         println("****")
          lastTwoLines(0).severity mustBe Severity.INFO
          lastTwoLines(0).message must startWith("[" + ServerErrorLocal.EMPTY_SCHEMATA.getCode + "]")
          lastTwoLines(1).severity mustBe Severity.INFO
@@ -89,7 +85,7 @@ class SchemaDeployEmptyTest extends PlaySpec with OneAppPerSuite with BeforeAndA
 
          server.schemata.size mustBe 0
 
-         val lastTwoLines = LogSniffer.last(2)
+         val lastTwoLines = ServerLogTailer.last(2, "logs/application.log")
          lastTwoLines(0).severity mustBe Severity.ERROR
          lastTwoLines(0).message must startWith("[" + SyntaxError.JSON_SYNTAX_ERROR.getCode + "]")
          lastTwoLines(1).severity mustBe Severity.WARN

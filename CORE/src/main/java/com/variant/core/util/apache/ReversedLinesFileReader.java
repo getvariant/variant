@@ -1,4 +1,4 @@
-package com.variant.server.test.util;
+package com.variant.core.util.apache;
 
 /* ************ CUT AND PASTE FROM APACHE IO UTILS ************* */
 
@@ -27,8 +27,6 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
-
-import org.apache.commons.io.Charsets;
 
 /**
  * Reads lines in a file reversely (similar to a BufferedReader, but starting at

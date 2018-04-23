@@ -1,5 +1,5 @@
 package com.variant.server.test.util
-
+/*
 import play.api.Logger
 import scala.io.Source
 import scala.sys.process._
@@ -7,6 +7,7 @@ import java.nio.charset.Charset
 import java.io.File
 import scala.collection.mutable
 import com.variant.core.UserError
+import com.variant.core.util.apache.ReversedLinesFileReader
 
 /**
  * 
@@ -64,3 +65,4 @@ object LogSniffer {
       val format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS")
    }
 }
+*/
