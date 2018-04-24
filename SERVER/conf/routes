@@ -17,8 +17,9 @@ DELETE  /connection              com.variant.server.play.controller.ConnectionCo
 POST    /event                   com.variant.server.play.controller.EventController.post()
 
 # Session Controller
-GET     /session/:id             com.variant.server.play.controller.SessionController.get(id: String)
-PUT     /session                 com.variant.server.play.controller.SessionController.save()
+GET     /session/:id             com.variant.server.play.controller.SessionController.getSession(id: String)
+PUT     /session                 com.variant.server.play.controller.SessionController.saveSession()
+PUT     /session/attr           com.variant.server.play.controller.SessionController.addAttribute()
 
 # Request Controller
 POST    /request                 com.variant.server.play.controller.RequestController.create()

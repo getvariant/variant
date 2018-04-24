@@ -56,6 +56,10 @@ public class HttpRemoter {
 			req.setHeader("Content-Type", Constants.HTTP_HEADER_CONTENT_TYPE);
 
 			resp = httpClient.execute(req);
+			
+			Header[] connStatusHeader = resp.getHeaders(Constants.HTTP_HEADER_CONN_STATUS);
+			String connStatus = connStatusHeader.length == 0 ? null : connStatusHeader[0].getValue();
+
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(String.format(
 						"+++ %s %s : %s (%s) responded with:", 
@@ -66,15 +70,11 @@ public class HttpRemoter {
 					HttpEntity entity = ((HttpEntityEnclosingRequestBase)req).getEntity();
 					String body = entity == null ? "null" : EntityUtils.toString(entity);
 					LOG.trace("Body: '" + body + "'");
-					LOG.trace("Connection Status: " + resp.getHeaders(Constants.HTTP_HEADER_CONN_STATUS)[0]);
+					LOG.trace("Connection Status: " + (connStatus == null ? "null" : connStatus));
 				}
 			}
 			
 			HttpResponse result = new HttpResponse(req, resp);
-
-			if (LOG.isTraceEnabled()) {
-				LOG.trace("Body: '" + result.body + "'");
-			}
 
 			// Process the http status and the body.
 			switch (result.status) {
@@ -137,6 +137,10 @@ public class HttpRemoter {
 				throw new ClientException.Internal(String.format("Unexpected status %s", conn.getStatus()));
 			}
 			resp = httpClient.execute(req);
+
+			Header[] connStatusHeader = resp.getHeaders(Constants.HTTP_HEADER_CONN_STATUS);
+			String connStatus = connStatusHeader.length == 0 ? null : connStatusHeader[0].getValue();
+			
 			if (LOG.isTraceEnabled()) {
 				LOG.trace(String.format(
 						"+++ %s %s : %s (%s) responded with:", 
@@ -147,19 +151,11 @@ public class HttpRemoter {
 					HttpEntity entity = ((HttpEntityEnclosingRequestBase)req).getEntity();
 					String body = entity == null ? "null" : EntityUtils.toString(entity);
 					LOG.trace("Body: '" + body + "'");
-					LOG.trace("Connection Status: " + resp.getHeaders(Constants.HTTP_HEADER_CONN_STATUS)[0]);
+					LOG.trace("Connection Status: " + (connStatus == null ? "null" : connStatus));
 				}
 			}
 			
 			HttpResponse result = new HttpResponse(req, resp);
-
-			Header[] connStatusHeader = resp.getHeaders(Constants.HTTP_HEADER_CONN_STATUS);
-			String connStatus = connStatusHeader.length == 0 ? null : connStatusHeader[0].getValue();
-
-			if (LOG.isTraceEnabled()) {
-				LOG.trace("Body: '" + result.body + "'");
-				LOG.trace("Connection Status: " + (connStatus == null ? "null" : connStatus));
-			}
 
 			// If the server sent the connection status header, update this connection.
 			if (connStatus != null) ((ConnectionImpl)conn).setStatus(ConnectionStatus.valueOf(connStatus));

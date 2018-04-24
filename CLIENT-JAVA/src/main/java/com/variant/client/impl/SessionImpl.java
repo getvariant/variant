@@ -269,10 +269,8 @@ public class SessionImpl implements Session {
 	@Override
 	public String setAttribute(String name, String value) {
 		checkState();
-		String result = coreSession.setAttribute(name, value);
-		save();
-		return result;
-	}    
+		return conn.client.server.sessionAttrSet(this, name, value);
+	}
 
 	/**
 	 * Read mutable

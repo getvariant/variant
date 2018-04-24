@@ -70,14 +70,16 @@ abstract public class Payload {
 	}
 	
 	/**
-	 * 
+	 * Most responses will contain the most up-to-date session, and some will also contain a return value.
 	 */
 	public static class Session extends Payload {
 		
 		public final CoreSession session;
+		public final String returns;
 		
-		private Session(CoreSession session) {
+		private Session(CoreSession session, String returns) {
 			this.session = session;
+			this.returns = returns;
 		}
 		
 		public static Session fromResponse(com.variant.client.Connection conn, HttpResponse resp) {
@@ -89,8 +91,9 @@ abstract public class Payload {
 				String coreSsnSrc = (String) map.get("session");
 				if (coreSsnSrc == null)
 					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
+				String returns = (String) map.get("returns");
 
-				return new Session(CoreSession.fromJson(coreSsnSrc, conn.getSchema()));
+				return new Session(CoreSession.fromJson(coreSsnSrc, conn.getSchema()), returns);
 			}
 			catch (VariantException va) {
 				throw va;

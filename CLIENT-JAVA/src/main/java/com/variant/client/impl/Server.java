@@ -169,6 +169,7 @@ public class Server {
 
 	/**
 	 * Save or replace session on server.
+	 * Is this actually needed?
 	 */
 	public void sessionSave(final Session ssn) {
 		
@@ -182,6 +183,45 @@ public class Server {
 			}
 		}.run(ssn.getConnection());
 		
+	}
+
+	/**
+	 * Set a session attribute.
+	 * @return previous global value of this attribute.
+	 * 
+	 */
+	public String sessionAttrSet(Session ssn, String name, String value) {
+		
+		if (name == null) throw new NullPointerException("Name cannot be null");
+		if (value == null) throw new NullPointerException("Value cannot be null");
+		
+		if (LOG.isTraceEnabled()) LOG.trace(
+				String.format("sessionAttrSet(%s, %s)", name, value));
+
+		// Make body
+		final StringWriter body = new StringWriter(2048);
+		try {
+			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
+			jsonGen.writeStartObject();
+			jsonGen.writeStringField("sid", ssn.getId());
+			jsonGen.writeStringField("name", name);
+			jsonGen.writeStringField("value", value);
+			jsonGen.writeEndObject();
+		}
+		catch (Exception t) {
+			throw new ClientException.Internal(t);
+		}
+		
+		// Call server
+		Payload.Session response =
+				new CommonExceptionHandler<Payload.Session>() {
+			@Override Payload.Session block() throws Exception {
+				HttpResponse resp = adapter.put(serverUrl + "session/attr", body.toString(), ssn.getConnection());
+				return Payload.Session.fromResponse(ssn.getConnection(), resp);
+			}
+		}.run(ssn.getConnection());
+		
+		return response.returns;
 	}
 
 	//---------------------------------------------------------------------------------------------//

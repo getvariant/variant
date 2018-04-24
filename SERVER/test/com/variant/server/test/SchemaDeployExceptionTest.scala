@@ -1,31 +1,36 @@
 package com.variant.server.test
 
-import scala.util.Random
-import org.scalatestplus.play._
-import play.api.Application
-import play.api.test._
-import play.api.test.Helpers._
-import scala.collection.JavaConversions._
-import com.variant.core.UserError.Severity._
-import com.variant.server.test.util.EventReader
-import com.variant.server.api.ConfigKeys
-import com.variant.server.conn.SessionStore
-import com.variant.server.boot.VariantServer
-import play.api.inject.guice.GuiceApplicationBuilder
-import org.scalatest.TestData
-import play.api.Configuration
-import com.variant.server.boot.VariantApplicationLoader
-import com.variant.core.RuntimeError._
-import com.variant.server.boot.ServerErrorLocal._
-import com.variant.server.api.ServerException
-import org.apache.commons.io.FileUtils
 import java.io.File
-import scala.util.Try
+
 import scala.reflect.io.Path
+import scala.util.Try
+
+import org.apache.commons.io.FileUtils
+import org.scalatest.TestData
+import org.scalatestplus.play.OneAppPerTest
+
+import com.variant.core.RuntimeError.CONFIG_PROPERTY_NOT_SET
 import com.variant.core.UserError.Severity
+import com.variant.core.UserError.Severity.FATAL
+import com.variant.server.api.ConfigKeys
+import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
+import com.variant.server.boot.ServerErrorLocal.SCHEMATA_DIR_MISSING
+import com.variant.server.boot.ServerErrorLocal.SCHEMATA_DIR_NOT_DIR
+import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.boot.VariantServer
 import com.variant.server.test.spec.BaseSpec
-import com.variant.server.test.util.LogSniffer
+import com.variant.server.test.util.ServerLogTailer
+
+import play.api.Application
+import play.api.Configuration
+import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.test.FakeRequest
+import play.api.test.Helpers.GET
+import play.api.test.Helpers.PUT
+import play.api.test.Helpers.SERVICE_UNAVAILABLE
+import play.api.test.Helpers.route
+import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
 
 /**
  * Test various schema deployment error scenarios
@@ -149,7 +154,7 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
       
       "cause server to throw SCHEMA_NAME_DUPE" in {
 
-         val logTail = LogSniffer.last(3)
+         val logTail = ServerLogTailer.last(3)
          server.schemata.size mustBe 1
          val errLine = logTail(0)
          errLine.severity mustBe Severity.ERROR

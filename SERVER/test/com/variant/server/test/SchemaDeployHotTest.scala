@@ -1,5 +1,6 @@
 package com.variant.server.test
 
+import com.variant.core.ConnectionStatus._
 import com.variant.core.ServerError._
 import com.variant.core.UserError.Severity
 import com.variant.core.schema.parser.error.SemanticError
@@ -14,11 +15,11 @@ import com.variant.server.test.spec.TempSchemataDir
 import com.variant.server.test.spec.TempSchemataDir.dirWatcherLatencyMsecs
 import com.variant.server.test.spec.TempSchemataDir.schemataDir
 import com.variant.server.test.spec.TempSchemataDir.sessionTimeoutSecs
-import com.variant.server.test.util.LogSniffer
 import com.variant.server.test.util.ParameterizedString
+import com.variant.server.test.util.ServerLogTailer
+
 import play.api.Logger
 import play.api.libs.json.JsValue.jsValueToJsLookup
-import play.api.libs.json.Json
 import play.api.test.Helpers.BAD_REQUEST
 import play.api.test.Helpers.GET
 import play.api.test.Helpers.OK
@@ -29,7 +30,6 @@ import play.api.test.Helpers.defaultAwaitTimeout
 import play.api.test.Helpers.route
 import play.api.test.Helpers.status
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
-import com.variant.core.ConnectionStatus._
 
 
 
@@ -122,7 +122,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
          server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
 
-         val logLines = LogSniffer.last(2)
+         val logLines = ServerLogTailer.last(2)
          logLines(0).severity mustBe Severity.ERROR
          logLines(0).message must startWith (s"[${ServerErrorLocal.SCHEMA_CANNOT_REPLACE.getCode}]")
          logLines(1).severity mustBe Severity.WARN
@@ -179,7 +179,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	      IoUtils.fileCopy("schemata-test-with-errors/big-covar-schema-error.json", s"${schemataDir}/another-big-test-schema.json")
          Thread.sleep(dirWatcherLatencyMsecs)
              
-         val logLines = LogSniffer.last(2)
+         val logLines = ServerLogTailer.last(2)
          logLines(0).severity mustBe Severity.ERROR
          logLines(0).message must startWith (s"[${SyntaxError.JSON_SYNTAX_ERROR.getCode}]")
          logLines(1).severity mustBe Severity.WARN
@@ -201,7 +201,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	      IoUtils.fileCopy("schemata-test-with-errors/petclinic-schema.json", s"${schemataDir}/petclinic-schema2.json")
          Thread.sleep(dirWatcherLatencyMsecs)
              
-         val logLines = LogSniffer.last(2)
+         val logLines = ServerLogTailer.last(2)
          logLines(0).severity mustBe Severity.ERROR
          logLines(0).message must startWith (s"[${SemanticError.CONTROL_EXPERIENCE_MISSING.getCode}]")
          logLines(1).severity mustBe Severity.WARN

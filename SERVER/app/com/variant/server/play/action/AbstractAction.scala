@@ -41,7 +41,11 @@ abstract class AbstractAction
       
       if (VariantServer.instance.isUp) {
 
-      try {
+         if (logger.isTraceEnabled) {
+            logger.trace("Request [%s] with body [%s]".format(req, request.body))
+         }
+         
+         try {
             newRequest = Some(beforeBlock(request))
 
             // Delegate to the concrete action with the new request object

@@ -2,7 +2,6 @@ package com.variant.server.play.controller
 
 import javax.inject.Inject
 import scala.collection.JavaConversions._
-import play.api.mvc.Controller
 import play.api.mvc.Request
 import com.variant.server.conn.SessionStore
 import play.api.Logger
