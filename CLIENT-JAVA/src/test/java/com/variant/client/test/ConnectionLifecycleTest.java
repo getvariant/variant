@@ -1,21 +1,18 @@
 package com.variant.client.test;
 
+import static com.variant.core.ConnectionStatus.CLOSED_BY_CLIENT;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
-import com.variant.client.ClientException;
+import java.util.List;
+
 import com.variant.client.Connection;
-
-import static com.variant.core.ConnectionStatus.*;
-
-import com.variant.client.ConnectionClosedException;
 import com.variant.client.Connection.LifecycleListener;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
-import com.variant.client.impl.VariantClientImpl;
-import com.variant.core.ServerError;
+import com.variant.client.test.util.ClientLogTailer;
+import com.variant.core.util.LogTailer;
+import com.variant.core.util.LogTailer.Entry;
 import com.variant.core.util.MutableInteger;
 
 /**
@@ -38,7 +35,7 @@ public class ConnectionLifecycleTest extends ClientBaseTestWithServer {
     private class BadListener implements LifecycleListener {	
 		@Override
 		public void onClosed(Connection connection) {
-			throw new RuntimeException("UncaughtException");
+			throw new RuntimeException("Uncaught Exception");
 		}
 	};
 
@@ -51,52 +48,18 @@ public class ConnectionLifecycleTest extends ClientBaseTestWithServer {
 		Connection conn = client.getConnection("big_covar_schema");		
 		Session ssn = conn.getOrCreateSession(newSid());
 		
-		
-
-
-
-		// Good listener 1
-		conn.registerLifecycleListener(
-				new LifecycleListener() {
-					@Override
-					public void onClosed(Connection connection) {
-						listenerCount.increment();
-					}
-				});
-		
+		conn.registerLifecycleListener(new GoodListener());
+		conn.registerLifecycleListener(new BadListener());
+		conn.registerLifecycleListener(new GoodListener());
+	
 		conn.close();
 		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
-		assertEquals(1, listenerCount);
+		assertEquals(2, listenerCount.intValue());
 		
-		// Exception on a subsequent close.
-		// Throw user error exception when trying to use this connection.
-		new ClientUserExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				conn.close();
-			}
-			
-			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
-			}
-			
-		}.assertThrown(ConnectionClosedException.class);
+		List<Entry> logLines = ClientLogTailer.last(1);
+		assertEquals(
+				ClientUserError.CONNECTION_LIFECYCLE_LISTENER_EXCEPTION.asMessage("com.variant.client.impl.ConnectionImpl$1"),
+				logLines.get(0).message);
 
-		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
-
-		// Throw user error exception when trying to use this connection.
-		new ClientUserExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				conn.getSession("foo");
-			}
-			
-			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
-			}
-			
-		}.assertThrown(ConnectionClosedException.class);
-		
-		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
 	}	
 }

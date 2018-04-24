@@ -204,16 +204,16 @@ public class ConnectionImpl implements Connection {
 		new Runnable() {
 			
 			@Override public void run() {
-				try {
-					for (LifecycleListener l: lifecycleListeners) {
+				for (LifecycleListener l: lifecycleListeners) {
+					try {
 						l.onClosed(target);
 					}
-				}
-				catch (Throwable t) {
-					LOG.error(ClientUserError.CONNECTION_LIFECYCLE_LISTENER_EXCEPTION.asMessage(t.getMessage()), t);
+					catch (Throwable t) {
+						LOG.error(ClientUserError.CONNECTION_LIFECYCLE_LISTENER_EXCEPTION.asMessage(this.getClass().getName()), t);
+					}
 				}
 			}
-		};
+		}.run();
 	}
 	
 	/**
