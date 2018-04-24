@@ -180,7 +180,6 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public String getId() {
-		checkState(); 
 		return coreSession.getId();
 	}
 
@@ -276,7 +275,7 @@ public class SessionImpl implements Session {
 	}    
 
 	/**
-	 * Mutable
+	 * Read mutable
 	 */
 	@Override
 	public String getAttribute(String name) {
@@ -286,7 +285,7 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * Mutable
+	 * Mutate
 	 */
 	@Override
 	public String clearAttribute(String name) {
@@ -338,9 +337,6 @@ public class SessionImpl implements Session {
 	 */
 	public void expire() {
 		isExpired = true;
-		coreSession = null;
-		sessionIdTracker = null;
-		targetingTracker = null;		
 	}
 
 }

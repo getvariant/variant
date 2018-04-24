@@ -1,6 +1,5 @@
 package com.variant.client.session;
 
-import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -8,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.Session;
 import com.variant.client.impl.SessionImpl;
-import com.variant.core.util.TimeUtils;
 
 /**
  * Keep track of all sessions in a client instance in order to provide idempotency of the getSession() call.
@@ -152,7 +150,7 @@ public class SessionCache {
 	public void destroy() {
 		//vacuumThread.interrupt();
 		for (Entry e: cache.values()) {e.session.expire();}
-		cache = null;
+		cache.clear();
 	}
 	
 }

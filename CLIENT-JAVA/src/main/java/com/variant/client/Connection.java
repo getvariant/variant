@@ -150,8 +150,8 @@ public interface Connection {
 	void close();
 
 	/**
-	 * Register a session expiration listener. If multiple listeners have been registered with a
-	 * connection, they will be posted serially, but the order of their invocation is undefined. 
+	 * Register a life cycle listener. If multiple listeners have been registered with a
+	 * connection, they will be posted serially, but the order of their invocation is undefined.
 	 * 
 	 * @param listener
 	 * @since 0.8

@@ -196,8 +196,7 @@ public class ConnectionImpl implements Connection {
 	}
 	
 	/**
-	 * TODO. Move this out to an asynchronous thread so no forground process
-	 * pays the toll.
+	 * Post life cycle listeners
 	 */
 	private void postListeners() {
 		final Connection target = this;
@@ -321,6 +320,13 @@ public class ConnectionImpl implements Connection {
 		}
 		else
 			throw new ClientException.Internal("Unexpected connection status from server " + status + ")");	
+	}
+	
+	/**
+	 * Only tests are allowed to use this.
+	 */
+	public SessionCache getSessionCache() {
+		return cache;
 	}
 		
 }
