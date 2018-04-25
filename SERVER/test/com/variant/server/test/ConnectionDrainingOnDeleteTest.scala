@@ -15,6 +15,7 @@ import com.variant.server.test.controller.SessionTest
 import com.variant.core.util.IoUtils
 import com.variant.core.util.StringUtils
 import scala.util.Random
+import play.api.libs.json.Json
 
 
 /**
@@ -138,7 +139,10 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidBig = connId2Big(i)
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)(j)
-            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidBig)))
+            val body = Json.obj(
+                 "sid" -> sid
+               ).toString
+            assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
                .is(OK)
                .withConnStatusHeader(OPEN)
                .withBodyJson { json => 
@@ -150,7 +154,10 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidPet = connId2Pet(CONNECTIONS - (i+1))
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)(j)
-            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidPet)))
+            val body = Json.obj(
+                 "sid" -> sid
+               ).toString
+            assertResp(route(app, connectedRequest(GET, context + "/session", cidPet).withBody(body)))
                .is(OK)
                .withConnStatusHeader(OPEN)
                .withBodyJson { json => 
@@ -184,7 +191,10 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidBig = connId2Big(i)
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)(j)
-            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidBig)))
+            val body = Json.obj(
+                 "sid" -> sid
+               ).toString
+            assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
                .is(OK)
                .withConnStatusHeader(OPEN, CLOSED_BY_SERVER)  // changes underneath
                .withBodyJson { json => 
@@ -196,7 +206,10 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidPet = connId2Pet(i)
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)(j)
-            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidPet)))
+            val body = Json.obj(
+                 "sid" -> sid
+               ).toString
+            assertResp(route(app, connectedRequest(GET, context + "/session", cidPet).withBody(body)))
                .is(OK)
                .withConnStatusHeader(OPEN)
                .withBodyJson { json => 
@@ -252,14 +265,16 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
             .withNoBody
 
          // And read, just in case
-         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
+         val getBody = Json.obj(
+              "sid" -> sid
+            ).toString
+         assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(getBody)))
             .is(OK)
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
                StringUtils.digest((json \ "session").as[String]) mustBe 
                   StringUtils.digest(body)
          }
-
       }
       
       "refuse session create in draining connection" in {
@@ -284,7 +299,10 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidBig = connId2Big(i)
          for (j <- 0 until SESSIONS) {
             val sid = ssnId2Big(i)(j)
-            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidBig)))
+            val body = Json.obj(
+                 "sid" -> sid
+               ).toString
+            assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
                .isError(UnknownConnection, cidBig)
                .withNoConnStatusHeader
                .withNoBody
@@ -293,7 +311,10 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidPet = connId2Pet(i)
          for (j <- 0 until SESSIONS) {
             val sid = ssnId2Pet(i)(j)
-            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidPet)))
+            val body = Json.obj(
+                 "sid" -> sid
+               ).toString
+            assertResp(route(app, connectedRequest(GET, context + "/session", cidPet).withBody(body)))
                .isError(SessionExpired, sid)
                .withConnStatusHeader(OPEN)
                .withNoBody

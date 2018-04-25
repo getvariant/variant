@@ -19,8 +19,9 @@ POST    /event                   com.variant.server.play.controller.EventControl
 # Session Controller
 GET     /session                 com.variant.server.play.controller.SessionController.getSession()
 PUT     /session                 com.variant.server.play.controller.SessionController.saveSession()
-PUT     /session/attr            com.variant.server.play.controller.SessionController.addAttribute()
+
 GET     /session/attr            com.variant.server.play.controller.SessionController.getAttribute()
+PUT     /session/attr            com.variant.server.play.controller.SessionController.addAttribute()
 
 # Request Controller
 POST    /request                 com.variant.server.play.controller.RequestController.create()

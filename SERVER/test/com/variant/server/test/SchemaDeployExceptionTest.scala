@@ -1,14 +1,11 @@
 package com.variant.server.test
 
 import java.io.File
-
 import scala.reflect.io.Path
 import scala.util.Try
-
 import org.apache.commons.io.FileUtils
 import org.scalatest.TestData
 import org.scalatestplus.play.OneAppPerTest
-
 import com.variant.core.RuntimeError.CONFIG_PROPERTY_NOT_SET
 import com.variant.core.UserError.Severity
 import com.variant.core.UserError.Severity.FATAL
@@ -21,7 +18,6 @@ import com.variant.server.boot.VariantApplicationLoader
 import com.variant.server.boot.VariantServer
 import com.variant.server.test.spec.BaseSpec
 import com.variant.server.test.util.ServerLogTailer
-
 import play.api.Application
 import play.api.Configuration
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -31,6 +27,7 @@ import play.api.test.Helpers.PUT
 import play.api.test.Helpers.SERVICE_UNAVAILABLE
 import play.api.test.Helpers.route
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
+import play.api.libs.json.Json
 
 /**
  * Test various schema deployment error scenarios
@@ -141,7 +138,10 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
       
       "return 503 in every http request after SCHEMATA_DIR_NOT_DIR" in {
 
-         assertResp(route(app, FakeRequest(GET, context + "/session/foo")))
+         val body = Json.obj(
+              "sid" -> "foo"
+            ).toString
+         assertResp(route(app, FakeRequest(GET, context + "/session").withBody(body)))
             .is(SERVICE_UNAVAILABLE)
             .withNoConnStatusHeader
             .withNoBody

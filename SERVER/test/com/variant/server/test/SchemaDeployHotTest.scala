@@ -1,7 +1,9 @@
 package com.variant.server.test
 
-import com.variant.core.ConnectionStatus._
-import com.variant.core.ServerError._
+import com.variant.core.ConnectionStatus.CLOSED_BY_SERVER
+import com.variant.core.ConnectionStatus.OPEN
+import com.variant.core.ServerError.SessionExpired
+import com.variant.core.ServerError.UnknownConnection
 import com.variant.core.UserError.Severity
 import com.variant.core.schema.parser.error.SemanticError
 import com.variant.core.schema.parser.error.SyntaxError
@@ -20,15 +22,12 @@ import com.variant.server.test.util.ServerLogTailer
 
 import play.api.Logger
 import play.api.libs.json.JsValue.jsValueToJsLookup
-import play.api.test.Helpers.BAD_REQUEST
+import play.api.libs.json.Json
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.test.Helpers.GET
 import play.api.test.Helpers.OK
 import play.api.test.Helpers.PUT
-import play.api.test.Helpers.contentAsJson
-import play.api.test.Helpers.contentAsString
-import play.api.test.Helpers.defaultAwaitTimeout
 import play.api.test.Helpers.route
-import play.api.test.Helpers.status
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
 
 
@@ -278,7 +277,10 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 
 	   "permit session read over draining connection" in {
 	      
-         assertResp(route(app, connectedRequest(GET, context + "/session" + "/" + sid, cid)))
+         val body = Json.obj(
+              "sid" -> sid
+            ).toString
+         assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(body)))
             .isOk
             .withConnStatusHeader(CLOSED_BY_SERVER)
             .withBodyJson { json => 
@@ -307,8 +309,12 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   
 	   "expire existing session as normal in the undeployed schema" in {
          
-         Thread.sleep(sessionTimeoutSecs * 1000);    
-         assertResp(route(app, connectedRequest(GET, context + "/session" + "/" + sid, cid)))
+         Thread.sleep(sessionTimeoutSecs * 1000);
+         
+         val body = Json.obj(
+              "sid" -> sid
+            ).toString
+         assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(body)))
             .isError(SessionExpired, sid)
             .withConnStatusHeader(CLOSED_BY_SERVER)
 
@@ -386,7 +392,10 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          val halfExp = sessionTimeoutSecs * 500
          for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
             Thread.sleep(wait)
-            assertResp(route(app, connectedRequest(GET, context + "/session" + "/" + sid1, cid1)))
+            val body = Json.obj(
+                 "sid" -> sid1
+               ).toString
+            assertResp(route(app, connectedRequest(GET, context + "/session", cid1).withBody(body)))
                .isOk
                .withConnStatusHeader(CLOSED_BY_SERVER)
                .withBodyJson { json => 
