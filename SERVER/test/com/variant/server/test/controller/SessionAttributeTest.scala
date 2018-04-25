@@ -30,8 +30,8 @@ class SessionAttributeTest extends BaseSpecWithServer {
 
    "SessionController" should {
 
-      var cid: String = null 
-      var sid: String = null
+      var cid1: String = null 
+      var sid1: String = null
       
       "obtain a connection and a session" in {
 
@@ -39,27 +39,40 @@ class SessionAttributeTest extends BaseSpecWithServer {
            .isOk
            .withConnStatusHeader(OPEN)
            .withBodyJson { json =>
-               cid = (json \ "id").as[String]
-               cid mustNot be (null)
+               cid1 = (json \ "id").as[String]
+               cid1 mustNot be (null)
          }
          
-         sid = newSid
-         val body = sessionJsonBigCovar.expand("sid" -> sid)
-         assertResp(route(app, connectedRequest(PUT, endpoint, cid).withBody(body)))
+         sid1 = newSid
+         val body = sessionJsonBigCovar.expand("sid" -> sid1)
+         assertResp(route(app, connectedRequest(PUT, endpoint, cid1).withBody(body)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withNoBody
       }
 
-      "set an attribute first session" in {
+      "set an attribute in first session" in {
          
          val body: JsValue = Json.obj(
-            "sid" -> sid,
+            "sid" -> sid1,
             "name" -> "ATTRIBUTE NAME",
             "value" -> "ATTRIBUTE VALUE"
          )
          
-         assertResp(route(app, connectedRequest(PUT, endpoint + "/attr", cid).withBody(body.toString())))
+         assertResp(route(app, connectedRequest(PUT, endpoint + "/attr", cid1).withBody(body.toString())))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withNoBody
+         
+      }
+
+      "read the attribute in first session" in {
+                  
+         val body: JsValue = Json.obj(
+            "sid" -> sid1,
+            "name" -> "ATTRIBUTE NAME"
+         )
+         assertResp(route(app, connectedRequest(GET, endpoint + "/attr" , cid1).withBody(body.toString())))
             .isOk
             .withConnStatusHeader(OPEN)
             .withNoBody

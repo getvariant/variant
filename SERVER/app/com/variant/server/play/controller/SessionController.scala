@@ -54,8 +54,16 @@ class SessionController @Inject() (
    /**
     * Get a session by ID, if exists and was open in the current or parallel connection.
     */
-   def getSession(sid: String) = connectedAction { req =>
+   def getSession() = connectedAction { req =>
 
+      val bodyJson = getBody(req).getOrElse {
+         throw new ServerException.Remote(EmptyBody)
+      }
+      
+      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "sid")         
+      }
+      
       val conn = req.attrs.get(connectedAction.ConnKey).get
       val ssn = server.ssnStore.getOrBust(sid, conn)
       val response = JsObject(Seq(
@@ -98,4 +106,30 @@ class SessionController @Inject() (
       Ok(response.toString())
    }
  
+   /**
+    * Get an attribute value
+    */
+   def getAttribute() = connectedAction { req =>
+
+      val bodyJson = getBody(req).getOrElse {
+         throw new ServerException.Remote(EmptyBody)
+      }
+      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "sid")         
+      }
+      val name = (bodyJson \ "name").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "name")         
+      }
+
+      val conn = req.attrs.get(connectedAction.ConnKey).get
+      val ssn = server.ssnStore.getOrBust(sid, conn)
+      val returns = ssn.getAttribute(name)
+      val response = JsObject(Seq(
+         "session" -> JsString(ssn.toJson)
+      ))
+      if (returns != null) response + ("returns" -> JsString(returns))
+      
+      Ok(response.toString)
+   }
+
 }

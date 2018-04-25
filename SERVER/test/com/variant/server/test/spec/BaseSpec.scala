@@ -235,9 +235,9 @@ trait BaseSpec extends PlaySpec {
    /**
     * All route calls, emulating a connected API call.
     */
-   protected def connectedRequest(method: String, uri: String, connId: String) = {
+   protected def connectedRequest(method: String, uri: String, cid: String) = {
       FakeRequest(method, uri)
-         .withHeaders("Content-Type" -> HTTP_HEADER_CONTENT_TYPE, HTTP_HEADER_CONNID -> connId)
+         .withHeaders("Content-Type" -> HTTP_HEADER_CONTENT_TYPE, HTTP_HEADER_CONNID -> cid)
    }
 
 }
