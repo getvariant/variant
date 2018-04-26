@@ -320,7 +320,6 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
             assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(body)))
                .isError(SessionExpired, newsid)
                .withConnStatusHeader(CLOSED_BY_SERVER) 
-               .withNoBody
          }
          
          joinAll
@@ -337,7 +336,6 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
                assertResp(route(app, connectedRequest(GET, context + "/session", newcid).withBody(body)))
                   .isError(SessionExpired, sid)
                   .withConnStatusHeader(OPEN) 
-                  .withNoBody
             }
          }         
          joinAll
@@ -357,7 +355,6 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
             assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
                .isError(UnknownConnection, cidBig)
                .withNoConnStatusHeader
-               .withNoBody
          }
 
          val cidPet = connId2Pet(i)
@@ -369,7 +366,6 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
             assertResp(route(app, connectedRequest(GET, context + "/session", cidPet).withBody(body)))
                .isError(SessionExpired, sid)
                .withConnStatusHeader(OPEN)
-               .withNoBody
          }
          
          val body = Json.obj(
@@ -378,7 +374,6 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          assertResp(route(app, connectedRequest(GET, context + "/session", newcid).withBody(body)))
             .isError(SessionExpired, newsid)
             .withConnStatusHeader(OPEN)
-            .withNoBody
       
       }
    }

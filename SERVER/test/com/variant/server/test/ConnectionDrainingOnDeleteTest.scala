@@ -305,7 +305,6 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
             assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
                .isError(UnknownConnection, cidBig)
                .withNoConnStatusHeader
-               .withNoBody
          }
 
          val cidPet = connId2Pet(i)
@@ -317,7 +316,6 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
             assertResp(route(app, connectedRequest(GET, context + "/session", cidPet).withBody(body)))
                .isError(SessionExpired, sid)
                .withConnStatusHeader(OPEN)
-               .withNoBody
          }
       }
    }
