@@ -4,6 +4,7 @@ import play.api.mvc._
 import com.variant.server.conn.Connection
 import com.variant.core.util.Constants._
 import play.api.Logger
+import play.api.test.Helpers
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorRemote
 import play.api.libs.typedmap.TypedKey
@@ -13,6 +14,9 @@ import com.variant.server.boot.VariantServer
 import com.variant.core.ServerError
 import com.variant.core.util.TimeUtils
 import scala.concurrent.ExecutionContext
+import akka.util.Timeout
+import scala.concurrent.duration._
+import scala.concurrent.Await
 
 abstract class AbstractAction
    (parser: BodyParsers.Default)
@@ -42,7 +46,7 @@ abstract class AbstractAction
       if (VariantServer.instance.isUp) {
 
          if (logger.isTraceEnabled) {
-            logger.trace("Request [%s] with body [%s]".format(req, request.body))
+            logger.trace("Request [%s] with body:\n%s".format(req, request.body))
          }
          
          try {
@@ -70,8 +74,13 @@ abstract class AbstractAction
             }
          }
          
-         logger.trace("Request [%s] completed in %s".format(req, TimeUtils.formatDuration(System.currentTimeMillis - start)))
-
+         if (logger.isTraceEnabled) {
+            logger.trace {
+                  val body = Helpers.contentAsString(future)(1000 millis)
+                  "Request [%s] completed in %s with response body:\n%s"
+                  .format(req, TimeUtils.formatDuration(System.currentTimeMillis - start), body)
+            }
+         }
          future.map(_.withHeaders(headers:_*))
 
       }

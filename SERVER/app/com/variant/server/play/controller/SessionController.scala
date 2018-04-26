@@ -108,7 +108,7 @@ class SessionController @Inject() (
  
    /**
     * Get an attribute value
-    */
+    *
    def getAttribute() = connectedAction { req =>
 
       val bodyJson = getBody(req).getOrElse {
@@ -123,13 +123,14 @@ class SessionController @Inject() (
 
       val conn = req.attrs.get(connectedAction.ConnKey).get
       val ssn = server.ssnStore.getOrBust(sid, conn)
-      val returns = ssn.getAttribute(name)
+      val value = ssn.getAttribute(name)
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson)
       ))
-      if (returns != null) response + ("returns" -> JsString(returns))
+      
+      if (value != null) response + ("returns" -> JsString(value))
       
       Ok(response.toString)
    }
-
+   */
 }

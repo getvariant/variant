@@ -92,6 +92,10 @@ trait BaseSpec extends PlaySpec {
          this
       }
 
+      def echo(): ResultWrap = {
+         println("*** ECHO RESULT *** \n" + status(res) + ", body: '" + contentAsString(res) + "'")
+         this
+      }
      /**
        * 
        */
@@ -147,8 +151,9 @@ trait BaseSpec extends PlaySpec {
        * 
        */
       def withNoBody = {
-         if (contentAsString(res) == Some)
-            fail { "Response body was not empty " + stackLine }
+         val body = contentAsString(res)
+         if (body != null && body.length() > 0)
+            fail { s"Response body [$body] was not empty " + stackLine }
          this
       }
 

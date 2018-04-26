@@ -20,7 +20,8 @@ import com.variant.core.ConnectionStatus._
  */
 class SessionAttributeTest extends BaseSpecWithServer {
       
-   val endpoint = context + "/session"
+   val endpointSession = context + "/session"
+   val endpointAttribute = context + "/session/attr"
    
    val sessionJsonBigCovar = ParameterizedString(
       sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
@@ -31,7 +32,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
    "SessionController" should {
 
       var cid1: String = null 
-      var sid1: String = null
+      val sid1 = newSid
       
       "obtain a connection and a session" in {
 
@@ -43,9 +44,8 @@ class SessionAttributeTest extends BaseSpecWithServer {
                cid1 mustNot be (null)
          }
          
-         sid1 = newSid
          val body = sessionJsonBigCovar.expand("sid" -> sid1)
-         assertResp(route(app, connectedRequest(PUT, endpoint, cid1).withBody(body)))
+         assertResp(route(app, connectedRequest(PUT, endpointSession, cid1).withBody(body)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withNoBody
@@ -58,26 +58,111 @@ class SessionAttributeTest extends BaseSpecWithServer {
             "name" -> "ATTRIBUTE NAME",
             "value" -> "ATTRIBUTE VALUE"
          )
-         
-         assertResp(route(app, connectedRequest(PUT, endpoint + "/attr", cid1).withBody(body.toString())))
+         assertResp(route(app, connectedRequest(PUT, endpointAttribute, cid1).withBody(body.toString())))
             .isOk
             .withConnStatusHeader(OPEN)
-            .withNoBody
-         
+            .withBodyJson  { json =>
+               extractAttr(json, "ATTRIBUTE NAME") mustBe Some("ATTRIBUTE VALUE")
+            }
       }
 
       "read the attribute in first session" in {
                   
          val body: JsValue = Json.obj(
-            "sid" -> sid1,
-            "name" -> "ATTRIBUTE NAME"
+            "sid" -> sid1
          )
-         assertResp(route(app, connectedRequest(GET, endpoint + "/attr" , cid1).withBody(body.toString())))
+         assertResp(route(app, connectedRequest(GET, endpointSession, cid1).withBody(body.toString())))
             .isOk
             .withConnStatusHeader(OPEN)
-            .withNoBody
+            .withBodyJson  { json =>
+               extractAttr(json, "ATTRIBUTE NAME") mustBe Some("ATTRIBUTE VALUE")
+            }         
+      }
+      
+      var cid2: String = null
+
+      "read the attribute in a parallel session" in {
          
+         assertResp(route(app, connectionRequest("big_covar_schema")))
+           .isOk
+           .withConnStatusHeader(OPEN)
+           .withBodyJson { json =>
+               cid2 = (json \ "id").as[String]
+               cid2 mustNot be (null)
+               cid2 mustNot be (sid1)
+         }
+         
+         val body: JsValue = Json.obj(
+            "sid" -> sid1
+         )
+         assertResp(route(app, connectedRequest(GET, endpointSession, cid2).withBody(body.toString())))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson  { json =>
+               extractAttr(json, "ATTRIBUTE NAME") mustBe Some("ATTRIBUTE VALUE")
+            }         
+      }
+      
+      "update the attribute in the parallel session" in {
+     
+         val body: JsValue = Json.obj(
+            "sid" -> sid1,
+            "name" -> "ATTRIBUTE NAME",
+            "value" -> "SOME OTHER VALUE"
+         )
+         assertResp(route(app, connectedRequest(PUT, endpointAttribute, cid1).withBody(body.toString())))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson  { json =>
+               extractAttr(json, "ATTRIBUTE NAME") mustBe Some("SOME OTHER VALUE")
+            }
+      }
+      
+      "read the updated attribute in original session" in {
+                  
+         val body: JsValue = Json.obj(
+            "sid" -> sid1
+         )
+         assertResp(route(app, connectedRequest(GET, endpointSession, cid1).withBody(body.toString())))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson  { json =>
+               extractAttr(json, "ATTRIBUTE NAME") mustBe Some("SOME OTHER VALUE")
+            }         
       }
 
+      "refuse to read attribute in non-parallel session" in {
+                  
+         var cid3: String = null
+         
+         assertResp(route(app, connectionRequest("petclinic")))
+           .isOk
+           .withConnStatusHeader(OPEN)
+           .withBodyJson { json =>
+               cid3 = (json \ "id").as[String]
+               cid3 mustNot be (null)
+         }
+         
+         val body: JsValue = Json.obj(
+            "sid" -> sid1
+         )
+         assertResp(route(app, connectedRequest(GET, endpointSession, cid3).withBody(body.toString())))
+            .isError(SessionExpired, sid1)
+            .withConnStatusHeader(OPEN)
+      }
+
+   }
+
+   /**
+    * Extract the value of an attribute from the response JSON.
+    * Note that the session JSON is stringified, so has to be parsed.
+    */
+   def extractAttr(json: JsValue, name: String): Option[String] = {
+      val attrList = (Json.parse((json \ "session").as[String]) \ "attrList").as[List[Map[String, String]]]
+      var result: Option[String] = None
+      attrList.foreach { map => 
+         if (map.get("name").get == name) result = map.get("val") 
+         }
+      result
    }
 }

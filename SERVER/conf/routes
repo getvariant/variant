@@ -20,7 +20,7 @@ POST    /event                   com.variant.server.play.controller.EventControl
 GET     /session                 com.variant.server.play.controller.SessionController.getSession()
 PUT     /session                 com.variant.server.play.controller.SessionController.saveSession()
 
-GET     /session/attr            com.variant.server.play.controller.SessionController.getAttribute()
+#GET     /session/attr            com.variant.server.play.controller.SessionController.getAttribute()
 PUT     /session/attr            com.variant.server.play.controller.SessionController.addAttribute()
 
 # Request Controller
