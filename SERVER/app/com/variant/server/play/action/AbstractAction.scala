@@ -4,7 +4,6 @@ import play.api.mvc._
 import com.variant.server.conn.Connection
 import com.variant.core.util.Constants._
 import play.api.Logger
-import play.api.test.Helpers
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorRemote
 import play.api.libs.typedmap.TypedKey
@@ -59,6 +58,7 @@ abstract class AbstractAction
          }
          catch {
             case sre: ServerException.Remote =>
+               //if (logger.isDebugEnabled) logger.debug(sre.getMessage, sre)
                val result = ServerErrorRemote(sre.error).asResult(sre.args:_*)
                future = Future.successful(result)
             case t: Throwable => 
@@ -76,9 +76,12 @@ abstract class AbstractAction
          
          if (logger.isTraceEnabled) {
             logger.trace {
+               /*
                   val body = Helpers.contentAsString(future)(1000 millis)
                   "Request [%s] completed in %s with response body:\n%s"
-                  .format(req, TimeUtils.formatDuration(System.currentTimeMillis - start), body)
+                  .format(req, TimeUtils.formatDuration(System.currentTimeMillis - start), body) 
+               */
+                  "Request [%s] completed in %s".format(req, TimeUtils.formatDuration(System.currentTimeMillis - start)) 
             }
          }
          future.map(_.withHeaders(headers:_*))

@@ -181,7 +181,7 @@ trait BaseSpec extends PlaySpec {
             func(contentAsJson(res)) 
          } catch {
             case t: Throwable => 
-               fail(t.getMessage + stackLine) 
+               fail(t.getMessage + stackLine, t) 
          }
          
          this

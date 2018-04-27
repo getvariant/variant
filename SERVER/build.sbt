@@ -28,7 +28,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.play"      %% "play-json"          % "2.6.0",
   "com.typesafe.play"      %% "play-iteratees"     % "2.6.1",
   
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1", // % Test, // See #118
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
   
   // Variant Core
   "com.variant"            % "variant-core"        % coreVersion,  

@@ -150,11 +150,12 @@ public class Server {
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionGet(%s)", sid));
 		
+		final String body = String.format("{\"sid\":\"%s\"}", sid);
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
 				try {
-					HttpResponse resp = adapter.get(serverUrl + "session/" + sid, conn);
+					HttpResponse resp = adapter.get(serverUrl + "session", body, conn);
 					return Payload.Session.fromResponse(conn, resp);
 				}
 				catch (ClientException.User ue) {
@@ -207,11 +208,12 @@ public class Server {
 			jsonGen.writeStringField("name", name);
 			jsonGen.writeStringField("value", value);
 			jsonGen.writeEndObject();
+			jsonGen.flush();
 		}
 		catch (Exception t) {
 			throw new ClientException.Internal(t);
 		}
-		
+
 		// Call server
 		Payload.Session response =
 				new CommonExceptionHandler<Payload.Session>() {

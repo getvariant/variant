@@ -51,6 +51,34 @@ class SessionAttributeTest extends BaseSpecWithServer {
             .withNoBody
       }
 
+      "return null on read of non-existent attribute" in {
+                  
+         val body: JsValue = Json.obj(
+            "sid" -> sid1,
+            "name" -> "non-existent"
+         )
+         assertResp(route(app, connectedRequest(GET, endpointSession, cid1).withBody(body.toString())))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson  { json =>
+               extractAttr(json, "non-existent") mustBe None
+            }         
+      }
+
+      "clear non-existent attribute should return null" in {
+                  
+         val body: JsValue = Json.obj(
+            "sid" -> sid1,
+            "name" -> "non-existent"
+         )
+         assertResp(route(app, connectedRequest(DELETE, endpointAttribute, cid1).withBody(body.toString())))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson  { json =>
+               extractAttr(json, "non-existent") mustBe None
+            }         
+      }
+
       "set an attribute in first session" in {
          
          val body: JsValue = Json.obj(
@@ -62,6 +90,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson  { json =>
+               (json \ "returns").asOpt[String] mustBe None
                extractAttr(json, "ATTRIBUTE NAME") mustBe Some("ATTRIBUTE VALUE")
             }
       }
@@ -110,10 +139,11 @@ class SessionAttributeTest extends BaseSpecWithServer {
             "name" -> "ATTRIBUTE NAME",
             "value" -> "SOME OTHER VALUE"
          )
-         assertResp(route(app, connectedRequest(PUT, endpointAttribute, cid1).withBody(body.toString())))
+         assertResp(route(app, connectedRequest(PUT, endpointAttribute, cid2).withBody(body.toString())))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson  { json =>
+               (json \ "returns").asOpt[String] mustBe Some("ATTRIBUTE VALUE")
                extractAttr(json, "ATTRIBUTE NAME") mustBe Some("SOME OTHER VALUE")
             }
       }
@@ -151,6 +181,34 @@ class SessionAttributeTest extends BaseSpecWithServer {
             .withConnStatusHeader(OPEN)
       }
 
+      "clear the updated attribute in original session" in {
+                  
+         val body: JsValue = Json.obj(
+            "sid" -> sid1,
+            "name" -> "ATTRIBUTE NAME"
+         )
+         assertResp(route(app, connectedRequest(DELETE, endpointAttribute, cid1).withBody(body.toString())))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson  { json =>
+               (json \ "returns").asOpt[String] mustBe Some("SOME OTHER VALUE")
+               extractAttr(json, "ATTRIBUTE NAME") mustBe None
+            }         
+      }
+
+      "Confirm that the attribute is gone" in {
+                  
+         val body: JsValue = Json.obj(
+            "sid" -> sid1
+         )
+         assertResp(route(app, connectedRequest(GET, endpointSession, cid2).withBody(body.toString())))
+            .isOk
+            .withConnStatusHeader(OPEN)
+            .withBodyJson  { json =>
+               extractAttr(json, "ATTRIBUTE NAME") mustBe None
+            }         
+      }
+
    }
 
    /**
@@ -158,7 +216,8 @@ class SessionAttributeTest extends BaseSpecWithServer {
     * Note that the session JSON is stringified, so has to be parsed.
     */
    def extractAttr(json: JsValue, name: String): Option[String] = {
-      val attrList = (Json.parse((json \ "session").as[String]) \ "attrList").as[List[Map[String, String]]]
+      val ssnJson = Json.parse((json \ "session").as[String])
+      val attrList = (ssnJson \ "attrList").as[List[Map[String, String]]]
       var result: Option[String] = None
       attrList.foreach { map => 
          if (map.get("name").get == name) result = map.get("val") 

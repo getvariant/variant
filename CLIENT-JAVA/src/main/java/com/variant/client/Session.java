@@ -162,7 +162,9 @@ public interface Session {
 	/**
 	 * <p>Set a session-scoped attribute.
 	 * 
-	 * @return The string previously associated with this attribute, or null if none.
+	 * @name Attribute name. Cannot be <code>null</code>.
+	 * @name Attribute value. Cannot be <code>null</code>.
+	 * @return The string previously associated with this attribute, or <code>null</code> if none.
 	 * @since 0.6
 	 */
 	public String setAttribute(String name, String value);
@@ -170,6 +172,7 @@ public interface Session {
 	/**
 	 * <p>Retrieve the session-scoped attribute.
 	 * 
+	 * @param name Attribute name.
 	 * @return The string associated with this attribute.
 	 * @since 0.6
 	 */
@@ -178,7 +181,8 @@ public interface Session {
 	/**
 	 * <p>Remove a session-scoped attribute.
 	 * 
-	 * @return The string, previously associated with this attribute, or null if none.
+	 * @param name Attribute name.
+	 * @return The string, previously associated with this attribute, or <code>null</code> if none.
 	 * @since 0.7
 	 */
 	public String clearAttribute(String name);

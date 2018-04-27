@@ -22,9 +22,8 @@ public class HttpAdapter {
 	}
 	
 	/**
-	 * Send a GET.
+	 * Send a GET without a body
 	 * @param url
-	 * @param body
 	 * @return
 	 */
 	public HttpResponse get(final String url, Connection conn) { 		
@@ -33,6 +32,27 @@ public class HttpAdapter {
 				new HttpRemoter.Requestable() {	
 					@Override public HttpUriRequest requestOp() {
 						return new HttpGet(url);
+					}
+				},
+				conn
+		);
+	} 
+
+	/**
+	 * Send a GET with a body. Note that the stock HttpGet does not support entities
+	 * (bodies) so we've created our oun HttpGetWithEntity class.
+	 * @param url
+	 * @param body
+	 * @return
+	 */
+	public HttpResponse get(final String url, final String body, Connection conn) { 		
+		
+		return remoter.call(
+				new HttpRemoter.Requestable() {	
+					@Override public HttpUriRequest requestOp() throws Exception {
+						HttpGetWithEntity get =  new HttpGetWithEntity(url);
+						get.setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
+						return get;
 					}
 				},
 				conn

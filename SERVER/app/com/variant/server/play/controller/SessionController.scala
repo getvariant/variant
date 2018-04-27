@@ -88,9 +88,7 @@ class SessionController @Inject() (
       val name = (bodyJson \ "name").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "name")         
       }
-      val value = (bodyJson \ "value").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "value")         
-      }
+      val value = (bodyJson \ "value").asOpt[String].getOrElse(null)
 
       val conn = req.attrs.get(connectedAction.ConnKey).get
       val ssn = server.ssnStore.getOrBust(sid, conn)
@@ -98,18 +96,17 @@ class SessionController @Inject() (
       val prevValue = ssn.setAttribute(name, value)
       
       val response = JsObject(Seq(
-         "session" -> JsString(ssn.toJson)
+         "session" -> JsString(ssn.toJson),
+         "returns" -> JsString(prevValue)
       ))
-      
-      if (prevValue != null) response + ("returns" -> JsString(prevValue))
-      
+            
       Ok(response.toString())
    }
  
    /**
     * Get an attribute value
-    *
-   def getAttribute() = connectedAction { req =>
+    */
+   def clearAttribute() = connectedAction { req =>
 
       val bodyJson = getBody(req).getOrElse {
          throw new ServerException.Remote(EmptyBody)
@@ -123,14 +120,13 @@ class SessionController @Inject() (
 
       val conn = req.attrs.get(connectedAction.ConnKey).get
       val ssn = server.ssnStore.getOrBust(sid, conn)
-      val value = ssn.getAttribute(name)
+      val prevValue = ssn.clearAttribute(name)
       val response = JsObject(Seq(
-         "session" -> JsString(ssn.toJson)
+         "session" -> JsString(ssn.toJson),
+         "returns" -> JsString(prevValue)
       ))
-      
-      if (value != null) response + ("returns" -> JsString(value))
-      
+            
       Ok(response.toString)
    }
-   */
+
 }
