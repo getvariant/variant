@@ -104,7 +104,7 @@ class SessionController @Inject() (
    }
  
    /**
-    * Get an attribute value
+    * Clear an attribute
     */
    def clearAttribute() = connectedAction { req =>
 

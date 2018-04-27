@@ -150,5 +150,25 @@ public class HttpAdapter {
 				conn
 		);
 	}
-	
+
+	/**
+	 * Send a DELETE with a body
+	 * @param url
+	 * @param body
+	 * @return
+	 */
+	public HttpResponse delete(final String url, final String body, Connection conn) {
+		
+		return remoter.call(
+				new HttpRemoter.Requestable() {	
+					@Override public HttpUriRequest requestOp() throws Exception {
+						HttpDeleteWithEntity delete = new HttpDeleteWithEntity(url);
+						delete.setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
+						return delete;
+					}
+				},
+				conn
+		);
+	}
+
 }

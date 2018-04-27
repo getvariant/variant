@@ -39,6 +39,7 @@ public class SessionImpl implements Session {
 	private boolean isExpired = false;
 	
 	private final ConnectionImpl conn;  // Connection which created this session.
+	private final Server server;        // Server object associated with this VariantClient.
 	private CoreSession coreSession;
 	private SessionIdTracker sessionIdTracker;
 	private TargetingTracker targetingTracker;
@@ -114,7 +115,7 @@ public class SessionImpl implements Session {
 	//                                            PUBLIC                                            //
 	// ---------------------------------------------------------------------------------------------//
 	/**
-	 * Original session creator.
+	 * Create a foreground session with a session ID and a targeting trackers.
 	 */
 	public SessionImpl(
 			Connection conn,
@@ -123,6 +124,7 @@ public class SessionImpl implements Session {
 			Object...userData) {
 		
 		this.conn = (ConnectionImpl) conn;
+		this.server = this.conn.client.server;
 		this.coreSession = coreSession;
 		this.sessionIdTracker = sessionIdTracker;
 		this.targetingTracker = initTargetingTracker(userData);
@@ -130,13 +132,14 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * Parallel session creator.
+	 * Create a headless session without the session ID and the targeting trackers.
 	 */
 	public SessionImpl(
 			Connection conn,
 			CoreSession coreSession) {
 		
 		this.conn = (ConnectionImpl) conn;
+		this.server = this.conn.client.server;
 		this.coreSession = coreSession;
 		this.sessionIdTracker = null;
 		this.targetingTracker = null;
@@ -158,11 +161,8 @@ public class SessionImpl implements Session {
 			throw new ClientException.User(ACTIVE_REQUEST);
 		}
 		
-		Payload.Session payload = conn.client.server.requestCreate(getId(), state.getName(), conn);
-		rewrap(payload.session);
-		stateRequest = new StateRequestImpl(this);
-		
-		return stateRequest;
+		server.requestCreate(this, state.getName(), conn);
+		return new StateRequestImpl(this);
 	}
 
 	/**
@@ -268,8 +268,10 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public String setAttribute(String name, String value) {
+		if (name == null) throw new ClientException.User("Name cannot be null");
+		if (value == null) throw new ClientException.User("Value cannot be null");
 		checkState();
-		return conn.client.server.sessionAttrSet(this, name, value);
+		return server.sessionAttrSet(this, name, value);
 	}
 
 	/**
@@ -277,6 +279,7 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public String getAttribute(String name) {
+		if (name == null) throw new ClientException.User("Name cannot be null");
 		checkState();
 		conn.refreshSession(this);
 		return coreSession.getAttribute(name);
@@ -287,9 +290,9 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public String clearAttribute(String name) {
+		if (name == null) throw new ClientException.User("Name cannot be null");
 		checkState();
-		save();
-		return coreSession.clearAttribute(name);
+		return server.sessionAttrClear(this, name);
 	}
 
 	// ---------------------------------------------------------------------------------------------//
@@ -327,7 +330,9 @@ public class SessionImpl implements Session {
 		// Propagate to the state request wrapper object, if any.
 		if(stateRequest != null) stateRequest.rewrap(coreSession.getStateRequest());
 		
-		targetingTracker.set(fromTargetingStabile(coreSession.getTargetingStabile()));
+		// Update targeting tracker, if a foreground session.
+		if (targetingTracker != null)
+			targetingTracker.set(fromTargetingStabile(coreSession.getTargetingStabile()));
 	}
 	
 	/**

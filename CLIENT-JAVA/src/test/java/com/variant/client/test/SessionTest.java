@@ -32,7 +32,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	////@org.junit.Test
+	@org.junit.Test
 	public void noSessionIdInTrackerTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -69,7 +69,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	////@org.junit.Test
+	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -109,7 +109,7 @@ public class SessionTest extends ClientBaseTestWithServer {
    
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void connectionClosedLocallyTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -133,7 +133,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	 * Session expires too soon. See bug https://github.com/getvariant/variant/issues/67
 	 * + bug 82, probably a dupe.
 	 */
-    //@org.junit.Test
+    @org.junit.Test
 	public void connectionClosedRemotelyTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -163,25 +163,40 @@ public class SessionTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void attributesTest() throws Exception {
 
-		// Open connection
-		Connection conn = client.getConnection("big_covar_schema");		
-		assertNotNull(conn);
-		assertEquals(OPEN, conn.getStatus());
+		// Open two parallel connections
+		Connection conn1 = client.getConnection("big_covar_schema");		
+		Connection conn2 = client.getConnection("big_covar_schema");		
+		assertNotNull(conn1);
+		assertNotNull(conn2);
+		assertEquals(OPEN, conn1.getStatus());
+		assertEquals(OPEN, conn2.getStatus());
 
-		// Open session.
+		// Open a session.
 		String sid = newSid();
-		Session ssn = conn.getOrCreateSession(sid);
-		assertNotNull(ssn);
-		assertEquals(sid, ssn.getId());
+		assertNull(conn1.getSessionById(sid));
+		Session ssn1 = conn1.getOrCreateSession(sid);
+		assertNotNull(ssn1);
+		assertEquals(sid, ssn1.getId());
+		Session ssn2 = conn2.getSessionById(sid);
+		assertNotNull(ssn2);
+		assertEquals(sid, ssn2.getId());
 		
-		// Set attribute
-		assertNull(ssn.getAttribute("foo"));
-		assertNull(ssn.clearAttribute("foo"));
+		// Set attribute in ssn1
+		assertNull(ssn1.getAttribute("foo"));
+		assertNull(ssn1.clearAttribute("foo"));
 		String attr = "VALUE";
-		ssn.setAttribute("foo", attr);
-		assertEquals(attr, ssn.getAttribute("foo"));
-		assertEquals(attr, ssn.clearAttribute("foo"));
-		assertNull(ssn.getAttribute("foo"));
+		ssn1.setAttribute("foo", attr);
+
+		// read back in ssn1 and ssn2
+		assertEquals(attr, ssn1.getAttribute("foo"));
+		assertEquals(attr, ssn2.getAttribute("foo"));
+		
+		// Clear in ssn2
+		assertEquals(attr, ssn2.clearAttribute("foo"));
+		
+		// Read back in ssn1 and ssn2
+		assertNull(ssn1.getAttribute("foo"));
+		assertNull(ssn2.getAttribute("foo"));
 
 	}
 

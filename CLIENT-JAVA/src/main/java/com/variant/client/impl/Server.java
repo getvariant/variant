@@ -10,13 +10,12 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.client.ClientException;
 import com.variant.client.ConfigKeys;
 import com.variant.client.Connection;
-import com.variant.core.ConnectionStatus;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
-import com.variant.client.net.http.HttpRemoter;
 import com.variant.client.net.http.HttpResponse;
+import com.variant.core.ConnectionStatus;
 import com.variant.core.ServerError;
 import com.variant.core.VariantEvent;
 import com.variant.core.impl.VariantEventSupport;
@@ -186,15 +185,16 @@ public class Server {
 		
 	}
 
+	//---------------------------------------------------------------------------------------------//
+	//                                       /SESSION/ATTR                                         //
+	//---------------------------------------------------------------------------------------------//
+
 	/**
 	 * Set a session attribute.
 	 * @return previous global value of this attribute.
 	 * 
 	 */
-	public String sessionAttrSet(Session ssn, String name, String value) {
-		
-		if (name == null) throw new NullPointerException("Name cannot be null");
-		if (value == null) throw new NullPointerException("Value cannot be null");
+	public String sessionAttrSet(SessionImpl ssn, String name, String value) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionAttrSet(%s, %s)", name, value));
@@ -214,15 +214,49 @@ public class Server {
 			throw new ClientException.Internal(t);
 		}
 
-		// Call server
-		Payload.Session response =
-				new CommonExceptionHandler<Payload.Session>() {
+		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
 			@Override Payload.Session block() throws Exception {
 				HttpResponse resp = adapter.put(serverUrl + "session/attr", body.toString(), ssn.getConnection());
 				return Payload.Session.fromResponse(ssn.getConnection(), resp);
 			}
 		}.run(ssn.getConnection());
 		
+		ssn.rewrap(response.session);
+		return response.returns;
+	}
+
+	/**
+	 * Set a session attribute.
+	 * @return previous global value of this attribute.
+	 * 
+	 */
+	public String sessionAttrClear(SessionImpl ssn, String name) {
+		
+		if (LOG.isTraceEnabled()) LOG.trace(
+				String.format("sessionAttrClear(%s)", name));
+
+		// Make body
+		final StringWriter body = new StringWriter(2048);
+		try {
+			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
+			jsonGen.writeStartObject();
+			jsonGen.writeStringField("sid", ssn.getId());
+			jsonGen.writeStringField("name", name);
+			jsonGen.writeEndObject();
+			jsonGen.flush();
+		}
+		catch (Exception t) {
+			throw new ClientException.Internal(t);
+		}
+
+		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
+			@Override Payload.Session block() throws Exception {
+				HttpResponse resp = adapter.delete(serverUrl + "session/attr", body.toString(), ssn.getConnection());
+				return Payload.Session.fromResponse(ssn.getConnection(), resp);
+			}
+		}.run(ssn.getConnection());
+		
+		ssn.rewrap(response.session);
 		return response.returns;
 	}
 
@@ -234,20 +268,22 @@ public class Server {
 	 * POST /request.
      * Create a state request by targeting session for a state
 	 */
-	public Payload.Session requestCreate(String sid, String state, final ConnectionImpl conn) {
+	public void requestCreate(SessionImpl ssn, String state, final ConnectionImpl conn) {
 
 		if (LOG.isTraceEnabled()) LOG.trace(
-				String.format("requestCreate(%s,%s)", sid, state));
+				String.format("requestCreate(%s,%s)", ssn.getId(), state));
 
-		final String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", sid, state);
+		final String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", ssn.getId(), state);
 		
-		return new CommonExceptionHandler<Payload.Session>() {
+		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
 				HttpResponse resp = adapter.post(serverUrl + "request", body, conn); 
 				return Payload.Session.fromResponse(conn, resp);
 			}
 		}.run(conn);
+		
+		ssn.rewrap(response.session);
 	}
 
 	/**
