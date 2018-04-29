@@ -19,7 +19,6 @@ import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
-import com.variant.client.net.Payload;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.VariantEvent;
@@ -160,23 +159,26 @@ public class SessionImpl implements Session {
 		if (coreSession.getStateRequest() != null && !coreSession.getStateRequest().isCommitted()) {
 			throw new ClientException.User(ACTIVE_REQUEST);
 		}
-		
 		server.requestCreate(this, state.getName(), conn);
-		return new StateRequestImpl(this);
+		return getStateRequest();
 	}
 
 	/**
 	 * Mutable. But don't go to the server if already expired.
+	 * Do not throw connection expired exception.
 	 */
 	@Override
 	public boolean isExpired() {
 		if (isExpired) return true;
-		conn.refreshSession(this);
+		try {
+			conn.refreshSession(this);
+		}
+		catch (ConnectionClosedException e) { return true; }
 		return isExpired;
 	}
 	
 	/**
-	 * Immutable
+	 * Non-mutating
 	 */
 	@Override
 	public String getId() {
@@ -184,68 +186,30 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * Immutable
+	 * Non-mutating
 	 */
 	@Override
 	public Date getCreateDate() {
-		checkState();
 		return coreSession.createDate();
 	}
 
 	/**
-	 * Immutable.
+	 * Non-mutating
 	 */
 	@Override
 	public Connection getConnection() {
-		checkState();
 		return conn;
 	}
 
 	/**
-	 * Immutable
+	 * Non-mutating, 
+	 * but connection may refuse.
 	 */
 	@Override
 	public Config getConfig() {
-		checkState();
 		return conn.getClient().getConfig();
 	}
 
-	/**
-	 * Mutable
-	 */
-	@Override
-	public Map<State, Integer> getTraversedStates() {
-		checkState();
-		return coreSession.getTraversedStates();
-	}
-
-	/**
-	 * Mutable
-	 */
-	@Override
-	public Set<Test> getTraversedTests() {
-		checkState();
-		return coreSession.getTraversedTests();
-	}
-
-	/**
-	 * Mutable
-	 */
-	@Override
-	public Set<Test> getDisqualifiedTests() {
-		checkState();
-		return coreSession.getDisqualifiedTests();
-	}
-
-	/**
-	 * Mutable
-	 */
-	@Override
-	public void triggerEvent(VariantEvent event) {
-		checkState();
-		conn.client.server.eventSave(this, event);
-	}
-	
 	/**
 	 * Immutable
 	 */
@@ -255,7 +219,43 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * Mutable
+	 * Mutating or mutable state.
+	 */
+	@Override
+	public Map<State, Integer> getTraversedStates() {
+		checkState();
+		return coreSession.getTraversedStates();
+	}
+
+	/**
+	 * Mutating or mutable state.
+	 */
+	@Override
+	public Set<Test> getTraversedTests() {
+		checkState();
+		return coreSession.getTraversedTests();
+	}
+
+	/**
+	 * Mutating or mutable state.
+	 */
+	@Override
+	public Set<Test> getDisqualifiedTests() {
+		checkState();
+		return coreSession.getDisqualifiedTests();
+	}
+
+	/**
+	 * Mutating or mutable state.
+	 */
+	@Override
+	public void triggerEvent(VariantEvent event) {
+		checkState();
+		conn.client.server.eventSave(this, event);
+	}
+	
+	/**
+	 * Mutating or mutable state.
 	 */
 	@Override
 	public StateRequest getStateRequest() {
@@ -264,7 +264,7 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * Mutable
+	 * Mutating or mutable state.
 	 */
 	@Override
 	public String setAttribute(String name, String value) {
@@ -275,7 +275,7 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * Read mutable
+	 * Mutating or mutable state.
 	 */
 	@Override
 	public String getAttribute(String name) {
@@ -286,7 +286,7 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * Mutate
+	 * Mutating or mutable state.
 	 */
 	@Override
 	public String clearAttribute(String name) {
@@ -322,17 +322,25 @@ public class SessionImpl implements Session {
 	}
 
 	/**
+	 * Replace the core session. Recursively replaces the core state request.
 	 */
 	public void rewrap(CoreSession coreSession) {
 		// The new core session which this object wraps.
 		this.coreSession = (CoreSession) coreSession;
 		
 		// Propagate to the state request wrapper object, if any.
-		if(stateRequest != null) stateRequest.rewrap(coreSession.getStateRequest());
+		// Relies on this session already containing the new core session.
+		if(stateRequest != null) {
+			stateRequest.rewrap(coreSession.getStateRequest());
+		}
+		else if (coreSession != null){
+			stateRequest = new StateRequestImpl(this);
+		}
 		
 		// Update targeting tracker, if a foreground session.
 		if (targetingTracker != null)
 			targetingTracker.set(fromTargetingStabile(coreSession.getTargetingStabile()));
+		
 	}
 	
 	/**

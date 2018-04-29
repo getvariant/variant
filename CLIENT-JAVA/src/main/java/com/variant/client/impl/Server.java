@@ -290,12 +290,12 @@ public class Server {
 	 * PUT /request.
 	 * Commit a state request and trigger the state visited event.
 	 */
-	public Payload.Session requestCommit(final CoreSession ssn, final ConnectionImpl conn) {
+	public boolean requestCommit(final SessionImpl ssn, final ConnectionImpl conn) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("requestCommit(%s)", ssn.getId()));
 
-		return new CommonExceptionHandler<Payload.Session>() {
+		Payload.Session response =  new CommonExceptionHandler<Payload.Session>() {
 			@Override Payload.Session block() throws Exception {
 				StringWriter body = new StringWriter();
 				JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
@@ -309,7 +309,11 @@ public class Server {
 				return Payload.Session.fromResponse(conn, resp);
 			}
 		}.run(conn);
+		
+		//System.out.println("*********************\n" + response.toString());  
+		ssn.rewrap(response.session);
 
+		return true;
 	}
 
 }

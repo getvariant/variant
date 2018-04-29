@@ -55,26 +55,27 @@ public class HttpRemoter {
 			HttpUriRequest req = requestable.requestOp();
 			req.setHeader("Content-Type", Constants.HTTP_HEADER_CONTENT_TYPE);
 
-			resp = httpClient.execute(req);
-			
-			Header[] connStatusHeader = resp.getHeaders(Constants.HTTP_HEADER_CONN_STATUS);
-			String connStatus = connStatusHeader.length == 0 ? null : connStatusHeader[0].getValue();
+			resp = httpClient.execute(req);			
+			HttpResponse result = new HttpResponse(req, resp);
 
 			if (LOG.isTraceEnabled()) {
-				LOG.trace(String.format(
-						"+++ %s %s : %s (%s) responded with:", 
-						req.getMethod(), req.getURI(), 
-						resp.getStatusLine().getStatusCode(), 
-						TimeUtils.formatDuration(System.currentTimeMillis() - start)));
+				
+				StringBuilder buff = new StringBuilder();
+				buff.append("\n>>> ").append(req.getMethod()).append(" ").append(req.getURI());
 				if (req instanceof HttpEntityEnclosingRequestBase) {
 					HttpEntity entity = ((HttpEntityEnclosingRequestBase)req).getEntity();
 					String body = entity == null ? "null" : EntityUtils.toString(entity);
-					LOG.trace("Body: '" + body + "'");
-					LOG.trace("Connection Status: " + (connStatus == null ? "null" : connStatus));
+					buff.append("\nBody: '").append(body).append("'");
 				}
+				buff.append("\n<<< ").append(resp.getStatusLine().getStatusCode())
+					.append(" (")
+					.append(TimeUtils.formatDuration(System.currentTimeMillis() - start))
+					.append(")");
+				buff.append("\nConnection Status: ").append(result.status);
+				buff.append("\nBody: '").append(result.body).append("'");
+				
+				LOG.trace(buff.toString());
 			}
-			
-			HttpResponse result = new HttpResponse(req, resp);
 
 			// Process the http status and the body.
 			switch (result.status) {
@@ -136,27 +137,32 @@ public class HttpRemoter {
 			else {
 				throw new ClientException.Internal(String.format("Unexpected status %s", conn.getStatus()));
 			}
-			resp = httpClient.execute(req);
 
-			Header[] connStatusHeader = resp.getHeaders(Constants.HTTP_HEADER_CONN_STATUS);
-			String connStatus = connStatusHeader.length == 0 ? null : connStatusHeader[0].getValue();
-			
+			resp = httpClient.execute(req);
+			HttpResponse result = new HttpResponse(req, resp);
+
 			if (LOG.isTraceEnabled()) {
-				LOG.trace(String.format(
-						"+++ %s %s : %s (%s) responded with:", 
-						req.getMethod(), req.getURI(), 
-						resp.getStatusLine().getStatusCode(), 
-						TimeUtils.formatDuration(System.currentTimeMillis() - start)));
+				
+				StringBuilder buff = new StringBuilder();
+				buff.append("\n>>> ").append(req.getMethod()).append(" ").append(req.getURI());
 				if (req instanceof HttpEntityEnclosingRequestBase) {
 					HttpEntity entity = ((HttpEntityEnclosingRequestBase)req).getEntity();
 					String body = entity == null ? "null" : EntityUtils.toString(entity);
-					LOG.trace("Body: '" + body + "'");
-					LOG.trace("Connection Status: " + (connStatus == null ? "null" : connStatus));
+					buff.append("\nBody: '").append(body).append("'");
 				}
+				buff.append('\n');
+				buff.append("\n<<< ").append(resp.getStatusLine().getStatusCode())
+					.append(" (")
+					.append(TimeUtils.formatDuration(System.currentTimeMillis() - start))
+					.append(")");
+				buff.append("\nConnection Status: ").append(result.status);
+				buff.append("\nBody: '").append(result.body).append("'");
+				
+				LOG.trace(buff.toString());
 			}
-			
-			HttpResponse result = new HttpResponse(req, resp);
 
+			Header[] connStatusHeader = resp.getHeaders(Constants.HTTP_HEADER_CONN_STATUS);
+			String connStatus = connStatusHeader.length == 0 ? null : connStatusHeader[0].getValue();
 			// If the server sent the connection status header, update this connection.
 			if (connStatus != null) ((ConnectionImpl)conn).setStatus(ConnectionStatus.valueOf(connStatus));
 

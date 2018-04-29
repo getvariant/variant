@@ -1,9 +1,10 @@
 package com.variant.client.test;
 
+import static com.variant.core.ConnectionStatus.CLOSED_BY_SERVER;
+import static com.variant.core.ConnectionStatus.OPEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static com.variant.core.ConnectionStatus.*;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
@@ -11,7 +12,7 @@ import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.core.ServerError;
+import com.variant.core.schema.Schema;
 import com.variant.core.util.IoUtils;
 
 /**
@@ -32,8 +33,9 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 		final Connection conn = client.getConnection("big_covar_schema");		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
-		assertNotNull(conn.getClient());
-		assertNotNull(conn.getSchema());
+		assertEquals(client, conn.getClient());
+		Schema schema = conn.getSchema();
+		assertNotNull(schema);
 		assertEquals("big_covar_schema", conn.getSchema().getName());
 		assertEquals(5, conn.getSchema().getStates().size());
 		assertEquals(6, conn.getSchema().getTests().size());
@@ -44,7 +46,9 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 
 		assertEquals(OPEN, conn.getStatus());
 		assertEquals(conn, ((VariantClientImpl)client).byId(conn.getId()));
-
+		assertNotNull(conn.getId());
+		assertEquals(schema, conn.getSchema());
+		
 		// Can't do anything over the connection
 		new ClientUserExceptionInterceptor() {
 			
@@ -84,7 +88,19 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 			}
 			
 		}.assertThrown(ConnectionClosedException.class);
-		
+
+		new ClientUserExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn.getSchema();
+			}
+			
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
+		}.assertThrown(ConnectionClosedException.class);
+
 		// Confirm the schema is gone.
 		assertNull(client.getConnection("big_covar_schema"));
 

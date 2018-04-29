@@ -102,9 +102,11 @@ public class SessionTest extends ClientBaseTestWithServer {
 				}
 				@Override public void onThrown(ClientException.User e) {
 					assertEquals(ClientUserError.SESSION_EXPIRED, e.getError());
+					assertTrue(ssn.isExpired());
 				}
 			}.assertThrown(SessionExpiredException.class);
 		}
+		assertEquals(OPEN, conn.getStatus());
 	}
    
 	/**

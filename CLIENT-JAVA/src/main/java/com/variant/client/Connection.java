@@ -27,13 +27,24 @@ public interface Connection {
 	VariantClient getClient();
 
 	/**
-     * <p>This connection's unique ID. 
+     * <p>This connection's unique immutable ID, as was assigned by the server at the time this
+     * connection was open. 
      *  
-	 * @return Connection ID.
-	 *
 	 * @since 0.7
 	 */
 	String getId();
+
+	/**
+	 * Get the XDM schema, associated with this connection.
+	 * Does not throw {@link ConnectionClosedException} if the connection is closed.
+	 * 
+	 * @return An object of type {@link Schema}
+	 * 
+	 * @throws ConnectionClosedException
+	 * 
+	 * @since 0.7
+	 */
+	Schema getSchema();
 
 	/**
 	 * Get, if exists, or create, if does not exist, the Variant session with the externally tracked ID.
@@ -59,9 +70,12 @@ public interface Connection {
 	 *                 to the implementations of {@link SessionIdTracker#init(Connection, Object...)}
 	 *                 and {@link TargetingTracker#init(Connection, Object...)}.
      *
-	 * @since 0.7
 	 * @return An object of type {@link Session}. Never returns <code>null</code>.
-	 */
+	 *
+	 * @throws ConnectionClosedException
+     *
+	 * @since 0.7
+     */
 	Session getOrCreateSession(Object... userData);
 
 	/**
@@ -88,8 +102,11 @@ public interface Connection {
 	 *                 to the implementations of {@link SessionIdTracker#init(Connection, Object...)}
 	 *                 and {@link TargetingTracker#init(Connection, Object...)}.
      *
-	 * @since 0.7
 	 * @return An object of type {@link Session}, if the session exists, or <code>null</code> otherwise.
+     *
+	 * @throws ConnectionClosedException
+	 * 
+	 * @since 0.7
 	 */
 	Session getSession(Object... userData);
 
@@ -115,22 +132,15 @@ public interface Connection {
 	 * 
 	 * @param sessionId The ID of the session you are looking to retrieve from the server.
      *
-	 * @since 0.7
 	 * @return An object of type {@link Session}, if session exists, or {@code null} if no session with this ID
 	 *         was found on the server. This call is guaranteed to be idempotent, i.e. a subsequent
 	 *         invocation with the same session ID will return the same object, so long as the session hasn't expired.
+	 *         
+	 * @throws ConnectionClosedException
+     *
+     * @since 0.7
 	 */
 	Session getSessionById(String sessionId);
-
-	/**
-	 * Get the XDM schema, associated with this connection.
-	 * Does not throw {@link ConnectionClosedException} if the connection is closed.
-	 * 
-	 * @return An object of type {@link Schema}
-	 * 
-	 * @since 0.7
-	 */
-	Schema getSchema();
 
 	/**
 	 * Most recent known {@link ConnectionStatus} of this connection.
@@ -141,10 +151,13 @@ public interface Connection {
 	ConnectionStatus getStatus();
 	
 	/**
-	 * Close this connection. 
-	 * All sessions opened in this connection are destroyed and will not be available 
-	 * for retrieval from parallel connections. No-op if this connection has already been closed.
+	 * Close this connection. All local session objects created by this connection will become inaccessible.
+	 * However, the closure of the connection has no effect on the distributed session that had been
+	 * accessed by or created by this connection: these will remain active and accessible via the {@link #getSessionById(String)}
+	 * method until they expire naturally. 
 	 * 
+	 * @throws ConnectionClosedException
+     *
 	 * @since 0.7
 	 */
 	void close();

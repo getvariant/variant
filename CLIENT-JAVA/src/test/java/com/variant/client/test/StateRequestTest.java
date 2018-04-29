@@ -64,8 +64,9 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 	   	final StateRequest req = ssn.targetForState(state1);
 	   	assertNotNull(req);
+	   	assertEquals(req, ssn.getStateRequest());
 		assertEquals(5, req.getLiveExperiences().size());
-		
+
 		new ClientUserExceptionInterceptor() {
 			@Override public void toRun() {
 				req.getLiveExperience(test1);
@@ -101,7 +102,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(req.getState().getName(), event.getValue());
 		assertEquals(ssn.getCreateDate().getTime(), event.getCreateDate().getTime(), 10);
 		assertTrue(event.getParameterMap().isEmpty());
-		
 		assertTrue(req.commit());
 		assertTrue(req.isCommitted());
 		assertNull(req.getStateVisitedEvent());		
@@ -113,7 +113,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		Session ssn2 = conn.getSession(sid);
 		assertEquals(ssn, ssn2);
 		StateRequest req2 = ssn2.getStateRequest();
-		assertEquals(req, req2);
+		assertEquals(req, req2);  // << The problem probably is that session rewrap doesn't do request rewrap (see StateRequestImpl:104)
 		assertTrue(req2.isCommitted());
 
 		conn.close();

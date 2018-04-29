@@ -59,16 +59,6 @@ public interface Session {
 	public Date getCreateDate();
 
 	/**
-     * <p>Target this session for a state. 
-     *  
-	 * @return An instance of the {@link StateRequest} object, which
-	 *         may be further examined for more information about the outcome of this operation.  
-	 *
-	 * @since 0.5
-	 */
-	StateRequest targetForState(State state);
-	
-	/**
      * <p>The server connection whch created this session. 
      *  
 	 * @return An instance of the {@link Connection} object, which originally created this object
@@ -77,7 +67,20 @@ public interface Session {
 	 * @since 0.7
 	 */	
 	public Connection getConnection();
-	
+
+	/**
+     * <p>Target this session for a state. 
+     *  
+	 * @return An instance of the {@link StateRequest} object, which
+	 *         may be further examined for more information about the outcome of this operation.  
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws StateNotInstrumentedException 
+	 * 
+	 * @since 0.5
+	 */
+	StateRequest targetForState(State state);
+		
 	/**
 	 * Externally supplied configuration. A shortcut for {@code getConnection().getClient().getConfig()}
 	 * See https://github.com/typesafehub/config for details on Typesafe Config.
@@ -109,6 +112,11 @@ public interface Session {
 	 * 
 	 * @return A map, whose entries are keyed by {@link State} and values are Integer visit counts in
 	 *         that state.
+	 *         
+	 * @throws SessionExpiredException
+	 * @throws StateNotInstrumentedException 
+	 * 
+	 * @since 0.7
 	 */
 	public Map<State, Integer> getTraversedStates(); 
 
@@ -118,6 +126,11 @@ public interface Session {
 	 * b) T is not OFF, and c) this session qualified for T.
 	 * 
 	 * @return A set of object of type {@link Test}.
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws StateNotInstrumentedException 
+	 * 
+	 * @since 0.7
 	 */
 	public Set<Test> getTraversedTests(); 
 	
@@ -127,6 +140,11 @@ public interface Session {
 	 * that disqualified it may no longer hold.
 	 * 
 	 * @return A set of {@link Test}s which this session is disqualified for. 
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws StateNotInstrumentedException 
+	 * 
+	 * @since 0.7
 	 */
 	public Set<Test> getDisqualifiedTests();
 		
@@ -136,6 +154,9 @@ public interface Session {
 	 * @return An object of type {@link VariantCoreStateRequest}, or null, if none yet for this
 	 *         session.
 	 *  
+	 * @throws SessionExpiredException
+	 * @throws StateNotInstrumentedException 
+	 * 
 	 * @since 0.5
 	 */
 	public StateRequest getStateRequest();
@@ -144,6 +165,10 @@ public interface Session {
 	 * Trigger a custom event.
 	 * 
 	 * @param An implementation of {@link VariantEvent}, which represents the custom event to be triggered.
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws StateNotInstrumentedException 
+	 * 
 	 * @since 0.7
 	 */
 	public void triggerEvent(VariantEvent event);
@@ -155,6 +180,9 @@ public interface Session {
 	 * config key, or after the underlying {@link Connection} is closed.
 	 * 
 	 * @return true if this session has expired or false otherwise.
+	 * 
+	 * @throws StateNotInstrumentedException 
+     *
 	 * @since 0.6
 	 */
 	public boolean isExpired();
@@ -165,6 +193,10 @@ public interface Session {
 	 * @name Attribute name. Cannot be <code>null</code>.
 	 * @name Attribute value. Cannot be <code>null</code>.
 	 * @return The string previously associated with this attribute, or <code>null</code> if none.
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws StateNotInstrumentedException 
+	 * 
 	 * @since 0.6
 	 */
 	public String setAttribute(String name, String value);
@@ -174,6 +206,10 @@ public interface Session {
 	 * 
 	 * @param name Attribute name.
 	 * @return The string associated with this attribute.
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws StateNotInstrumentedException 
+	 * 
 	 * @since 0.6
 	 */
 	public String getAttribute(String name);
@@ -183,6 +219,10 @@ public interface Session {
 	 * 
 	 * @param name Attribute name.
 	 * @return The string, previously associated with this attribute, or <code>null</code> if none.
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws StateNotInstrumentedException 
+	 * 
 	 * @since 0.7
 	 */
 	public String clearAttribute(String name);

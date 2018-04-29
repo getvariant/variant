@@ -99,10 +99,7 @@ public class StateRequestImpl implements StateRequest {
 		session.getTargetingTracker().save(userData);
 		session.getSessionIdTracker().save(userData);
 		
-		Payload.Session payload = conn.client.server.requestCommit(session.getCoreSession(), conn);
-		session.rewrap(payload.session);
-		rewrap(payload.session.getStateRequest());
-		return true;
+		return conn.client.server.requestCommit(session, conn);
 	}
 
 	@Override

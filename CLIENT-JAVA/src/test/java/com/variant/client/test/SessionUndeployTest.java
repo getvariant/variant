@@ -1,21 +1,23 @@
 package com.variant.client.test;
 
 import static com.variant.core.ConnectionStatus.*;
-import static org.junit.Assert.*;
-
-import java.util.LinkedList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
+import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
-import com.variant.client.ConnectionClosedException;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.SessionImpl;
+import com.variant.core.impl.StateVisitedEvent;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.util.IoUtils;
-import com.variant.core.impl.StateVisitedEvent;
 
 /**
  * Test connections of a cold-deployed schemata.
@@ -23,7 +25,7 @@ import com.variant.core.impl.StateVisitedEvent;
  */
 public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	
-	private int SESSIONS = 100;
+	private int SESSIONS = 200;
 	
 	// Sole client
 	private VariantClient client = VariantClient.Factory.getInstance();		
@@ -36,10 +38,10 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		// Open connection
 		final Connection conn = client.getConnection("big_covar_schema");		
-		assertNotNull(conn);
+		final Schema schema = conn.getSchema();
 		assertEquals(OPEN, conn.getStatus());
 		assertNotNull(conn.getClient());
-		assertNotNull(conn.getSchema());
+		assertNotNull(schema);
 		assertEquals("big_covar_schema", conn.getSchema().getName());
 		assertEquals(5, conn.getSchema().getStates().size());
 		assertEquals(6, conn.getSchema().getTests().size());
@@ -74,43 +76,41 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				SessionImpl ssn = (SessionImpl) sessions[_i];
 				StateRequest req = requests[_i];
 
-				// Local ops do not refresh => no exceptions
+				// Non-mutating
 				assertNotNull(ssn.getId());
-				assertFalse(ssn.isExpired());
 				assertNotNull(ssn.getCreateDate());
 				assertEquals(conn, ssn.getConnection());
-				assertEquals(conn.getClient().getConfig(), ssn.getConfig());
+				assertEquals(1000, ssn.getTimeoutMillis());
 				
-				// These require refresh => throw exception.
+				// Mutable, but doesn't throw connection closed exception 
+				assertTrue(ssn.isExpired());
+
+				// Mutable, throws connection closed exception.
 				new ClientUserExceptionInterceptor() {
 				
 					@Override public void toRun() {
-						switch (_i % 10) {
+						switch (_i % 11) {						
 						case 0: conn.getSessionById(sessions[_i].getId()); break;
 						case 1: ssn.getTraversedStates(); break;
 						case 2: ssn.getTraversedTests(); break;
 						case 3: ssn.getDisqualifiedTests(); break;
-						case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), conn.getSchema().getState("state1"))); break;
-						case 8: ssn.getAttribute("foo"); break;
+						case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), schema.getState("state1"))); break;
+						case 5: ssn.getAttribute("foo"); break;
+						case 6: ssn.setAttribute("foo", "bar"); break;
+						case 7: ssn.clearAttribute("foo"); break;
+						case 8: ssn.targetForState(schema.getState("state4")); break;
 						case 9: req.commit(); break;
+						case 10: ssn.getConfig(); break;
 						}
 					}
 					
 					@Override public void onThrown(ClientException.User e) {
 						assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+						assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 					}
 					
-					@Override public void onNotThrown() {
-						System.out.println("******************* " + _i);
-					}
-
 				}.assertThrown(ConnectionClosedException.class);
 		
-				assertEquals(CLOSED_BY_SERVER, conn.getStatus());
-				
-				////// check immutable ops again.
-				////// Check session expiration listeners
-				////// should we expire sessions or connection close?
 			});
 		}
 		

@@ -1,7 +1,10 @@
 package com.variant.client.test;
 
-import static com.variant.core.ConnectionStatus.*;
-import static org.junit.Assert.*;
+import static com.variant.core.ConnectionStatus.CLOSED_BY_CLIENT;
+import static com.variant.core.ConnectionStatus.CLOSED_BY_SERVER;
+import static com.variant.core.ConnectionStatus.OPEN;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 
@@ -11,12 +14,10 @@ import com.variant.client.Session;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
-import com.variant.client.test.ClientBaseTest.ClientUserExceptionInterceptor;
 import com.variant.client.test.util.ClientLogTailer;
 import com.variant.core.ConnectionStatus;
-import com.variant.core.ServerError;
-import com.variant.core.util.LogTailer.Entry;
 import com.variant.core.util.IoUtils;
+import com.variant.core.util.LogTailer.Entry;
 import com.variant.core.util.MutableInteger;
 
 /**

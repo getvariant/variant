@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
+import com.variant.client.Connection.LifecycleListener;
 
 import static com.variant.core.ConnectionStatus.*;
 
@@ -157,8 +158,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		conn.close();
 		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
 		
-		// Exception on a subsequent close.
-		// Throw user error exception when trying to use this connection.
+		// Exception on subsequent operations
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
@@ -171,9 +171,6 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			
 		}.assertThrown(ConnectionClosedException.class);
 
-		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
-
-		// Throw user error exception when trying to use this connection.
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
@@ -185,8 +182,23 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			}
 			
 		}.assertThrown(ConnectionClosedException.class);
+
+		new ClientUserExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn.registerLifecycleListener(
+						new LifecycleListener() {							
+							@Override
+							public void onClosed(Connection connection) {}
+						});
+			}
+			@Override public void onThrown(ClientException.User e) {
+				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+			}
+			
+		}.assertThrown(ConnectionClosedException.class);
 		
-		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
+
 	}	
 
 	/**

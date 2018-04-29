@@ -107,7 +107,7 @@ public class ConnectionImpl implements Connection {
 		SessionImpl result = fetchSession(sessionId, null);
 		
 		if (result == null && create) {
-			// Session expired locally, recreate OK.  Don't bother with the server.
+			// Session expired locally, recreate OK => Recreate locally and save to server.
 			CoreSession coreSession = new CoreSession(sessionId);
 			result = new SessionImpl(this, coreSession, sidTracker, userData);
 			client.server.sessionSave(result);
