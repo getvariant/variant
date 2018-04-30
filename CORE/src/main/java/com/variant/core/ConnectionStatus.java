@@ -23,8 +23,17 @@ public enum ConnectionStatus {
 	CLOSED_BY_CLIENT,
 	
 	/**
+	 * The schema connected to by this connection has been undeployed by the server. Existing sessions
+	 * will continue to be serviced over this connection. But no new sessions created. An attempt to
+	 * create a new session over a draining connection will result in <code>ConnectionDrainingException</code>.
+	 * 
+	 * @since 0.8
+	 */
+	DRAINING,
+
+	/**
 	 * Connection has been closed by the server as the result of a schema reload or server restart.
-	 * No sessions can be retrieved or created.
+	 * No sessions can be retrieved or created over this connection.
 	 * 
 	 * @since 0.7
 	 */

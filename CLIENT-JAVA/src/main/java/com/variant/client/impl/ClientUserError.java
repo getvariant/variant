@@ -30,14 +30,17 @@ public class ClientUserError extends RuntimeError {
 	public static final ClientUserError CONNECTION_CLOSED =
 			new ClientUserError(334, "This connection has been closed");
 
+	public static final ClientUserError CONNECTION_DRAINING =
+			new ClientUserError(335, "No new sessions can be created over this connection because target schema has been undeployed");
+
 	public static final ClientUserError SESSION_EXPIRED =
-			new ClientUserError(335, "This session has expired");
+			new ClientUserError(336, "This session has expired");
 
 	public static final ClientUserError ACTIVE_REQUEST =
-			new ClientUserError(336, "Commit current state request first");
+			new ClientUserError(337, "Commit current state request first");
 
 	public static final ClientUserError CONNECTION_LIFECYCLE_LISTENER_EXCEPTION =
-			new ClientUserError(337, "Unhandled exception in connection lifecycle listener [%s]");
+			new ClientUserError(338, "Unhandled exception in connection lifecycle listener [%s]");
 
    /**
     * 

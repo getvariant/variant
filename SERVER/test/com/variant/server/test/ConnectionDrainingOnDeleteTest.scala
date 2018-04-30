@@ -196,7 +196,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
                ).toString
             assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
                .is(OK)
-               .withConnStatusHeader(OPEN, CLOSED_BY_SERVER)  // changes underneath
+               .withConnStatusHeader(OPEN, DRAINING)  // changes underneath
                .withBodyJson { json => 
                   StringUtils.digest((json \ "session").as[String]) mustBe 
                      StringUtils.digest(sessionJsonBig.expand("sid" -> sid).toString())
@@ -235,7 +235,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 	         val body = sessionJsonBig.expand("sid" -> ssnId2Big(i)(j))
             assertResp(route(app, connectedRequest(PUT, context + "/session", cidBig).withBody(body)))
                .is(OK)
-               .withConnStatusHeader(CLOSED_BY_SERVER)
+               .withConnStatusHeader(DRAINING)
                .withNoBody
          }
 
@@ -287,7 +287,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          // Create
          assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
             .isError(UnknownConnection, cid)
-            .withConnStatusHeader(CLOSED_BY_SERVER)
+            .withConnStatusHeader(DRAINING)
 
       }
 

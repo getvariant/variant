@@ -98,7 +98,7 @@ class SessionStore (private val server: VariantServer) {
 		case None => 
 		   session.connection.status match {
 		      case OPEN => sessionMap.put(session.getId, new Entry(session))
-		      case CLOSED_BY_SERVER => throw new ServerException.Remote(ServerError.UnknownConnection, session.connection.id)
+		      case DRAINING => throw new ServerException.Remote(ServerError.UnknownConnection, session.connection.id)
 		      case _ => throw new ServerException.Remote(ServerError.InvalidConnectionStatus, session.connection.id)
 		   }		   
 		

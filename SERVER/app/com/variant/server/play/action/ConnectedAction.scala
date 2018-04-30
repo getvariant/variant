@@ -30,7 +30,7 @@ extends AbstractAction (parser) (ec) {
       if (conn.status == CLOSED_BY_CLIENT)
          throw new ServerException.Remote(UnknownConnection, conn.id)
 
-      if (!Seq(OPEN, CLOSED_BY_SERVER).contains(conn.status))
+      if (!Seq(OPEN, DRAINING).contains(conn.status))
          throw new ServerException.Internal(s"Illegal connection status [${conn.status}]")
 
       request.addAttr(ConnKey, conn)

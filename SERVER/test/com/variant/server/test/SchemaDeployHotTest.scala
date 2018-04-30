@@ -1,6 +1,6 @@
 package com.variant.server.test
 
-import com.variant.core.ConnectionStatus.CLOSED_BY_SERVER
+import com.variant.core.ConnectionStatus.DRAINING
 import com.variant.core.ConnectionStatus.OPEN
 import com.variant.core.ServerError.SessionExpired
 import com.variant.core.ServerError.UnknownConnection
@@ -282,7 +282,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
             ).toString
          assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(body)))
             .isOk
-            .withConnStatusHeader(CLOSED_BY_SERVER)
+            .withConnStatusHeader(DRAINING)
             .withBodyJson { json => 
                StringUtils.digest((json \ "session").as[String]) mustBe 
                   StringUtils.digest(sessionJson.expand("sid" -> sid).toString())
@@ -294,7 +294,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          val body = sessionJson.expand("sid" -> sid)
          assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
             .isOk
-            .withConnStatusHeader(CLOSED_BY_SERVER)
+            .withConnStatusHeader(DRAINING)
             .withNoBody
 	   }
 
@@ -304,7 +304,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          val body = sessionJson.expand("sid" -> sid)
          assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
             .isError(UnknownConnection, cid)
-            .withConnStatusHeader(CLOSED_BY_SERVER)
+            .withConnStatusHeader(DRAINING)
       }
 	   
 	   "expire existing session as normal in the undeployed schema" in {
@@ -316,7 +316,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
             ).toString
          assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(body)))
             .isError(SessionExpired, sid)
-            .withConnStatusHeader(CLOSED_BY_SERVER)
+            .withConnStatusHeader(DRAINING)
 
 	   }
      	   
@@ -397,7 +397,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
                ).toString
             assertResp(route(app, connectedRequest(GET, context + "/session", cid1).withBody(body)))
                .isOk
-               .withConnStatusHeader(CLOSED_BY_SERVER)
+               .withConnStatusHeader(DRAINING)
                .withBodyJson { json => 
                   StringUtils.digest((json \ "session").as[String]) mustBe 
                      StringUtils.digest(sessionJsonBigCovar.expand("sid" -> sid1).toString())
@@ -426,7 +426,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          val body = sessionJsonBigCovar.expand("sid" -> sid2)
          assertResp(route(app, connectedRequest(PUT, context + "/session", cid1).withBody(body)))
             .isError(UnknownConnection, cid1)
-            .withConnStatusHeader(CLOSED_BY_SERVER)
+            .withConnStatusHeader(DRAINING)
       }
 
       val sessionJsonPetclinic = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))

@@ -36,7 +36,7 @@ class SessionController @Inject() (
     * 
     * ELSE (the session does not exist)
     *   IF connection is OPEN, create new session.
-    *   ELSE IF connection is CLOSED_BY_SERVER THEN UnknownConnection
+    *   ELSE IF connection is DRAINING THEN UnknownConnection
     *   ELSE InternalError
     *   
     */

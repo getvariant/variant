@@ -56,8 +56,8 @@ class Connection(val schema: ServerSchema) {
     * Set connection to draining mode.
     */
    def drain() {
-      _status = CLOSED_BY_SERVER
-      logger.debug(s"Put connection ID [${id}] to schema [${schema.getName}] into CLOSED_BY_SERVER mode")
+      _status = DRAINING
+      logger.info(s"Draining connection ID [${id}] to schema [${schema.getName}]")
    }
    /**
     * Close connection.
@@ -68,7 +68,7 @@ class Connection(val schema: ServerSchema) {
    }
 
    def isDisposable = {
-      Seq(CLOSED_BY_SERVER, CLOSED_BY_CLIENT).contains(_status) &&
+      Seq(DRAINING, CLOSED_BY_CLIENT).contains(_status) &&
       VariantServer.instance.ssnStore.sessionCount(this) == 0
    }
    
