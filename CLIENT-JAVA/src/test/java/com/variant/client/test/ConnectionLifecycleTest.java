@@ -112,7 +112,7 @@ public class ConnectionLifecycleTest extends ClientBaseTestWithServer {
 		
 
 	    IoUtils.fileCopy("schemata-remote/big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
-		Thread.sleep(dirWatcherLatencyMsecs);
+		Thread.sleep(dirWatcherLatencyMillis);
 
 		assertEquals(OPEN, conn.getStatus());
 		

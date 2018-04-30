@@ -42,7 +42,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 
 		assertNull(conn.getSession("foo"));
 		IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
-		Thread.sleep(dirWatcherLatencyMsecs);
+		Thread.sleep(dirWatcherLatencyMillis);
 
 		assertEquals(OPEN, conn.getStatus());
 		assertEquals(conn, ((VariantClientImpl)client).byId(conn.getId()));

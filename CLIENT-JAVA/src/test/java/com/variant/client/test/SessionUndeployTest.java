@@ -34,16 +34,14 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	private VariantClient client = VariantClient.Factory.getInstance();		
 	
 	/**
-	 * Schema undeployed. 
+	 * Schema undeployed with a session timeout interval set to less than
+	 * dirWatcherLatency, so that all sessions expire while we wait for
+	 * server to detect the delete of the schema file. 
+	 * Default server config.
 	 */
-	@org.junit.Test
-	public void closedByServerUndeployTest() throws Exception {
+	//@org.junit.Test
+	public void serverUndeployShortSessionTimeoutTest() throws Exception {
 
-		//---------------------------------------------------------
-		// 1. All defaults => sessions will be expired by the      
-		//    time the undeployment is detected.
-		//---------------------------------------------------------
-		
 		// Open connection
 		final Connection conn = client.getConnection("big_covar_schema");		
 		final Schema schema = conn.getSchema();
@@ -75,7 +73,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		joinAll();
 
 		IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
-		Thread.sleep(dirWatcherLatencyMsecs);
+		Thread.sleep(dirWatcherLatencyMillis);
 
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;
@@ -125,16 +123,106 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		joinAll();
 		
 		assertNull(client.getConnection("big_covar_schema"));
-		
-		//---------------------------------------------------------
-		// 2. Restart with a longer session expiration time, 
-		//    so we can test draining
-		//---------------------------------------------------------
-		@SuppressWarnings("serial")
-		Map<String, String> config = new HashMap<String, String>() {{
-			put("variant.session.timeout", String.valueOf(dirWatcherLatencyMsecs/1000 + 2));
-		}};
-		server.restart(config);
+
 	}	
 
+	/**
+	 * Schema undeployed with a session timeout interval set to greater than
+	 * dirWatcherLatency, so that we can test sesion draining. 
+	 */
+	@org.junit.Test
+	public void serverUndeploySessionDrainingTest() throws Exception {
+
+		final int sessionTimeoutSecs = dirWatcherLatencyMillis/1000 + 5;
+		
+		@SuppressWarnings("serial")
+		Map<String, String> config = new HashMap<String, String>() {{
+			put("variant.session.timeout", String.valueOf(sessionTimeoutSecs));
+		}};
+		server.restart(config);
+
+		// Open connection
+		final Connection conn = client.getConnection("big_covar_schema");	
+		final Schema schema = conn.getSchema();
+		assertEquals(OPEN, conn.getStatus());
+		assertNotNull(conn.getClient());
+		assertNotNull(schema);
+		assertEquals("big_covar_schema", conn.getSchema().getName());
+		assertEquals(5, conn.getSchema().getStates().size());
+		assertEquals(6, conn.getSchema().getTests().size());
+				
+		// Create sessions
+		Session[] sessions = new Session[SESSIONS];
+		StateRequest[] requests = new StateRequest[SESSIONS];
+		for (int i = 0; i < SESSIONS; i++) {
+			final int _i = i;  // Zhava. 
+			async (() -> {
+				String sid = newSid();
+				Session ssn = conn.getOrCreateSession(sid);
+				assertEquals(sessionTimeoutSecs * 1000, ssn.getTimeoutMillis());
+				assertEquals(sid, ssn.getId());
+				State state = conn.getSchema().getState("state" + ((_i % 5) + 1));
+				StateRequest req = ssn.targetForState(state);
+				assertNotNull(req);
+				assertEquals(req.getSession(), ssn);
+				sessions[_i] = ssn;
+				requests[_i] = req;
+			});
+		}
+		
+		joinAll();
+
+		IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
+		Thread.sleep(dirWatcherLatencyMillis);
+
+		for (int i = 0; i < SESSIONS; i++) {
+			final int _i = i;
+			async (() -> {
+				
+				SessionImpl ssn = (SessionImpl) sessions[_i];
+				StateRequest req = requests[_i];
+
+				// Non-mutating
+				assertNotNull(ssn.getId());
+				assertNotNull(ssn.getCreateDate());
+				assertEquals(conn, ssn.getConnection());
+				assertEquals(sessionTimeoutSecs * 1000, ssn.getTimeoutMillis());
+				
+				// Mutable, but doesn't throw connection closed exception 
+				assertTrue(ssn.isExpired());
+/*
+				// Mutable, throws connection closed exception.
+				new ClientUserExceptionInterceptor() {
+				
+					@Override public void toRun() {
+						switch (_i % 11) {						
+						case 0: conn.getSessionById(sessions[_i].getId()); break;
+						case 1: ssn.getTraversedStates(); break;
+						case 2: ssn.getTraversedTests(); break;
+						case 3: ssn.getDisqualifiedTests(); break;
+						case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), schema.getState("state1"))); break;
+						case 5: ssn.getAttribute("foo"); break;
+						case 6: ssn.setAttribute("foo", "bar"); break;
+						case 7: ssn.clearAttribute("foo"); break;
+						case 8: ssn.targetForState(schema.getState("state4")); break;
+						case 9: req.commit(); break;
+						case 10: ssn.getConfig(); break;
+						}
+					}
+					
+					@Override public void onThrown(ClientException.User e) {
+						assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+						assertEquals(CLOSED_BY_SERVER, conn.getStatus());
+					}
+					
+				}.assertThrown(ConnectionClosedException.class);
+		*/
+			});
+		}
+		
+		joinAll();
+		
+		assertNull(client.getConnection("big_covar_schema"));
+
+	}
 }
