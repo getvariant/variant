@@ -28,7 +28,7 @@ public class EventDataGen extends ClientBaseTestWithServer {
    @org.junit.Test
 	public void genPetclinicData() throws Exception {
 
-      startServer("conf-test/petclinic-with-postgres.conf");
+///////      startServer("conf-test/petclinic-with-postgres.conf");  <<<< This has changed!!!
 		VariantClient client = VariantClient.Factory.getInstance();
 /*
 		// For getCoreApi() to work, we need to be in the right package.

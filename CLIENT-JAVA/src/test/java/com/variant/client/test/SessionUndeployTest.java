@@ -6,6 +6,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
@@ -36,6 +39,11 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	@org.junit.Test
 	public void closedByServerUndeployTest() throws Exception {
 
+		//---------------------------------------------------------
+		// 1. All defaults => sessions will be expired by the      
+		//    time the undeployment is detected.
+		//---------------------------------------------------------
+		
 		// Open connection
 		final Connection conn = client.getConnection("big_covar_schema");		
 		final Schema schema = conn.getSchema();
@@ -117,6 +125,16 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		joinAll();
 		
 		assertNull(client.getConnection("big_covar_schema"));
+		
+		//---------------------------------------------------------
+		// 2. Restart with a longer session expiration time, 
+		//    so we can test draining
+		//---------------------------------------------------------
+		@SuppressWarnings("serial")
+		Map<String, String> config = new HashMap<String, String>() {{
+			put("variant.session.timeout", String.valueOf(dirWatcherLatencyMsecs/1000 + 2));
+		}};
+		server.restart(config);
 	}	
 
 }

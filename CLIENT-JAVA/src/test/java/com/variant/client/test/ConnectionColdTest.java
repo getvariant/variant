@@ -1,5 +1,8 @@
 package com.variant.client.test;
 
+import static com.variant.core.ConnectionStatus.CLOSED_BY_CLIENT;
+import static com.variant.core.ConnectionStatus.CLOSED_BY_SERVER;
+import static com.variant.core.ConnectionStatus.OPEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -7,9 +10,6 @@ import static org.junit.Assert.assertNull;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Connection.LifecycleListener;
-
-import static com.variant.core.ConnectionStatus.*;
-
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
@@ -220,7 +220,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 
 		// The connection doesn't yet know it's gone.
 		assertEquals(OPEN, conn.getStatus());
-
+		
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
