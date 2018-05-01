@@ -49,7 +49,7 @@ public interface Connection {
 	/**
 	 * Get, if exists, or create, if does not exist, the Variant session with the externally tracked ID.
 	 * 
-	 * Under normal circumstances, when this connection is {@link Status#OPEN}, the following behavior
+	 * Under normal circumstances, when this connection is {@link ConnectionStatus#OPEN}, the following behavior
 	 * is expected. If the session with the ID provided by the effective implementation 
 	 * of {@link SessionIdTracker} has not yet expired on the server, it is returned. 
 	 * Otherwise, a new session with this ID is created.
@@ -58,12 +58,12 @@ public interface Connection {
 	 * will return the same object, unless the session has expired between the calls,
 	 * in which case a brand new object will be returned.
 	 * 
-	 * However, if this connection is {@link Status#DRAINING}, no new sessions can be created. Therefore, 
+	 * However, if this connection is {@link ConnectionConnectionStatus#DRAINING}, no new sessions can be created. Therefore, 
 	 * If the session with the ID provided by the effective implementation 
 	 * of {@link SessionIdTracker} has not yet expired on the server, it is returned, but if the
-	 * session with this ID has expired, {@link ConnectionClosedException} is thrown.
+	 * session with this ID has expired, {@link ConnectionDrainingException} is thrown.
 	 * 
-	 * Finally, if this connection is {@link Status#CLOSED_BY_CLIENT} or {@link Status#CLOSED_BY_SERVER}, 
+	 * Finally, if this connection is {@link ConnectionStatus#CLOSED_BY_CLIENT} or {@link ConnectionStatus#CLOSED_BY_SERVER}, 
 	 * {@link ConnectionClosedException} is thrown.
 	 * 
 	 * @param userData An array of zero or more opaque objects which will be passed, without interpretation,
@@ -81,7 +81,7 @@ public interface Connection {
 	/**
 	 * Get, if exists, the Variant session with the externally tracked ID.
 	 * 
-	 * Under normal circumstances, when this connection is {@link Status#OPEN}, the following behavior
+	 * Under normal circumstances, when this connection is {@link ConnectionStatus#OPEN}, the following behavior
 	 * is expected. If the session with the ID provided by the effective implementation 
 	 * of {@link SessionIdTracker} has not yet expired on the server, it is returned. 
 	 * Otherwise, this method returns <code>null</code>.
@@ -90,12 +90,12 @@ public interface Connection {
 	 * will return the same object, unless the session has expired between the calls,
 	 * in which case a brand new object will be returned.
 	 * 
-	 * However, if this connection is {@link Status#DRAINING}, and the session with the ID 
+	 * However, if this connection is {@link ConnectionStatus#DRAINING}, and the session with the ID 
 	 * provided by the effective implementation of {@link SessionIdTracker} has not yet expired on the server, 
 	 * it is returned. Otherwise, if the session with this ID has expired, {@link ConnectionClosedException}
 	 * is thrown.
 	 * 
-	 * Finally, if this connection is {@link Status#CLOSED_BY_CLIENT} or {@link Status#CLOSED_BY_SERVER}, 
+	 * Finally, if this connection is {@link ConnectionStatus#CLOSED_BY_CLIENT} or {@link ConnectionStatus#CLOSED_BY_SERVER}, 
 	 * {@link ConnectionClosedException} is thrown.
 	 * 
 	 * @param userData An array of zero or more opaque objects which will be passed without interpretation
@@ -113,7 +113,7 @@ public interface Connection {
 	/**
 	 * Get, if exists, the Variant session with the externally tracked ID.
 	 * 
-	 * Under normal circumstances, when this connection is {@link Status#OPEN}, the following behavior
+	 * Under normal circumstances, when this connection is {@link ConnectionStatus#OPEN}, the following behavior
 	 * is expected. If the session with the ID provided by the effective implementation 
 	 * of {@link SessionIdTracker} has not yet expired on the server, it is returned. 
 	 * Otherwise, this method returns <code>null</code>.
@@ -122,12 +122,12 @@ public interface Connection {
 	 * will return the same object, unless the session has expired between the calls,
 	 * in which case a brand new object will be returned.
 	 * 
-	 * However, if this connection is {@link Status#DRAINING}, and the session with the ID 
+	 * However, if this connection is {@link ConnectionStatus#DRAINING}, and the session with the ID 
 	 * provided by the effective implementation of {@link SessionIdTracker} has not yet expired on the server, 
-	 * it is returned. Otherwise, if the session with this ID has expired, {@link ConnectionClosedException}
+	 * it is returned. Otherwise, if the session with this ID has expired, {@link ConnectionDrainingException}
 	 * is thrown.
 	 * 
-	 * Finally, if this connection is {@link Status#CLOSED_BY_CLIENT} or {@link Status#CLOSED_BY_SERVER}, 
+	 * Finally, if this connection is {@link ConnectionStatus#CLOSED_BY_CLIENT} or {@link ConnectionStatus#CLOSED_BY_SERVER}, 
 	 * {@link ConnectionClosedException} is thrown.
 	 * 
 	 * @param sessionId The ID of the session you are looking to retrieve from the server.

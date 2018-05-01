@@ -125,7 +125,8 @@ public class HttpRemoter {
 			HttpUriRequest req = requestable.requestOp();
 			req.setHeader("Content-Type", Constants.HTTP_HEADER_CONTENT_TYPE);
 			
-			if (conn.getStatus() == ConnectionStatus.OPEN) {
+			if (conn.getStatus() == ConnectionStatus.OPEN ||
+					conn.getStatus() == ConnectionStatus.DRAINING) {
 				// Aok.
 				req.setHeader(Constants.HTTP_HEADER_CONNID, conn.getId());
 			}

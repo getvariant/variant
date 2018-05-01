@@ -89,10 +89,14 @@ class ConnectionStore(private var server: VariantServer) {
    }
    
    /**
-    * 
+    * Remove from the connection store disposable connections.
     */
-   def disposeOf(cid: String) = {
-      connMap.remove(cid)
+   def deleteDisposable() = {
+      val toDelete = connMap.filter(_._2.isDisposable)
+      toDelete.foreach { entry =>
+         connMap.remove(entry._1)
+         logger.info(s"Disposed of ${entry._2.status} connection ID [${entry._1}]") 
+      }
    }
    
    /**

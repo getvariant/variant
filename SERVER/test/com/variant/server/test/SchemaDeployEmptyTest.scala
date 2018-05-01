@@ -66,10 +66,6 @@ class SchemaDeployEmptyTest extends PlaySpec with OneAppPerSuite with BeforeAndA
 	      server.schemata mustBe empty
          server.startupErrorLog.size mustEqual 0
          val lastTwoLines = ServerLogTailer.last(2, "logs/application.log")
-         println("****")
-         println("'" + lastTwoLines(0) + "'")
-         println("'" + lastTwoLines(1) + "'")
-         println("****")
          lastTwoLines(0).severity mustBe Severity.INFO
          lastTwoLines(0).message must startWith("[" + ServerErrorLocal.EMPTY_SCHEMATA.getCode + "]")
          lastTwoLines(1).severity mustBe Severity.INFO

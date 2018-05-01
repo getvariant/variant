@@ -60,8 +60,8 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 		 */
 		final public void assertThrown(UserError error, Object...args) {
 			ClientException.User result = super.run();
-			assertNotNull("Expected exception not thrown", result);
-			assertEquals(result.getError(), error);
+			assertNotNull("No exception was thrown", result);
+			assertEquals("Expected exception was not thrown", result.getError(), error);
 		}
 		
 		/**
@@ -69,8 +69,8 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 		 */
 		final public void assertThrown(Class<? extends ClientException.User> uex) {
 			ClientException.User result = super.run();
-			assertNotNull("Expected exception not thrown", result);
-			assertEquals(uex, result.getClass());
+			assertNotNull("No exception was thrown", result);
+			assertEquals("Expected exception was not thrown", uex, result.getClass());
 		}
 	}
 

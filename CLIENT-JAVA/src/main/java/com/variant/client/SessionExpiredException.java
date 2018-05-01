@@ -16,9 +16,8 @@ public class SessionExpiredException extends ClientException.User {
 		super(ClientUserError.SESSION_EXPIRED);
 	}
 
-/*
 	public SessionExpiredException(ClientException.User e) {
 		super(ClientUserError.CONNECTION_CLOSED, e);
 	}
-*/
+
 }

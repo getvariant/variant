@@ -33,7 +33,7 @@ public class ConnectionLifecycleTest extends ClientBaseTestWithServer {
 	/**
 	 * closed by client
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void closedByClientTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");
@@ -115,6 +115,8 @@ public class ConnectionLifecycleTest extends ClientBaseTestWithServer {
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		assertEquals(OPEN, conn.getStatus());
+		
+		//System.out.println("**************** " + ssn.isExpired());
 		
 		new ClientUserExceptionInterceptor() {
 			

@@ -57,7 +57,7 @@ class ConnectionController @Inject() (
   
    /**
     * DELETE
-    * Close an existing connection.
+    * Close an existing connection, as requested by client.
     */
    def close() = connectedAction { req =>
 

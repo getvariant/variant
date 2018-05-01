@@ -12,6 +12,7 @@ import com.variant.client.ConfigKeys;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
+import com.variant.client.SessionExpiredException;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
@@ -19,7 +20,6 @@ import com.variant.core.ConnectionStatus;
 import com.variant.core.ServerError;
 import com.variant.core.VariantEvent;
 import com.variant.core.impl.VariantEventSupport;
-import com.variant.core.session.CoreSession;
 
 /**
  * The abstraction of the remote server.  
@@ -51,9 +51,12 @@ public class Server {
 			// Intercept certain user exceptions.
 			catch (ClientException.User ce) {
 				if (ce.getError() == ServerError.UnknownConnection) {
-					// The server has hung up on this connection.
+					// The server has disposed of this connetion.
 					((ConnectionImpl)conn).setStatus(ConnectionStatus.CLOSED_BY_SERVER);
 					throw new ConnectionClosedException(ce);
+				}
+				else if (ce.getError() == ServerError.SessionExpired) {
+					throw new SessionExpiredException(ce);
 				}
 				else throw ce;
 			}
@@ -153,16 +156,18 @@ public class Server {
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				try {
+				//try {
 					HttpResponse resp = adapter.get(serverUrl + "session", body, conn);
 					return Payload.Session.fromResponse(conn, resp);
-				}
+				//}
+				/*
 				catch (ClientException.User ue) {
 					// If the server is saying the session wasn't there, this method
 					// should simply return null.
 					if (ue.getError() == ServerError.SessionExpired) return null;
 					else throw ue;
 				}
+				*/
 			}
 		}.run(conn);
 	}

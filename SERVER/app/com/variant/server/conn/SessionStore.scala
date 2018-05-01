@@ -97,7 +97,10 @@ class SessionStore (private val server: VariantServer) {
       // No current entry for this session id
 		case None => 
 		   session.connection.status match {
-		      case OPEN => sessionMap.put(session.getId, new Entry(session))
+		      case OPEN => {
+		         sessionMap.put(session.getId, new Entry(session))
+		         session.connection.schema.sessionCount.incrementAndGet
+		      }
 		      case DRAINING => throw new ServerException.Remote(ServerError.UnknownConnection, session.connection.id)
 		      case _ => throw new ServerException.Remote(ServerError.InvalidConnectionStatus, session.connection.id)
 		   }		   
@@ -145,22 +148,20 @@ class SessionStore (private val server: VariantServer) {
       logger.debug(s"Found session [${sid}]")            
       result
 	}
-	
-	/**
-	 * Number of sessions in a given connection.
-	 */
-	def sessionCount(conn: Connection) = {
-	   var result = 0
-	   for ((id, entry) <- sessionMap if (entry.session.connection == conn)) { 
-	      result += 1 
-	   }
-	   result
-	}
-	
+		
   /**
+   * The single entry point in session clean out.
+   * return the number of deleted sessions for reporting.
 	*/
-   def deleteIf(f: (Entry) => Boolean) {
-      sessionMap.retain((id, entry) => !f(entry))
+   def deleteExpired(): Int = {
+      val toDelete = sessionMap.filter { _._2.isExpired }
+      toDelete.values.foreach { entry =>
+         sessionMap -= entry.session.getId
+         entry.session.connection.schema.sessionCount.decrementAndGet()
+         if (logger.isTraceEnabled)
+	         logger.trace(s"Vacuumed expired session ID [$entry.session.getId]")
+      }
+      return toDelete.size
    }
 
 }

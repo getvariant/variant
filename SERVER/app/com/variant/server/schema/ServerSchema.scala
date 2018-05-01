@@ -14,6 +14,7 @@ import com.variant.core.schema.parser.FlusherService
 import play.api.Logger
 import com.variant.server.boot.Runtime
 import com.variant.server.event.EventWriter
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * 
@@ -33,8 +34,17 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
    
    private var coreSchema =  response.getSchema
 
+   /**
+    * Schema can be New, Deployed or Gone
+    */
    var state: State = New  
-      
+   
+   /**
+    * Number of sessions connected to this schema
+    * over any parallel connection.
+    */
+   val sessionCount = new AtomicInteger(0)
+
    /**
     * 
     *

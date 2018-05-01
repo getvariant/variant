@@ -10,6 +10,7 @@ import scala.math.BigDecimal.long2bigDecimal
 import com.variant.server.api.Session
 import com.variant.core.ConnectionStatus._
 import play.api.Logger
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Represents client connection
@@ -39,7 +40,7 @@ class Connection(val schema: ServerSchema) {
    
    val id = StringUtils.random64BitString(random)   
    val timestamp = System.currentTimeMillis()
-      
+   
    /**
     * Is this connection closed?
     */
@@ -67,9 +68,14 @@ class Connection(val schema: ServerSchema) {
       logger.debug(s"Put connection ID [${id}] to schema [${schema.getName}] into CLOSED_BY_CLIENT mode")
    }
 
+   /**
+    * Can this connection be disposed of by the vacuum thread?
+    * If connection is closed by client, it is immediately disposable.
+    * If connection is closed by server
+    */
    def isDisposable = {
-      Seq(DRAINING, CLOSED_BY_CLIENT).contains(_status) &&
-      VariantServer.instance.ssnStore.sessionCount(this) == 0
+      _status == CLOSED_BY_CLIENT ||
+      _status == DRAINING && schema.sessionCount.intValue == 0
    }
    
    /**

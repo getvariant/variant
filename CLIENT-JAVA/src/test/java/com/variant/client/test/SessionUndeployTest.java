@@ -39,7 +39,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	 * server to detect the delete of the schema file. 
 	 * Default server config.
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void serverUndeployShortSessionTimeoutTest() throws Exception {
 
 		// Open connection
@@ -130,7 +130,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	 * Schema undeployed with a session timeout interval set to greater than
 	 * dirWatcherLatency, so that we can test sesion draining. 
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void serverUndeploySessionDrainingTest() throws Exception {
 
 		final int sessionTimeoutSecs = dirWatcherLatencyMillis/1000 + 5;

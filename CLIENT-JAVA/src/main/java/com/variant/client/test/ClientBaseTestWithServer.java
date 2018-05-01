@@ -20,7 +20,7 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 	public final static String SCHEMATA_DIR = "/tmp/schemata-remote";
 	
 	// Takes this long for the new schema to be detected.
-	public final static int dirWatcherLatencyMillis = 10000;
+	public final static int dirWatcherLatencyMillis = 25000;
 	
 	/**
 	 * Start the server once for test case
