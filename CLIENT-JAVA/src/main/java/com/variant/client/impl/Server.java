@@ -134,7 +134,7 @@ public class Server {
 
 		new CommonExceptionHandlerVoid() {
 			@Override void voidBlock() throws Exception {
-				adapter.post(serverUrl + "event/", ((VariantEventSupport)event).toJson(), ssn.getConnection());
+				adapter.post(serverUrl + "event", ((VariantEventSupport)event).toJson(), ssn.getConnection());
 			}
 		}.run(ssn.getConnection());
 	}

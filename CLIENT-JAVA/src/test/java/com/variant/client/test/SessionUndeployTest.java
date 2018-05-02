@@ -28,7 +28,7 @@ import com.variant.core.util.IoUtils;
  */
 public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	
-	private int SESSIONS = 200;
+	private int SESSIONS = 100;
 	
 	// Sole client
 	private VariantClient client = VariantClient.Factory.getInstance();		
@@ -85,17 +85,16 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				// Non-mutating
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
+				assertTrue(ssn.isExpired());
+				//assertEquals(client.getConfig(), ssn.getConfig());
 				assertEquals(conn, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				
-				// Mutable, but doesn't throw connection closed exception 
-				assertTrue(ssn.isExpired());
-
-				// Mutable, throws connection closed exception.
+				// Try every mutating method - should throw connection closed exception.
 				new ClientUserExceptionInterceptor() {
 				
 					@Override public void toRun() {
-						switch (_i % 11) {						
+						switch (_i % 10) {
 						case 0: conn.getSessionById(sessions[_i].getId()); break;
 						case 1: ssn.getTraversedStates(); break;
 						case 2: ssn.getTraversedTests(); break;
@@ -106,13 +105,15 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 7: ssn.clearAttribute("foo"); break;
 						case 8: ssn.targetForState(schema.getState("state4")); break;
 						case 9: req.commit(); break;
-						case 10: ssn.getConfig(); break;
 						}
 					}
 					
 					@Override public void onThrown(ClientException.User e) {
 						assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 						assertEquals(CLOSED_BY_SERVER, conn.getStatus());
+					}
+					@Override public void onNotThrown() {
+						System.out.println("****************** " + _i);
 					}
 					
 				}.assertThrown(ConnectionClosedException.class);
@@ -128,7 +129,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 	/**
 	 * Schema undeployed with a session timeout interval set to greater than
-	 * dirWatcherLatency, so that we can test sesion draining. 
+	 * dirWatcherLatency, so that we can test schema draining. 
 	 */
 	//@org.junit.Test
 	public void serverUndeploySessionDrainingTest() throws Exception {

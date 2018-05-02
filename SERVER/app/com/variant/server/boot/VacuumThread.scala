@@ -30,13 +30,13 @@ class VacuumThread(server: VariantServer) extends Thread {
 				val now = System.currentTimeMillis();
 				
 				// Sessions sweep
-				val deleteCount = server.ssnStore.deleteExpired()  
+				val deleteCount = server.ssnStore.vacuum()  
 			   
 				if (logger.isTraceEnabled) logger.trace(s"Vacuumed $deleteCount session(s)");
 				else if (logger.isDebugEnabled && deleteCount > 0) logger.debug(s"Vacuumed $deleteCount session(s)");
 
 				// Connections sweep
-            server.connStore.deleteDisposable()
+            server.connStore.vacuum()
 
 				Thread.sleep(vacuumingFrequencyMillis)
 				logger.trace("Vacuum thread woke up after %s millis".format(System.currentTimeMillis() - now))

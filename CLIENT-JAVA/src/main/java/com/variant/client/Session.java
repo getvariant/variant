@@ -179,7 +179,7 @@ public interface Session {
 	 * been inactive for the period of time configured by the {@code session.timeout}
 	 * config key, or after the underlying {@link Connection} is closed.
 	 * 
-	 * @return true if this session has expired or false otherwise.
+	 * @return true if this session has expired or false otherwise. 
 	 * 
 	 * @throws StateNotInstrumentedException 
      *

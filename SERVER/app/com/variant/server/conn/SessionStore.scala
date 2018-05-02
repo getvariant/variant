@@ -153,13 +153,13 @@ class SessionStore (private val server: VariantServer) {
    * The single entry point in session clean out.
    * return the number of deleted sessions for reporting.
 	*/
-   def deleteExpired(): Int = {
+   def vacuum(): Int = {
       val toDelete = sessionMap.filter { _._2.isExpired }
       toDelete.values.foreach { entry =>
          sessionMap -= entry.session.getId
          entry.session.connection.schema.sessionCount.decrementAndGet()
          if (logger.isTraceEnabled)
-	         logger.trace(s"Vacuumed expired session ID [$entry.session.getId]")
+	         logger.trace(s"Vacuumed expired session ID [${entry.session.getId}]")
       }
       return toDelete.size
    }

@@ -169,11 +169,16 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public boolean isExpired() {
+		
 		if (isExpired) return true;
+		
 		try {
 			conn.refreshSession(this);
 		}
-		catch (ConnectionClosedException e) { return true; }
+		catch (SessionExpiredException | ConnectionClosedException e) { 
+			isExpired = true; 
+		}
+		
 		return isExpired;
 	}
 	
@@ -224,6 +229,7 @@ public class SessionImpl implements Session {
 	@Override
 	public Map<State, Integer> getTraversedStates() {
 		checkState();
+		conn.refreshSession(this);
 		return coreSession.getTraversedStates();
 	}
 
@@ -233,6 +239,7 @@ public class SessionImpl implements Session {
 	@Override
 	public Set<Test> getTraversedTests() {
 		checkState();
+		conn.refreshSession(this);
 		return coreSession.getTraversedTests();
 	}
 
@@ -242,6 +249,7 @@ public class SessionImpl implements Session {
 	@Override
 	public Set<Test> getDisqualifiedTests() {
 		checkState();
+		conn.refreshSession(this);
 		return coreSession.getDisqualifiedTests();
 	}
 

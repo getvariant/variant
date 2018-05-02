@@ -274,7 +274,13 @@ public class ConnectionImpl implements Connection {
 	@Override
 	public Session getSessionById(String sessionId) {
 		preChecks();
-		return fetchSession(sessionId, null);
+		// Intercept session expired exception.
+		try {
+			return fetchSession(sessionId, null);
+		}
+		catch (SessionExpiredException sex) { 
+			return null;
+		}	
 	}
 	
 	@Override
