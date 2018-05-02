@@ -204,7 +204,7 @@ public class ConnectionImpl implements Connection {
 			throw new ClientException.Internal(buff.toString());
 		}
 		status = ConnectionStatus.OPEN;
-		schema = resp.getSchema();
+		schema = new SchemaImpl(payload.schemaId, resp.getSchema());
 	}
 	
 	/**

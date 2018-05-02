@@ -4,21 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Random;
 
 import com.variant.core.schema.Flusher;
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.Hook;
-import com.variant.core.util.StringUtils;
 
 /**
  * @author Igor
  */
 public class SchemaImpl implements Schema {
-
-	private final String ID = StringUtils.random64BitString(new Random(System.currentTimeMillis()));
 	
 	// Meta
 	private String name = null;
@@ -63,11 +59,6 @@ public class SchemaImpl implements Schema {
 	@Override
 	public Flusher getFlusher() {
 		return flusher;
-	}
-
-	@Override
-	public String getId() {
-		return ID;
 	}
 	
 	/**

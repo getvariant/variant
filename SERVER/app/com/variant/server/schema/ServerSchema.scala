@@ -15,6 +15,7 @@ import play.api.Logger
 import com.variant.server.boot.Runtime
 import com.variant.server.event.EventWriter
 import java.util.concurrent.atomic.AtomicInteger
+import com.variant.core.util.StringUtils
 
 /**
  * 
@@ -31,9 +32,10 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
    import State._
    
    private val logger = Logger(this.getClass)   
+   private val rand = new java.util.Random()
+   private val coreSchema =  response.getSchema
+   private val id = StringUtils.random64BitString(rand)
    
-   private var coreSchema =  response.getSchema
-
    /**
     * Schema can be New, Deployed or Gone
     */
@@ -72,9 +74,7 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
 	   coreSchema.getFlusher
 	}
 
-   override def getId = {
-	   coreSchema.getId
-	}
+   override def getId = id
 
 	override def getStates = {
 	   coreSchema.getStates

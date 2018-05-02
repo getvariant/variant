@@ -19,7 +19,7 @@ public interface Schema {
 	 * @return Schema name, as provided in the meta clause.
 	 * @since 0.7
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * <p>This schema's comment.
@@ -27,7 +27,7 @@ public interface Schema {
 	 * @return Schema comment, as provided in the meta clause.
 	 * @since 0.7
 	 */
-	public String getComment();
+	String getComment();
 	
 	/**
 	 * <p>List of schema-scoped user hooks.
@@ -35,7 +35,7 @@ public interface Schema {
 	 * @return A list of {@link Hook} objects in the ordinal order.
 	 * @since 0.7
 	 */
-	public List<Hook> getHooks();
+	List<Hook> getHooks();
 
 	/**
 	 * <p>This schema's declared {@link Flusher}. If no flusher is declared by the schema, the system wide default
@@ -44,15 +44,17 @@ public interface Schema {
 	 * @return An object of type {@link Flusher} if flusher was declared in this schema, or {@code null} otherwise.
 	 * @since 0.8
 	 */
-	public Flusher getFlusher();
+	Flusher getFlusher();
 
 	/**
-	 * <p>This schema's ID.
+	 * <p>This schema's server-assigned identifier.
 	 * 
 	 * @return Schema ID.
 	 * @since 0.6
 	 */
-	public String getId();
+	default String getId() {
+		throw new UnsupportedOperationException();
+	}
 
 	/**
 	 * <p>The list of all states in ordinal order, the order in which they were defined.
@@ -60,7 +62,7 @@ public interface Schema {
 	 * @return A list of {@link State} objects.
 	 * @since 0.5
 	 */
-	public List<State> getStates();
+	List<State> getStates();
 
 	/**
 	 * <p>Get a state by name. State names are case sensitive.
@@ -69,14 +71,14 @@ public interface Schema {
 	 * @return State with the given name, or null if none. 
 	 * @since 0.5
 	 */
-	public State getState(String name);
+	State getState(String name);
 
 	/**
 	 * <p>The list of all tests in ordinal order, the order in which they were defined.
 	 * 
 	 * @return A list of {@link Test} objects.
 	 */
-	public List<Test>getTests();
+	List<Test>getTests();
 	
 	/**
 	 * <p>Get a test by name. Test names are case sensitive.
@@ -85,6 +87,6 @@ public interface Schema {
 	 * @return Test with the given name, or null if none.
 	 * @since 0.5
 	 */
-	public Test getTest(String name);
+	Test getTest(String name);
 	
 }

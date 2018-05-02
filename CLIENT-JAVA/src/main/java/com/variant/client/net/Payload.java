@@ -24,12 +24,14 @@ abstract public class Payload {
 		public final String id;
 		public final int sessionTimeout;
 		public final long timestamp;
+		public final String schemaId;
 		public final String schemaSrc;
 		
-		private Connection(String id, int sessionTimeout, long timestamp, String schemaSrc) {
+		private Connection(String id, int sessionTimeout, long timestamp, String schemaSrc, String schemaId) {
 			this.id = id;
 			this.sessionTimeout = sessionTimeout;
 			this.timestamp = timestamp;
+			this.schemaId = schemaId;
 			this.schemaSrc = schemaSrc;
 		}
 		
@@ -57,7 +59,7 @@ abstract public class Payload {
 				if (schemaId == null)
 					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/id", Connection.class.getName());
 				
-				return new Connection(id, ssnto, ts, schemaSrc);
+				return new Connection(id, ssnto, ts, schemaSrc, schemaId);
 			}
 			catch (VariantException va) {
 				throw va;
