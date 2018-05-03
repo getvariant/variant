@@ -6,7 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.ConfigException;
-import com.variant.core.RuntimeError;
+import com.variant.core.CommonError;
+import com.variant.core.ServerError;
 import com.variant.core.UserHook;
 import com.variant.core.lce.LifecycleEvent;
 import com.variant.core.lce.StateAwareLifecycleEvent;
@@ -216,12 +217,12 @@ public class ServerHooksService implements HooksService {
 		   // (I don't understand the need form this cast)
 		   return ((UserHook<LifecycleEvent>)event.getDefaultHook()).post(event);
 
-		} catch (ServerException.User e) {
+		} catch (ServerException.Local e) {
 			throw e;
 		
 		} catch (Exception e) {
-			LOG.error(RuntimeError.HOOK_UNHANDLED_EXCEPTION.asMessage(hookDef.getClassName(), e.getMessage()), e);
-			throw new ServerException.User(RuntimeError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
+			LOG.error(ServerError.HOOK_UNHANDLED_EXCEPTION.asMessage(hookDef.getClassName(), e.getMessage()), e);
+			throw new ServerException.Local(ServerError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
 		}				
 
 	}

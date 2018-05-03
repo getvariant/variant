@@ -5,10 +5,10 @@ import com.variant.server.test.hooks.TestTargetingHook
 import com.variant.server.test.hooks.TestTargetingHookNil
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.api.ServerException
-import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.BaseSpecWithServerAsync
+import com.variant.core.ServerError
 
 class TargetingTest extends BaseSpecWithServerAsync {
 
@@ -326,12 +326,12 @@ class TargetingTest extends BaseSpecWithServerAsync {
 	
 		   var ssn = SessionImpl.empty(newSid(), schema)
    	   
-   	   val caughtEx = intercept[ServerException.User] {
+   	   val caughtEx = intercept[ServerException.Local] {
              ssn.targetForState(state1)   // targeting hook returns an experience not from test1
          }
          caughtEx.getMessage mustBe (
-                     new ServerException.User(
-                           ServerErrorLocal.HOOK_TARGETING_BAD_EXPERIENCE, classOf[TestTargetingHook].getName, "test1", "test2.A"
+                     new ServerException.Local(
+                           ServerError.HOOK_TARGETING_BAD_EXPERIENCE, classOf[TestTargetingHook].getName, "test1", "test2.A"
                      ).getMessage)
  
 	   }

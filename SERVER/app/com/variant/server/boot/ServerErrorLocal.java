@@ -1,12 +1,12 @@
 package com.variant.server.boot;
 
-import com.variant.core.RuntimeError;
+import com.variant.core.CommonError;
 
 /**
  * Local Server Errors, i.e. ones thrown to the server log and not sent back to client.
  * These are raised by UserErrorException.
  */
-public class ServerErrorLocal extends RuntimeError {
+public class ServerErrorLocal extends CommonError {
 
 	//
 	// 401-420 Server bootstrap
@@ -62,22 +62,6 @@ public class ServerErrorLocal extends RuntimeError {
 	public final static ServerErrorLocal SERVER_SHUTDOWN = 
 			new ServerErrorLocal(433, Severity.INFO, "%s shutdown on :%s%s, uptime %s.");
 
-	//
-	// 461-480 Server API
-	//
-
-	public final static ServerErrorLocal HOOK_TARGETING_BAD_EXPERIENCE = 
-			new ServerErrorLocal(461, Severity.ERROR, "Targeting hook [%s] for test [%s] cannot set experience [%s]");
-
-
-	//
-	// 481-500 Other server runtime
-	//
-	public final static ServerErrorLocal STATE_UNDEFINED_IN_EXPERIENCE =
-			new ServerErrorLocal(481, Severity.ERROR, "Currently active experience [%s] is undefined on state [%s]");
-
-	public static final ServerErrorLocal EXPERIENCE_WEIGHT_MISSING = 
-			new ServerErrorLocal(482, Severity.ERROR, "No weight specified for Test [%s], Experience [%s] and no custom targeter found");
 
 	
    /**

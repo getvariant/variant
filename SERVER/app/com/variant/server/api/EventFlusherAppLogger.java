@@ -1,8 +1,5 @@
 package com.variant.server.api;
 
-import static com.variant.core.RuntimeError.CONFIG_PROPERTY_NOT_SET;
-import static com.variant.server.api.ConfigKeys.EVENT_FLUSHER_CLASS_INIT;
-
 import java.util.Collection;
 import java.util.Map;
 

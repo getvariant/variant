@@ -42,39 +42,86 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	@org.junit.Test
 	public void serverUndeploySessionTimeoutTest() throws Exception {
 
-		// Open first connection to big_covar_schema
+		// First connection to big_covar_schema
 		final Connection conn1 = client.getConnection("big_covar_schema");		
 		assertEquals(OPEN, conn1.getStatus());
 		assertEquals(client, conn1.getClient());
 		final Schema schema1 = conn1.getSchema();
 		assertEquals("big_covar_schema", schema1.getName());
-				
-		// Open second connection to big_covar_schema
+
+		// Second connection to big_covar_schema
 		final Connection conn2 = client.getConnection("big_covar_schema");		
 		assertEquals(OPEN, conn2.getStatus());
 		assertEquals(client, conn2.getClient());
 		final Schema schema2 = conn2.getSchema();
-		assertEquals("big_covar_schema", schema1.getName());
+		assertEquals("big_covar_schema", schema2.getName());
 		assertEquals(schema1.getId(), schema2.getId());
 		
-		// Create sessions
-		Session[] sessions = new Session[SESSIONS];
-		StateRequest[] requests = new StateRequest[SESSIONS];
+		// Third connection to petclinic
+		final Connection conn3 = client.getConnection("petclinic");		
+		assertEquals(OPEN, conn3.getStatus());
+		assertEquals(client, conn3.getClient());
+		final Schema schema3 = conn3.getSchema();
+		assertEquals("petclinic", schema3.getName());
+
+		// Create sessions in conn1
+		Session[] sessions1 = new Session[SESSIONS];
+		StateRequest[] requests1 = new StateRequest[SESSIONS];
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;  // Zhava. 
 			async (() -> {
 				String sid = newSid();
 				Session ssn = conn1.getOrCreateSession(sid);
 				assertEquals(sid, ssn.getId());
-				State state = conn1.getSchema().getState("state" + ((_i % 5) + 1));
+				State state = schema1.getState("state" + ((_i % 5) + 1));
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
 				assertEquals(req.getSession(), ssn);
-				sessions[_i] = ssn;
-				requests[_i] = req;
+				sessions1[_i] = ssn;
+				requests1[_i] = req;
 			});
 		}
 		
+		// Retrieve existing sessions over conn2
+		Session[] sessions2 = new Session[SESSIONS];
+		StateRequest[] requests2 = new StateRequest[SESSIONS];
+		for (int i = 0; i < SESSIONS; i++) {
+			final int _i = i;  // Zhava. 
+			async (() -> {
+				String sid = sessions1[_i].getId();
+				Session ssn = conn2.getSessionById(sid);
+				assertEquals(sid, ssn.getId());
+				assertNotEquals(ssn, sessions1[_i]);
+				// Should be okay to use state from parallel schema.
+				State state = schema3.getState("state" + ((_i % 5) + 1));
+				assertNotNull(ssn.getStateRequest());
+				System.out.println("************** " + ssn.getStateRequest().isCommitted());
+				StateRequest req = ssn.targetForState(state);
+				assertNotNull(req);
+				assertEquals(req.getSession(), ssn);
+				sessions2[_i] = ssn;
+				requests2[_i] = req;
+			});
+		}
+
+		// Create sessions in conn3
+		Session[] sessions3 = new Session[SESSIONS];
+		StateRequest[] requests3 = new StateRequest[SESSIONS];
+		for (int i = 0; i < SESSIONS; i++) {
+			final int _i = i;  // Zhava. 
+			async (() -> {
+				String sid = newSid();
+				Session ssn = conn3.getOrCreateSession(sid);
+				assertEquals(sid, ssn.getId());
+				State state = schema3.getState("newOwner");
+				StateRequest req = ssn.targetForState(state);
+				assertNotNull(req);
+				assertEquals(req.getSession(), ssn);
+				sessions3[_i] = ssn;
+				requests3[_i] = req;
+			});
+		}
+
 		joinAll();
 
 		IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
@@ -84,8 +131,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			final int _i = i;
 			async (() -> {
 				
-				SessionImpl ssn = (SessionImpl) sessions[_i];
-				StateRequest req = requests[_i];
+				SessionImpl ssn = (SessionImpl) sessions1[_i];
+				StateRequest req = requests1[_i];
 
 				// Non-mutating
 				assertNotNull(ssn.getId());
@@ -100,7 +147,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				
 					@Override public void toRun() {
 						switch (_i % 10) {
-						case 0: conn1.getSessionById(sessions[_i].getId()); break;
+						case 0: conn1.getSessionById(sessions1[_i].getId()); break;
 						case 1: ssn.getTraversedStates(); break;
 						case 2: ssn.getTraversedTests(); break;
 						case 3: ssn.getDisqualifiedTests(); break;

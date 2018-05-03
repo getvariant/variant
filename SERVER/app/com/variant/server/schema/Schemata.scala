@@ -26,7 +26,7 @@ class Schemata () {
       _schemaMap.get(newSchema.getName) match {   
          case Some(oldSchema) => {
             if (oldSchema.origin != newSchema.origin) {
-              throw new ServerException.User(ServerErrorLocal.SCHEMA_CANNOT_REPLACE, newSchema.getName(), oldSchema.origin, newSchema.origin)
+              throw new ServerException.Local(ServerErrorLocal.SCHEMA_CANNOT_REPLACE, newSchema.getName(), oldSchema.origin, newSchema.origin)
            }
            oldSchema.undeploy()
          }

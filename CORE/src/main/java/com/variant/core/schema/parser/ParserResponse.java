@@ -65,7 +65,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.variant.core.RuntimeError;
+import com.variant.core.CommonError;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
@@ -178,7 +178,7 @@ public class ParserResponse {
 	 * but are reported with the ParserResponse.
 	 * @param error
 	 */
-	public ParserMessage addMessage(RuntimeError error, String...args) {
+	public ParserMessage addMessage(CommonError error, String...args) {
 		ParserMessage result = new ParserMessageImpl(error, args);
 		addMessageCommon(result);
 		return result;

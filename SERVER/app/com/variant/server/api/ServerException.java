@@ -1,14 +1,10 @@
 package com.variant.server.api;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
-import com.variant.core.UserError;
-import com.variant.core.VariantException;
-import com.variant.core.UserError.Severity;
+import com.variant.core.CommonError;
 import com.variant.core.ServerError;
-import com.variant.core.util.Tuples.Pair;
+import com.variant.core.UserError.Severity;
+import com.variant.core.VariantException;
+import com.variant.server.boot.ServerErrorLocal;
 /**
  * The super-type for of Variant server exception. 
  * 
@@ -71,14 +67,14 @@ abstract public class ServerException extends VariantException {
 	 * 
 	 * @since 0.7
 	 */
-	public static class User extends ServerException {
+	public static class Local extends ServerException {
 
-		public final UserError error;
+		public final CommonError error;
 		public final String[] args;
 		
 		/**
 		 */
-		public User(UserError error, String...args) {
+		public Local(CommonError error, String...args) {
 			super();
 			this.error = error;
 			this.args = args;
@@ -86,7 +82,7 @@ abstract public class ServerException extends VariantException {
 
 		/**
 		 */
-		public User(UserError error, Throwable t, String...args) {
+		public Local(CommonError error, Throwable t, String...args) {
 			super(t);
 			this.error = error;
 			this.args = args;
@@ -118,7 +114,6 @@ abstract public class ServerException extends VariantException {
 		public final ServerError error;
 		public final String[] args;
 		
-		private final HashMap<String,String> headers = new HashMap<String,String>();
 		/**
 		 * 
 		 * @param template

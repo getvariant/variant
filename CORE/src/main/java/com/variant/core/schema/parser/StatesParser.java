@@ -1,12 +1,17 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
+import static com.variant.core.schema.parser.error.SemanticError.DUPE_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_EMPTY_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
 
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.RuntimeError;
 import com.variant.core.CoreException;
+import com.variant.core.ServerError;
 import com.variant.core.UserError.Severity;
 import com.variant.core.VariantException;
 import com.variant.core.schema.Hook;
@@ -73,7 +78,7 @@ public class StatesParser implements Keywords {
 						hooksService.post(new StateParsedLifecycleEventImpl(state, response));
 					}
 					catch (VariantException e) {
-						response.addMessage(RuntimeError.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
+						response.addMessage(ServerError.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
 						throw e;
 					}
 				}

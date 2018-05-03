@@ -37,19 +37,19 @@ public class EventFlusherPostgres extends EventFlusherJdbc {
 				
 		ConfigValue val = config.get("url");
 		if (val == null)
-			throw new ServerException.User(
+			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "url", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 		url = (String) val.unwrapped(); 		// TODO: This will break if url exists but is no a string.
 
 		val = config.get("user");
 		if (val == null)
-			throw new ServerException.User(
+			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "user", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 		user = (String) val.unwrapped(); 		// TODO: This will break if url exists but is no a string.
 
 		val = config.get("password");
 		if (val == null)
-			throw new ServerException.User(
+			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "password", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 		password = (String) val.unwrapped(); 	// TODO: This will break if url exists but is no a string.
 

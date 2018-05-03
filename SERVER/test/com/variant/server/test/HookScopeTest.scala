@@ -7,7 +7,7 @@ import com.variant.core.UserError.Severity._
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.RuntimeError._
+import com.variant.core.ServerError._
 import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
 import com.variant.server.test.hooks.StateParsedHook
@@ -139,7 +139,7 @@ class HookScopeTest extends BaseSpecWithServer {
       val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
-      //response.getMessages.foreach(println _)
+      response.getMessages.foreach(println _)
    		response.getMessages.size mustBe 5
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 0

@@ -72,7 +72,7 @@ import EventTest._
             .withNoBody
       }
 
-      "return  400 and error on POST to non-existent schema" in {
+      "return  400 and error on POST to non-existent schema" in {         
          assertResp(route(app, connectionRequest("foo")))
             .isError(UnknownSchema, "foo")
             .withNoConnStatusHeader

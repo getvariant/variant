@@ -55,6 +55,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 	   	schema = conn.getSchema();
 	   	State state1 = schema.getState("state1");
+	   	State state2 = schema.getState("state2");
 	   	final Test test1 = schema.getTest("test1");
 	   	Test test2 = schema.getTest("test2");
 	   	Test test3 = schema.getTest("test3");
@@ -89,10 +90,9 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	
 		assertFalse(req.isCommitted());
 		
-		/* On occasion, we may get a trivial resolution and these will fail
+		// On occasion, we may get a trivial resolution and these will fail ????
 		assertNotNull(req.getResolvedParameters().get("path"));
-		assertNotNull(req.getResolvedStateVariant());
-		*/
+		// assertNotNull(req.getResolvedStateVariant());     See #119. Should never return null.        
 
 		assertEquals(ssn, req.getSession());
 		assertEquals(state1, req.getState());
@@ -102,6 +102,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(req.getState().getName(), event.getValue());
 		assertEquals(ssn.getCreateDate().getTime(), event.getCreateDate().getTime(), 10);
 		assertTrue(event.getParameterMap().isEmpty());
+				
 		assertTrue(req.commit());
 		assertTrue(req.isCommitted());
 		assertNull(req.getStateVisitedEvent());		

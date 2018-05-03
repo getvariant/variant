@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.typesafe.config.Config;
-import com.variant.core.RuntimeError;
+import com.variant.core.CommonError;
 import com.variant.core.conf.ConfigLoader;
 
 public class ConfigTest extends BaseTestCore {
@@ -35,7 +35,7 @@ public class ConfigTest extends BaseTestCore {
 			@Override public void toRun() {
 				ConfigLoader.load("variant.conf", "variant-default.conf");
 			}
-		}.assertThrown(RuntimeError.CONFIG_FILE_NOT_FOUND, "non-existent");
+		}.assertThrown(CommonError.CONFIG_FILE_NOT_FOUND, "non-existent");
 		
 		// Path override must exist
 		System.setProperty("variant.config.resource", "non-existent");
@@ -45,7 +45,7 @@ public class ConfigTest extends BaseTestCore {
 			@Override public void toRun() {
 				ConfigLoader.load("variant.conf", "variant-default.conf");
 			}
-		}.assertThrown(RuntimeError.CONFIG_RESOURCE_NOT_FOUND, "non-existent");
+		}.assertThrown(CommonError.CONFIG_RESOURCE_NOT_FOUND, "non-existent");
 
 	}
 

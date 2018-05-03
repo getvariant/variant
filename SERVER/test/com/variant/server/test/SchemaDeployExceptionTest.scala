@@ -6,14 +6,12 @@ import scala.util.Try
 import org.apache.commons.io.FileUtils
 import org.scalatest.TestData
 import org.scalatestplus.play.OneAppPerTest
-import com.variant.core.RuntimeError.CONFIG_PROPERTY_NOT_SET
+import com.variant.core.CommonError.CONFIG_PROPERTY_NOT_SET
 import com.variant.core.UserError.Severity
 import com.variant.core.UserError.Severity.FATAL
 import com.variant.server.api.ConfigKeys
 import com.variant.server.api.ServerException
-import com.variant.server.boot.ServerErrorLocal
-import com.variant.server.boot.ServerErrorLocal.SCHEMATA_DIR_MISSING
-import com.variant.server.boot.ServerErrorLocal.SCHEMATA_DIR_NOT_DIR
+import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.boot.VariantApplicationLoader
 import com.variant.server.boot.VariantServer
 import com.variant.server.test.spec.BaseSpec
@@ -92,7 +90,7 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getMessage mustEqual
-            new ServerException.User(CONFIG_PROPERTY_NOT_SET, ConfigKeys.SCHEMATA_DIR).getMessage
+            new ServerException.Local(CONFIG_PROPERTY_NOT_SET, ConfigKeys.SCHEMATA_DIR).getMessage
    		server.isUp mustBe false
       }
    }
@@ -104,7 +102,7 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual SCHEMATA_DIR_MISSING.getSeverity
-         ex.getMessage mustEqual new ServerException.User(SCHEMATA_DIR_MISSING, "non-existent").getMessage
+         ex.getMessage mustEqual new ServerException.Local(SCHEMATA_DIR_MISSING, "non-existent").getMessage
    		server.isUp mustBe false
       }
       
@@ -132,7 +130,7 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual FATAL
-         ex.getMessage mustEqual new ServerException.User(SCHEMATA_DIR_NOT_DIR, "test-schemata-file").getMessage
+         ex.getMessage mustEqual new ServerException.Local(SCHEMATA_DIR_NOT_DIR, "test-schemata-file").getMessage
    		server.isUp mustBe false
       }
       
@@ -158,7 +156,7 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
          server.schemata.size mustBe 1
          val errLine = logTail(0)
          errLine.severity mustBe Severity.ERROR
-   		errLine.message must include (ServerErrorLocal.SCHEMA_CANNOT_REPLACE.asMessage("ParserCovariantOkayBigTestNoHooks", "schema1.json", "schema2.json"))
+   		errLine.message must include (SCHEMA_CANNOT_REPLACE.asMessage("ParserCovariantOkayBigTestNoHooks", "schema1.json", "schema2.json"))
    		server.isUp mustBe true         
       }  
    }

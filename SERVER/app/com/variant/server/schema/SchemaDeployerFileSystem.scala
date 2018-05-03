@@ -5,7 +5,7 @@ import scala.io.Source
 import scala.collection.mutable
 import play.api.Logger
 import com.variant.server.api.ConfigKeys._
-import com.variant.core.RuntimeError._
+import com.variant.core.CommonError._
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.VariantServer
@@ -30,15 +30,15 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
   lazy val dir = {
      
      if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
-        throw new ServerException.User(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
+        throw new ServerException.Local(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
       
      val dirName = Option(VariantServer.instance.config.getString(SCHEMATA_DIR))
 
      val result = new File(dirName.get)
      if (!result.exists)
-        throw new ServerException.User(ServerErrorLocal.SCHEMATA_DIR_MISSING, dirName.get)
+        throw new ServerException.Local(ServerErrorLocal.SCHEMATA_DIR_MISSING, dirName.get)
      if (!result.isDirectory)
-        throw new ServerException.User(ServerErrorLocal.SCHEMATA_DIR_NOT_DIR, dirName.get)
+        throw new ServerException.Local(ServerErrorLocal.SCHEMATA_DIR_NOT_DIR, dirName.get)
      result
   }
   
@@ -81,7 +81,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
          try {
             deploy(parserResp, file.getName)
          } catch {
-            case ue: ServerException.User => 
+            case ue: ServerException.Local => 
                logger.error(ue.getMessage)
                logger.warn(ServerErrorLocal.SCHEMA_FAILED.asMessage( parserResp.getSchema.getName, file.getAbsolutePath))
          }

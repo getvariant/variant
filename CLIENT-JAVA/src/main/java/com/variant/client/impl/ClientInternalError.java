@@ -1,24 +1,24 @@
 package com.variant.client.impl;
 
-import com.variant.core.RuntimeError;
+import com.variant.core.CommonError;
 
 /**
  * Internal variant exceptions, emitted by the client code,
  * i.e. not coming from the server.
  */
-public class ClientInternalError extends RuntimeError {
+public class ClientInternalError extends CommonError {
 
 	//
-	// 301-330 Client Local internal errors.
+	// 251-270 Client Local internal errors.
 	//
 	public static final ClientInternalError INTERNAL_ERROR =
-			new ClientInternalError(301, Severity.ERROR, "Internal Variant client error [%s]");
+			new ClientInternalError(251, Severity.ERROR, "Internal Variant client error [%s]");
 
 	public static final ClientInternalError INTERNAL_SERVER_ERROR =
-			new ClientInternalError(302, Severity.ERROR, "Internal Variant server error [%s]");
+			new ClientInternalError(252, Severity.ERROR, "Internal Variant server error [%s]");
 
 	public static final ClientInternalError NET_PAYLOAD_ELEMENT_MISSING =
-			new ClientInternalError(303, Severity.ERROR, "Element [%s] is missing in payload [%s]");
+			new ClientInternalError(253, Severity.ERROR, "Element [%s] is missing in payload [%s]");
 
    /**
     * 

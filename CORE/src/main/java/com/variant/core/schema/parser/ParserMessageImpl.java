@@ -1,6 +1,6 @@
 package com.variant.core.schema.parser;
 
-import com.variant.core.RuntimeError;
+import com.variant.core.CommonError;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.parser.error.ParserError;
@@ -31,7 +31,7 @@ public class ParserMessageImpl implements ParserMessage {
 	 * Create parser message from a runtime error.  These are not emitted by the parser,
 	 * but are reported with the ParserResponse.
 	 */
-	public ParserMessageImpl(RuntimeError error, String...args) {
+	public ParserMessageImpl(CommonError error, String...args) {
 		severity = error.getSeverity();
 		message = error.asMessage((Object[])args);
 		code = error.getCode();

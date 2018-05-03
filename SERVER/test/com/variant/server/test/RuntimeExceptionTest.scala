@@ -1,7 +1,7 @@
 package com.variant.server.test
 
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.RuntimeError._
+import com.variant.core.ServerError._
 import com.variant.server.api.Session
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerSuite
@@ -140,8 +140,8 @@ class RuntimeExceptionTest extends BaseSpecWithServer {
 			   fail("Expected exception not thrown")
    		}
          catch {
-            case uex: ServerException.User =>  uex.getMessage() mustEqual
-      			new ServerException.User(EXPERIENCE_WEIGHT_MISSING, "test1", "A").getMessage()
+            case uex: ServerException.Local =>  uex.getMessage() mustEqual
+      			new ServerException.Local(EXPERIENCE_WEIGHT_MISSING, "test1", "A").getMessage()
    		}
       }
    }

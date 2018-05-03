@@ -22,7 +22,6 @@ import com.variant.server.api.ServerException
 import play.api.ApplicationLoader
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.util.VariantClassLoader
-import com.variant.core.RuntimeError
 import com.variant.core.UserError.Severity
 import com.variant.server.conn.ConnectionStore
 import play.api.Play

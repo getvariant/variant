@@ -9,6 +9,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.ServerError;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.StringUtils;
 import com.variant.core.session.SessionScopedTargetingStabile;
@@ -21,8 +22,6 @@ import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
-
-import static com.variant.server.boot.ServerErrorLocal.*;
 
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
@@ -134,7 +133,7 @@ public class Runtime {
 
 				// It's a user error to hit an undefined state in an active experience.
 				if (!exp.isDefinedOn(state))  {
-					throw new ServerException.User(STATE_UNDEFINED_IN_EXPERIENCE, exp.toString(), state.getName());
+					throw new ServerException.Local(ServerError.STATE_UNDEFINED_IN_EXPERIENCE, exp.toString(), state.getName());
 				}
 
 				alreadyTargeted.add(exp);

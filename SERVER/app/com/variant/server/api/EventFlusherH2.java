@@ -1,7 +1,7 @@
 package com.variant.server.api;
 
 
-import static com.variant.core.RuntimeError.CONFIG_PROPERTY_NOT_SET;
+import static com.variant.core.CommonError.CONFIG_PROPERTY_NOT_SET;
 import static com.variant.server.api.ConfigKeys.EVENT_FLUSHER_CLASS_INIT;
 
 import java.sql.Connection;
@@ -36,17 +36,17 @@ public class EventFlusherH2 extends EventFlusherJdbc {
 		
 		url = config.getString("url");
 		if (url == null)
-			throw new ServerException.User(
+			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "url", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 
 		user = config.getString("user");
 		if (user == null)
-			throw new ServerException.User(
+			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "user", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 
 		password = config.getString("password");
 		if (password == null)
-			throw new ServerException.User(
+			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "password", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 		
 	}

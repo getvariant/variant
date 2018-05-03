@@ -1,6 +1,6 @@
 package com.variant.server.impl;
 
-import static com.variant.server.boot.ServerErrorLocal.HOOK_TARGETING_BAD_EXPERIENCE;
+import static com.variant.core.ServerError.HOOK_TARGETING_BAD_EXPERIENCE;
 
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -31,7 +31,7 @@ public class TestTargetingLifecycleEventPostResultImpl implements TestTargetingL
 			if (experience.equals(te)) {
 				if (!experience.isDefinedOn(state)) {
 					StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-					throw new ServerException.User(
+					throw new ServerException.Local(
 							HOOK_TARGETING_BAD_EXPERIENCE, 
 							caller.getClassName(), test.getName(), experience.toString(), test.getName());
 				}
@@ -42,7 +42,7 @@ public class TestTargetingLifecycleEventPostResultImpl implements TestTargetingL
 		// If we're here, the experience is not from the test we're listening for.
 		// Figure out the caller class and throw an exception.
 		StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-		throw new ServerException.User(
+		throw new ServerException.Local(
 				HOOK_TARGETING_BAD_EXPERIENCE, 
 				caller.getClassName(), test.getName(), experience.toString());
 	}

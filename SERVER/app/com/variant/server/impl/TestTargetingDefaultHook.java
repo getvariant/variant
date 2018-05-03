@@ -2,16 +2,14 @@ package com.variant.server.impl;
 
 import java.util.Random;
 
-import com.typesafe.config.Config;
+import com.variant.core.ServerError;
 import com.variant.core.UserHook;
-import com.variant.server.lce.TestTargetingLifecycleEvent;
-import com.variant.core.schema.Hook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.PostResultFactory;
 import com.variant.server.api.ServerException;
-import com.variant.server.boot.ServerErrorLocal;
+import com.variant.server.lce.TestTargetingLifecycleEvent;
 
 class TestTargetingDefaultHook implements UserHook<TestTargetingLifecycleEvent> {
 	
@@ -47,7 +45,7 @@ class TestTargetingDefaultHook implements UserHook<TestTargetingLifecycleEvent> 
 			if (e.getWeight() == null ) {
 				// It's not a syntax error not to supply the weight, but if we're
 				// here it means that no targeter hook fired, and that's a runtime error.
-				throw new ServerException.User(ServerErrorLocal.EXPERIENCE_WEIGHT_MISSING, e.getTest().getName(), e.getName());
+				throw new ServerException.Local(ServerError.EXPERIENCE_WEIGHT_MISSING, e.getTest().getName(), e.getName());
 			}
 			weightSum += e.getWeight().doubleValue();
 		}

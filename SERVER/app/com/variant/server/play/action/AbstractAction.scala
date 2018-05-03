@@ -57,10 +57,15 @@ abstract class AbstractAction
             future = block(newRequest.get) 
          }
          catch {
-            case sre: ServerException.Remote =>
-               //if (logger.isDebugEnabled) logger.debug(sre.getMessage, sre)
-               val result = ServerErrorRemote(sre.error).asResult(sre.args:_*)
+            case r: ServerException.Remote  =>
+               val result = ServerErrorRemote(r.error).asResult(r.args:_*)
                future = Future.successful(result)
+/* do we need this?
+            case l: ServerException.Local  =>
+               //if (logger.isDebugEnabled) logger.debug(sre.getMessage, sre)
+               val result = ServerErrorRemote(l.error).asResult(l.args:_*)
+               future = Future.successful(result)
+*/
             case t: Throwable => 
                logger.error("Unexpected Internal Error in [%s]".format(req), t);
                future = Future.successful(ServerErrorRemote(ServerError.InternalError).asResult(t.getMessage))            

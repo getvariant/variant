@@ -24,32 +24,32 @@ Range   Base         Major Area               Minor Area
 171-180                                       Syntax
 181-200                                       Other
 201-220              Configuration
-241-250              Collateral
-251-270              Other common runtime
-271-300              --Available
+221-250              -- Available
 
-301-400 Client Local
-301-330              Internal
-331-400              User
-        
-401-600 Server local 
+251-300 Client Local
+251-270              Internal
+271-300              User
+
+300-400 -- Available
+
+401-600 Server Local 
 401-420              Server bootstrap
-421-440              Schema deployment
-441-460              Event writing
-461-480              User                     Server API
-481-500              Other server runtime
-501-600              -- Available
+421-450              Schema deployment
+
+451-500              User                     Server API
+501-520              Other server runtime
+
+521-600              -- Available
 
 601-800 Server
-601-700              Internal
-601-610                                       Payload syntax error
-611-630                                       Payload parse error
-631-700                                       Other internal errors
+601-660              Internal
+601-620                                       Payload syntax error
+621-640                                       Payload parse error
+641-660                                       Other internal errors
+661-700              User  Server API
+661-680                                       User Hooks
+681-700                                       Other
 701-800              User, Client API
-701-720                                       Connection
-721-740                                       Session
-741-760                                       Event
-761-800                                       --Unused
 
 801-999              Reserved
 
