@@ -1,22 +1,23 @@
 package com.variant.client.test;
 
+import static com.variant.core.ConnectionStatus.CLOSED_BY_CLIENT;
+import static com.variant.core.ConnectionStatus.OPEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static com.variant.core.ConnectionStatus.*;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.impl.ClientUserError;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
-import com.variant.core.RuntimeError;
+import com.variant.client.impl.ClientUserError;
+import com.variant.core.ServerError;
 import com.variant.core.VariantEvent;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
@@ -73,7 +74,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 				req.getLiveExperience(test1);
 			}
 			@Override public void onThrown(ClientException.User e) {
-				assertEquals(RuntimeError.STATE_NOT_INSTRUMENTED_BY_TEST, e.getError());
+				assertEquals(ServerError.STATE_NOT_INSTRUMENTED_BY_TEST, e.getError());
 			}
 		}.assertThrown(StateNotInstrumentedException.class);
 		

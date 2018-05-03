@@ -7,9 +7,8 @@ import java.util.Set;
 import com.variant.client.Session;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
-import com.variant.client.net.Payload;
-import com.variant.core.RuntimeError;
 import com.variant.core.CoreException;
+import com.variant.core.ServerError;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
@@ -77,7 +76,7 @@ public class StateRequestImpl implements StateRequest {
 			return session.getCoreSession().getStateRequest().getLiveExperience(test);
 		}
 		catch (CoreException.User e) {
-			if (e.error.getCode() == RuntimeError.STATE_NOT_INSTRUMENTED_BY_TEST.getCode())
+			if (e.error.getCode() == ServerError.STATE_NOT_INSTRUMENTED_BY_TEST.getCode())
 				throw new StateNotInstrumentedException(e);
 			else throw e;
 		}
