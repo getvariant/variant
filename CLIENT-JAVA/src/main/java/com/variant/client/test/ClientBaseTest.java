@@ -13,11 +13,6 @@ import com.variant.core.test.VariantBaseTest;
  */
 public abstract class ClientBaseTest extends VariantBaseTest {
 	
-	@Override
-	protected Schema getSchema() {
-		throw new RuntimeException("No schema yet");
-	}
-
 	/**
 	 * Build up userData arguments for the *Simple trackers. 
 	 * They expect user data as follows:
@@ -29,12 +24,12 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 	 * @param experiences
 	 * @return
 	 */
-	protected Object[] userDataForSimpleIn(String sessionId, String...experiences) {
+	protected Object[] userDataForSimpleIn(String sessionId, Schema schema, String...experiences) {
 		
 		Object[] result = new Object[experiences.length + 1];
 		result[0] = sessionId;
 		for (int i = 0; i < experiences.length; i++) {
-			result[i+1] = experience(experiences[i]);
+			result[i+1] = experience(schema, experiences[i]);
 		}
 		
 		return result;

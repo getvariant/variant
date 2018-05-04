@@ -17,6 +17,7 @@ import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
+import com.variant.client.impl.StateRequestImpl;
 import com.variant.core.ServerError;
 import com.variant.core.VariantEvent;
 import com.variant.core.impl.StateVisitedEvent;
@@ -24,21 +25,17 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
+import com.variant.core.util.CollectionsUtils;
+import com.variant.core.util.StringUtils;
 
 public class StateRequestTest extends ClientBaseTestWithServer {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
-	private Schema schema;
 	
 	public StateRequestTest() throws Exception {
 		startServer();
 	}
 	
-	@Override
-	protected Schema getSchema() {
-		return schema;
-	}
-
 	/**
 	 */
 	@org.junit.Test
@@ -54,7 +51,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn);
 		assertEquals(sid, ssn.getId());
 
-	   	schema = conn.getSchema();
+	   	Schema schema = conn.getSchema();
 	   	State state1 = schema.getState("state1");
 	   	State state2 = schema.getState("state2");
 	   	final Test test1 = schema.getTest("test1");
@@ -127,14 +124,14 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	public void deterministicTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");
-		schema = conn.getSchema();
+		Schema schema = conn.getSchema();
 		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 
 		// Via SID tracker, create.
 		String sid = newSid();
-		Object[] userData = userDataForSimpleIn(sid, "test4.C", "test5.C");
+		Object[] userData = userDataForSimpleIn(sid, schema, "test4.C", "test5.C");
 		Session ssn = conn.getOrCreateSession(userData);
 		assertNotNull(ssn);
 		assertEquals(sid, ssn.getId());
@@ -152,11 +149,11 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	assertNotNull(req);
 		assertEquals(6, req.getLiveExperiences().size());
 
-		assertEquals(experience("test1.A"), req.getLiveExperience(test1));
-		assertEquals(experience("test2.A"), req.getLiveExperience(test2));
-		assertEquals(experience("test3.A"), req.getLiveExperience(test3));
-		assertEquals(experience("test4.C"), req.getLiveExperience(test4));
-		assertEquals(experience("test5.C"), req.getLiveExperience(test5));
+		assertEquals(experience(schema, "test1.A"), req.getLiveExperience(test1));
+		assertEquals(experience(schema, "test2.A"), req.getLiveExperience(test2));
+		assertEquals(experience(schema, "test3.A"), req.getLiveExperience(test3));
+		assertEquals(experience(schema, "test4.C"), req.getLiveExperience(test4));
+		assertEquals(experience(schema, "test5.C"), req.getLiveExperience(test5));
 		assertNotNull(req.getLiveExperience(test6));  // Can be anything.
 
 		assertEquals("/path/to/state2/test4.C+test5.C", req.getResolvedParameters().get("path"));
@@ -177,14 +174,14 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	public void commitTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");
-		schema = conn.getSchema();
+		Schema schema = conn.getSchema();
 		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 
 		// Via SID tracker, create.
 		String sid = newSid();
-		Object[] userData = userDataForSimpleIn(sid, "test4.C", "test5.C");
+		Object[] userData = userDataForSimpleIn(sid, schema, "test4.C", "test5.C");
 		Session ssn1 = conn.getOrCreateSession(userData);
 		assertNotNull(ssn1);
 		assertEquals(sid, ssn1.getId());
@@ -234,7 +231,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		final Session ssn = conn.getOrCreateSession(sid);
 		assertFalse(ssn.isExpired());
 	
-	   	schema = conn.getSchema();
+	   	Schema schema = conn.getSchema();
 	   	State state2 = schema.getState("state2");
 	   	final StateRequest req = ssn.targetForState(state2);
 	   	
@@ -260,7 +257,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	public void connectionClosedLocallyTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
-	   	schema = conn.getSchema();
+	   	Schema schema = conn.getSchema();
 
 		String sid = newSid();
 		final Session ssn = conn.getOrCreateSession(sid);	
@@ -292,7 +289,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	public void targetingHookExceptionTest() {
 		
 		Connection conn = client.getConnection("petclinic");		
-	   	schema = conn.getSchema();
+	   	Schema schema = conn.getSchema();
 
 		String sid = newSid();
 		final Session ssn = conn.getOrCreateSession(sid);	
@@ -313,9 +310,40 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertTrue(ssn.getTraversedTests().isEmpty());
 		assertTrue(ssn.getDisqualifiedTests().isEmpty());
 		
-		// Set the attribute and target in a parallel connection. 
+		// Set the attribute and target. 
 		ssn.setAttribute("user-agent", "Any string");
 		StateRequest req = ssn.targetForState(schema.getState("newOwner"));
-		req.commit();
+		assertEquals(req, ssn.getStateRequest());
+		assertTrue(req.commit());
+		assertTrue(req.isCommitted());
 	}
+	
+	@org.junit.Test
+	public void targetFromParallelConnectionsTest() throws Exception {
+		
+		Connection conn1 = client.getConnection("big_covar_schema");		
+	   	Schema schema1 = conn1.getSchema();
+
+		String sid = newSid();
+		Session ssn1 = conn1.getOrCreateSession(sid);	
+		
+		StateRequest req1 = ssn1.targetForState(schema1.getState("state3"));
+
+		Connection conn2 = client.getConnection("big_covar_schema");		
+	   	Schema schema2 = conn1.getSchema();
+	   	
+	   	assertEquals(schema2.getId(), schema1.getId());
+	   	
+	   	Session ssn2 = conn2.getSessionById(sid);
+	   	assertNotNull(ssn2);
+	   	
+	   	StateRequest req2 = ssn2.getStateRequest();
+	   	assertNotNull(req2);
+	   	assertEquals(ssn2, req2.getSession());
+	   	
+	   	// To compare requests, we simple compare their JSON serializations.
+	   	assertEquals(((StateRequestImpl)req1).getCoreStateRequest().toJson(), ((StateRequestImpl)req2).getCoreStateRequest().toJson());
+
+	}
+
 }

@@ -145,19 +145,32 @@ public class HttpRemoter {
 			if (LOG.isTraceEnabled()) {
 				
 				StringBuilder buff = new StringBuilder();
-				buff.append("\n>>> ").append(req.getMethod()).append(" ").append(req.getURI());
+				buff.append("\n>>>      ").append(req.getMethod()).append(" ").append(req.getURI());
+				buff.append("\nHeaders: ");
+				boolean first = true;
+				for (Header h: req.getAllHeaders()) {
+					if (first) first = false;
+					else buff.append("\n         ");
+					buff.append(h).append(" ");
+				}
 				if (req instanceof HttpEntityEnclosingRequestBase) {
 					HttpEntity entity = ((HttpEntityEnclosingRequestBase)req).getEntity();
 					String body = entity == null ? "null" : EntityUtils.toString(entity);
-					buff.append("\nBody: '").append(body).append("'");
+					buff.append("\nBody:    '").append(body).append("'");
 				}
 				buff.append('\n');
-				buff.append("\n<<< ").append(resp.getStatusLine().getStatusCode())
+				buff.append("\n<<<       ").append(resp.getStatusLine().getStatusCode())
 					.append(" (")
 					.append(TimeUtils.formatDuration(System.currentTimeMillis() - start))
 					.append(")");
-				buff.append("\nConnection Status: ").append(result.status);
-				buff.append("\nBody: '").append(result.body).append("'");
+				buff.append("\nHeaders: ");
+				first = true;
+				for (Header h: resp.getAllHeaders()) {
+					if (first) first = false;
+					else buff.append("\n         ");
+					buff.append(h).append(" ");
+				}
+				buff.append("\nBody:   '").append(result.body).append("'");
 				
 				LOG.trace(buff.toString());
 			}

@@ -131,4 +131,8 @@ public class StateRequestImpl implements StateRequest {
 	public void rewrap(CoreStateRequest coreRequest) {
 		this.coreRequest = coreRequest;
 	}
+	
+	public CoreStateRequest getCoreStateRequest() {
+		return coreRequest;
+	}
 }

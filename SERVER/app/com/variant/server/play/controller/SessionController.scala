@@ -45,7 +45,6 @@ class SessionController @Inject() (
       val ssnJson = req.body.asText.getOrElse {
          throw new ServerException.Remote(EmptyBody)
       }
-
       val conn = req.attrs.get(connectedAction.ConnKey).get
       server.ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
       Ok      

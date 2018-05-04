@@ -33,12 +33,12 @@ public class HttpResponse {
 	 * @throws IOException 
 	 * @throws ParseException 
 	 */
-	HttpResponse(HttpUriRequest request, CloseableHttpResponse underlyingResponse) throws ParseException, IOException {
+	HttpResponse(HttpUriRequest request, CloseableHttpResponse response) throws ParseException, IOException {
 
 		this.request = request;
-		this.status = underlyingResponse.getStatusLine().getStatusCode();
-		this.headers = underlyingResponse.getAllHeaders();
-		HttpEntity entity = underlyingResponse.getEntity();
+		this.status = response.getStatusLine().getStatusCode();
+		this.headers = response.getAllHeaders();
+		HttpEntity entity = response.getEntity();
 		this.body = entity == null ? null : EntityUtils.toString(entity);
 	}
 	

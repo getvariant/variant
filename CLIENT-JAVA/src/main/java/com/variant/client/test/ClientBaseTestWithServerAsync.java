@@ -2,6 +2,7 @@ package com.variant.client.test;
 
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -13,7 +14,7 @@ public abstract class ClientBaseTestWithServerAsync extends ClientBaseTestWithSe
 		
 	private final Executor pool = Executors.newFixedThreadPool(4);
 	private final AtomicInteger taskCount = new AtomicInteger(0);
-	private final Throwable[] unexpectedException = {null};
+	private final ArrayList<Throwable> thrown = new ArrayList<Throwable>();
 	
 	/**
 	 * @param r
@@ -27,7 +28,7 @@ public abstract class ClientBaseTestWithServerAsync extends ClientBaseTestWithSe
 		         block.run();
 	         } 
 	         catch (Throwable t) {
-	        	 unexpectedException[0] = t;
+	        	 thrown.add(t);
 	         } 
 	         finally {
 	        	 taskCount.decrementAndGet();
@@ -50,10 +51,9 @@ public abstract class ClientBaseTestWithServerAsync extends ClientBaseTestWithSe
 	      if (wated >= timeout) 
 	    	  fail("Unexpected timeout waiting for background threads.");
 	      
-	      if (unexpectedException[0] != null) {
-	    	  Throwable ue = unexpectedException[0];
-	         unexpectedException[0] = null;
-	         throw new RuntimeException("Async block crashed: " + ue.getMessage(), ue);
+	      if (thrown.size() > 0) {
+	    	  for (Throwable t: thrown) t.printStackTrace();
+	    	  fail("Failing due to previous exceptions in async block(s)");
 	      }
 	   }
 

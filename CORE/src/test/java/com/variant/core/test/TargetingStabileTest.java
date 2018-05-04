@@ -16,10 +16,7 @@ import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.IoUtils;
 
 public class TargetingStabileTest extends BaseTestCore {
-		
-	private Schema schema = null;
-	@Override protected Schema getSchema() {return schema;}
-	
+			
 	/**
 	 * 
 	 */
@@ -30,7 +27,7 @@ public class TargetingStabileTest extends BaseTestCore {
 		ParserResponse response = parser.parse(IoUtils.openResourceAsStream("/schema/ParserCovariantOkayBigTest.json")._1());
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		schema = response.getSchema();
+		Schema schema = response.getSchema();
 		
 		CoreSession ssn = new CoreSession("SID");
 		assertNull(ssn.getStateRequest());
@@ -38,13 +35,13 @@ public class TargetingStabileTest extends BaseTestCore {
 		// 
 		// Empty string
 		//
-		setTargetingStabile(ssn);
+		setTargetingStabile(ssn, schema);
 		assertEquals(0, ssn.getTargetingStabile().getAll().size());
 
 		// 
 		// Single entry
 		//
-		setTargetingStabile(ssn, "test1.A");
+		setTargetingStabile(ssn, schema, "test1.A");
 		SessionScopedTargetingStabile stabile = ssn.getTargetingStabile();
 		assertEquals(1, stabile.getAll().size());
 		assertEquals(1, stabile.getAllAsExperiences(schema).size());
@@ -61,21 +58,21 @@ public class TargetingStabileTest extends BaseTestCore {
 		// 
 		// Multiple entries - good
 		//
-		setTargetingStabile(ssn, "test1.A", "test2.C", "test4.B");
+		setTargetingStabile(ssn, schema, "test1.A", "test2.C", "test4.B");
 		stabile = ssn.getTargetingStabile();
 		assertEquals(3, stabile.getAll().size());
-		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test1.A")));
-		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test2.C")));
-		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test4.B")));
+		assertTrue(stabile.getAllAsExperiences(schema).contains(experience(schema, "test1.A")));
+		assertTrue(stabile.getAllAsExperiences(schema).contains(experience(schema, "test2.C")));
+		assertTrue(stabile.getAllAsExperiences(schema).contains(experience(schema, "test4.B")));
 
 		assertNull(stabile.remove("junk"));
 		assertEquals(3, stabile.getAll().size());
 		
 		assertNotNull(stabile.remove("test2"));
 		assertEquals(2, stabile.getAll().size());
-		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test1.A")));
-		assertFalse(stabile.getAllAsExperiences(schema).contains(experience("test2.C")));
-		assertTrue(stabile.getAllAsExperiences(schema).contains(experience("test4.B")));
+		assertTrue(stabile.getAllAsExperiences(schema).contains(experience(schema, "test1.A")));
+		assertFalse(stabile.getAllAsExperiences(schema).contains(experience(schema, "test2.C")));
+		assertTrue(stabile.getAllAsExperiences(schema).contains(experience(schema, "test4.B")));
 
 	}
 

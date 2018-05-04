@@ -114,7 +114,7 @@ public class SessionImpl implements Session {
 	//                                            PUBLIC                                            //
 	// ---------------------------------------------------------------------------------------------//
 	/**
-	 * Create a foreground session with a session ID and a targeting trackers.
+	 * Create a brand new foreground session with a session ID and a targeting trackers.
 	 */
 	public SessionImpl(
 			Connection conn,
@@ -132,6 +132,7 @@ public class SessionImpl implements Session {
 
 	/**
 	 * Create a headless session without the session ID and the targeting trackers.
+	 * May contain state request object.
 	 */
 	public SessionImpl(
 			Connection conn,
@@ -142,6 +143,11 @@ public class SessionImpl implements Session {
 		this.coreSession = coreSession;
 		this.sessionIdTracker = null;
 		this.targetingTracker = null;
+		
+		if (coreSession.getStateRequest() != null) {
+			// relies on `this` already containing the coreSession object.
+			this.stateRequest = new StateRequestImpl(this);
+		}
 	}
 
 	/**
@@ -333,15 +339,19 @@ public class SessionImpl implements Session {
 	 * Replace the core session. Recursively replaces the core state request.
 	 */
 	public void rewrap(CoreSession coreSession) {
+		
+		if (coreSession == null) 
+			throw new ClientException.Internal("NULL Core Session");
+		
 		// The new core session which this object wraps.
 		this.coreSession = (CoreSession) coreSession;
 		
 		// Propagate to the state request wrapper object, if any.
-		// Relies on this session already containing the new core session.
+		// Relies on this SessionImpl already containing the new core session.
 		if(stateRequest != null) {
 			stateRequest.rewrap(coreSession.getStateRequest());
 		}
-		else if (coreSession != null){
+		else {
 			stateRequest = new StateRequestImpl(this);
 		}
 		

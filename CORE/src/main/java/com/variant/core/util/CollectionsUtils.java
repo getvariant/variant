@@ -133,6 +133,12 @@ public class CollectionsUtils {
 	}
 
 	/**
+	 */
+	public static String toString(Object[] objectArray) {
+		return toString(objectArray, ", ");
+	}
+	
+	/**
 	 * Collection toString();
 	 * @param c
 	 * @param separator
@@ -149,6 +155,13 @@ public class CollectionsUtils {
 		}
 		return result.toString();
 	}
+
+	/**
+	 */
+	public static String toString(Collection<?> c) {
+		return toString(c, ", ");
+	}
+
 	/**
 	 * Collection toString();
 	 * @param c
@@ -167,4 +180,9 @@ public class CollectionsUtils {
 		return result.toString();
 	}
 
+	/**
+	 */
+	public static String toString(Map<?,?> map) {
+		return toString(map, ", ");
+	}
 }

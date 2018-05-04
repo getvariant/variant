@@ -1,13 +1,11 @@
 package com.variant.client.test;
 
-import static com.variant.core.ConnectionStatus.*;
+import static com.variant.core.ConnectionStatus.CLOSED_BY_SERVER;
+import static com.variant.core.ConnectionStatus.OPEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
@@ -28,7 +26,7 @@ import com.variant.core.util.IoUtils;
  */
 public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	
-	private int SESSIONS = 100;
+	private int SESSIONS = 1;
 	
 	// Sole client
 	private VariantClient client = VariantClient.Factory.getInstance();		
@@ -76,10 +74,18 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				State state = schema1.getState("state" + ((_i % 5) + 1));
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
+				assertEquals(req, ssn.getStateRequest());
 				assertEquals(req.getSession(), ssn);
 				sessions1[_i] = ssn;
 				requests1[_i] = req;
 			});
+		}
+		
+		joinAll();
+		
+		for (int i = 0; i < SESSIONS; i++) {
+			assertNotNull(sessions1[i]);
+			assertNotNull(requests1[i]);
 		}
 		
 		// Retrieve existing sessions over conn2
@@ -93,9 +99,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(sid, ssn.getId());
 				assertNotEquals(ssn, sessions1[_i]);
 				// Should be okay to use state from parallel schema.
-				State state = schema3.getState("state" + ((_i % 5) + 1));
-				assertNotNull(ssn.getStateRequest());
-				StateRequest req = ssn.targetForState(state);
+				StateRequest req = ssn.getStateRequest();
 				assertNotNull(req);
 				assertEquals(req.getSession(), ssn);
 				sessions2[_i] = ssn;
@@ -113,6 +117,9 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				Session ssn = conn3.getOrCreateSession(sid);
 				assertEquals(sid, ssn.getId());
 				State state = schema3.getState("newOwner");
+				// The qualifying and targeting hooks will throw an NPE
+				// if user-agent attribute is not set.
+				ssn.setAttribute("user-agent", "does not matter");
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
 				assertEquals(req.getSession(), ssn);
