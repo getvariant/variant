@@ -70,7 +70,7 @@ public class ServerError extends CommonError {
 	// 661-680 User, Server API, Hooks
 	// 
 	public static final ServerError  HOOK_UNHANDLED_EXCEPTION =
-			new ServerError(661, "User hook class [%s] threw an exception [%s]. See logs for details.");
+			new ServerError(661, "User hook class [%s] threw an exception [%s]. See server logs for details.");
 
 	public static final ServerError HOOK_USER_MESSAGE_INFO =
 			new ServerError(662, Severity.INFO, "User hook generated the following message: [%s]");

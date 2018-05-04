@@ -95,7 +95,6 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				// Should be okay to use state from parallel schema.
 				State state = schema3.getState("state" + ((_i % 5) + 1));
 				assertNotNull(ssn.getStateRequest());
-				System.out.println("************** " + ssn.getStateRequest().isCommitted());
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
 				assertEquals(req.getSession(), ssn);

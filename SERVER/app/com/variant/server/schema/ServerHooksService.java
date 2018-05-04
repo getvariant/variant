@@ -222,7 +222,7 @@ public class ServerHooksService implements HooksService {
 		
 		} catch (Exception e) {
 			LOG.error(ServerError.HOOK_UNHANDLED_EXCEPTION.asMessage(hookDef.getClassName(), e.getMessage()), e);
-			throw new ServerException.Local(ServerError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
+			throw new ServerException.Remote(ServerError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
 		}				
 
 	}

@@ -96,8 +96,6 @@ public class Runtime {
 		
 		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
 			throw new ServerException.Internal("State [" + state.getName() + "] is not in schema");
-
-		StateRequestImpl newReq = session.newStateRequest(state);
 				
 		// 1. Build the active test list.
 		ArrayList<Test> activeTestList = new ArrayList<Test>();
@@ -227,6 +225,8 @@ public class Runtime {
 		if (!resolution._1()) throw new ServerException.Internal(
 				"Vector [" + CollectionsUtils.toString(vector, ",") + "] is unresolvable");
 		
+		// AOK. Create the state request object.
+		StateRequestImpl newReq = session.newStateRequest(state);
 		newReq.setResolvedStateVariant(resolution._2());
 	}
 
