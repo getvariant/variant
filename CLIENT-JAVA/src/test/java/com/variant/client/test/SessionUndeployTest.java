@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
+import com.variant.client.SessionExpiredException;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
@@ -26,7 +27,7 @@ import com.variant.core.util.IoUtils;
  */
 public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	
-	private int SESSIONS = 1;
+	private int SESSIONS = 20;
 	
 	// Sole client
 	private VariantClient client = VariantClient.Factory.getInstance();		
@@ -133,6 +134,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
 
+		// Short session timeout => all sessions should be gone and 3 connections cleaned out.
+		
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;
 			async (() -> {
@@ -140,15 +143,17 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				SessionImpl ssn = (SessionImpl) sessions1[_i];
 				StateRequest req = requests1[_i];
 
-				// Non-mutating
+				// Non-mutating methods that don't go over the network.
+				assertTrue(ssn.isExpired());
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
-				assertTrue(ssn.isExpired());
 				//assertEquals(client.getConfig(), ssn.getConfig());
 				assertEquals(conn1, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				
-				// Try every mutating method - should throw connection closed exception.
+				// Mutating methods throw connection closed exception
+				// because by now all sessions in the connection have expired and the
+				// connection has been vacuumed.
 				new ClientUserExceptionInterceptor() {
 				
 					@Override public void toRun() {
@@ -175,7 +180,100 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		
 			});
 		}
+
+		for (int i = 0; i < SESSIONS; i++) {
+			final int _i = i;
+			async (() -> {
+				
+				SessionImpl ssn = (SessionImpl) sessions2[_i];
+				StateRequest req = requests2[_i];
+
+				// Non-mutating methods that don't go over the network.
+				assertTrue(ssn.isExpired());
+				assertNotNull(ssn.getId());
+				assertNotNull(ssn.getCreateDate());
+				//assertEquals(client.getConfig(), ssn.getConfig());
+				assertEquals(conn2, ssn.getConnection());
+				assertEquals(1000, ssn.getTimeoutMillis());
+				
+				// Mutating methods throw connection closed exception
+				// because by now all sessions in the connection have expired and the
+				// connection has been cleaned out.
+				new ClientUserExceptionInterceptor() {
+				
+					@Override public void toRun() {
+						switch (_i % 10) {
+						case 0: conn2.getSessionById(sessions1[_i].getId()); break;
+						case 1: ssn.getTraversedStates(); break;
+						case 2: ssn.getTraversedTests(); break;
+						case 3: ssn.getDisqualifiedTests(); break;
+						case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), schema1.getState("state1"))); break;
+						case 5: ssn.getAttribute("foo"); break;
+						case 6: ssn.setAttribute("foo", "bar"); break;
+						case 7: ssn.clearAttribute("foo"); break;
+						case 8: ssn.targetForState(schema1.getState("state4")); break;
+						case 9: req.commit(); break;
+						}
+					}
+					
+					@Override public void onThrown(ClientException.User e) {
+						assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+						assertEquals(CLOSED_BY_SERVER, conn1.getStatus());
+					}
+					
+				}.assertThrown(ConnectionClosedException.class);
 		
+			});
+		}
+
+		// The non-draining connection should remain open, even though all the sessions
+		// are gone and vacuumed.
+		assertEquals(OPEN, conn3.getStatus());
+
+		for (int i = 0; i < SESSIONS; i++) {
+			final int _i = i;
+			async (() -> {
+				
+				// Session has expired on the server
+				assertNull(conn3.getSessionById(sessions1[_i].getId()));
+			
+				SessionImpl ssn = (SessionImpl) sessions3[_i];
+				StateRequest req = requests3[_i];
+
+				// Non-mutating methods that don't go over the network.
+				assertTrue(ssn.isExpired());
+				assertNotNull(ssn.getId());
+				assertNotNull(ssn.getCreateDate());
+				//assertEquals(client.getConfig(), ssn.getConfig());
+				assertEquals(conn3, ssn.getConnection());
+				assertEquals(1000, ssn.getTimeoutMillis());
+				
+				// Mutating methods throw session expired exception
+				new ClientUserExceptionInterceptor() {
+				
+					@Override public void toRun() {
+						switch (_i % 9) {
+						case 0: req.commit(); break;
+						case 1: ssn.getTraversedStates(); break;
+						case 2: ssn.getTraversedTests(); break;
+						case 3: ssn.getDisqualifiedTests(); break;
+						case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), schema1.getState("state1"))); break;
+						case 5: ssn.getAttribute("foo"); break;
+						case 6: ssn.setAttribute("foo", "bar"); break;
+						case 7: ssn.clearAttribute("foo"); break;
+						case 8: ssn.targetForState(schema1.getState("state4")); break;
+						}
+					}
+					
+					@Override public void onThrown(ClientException.User e) {
+						assertEquals(ClientUserError.SESSION_EXPIRED, e.getError());
+					}
+					
+				}.assertThrown(SessionExpiredException.class);
+		
+			});
+		}
+
 		joinAll();
 		
 		assertNull(client.getConnection("big_covar_schema"));
