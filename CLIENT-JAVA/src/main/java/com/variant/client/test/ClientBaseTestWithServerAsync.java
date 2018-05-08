@@ -2,7 +2,7 @@ package com.variant.client.test;
 
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -14,7 +14,7 @@ public abstract class ClientBaseTestWithServerAsync extends ClientBaseTestWithSe
 		
 	private final Executor pool = Executors.newFixedThreadPool(4);
 	private final AtomicInteger taskCount = new AtomicInteger(0);
-	private final ArrayList<Throwable> thrown = new ArrayList<Throwable>();
+	private final ConcurrentLinkedQueue<Throwable> thrown = new ConcurrentLinkedQueue<Throwable>();
 	
 	/**
 	 * @param r

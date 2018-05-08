@@ -19,7 +19,6 @@ import com.variant.client.VariantClient;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
 import com.variant.core.ConnectionStatus;
-import com.variant.core.ServerError;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
@@ -52,7 +51,7 @@ public class ConnectionImpl implements Connection {
 		case DRAINING: break;
 		
 		case CLOSED_BY_CLIENT: 
-		case CLOSED_BY_SERVER: throw new ConnectionClosedException();		
+		case CLOSED_BY_SERVER: throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);		
 		}
 	}
 	
@@ -111,7 +110,12 @@ public class ConnectionImpl implements Connection {
 		try {
 			result = fetchSession(sessionId, null);
 		}
-		catch (SessionExpiredException sex) { } // Okay.
+		catch (SessionExpiredException sex) { } // Return null instead.
+		
+		// if Session wasn't found on the server and the connection is draining,
+		// throw exception rather than return null.
+		if (result == null && status == ConnectionStatus.DRAINING)
+			throw new ConnectionClosedException(ClientUserError.CONNECTION_DRAINING);
 		
 		if (result == null && create) {
 			// Session expired locally, recreate OK => Recreate locally and save to server.
@@ -134,24 +138,26 @@ public class ConnectionImpl implements Connection {
 	}
 	
 	/**
-	 * Get an existing session by session ID from the server, or null if
-	 * the session does not exist on the server.
-	 * @param create
-	 * @param userData
+	 * Get an existing session by session ID from the server.
+	 * If session exists on the server
+	 *   if exists locally then rewrap
+	 *   else create new local session
+	 * else
+	 *   if exists locally then expire, return null.
+	 *   else return null.
+	 *   
 	 * @return
 	 */
 	private SessionImpl fetchSession(String sid, SessionImpl localSession) {
 
 		// Go straight to the server as we may not have it in the client-local cache,
 		// e.g. when we get it from a parallel connection.
-		
 		Payload.Session payload;
 		
 		try {
 			payload = client.server.sessionGet(sid, this);
 		}
 		catch (SessionExpiredException sex) {
-			// Intercept session expired exception and do some housekeeping
 			cache.expire(sid);
 			throw sex;
 		}
@@ -165,7 +171,9 @@ public class ConnectionImpl implements Connection {
 		SessionImpl clientSsn = localSession == null ? (SessionImpl) cache.get(sid) : localSession;
 		
 		if (clientSsn == null) {
+			// New headless session
 			clientSsn = new SessionImpl(this, serverSsn);
+			cache.add(clientSsn);
 		}
 		else {
 			clientSsn.rewrap(serverSsn);
@@ -328,13 +336,14 @@ public class ConnectionImpl implements Connection {
 			throw new ClientException.Internal("Cannot reopen a connection (currently " + this.status + ")");				
 		
 		case DRAINING: 
+			this.status = status;
 			break; // Anything?
 
 		case CLOSED_BY_SERVER:
 			this.status = status;
 			postListeners();
 			destroy();
-			throw new ConnectionClosedException();
+			throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);
 		
 		case CLOSED_BY_CLIENT:
 			this.status = status;

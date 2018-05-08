@@ -53,7 +53,9 @@ public class Server {
 				if (ce.getError() == ServerError.UnknownConnection) {
 					// The server has disposed of this connetion.
 					((ConnectionImpl)conn).setStatus(ConnectionStatus.CLOSED_BY_SERVER);
-					throw new ConnectionClosedException(ce);
+					// Superfluous throw because setStatus() above should throw the same exception,
+					// but without it compiler will complain.
+					throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);
 				}
 				else if (ce.getError() == ServerError.SessionExpired) {
 					throw new SessionExpiredException(ce);

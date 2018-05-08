@@ -125,22 +125,33 @@ public class SessionCache {
 	 * @param sessionId
 	 * @return session object if found, null otherwise.
 	 */
-	public Session get(String sessionId) {
+	public Session get(String sid) {
 		
-		Entry entry = cache.get(sessionId);
-		if (entry != null) {
+		Session result = null;
+		Entry entry = cache.get(sid);
+
+		if (entry == null) {
+			if (LOG.isDebugEnabled()) 
+				LOG.debug("Local cache miss for sid [" + sid + "]");
+		}
+		else {
+			if (LOG.isDebugEnabled()) 
+				LOG.debug("Local cache hit for sid [" + sid + "]");
 			entry.accessTimestamp = System.currentTimeMillis();
 			return entry.session;
 		}
-		return null;
+		return result;
 	}
 		
 	/**
 	 * Expire locally a session that has already expired on the server.
 	 * @param sessionId
 	 */
-	public void expire(String sessionId) {
-		Entry entry = cache.remove(sessionId);
+	public void expire(String sid) {
+		if (LOG.isDebugEnabled()) 
+			LOG.debug("Expiring local session [" + sid + "]");
+
+		Entry entry = cache.remove(sid);
 		if (entry != null) entry.session.expire();
 	}
 	
@@ -152,5 +163,5 @@ public class SessionCache {
 		for (Entry e: cache.values()) {e.session.expire();}
 		cache.clear();
 	}
-	
+
 }

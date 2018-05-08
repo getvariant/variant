@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
+import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.util.Constants;
@@ -85,10 +86,9 @@ public class HttpRemoter {
 				
 			case HttpStatus.SC_BAD_REQUEST:
 				
-				if (LOG.isDebugEnabled()) {
-					LOG.debug("Server status " + result.status + ": " + result.body);
-				}
-				throw result.toClientException();
+				ClientException ce = result.toClientException();
+				if (LOG.isDebugEnabled()) LOG.debug("Server Error " + ce.getMessage());
+				throw ce;
 			
 			default:
 				throw new ClientException.Internal(
@@ -133,7 +133,7 @@ public class HttpRemoter {
 			else if (conn.getStatus() == ConnectionStatus.CLOSED_BY_SERVER) {
 				// Another session flipped this connection to CLOSED_BY_SERVER, after we last checked.
 				// We'll trust the status.
-				throw new ConnectionClosedException();
+				throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);
 			}
 			else {
 				throw new ClientException.Internal(String.format("Unexpected status %s", conn.getStatus()));
@@ -186,10 +186,10 @@ public class HttpRemoter {
 				return result;
 			case HttpStatus.SC_BAD_REQUEST:
 				
-				if (LOG.isDebugEnabled()) {
-					LOG.debug("Server status " + result.status + ": " + result.body);
-				}
-				throw result.toClientException();
+				ClientException ce = result.toClientException();
+				if (LOG.isDebugEnabled()) LOG.debug("Server Error " + ce.getMessage());
+				throw ce;
+
 			default:
 				throw new ClientException.Internal(
 						String.format("Unexpected response from server: [%s %s : %s]",

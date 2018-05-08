@@ -95,8 +95,7 @@ public class StateRequestImpl implements StateRequest {
 		if (isCommitted()) return false;
 		
 		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
-		session.getTargetingTracker().save(userData);
-		session.getSessionIdTracker().save(userData);
+		session.saveTrackers(userData);
 		
 		return conn.client.server.requestCommit(session, conn);
 	}
@@ -135,4 +134,5 @@ public class StateRequestImpl implements StateRequest {
 	public CoreStateRequest getCoreStateRequest() {
 		return coreRequest;
 	}
+	
 }

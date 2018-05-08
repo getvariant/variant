@@ -12,12 +12,8 @@ import com.variant.client.impl.ClientUserError;
 @SuppressWarnings("serial")
 public class ConnectionClosedException extends ClientException.User {
 	
-	public ConnectionClosedException() {
-		super(ClientUserError.CONNECTION_CLOSED);
-	}
-
-	public ConnectionClosedException(ClientException.User e) {
-		super(ClientUserError.CONNECTION_CLOSED, e);
+	public ConnectionClosedException(ClientUserError error) {
+		super(error);
 	}
 
 }

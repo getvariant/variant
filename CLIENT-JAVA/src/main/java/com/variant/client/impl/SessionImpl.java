@@ -10,6 +10,9 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.typesafe.config.Config;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
@@ -35,6 +38,8 @@ import com.variant.core.session.SessionScopedTargetingStabile;
  */
 public class SessionImpl implements Session {
 
+	final private static Logger LOG = LoggerFactory.getLogger(SessionImpl.class);
+	
 	private boolean isExpired = false;
 	
 	private final ConnectionImpl conn;  // Connection which created this session.
@@ -103,8 +108,10 @@ public class SessionImpl implements Session {
 	 */
 	void checkState() {
 		if (isExpired) {
-			if (conn.getStatus() != ConnectionStatus.OPEN)
-				throw new ConnectionClosedException();
+			if (conn.getStatus() == ConnectionStatus.DRAINING)
+				throw new ConnectionClosedException(ClientUserError.CONNECTION_DRAINING);
+			else if (conn.getStatus() != ConnectionStatus.OPEN)
+				throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);
 			else
 				throw new SessionExpiredException();
 		}
@@ -315,18 +322,6 @@ public class SessionImpl implements Session {
 	public void save() {
 		conn.client.server.sessionSave(this);
 	}
-	
-	/**
-	 */
-	public SessionIdTracker getSessionIdTracker() {
-		return sessionIdTracker;
-	}
-
-	/**
-	 */
-	public TargetingTracker getTargetingTracker() {
-		return targetingTracker;
-	}
 
 	/**
 	 */
@@ -336,12 +331,24 @@ public class SessionImpl implements Session {
 	}
 
 	/**
+	 * Save trackers. Headless sessions won't have them.
+	 */
+	public void saveTrackers(Object... userData) {
+		if (targetingTracker != null) targetingTracker.save(userData);
+		if (sessionIdTracker != null) sessionIdTracker.save(userData);
+	}
+
+	/**
 	 * Replace the core session. Recursively replaces the core state request.
 	 */
 	public void rewrap(CoreSession coreSession) {
 		
+		if (LOG.isDebugEnabled()) {
+			LOG.debug(String.format("Rewrapping session ID [%s] in [%s]", getId(), this));
+		}
+		
 		if (coreSession == null) 
-			throw new ClientException.Internal("NULL Core Session");
+			throw new ClientException.Internal("Null Core Session");
 		
 		// The new core session which this object wraps.
 		this.coreSession = (CoreSession) coreSession;
