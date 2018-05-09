@@ -130,7 +130,6 @@ class RequestTest extends BaseSpecWithServer {
             e.getSessionId mustBe sid
             e.getName mustBe StateVisitedEvent.EVENT_NAME
             e.getValue mustBe "state2"
-            e.getCreatedOn.getTime mustBe stateReq.createDate().getTime +- 100
             (e.getEventExperiences.toSet[EventExperienceFromDatabase].map {x => schema.getTest(x.getTestName).getExperience(x.getExperienceName)} 
                mustBe stateReq.getLiveExperiences.toSet)
          }
