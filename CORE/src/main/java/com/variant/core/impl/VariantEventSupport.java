@@ -141,8 +141,13 @@ abstract public class VariantEventSupport implements VariantEvent {
 			}
 		}
 		return result;
-			
-
 	}
 	
+	/**
+	 * 
+	 */
+	@Override
+	public String toString() {
+		return toJson();
+	}
 }

@@ -303,13 +303,12 @@ public class Server {
 				String.format("requestCommit(%s)", ssn.getId()));
 
 		Payload.Session response =  new CommonExceptionHandler<Payload.Session>() {
+			
 			@Override Payload.Session block() throws Exception {
 				StringWriter body = new StringWriter();
 				JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 				jsonGen.writeStartObject();
 				jsonGen.writeStringField("sid", ssn.getId());
-				//jsonGen.writeStringField("cid", connection.getId());
-				//jsonGen.writeStringField("ssn", ssn.toJson());
 				jsonGen.writeEndObject();
 				jsonGen.flush();
 				HttpResponse resp = adapter.put(serverUrl + "request", body.toString(), conn);
@@ -317,7 +316,6 @@ public class Server {
 			}
 		}.run(conn);
 		
-		//System.out.println("*********************\n" + response.toString());  
 		ssn.rewrap(response.session);
 
 		return true;

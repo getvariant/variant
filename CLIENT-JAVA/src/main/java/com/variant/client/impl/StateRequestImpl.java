@@ -40,10 +40,6 @@ public class StateRequestImpl implements StateRequest {
 	//---------------------------------------------------------------------------------------------//
 	//                                            PUBLIC                                           //
 	//---------------------------------------------------------------------------------------------//
-	@Override
-	public Date getCreateDate() {
-		return coreRequest.createDate();
-	}
 
 	@Override
 	public State getState() {
@@ -100,8 +96,12 @@ public class StateRequestImpl implements StateRequest {
 		return conn.client.server.requestCommit(session, conn);
 	}
 
+	/**
+	 * May be committed in a parallel session, so must refresh.
+	 */
 	@Override
 	public boolean isCommitted() {
+		session.refreshFromServer();
 		return session.getCoreSession().getStateRequest().isCommitted();
 	}
 

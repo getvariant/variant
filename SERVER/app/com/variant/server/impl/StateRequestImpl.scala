@@ -39,10 +39,6 @@ class StateRequestImpl(private val session: Session, private val coreReq:CoreSta
 
 	/**
 	 */
-	override def createDate(): Date = coreReq.createDate
-
-	/**
-	 */
 	override def isCommitted(): Boolean = coreReq.isCommitted
 
 	/**

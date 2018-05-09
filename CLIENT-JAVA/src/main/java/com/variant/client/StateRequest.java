@@ -1,6 +1,5 @@
 package com.variant.client;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,14 +37,6 @@ public interface StateRequest {
 	 */
 	State getState();
 	
-	/**
-	 * Creation timestamp.
-     * 
-     *@return Creation timestamp of this state request object.
-	 * @since 0.7
-	 */
-	public Date getCreateDate();
-
 	/**
 	 * The state variant to which this state request resolved at run time. A state request can 
 	 * have either trivial resolution, or resolve to a {@link StateVariant}. Trivial resolution means that all live

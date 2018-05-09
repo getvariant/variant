@@ -5,7 +5,6 @@ import static com.variant.core.ServerError.STATE_NOT_INSTRUMENTED_BY_TEST;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -42,7 +41,6 @@ public class CoreStateRequest implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private final CoreSession session;
-	private final Date createDate = new Date();
 	private final StateImpl state;
 	private StateVariant resolvedStateVariant;
 	private Map<String,String> resolvedParameterMap;
@@ -81,10 +79,6 @@ public class CoreStateRequest implements Serializable {
 
 	public State getState() {
 		return state;
-	}
-
-	public Date createDate() {
-		return createDate;
 	}
 
 	public void commit() {

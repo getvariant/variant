@@ -186,7 +186,7 @@ public class SessionImpl implements Session {
 		if (isExpired) return true;
 		
 		try {
-			conn.refreshSession(this);
+			refreshFromServer();
 		}
 		catch (SessionExpiredException | ConnectionClosedException e) { 
 			isExpired = true; 
@@ -242,7 +242,7 @@ public class SessionImpl implements Session {
 	@Override
 	public Map<State, Integer> getTraversedStates() {
 		checkState();
-		conn.refreshSession(this);
+		refreshFromServer();
 		return coreSession.getTraversedStates();
 	}
 
@@ -252,7 +252,7 @@ public class SessionImpl implements Session {
 	@Override
 	public Set<Test> getTraversedTests() {
 		checkState();
-		conn.refreshSession(this);
+		refreshFromServer();
 		return coreSession.getTraversedTests();
 	}
 
@@ -262,7 +262,7 @@ public class SessionImpl implements Session {
 	@Override
 	public Set<Test> getDisqualifiedTests() {
 		checkState();
-		conn.refreshSession(this);
+		refreshFromServer();
 		return coreSession.getDisqualifiedTests();
 	}
 
@@ -302,7 +302,7 @@ public class SessionImpl implements Session {
 	public String getAttribute(String name) {
 		if (name == null) throw new ClientException.User("Name cannot be null");
 		checkState();
-		conn.refreshSession(this);
+		refreshFromServer();
 		return coreSession.getAttribute(name);
 	}
 
@@ -375,4 +375,10 @@ public class SessionImpl implements Session {
 		isExpired = true;
 	}
 
+	/**
+	 * Refresh this session from server.
+	 */
+	public void refreshFromServer() {
+		conn.refreshSession(this);
+	}
 }

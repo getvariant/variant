@@ -39,14 +39,6 @@ public interface StateRequest {
 	State getState();
 
 	/**
-	 * Creation timestamp.
-     * 
-     *@return Creation timestamp of this state request object.
-	 * @since 0.7
-	 */
-	Date createDate();
-
-	/**
 	 * Has this state request been committed?
      * 
      *@return true if this request has ben committed, or false otherwise.
