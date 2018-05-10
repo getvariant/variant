@@ -9,11 +9,11 @@ import static org.junit.Assert.assertNull;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.Connection.LifecycleListener;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.VariantClientImpl;
+import com.variant.client.lce.ConnectionLifecycleEvent;
 import com.variant.core.ServerError;
 
 /**
@@ -187,9 +187,14 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			
 			@Override public void toRun() {
 				conn.registerLifecycleListener(
-						new LifecycleListener() {							
-							@Override
-							public void onClosed(Connection connection) {}
+						new ConnectionLifecycleEvent.Listener() {
+							
+							@Override public Class<? extends ConnectionLifecycleEvent> getEventClass() {
+								return ConnectionLifecycleEvent.Closed.class;
+							}
+
+							@Override public void post(ConnectionLifecycleEvent event) {}
+
 						});
 			}
 			@Override public void onThrown(ClientException.User e) {

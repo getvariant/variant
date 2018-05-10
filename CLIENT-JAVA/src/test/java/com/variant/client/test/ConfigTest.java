@@ -1,6 +1,8 @@
 package com.variant.client.test;
 
-import static com.variant.client.ConfigKeys.*;
+import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
+import static com.variant.client.ConfigKeys.TARGETING_STABILITY_DAYS;
+import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;

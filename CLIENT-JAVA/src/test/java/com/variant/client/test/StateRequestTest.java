@@ -17,7 +17,6 @@ import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
-import com.variant.client.impl.StateRequestImpl;
 import com.variant.core.ServerError;
 import com.variant.core.VariantEvent;
 import com.variant.core.impl.StateVisitedEvent;

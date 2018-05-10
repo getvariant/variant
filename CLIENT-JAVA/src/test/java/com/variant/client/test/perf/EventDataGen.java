@@ -1,9 +1,9 @@
 package com.variant.client.test.perf;
 
 
-import java.util.Random;
+import static org.junit.Assert.assertNotNull;
 
-import static org.junit.Assert.*;
+import java.util.Random;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;

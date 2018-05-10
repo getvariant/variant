@@ -16,6 +16,7 @@ import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.VariantClient;
+import com.variant.client.lce.ConnectionLifecycleEvent;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
 import com.variant.core.ConnectionStatus;
@@ -36,8 +37,8 @@ public class ConnectionImpl implements Connection {
 	final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
 
 	// Listeners
-	final private LinkedHashSet<LifecycleListener> lifecycleListeners = 
-			new LinkedHashSet<LifecycleListener>();
+	final private LinkedHashSet<ConnectionLifecycleEvent.Listener> lifecycleListeners = 
+			new LinkedHashSet<ConnectionLifecycleEvent.Listener>();
 
 	/**
 	 * Is this connection still valid?
@@ -219,13 +220,26 @@ public class ConnectionImpl implements Connection {
 	 * Post life cycle listeners
 	 */
 	private void postListeners() {
-		final Connection target = this;
+
 		new Runnable() {
 			
 			@Override public void run() {
-				for (LifecycleListener l: lifecycleListeners) {
+				for (ConnectionLifecycleEvent.Listener listener: lifecycleListeners) {
+					
 					try {
-						l.onClosed(target);
+						listener.post(
+								new ConnectionLifecycleEvent.Closed() {									
+									
+									@Override public Connection getConnection() {
+										return ConnectionImpl.this;
+									}
+
+									
+									//@Override 
+									public Class<ConnectionLifecycleEvent> getEventClass() {
+										return this.getEventClass();
+									}
+								});
 					}
 					catch (Throwable t) {
 						LOG.error(ClientUserError.CONNECTION_LIFECYCLE_LISTENER_EXCEPTION.asMessage(this.getClass().getName()), t);
@@ -303,7 +317,7 @@ public class ConnectionImpl implements Connection {
 	}
 
 	@Override
-	public void registerLifecycleListener(LifecycleListener listener) {
+	public void registerLifecycleListener(ConnectionLifecycleEvent.Listener listener) {
 		preChecks();
 		lifecycleListeners.add(listener);
 	}

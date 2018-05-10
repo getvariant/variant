@@ -14,13 +14,14 @@
            and copy them to variant-server-extapi/lib as dependencies for ExtAPI.
    *** improvement: have release.sh also copy core and java client jars to variant-pub/variant-java-servlet-adapter/lib ***
          • cd variant-pub/VARIANT-SERVER-EXTAPI
+         • rm old dependencies from lib/
          • install the extAPI jar into local maven:
-           $ mvn install:install-file -Dfile=lib/variant-server-extapi-0.8.0.jar -DgroupId=com.variant \
-                -DartifactId=variant-server-extapi -Dversion=0.8.0 -Dpackaging=jar
+           $ mvn install:install-file -Dfile=lib/variant-server-extapi-0.8.1.jar -DgroupId=com.variant \
+                -DartifactId=variant-server-extapi -Dversion=0.8.1 -Dpackaging=jar
          • Build the custom objects for the demo app target/server-extapi-custom-<release>.jar:
            $ mvn clean package 
-         • $ cp target/variant-extapi-custom-0.8.0.jar ../../variant/SERVER/distr/ext/variant-extapi-demo-0.8.0.jar
-         
+         • $ cp target/variant-extapi-custom-0.8.1.jar ../../variant/SERVER/distr/ext/variant-extapi-demo-0.8.1.jar
+         • remove old extapi jar from SERVER/distr/ext/
 
     2.2. Confirm the latest variant-extapi-demo-<release>.jar made it to the SERVER project and 
          that it does not brake the server.

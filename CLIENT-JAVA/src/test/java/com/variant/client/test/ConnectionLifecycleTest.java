@@ -14,6 +14,7 @@ import com.variant.client.Session;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
+import com.variant.client.lce.ConnectionLifecycleEvent;
 import com.variant.client.test.util.ClientLogTailer;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.util.IoUtils;
@@ -43,26 +44,58 @@ public class ConnectionLifecycleTest extends ClientBaseTestWithServer {
 
 		// Life cycle Listener
 		conn.registerLifecycleListener(
-				(Connection connection) -> {
-					count.increment();  // Will be posted
-					assertEquals(ConnectionStatus.CLOSED_BY_CLIENT, connection.getStatus());
-					assertEquals(conn, connection);
-		});
+				new ConnectionLifecycleEvent.Listener() {
+					
+					@Override public Class<? extends ConnectionLifecycleEvent> getEventClass() {
+						return ConnectionLifecycleEvent.Closed.class;
+					}
+
+					@Override public void post(ConnectionLifecycleEvent event) {
+						count.increment();  // Will be posted
+						Connection conn = event.getConnection();
+						assertEquals(ConnectionStatus.CLOSED_BY_CLIENT, conn.getStatus());
+						assertEquals(conn, conn);						
+					}
+
+				});
 
 		// Another, which throws an exception.
 		conn.registerLifecycleListener(
-				(Connection connection) -> {
-					throw new RuntimeException("Runtime Exception");
-		});
+				new ConnectionLifecycleEvent.Listener() {
+					
+					@Override public Class<? extends ConnectionLifecycleEvent> getEventClass() {
+						return ConnectionLifecycleEvent.Closed.class;
+					}
+
+					@Override public void post(ConnectionLifecycleEvent event) {
+						throw new RuntimeException("Runtime Exception");					}
+				});
 
 		conn.registerLifecycleListener(
-				(Connection connection) -> {
-					count.increment(); // Will be posted
-					connection.registerLifecycleListener(  // Will throw exception
-							(Connection connection2) -> {
-								 // Nothing
-					});
-		});
+				new ConnectionLifecycleEvent.Listener() {
+					
+					@Override public Class<? extends ConnectionLifecycleEvent> getEventClass() {
+						return ConnectionLifecycleEvent.Closed.class;
+					}
+
+					@Override public void post(ConnectionLifecycleEvent event) {
+						
+						count.increment(); // Will be posted
+						
+						event.getConnection().registerLifecycleListener(  // Will throw exception
+								
+								new ConnectionLifecycleEvent.Listener() {
+									
+									@Override public Class<? extends ConnectionLifecycleEvent> getEventClass() {
+										return ConnectionLifecycleEvent.Closed.class;
+									}
+
+									@Override public void post(ConnectionLifecycleEvent event) {}												
+
+								});
+						}
+				});
+
 		
 		conn.close();
 		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
@@ -86,37 +119,65 @@ public class ConnectionLifecycleTest extends ClientBaseTestWithServer {
 		Session ssn = conn.getOrCreateSession(newSid());
 		
 		MutableInteger count = new MutableInteger(0);
-
+		
 		// Life cycle Listener
 		conn.registerLifecycleListener(
-				(Connection connection) -> {
-					count.increment();  // Will be posted
-					assertEquals(ConnectionStatus.CLOSED_BY_CLIENT, connection.getStatus());
-					assertEquals(conn, connection);
-		});
+				new ConnectionLifecycleEvent.Listener() {
+					
+					@Override public Class<? extends ConnectionLifecycleEvent> getEventClass() {
+						return ConnectionLifecycleEvent.Closed.class;
+					}
+
+					@Override public void post(ConnectionLifecycleEvent event) {
+						Connection conn = event.getConnection();
+						count.increment();  // Will be posted
+						assertEquals(ConnectionStatus.CLOSED_BY_CLIENT, conn.getStatus());
+						assertEquals(conn, conn);
+					}
+
+				});
 
 		// Another, which throws an exception.
 		conn.registerLifecycleListener(
-				(Connection connection) -> {
-					throw new RuntimeException("Runtime Exception");
-		});
+				new ConnectionLifecycleEvent.Listener() {
+					
+					@Override public Class<? extends ConnectionLifecycleEvent> getEventClass() {
+						return ConnectionLifecycleEvent.Closed.class;
+					}
+
+					@Override public void post(ConnectionLifecycleEvent event) {
+						throw new RuntimeException("Runtime Exception");					}
+				});
 
 		conn.registerLifecycleListener(
-				(Connection connection) -> {
-					count.increment(); // Will be posted
-					connection.registerLifecycleListener(  // Will throw exception
-							(Connection connection2) -> {
-								 // Nothing
-					});
-		});
-		
+				new ConnectionLifecycleEvent.Listener() {
+					
+					@Override public Class<? extends ConnectionLifecycleEvent> getEventClass() {
+						return ConnectionLifecycleEvent.Closed.class;
+					}
+
+					@Override public void post(ConnectionLifecycleEvent event) {
+						
+						count.increment(); // Will be posted
+						
+						event.getConnection().registerLifecycleListener(  // Will throw exception
+								
+								new ConnectionLifecycleEvent.Listener() {
+									
+									@Override public Class<? extends ConnectionLifecycleEvent> getEventClass() {
+										return ConnectionLifecycleEvent.Closed.class;
+									}
+
+									@Override public void post(ConnectionLifecycleEvent event) {}												
+
+								});
+						}
+				});
 
 	    IoUtils.fileCopy("schemata-remote/big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		assertEquals(OPEN, conn.getStatus());
-		
-		//System.out.println("**************** " + ssn.isExpired());
 		
 		new ClientUserExceptionInterceptor() {
 			

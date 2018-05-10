@@ -1,5 +1,6 @@
 package com.variant.client;
 
+import com.variant.client.lce.ConnectionLifecycleEvent;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.schema.Schema;
 
@@ -163,30 +164,12 @@ public interface Connection {
 	void close();
 
 	/**
-	 * Register a life cycle listener. If multiple listeners have been registered with a
-	 * connection, they will be posted serially, but the order of their invocation is undefined.
+	 * Register a connection life cycle listener. If multiple listeners have been registered with a
+	 * connection, they will be posted asynchronously and serially, but the order of their invocation is undefined.
 	 * 
 	 * @param listener
 	 * @since 0.8
 	 */
-	void registerLifecycleListener(LifecycleListener listener);
-
-	/**
-	 * Interface to be implemented by a connection life cycle listener class, whose instance can
-	 * be passed to {@link Connection#registerLifecycleListener(LifecycleListener)}.
-	 * 
-	 * @since 0.8
-	 */
-	public interface LifecycleListener {
-	   /**
-	    * Variant will call this method whenever the status of the target connection goes from
-	    * OPEN to either CLOSED_BY_CLIENT, or CLOSED_BY_SERVER. If this code throws an exception,
-	    * it will be reported in the application log only. 
-	    * 
-	    * @since 0.8
-	    * @param connection: The target connection object.
-	    */
-	   public void onClosed(Connection connection);
-	}
+	void registerLifecycleListener(ConnectionLifecycleEvent.Listener listener);
 
 }
