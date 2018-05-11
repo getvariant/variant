@@ -35,7 +35,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void noStabilTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -117,7 +117,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void deterministicTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");
@@ -167,7 +167,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void commitTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");
@@ -219,7 +219,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -250,7 +250,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	/**
 	 * Session expires too soon. See bug https://github.com/getvariant/variant/issues/67
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void connectionClosedLocallyTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");		
@@ -282,7 +282,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	 * Petclinic schema defines a qual and a targeting hook which will fail,
 	 * unless we create some session attributes.
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void targetingHookExceptionTest() {
 		
 		Connection conn = client.getConnection("petclinic");		

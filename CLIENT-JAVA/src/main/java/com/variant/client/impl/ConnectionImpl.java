@@ -4,7 +4,9 @@ import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
 
 import java.util.LinkedHashSet;
+import java.util.Queue;
 import java.util.Random;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +18,10 @@ import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.VariantClient;
+import com.variant.client.lce.ConnectionClosed;
 import com.variant.client.lce.ConnectionLifecycleEvent;
+import com.variant.client.lce.LifecycleEvent;
+import com.variant.client.lce.UserHook;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
 import com.variant.core.ConnectionStatus;
@@ -37,9 +42,13 @@ public class ConnectionImpl implements Connection {
 	final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
 
 	// Listeners
-	final private LinkedHashSet<ConnectionLifecycleEvent.Listener> lifecycleListeners = 
-			new LinkedHashSet<ConnectionLifecycleEvent.Listener>();
+	final private LinkedHashSet<UserHook<? extends LifecycleEvent>> lcHooks = 
+			new LinkedHashSet<UserHook<? extends LifecycleEvent>>();
 
+	// For the benefit of tests, we maintain exceptions thrown asynchronously by lce listeners.
+	final private LinkedBlockingQueue<Throwable> asyncExceptions = 
+			new LinkedBlockingQueue<Throwable>(10);
+				
 	/**
 	 * Is this connection still valid?
 	 * @return
@@ -219,30 +228,30 @@ public class ConnectionImpl implements Connection {
 	/**
 	 * Post life cycle listeners
 	 */
+    @SuppressWarnings("unchecked")
 	private void postListeners() {
 
 		new Runnable() {
 			
 			@Override public void run() {
-				for (ConnectionLifecycleEvent.Listener listener: lifecycleListeners) {
+				
+				for (UserHook<? extends LifecycleEvent> hook: lcHooks) {
 					
 					try {
-						listener.post(
-								new ConnectionLifecycleEvent.Closed() {									
+						((UserHook<LifecycleEvent>)hook).post(
+								
+								new ConnectionClosed() {
 									
 									@Override public Connection getConnection() {
 										return ConnectionImpl.this;
 									}
-
-									
-									//@Override 
-									public Class<ConnectionLifecycleEvent> getEventClass() {
-										return this.getEventClass();
-									}
 								});
 					}
 					catch (Throwable t) {
-						LOG.error(ClientUserError.CONNECTION_LIFECYCLE_LISTENER_EXCEPTION.asMessage(this.getClass().getName()), t);
+						asyncExceptions.add(t);
+						LOG.error(
+								ClientUserError.LIFECYCLE_LISTENER_EXCEPTION
+									.asMessage(t.getMessage(), this.getClass().getName()), t);
 					}
 				}
 			}
@@ -317,9 +326,9 @@ public class ConnectionImpl implements Connection {
 	}
 
 	@Override
-	public void registerLifecycleListener(ConnectionLifecycleEvent.Listener listener) {
+	public void addLifecycleHook(UserHook<? extends LifecycleEvent> hook) {
 		preChecks();
-		lifecycleListeners.add(listener);
+		lcHooks.add(hook);
 	}
 
 	@Override
@@ -376,5 +385,12 @@ public class ConnectionImpl implements Connection {
 	public SessionCache getSessionCache() {
 		return cache;
 	}
-		
+
+	/**
+	 * This is how tests can get a hold of exceptions thrown by lifecycle event listeners.
+	 * @return
+	 */
+	public Queue<Throwable> getAsyncExceptions() {
+		return asyncExceptions;
+	}
 }

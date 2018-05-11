@@ -39,8 +39,8 @@ public class ClientUserError extends CommonError {
 	public static final ClientUserError ACTIVE_REQUEST =
 			new ClientUserError(276, "Commit current state request first");
 
-	public static final ClientUserError CONNECTION_LIFECYCLE_LISTENER_EXCEPTION =
-			new ClientUserError(277, "Unhandled exception in connection lifecycle listener [%s]");
+	public static final ClientUserError LIFECYCLE_LISTENER_EXCEPTION =
+			new ClientUserError(277, "Unhandled exception [%s] in lifecycle listener class [%s]");
 
    /**
     * 

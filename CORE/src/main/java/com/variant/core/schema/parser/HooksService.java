@@ -18,16 +18,6 @@ public interface HooksService {
 	void initHook(Hook hook, ParserResponse parserResponse);
 	
 	/**
-	 * Add a test-bound user hook to this hooker.
-	 *
-	void addHook(UserHook<? extends LifecycleEvent> hook, Test test);
-
-	/**
-	 * Remove all user hooks. 
-	 *
-	void clear();
-
-	/**
 	 * Post all hooks for a particular LCE type. This triggers post of all event types
 	 * assignable to the passed type, i.e. all of its subtypes.
 	 * 

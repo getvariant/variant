@@ -13,7 +13,8 @@ import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.client.lce.ConnectionLifecycleEvent;
+import com.variant.client.lce.ConnectionClosed;
+import com.variant.client.lce.UserHook;
 import com.variant.core.ServerError;
 
 /**
@@ -183,17 +184,18 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			
 		}.assertThrown(ConnectionClosedException.class);
 
+		// Can't register hook on a closed conn
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				conn.registerLifecycleListener(
-						new ConnectionLifecycleEvent.Listener() {
+				conn.addLifecycleHook(
+						new UserHook<ConnectionClosed>() {
 							
-							@Override public Class<? extends ConnectionLifecycleEvent> getEventClass() {
-								return ConnectionLifecycleEvent.Closed.class;
+							@Override public Class<ConnectionClosed> getLifecycleEventClass() {
+								return ConnectionClosed.class;
 							}
 
-							@Override public void post(ConnectionLifecycleEvent event) {}
+							@Override public void post(ConnectionClosed event) {}
 
 						});
 			}
@@ -203,7 +205,6 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			
 		}.assertThrown(ConnectionClosedException.class);
 		
-
 	}	
 
 	/**
