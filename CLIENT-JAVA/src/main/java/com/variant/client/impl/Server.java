@@ -158,18 +158,8 @@ public class Server {
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				//try {
-					HttpResponse resp = adapter.get(serverUrl + "session", body, conn);
-					return Payload.Session.fromResponse(conn, resp);
-				//}
-				/*
-				catch (ClientException.User ue) {
-					// If the server is saying the session wasn't there, this method
-					// should simply return null.
-					if (ue.getError() == ServerError.SessionExpired) return null;
-					else throw ue;
-				}
-				*/
+				HttpResponse resp = adapter.get(serverUrl + "session", body, conn);
+				return Payload.Session.fromResponse(conn, resp);
 			}
 		}.run(conn);
 	}

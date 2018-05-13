@@ -4,12 +4,7 @@ import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
 
 import java.util.LinkedHashSet;
-import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
@@ -19,7 +14,6 @@ import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.VariantClient;
 import com.variant.client.lce.ConnectionClosed;
-import com.variant.client.lce.ConnectionLifecycleEvent;
 import com.variant.client.lce.LifecycleEvent;
 import com.variant.client.lce.UserHook;
 import com.variant.client.net.Payload;
@@ -38,16 +32,6 @@ import com.variant.core.util.StringUtils;
  * @author Igor
  */
 public class ConnectionImpl implements Connection {
-
-	final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
-
-	// Listeners
-	final private LinkedHashSet<UserHook<? extends LifecycleEvent>> lcHooks = 
-			new LinkedHashSet<UserHook<? extends LifecycleEvent>>();
-
-	// For the benefit of tests, we maintain exceptions thrown asynchronously by lce listeners.
-	final private LinkedBlockingQueue<Throwable> asyncExceptions = 
-			new LinkedBlockingQueue<Throwable>(10);
 				
 	/**
 	 * Is this connection still valid?
@@ -191,13 +175,22 @@ public class ConnectionImpl implements Connection {
 		return clientSsn;	
 	}
 
+	// Lifecycle hooks have package visibility because accessed by HooksService.
+	final LinkedHashSet<UserHook<? extends LifecycleEvent>> lifecycleHooks = 
+			new LinkedHashSet<UserHook<? extends LifecycleEvent>>();
+
+	// Session cache has package visibilithy because accessed by HooksService.
+	final SessionCache cache;
+
+
+	//final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
+
 
 	private static final Random RAND = new Random(System.currentTimeMillis());
 	
 	private final String id;
 	private final long sessionTimeoutMillis;
 	private final long timestamp;
-	private final SessionCache cache;
 	private final Schema schema;
 	private ConnectionStatus status = null;
 
@@ -213,7 +206,7 @@ public class ConnectionImpl implements Connection {
 		id = payload.id;
 		timestamp = payload.timestamp;
 		sessionTimeoutMillis = payload.sessionTimeout * 1000;
-		cache = new SessionCache();
+		cache = new SessionCache(this);
 		
 		ParserResponse resp = new ClientSchemaParser().parse(payload.schemaSrc);
 		if (resp.hasMessages(Severity.ERROR)) {
@@ -223,39 +216,6 @@ public class ConnectionImpl implements Connection {
 		}
 		status = ConnectionStatus.OPEN;
 		schema = new SchemaImpl(payload.schemaId, resp.getSchema());
-	}
-	
-	/**
-	 * Post life cycle listeners
-	 */
-    @SuppressWarnings("unchecked")
-	private void postListeners() {
-
-		new Runnable() {
-			
-			@Override public void run() {
-				
-				for (UserHook<? extends LifecycleEvent> hook: lcHooks) {
-					
-					try {
-						((UserHook<LifecycleEvent>)hook).post(
-								
-								new ConnectionClosed() {
-									
-									@Override public Connection getConnection() {
-										return ConnectionImpl.this;
-									}
-								});
-					}
-					catch (Throwable t) {
-						asyncExceptions.add(t);
-						LOG.error(
-								ClientUserError.LIFECYCLE_LISTENER_EXCEPTION
-									.asMessage(t.getMessage(), this.getClass().getName()), t);
-					}
-				}
-			}
-		}.run();
 	}
 	
 	/**
@@ -282,7 +242,7 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public VariantClient getClient() {
-		preChecks();
+		//preChecks(); We need to call this while raising connection closed LCE.
 		return client;
 	}
 
@@ -328,7 +288,7 @@ public class ConnectionImpl implements Connection {
 	@Override
 	public void addLifecycleHook(UserHook<? extends LifecycleEvent> hook) {
 		preChecks();
-		lcHooks.add(hook);
+		lifecycleHooks.add(hook);
 	}
 
 	@Override
@@ -364,14 +324,14 @@ public class ConnectionImpl implements Connection {
 
 		case CLOSED_BY_SERVER:
 			this.status = status;
-			postListeners();
 			destroy();
+			client.lceService.raiseEvent(ConnectionClosed.class, this);
 			throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);
 		
 		case CLOSED_BY_CLIENT:
 			this.status = status;
-			postListeners();
 			destroy();
+			client.lceService.raiseEvent(ConnectionClosed.class, this);
 			break;
 			
 		default: 
@@ -386,11 +346,4 @@ public class ConnectionImpl implements Connection {
 		return cache;
 	}
 
-	/**
-	 * This is how tests can get a hold of exceptions thrown by lifecycle event listeners.
-	 * @return
-	 */
-	public Queue<Throwable> getAsyncExceptions() {
-		return asyncExceptions;
-	}
 }

@@ -185,7 +185,6 @@ public class HttpRemoter {
 			case HttpStatus.SC_OK:
 				return result;
 			case HttpStatus.SC_BAD_REQUEST:
-				
 				ClientException ce = result.toClientException();
 				if (LOG.isDebugEnabled()) LOG.debug("Server Error " + ce.getMessage());
 				throw ce;

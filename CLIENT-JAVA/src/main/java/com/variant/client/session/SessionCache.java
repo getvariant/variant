@@ -1,12 +1,17 @@
 package com.variant.client.session;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.impl.SessionImpl;
+import com.variant.core.util.immutable.ImmutableList;
 
 /**
  * Keep track of all sessions in a client instance in order to provide idempotency of the getSession() call.
@@ -89,7 +94,9 @@ public class SessionCache {
 	//private final long sessionTimeoutMillis;
 	//private final long vacuumInterval;
 	
-	private ConcurrentHashMap<String, Entry> cache = new ConcurrentHashMap<String, Entry>();
+	private final ConcurrentHashMap<String, Entry> cache = new ConcurrentHashMap<String, Entry>();
+	private final Connection conn;
+	
 	// private VacuumThread vacuumThread;
 
 	// ---------------------------------------------------------------------------------------------//
@@ -99,7 +106,8 @@ public class SessionCache {
 	/**
 	 * 
 	 */
-	public SessionCache() {
+	public SessionCache(Connection conn) {
+		this.conn = conn;
 	/*
 		this.sessionTimeoutMillis = sessionTimeoutMillis;
 		// Vacuum therad wakes up no less frequently than 30 seconds, but more frequently for tests,
@@ -110,6 +118,15 @@ public class SessionCache {
 		vacuumThread.setName(VacuumThread.class.getSimpleName());
 		vacuumThread.start();
 	 */
+	}
+	
+	/**
+	 * All sessions in this cache as an immutable list.
+	 * @return
+	 */
+	public List<SessionImpl> allSessions() {
+		List<SessionImpl> result = cache.values().stream().map(e -> e.session).collect(Collectors.toList());
+		return new ImmutableList<SessionImpl>(result);
 	}
 	
 	/**
@@ -142,7 +159,7 @@ public class SessionCache {
 		}
 		return result;
 	}
-		
+	
 	/**
 	 * Expire locally a session that has already expired on the server.
 	 * @param sessionId
@@ -162,6 +179,7 @@ public class SessionCache {
 		//vacuumThread.interrupt();
 		for (Entry e: cache.values()) {e.session.expire();}
 		cache.clear();
+		LOG.debug("Doestroyed session cache for connection [" + conn.getId() + "]");
 	}
 
 }

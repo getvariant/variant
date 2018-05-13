@@ -5,8 +5,10 @@ import static com.variant.core.ConnectionStatus.CLOSED_BY_SERVER;
 import static com.variant.core.ConnectionStatus.OPEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Queue;
+import java.util.HashSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
@@ -14,10 +16,13 @@ import com.variant.client.Session;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
+import com.variant.client.impl.LifecycleEventService;
+import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.lce.ConnectionClosed;
-import com.variant.client.lce.ConnectionLifecycleEvent;
+import com.variant.client.lce.SessionExpired;
 import com.variant.client.lce.UserHook;
 import com.variant.core.ConnectionStatus;
+import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.IoUtils;
 import com.variant.core.util.MutableInteger;
 
@@ -25,10 +30,12 @@ import com.variant.core.util.MutableInteger;
  * Test connections of a cold-deployed schemata.
  *
  */
-public class LifecycleEventTest extends ClientBaseTestWithServer {
+public class LifecycleHookTest extends ClientBaseTestWithServer {
 	
 	// Sole client
 	private VariantClient client = VariantClient.Factory.getInstance();		
+	
+	private LifecycleEventService lceService = ((VariantClientImpl)client).lceService; 
 	
 	/**
 	 * Session Expiration
@@ -36,9 +43,33 @@ public class LifecycleEventTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		Connection conn = client.getConnection("big_covar_schema");
+		
+		HashSet<String> hookPosts = new HashSet<String>();
+	
+		// Connection-level SessionExpired Hook
+		conn.addLifecycleHook(
+				new UserHook<SessionExpired>() {
+					
+					@Override public Class<SessionExpired> getLifecycleEventClass() {
+						return SessionExpired.class;
+					}
+
+					@Override public void post(SessionExpired event) {
+						assertEquals(conn, event.getSession().getConnection());
+						assertTrue(event.getSession().isExpired());
+						hookPosts.add(event.getSession().getId());
+					}
+
+				});
+
 		Session ssn = conn.getOrCreateSession(newSid());
 
 		Thread.sleep(ssn.getTimeoutMillis());
+		assertTrue(hookPosts.isEmpty());
+		assertTrue(ssn.isExpired());
+		assertEqualAsSets(CollectionsUtils.set(ssn.getId()), hookPosts);
+
+		
 	}
 
 	/**
@@ -50,9 +81,9 @@ public class LifecycleEventTest extends ClientBaseTestWithServer {
 		Connection conn = client.getConnection("big_covar_schema");
 		Session ssn = conn.getOrCreateSession(newSid());
 		
-		MutableInteger count = new MutableInteger(0);
+		AtomicInteger count = new AtomicInteger(0);
 
-		// Life cycle Listener
+		// ConnectionClosed Hook
 		conn.addLifecycleHook(
 				new UserHook<ConnectionClosed>() {
 					
@@ -61,10 +92,10 @@ public class LifecycleEventTest extends ClientBaseTestWithServer {
 					}
 
 					@Override public void post(ConnectionClosed event) {
-						count.increment();  // Will be posted
+						count.incrementAndGet();  // Will be posted
 						Connection conn = event.getConnection();
 						assertEquals(ConnectionStatus.CLOSED_BY_CLIENT, conn.getStatus());
-						assertEquals(conn, conn);						
+						assertEquals(conn, event.getConnection());						
 					}
 
 				});
@@ -90,7 +121,7 @@ public class LifecycleEventTest extends ClientBaseTestWithServer {
 
 					@Override public void post(ConnectionClosed event) {
 						
-						count.increment(); // Will be posted
+						count.incrementAndGet(); // Will be posted
 						
 						event.getConnection().addLifecycleHook(  // Will throw exception
 								
@@ -100,7 +131,9 @@ public class LifecycleEventTest extends ClientBaseTestWithServer {
 										return ConnectionClosed.class;
 									}
 
-									@Override public void post(ConnectionClosed event) {}												
+									@Override public void post(ConnectionClosed event) {
+										count.incrementAndGet();  // should not get here!
+									}												
 
 								});
 						}
@@ -110,19 +143,20 @@ public class LifecycleEventTest extends ClientBaseTestWithServer {
 		conn.close();
 		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
 		assertNull(((ConnectionImpl)conn).getSessionCache().get(ssn.getId()));
-		assertEquals(2, count.intValue());
 		
-		Queue<Throwable> asyncExceptions = ((ConnectionImpl)conn).getAsyncExceptions();
-		assertEquals(2, asyncExceptions.size());
-		assertEquals("Foobar", asyncExceptions.poll().getMessage());
-		assertEquals(ClientUserError.CONNECTION_CLOSED.asMessage(), asyncExceptions.poll().getMessage());
+		lceService.awaitAll();
+		
+		assertEquals(2, count.intValue());
+		assertEquals(2, lceService.asyncExceptions.size());
+		assertEquals("Foobar", lceService.asyncExceptions.poll().getMessage());
+		assertEquals(ClientUserError.CONNECTION_CLOSED.asMessage(), lceService.asyncExceptions.poll().getMessage());
 
 	}	
 	
 	/**
 	 * closed by server
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void connectionClosedByServerTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");
@@ -130,7 +164,7 @@ public class LifecycleEventTest extends ClientBaseTestWithServer {
 		
 		MutableInteger count = new MutableInteger(0);
 		
-		// Life cycle Listener
+		// ConnectionClosed Hook
 		conn.addLifecycleHook(
 				new UserHook<ConnectionClosed>() {
 					
@@ -142,7 +176,7 @@ public class LifecycleEventTest extends ClientBaseTestWithServer {
 						Connection conn = event.getConnection();
 						count.increment();  // Will be posted
 						assertEquals(ConnectionStatus.CLOSED_BY_SERVER, conn.getStatus());
-						assertEquals(conn, conn);
+						assertEquals(conn, event.getConnection());
 					}
 
 				});
@@ -178,7 +212,9 @@ public class LifecycleEventTest extends ClientBaseTestWithServer {
 										return ConnectionClosed.class;
 									}
 
-									@Override public void post(ConnectionClosed event) {}												
+									@Override public void post(ConnectionClosed event) {
+										count.increment();  // should not get here!
+									}												
 
 								});
 						}
@@ -196,13 +232,15 @@ public class LifecycleEventTest extends ClientBaseTestWithServer {
 			}
 			
 		}.assertThrown(ConnectionClosedException.class);
-	
-		Queue<Throwable> asyncExceptions = ((ConnectionImpl)conn).getAsyncExceptions();
-		assertEquals(2, asyncExceptions.size());
-		assertEquals("Foobar", asyncExceptions.poll().getMessage());
-		assertEquals(ClientUserError.CONNECTION_CLOSED.asMessage(), asyncExceptions.poll().getMessage());
-		
+	    
 		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
+
+		lceService.awaitAll();
+		
+		assertEquals(2, lceService.asyncExceptions.size());
+		assertEquals("Foobar", lceService.asyncExceptions.poll().getMessage());
+		assertEquals(ClientUserError.CONNECTION_CLOSED.asMessage(), lceService.asyncExceptions.poll().getMessage());
+		
 		assertNull(((ConnectionImpl)conn).getSessionCache().get(ssn.getId()));
 		assertEquals(2, count.intValue());
 	

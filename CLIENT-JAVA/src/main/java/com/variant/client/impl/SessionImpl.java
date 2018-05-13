@@ -22,6 +22,7 @@ import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
+import com.variant.client.lce.SessionExpired;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.VariantEvent;
@@ -372,7 +373,9 @@ public class SessionImpl implements Session {
 	 * Expire this session object.
 	 */
 	public void expire() {
+		LOG.debug("Expired session [" + getId() + "]");
 		isExpired = true;
+		((VariantClientImpl)conn.getClient()).lceService.raiseEvent(SessionExpired.class, this);
 	}
 
 	/**
