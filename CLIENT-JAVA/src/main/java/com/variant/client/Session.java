@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.typesafe.config.Config;
+import com.variant.client.lifecycle.LifecycleEvent;
+import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -226,4 +228,16 @@ public interface Session {
 	 * @since 0.7
 	 */
 	public String clearAttribute(String name);
+	
+	/**
+	 * Register a connection-level life-cycle hook. Hooks are posted asynchronously.
+	 * If multiple hooks are registered for a particular life-cycle event, connection-specific
+	 * hooks are posted first, followed by connection-specific hooks.  
+	 * order is undefined.
+	 * 
+	 * @param An implementation of {@link Lifecycle}
+	 * @since 0.8
+	 */
+	void addLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook);
+
 }

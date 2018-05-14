@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.typesafe.config.Config;
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
+import com.variant.client.lifecycle.LifecycleService;
 import com.variant.core.conf.ConfigLoader;
 
 /**
@@ -20,7 +21,7 @@ public class VariantClientImpl implements VariantClient {
 	private final ConnectionFactory connFactory = new ConnectionFactory(this);
 	private final ConcurrentHashMap<String, Connection> connMap = new ConcurrentHashMap<String, Connection>();
 	
-	public final LifecycleEventService lceService = new LifecycleEventService(this);
+	public final LifecycleService lceService = new LifecycleService(this);
 	public final Server server;
 		
 	//---------------------------------------------------------------------------------------------//

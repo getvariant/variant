@@ -1,7 +1,7 @@
 package com.variant.client;
 
-import com.variant.client.lce.UserHook;
-import com.variant.client.lce.LifecycleEvent;
+import com.variant.client.lifecycle.LifecycleEvent;
+import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.schema.Schema;
 
@@ -165,12 +165,14 @@ public interface Connection {
 	void close();
 
 	/**
-	 * Register a connection life cycle listener. If multiple listeners have been registered with a
-	 * connection, they will be posted asynchronously and serially, but the order of their invocation is undefined.
+	 * Register a connection-level life-cycle hook. Hooks are posted asynchronously.
+	 * If multiple hooks are registered for a particular life-cycle event, connection-specific
+	 * hooks are posted first, followed by connection-specific hooks.  
+	 * order is undefined.
 	 * 
-	 * @param hook
+	 * @param An implementation of {@link Lifecycle}
 	 * @since 0.8
 	 */
-	void addLifecycleHook(UserHook<? extends LifecycleEvent> hook);
+	void addLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook);
 
 }

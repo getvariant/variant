@@ -1,4 +1,4 @@
-package com.variant.client.impl;
+package com.variant.client.lifecycle;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -13,16 +13,13 @@ import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
-import com.variant.client.lce.ConnectionClosed;
-import com.variant.client.lce.ConnectionLifecycleEvent;
-import com.variant.client.lce.LifecycleEvent;
-import com.variant.client.lce.SessionExpired;
-import com.variant.client.lce.SessionLifecycleEvent;
-import com.variant.client.lce.UserHook;
+import com.variant.client.impl.ClientUserError;
+import com.variant.client.impl.ConnectionImpl;
+import com.variant.client.impl.SessionImpl;
 
-public class LifecycleEventService {
+public class LifecycleService {
 
-	final private static Logger LOG = LoggerFactory.getLogger(LifecycleEventService.class);
+	final private static Logger LOG = LoggerFactory.getLogger(LifecycleService.class);
 	
 	// Static thread pool is shared by all connections and all sessions
 	// in a particular variant client.
@@ -38,7 +35,7 @@ public class LifecycleEventService {
 	 * @param event
 	 */
 	@SuppressWarnings("unchecked")
-	private void postLifecycleHook(UserHook<? extends LifecycleEvent> hook, LifecycleEvent event) {
+	private void postLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook, LifecycleEvent event) {
 		
 		threadPool.submit(
 					new Callable<Void>() {
@@ -47,7 +44,7 @@ public class LifecycleEventService {
 						public Void call() {
 							
 							try {
-								((UserHook<LifecycleEvent>)hook).post(event);								
+								((LifecycleHook<LifecycleEvent>)hook).post(event);								
 							}
 							catch (Throwable t) {
 								asyncExceptions.add(t);
@@ -69,20 +66,20 @@ public class LifecycleEventService {
 	/**
 	 * 
 	 */
-	LifecycleEventService(VariantClient client) {
+	public LifecycleService(VariantClient client) {
 		this.client = client;
 	}
 
 	/**
 	 * Raise a connection scoped event
 	 */
-	void raiseEvent(Class<? extends ConnectionLifecycleEvent> eventClass, ConnectionImpl conn) {
+	public void raiseEvent(Class<? extends ConnectionLifecycleEvent> eventClass, ConnectionImpl conn) {
 		
 		if (conn.getClient() != client) 
 			throw new ClientException.Internal("Bad client");
 	
 
-		for (UserHook<? extends LifecycleEvent> hook: conn.lifecycleHooks) {
+		for (LifecycleHook<? extends LifecycleEvent> hook: conn.getLifecycleHooks()) {
 
 			if (!eventClass.isAssignableFrom(hook.getLifecycleEventClass())) continue;
 
@@ -98,13 +95,13 @@ public class LifecycleEventService {
 	/**
 	 * Raise a session scoped event
 	 */
-	void raiseEvent(Class<? extends SessionLifecycleEvent> eventClass, SessionImpl session) {
+	public void raiseEvent(Class<? extends SessionLifecycleEvent> eventClass, SessionImpl session) {
 					
 		if (session.getConnection().getClient() != client) 
 			throw new ClientException.Internal("Bad client");
 
 		// 1. Connection level 
-		for (UserHook<? extends LifecycleEvent> hook: ((ConnectionImpl)session.getConnection()).lifecycleHooks) {
+		for (LifecycleHook<? extends LifecycleEvent> hook: ((ConnectionImpl)session.getConnection()).getLifecycleHooks()) {
 			
 			if (!eventClass.isAssignableFrom(hook.getLifecycleEventClass())) continue;
 

@@ -1,4 +1,4 @@
-package com.variant.client.lce;
+package com.variant.client.lifecycle;
 
 /**
  * 

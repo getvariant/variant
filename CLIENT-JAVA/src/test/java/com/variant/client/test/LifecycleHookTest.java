@@ -16,11 +16,11 @@ import com.variant.client.Session;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
-import com.variant.client.impl.LifecycleEventService;
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.client.lce.ConnectionClosed;
-import com.variant.client.lce.SessionExpired;
-import com.variant.client.lce.UserHook;
+import com.variant.client.lifecycle.ConnectionClosed;
+import com.variant.client.lifecycle.LifecycleService;
+import com.variant.client.lifecycle.LifecycleHook;
+import com.variant.client.lifecycle.SessionExpired;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.IoUtils;
@@ -35,7 +35,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 	// Sole client
 	private VariantClient client = VariantClient.Factory.getInstance();		
 	
-	private LifecycleEventService lceService = ((VariantClientImpl)client).lceService; 
+	private LifecycleService lceService = ((VariantClientImpl)client).lceService; 
 	
 	/**
 	 * Session Expiration
@@ -48,7 +48,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 	
 		// Connection-level SessionExpired Hook
 		conn.addLifecycleHook(
-				new UserHook<SessionExpired>() {
+				new LifecycleHook<SessionExpired>() {
 					
 					@Override public Class<SessionExpired> getLifecycleEventClass() {
 						return SessionExpired.class;
@@ -85,7 +85,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 
 		// ConnectionClosed Hook
 		conn.addLifecycleHook(
-				new UserHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosed>() {
 					
 					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
 						return ConnectionClosed.class;
@@ -102,7 +102,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 
 		// Another, which throws an exception.
 		conn.addLifecycleHook(
-				new UserHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosed>() {
 					
 					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
 						return ConnectionClosed.class;
@@ -113,7 +113,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 				});
 
 		conn.addLifecycleHook(
-				new UserHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosed>() {
 					
 					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
 						return ConnectionClosed.class;
@@ -125,7 +125,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 						
 						event.getConnection().addLifecycleHook(  // Will throw exception
 								
-								new UserHook<ConnectionClosed>() {
+								new LifecycleHook<ConnectionClosed>() {
 									
 									@Override public Class<ConnectionClosed> getLifecycleEventClass() {
 										return ConnectionClosed.class;
@@ -166,7 +166,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		
 		// ConnectionClosed Hook
 		conn.addLifecycleHook(
-				new UserHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosed>() {
 					
 					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
 						return ConnectionClosed.class;
@@ -183,7 +183,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 
 		// Another, which throws an exception.
 		conn.addLifecycleHook(
-				new UserHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosed>() {
 					
 					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
 						return ConnectionClosed.class;
@@ -194,7 +194,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 				});
 
 		conn.addLifecycleHook(
-				new UserHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosed>() {
 					
 					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
 						return ConnectionClosed.class;
@@ -206,7 +206,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 						
 						event.getConnection().addLifecycleHook(  // Will throw exception
 								
-								new UserHook<ConnectionClosed>() {
+								new LifecycleHook<ConnectionClosed>() {
 									
 									@Override public Class<ConnectionClosed> getLifecycleEventClass() {
 										return ConnectionClosed.class;

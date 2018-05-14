@@ -13,8 +13,8 @@ import com.variant.client.ConnectionClosedException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.client.lce.ConnectionClosed;
-import com.variant.client.lce.UserHook;
+import com.variant.client.lifecycle.ConnectionClosed;
+import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.core.ServerError;
 
 /**
@@ -189,7 +189,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			
 			@Override public void toRun() {
 				conn.addLifecycleHook(
-						new UserHook<ConnectionClosed>() {
+						new LifecycleHook<ConnectionClosed>() {
 							
 							@Override public Class<ConnectionClosed> getLifecycleEventClass() {
 								return ConnectionClosed.class;

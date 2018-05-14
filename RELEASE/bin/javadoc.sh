@@ -33,7 +33,7 @@ javadoc -d ${javadoc_dir}  \
    com.variant.core.lce               \
    com.variant.core.schema            \
    com.variant.client                 \
-   com.variant.client.lce             \
+   com.variant.client.lifecycle       \
    com.variant.server.api             \
    com.variant.server.lce
 

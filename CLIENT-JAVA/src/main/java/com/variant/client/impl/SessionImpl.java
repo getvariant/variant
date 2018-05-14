@@ -22,7 +22,9 @@ import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
-import com.variant.client.lce.SessionExpired;
+import com.variant.client.lifecycle.LifecycleEvent;
+import com.variant.client.lifecycle.LifecycleHook;
+import com.variant.client.lifecycle.SessionExpired;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.VariantEvent;
@@ -30,6 +32,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
+import com.variant.core.util.immutable.ImmutableList;
 
 /**
  * Permanent wrapper around transient CoreSession, + client only session functionality. 
@@ -49,6 +52,10 @@ public class SessionImpl implements Session {
 	private SessionIdTracker sessionIdTracker;
 	private TargetingTracker targetingTracker;
 	private StateRequestImpl stateRequest;
+
+	// Lifecycle hooks.
+	final private ArrayList<LifecycleHook<? extends LifecycleEvent>> lifecycleHooks = 
+			new ArrayList<LifecycleHook<? extends LifecycleEvent>>();
 
 	/**
 	 * 
@@ -106,8 +113,9 @@ public class SessionImpl implements Session {
 	
 	/**
 	 * Sill ok to use this object?
+	 * Package visibility because state request abject needs access.
 	 */
-	void checkState() {
+	void preChecks() {
 		if (isExpired) {
 			if (conn.getStatus() == ConnectionStatus.DRAINING)
 				throw new ConnectionClosedException(ClientUserError.CONNECTION_DRAINING);
@@ -164,7 +172,7 @@ public class SessionImpl implements Session {
 	@Override
 	public StateRequest targetForState(State state) {
 
-		checkState();
+		preChecks();
 
 		if (state == null) 
 			throw new ClientException.User("State cannot be null");
@@ -242,7 +250,7 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public Map<State, Integer> getTraversedStates() {
-		checkState();
+		preChecks();
 		refreshFromServer();
 		return coreSession.getTraversedStates();
 	}
@@ -252,7 +260,7 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public Set<Test> getTraversedTests() {
-		checkState();
+		preChecks();
 		refreshFromServer();
 		return coreSession.getTraversedTests();
 	}
@@ -262,7 +270,7 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public Set<Test> getDisqualifiedTests() {
-		checkState();
+		preChecks();
 		refreshFromServer();
 		return coreSession.getDisqualifiedTests();
 	}
@@ -272,7 +280,7 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public void triggerEvent(VariantEvent event) {
-		checkState();
+		preChecks();
 		conn.client.server.eventSave(this, event);
 	}
 	
@@ -281,7 +289,7 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public StateRequest getStateRequest() {
-		checkState();
+		preChecks();
 		return stateRequest;
 	}
 
@@ -292,7 +300,7 @@ public class SessionImpl implements Session {
 	public String setAttribute(String name, String value) {
 		if (name == null) throw new ClientException.User("Name cannot be null");
 		if (value == null) throw new ClientException.User("Value cannot be null");
-		checkState();
+		preChecks();
 		return server.sessionAttrSet(this, name, value);
 	}
 
@@ -302,7 +310,7 @@ public class SessionImpl implements Session {
 	@Override
 	public String getAttribute(String name) {
 		if (name == null) throw new ClientException.User("Name cannot be null");
-		checkState();
+		preChecks();
 		refreshFromServer();
 		return coreSession.getAttribute(name);
 	}
@@ -313,9 +321,16 @@ public class SessionImpl implements Session {
 	@Override
 	public String clearAttribute(String name) {
 		if (name == null) throw new ClientException.User("Name cannot be null");
-		checkState();
+		preChecks();
 		return server.sessionAttrClear(this, name);
 	}
+
+	@Override
+	public void addLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook) {
+		preChecks();
+		lifecycleHooks.add(hook);
+	}
+
 
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
@@ -327,7 +342,7 @@ public class SessionImpl implements Session {
 	/**
 	 */
 	public CoreSession getCoreSession() {
-		checkState();
+		preChecks();
 		return coreSession;
 	}
 
@@ -384,4 +399,12 @@ public class SessionImpl implements Session {
 	public void refreshFromServer() {
 		conn.refreshSession(this);
 	}
+	
+	/**
+	 * Read-only snapshot.
+	 */
+	public ImmutableList<LifecycleHook<? extends LifecycleEvent>> getLifecycleHooks() {
+		return new ImmutableList<LifecycleHook<? extends LifecycleEvent>>(lifecycleHooks);
+	}
+
 }

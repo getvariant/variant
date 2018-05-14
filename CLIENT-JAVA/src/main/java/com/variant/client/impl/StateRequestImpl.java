@@ -27,7 +27,7 @@ public class StateRequestImpl implements StateRequest {
 	private CoreStateRequest coreRequest;
 	
 	private void checkState() {
-		session.checkState();
+		session.preChecks();
 	}
 	
 	public StateRequestImpl(SessionImpl session) 

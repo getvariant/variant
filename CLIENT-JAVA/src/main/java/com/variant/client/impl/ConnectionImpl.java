@@ -3,7 +3,7 @@ package com.variant.client.impl;
 import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
 import java.util.Random;
 
 import com.variant.client.ClientException;
@@ -13,9 +13,9 @@ import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.VariantClient;
-import com.variant.client.lce.ConnectionClosed;
-import com.variant.client.lce.LifecycleEvent;
-import com.variant.client.lce.UserHook;
+import com.variant.client.lifecycle.ConnectionClosed;
+import com.variant.client.lifecycle.LifecycleEvent;
+import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
 import com.variant.core.ConnectionStatus;
@@ -25,6 +25,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.StringUtils;
+import com.variant.core.util.immutable.ImmutableList;
 
 /**
  * A connection to the server.
@@ -175,9 +176,9 @@ public class ConnectionImpl implements Connection {
 		return clientSsn;	
 	}
 
-	// Lifecycle hooks have package visibility because accessed by HooksService.
-	final LinkedHashSet<UserHook<? extends LifecycleEvent>> lifecycleHooks = 
-			new LinkedHashSet<UserHook<? extends LifecycleEvent>>();
+	// Lifecycle hooks.
+	final private ArrayList<LifecycleHook<? extends LifecycleEvent>> lifecycleHooks = 
+			new ArrayList<LifecycleHook<? extends LifecycleEvent>>();
 
 	// Session cache has package visibilithy because accessed by HooksService.
 	final SessionCache cache;
@@ -286,7 +287,7 @@ public class ConnectionImpl implements Connection {
 	}
 
 	@Override
-	public void addLifecycleHook(UserHook<? extends LifecycleEvent> hook) {
+	public void addLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook) {
 		preChecks();
 		lifecycleHooks.add(hook);
 	}
@@ -337,6 +338,13 @@ public class ConnectionImpl implements Connection {
 		default: 
 			throw new ClientException.Internal("Unexpected connection status from server " + status + ")");
 		}
+	}
+	
+	/**
+	 * Read-only snapshot.
+	 */
+	public ImmutableList<LifecycleHook<? extends LifecycleEvent>> getLifecycleHooks() {
+		return new ImmutableList<LifecycleHook<? extends LifecycleEvent>>(lifecycleHooks);
 	}
 	
 	/**
