@@ -147,15 +147,7 @@ public class ConnectionImpl implements Connection {
 
 		// Go straight to the server as we may not have it in the client-local cache,
 		// e.g. when we get it from a parallel connection.
-		Payload.Session payload;
-		
-		try {
-			payload = client.server.sessionGet(sid, this);
-		}
-		catch (SessionExpiredException sex) {
-			cache.expire(sid);
-			throw sex;
-		}
+		Payload.Session payload = client.server.sessionGet(sid, this);
 
 		CoreSession serverSsn =  payload.session;
 		

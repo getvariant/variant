@@ -43,7 +43,19 @@ public class Server {
 		
 		abstract T block() throws Exception;
 		
-		T run(Connection conn) {
+		/**
+		 * All sessions should use this.
+		 * All real work happens in {@link #run(Connection)}.
+		 * Here we only intercept and clean out expired sessions.
+		 */
+		T run(Session ssn) {
+			return run(ssn.getId(), ssn.getConnection());
+		}
+
+	   /**
+		 * If no session yet, use this.
+		 */
+		T run(String sid, Connection conn) {
 			
 			try { 
 				return block(); 
@@ -58,6 +70,7 @@ public class Server {
 					throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);
 				}
 				else if (ce.getError() == ServerError.SessionExpired) {
+					((ConnectionImpl)conn).cache.expire(sid);
 					throw new SessionExpiredException(ce);
 				}
 				else throw ce;
@@ -138,7 +151,7 @@ public class Server {
 			@Override void voidBlock() throws Exception {
 				adapter.post(serverUrl + "event", ((VariantEventSupport)event).toJson(), ssn.getConnection());
 			}
-		}.run(ssn.getConnection());
+		}.run(ssn);
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -161,7 +174,7 @@ public class Server {
 				HttpResponse resp = adapter.get(serverUrl + "session", body, conn);
 				return Payload.Session.fromResponse(conn, resp);
 			}
-		}.run(conn);
+		}.run(sid, conn);
 	}
 
 	/**
@@ -178,7 +191,7 @@ public class Server {
 				String body = ((SessionImpl)ssn).getCoreSession().toJson();
 				adapter.put(serverUrl + "session", body, ssn.getConnection());
 			}
-		}.run(ssn.getConnection());
+		}.run(ssn);
 		
 	}
 
@@ -216,7 +229,7 @@ public class Server {
 				HttpResponse resp = adapter.put(serverUrl + "session/attr", body.toString(), ssn.getConnection());
 				return Payload.Session.fromResponse(ssn.getConnection(), resp);
 			}
-		}.run(ssn.getConnection());
+		}.run(ssn);
 		
 		ssn.rewrap(response.session);
 		return response.returns;
@@ -251,7 +264,7 @@ public class Server {
 				HttpResponse resp = adapter.delete(serverUrl + "session/attr", body.toString(), ssn.getConnection());
 				return Payload.Session.fromResponse(ssn.getConnection(), resp);
 			}
-		}.run(ssn.getConnection());
+		}.run(ssn);
 		
 		ssn.rewrap(response.session);
 		return response.returns;
@@ -265,7 +278,7 @@ public class Server {
 	 * POST /request.
      * Create a state request by targeting session for a state
 	 */
-	public void requestCreate(SessionImpl ssn, String state, final ConnectionImpl conn) {
+	public void requestCreate(SessionImpl ssn, String state) {
 
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("requestCreate(%s,%s)", ssn.getId(), state));
@@ -275,10 +288,10 @@ public class Server {
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.post(serverUrl + "request", body, conn); 
-				return Payload.Session.fromResponse(conn, resp);
+				HttpResponse resp = adapter.post(serverUrl + "request", body, ssn.getConnection()); 
+				return Payload.Session.fromResponse(ssn.getConnection(), resp);
 			}
-		}.run(conn);
+		}.run(ssn);
 		
 		ssn.rewrap(response.session);
 	}
@@ -287,7 +300,7 @@ public class Server {
 	 * PUT /request.
 	 * Commit a state request and trigger the state visited event.
 	 */
-	public boolean requestCommit(final SessionImpl ssn, final ConnectionImpl conn) {
+	public boolean requestCommit(final SessionImpl ssn) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("requestCommit(%s)", ssn.getId()));
@@ -301,10 +314,10 @@ public class Server {
 				jsonGen.writeStringField("sid", ssn.getId());
 				jsonGen.writeEndObject();
 				jsonGen.flush();
-				HttpResponse resp = adapter.put(serverUrl + "request", body.toString(), conn);
-				return Payload.Session.fromResponse(conn, resp);
+				HttpResponse resp = adapter.put(serverUrl + "request", body.toString(), ssn.getConnection());
+				return Payload.Session.fromResponse(ssn.getConnection(), resp);
 			}
-		}.run(conn);
+		}.run(ssn);
 		
 		ssn.rewrap(response.session);
 

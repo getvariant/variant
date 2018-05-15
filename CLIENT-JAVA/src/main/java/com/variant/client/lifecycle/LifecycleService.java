@@ -97,7 +97,6 @@ public class LifecycleService {
 	 */
 	public void raiseEvent(Class<? extends SessionLifecycleEvent> eventClass, SessionImpl session) {
 					
-		System.out.println("********* RAISED for sid "+ session.getId());
 		if (session.getConnection().getClient() != client) 
 			throw new ClientException.Internal("Bad client");
 

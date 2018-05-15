@@ -1,6 +1,5 @@
 package com.variant.client.impl;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
@@ -93,7 +92,7 @@ public class StateRequestImpl implements StateRequest {
 		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 		session.saveTrackers(userData);
 		
-		return conn.client.server.requestCommit(session, conn);
+		return conn.client.server.requestCommit(session);
 	}
 
 	/**

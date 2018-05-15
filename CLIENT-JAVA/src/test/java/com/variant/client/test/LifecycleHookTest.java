@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
@@ -27,7 +26,6 @@ import com.variant.core.ConnectionStatus;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.IoUtils;
 import com.variant.core.util.MutableInteger;
-import com.variant.core.util.StringUtils;
 
 /**
  * Test connections of a cold-deployed schemata.
@@ -53,7 +51,6 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		}
 
 		@Override public void post(SessionExpired event) {
-			System.out.println("********************** posted for sid " + event.getSession().getId());
 			assertEquals(conn, event.getSession().getConnection());
 			assertTrue(event.getSession().isExpired());
 			hookPosts.add(event.getSession().getId());
@@ -144,7 +141,6 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		ssn6.addLifecycleHook(new SessionExpiredHook(conn1));
 		ssn7.addLifecycleHook(new SessionExpiredHook(conn1));
 		ssn8.addLifecycleHook(new SessionExpiredHook(conn2));
-		System.out.println("********************** sids " + ssn6.getId() + " " + ssn7.getId() + " " + ssn8.getId());
 
 		Thread.sleep(ssn2.getTimeoutMillis());
 				
@@ -155,14 +151,9 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 				ssn6.clearAttribute("foo");
 			}
-			
-			@Override
-			public void onThrown(ClientException.User e) {
-				e.printStackTrace();
-			}
-			
+						
 		}.assertThrown(SessionExpiredException.class);
-		/*
+
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
@@ -178,18 +169,16 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 			}
 			
 		}.assertThrown(SessionExpiredException.class);
-*/
+
 		lifecycleService.awaitAll();
-		Thread.sleep(2000);
-		System.out.println("******** hookPosts: " + CollectionsUtils.toString(hookPosts));
-		assertEqualAsLists(CollectionsUtils.list(ssn2.getId()), hookPosts);
+		assertEqualAsLists(CollectionsUtils.list(ssn6.getId(), ssn6.getId(), ssn7.getId(), ssn7.getId(), ssn8.getId()), hookPosts);
 
 	}
 
 	/**
 	 * Connection closed by client
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void connectionClosedByClientTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");
@@ -270,7 +259,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 	/**
 	 * closed by server
 	 */
-	////@org.junit.Test
+	@org.junit.Test
 	public void connectionClosedByServerTest() throws Exception {
 		
 		Connection conn = client.getConnection("big_covar_schema");

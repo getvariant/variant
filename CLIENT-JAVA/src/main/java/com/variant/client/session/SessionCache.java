@@ -165,8 +165,6 @@ public class SessionCache {
 	 * @param sessionId
 	 */
 	public void expire(String sid) {
-		if (LOG.isDebugEnabled()) 
-			LOG.debug("Expiring local session [" + sid + "]");
 
 		Entry entry = cache.remove(sid);
 		if (entry != null) entry.session.expire();

@@ -181,7 +181,7 @@ public class SessionImpl implements Session {
 		if (coreSession.getStateRequest() != null && !coreSession.getStateRequest().isCommitted()) {
 			throw new ClientException.User(ACTIVE_REQUEST);
 		}
-		server.requestCreate(this, state.getName(), conn);
+		server.requestCreate(this, state.getName());
 		return getStateRequest();
 	}
 
@@ -376,11 +376,12 @@ public class SessionImpl implements Session {
 		
 		// Propagate to the state request wrapper object, if any.
 		// Relies on this SessionImpl already containing the new core session.
-		if(stateRequest != null) {
-			stateRequest.rewrap(coreSession.getStateRequest());
+		if(stateRequest == null) {
+			if (coreSession.getStateRequest() != null)
+				stateRequest = new StateRequestImpl(this);
 		}
 		else {
-			stateRequest = new StateRequestImpl(this);
+			stateRequest.rewrap(coreSession.getStateRequest());			
 		}
 		
 		// Update targeting tracker, if a foreground session.
@@ -393,7 +394,9 @@ public class SessionImpl implements Session {
 	 * Expire this session object.
 	 */
 	public void expire() {
-		LOG.debug("Expired session [" + getId() + "]");
+		
+		if (LOG.isDebugEnabled()) LOG.debug("Expired session [" + getId() + "]");
+
 		isExpired = true;
 		((VariantClientImpl)conn.getClient()).lceService.raiseEvent(SessionExpired.class, this);
 	}

@@ -280,7 +280,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 	/**
 	 * Petclinic schema defines a qual and a targeting hook which will fail,
-	 * unless we create some session attributes.
+	 * unless we create "user-agent" session attributes.
 	 */
 	@org.junit.Test
 	public void targetingHookExceptionTest() {
