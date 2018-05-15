@@ -1,12 +1,12 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
@@ -176,6 +176,42 @@ abstract public class VariantBaseTest {
 	 * @param 
 	 */
 	protected static <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected) {
+
+		Comparator<T> comp = new Comparator<T>() {
+			@Override
+			public int compare(Object o1, Object o2) {return o1.equals(o2) ? 0 : 1;}
+		};
+		assertEqualAsSets(actual, expected, comp);
+	}
+
+	/**
+	 * Assert that two lists are the same, including order.
+	 * Custom comparator.
+	 *  
+	 * @param 
+	 */
+	protected static <T> void assertEqualAsLists(List<T> actual, List<T> expected, Comparator<T> comp) {
+		
+		assertEquals("Actual list of size " + actual.size() + "was not equal expected size " + expected.size(), actual.size(), expected.size());
+		
+		Iterator<T> actualIter = actual.iterator(); 
+		Iterator<T> expectedIter = expected.iterator(); 
+		while (actualIter.hasNext()) {
+
+			T a = actualIter.next();
+			T e = expectedIter.next();
+			if (comp.compare(a, e) != 0) {
+				fail("Actual element " + a + " was not equal expected element " + e);
+			}
+		}		
+	}
+
+	/**
+	 * Same as above with the trivial comparator
+	 *  
+	 * @param 
+	 */
+	protected static <T> void assertEqualAsLists(List<T> actual, List<T> expected) {
 
 		Comparator<T> comp = new Comparator<T>() {
 			@Override

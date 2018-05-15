@@ -290,6 +290,7 @@ public class SessionImpl implements Session {
 	@Override
 	public StateRequest getStateRequest() {
 		preChecks();
+		refreshFromServer();
 		return stateRequest;
 	}
 
@@ -325,9 +326,13 @@ public class SessionImpl implements Session {
 		return server.sessionAttrClear(this, name);
 	}
 
+	/**
+	 * Mutating or mutable state.
+	 */
 	@Override
 	public void addLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook) {
 		preChecks();
+		refreshFromServer();
 		lifecycleHooks.add(hook);
 	}
 

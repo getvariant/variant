@@ -97,6 +97,7 @@ public class LifecycleService {
 	 */
 	public void raiseEvent(Class<? extends SessionLifecycleEvent> eventClass, SessionImpl session) {
 					
+		System.out.println("********* RAISED for sid "+ session.getId());
 		if (session.getConnection().getClient() != client) 
 			throw new ClientException.Internal("Bad client");
 
@@ -115,8 +116,7 @@ public class LifecycleService {
 		
 		// 2. Session level 
 
-	/*
-		for (UserHook<? extends LifecycleEvent> hook: session.lifecycleHooks) {
+		for (LifecycleHook<? extends LifecycleEvent> hook: session.getLifecycleHooks()) {
 			
 			if (!eventClass.isAssignableFrom(hook.getLifecycleEventClass())) continue;
 
@@ -127,7 +127,6 @@ public class LifecycleService {
 			};
 			postLifecycleHook(hook, event);
 		}
-	*/
 	}
 
 	// Tests can block until all submitted async callables are done.
