@@ -293,7 +293,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	public void serverUndeploySessionDrainingTest() throws Exception {
 
 		// Restore the big_covar_schema
-	    IoUtils.fileCopy("schemata-remote/big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
+	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
 
 		// restart the server with the longger session timeout
 		int ssnTimeout = dirWatcherLatencyMillis/1000 + 2000;

@@ -323,7 +323,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 						}
 				});
 
-	    IoUtils.fileCopy("schemata-remote/big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
+	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		assertEquals(OPEN, conn.getStatus());

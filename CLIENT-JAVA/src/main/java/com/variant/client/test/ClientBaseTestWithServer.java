@@ -19,6 +19,9 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 	// Server should have initialized this schemata dir
 	public final static String SCHEMATA_DIR = "/tmp/schemata-remote";
 	
+	// Schema files location in the local project
+	public final static String SCHEMATA_DIR_SRC = "src/test/resources/schemata-remote/";
+
 	// Takes this long for the new schema to be detected.
 	public final static int dirWatcherLatencyMillis = 12000;
 	
@@ -31,8 +34,8 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 
 		IoUtils.emptyDir(SCHEMATA_DIR);
 		//Deploy the schemata
-	    IoUtils.fileCopy("schemata-remote/big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
-	    IoUtils.fileCopy("schemata-remote/petclinic-schema.json", SCHEMATA_DIR + "/petclinic-schema.json");
+	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
+	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "petclinic-schema.json", SCHEMATA_DIR + "/petclinic-schema.json");
 		server = new ServerProcess();
 		server.start(svrConf);
 	}

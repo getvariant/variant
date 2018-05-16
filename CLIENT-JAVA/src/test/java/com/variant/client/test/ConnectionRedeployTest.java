@@ -40,7 +40,7 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 		assertEquals(5, conn1.getSchema().getStates().size());
 		assertEquals(6, conn1.getSchema().getTests().size());
 
-	    IoUtils.fileCopy("schemata-remote/big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
+	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		// Connection doesn't know its' gone.
