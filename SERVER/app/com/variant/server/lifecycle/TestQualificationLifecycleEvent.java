@@ -1,7 +1,7 @@
-package com.variant.server.lce;
+package com.variant.server.lifecycle;
 
-import com.variant.core.UserHook;
-import com.variant.core.lce.TestAwareLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.core.lifecycle.TestAwareLifecycleEvent;
 
 
 /**
@@ -16,7 +16,7 @@ import com.variant.core.lce.TestAwareLifecycleEvent;
  * factory method.
  * 
  * @author Igor Urisman.
- * @see UserHook
+ * @see LifecycleHook
  * @see PostResult
  * @since 0.5
  *
@@ -24,12 +24,12 @@ import com.variant.core.lce.TestAwareLifecycleEvent;
 public interface TestQualificationLifecycleEvent extends RuntimeLifecycleEvent, TestAwareLifecycleEvent {
       
    /**
-    * The return type of the {@link UserHook#post(com.variant.core.LifecycleEvent) UserHook.post(TestQualificationLifecycleEvent)} 
+    * The return type of the {@link LifecycleHook#post(com.variant.core.LifecycleEvent) LifecycleHook.post(TestQualificationLifecycleEvent)} 
     * method.
     * 
     * @since 0.7
     */
-   public interface PostResult extends UserHook.PostResult {
+   public interface PostResult extends LifecycleHook.PostResult {
       
       /**
        * Set whether the session is qualified for the associated test.
@@ -40,7 +40,7 @@ public interface TestQualificationLifecycleEvent extends RuntimeLifecycleEvent, 
       public void setQualified(boolean qualified);
 
       /**
-       * <p>The {@link UserHook#post(com.variant.core.LifecycleEvent) UserHook.post(TestQualificationLifecycleEvent)} method
+       * <p>The {@link LifecycleHook#post(com.variant.core.LifecycleEvent) LifecycleHook.post(TestQualificationLifecycleEvent)} method
        * may call this to inform Variant server whether the entry for this test should
        * be removed from this session's targeting tracker, in the case it is disqualified.
        * If the associated session was disqualified for the associated test, and this method was passed <code>true</code>, 

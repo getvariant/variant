@@ -30,7 +30,7 @@ public interface Schema {
 	String getComment();
 	
 	/**
-	 * <p>List of schema-scoped user hooks.
+	 * <p>List of schema-scoped life-cycle hooks.
 	 * 
 	 * @return A list of {@link Hook} objects in the ordinal order.
 	 * @since 0.7

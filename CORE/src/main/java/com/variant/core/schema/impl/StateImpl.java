@@ -111,7 +111,7 @@ public class StateImpl implements State {
 	}
 		
 	/**
-	 * Add user hook to this test
+	 * Add life-cycle hook to this test
 	 * @param hook
 	 * @return true if hook didn't exist, false if did.
 	 */

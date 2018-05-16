@@ -76,7 +76,7 @@ public class ServerFlusherService implements FlusherService {
 		ParserResponse response = parser.responseInProgress();
 		
 		try {
-			// Create the Class object for the supplied UserHook implementation.
+			// Create the Class object for the supplied LifecycleHook implementation.
 			Object flusherObj = server.classloader().instantiate(flusher.getClassName(), flusher.getInit());
 			
 			if (flusherObj == null) {

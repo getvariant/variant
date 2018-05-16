@@ -1,13 +1,13 @@
 package com.variant.server.test.hooks;
 
-import com.variant.core.UserHook;
+import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.Session;
-import com.variant.server.lce.TestTargetingLifecycleEvent;
+import com.variant.server.lifecycle.TestTargetingLifecycleEvent;
 
 /**
  * targeting listener does nothing, except logs test names.
  */
-public class TestTargetingHookNil implements UserHook<TestTargetingLifecycleEvent> {
+public class TestTargetingHookNil implements LifecycleHook<TestTargetingLifecycleEvent> {
 
 	public static String ATTR_KEY = "current-list";
 	

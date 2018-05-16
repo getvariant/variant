@@ -1,6 +1,6 @@
-package com.variant.server.lce;
+package com.variant.server.lifecycle;
 
-import com.variant.core.lce.LifecycleEvent;
+import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.server.api.Session;
 
 /**

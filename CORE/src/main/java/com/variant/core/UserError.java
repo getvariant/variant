@@ -47,7 +47,7 @@ Range   Base         Major Area               Minor Area
 621-640                                       Payload parse error
 641-660                                       Other internal errors
 661-700              User  Server API
-661-680                                       User Hooks
+661-680                                       Life-cycle Hooks
 681-700                                       Other
 701-800              User, Client API
 

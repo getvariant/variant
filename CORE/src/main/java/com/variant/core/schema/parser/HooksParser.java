@@ -56,7 +56,7 @@ public class HooksParser implements Keywords {
 	}
 	
 	/**
-	 * Parse an individual user hook definition
+	 * Parse an individual life-cycle hook definition
 	 * @param rawHook
 	 * @param response
 	 * @return

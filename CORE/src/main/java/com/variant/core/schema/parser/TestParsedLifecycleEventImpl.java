@@ -3,8 +3,8 @@ package com.variant.core.schema.parser;
 import com.variant.core.CommonError;
 import com.variant.core.ServerError;
 import com.variant.core.UserError.Severity;
-import com.variant.core.UserHook;
-import com.variant.core.lce.TestParsedLifecycleEvent;
+import com.variant.core.lifecycle.TestParsedLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.Test;
 
 /**
@@ -45,9 +45,9 @@ public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 	}
 
 	@Override
-	public UserHook<TestParsedLifecycleEvent> getDefaultHook() {
+	public LifecycleHook<TestParsedLifecycleEvent> getDefaultHook() {
 
-		return new UserHook<TestParsedLifecycleEvent>() {
+		return new LifecycleHook<TestParsedLifecycleEvent>() {
 
 			@Override
 			public Class<TestParsedLifecycleEvent> getLifecycleEventClass() {
@@ -55,7 +55,7 @@ public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 			}
 
 			@Override
-			public UserHook.PostResult post(TestParsedLifecycleEvent event) {
+			public LifecycleHook.PostResult post(TestParsedLifecycleEvent event) {
 					
 				return new TestParsedLifecycleEvent.PostResult() {};
 				

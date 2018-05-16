@@ -1,11 +1,11 @@
 package com.variant.core.schema.parser;
 
-import com.variant.core.UserHook;
-import com.variant.core.lce.LifecycleEvent;
+import com.variant.core.lifecycle.LifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.Hook;
 
 /**
- * User Hook processor.
+ * Life-cycle hooks service.
  * 
  * @author
  *
@@ -13,7 +13,7 @@ import com.variant.core.schema.Hook;
 public interface HooksService {
 
 	/**
-	 * Add an unbound user hook to this hooker.
+	 * Add an unbound life-cycle hook to this hooker.
 	 */
 	void initHook(Hook hook, ParserResponse parserResponse);
 	
@@ -24,7 +24,7 @@ public interface HooksService {
 	 * @param event
 	 * @return the event passed in as argument.
 	 */
-	public UserHook.PostResult post(LifecycleEvent event);
+	public LifecycleHook.PostResult post(LifecycleEvent event);
 
 	/**
 	 * Null hooker, which does nothing whatsoever.
@@ -39,7 +39,7 @@ public interface HooksService {
 		public void initHook(Hook hook, ParserResponse parserResponse) {}
 		
 		@Override
-		public UserHook.PostResult post(LifecycleEvent hook) {return null;}
+		public LifecycleHook.PostResult post(LifecycleEvent hook) {return null;}
 	};
 }
 

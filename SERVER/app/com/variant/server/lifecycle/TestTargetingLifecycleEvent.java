@@ -1,8 +1,8 @@
-package com.variant.server.lce;
+package com.variant.server.lifecycle;
 
-import com.variant.core.UserHook;
-import com.variant.core.lce.StateAwareLifecycleEvent;
-import com.variant.core.lce.TestAwareLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.core.lifecycle.StateAwareLifecycleEvent;
+import com.variant.core.lifecycle.TestAwareLifecycleEvent;
 import com.variant.core.schema.Test.Experience;
 
 /**
@@ -27,12 +27,12 @@ import com.variant.core.schema.Test.Experience;
 public interface TestTargetingLifecycleEvent extends RuntimeLifecycleEvent, TestAwareLifecycleEvent, StateAwareLifecycleEvent {
 	
    /**
-    * The return type of the {@link UserHook#post(com.variant.core.LifecycleEvent) UserHook.post(TestTargetingLifecycleEvent)} 
+    * The return type of the {@link LifecycleHook#post(com.variant.core.LifecycleEvent) LifecycleHook.post(TestTargetingLifecycleEvent)} 
     * method.
     * 
     * @since 0.7
     */
-	public interface PostResult extends UserHook.PostResult {
+	public interface PostResult extends LifecycleHook.PostResult {
 	   
 	   /**
 	    * Set the test experience for this session in this test.

@@ -1,6 +1,6 @@
 package com.variant.server.impl;
 
-import com.variant.server.lce.TestQualificationLifecycleEvent;
+import com.variant.server.lifecycle.TestQualificationLifecycleEvent;
 
 public class TestQualificationLifecycleEventPostResultImpl implements TestQualificationLifecycleEvent.PostResult {
 

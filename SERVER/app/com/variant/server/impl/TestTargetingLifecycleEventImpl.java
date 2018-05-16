@@ -1,7 +1,7 @@
 package com.variant.server.impl;
 
-import com.variant.core.UserHook;
-import com.variant.server.lce.TestTargetingLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.server.lifecycle.TestTargetingLifecycleEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.server.api.Session;
@@ -32,7 +32,7 @@ public class TestTargetingLifecycleEventImpl implements TestTargetingLifecycleEv
 	}
 
 	@Override
-	public UserHook<TestTargetingLifecycleEvent> getDefaultHook() {
+	public LifecycleHook<TestTargetingLifecycleEvent> getDefaultHook() {
 		
 		return new TestTargetingDefaultHook();
 	}

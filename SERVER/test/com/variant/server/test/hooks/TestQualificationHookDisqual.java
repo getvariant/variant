@@ -1,11 +1,11 @@
 package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
-import com.variant.core.UserHook;
+import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.PostResultFactory;
-import com.variant.server.lce.TestQualificationLifecycleEvent;
+import com.variant.server.lifecycle.TestQualificationLifecycleEvent;
 
-public class TestQualificationHookDisqual implements UserHook<TestQualificationLifecycleEvent>{
+public class TestQualificationHookDisqual implements LifecycleHook<TestQualificationLifecycleEvent>{
 
 	private boolean removeFromTargetingTracker = false;
 

@@ -6,12 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.ConfigException;
-import com.variant.core.CommonError;
 import com.variant.core.ServerError;
-import com.variant.core.UserHook;
-import com.variant.core.lce.LifecycleEvent;
-import com.variant.core.lce.StateAwareLifecycleEvent;
-import com.variant.core.lce.TestAwareLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.core.lifecycle.StateAwareLifecycleEvent;
+import com.variant.core.lifecycle.TestAwareLifecycleEvent;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.HooksService;
 import com.variant.core.schema.parser.ParserResponse;
@@ -72,7 +71,7 @@ public class ServerHooksService implements HooksService {
 	public void initHook(Hook hookDef, ParserResponse parserResponse) {
 
 		try {
-			// Create the hook object for the supplied UserHook implementation.
+			// Create the hook object for the supplied LifecycleHook implementation.
 			Object hookObj = server.classloader().instantiate(hookDef.getClassName(), hookDef.getInit());
 					
 			if (hookObj == null) {
@@ -81,12 +80,12 @@ public class ServerHooksService implements HooksService {
 			}
 			
 			// It must implement the right interface.
-			if (! (hookObj instanceof UserHook)) {
-				parserResponse.addMessage(ServerErrorLocal.HOOK_CLASS_NO_INTERFACE, hookObj.getClass().getName(), UserHook.class.getName());
+			if (! (hookObj instanceof LifecycleHook)) {
+				parserResponse.addMessage(ServerErrorLocal.HOOK_CLASS_NO_INTERFACE, hookObj.getClass().getName(), LifecycleHook.class.getName());
 				return;
 			}
 			
-			UserHook<? extends LifecycleEvent> hookImpl = (UserHook<LifecycleEvent>) hookObj;
+			LifecycleHook<? extends LifecycleEvent> hookImpl = (LifecycleHook<LifecycleEvent>) hookObj;
 			
 			// The implementation's scope must be compatible with that of the definition:
 			// 1. Test-scoped hookDef must define an implementation which listens to a test aware event.
@@ -143,7 +142,7 @@ public class ServerHooksService implements HooksService {
 	 */
    @SuppressWarnings("unchecked")
    @Override
-   public UserHook.PostResult post(LifecycleEvent event) {
+   public LifecycleHook.PostResult post(LifecycleEvent event) {
 			   
 	   // 1. Build the hook chain, i.e. all hooks eligible for posting, in order.
 	   
@@ -202,8 +201,8 @@ public class ServerHooksService implements HooksService {
 				   
 			   hookDef = hle.hookDef;
 				   												
-			   UserHook<LifecycleEvent> hook = (UserHook<LifecycleEvent>) server.classloader().instantiate(hle.hookDef.getClassName(), hle.hookDef.getInit());
-			   UserHook.PostResult result = hook.post(event);
+			   LifecycleHook<LifecycleEvent> hook = (LifecycleHook<LifecycleEvent>) server.classloader().instantiate(hle.hookDef.getClassName(), hle.hookDef.getInit());
+			   LifecycleHook.PostResult result = hook.post(event);
 			   
 			   if (LOG.isTraceEnabled())
 				   LOG.trace("Posted user hook [" + hle.hookDef.getName() + "] with [" + event + "]. Result: [" + result + "]");
@@ -215,14 +214,14 @@ public class ServerHooksService implements HooksService {
 
 		   // Either empty chain, or none cared to return a result: post default hook.
 		   // (I don't understand the need form this cast)
-		   return ((UserHook<LifecycleEvent>)event.getDefaultHook()).post(event);
+		   return ((LifecycleHook<LifecycleEvent>)event.getDefaultHook()).post(event);
 
 		} catch (ServerException.Local e) {
 			throw e;
 		
 		} catch (Exception e) {
 			LOG.error(ServerError.HOOK_UNHANDLED_EXCEPTION.asMessage(hookDef.getClassName(), e.getMessage()), e);
-			throw new ServerException.Remote(ServerError.HOOK_UNHANDLED_EXCEPTION, UserHook.class.getName(), e.getMessage());
+			throw new ServerException.Remote(ServerError.HOOK_UNHANDLED_EXCEPTION, LifecycleHook.class.getName(), e.getMessage());
 		}				
 
 	}

@@ -1,12 +1,9 @@
-package com.variant.core;
+package com.variant.core.lifecycle;
 
 import com.typesafe.config.Config;
-import com.variant.core.lce.LifecycleEvent;
-import com.variant.core.lce.StateAwareLifecycleEvent;
-import com.variant.core.lce.TestAwareLifecycleEvent;
 
 /**
- * <p>The interface to be implemented by a user hook, which wants to be posted of a life cycle event.
+ * <p>The interface to be implemented by a life-cycle hook, which wants to be posted of a life-cycle event.
  * Whenever Variant triggers a life cycle event type assignable to the class returned by {@link #getLifecycleEventClass()},
  * this listener is posted via the {@link #post(LifecycleEvent)} method.
  * 
@@ -16,7 +13,7 @@ import com.variant.core.lce.TestAwareLifecycleEvent;
  * none of user defined hooks returned a non-null value, the default hook is posted, which is guaranteed
  * to return a value.
  * 
- * <p>User hooks are defined in the experiment schema at the meta, state or test level. Those hooks, defined
+ * <p>Life-cycle hooks are defined in the experiment schema at the meta, state or test level. Those hooks, defined
  * at the meta level are <em>schema-scoped</em> and are applicable to all states and tests in the schema.
  * Hooks defined at the state level are <em>state-scoped</em> and are only applicable to the state where
  * they are defined. Finally, hooks defined at the test level are <em>test-scoped</em> and are only applicable
@@ -39,7 +36,7 @@ import com.variant.core.lce.TestAwareLifecycleEvent;
  *
  */
 
-public interface UserHook<E extends LifecycleEvent> {
+public interface LifecycleHook<E extends LifecycleEvent> {
 		
 	/**
 	 * Implementation must tell the server what life cycle event type(s) it wants to be posted on.
@@ -69,7 +66,7 @@ public interface UserHook<E extends LifecycleEvent> {
 
 	
 	/**
-	 * <p>The result of the {@link UserHook#post(LifecycleEvent)} callback. Concrete implementations will have methods
+	 * <p>The result of the {@link LifecycleHook#post(LifecycleEvent)} callback. Concrete implementations will have methods
 	 * for the user code to set the details of the outcome of the post operation expected by the server.
 	 * 
 	 * <p>T  

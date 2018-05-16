@@ -1,12 +1,10 @@
 package com.variant.server.impl;
 
-import com.typesafe.config.Config;
-import com.variant.core.UserHook;
-import com.variant.server.lce.TestQualificationLifecycleEvent;
-import com.variant.core.schema.Hook;
+import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.PostResultFactory;
+import com.variant.server.lifecycle.TestQualificationLifecycleEvent;
 
-class TestQualificationDefaultHook implements UserHook<TestQualificationLifecycleEvent> {
+class TestQualificationDefaultHook implements LifecycleHook<TestQualificationLifecycleEvent> {
 	
 	/**
 	 * Package visibility
@@ -27,7 +25,7 @@ class TestQualificationDefaultHook implements UserHook<TestQualificationLifecycl
 	 * 
 	 */
 	@Override
-	public UserHook.PostResult post(TestQualificationLifecycleEvent event) throws Exception {
+	public LifecycleHook.PostResult post(TestQualificationLifecycleEvent event) throws Exception {
 		
 		TestQualificationLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);				
 		result.setQualified(true);

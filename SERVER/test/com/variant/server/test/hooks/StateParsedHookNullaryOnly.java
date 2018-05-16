@@ -1,9 +1,9 @@
 package com.variant.server.test.hooks;
 
-import com.variant.core.UserHook;
-import com.variant.core.lce.StateParsedLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.core.lifecycle.StateParsedLifecycleEvent;
 
-public class StateParsedHookNullaryOnly implements UserHook<StateParsedLifecycleEvent> {
+public class StateParsedHookNullaryOnly implements LifecycleHook<StateParsedLifecycleEvent> {
 		
 	public StateParsedHookNullaryOnly() {}
 	

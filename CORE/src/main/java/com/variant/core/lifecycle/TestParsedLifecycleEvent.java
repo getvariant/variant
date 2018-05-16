@@ -1,6 +1,5 @@
-package com.variant.core.lce;
+package com.variant.core.lifecycle;
 
-import com.variant.core.UserHook;
 
 
 /**
@@ -15,11 +14,11 @@ import com.variant.core.UserHook;
 public interface TestParsedLifecycleEvent extends TestAwareLifecycleEvent, ParsetimeLifecycleEvent {
 	
    /**
-    * A {@link com.variant.core.UserHook.PostResult} suitable as the return type of the {@link UserHook#post(LifecycleEvent)},
+    * A {@link com.variant.core.lifecycle.LifecycleHook.PostResult} suitable as the return type of the {@link LifecycleHook#post(LifecycleEvent)},
     * invoked with the event type of {@link TestParsedLifecycleEvent}.
     * 
     * @since 0.7
     */
-   public interface PostResult extends UserHook.PostResult {}
+   public interface PostResult extends LifecycleHook.PostResult {}
 
 }

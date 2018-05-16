@@ -65,7 +65,7 @@ public interface Test {
 	public boolean isOn();
 	
 	/**
-	 * <p>List of user hooks, defined in the scope of this test.
+	 * <p>List of life-cycle hooks, defined in the scope of this test.
 	 * 
 	 * @return A list of {@link Hook} object in the ordinal order.
 	 * @since 0.7

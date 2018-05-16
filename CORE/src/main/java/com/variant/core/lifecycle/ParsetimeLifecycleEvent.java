@@ -1,4 +1,4 @@
-package com.variant.core.lce;
+package com.variant.core.lifecycle;
 
 import com.variant.core.UserError.Severity;
 

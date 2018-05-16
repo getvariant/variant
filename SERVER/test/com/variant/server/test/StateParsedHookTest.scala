@@ -4,7 +4,7 @@ import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
-import com.variant.core.lce.TestParsedLifecycleEvent
+import com.variant.core.lifecycle.TestParsedLifecycleEvent
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._

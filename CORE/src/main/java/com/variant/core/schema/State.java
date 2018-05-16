@@ -65,7 +65,7 @@ public interface State {
 	public boolean isNonvariantIn(Test test);
 	
 	/**
-	 * <p>List of state-scoped user hooks defined with this state.
+	 * <p>List of state-scoped life-cycle hooks defined with this state.
 	 * 
 	 * @return A list of {@link Hook} objects in the ordinal order.
 	 * @since 0.8

@@ -146,7 +146,7 @@ public class ParserResponse {
 	}
 
 	/**
-	 * Add a message generated externally by a parser time user hook.
+	 * Add a message generated externally by a parser time life-cycle hook.
 	 *
     public void addMessage(Severity severity, String message) {
 		ParserMessage result = new ParserMessageImpl(new ParserHookError(severity, message));

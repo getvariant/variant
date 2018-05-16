@@ -1,13 +1,13 @@
 package com.variant.server.test.hooks;
 
-import com.variant.core.UserHook;
+import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.Session;
-import com.variant.server.lce.TestQualificationLifecycleEvent;
+import com.variant.server.lifecycle.TestQualificationLifecycleEvent;
 
 /**
  * Do nothing. Tests should be qualified by default.
  */
-public class TestQualificationHookNil implements UserHook<TestQualificationLifecycleEvent> {
+public class TestQualificationHookNil implements LifecycleHook<TestQualificationLifecycleEvent> {
 
 	public static String ATTR_KEY = TestQualificationHookNil.class.getName();
 	

@@ -2,10 +2,10 @@ package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
 import com.variant.core.UserError.Severity;
-import com.variant.core.UserHook;
-import com.variant.core.lce.StateParsedLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.core.lifecycle.StateParsedLifecycleEvent;
 
-public class StateParsedHook2Constructors implements UserHook<StateParsedLifecycleEvent> {
+public class StateParsedHook2Constructors implements LifecycleHook<StateParsedLifecycleEvent> {
 		
 	public static String MSG_NULLARY    = "Nullary Constructor Called";
 	public static String MSG_SINGLE_ARG = "Single-arg Constructor Called";

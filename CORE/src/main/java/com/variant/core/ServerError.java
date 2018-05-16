@@ -70,16 +70,16 @@ public class ServerError extends CommonError {
 	// 661-680 User, Server API, Hooks
 	// 
 	public static final ServerError  HOOK_UNHANDLED_EXCEPTION =
-			new ServerError(661, "User hook class [%s] threw an exception [%s]. See server logs for details.");
+			new ServerError(661, "Life-cycle hook class [%s] threw an exception [%s]. See server logs for details.");
 
 	public static final ServerError HOOK_USER_MESSAGE_INFO =
-			new ServerError(662, Severity.INFO, "User hook generated the following message: [%s]");
+			new ServerError(662, Severity.INFO, "Life-cycle hook generated the following message: [%s]");
 
 	public static final ServerError HOOK_USER_MESSAGE_WARN =
-			new ServerError(663, Severity.WARN, "User hook generated the following message: [%s]");
+			new ServerError(663, Severity.WARN, "Life-cycle hook generated the following message: [%s]");
 
 	public static final ServerError HOOK_USER_MESSAGE_ERROR =
-			new ServerError(664, Severity.ERROR, "User hook generated the following message: [%s]");
+			new ServerError(664, Severity.ERROR, "Life-cycle hook generated the following message: [%s]");
 
 	public final static ServerError HOOK_TARGETING_BAD_EXPERIENCE = 
 			new ServerError(665, "Targeting hook [%s] for test [%s] cannot set experience [%s]");

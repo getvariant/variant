@@ -13,7 +13,7 @@ package com.variant.core.schema;
 public interface Hook {
 		
 	/**
-	 * The name of this user hook.
+	 * The name of this life-cycle hook.
 	 * 
 	 * @return The name of this hook. Never null.
 	 * @since 0.7
@@ -38,14 +38,14 @@ public interface Hook {
 	
 	
 	/**
-	 * Schema scoped user hook.
+	 * Schema scoped life-cycle hook.
 	 * @author Igor
 	 * @since 0.7
 	 */
 	public interface Schema extends Hook {}
 	
 	/**
-	 * State scoped user hook.
+	 * State scoped life-cycle hook.
 	 * @author Igor
 	 * @since 0.7
 	 */
@@ -62,7 +62,7 @@ public interface Hook {
 	}
 
 	/**
-	 * Test scoped user hook..
+	 * Test scoped life-cycle hook.
 	 * @author Igor
 	 * @since 0.7
 	 */

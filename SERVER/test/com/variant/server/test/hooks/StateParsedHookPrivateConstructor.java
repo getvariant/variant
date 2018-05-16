@@ -1,9 +1,9 @@
 package com.variant.server.test.hooks;
 
-import com.variant.core.UserHook;
-import com.variant.core.lce.StateParsedLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.core.lifecycle.StateParsedLifecycleEvent;
 
-public class StateParsedHookPrivateConstructor implements UserHook<StateParsedLifecycleEvent> {
+public class StateParsedHookPrivateConstructor implements LifecycleHook<StateParsedLifecycleEvent> {
 		
 	// ServerHooker won't be able to instantiate
 	private StateParsedHookPrivateConstructor() {}

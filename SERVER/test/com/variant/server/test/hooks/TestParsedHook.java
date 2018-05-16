@@ -2,11 +2,11 @@ package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
 import com.variant.core.UserError.Severity;
-import com.variant.core.UserHook;
-import com.variant.core.lce.TestParsedLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.core.lifecycle.TestParsedLifecycleEvent;
 import com.variant.server.api.PostResultFactory;
 
-public class TestParsedHook implements UserHook<TestParsedLifecycleEvent> {
+public class TestParsedHook implements LifecycleHook<TestParsedLifecycleEvent> {
 	
 	public static final String INFO_MESSAGE_FORMAT = "Info-Message-Test %s %s";
 	public static final String WARN_MESSAGE_FORMAT = "Warn-Message-Test %s %s";

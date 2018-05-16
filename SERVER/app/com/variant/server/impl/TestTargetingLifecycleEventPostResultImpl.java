@@ -6,7 +6,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.ServerException;
-import com.variant.server.lce.TestTargetingLifecycleEvent;
+import com.variant.server.lifecycle.TestTargetingLifecycleEvent;
 
 public class TestTargetingLifecycleEventPostResultImpl implements TestTargetingLifecycleEvent.PostResult {
 

@@ -11,7 +11,7 @@ import com.variant.core.schema.parser.SchemaParser;
 public class BaseTestCore extends VariantBaseTest {	
 	
 	/**
-	 * Core tests will use a concrete schema parser that operates on a null user hooker.
+	 * Core tests will use a concrete schema parser that operates on a null hooks service.
 	 * This is good enough for the client side parsing. Server will test parse time hooks.
 	 * 
 	 * @return

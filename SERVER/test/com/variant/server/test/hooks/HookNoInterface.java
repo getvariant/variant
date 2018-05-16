@@ -1,7 +1,7 @@
 package com.variant.server.test.hooks;
 
-import com.variant.core.UserHook;
-import com.variant.server.lce.TestQualificationLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.server.lifecycle.TestQualificationLifecycleEvent;
 
 /**
  * This class does not implement the required interface.
@@ -16,7 +16,7 @@ public class HookNoInterface {
 		return TestQualificationLifecycleEvent.class;
     }
    
-	public UserHook.PostResult post(TestQualificationLifecycleEvent event) {
+	public LifecycleHook.PostResult post(TestQualificationLifecycleEvent event) {
 		return null;
 	}
 }

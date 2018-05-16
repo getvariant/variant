@@ -3,15 +3,15 @@ package com.variant.server.impl;
 import java.util.Random;
 
 import com.variant.core.ServerError;
-import com.variant.core.UserHook;
+import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.PostResultFactory;
 import com.variant.server.api.ServerException;
-import com.variant.server.lce.TestTargetingLifecycleEvent;
+import com.variant.server.lifecycle.TestTargetingLifecycleEvent;
 
-class TestTargetingDefaultHook implements UserHook<TestTargetingLifecycleEvent> {
+class TestTargetingDefaultHook implements LifecycleHook<TestTargetingLifecycleEvent> {
 	
 	private static Random rand = new Random(System.currentTimeMillis());
 

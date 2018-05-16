@@ -3,7 +3,7 @@ package com.variant.core.schema.parser;
 import com.variant.core.schema.Flusher;
 
 /**
- * User Hook processor.
+ * Flusher Service.
  * 
  * @author
  *

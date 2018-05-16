@@ -1,10 +1,10 @@
 package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
-import com.variant.core.UserHook;
-import com.variant.core.lce.StateParsedLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.core.lifecycle.StateParsedLifecycleEvent;
 
-public class StateParsedHookSingleArgOnly implements UserHook<StateParsedLifecycleEvent> {
+public class StateParsedHookSingleArgOnly implements LifecycleHook<StateParsedLifecycleEvent> {
 		
 	/**
 	 * Non nullary constructor

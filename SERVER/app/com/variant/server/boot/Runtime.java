@@ -22,10 +22,9 @@ import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
-
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
-import com.variant.server.lce.TestQualificationLifecycleEvent;
+import com.variant.server.lifecycle.TestQualificationLifecycleEvent;
 import com.variant.server.impl.SessionImpl;
 import com.variant.server.impl.StateRequestImpl;
 import com.variant.server.impl.TestQualificationLifecycleEventImpl;

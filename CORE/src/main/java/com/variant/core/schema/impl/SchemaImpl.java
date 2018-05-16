@@ -143,7 +143,7 @@ public class SchemaImpl implements Schema {
 	}
 
 	/**
-	 * Add user hook to this schema
+	 * Add life-cycle hook to this schema
 	 * @param hook
 	 * @return true if hook didn't exist, false if did.
 	 */

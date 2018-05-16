@@ -1,7 +1,7 @@
 package com.variant.server.impl;
 
-import com.variant.core.UserHook;
-import com.variant.server.lce.TestQualificationLifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.server.lifecycle.TestQualificationLifecycleEvent;
 import com.variant.core.schema.Test;
 import com.variant.server.api.Session;
 
@@ -21,7 +21,7 @@ public class TestQualificationLifecycleEventImpl  implements TestQualificationLi
 	}
 	
 	@Override
-	public UserHook<TestQualificationLifecycleEvent> getDefaultHook() {
+	public LifecycleHook<TestQualificationLifecycleEvent> getDefaultHook() {
 		return new TestQualificationDefaultHook();
 	}
 

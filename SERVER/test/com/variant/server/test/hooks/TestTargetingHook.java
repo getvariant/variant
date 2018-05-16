@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Random;
 
 import com.typesafe.config.Config;
-import com.variant.core.UserHook;
+import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.PostResultFactory;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
-import com.variant.server.lce.TestTargetingLifecycleEvent;
+import com.variant.server.lifecycle.TestTargetingLifecycleEvent;
 
 /**
  * Test targeter hook.
@@ -19,7 +19,7 @@ import com.variant.server.lce.TestTargetingLifecycleEvent;
  * otherwise, if experience is given, attempt to find that experience.
  * 
  */
-public class TestTargetingHook implements UserHook<TestTargetingLifecycleEvent> {
+public class TestTargetingHook implements LifecycleHook<TestTargetingLifecycleEvent> {
 
 	public static String ATTR_KEY = TestTargetingHook.class.getName();
 

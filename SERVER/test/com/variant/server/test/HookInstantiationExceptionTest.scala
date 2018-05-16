@@ -1,20 +1,8 @@
 package com.variant.server.test;
 
-import com.variant.core.lce.LifecycleEvent
-import com.variant.core.lce.StateParsedLifecycleEvent
-import com.variant.core.schema.State
-import scala.collection.mutable.ListBuffer
-import scala.collection.JavaConversions._
-import com.variant.core.UserError.Severity._
-import com.variant.core.lce.TestParsedLifecycleEvent
-import com.variant.core.schema.Test
-import org.scalatest.Assertions._
-import com.variant.server.boot.ServerErrorLocal._
-import com.variant.server.api.ServerException
-import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.server.test.hooks.StateParsedHook
+import com.variant.core.UserError.Severity.ERROR
+import com.variant.core.UserError.Severity.FATAL
 import com.variant.server.boot.ServerErrorLocal
-import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.BaseSpecWithServer
 
@@ -31,7 +19,7 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
 	"Any hook" should {
 	   
 	   ////////////////////
-	   "emit HOOK_CLASS_NO_INTERFACE if class doesn't implement UserHook" in {
+	   "emit HOOK_CLASS_NO_INTERFACE if class doesn't implement Userook" in {
 	      
    	    val schema = """
 {                                                                              
@@ -77,7 +65,7 @@ class HookInstantiationExceptionTest extends BaseSpecWithServer {
      		 response.getMessages(ERROR).size() mustBe 1
      		 var msg = response.getMessages.get(0)
      	   msg.getSeverity mustBe ERROR
-     	   msg.getText mustBe ServerErrorLocal.HOOK_CLASS_NO_INTERFACE.asMessage("com.variant.server.test.hooks.HookNoInterface", "com.variant.core.UserHook")
+     	   msg.getText mustBe ServerErrorLocal.HOOK_CLASS_NO_INTERFACE.asMessage("com.variant.server.test.hooks.HookNoInterface", "com.variant.core.lifecycle.LifecycleHook")
       }
    }
 	

@@ -270,7 +270,7 @@ class HookScopeTest extends BaseSpecWithServer {
    		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS1", "state1")))
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ServerErrorLocal.HOOK_TEST_SCOPE_VIOLATION.asMessage("stateParsed", "test1", "com.variant.core.lce.StateParsedLifecycleEvent"))
+   		msg.getText must include (ServerErrorLocal.HOOK_TEST_SCOPE_VIOLATION.asMessage("stateParsed", "test1", "com.variant.core.lifecycle.StateParsedLifecycleEvent"))
 
    		server.schemata.get(schemaName).isDefined mustBe false
    		
@@ -351,7 +351,7 @@ class HookScopeTest extends BaseSpecWithServer {
    		// Confirm parse time hooks were posted. Note that compile time hooks fire for off tests.
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testParsed", "state2", "com.variant.core.lce.TestParsedLifecycleEvent"))
+   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testParsed", "state2", "com.variant.core.lifecycle.TestParsedLifecycleEvent"))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe INFO
    		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT1", "test1")))
@@ -524,7 +524,7 @@ class HookScopeTest extends BaseSpecWithServer {
 
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testQualifier", "state1", "com.variant.server.lce.TestQualificationLifecycleEvent"))
+   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testQualifier", "state1", "com.variant.server.lifecycle.TestQualificationLifecycleEvent"))
 
    		server.schemata.get(schemaName).isDefined mustBe false
    		
