@@ -20,7 +20,8 @@ fi
 
 variant_root=$(cd $(dirname $0)/../..; pwd)
 variant_pub_root=$(cd $variant_root/../variant-pub; pwd)
-server_extapi_root=$variant_pub_root/variant-server-extapi
+extapi_root=$variant_pub_root/variant-server-extapi
+servlet_adapter_root=$variant_pub_root/variant-java-servlet-adapter
 release_dir=${variant_root}/RELEASE
 stage_dir=${release_dir}/stage
 target_dir=${release_dir}/target
@@ -33,21 +34,23 @@ mkdir ${stage_dir} ${target_dir} ${stage_dir}/server ${stage_dir}/java
 #
 ${variant_root}/CORE/bin/release.sh
 cp $variant_root/CORE/target/variant-core*.jar ${stage_dir}/java
-cp $variant_root/CORE/target/variant-core*.jar $server_extapi_root/lib
+cp $variant_root/CORE/target/variant-core*.jar $extapi_root/lib
+cp $variant_root/CORE/target/variant-core*.jar $servlet_adapter_root/lib
 
 #
 # SERVER
 #
 ${variant_root}/SERVER/mbin/release.sh
 cp $variant_root/SERVER/target/universal/variant-server-${version}.zip ${stage_dir}/server/variant-server-${version}${version2}.zip
-cp $variant_root/SERVER/target/universal/variant-server-extapi-${version}.jar $server_extapi_root/lib
+cp $variant_root/SERVER/target/universal/variant-server-extapi-${version}.jar $extapi_root/lib
 
 #
 # JAVA CLIENT
 #
 cd ${variant_root}/CLIENT-JAVA
 mvn clean package -DskipTests
-cp target/java-client*.jar ${stage_dir}/java/variant-java-client-${version}.jar
+cp target/variant-java-client*.jar ${stage_dir}/java
+cp target/variant-java-client*.jar $servlet_adapter_root/lib
 cp distr/variant.conf ${stage_dir}/java
 
 #
