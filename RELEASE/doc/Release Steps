@@ -40,8 +40,10 @@
 
     3.1. Create new release branch in variant-java-servlet-adapter
     3.2. Update version in pom.xml and make code changes
-    3.3. Test/Build and copy /target/variant-java-client-servlet-adapter-<release>.jar to /lib.
-    3.4. Copy latest variant-core.jar and variant-java-client.jar to /lib
+    3.3. Uncomment ServletSessionTest in pom.xml, then run 'mvn clean build'. If tests run clean, comment out ServletSessionTest.
+    3.4. Delete old jars from /lib
+    3.5. copy /target/variant-java-client-servlet-adapter-<release>.jar to /lib.
+    3.4. Copy latest variant-core-<release>.jar and variant-java-client-<release>.jar from CLIENT-JAVA project to /lib
     3.5. Build javadoc by running bin/javadoc.sh. Will install it in /docs, which is where github pages will look for it.
     3.6. Commit and merge back to main.
 

@@ -95,7 +95,7 @@ class ConnectionStore(private var server: VariantServer) {
       val toDelete = connMap.filter(_._2.isDisposable)
       toDelete.foreach { entry =>
          connMap.remove(entry._1)
-         logger.info(s"Disposed of ${entry._2.status} connection ID [${entry._1}]") 
+         logger.debug(s"Disposed of ${entry._2.status} connection ID [${entry._1}]") 
       }
    }
    
