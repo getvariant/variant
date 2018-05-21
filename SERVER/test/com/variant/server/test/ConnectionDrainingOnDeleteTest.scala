@@ -139,10 +139,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidBig = connId2Big(i)
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidBig)))
                .is(OK)
                .withConnStatusHeader(OPEN)
                .withBodyJson { json => 
@@ -154,10 +151,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidPet = connId2Pet(CONNECTIONS - (i+1))
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidPet).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidPet)))
                .is(OK)
                .withConnStatusHeader(OPEN)
                .withBodyJson { json => 
@@ -191,10 +185,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidBig = connId2Big(i)
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidBig)))
                .is(OK)
                .withConnStatusHeader(OPEN, DRAINING)  // changes underneath
                .withBodyJson { json => 
@@ -206,10 +197,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidPet = connId2Pet(i)
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidPet).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidPet)))
                .is(OK)
                .withConnStatusHeader(OPEN)
                .withBodyJson { json => 
@@ -265,10 +253,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
             .withNoBody
 
          // And read, just in case
-         val getBody = Json.obj(
-              "sid" -> sid
-            ).toString
-         assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(getBody)))
+         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
             .is(OK)
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
@@ -299,10 +284,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidBig = connId2Big(i)
          for (j <- 0 until SESSIONS) {
             val sid = ssnId2Big(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidBig)))
                .isError(UnknownConnection, cidBig)
                .withNoConnStatusHeader
          }
@@ -310,10 +292,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          val cidPet = connId2Pet(i)
          for (j <- 0 until SESSIONS) {
             val sid = ssnId2Pet(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidPet).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidPet)))
                .isError(SessionExpired, sid)
                .withConnStatusHeader(OPEN)
          }

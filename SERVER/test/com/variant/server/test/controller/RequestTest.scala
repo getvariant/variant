@@ -63,10 +63,7 @@ class RequestTest extends BaseSpecWithServer {
 
       "create and commit new state request" in {
 
-         val body = Json.obj(
-              "sid" -> sid
-            ).toString
-         assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(body)))
+         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
@@ -175,10 +172,7 @@ class RequestTest extends BaseSpecWithServer {
 
       "Disqualify session from test" in {
 
-         val body = Json.obj(
-              "sid" -> sid
-            ).toString
-         assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(body)))
+         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 

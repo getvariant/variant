@@ -77,32 +77,17 @@ class SessionTest extends BaseSpecWithServer {
          }
       }
 
-      "return SessionExpired on GET non-existent session on valid CID" in {  
-         
-         val body = Json.obj(
-            "sid" -> "bad"
-         ).toString
-         
-         assertResp(route(app, connectedRequest(GET, endpoint, connId).withBody(body)))
-            .isError(SessionExpired, "bad")
-            .withConnStatusHeader(OPEN)
-      }
-
-      "return EmptyBody on GET with valid cid and no body" in {  
+      "return 404 on GET with no sid" in {  
                   
          assertResp(route(app, connectedRequest(GET, endpoint, connId)))
-            .isError(EmptyBody)
-            .withConnStatusHeader(OPEN)
+            .is(NOT_FOUND)
+            .withNoBody
       }
 
-      "return MissingProperty on GET with valid cid and bad body" in {  
+      "return SessionExpired on GET non-existent session on valid CID" in {  
          
-         val body = Json.obj(
-            "sidd" -> "should have been sid"
-         ).toString
-         
-         assertResp(route(app, connectedRequest(GET, endpoint, connId).withBody(body)))
-            .isError(MissingProperty, "sid")
+         assertResp(route(app, connectedRequest(GET, endpoint + "/foo", connId)))
+            .isError(SessionExpired, "foo")
             .withConnStatusHeader(OPEN)
       }
 
@@ -126,11 +111,9 @@ class SessionTest extends BaseSpecWithServer {
 
       "return OK and existing session on GET" in {
        
-         val body = Json.obj(
-            "sid" -> "foo"
-            ).toString
+         val body = "just some junk that should be ignored"
 
-         assertResp(route(app, connectedRequest(GET, endpoint, connId).withBody(body)))
+         assertResp(route(app, connectedRequest(GET, endpoint + "/foo", connId).withBody(body)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
@@ -147,11 +130,7 @@ class SessionTest extends BaseSpecWithServer {
             .withNoBody
             .withConnStatusHeader(OPEN)
          
-         val getBody = Json.obj(
-            "sid" -> "foo"
-            ).toString
-
-         assertResp(route(app, connectedRequest(GET, endpoint , connId).withBody(getBody)))
+         assertResp(route(app, connectedRequest(GET, endpoint + "/foo" , connId)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json =>
@@ -168,11 +147,7 @@ class SessionTest extends BaseSpecWithServer {
             .withNoBody
             .withConnStatusHeader(OPEN)
          
-         val getBody = Json.obj(
-            "sid" -> "bar1"
-            ).toString
-
-         assertResp(route(app, connectedRequest(GET, endpoint, connId).withBody(getBody)))
+         assertResp(route(app, connectedRequest(GET, endpoint + "/bar1", connId)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json =>
@@ -183,11 +158,7 @@ class SessionTest extends BaseSpecWithServer {
 
      "not lose existing session with different key" in {
 
-         val body = Json.obj(
-            "sid" -> "foo"
-            ).toString
-
-         assertResp(route(app, connectedRequest(GET, endpoint, connId).withBody(body)))
+         assertResp(route(app, connectedRequest(GET, endpoint + "/foo", connId)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json =>
@@ -197,16 +168,12 @@ class SessionTest extends BaseSpecWithServer {
       }
 
       "keep an existing session alive" in {
-      
-         val body = Json.obj(
-            "sid" -> "foo"
-         ).toString
-         
+               
          val halfExp = sessionTimeoutMillis / 2
          halfExp mustBe 500   
          for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
             Thread.sleep(wait)
-            assertResp(route(app, connectedRequest(GET, endpoint, connId).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, endpoint + "/foo", connId)))
                .isOk
                .withConnStatusHeader(OPEN)
                .withBodyJson { json => 
@@ -222,11 +189,7 @@ class SessionTest extends BaseSpecWithServer {
       
          ("foo" :: "bar" :: Nil).foreach { sid =>
 
-            val body = Json.obj(
-               "sid" -> sid
-            ).toString
-
-            assertResp(route(app, connectedRequest(GET, endpoint, connId).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, endpoint + "/" + sid, connId)))
                .isError(SessionExpired, sid)
                .withConnStatusHeader(OPEN)
          }
@@ -261,13 +224,9 @@ class SessionTest extends BaseSpecWithServer {
             .isOk
             .withNoBody
             .withConnStatusHeader(OPEN)
-
-         Json.obj(
-            "sid" -> sid
-         ).toString
          
          // Get the session on the parallel connection.
-         assertResp(route(app, connectedRequest(GET, endpoint, conn2Id).withBody(body)))
+         assertResp(route(app, connectedRequest(GET, endpoint + "/" + sid, conn2Id)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
@@ -359,17 +318,13 @@ class SessionTest extends BaseSpecWithServer {
             .withNoBody
             .withConnStatusHeader(CLOSED_BY_CLIENT)
 
-         val getBody = Json.obj(
-            "sid" -> sid
-         ).toString
-
          // Cannot get to session over closed connection.
-         assertResp(route(app, connectedRequest(GET, endpoint, connId).withBody(getBody)))
+         assertResp(route(app, connectedRequest(GET, endpoint + "/" + sid, connId)))
             .isError(UnknownConnection, connId)
             .withNoConnStatusHeader
 
          // OK getting to session over open connection.
-         assertResp(route(app, connectedRequest(GET, endpoint, conn2Id).withBody(getBody)))
+         assertResp(route(app, connectedRequest(GET, endpoint + "/" + sid, conn2Id)))
             .isOk
             .withConnStatusHeader(OPEN)
 
@@ -379,17 +334,13 @@ class SessionTest extends BaseSpecWithServer {
 
          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
 
-         val getBody = Json.obj(
-            "sid" -> sid
-         ).toString
-
          // Same error over the closed connection
-         assertResp(route(app, connectedRequest(GET, endpoint, connId).withBody(getBody)))
+         assertResp(route(app, connectedRequest(GET, endpoint + "/" + sid, connId)))
             .isError(UnknownConnection, connId)
             .withNoConnStatusHeader
 
          // Session Expired over live connection.
-         assertResp(route(app, connectedRequest(GET, endpoint , conn2Id).withBody(getBody)))
+         assertResp(route(app, connectedRequest(GET, endpoint + "/" + sid, conn2Id)))
             .isError(SessionExpired, sid)
             .withConnStatusHeader(OPEN)
 

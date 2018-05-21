@@ -53,11 +53,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
 
       "return null on read of non-existent attribute" in {
                   
-         val body: JsValue = Json.obj(
-            "sid" -> sid1,
-            "name" -> "non-existent"
-         )
-         assertResp(route(app, connectedRequest(GET, endpointSession, cid1).withBody(body.toString())))
+         assertResp(route(app, connectedRequest(GET, endpointSession + "/" + sid1, cid1)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson  { json =>
@@ -97,10 +93,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
 
       "read the attribute in first session" in {
                   
-         val body: JsValue = Json.obj(
-            "sid" -> sid1
-         )
-         assertResp(route(app, connectedRequest(GET, endpointSession, cid1).withBody(body.toString())))
+         assertResp(route(app, connectedRequest(GET, endpointSession + "/" + sid1, cid1)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson  { json =>
@@ -121,10 +114,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
                cid2 mustNot be (sid1)
          }
          
-         val body: JsValue = Json.obj(
-            "sid" -> sid1
-         )
-         assertResp(route(app, connectedRequest(GET, endpointSession, cid2).withBody(body.toString())))
+         assertResp(route(app, connectedRequest(GET, endpointSession + "/" + sid1, cid2)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson  { json =>
@@ -150,10 +140,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
       
       "read the updated attribute in original session" in {
                   
-         val body: JsValue = Json.obj(
-            "sid" -> sid1
-         )
-         assertResp(route(app, connectedRequest(GET, endpointSession, cid1).withBody(body.toString())))
+         assertResp(route(app, connectedRequest(GET, endpointSession + "/" + sid1, cid1)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson  { json =>
@@ -173,10 +160,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
                cid3 mustNot be (null)
          }
          
-         val body: JsValue = Json.obj(
-            "sid" -> sid1
-         )
-         assertResp(route(app, connectedRequest(GET, endpointSession, cid3).withBody(body.toString())))
+         assertResp(route(app, connectedRequest(GET, endpointSession + "/" + sid1, cid3)))
             .isError(SessionExpired, sid1)
             .withConnStatusHeader(OPEN)
       }
@@ -198,10 +182,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
 
       "Confirm that the attribute is gone" in {
                   
-         val body: JsValue = Json.obj(
-            "sid" -> sid1
-         )
-         assertResp(route(app, connectedRequest(GET, endpointSession, cid2).withBody(body.toString())))
+         assertResp(route(app, connectedRequest(GET, endpointSession + "/" + sid1, cid2)))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson  { json =>

@@ -277,10 +277,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 
 	   "permit session read over draining connection" in {
 	      
-         val body = Json.obj(
-              "sid" -> sid
-            ).toString
-         assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(body)))
+         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
             .isOk
             .withConnStatusHeader(DRAINING)
             .withBodyJson { json => 
@@ -311,10 +308,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          
          Thread.sleep(sessionTimeoutSecs * 1000);
          
-         val body = Json.obj(
-              "sid" -> sid
-            ).toString
-         assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(body)))
+         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
             .isError(SessionExpired, sid)
             .withConnStatusHeader(DRAINING)
 
@@ -392,10 +386,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          val halfExp = sessionTimeoutSecs * 500
          for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
             Thread.sleep(wait)
-            val body = Json.obj(
-                 "sid" -> sid1
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cid1).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid1, cid1)))
                .isOk
                .withConnStatusHeader(DRAINING)
                .withBodyJson { json => 

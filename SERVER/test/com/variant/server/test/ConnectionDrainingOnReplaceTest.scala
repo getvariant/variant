@@ -141,11 +141,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          val cidBig = connId2Big(i)
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidBig)))
                .is(OK)
                .withConnStatusHeader(OPEN)
                .withBodyJson { json => 
@@ -157,10 +153,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          val cidPet = connId2Pet(CONNECTIONS - (i+1))
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidPet).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidPet)))
                .is(OK)
                .withConnStatusHeader(OPEN)
                .withBodyJson { json => 
@@ -198,10 +191,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          val cidBig = connId2Big(i)
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidBig)))
                .is(OK)
                .withConnStatusHeader(OPEN, DRAINING)  // changes underneath
                .withBodyJson { json => 
@@ -213,10 +203,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          val cidPet = connId2Pet(i)
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidPet).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidPet)))
                .is(OK)
                .withConnStatusHeader(OPEN)
                .withBodyJson { json => 
@@ -259,11 +246,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
             .withNoBody
 
          // And read, just in case
-         val getBody = Json.obj(
-            "sid" -> sid
-         ).toString
-
-         assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(getBody)))
+         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
             .is(OK)
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
@@ -314,10 +297,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          val cid = connId2Big(i)
          for (j <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)(j)
-            val body = Json.obj(
-                 "sid" -> newsid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cid).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + newsid, cid)))
                .isError(SessionExpired, newsid)
                .withConnStatusHeader(DRAINING) 
          }
@@ -330,10 +310,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          for (i <- 0 until CONNECTIONS) {
             for (j <- 0 until SESSIONS) async {
                val sid = ssnId2Big(i)(j)
-               val body = Json.obj(
-                  "sid" -> sid
-               ).toString
-               assertResp(route(app, connectedRequest(GET, context + "/session", newcid).withBody(body)))
+               assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, newcid)))
                   .isError(SessionExpired, sid)
                   .withConnStatusHeader(OPEN) 
             }
@@ -349,10 +326,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          val cidBig = connId2Big(i)
          for (j <- 0 until SESSIONS) {
             val sid = ssnId2Big(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidBig).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidBig)))
                .isError(UnknownConnection, cidBig)
                .withNoConnStatusHeader
          }
@@ -360,18 +334,12 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          val cidPet = connId2Pet(i)
          for (j <- 0 until SESSIONS) {
             val sid = ssnId2Pet(i)(j)
-            val body = Json.obj(
-                 "sid" -> sid
-               ).toString
-            assertResp(route(app, connectedRequest(GET, context + "/session", cidPet).withBody(body)))
+            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cidPet)))
                .isError(SessionExpired, sid)
                .withConnStatusHeader(OPEN)
          }
          
-         val body = Json.obj(
-              "sid" -> newsid
-            ).toString
-         assertResp(route(app, connectedRequest(GET, context + "/session", newcid).withBody(body)))
+         assertResp(route(app, connectedRequest(GET, context + "/session/" + newsid, newcid)))
             .isError(SessionExpired, newsid)
             .withConnStatusHeader(OPEN)
       

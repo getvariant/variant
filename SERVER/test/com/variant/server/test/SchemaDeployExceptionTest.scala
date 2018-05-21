@@ -136,10 +136,7 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
       
       "return 503 in every http request after SCHEMATA_DIR_NOT_DIR" in {
 
-         val body = Json.obj(
-              "sid" -> "foo"
-            ).toString
-         assertResp(route(app, FakeRequest(GET, context + "/session").withBody(body)))
+         assertResp(route(app, FakeRequest(GET, context + "/session/foo")))
             .is(SERVICE_UNAVAILABLE)
             .withNoConnStatusHeader
             .withNoBody
