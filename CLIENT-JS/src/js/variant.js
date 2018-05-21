@@ -8,12 +8,12 @@
 		window.variant = {
 			url: null,
 			sid: null,
-			cid: null,
+			schema: null,
 			success: function() {},
-			error: function(jqXHR) {
+			error: function(qXHR) {
 				throw Error(
-						"Bad response from Variant server: " + 
-						jqXHR.status + " " + jqXHR.statusText + ": " + jqXHR.responseText);
+						"Bad response from Variant server: " +
+						qXHR.status + ", '" + qXHR.statusText + "', '" + qXHR.responseText + "'");
 			}
 	    }
 	}
@@ -69,32 +69,40 @@
 				},
 				500
 			);
-		},
-		
+		}
 	}
 
 	/**
-	 * Boot up Variant.js: override default properties and start the drainer.
+	 * Connect to a variant schema.
+	 * @arg:
+	 *  {
+	 *     url,      -- Schema URL
+	 *     success,  -- function to call on success
+	 *     error     -- function to call on error
+	 *  }
 	 */
-	variant.boot = function(props) {
+	variant.connect = function(url, success) {
+				
 		
-		if (booted) throw Error("Variant.JS is already booted.");
+		if (arguments.length == 0) 
+			throw Error ("variant.connect() takes one or two argument");
+			    
+		var urlTokens = url.split(":");
+		if (urlTokens.length != 4) 
+			throw Error("Invalid URL. Expected 'variant:<host>:<port><path>:<schema>'. Example 'variant:localhost:5377/variant:petclinic");
 		
-		if (arguments.length != 0) {
-			
-			if (!props.url) throw Error("Property 'url' not set") 
-			variant.url = props.url;
-			if (!variant.url.endsWith('/')) variant.url += "/";
-
-			if (!props.sid)	throw Error("Property 'sid' not	set")
-			variant.sid = props.sid;
-                        
-			if (!props.cid)	throw Error("Property 'cid' not	set")
-			variant.cid = props.cid;
-
-			variant.success = props.success || variant.success;
-			variant.error = props.error || variant.error;
-		}
+		variant.endpoint = "http://" + urlTokens[1] + ":" + urlTokens[2];
+		
+		// Attempt to connect
+		$.ajax({
+			url: variant.endpoint + "/connection/" + urlTokens[3],
+			method: "post",
+			contentType: "text/plain; charset=utf-8",
+			success: function (respBody, status, resp) {
+				success(new variant.Connection(resp));
+			},
+			error: variant.error
+		});
 
 		if (webStorage && !sessionStorage.variantQueue) sessionStorage.variantQueue = "[]";
 
@@ -102,9 +110,46 @@
 		booted = true;
 	}
 
+	/*****************************************************\
+	 *                variant.Connection
+	 \****************************************************/	
+	variant.Connection = function(resp) {
+		
+		this.status = resp.getResponseHeader("X-Connection-Status");
+		var bodyObject = JSON.parse(resp.responseText);
+		this.id = bodyObject.id;
+	}
+
 	/**
-	 * Event Object can be sent to server.
+	 * get existing session by id
 	 */
+	variant.Connection.prototype.getSessionById = function (sid, success) {
+		
+	console.log("this.id " + this.id);
+		$.ajax({
+			url: variant.endpoint + "/session",
+			method: "get",
+			headers: { "X-Connection-ID": this.id },
+			contentType: "text/plain; charset=utf-8",
+			data: "{\"sid\":\"" + sid + "\"}",
+			success: function (respBody, status, resp) {
+				new variantSession(resp);
+			},
+			error: variant.error
+		});
+		
+	}
+	
+	/*****************************************************\
+	 *                variant.Session
+	 \****************************************************/	
+	variant.Session = function(resp) {
+		console.log("GOT SESSION '" + resp + "'");
+	}
+	
+	/*****************************************************\
+	 *                variant.Event
+	 \****************************************************/
 	variant.Event = function(name, value, params) {
 
 		if (!webStorage) return;
