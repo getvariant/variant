@@ -39,12 +39,13 @@ public class HttpAdapter {
 	} 
 
 	/**
+	 * *********** COMMENTED OUT: JAVASCRIPT DOES NOT SUPPORT GET WITH BODY **************
 	 * Send a GET with a body. Note that the stock HttpGet does not support entities
 	 * (bodies) so we've created our oun HttpGetWithEntity class.
 	 * @param url
 	 * @param body
 	 * @return
-	 */
+	 *
 	public HttpResponse get(final String url, final String body, Connection conn) { 		
 		
 		return remoter.call(
@@ -58,7 +59,8 @@ public class HttpAdapter {
 				conn
 		);
 	} 
-
+	***************************************************************************************/
+	
 	/**
 	 * Send a POST with a body
 	 * @param url

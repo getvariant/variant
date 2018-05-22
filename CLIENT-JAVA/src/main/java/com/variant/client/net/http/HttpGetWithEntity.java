@@ -1,5 +1,5 @@
 package com.variant.client.net.http;
-
+/*
 import java.net.URI;
 
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -7,7 +7,7 @@ import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 /**
  * A GET which accepts entities (bodies) to work around Apache's hangup
  * on not supporting bodies with GET.
- */
+ *
 public class HttpGetWithEntity  extends HttpEntityEnclosingRequestBase {
 	
     public final static String METHOD_NAME = "GET";
@@ -29,10 +29,11 @@ public class HttpGetWithEntity  extends HttpEntityEnclosingRequestBase {
 
     /**
      * @throws IllegalArgumentException if the uri is invalid.
-     */
+     *
     public HttpGetWithEntity(final String uri) {
         super();
         setURI(URI.create(uri));
     }
 
 }
+*/

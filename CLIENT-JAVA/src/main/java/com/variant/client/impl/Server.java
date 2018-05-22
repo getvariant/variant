@@ -167,11 +167,10 @@ public class Server {
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionGet(%s)", sid));
 		
-		final String body = String.format("{\"sid\":\"%s\"}", sid);
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.get(serverUrl + "session", body, conn);
+				HttpResponse resp = adapter.get(serverUrl + "session/" + sid, conn);
 				return Payload.Session.fromResponse(conn, resp);
 			}
 		}.run(sid, conn);
