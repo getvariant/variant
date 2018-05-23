@@ -18,7 +18,7 @@
 	    }
 	}
 
-	// privates
+	// Can't do without session storage.
 	if ((typeof(Storage) === "undefined")) {
 		throw Error("Webstorage required but is not supported by this browser.");
 	}
@@ -33,6 +33,7 @@
 		 * of events. We parse in order to push and then stringify again to save.
 		 */
 		push: function(event) {
+			console.log("push: " + event)
 			var queueAsArray = JSON.parse(sessionStorage.variantQueue);
 			queueAsArray.push(event);
 			sessionStorage.variantQueue = JSON.stringify(queueAsArray);
@@ -42,6 +43,7 @@
 			
 			var drainer = setInterval(
 				function() {
+					console.log("queue: " + sessionStorage.variantQueue)
 					var queueAsArray = JSON.parse(sessionStorage.variantQueue);
 					var cnt = 0;
 					while (queueAsArray.length > 0) {
@@ -52,7 +54,7 @@
 						event.sid = event.ssn.id;
 						delete(event.ssn);
 						$.ajax({
-							url: variant.endpoint + '/event',
+							url: sessionStorage.variantEndpoint + '/event',
 							method: "post",
 							data: JSON.stringify(event),
 							headers: { "X-Connection-ID": cid },
@@ -69,32 +71,39 @@
 	}
 
 	/**
-	 * Connect to a variant schema.
-	 * @arg:
-	 *  {
-	 *     url,      -- Schema URL
-	 *     success,  -- function to call on success
-	 *     error     -- function to call on error
-	 *  }
+	 * Connect to a variant schema. 
+	 * @param url - variant url 'variant:<host>:<port><path>:<schema>'. Example 'variant:localhost:5377/variant:petclini
+	 * @param success - success callback function.
 	 */
 	variant.connect = function(url, success) {
 				
-		
 		if (arguments.length == 0) 
-			throw Error ("variant.connect() takes one or two argument");
-			    
+			throw Error ("Usage: variant.connect(url, success)");
+
+		// If we already have a connection to this URL, reuse that.
+		if (sessionStorage.variantUrl == url) {
+			var conn = new variant.Connection(sessionStorage.variantConn);
+			success(conn);
+			return;
+		}
+		
+		// First time through - connect to server.
+		
 		var urlTokens = url.split(":");
 		if (urlTokens.length != 4) 
-			throw Error("Invalid URL. Expected 'variant:<host>:<port><path>:<schema>'. Example 'variant:localhost:5377/variant:petclinic");
+			throw Error("Invalid URL. Expected 'variant:<host>:<port><path>:<schema>'. Example 'variant:localhost:5377/variant:petclinic");		
 		
-		variant.endpoint = "http://" + urlTokens[1] + ":" + urlTokens[2];
+		sessionStorage.variantEndpoint = "http://" + urlTokens[1] + ":" + urlTokens[2];
 		
 		$.ajax({
-			url: variant.endpoint + "/connection/" + urlTokens[3],
+			url: sessionStorage.variantEndpoint + "/connection/" + urlTokens[3],
 			method: "post",
 			contentType: "text/plain; charset=utf-8",
 			success: function (respBody, status, resp) {
-				success(new variant.Connection(resp));
+				sessionStorage.variantUrl = url;
+				var conn = new variant.Connection(resp);
+				sessionStorage.variantConn = JSON.stringify(conn);
+				success(conn);
 			},
 			error: variant.error
 		});
@@ -102,17 +111,25 @@
 		if (!sessionStorage.variantQueue) sessionStorage.variantQueue = "[]";
 
 		eventQueue.drain();
-		booted = true;
 	}
 
 	/*****************************************************\
 	 *                variant.Connection
 	 \****************************************************/	
-	variant.Connection = function(resp) {
-		
-		this.status = resp.getResponseHeader("X-Connection-Status");
-		var bodyObject = JSON.parse(resp.responseText);
-		this.id = bodyObject.id;
+	variant.Connection = function(arg) {
+
+		if (typeof arg === "string") {
+			// Restoring from session storage string.
+			var fromJson = JSON.parse(arg);
+			this.status = fromJson.status;
+			this.id = fromJson.id;
+		}
+		else {
+			// Creating from AJAX response.
+			this.status = arg.getResponseHeader("X-Connection-Status");
+			var bodyObject = JSON.parse(arg.responseText);
+			this.id = bodyObject.id;
+		}
 	}
 
 	/**
@@ -123,7 +140,7 @@
 		var conn = this;
 		
 		$.ajax({
-			url: variant.endpoint + "/session/" + sid,
+			url: sessionStorage.variantEndpoint + "/session/" + sid,
 			method: "get",
 			headers: { "X-Connection-ID": this.id },
 			contentType: "text/plain; charset=utf-8",
@@ -150,6 +167,7 @@
 	 * Send custom event to the server.
 	 */
 	variant.Session.prototype.triggerEvent = function(event) {
+		console.dir(event);
 		event.ssn = this;
 		eventQueue.push(event);
 	}
