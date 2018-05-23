@@ -84,9 +84,9 @@
          ],
          'hooks':[
             {
-               // Disqualifies all Firefox traffic.
+               // Disqualifies all Safari traffic.
                'name':'FirefoxDisqualifier',
-               'class':'com.variant.server.ext.demo.FirefoxDisqualHook'
+               'class':'com.variant.server.ext.demo.SafariDisqualHook'
             },
             {
                // Assigns all Chrome traffic to the control experience
