@@ -19,22 +19,20 @@
 	}
 
 	// privates
-	var webStorage = !(typeof(Storage) === "undefined");
-	var booted = false;
-
+	if ((typeof(Storage) === "undefined")) {
+		throw Error("Webstorage required but is not supported by this browser.");
+	}
+	
 	// Private Event Queue.
 	// Does nothing if session storage not supported by browser.
 	var eventQueue = {
 
 		/**
 		 * Push an event onto the queue.
-		 * local storage can only be a strging, so we store events in a json representation of an array
+		 * local storage can only be a string, so we store events in a json representation of an array
 		 * of events. We parse in order to push and then stringify again to save.
 		 */
 		push: function(event) {
-
-			if (!webStorage) return;
-			
 			var queueAsArray = JSON.parse(sessionStorage.variantQueue);
 			queueAsArray.push(event);
 			sessionStorage.variantQueue = JSON.stringify(queueAsArray);
@@ -42,25 +40,23 @@
 		
 		drain: function() {
 			
-			if (!webStorage) return;	
-								
 			var drainer = setInterval(
 				function() {
 					var queueAsArray = JSON.parse(sessionStorage.variantQueue);
-					if (queueAsArray.length > 0 && !variant.url) {
-						clearInterval(drainer);
-						throw Error("API endpoint URL has not been set. Call variant.options() to set. " + sessionStorage.variantQueue);
-					}
-
 					var cnt = 0;
 					while (queueAsArray.length > 0) {
 						var event = queueAsArray.pop();
+						// The event object is just as we need it, except the ssn field has the
+						// entire session object, which we need to replace with sid.
+						var cid = event.ssn.conn.id;
+						event.sid = event.ssn.id;
+						delete(event.ssn);
 						$.ajax({
-							url: variant.url + 'event',
+							url: variant.endpoint + '/event',
 							method: "post",
 							data: JSON.stringify(event),
-							contentType: "application/json",
-							success: variant.success,
+							headers: { "X-Connection-ID": cid },
+							contentType: "text/plain; charset=utf-8",
 							error: variant.error
 						});
 						cnt++;
@@ -93,7 +89,6 @@
 		
 		variant.endpoint = "http://" + urlTokens[1] + ":" + urlTokens[2];
 		
-		// Attempt to connect
 		$.ajax({
 			url: variant.endpoint + "/connection/" + urlTokens[3],
 			method: "post",
@@ -104,7 +99,7 @@
 			error: variant.error
 		});
 
-		if (webStorage && !sessionStorage.variantQueue) sessionStorage.variantQueue = "[]";
+		if (!sessionStorage.variantQueue) sessionStorage.variantQueue = "[]";
 
 		eventQueue.drain();
 		booted = true;
@@ -125,15 +120,16 @@
 	 */
 	variant.Connection.prototype.getSessionById = function (sid, success) {
 		
-	console.log("this.id " + this.id);
+		var conn = this;
+		
 		$.ajax({
-			url: variant.endpoint + "/session",
+			url: variant.endpoint + "/session/" + sid,
 			method: "get",
 			headers: { "X-Connection-ID": this.id },
 			contentType: "text/plain; charset=utf-8",
-			data: "{\"sid\":\"" + sid + "\"}",
 			success: function (respBody, status, resp) {
-				new variantSession(resp);
+				var ssn = new variant.Session(conn, resp);
+				success(ssn);
 			},
 			error: variant.error
 		});
@@ -143,8 +139,19 @@
 	/*****************************************************\
 	 *                variant.Session
 	 \****************************************************/	
-	variant.Session = function(resp) {
-		console.log("GOT SESSION '" + resp + "'");
+	variant.Session = function(conn, resp) {
+		var bodyObject = JSON.parse(resp.responseText);
+		this.coreSsn = JSON.parse(bodyObject.session);
+		this.conn = conn;
+		this.id = this.coreSsn.sid;
+	}
+	
+	/**
+	 * Send custom event to the server.
+	 */
+	variant.Session.prototype.triggerEvent = function(event) {
+		event.ssn = this;
+		eventQueue.push(event);
 	}
 	
 	/*****************************************************\
@@ -152,24 +159,12 @@
 	 \****************************************************/
 	variant.Event = function(name, value, params) {
 
-		if (!webStorage) return;
-
 		if (arguments.length < 2) throw Error("Contructor variant.Event(name, value, params) requires at least 2 arguments.");
 	  
 		this.name = name;
 		this.value = value;
-		this.sid = variant.sid;
 		this.ts = Date.now;
 		this.params = params;
-	}
-
-	/**
-	 * Push the event onto queue.
-	 */
-	variant.Event.prototype.send = function() {
-		if (!webStorage) return;
-		if (!booted) throw Error("Variant.JS is not booted.  Call variant.boot() first.")
-		eventQueue.push(this);
 	}
 
 })();
