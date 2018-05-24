@@ -33,7 +33,6 @@
 		 * of events. We parse in order to push and then stringify again to save.
 		 */
 		push: function(event) {
-			console.log("push: " + event)
 			var queueAsArray = JSON.parse(sessionStorage.variantQueue);
 			queueAsArray.push(event);
 			sessionStorage.variantQueue = JSON.stringify(queueAsArray);
@@ -43,7 +42,6 @@
 			
 			var drainer = setInterval(
 				function() {
-					console.log("queue: " + sessionStorage.variantQueue)
 					var queueAsArray = JSON.parse(sessionStorage.variantQueue);
 					var cnt = 0;
 					while (queueAsArray.length > 0) {
@@ -167,7 +165,6 @@
 	 * Send custom event to the server.
 	 */
 	variant.Session.prototype.triggerEvent = function(event) {
-		console.dir(event);
 		event.ssn = this;
 		eventQueue.push(event);
 	}

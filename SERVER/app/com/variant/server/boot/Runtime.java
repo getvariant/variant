@@ -70,9 +70,9 @@ public class Runtime {
      * 4. If we still have pre-targeted tests, confirm that their targeting is compatible with this
      *    session's current targeting. In other words, confirm that the test cell given by the combination
      *    of the targeted and the pre-targeted experiences is resolvable in the current schema.
-     *    The reason we may not is, e.g., if two tests used to be covariant and the TT contains a variant
+     *    The reason we may not is, e.g., if two tests used to be conjoint and the TT contains a variant
      *    experience for one, and the currently targeted list contains a variant experience for the other.
-     *    If, in the current schema, they are no longer covariant, this combination is no longer resolvable.
+     *    If, in the current schema, they are no longer conjoint, this combination is no longer resolvable.
      *    
      * 5. If pre-targeted list is not compatible with the currently targeted list, compute the maximal 
      *    compatible subset, i.e. one that of possible compatible subsets is the longest. Remove from the
