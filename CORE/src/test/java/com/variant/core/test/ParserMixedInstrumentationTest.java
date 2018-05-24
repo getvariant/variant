@@ -15,7 +15,7 @@ import com.variant.core.schema.parser.error.SemanticError.Location;
 
 /**
  * Test mixed instrumentation, i.e. when an experience is not defined
- * on a particular state, as denoted by the tests/onState/isDefined element.
+ * on a particular state, as denoted by the tests/onState/isPhantom element.
  *
  * @author Igor 
  *
@@ -61,7 +61,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'isDefined':false,                                   \n" +
+			    	    "                    'isPhantom':true,                                    \n" +
 						"                    'parameters': [    // not allowed                    \n" +
 						"                       {                                                 \n" +
 						"                          'name':'path',                                 \n" +
@@ -93,7 +93,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 {                                                       \n" +
 			    	    "                    // control allowed,                                  \n" +
 			    	    "                    'experienceRef':'A',                                 \n" + 
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 }                                                       \n" +
 			    	    "                 // B is missing.                                        \n" +
 			    	    "              ]                                                          \n" +
@@ -119,7 +119,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" + 
-			    	    "                    'isDefined':34   // not a boolean.                   \n" +
+			    	    "                    'isPhantom':34   // not a boolean.                   \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
@@ -144,7 +144,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" + 
-			    	    "                    'isDefined': {'foo':'bar'} // Not a boolean          \n" + 
+			    	    "                    'isPhantom': {'foo':'bar'} // Not a boolean          \n" + 
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
@@ -176,7 +176,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/tests[0]/onStates[0]/variants[0]/parameters/"), 
-				PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT, "parameters");
+				PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT, "parameters");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
@@ -190,13 +190,13 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(3);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[0]/variants[0]/isDefined"), 
-				PROPERTY_NOT_BOOLEAN, "isDefined");
+				new Location("/tests[2]/onStates[0]/variants[0]/isPhantom"), 
+				PROPERTY_NOT_BOOLEAN, "isPhantom");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(4);
 		expected = new ParserMessageImpl(
-				new Location("/tests[3]/onStates[0]/variants[0]/isDefined"), 
-				PROPERTY_NOT_BOOLEAN, "isDefined");
+				new Location("/tests[3]/onStates[0]/variants[0]/isPhantom"), 
+				PROPERTY_NOT_BOOLEAN, "isPhantom");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(5);
 		expected = new ParserMessageImpl(
@@ -244,7 +244,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -253,7 +253,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -290,7 +290,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 }                                                       \n" +
 				        "                 // ERROR: need the def for the proper B                 \n" +
 			    	    "              ]                                                          \n" +
@@ -300,7 +300,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 }                                                       \n" +
 				        "                 // Not an error: don't need hybrid def for T1.B         \n" +
 				        "                 // becose proper B is off => the entire slice is also   \n" +
@@ -369,7 +369,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -378,7 +378,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -415,7 +415,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -449,7 +449,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 				        "                 // Error: proper B is off => the entire slice is too    \n" +
 			    	    "                 {                                                       \n" +
@@ -488,12 +488,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/tests[1]/onStates[0]/variants/"), 
-				COVARIANT_VARIANT_COVARIANT_UNDEFINED, "test1.B", "state1");
+				COVARIANT_VARIANT_COVARIANT_PHANTOM, "test1.B", "state1");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
 				new Location("/tests[1]/onStates[1]/variants/"), 
-				COVARIANT_VARIANT_PROPER_UNDEFINED, "test2.B", "state2");
+				COVARIANT_VARIANT_PROPER_PHANTOM, "test2.B", "state2");
 		assertMessageEqual(expected, actual);
 	}
 	
@@ -536,7 +536,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -545,7 +545,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -582,7 +582,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -616,7 +616,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 				        "                 // Error: proper B is off => the entire slice is too    \n" +
 			    	    "                 {                                                       \n" +
@@ -655,12 +655,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/tests[1]/onStates[0]/variants/"), 
-				COVARIANT_VARIANT_COVARIANT_UNDEFINED, "test1.B", "state1");
+				COVARIANT_VARIANT_COVARIANT_PHANTOM, "test1.B", "state1");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
 				new Location("/tests[1]/onStates[1]/variants/"), 
-				COVARIANT_VARIANT_PROPER_UNDEFINED, "test2.B", "state2");
+				COVARIANT_VARIANT_PROPER_PHANTOM, "test2.B", "state2");
 		assertMessageEqual(expected, actual);
 	}
 	
@@ -722,7 +722,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
@@ -735,8 +735,8 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
-			    	    "                 }                                                      \n" +
+			    	    "                    'isPhantom':true                                     \n" +
+			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
@@ -744,7 +744,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -757,7 +757,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
@@ -800,7 +800,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -830,7 +830,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 */
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
@@ -941,7 +941,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
@@ -954,7 +954,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 }                                                      \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
@@ -963,7 +963,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -976,7 +976,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
@@ -1023,7 +1023,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -1051,7 +1051,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'C',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                    \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
@@ -1206,7 +1206,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'A',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
@@ -1228,7 +1228,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
-			    	    "                    'isDefined':false                                    \n" +
+			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 }                                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +

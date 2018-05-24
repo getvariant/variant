@@ -1,30 +1,6 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.ALL_PROPER_EXPERIENCES_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_DUPE;
-import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_TESTREF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_TEST_DISJOINT;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_COVARIANT_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_DUPE;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_PROPER_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.DUPE_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_STRING;
-import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
-import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_EMPTY_LIST;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_NUMBER;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPER_VARIANT_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.STATEREF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
-import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_INCOMPATIBLE;
-import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_XOR;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -551,7 +527,7 @@ public class TestsParser implements Keywords {
 		// At least one proper variant required to be defined.
 		boolean allProperVariantsUndefined = true;
 		for (Experience properExperience: test.getExperiences()) {
-			if (properExperience.isDefinedOn(tos.getState())) { 
+			if (!properExperience.isPhantomOn(tos.getState())) { 
 				allProperVariantsUndefined = false;
 				break;
 			}
@@ -583,17 +559,17 @@ public class TestsParser implements Keywords {
 			else if (point.getVariant() != null && !point.isDefinedOn(tos.getState())) {
 				// We have a point and one of the coordinate experiences were declared as undefined.
 				// Find out which one.
-				if (!point.getExperience().isDefinedOn(tos.getState())) {
+				if (point.getExperience().isPhantomOn(tos.getState())) {
 					response.addMessage(
 							tosLocation.plusObj(KEYWORD_VARIANTS),
-							COVARIANT_VARIANT_PROPER_UNDEFINED, 
+							COVARIANT_VARIANT_PROPER_PHANTOM, 
 							point.getExperience().toString(), tos.getState().getName());
 				}
 				for (Experience e: point.getCovariantExperiences()) {
-					if (e.isDefinedOn(tos.getState())) continue;
+					if (!e.isPhantomOn(tos.getState())) continue;
 					response.addMessage(
 							tosLocation.plusObj(KEYWORD_VARIANTS),
-							COVARIANT_VARIANT_COVARIANT_UNDEFINED,  
+							COVARIANT_VARIANT_COVARIANT_PHANTOM,  
 							e.toString(), tos.getState().getName());
 				}				
 			}

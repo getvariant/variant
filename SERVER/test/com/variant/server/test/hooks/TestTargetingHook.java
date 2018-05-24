@@ -79,7 +79,7 @@ public class TestTargetingHook implements LifecycleHook<TestTargetingLifecycleEv
 					
 		for (int i = 0; i < weights.length; i++) {
 			Experience e = test.getExperiences().get(i);
-			if (!e.isDefinedOn(state)) continue;
+			if (e.isPhantomOn(state)) continue;
 			weightSum += weights[i];
 		}
 
@@ -93,7 +93,7 @@ public class TestTargetingHook implements LifecycleHook<TestTargetingLifecycleEv
 		//Experience lastExperience = null;
 		for (int i = 0; i < weights.length; i++) {
 			Experience e = test.getExperiences().get(i);
-			if (!e.isDefinedOn(state)) continue;
+			if (e.isPhantomOn(state)) continue;
 			//lastExperience = e;
 			weightSum += weights[i];
 			if (randVal < weightSum) {

@@ -168,18 +168,19 @@ public interface Test {
 		public Number getWeight();
 		
 		/**
-		 * Is this experience defined on a given state?
-		 * If a state variant is declared as undefined, it exclude that state from instrumentation
-		 * by the corresponding proper experience. This comes in handy
-		 * when a variant experience adds (or subtracts) states as compared with the control experience.
+		 * Is this experience phantom on a given state?
+		 * When a state variant is declared as phantom, it excludes that state from instrumentation
+		 * by the corresponding experience. Phantom instrumentation allows a variant experience
+		 * to span more (or fewer) states than the control experience.
+		 * 
 		 * See documentation for more on <i>mixed instrumentation</i>.
 		 * 
-		 * @return true if this variant was declared as defined, or false otherwise.
+		 * @return true if this variant was declared as phantom, or false otherwise.
 		 * @throws NullPointerException if argument is <code>null</code>
 		 * @since 0.6
 		 *
 		*/
-		public boolean isDefinedOn(State state);
+		public boolean isPhantomOn(State state);
 	}
 
 	/**

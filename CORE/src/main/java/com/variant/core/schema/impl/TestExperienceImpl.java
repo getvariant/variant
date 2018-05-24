@@ -51,9 +51,9 @@ public class TestExperienceImpl implements Test.Experience  {
 	}
 	
 	@Override
-	public boolean isDefinedOn(State state) {
+	public boolean isPhantomOn(State state) {
 		if (state == null) throw new NullPointerException("Null state");
-		return !uninstrumentedStates.contains(state);
+		return uninstrumentedStates.contains(state);
 	}
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //

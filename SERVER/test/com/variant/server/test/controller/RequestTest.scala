@@ -161,7 +161,7 @@ class RequestTest extends BaseSpecWithServer {
       "create new session" in {
          
          val ssn = SessionImpl.empty(sid, schema)
-         ssn.setAttribute("user-agent", "Firefox")
+         ssn.setAttribute("user-agent", "Safari")
          val reqBody = ssn.toJson
 
          assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(reqBody)))
@@ -177,7 +177,7 @@ class RequestTest extends BaseSpecWithServer {
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
                val coreSsn1 = CoreSession.fromJson((json \ "session").as[String], schema)
-               coreSsn1.getAttribute("user-agent") mustBe "Firefox"
+               coreSsn1.getAttribute("user-agent") mustBe "Safari"
                coreSsn1.getStateRequest mustBe (null)
              } 
          
@@ -196,7 +196,7 @@ class RequestTest extends BaseSpecWithServer {
                val stateReq = coreSsn.getStateRequest
                stateReq mustNot be (null)
                stateReq.isCommitted() mustBe false
-               stateReq.getLiveExperiences.size mustBe 0
+               stateReq.getLiveExperiences.size mustBe 0  // We were disqualified by SafariDisqualHook
                coreSsn.getDisqualifiedTests.size mustBe 1
                coreSsn.getDisqualifiedTests.toSeq(0).getName mustBe "NewOwnerTest"         
                // Resolved parameter must always be from the state def because we're disqualified

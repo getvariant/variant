@@ -299,33 +299,18 @@ public class SemanticError extends ParserError {
 	public static final SemanticError COVARIANT_VARIANT_TEST_NOT_COVARIANT =
 			new SemanticError(92, Severity.ERROR, "List element 'covariantExperienceRefs' cannot refer to non-covariant test [%s]"); 	
 	
-	public static final SemanticError COVARIANT_VARIANT_PROPER_UNDEFINED =
-			new SemanticError(93, Severity.ERROR, "State variant cannot refer to proper experience [%s], which is undefined on state [%s]"); 	
+	public static final SemanticError COVARIANT_VARIANT_PROPER_PHANTOM =
+			new SemanticError(93, Severity.ERROR, "State variant cannot refer to proper experience [%s], which is phantom on state [%s]"); 	
 	
-	public static final SemanticError COVARIANT_VARIANT_COVARIANT_UNDEFINED =
-			new SemanticError(94, Severity.ERROR, "State variant cannot refer to covariant experience [%s], which is undefined on state [%s]"); 	
+	public static final SemanticError COVARIANT_VARIANT_COVARIANT_PHANTOM =
+			new SemanticError(94, Severity.ERROR, "State variant cannot refer to covariant experience [%s], which is phantom on state [%s]"); 	
 	
-	public static final SemanticError PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT =
-			new SemanticError(95, Severity.ERROR, "Property '%s' is not allowed in an undefined state variant"); 
-/*
-	public static final SemanticError EXPERIENCEREF_PARAMS_NOT_ALLOWED =
-			new SemanticError(96, Severity.ERROR, "'tests/onStates/variants/parameters' property not allowed in an undefined variant (Test [%s], StateRef [%s], ExperienceRef [%s])");
+	public static final SemanticError PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT =
+			new SemanticError(95, Severity.ERROR, "Property '%s' is not allowed in a phantom state variant"); 
 	
-	public static final SemanticError COVARIANT_EXPERIENCEREFS_NOT_LIST =
-			new SemanticError(97, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs' property must be a list (Test [%s], StateRef [%s], ExperienceRef [%s])"); 
-	
-	public static final SemanticError COVARIANT_EXPERIENCE_REF_NOT_OBJECT =
-			new SemanticError(98, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs' list element must be an object (Test [%s], StateRef [%s], ExperienceRefs [%s])"); 
-*/
 	public static final SemanticError COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT =
 			new SemanticError(99, Severity.ERROR, "Property 'covariantExperienceRefs' cannot reference non-covariant tests [%s]"); 
-/*	
-	public static final SemanticError COVARIANT_EXPERIENCE_TEST_REF_NOT_STRING =
-			new SemanticError(100, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs/testRef' property must be a string (Test [%s], StateRef [%s], ExperienceRef [%s])"); 
-	
-	public static final SemanticError COVARIANT_EXPERIENCE_EXPERIENCE_REF_NOT_STRING =
-			new SemanticError(101, Severity.ERROR, "'tests/onStates/variants/covariantExperienceRefs/experienceRefs' property must be a string (Test [%s], StateRef [%s], ExperienceRef [%s])"); 
-*/
+
 	public static final SemanticError COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED =
 			new SemanticError(102, Severity.ERROR, "Property 'testRef' references non-existent test [%s]"); 
 	
@@ -337,16 +322,7 @@ public class SemanticError extends ParserError {
 	
 	public static final SemanticError COVARIANT_EXPERIENCE_DUPE =
 			new SemanticError(105, Severity.ERROR, "Duplicate covariant experience reference [%s.%s]"); 
-/*	
-	public static final SemanticError ISDEFINED_NOT_BOOLEAN =
-			new SemanticError(106, Severity.ERROR, "'tests/onStates/variants/isDefined' property must be a boolean (Test [%s], StateRef [%s])"); 
-	
-	public static final SemanticError EXPERIENCEREF_MISSING =
-			new SemanticError(107, Severity.ERROR, "'tests/onStates/variants/experienceRef' property is missing (Test [%s], StateRef [%s])"); 
-	
-	public static final SemanticError EXPERIENCEREF_NOT_STRING =
-			new SemanticError(108, Severity.ERROR, "'tests/onStates/variants/experienceRef' property must be a string (Test [%s], StateRef [%s])"); 
-*/
+
 	public static final SemanticError EXPERIENCEREF_UNDEFINED =
 			new SemanticError(109, Severity.ERROR, "Property 'experienceRef' references a non-existent experience [%s]"); 
 	
@@ -356,25 +332,7 @@ public class SemanticError extends ParserError {
 	// 
 	// 151-170 Schema parser Parameters
 	//
-/*	
-	public static final SemanticError PARAMS_NOT_LIST = 
-			new SemanticError(151, Severity.ERROR, "'parameters' property must be a list"); 
 
-	public static final SemanticError PARAM_NOT_OBJECT =
-			new SemanticError(152, Severity.ERROR, "'parameters' property element must be an object"); 
-	
-	public static final SemanticError PARAM_NAME_INVALID =
-			new SemanticError(153, Severity.ERROR, "Parameter name must be a string, containing letters, digits and _, and cannot start with a digit"); 
-
-	public static final SemanticError PARAM_VALUE_INVALID =
-			new SemanticError(154, Severity.ERROR, "Parameter value must be a string"); 
-
-	public static final SemanticError PARAM_NAME_MISSING =
-			new SemanticError(155, Severity.ERROR, "Parameter name missing"); 
-
-	public static final SemanticError PARAM_VALUE_MISSING =
-			new SemanticError(156, Severity.ERROR, "Parameter value missing"); 
-*/
 	// 
 	// 171-200 Schema parser Other
 	//
@@ -383,9 +341,6 @@ public class SemanticError extends ParserError {
 
 	public static final SemanticError NAME_INVALID =
 			new SemanticError(172, Severity.ERROR, "Property 'name' must be a string, containing letters, digits and _, and cannot start with a digit"); 
-
-	//public static final SemanticError NAME_MISSING =
-	//		new SemanticError(173, Severity.ERROR, "Property 'name' is missing"); 
 
 	public static final SemanticError NAME_MISSING =
 			new SemanticError(174, Severity.ERROR, "Property 'name' is missing"); 

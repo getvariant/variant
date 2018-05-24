@@ -1,20 +1,6 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_DUPE;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_TEST_NOT_COVARIANT;
-import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
-import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -63,11 +49,11 @@ public class VariantParser implements Keywords {
 			return null;
 		}
 		
-		// Pass 1. Find proper experienceRef and isDefined
+		// Pass 1. Find proper experienceRef and isPhantom
 		// Note that we loop over all entries instead of just getting what we want because
 		// the syntax is case insensitive and don't know what to get().
 		String experienceRef = null;
-		boolean isDefined = true;
+		boolean isPhantom = false;
 		
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
@@ -80,12 +66,12 @@ public class VariantParser implements Keywords {
 					return null;
 				}
 			}
-			else if (entry.getKey().equalsIgnoreCase(KEYWORD_IS_DEFINED)) {
+			else if (entry.getKey().equalsIgnoreCase(KEYWORD_IS_PHANTOM)) {
 				try {
-					isDefined = (Boolean) entry.getValue();
+					isPhantom = (Boolean) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(variantLocation.plusProp(KEYWORD_IS_DEFINED), PROPERTY_NOT_BOOLEAN, KEYWORD_IS_DEFINED);
+					response.addMessage(variantLocation.plusProp(KEYWORD_IS_PHANTOM), PROPERTY_NOT_BOOLEAN, KEYWORD_IS_PHANTOM);
 				}
 			}
 		}
@@ -102,8 +88,8 @@ public class VariantParser implements Keywords {
 			return null;			
 		}
 
-		// Variant cannot refer to a control experience, unless undefined.
-		if (experience.isControl() && isDefined) {
+		// Variant cannot refer to a control experience, unless phantom.
+		if (experience.isControl() && !isPhantom) {
 			response.addMessage(variantLocation.plusProp(KEYWORD_EXPERIENCE_REF), EXPERIENCEREF_ISCONTROL,  experienceRef);
 			return null;						
 		}
@@ -115,10 +101,10 @@ public class VariantParser implements Keywords {
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_COVARIANT_EXPERIENCE_REFS)) {
 				
-				if (!isDefined) {
+				if (isPhantom) {
 					response.addMessage(
 							variantLocation.plusProp(KEYWORD_EXPERIENCE_REF),
-							PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT, 
+							PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT, 
 							KEYWORD_COVARIANT_EXPERIENCE_REFS);
 					
 					return null;					
@@ -247,15 +233,15 @@ public class VariantParser implements Keywords {
 		
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
-			if (StringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_EXPERIENCE_REF, KEYWORD_IS_DEFINED, KEYWORD_COVARIANT_EXPERIENCE_REFS)) 
+			if (StringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_EXPERIENCE_REF, KEYWORD_IS_PHANTOM, KEYWORD_COVARIANT_EXPERIENCE_REFS)) 
 				continue;
 		
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_PARAMETERS)) {
 				
-				if (!isDefined) {
+				if (isPhantom) {
 					response.addMessage(
 							variantLocation.plusObj(KEYWORD_PARAMETERS),
-							PROPERTY_NOT_ALLOWED_UNDEFINED_VARIANT, 
+							PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT, 
 							KEYWORD_PARAMETERS);
 					return null;					
 				}
@@ -268,7 +254,7 @@ public class VariantParser implements Keywords {
 		}
 
 		// Don't create a state variant if undefined.
-		if (!isDefined) {
+		if (isPhantom) {
 			experience.addUninstrumentedState(state);
 			return null;
 		}

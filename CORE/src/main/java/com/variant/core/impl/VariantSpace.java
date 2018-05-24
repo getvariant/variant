@@ -270,7 +270,7 @@ public class VariantSpace {
 		 */
 		public boolean isDefinedOn(State state) {
 			for (Experience e: coordinates.coordinates) {
-				if (!e.isDefinedOn(state)) return false;
+				if (e.isPhantomOn(state)) return false;
 			}
 			return true;
 		}

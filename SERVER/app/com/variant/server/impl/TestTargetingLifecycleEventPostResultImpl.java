@@ -29,7 +29,7 @@ public class TestTargetingLifecycleEventPostResultImpl implements TestTargetingL
 		
 		for (Experience te: test.getExperiences()) {
 			if (experience.equals(te)) {
-				if (!experience.isDefinedOn(state)) {
+				if (experience.isPhantomOn(state)) {
 					StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
 					throw new ServerException.Local(
 							HOOK_TARGETING_BAD_EXPERIENCE, 

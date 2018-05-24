@@ -41,7 +41,7 @@ class TestTargetingDefaultHook implements LifecycleHook<TestTargetingLifecycleEv
 
 		double weightSum = 0;
 		for (Experience e: test.getExperiences()) {
-			if (!e.isDefinedOn(state)) continue;
+			if (e.isPhantomOn(state)) continue;
 			if (e.getWeight() == null ) {
 				// It's not a syntax error not to supply the weight, but if we're
 				// here it means that no targeter hook fired, and that's a runtime error.
@@ -58,7 +58,7 @@ class TestTargetingDefaultHook implements LifecycleHook<TestTargetingLifecycleEv
 		double randVal = rand.nextDouble() * weightSum;
 		weightSum = 0;
 		for (Experience e: test.getExperiences()) {
-			if (!e.isDefinedOn(state)) continue;
+			if (e.isPhantomOn(state)) continue;
 			weightSum += e.getWeight().doubleValue();
 			if (randVal < weightSum) {
 				TestTargetingLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);

@@ -129,7 +129,7 @@ public class Runtime {
 							"Active traversed test [" + test.getName() + "] not in targeting stabile");
 
 				// It's a user error to hit an undefined state in an active experience.
-				if (!exp.isDefinedOn(state))  {
+				if (exp.isPhantomOn(state))  {
 					throw new ServerException.Local(ServerError.STATE_UNDEFINED_IN_EXPERIENCE, exp.toString(), state.getName());
 				}
 
@@ -147,7 +147,7 @@ public class Runtime {
 					// We have a pre-targeted experience for a test that we have just hit.
 					// If this is an undefined state, we need to discard the pre-targeted experience
 					// and treat this as free.
-					if (exp.isDefinedOn(state)) {
+					if (!exp.isPhantomOn(state)) {
 						preTargeted.add(exp);						
 					}
 					else {
@@ -265,7 +265,7 @@ public class Runtime {
 		for (Experience e: vector) {
 			if (e.isControl()) continue;
 			for (OnState tos: e.getTest().getOnStates()) {
-				if (!tos.getState().isNonvariantIn(e.getTest()) && e.isDefinedOn(tos.getState())) {
+				if (!tos.getState().isNonvariantIn(e.getTest()) && !e.isPhantomOn(tos.getState())) {
 					relevantStates.add(tos.getState());
 				}
 			}
@@ -276,7 +276,7 @@ public class Runtime {
 			// Otherwise resolveState() with throw an exception.
 			Collection<Experience> instumentedVector = new ArrayList<Experience>();
 			for (Experience e: vector) {
-				if (!e.isControl() && state.isInstrumentedBy(e.getTest()) && e.isDefinedOn(state)) 
+				if (!e.isControl() && state.isInstrumentedBy(e.getTest()) && !e.isPhantomOn(state)) 
 					instumentedVector.add(e);
 			}
 			if (!resolveState(state, instumentedVector)._1()) return false;
@@ -357,7 +357,7 @@ public class Runtime {
 		ArrayList<Experience> vector = new ArrayList<Experience>();
 		Experience  definedVariantExperience = null;
 		for (Experience e: test.getExperiences()) {
-			if (!e.isControl() && e.isDefinedOn(state)) {
+			if (!e.isControl() && !e.isPhantomOn(state)) {
 				definedVariantExperience = e;
 				break;
 			}
@@ -412,7 +412,7 @@ public class Runtime {
 						if (!state.isInstrumentedBy(e.getTest()))
 							throw new ServerException.Internal("Uninstrumented test [" + e + "] in input vector");
 
-						if (!e.isDefinedOn(state))
+						if (e.isPhantomOn(state))
 							throw new ServerException.Internal("Undefined experience [" + e + "] in input vector");
 
 						found = true;
