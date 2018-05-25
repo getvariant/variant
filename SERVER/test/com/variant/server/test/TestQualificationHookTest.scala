@@ -14,7 +14,7 @@ import com.variant.server.test.spec.BaseSpecWithServer
 class TestQualificationHookTest extends BaseSpecWithServer {
       
    /**
-    * Inject all the hooks into the schema in /ParserCovariantOkayBigTest.json
+    * Inject all the hooks into the schema in /ParserConjointOkayBigTest.json
     */
    private[this] def generateSchema(hooks: Map[String, String]):String = {
       
@@ -29,7 +29,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
       val test5HooksList = hooks.getOrElse("test5-hooks","")
       val test6HooksList = hooks.getOrElse("test6-hooks","")
       
-      val stream = getClass.getResourceAsStream("/ParserCovariantOkayBigTest.json")
+      val stream = getClass.getResourceAsStream("/ParserConjointOkayBigTest.json")
       ParameterizedString(IOUtils.toString(stream)).expand(
             "schema-hooks"-> schemaHooksList,
             "test1-hooks"->test1HooksList,
@@ -40,7 +40,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
             "test6-hooks"->test6HooksList)
    }
 
-   val schemaName = "parser_covariant_okay_big_test"
+   val schemaName = "parser_conjoint_okay_big_test"
    
   	"TestQualificationHook" should {
 	   

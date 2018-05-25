@@ -37,7 +37,7 @@ class EventWriterTest extends BaseSpecWithServer {
    
    "Event writer" should {
 
-      val schema = server.schemata("big_covar_schema")
+      val schema = server.schemata("big_conjoint_schema")
       val eventWriter = schema.eventWriter
       val eventReader = EventReader(eventWriter)
 
@@ -52,7 +52,7 @@ class EventWriterTest extends BaseSpecWithServer {
       
       "obtain a connection" in {
          // POST new connection
-         assertResp(route(app, connectionRequest("big_covar_schema")))
+         assertResp(route(app, connectionRequest("big_conjoint_schema")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 

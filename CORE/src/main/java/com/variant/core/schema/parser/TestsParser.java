@@ -198,31 +198,31 @@ public class TestsParser implements Keywords {
 		result.setExperiences(experiences);
 		
 		
-		// Pass 3: Parse covariantTestRefs, isOn, hooks.
+		// Pass 3: Parse conjointTestRefs, isOn, hooks.
 		List<TestImpl> covarTests = null;
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_COVARIANT_TEST_REFS)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_CONJOINT_TEST_REFS)) {
 				Object covarTestRefsObject = entry.getValue();
 				if (!(covarTestRefsObject instanceof List)) {
-					response.addMessage(testLocation.plusProp(KEYWORD_COVARIANT_TEST_REFS), PROPERTY_NOT_LIST, KEYWORD_COVARIANT_TEST_REFS);
+					response.addMessage(testLocation.plusProp(KEYWORD_CONJOINT_TEST_REFS), PROPERTY_NOT_LIST, KEYWORD_CONJOINT_TEST_REFS);
 				}
 				else {
 					covarTests = new ArrayList<TestImpl>();
 					List<?> rawCovarTestRefs = (List<?>) covarTestRefsObject;
 					int refIx = 0;
 					for (Object covarTestRefObject: rawCovarTestRefs) {
-						Location testRefLocation = testLocation.plusProp(KEYWORD_COVARIANT_TEST_REFS).plusIx(refIx++);
+						Location testRefLocation = testLocation.plusProp(KEYWORD_CONJOINT_TEST_REFS).plusIx(refIx++);
 						if (!(covarTestRefObject instanceof String)) {
-							response.addMessage(testRefLocation, ELEMENT_NOT_STRING, KEYWORD_COVARIANT_TEST_REFS);
+							response.addMessage(testRefLocation, ELEMENT_NOT_STRING, KEYWORD_CONJOINT_TEST_REFS);
 						}
 						else {
 							String covarTestRef = (String) covarTestRefObject;
-							// Covariant test, referenced by covariantTestRefs clause must
+							// Conjoint test, referenced by conjointTestRefs clause must
 							// have been initialized by now.  Single pass parser!
 							TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);
 							if (covarTest == null) {
-								response.addMessage(testRefLocation, COVARIANT_TESTREF_UNDEFINED, covarTestRef);
+								response.addMessage(testRefLocation, CONJOINT_TESTREF_UNDEFINED, covarTestRef);
 							}
 							else {
 								covarTests.add(covarTest);
@@ -246,7 +246,7 @@ public class TestsParser implements Keywords {
 
 		}
 		
-		// Resort covariant tests in ordinal order before adding to the result.
+		// Resort conjoint tests in ordinal order before adding to the result.
 		List<TestImpl> covarTestsReordered = null;
 		if (covarTests != null) {
 			covarTestsReordered = new ArrayList<TestImpl>(covarTests.size());
@@ -254,14 +254,14 @@ public class TestsParser implements Keywords {
 				if (covarTests.contains(t)) covarTestsReordered.add((TestImpl)t);
 			}
 		}
-		result.setCovariantTests(covarTestsReordered);
+		result.setConjointTests(covarTestsReordered);
 		
 		// Pass 4: Parse onStates, if we have the control variant
 		if (controlExperienceFound) {
 			for(Map.Entry<String, ?> entry: test.entrySet()) {
 				
 				if (StringUtils.equalsIgnoreCase(entry.getKey(), 
-						KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_COVARIANT_TEST_REFS, KEYWORD_IS_ON, KEYWORD_HOOKS)) continue;
+						KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_CONJOINT_TEST_REFS, KEYWORD_IS_ON, KEYWORD_HOOKS)) continue;
 	
 				if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_STATES)) {
 					
@@ -307,13 +307,13 @@ public class TestsParser implements Keywords {
 		
 		result.setOnViews(onStates);
 		
-		// A covariant test cannot be disjoint.
+		// A conjoint test cannot be disjoint.
 		if (covarTests != null) {
 			int covarTestIx = 0;
 			for (Test covarTest: covarTests) {
 				if (result.isSerialWith(covarTest)) {
-					Location tosLocation = testLocation.plusProp(KEYWORD_COVARIANT_TEST_REFS).plusIx(covarTestIx++);
-					response.addMessage(tosLocation, COVARIANT_TEST_DISJOINT, name, covarTest.getName());
+					Location tosLocation = testLocation.plusProp(KEYWORD_CONJOINT_TEST_REFS).plusIx(covarTestIx++);
+					response.addMessage(tosLocation, CONJOINT_TEST_DISJOINT, name, covarTest.getName());
 				}
 			}
 		}
@@ -487,14 +487,14 @@ public class TestsParser implements Keywords {
 						for (StateVariant v: tos.getVariants()) {
 							if (v.getExperience().equals(variant.getExperience())) { 
 								if (v.isProper() && variant.isProper()) {
-									// Dupe proper experience ref and no covariant experiences in this view.
+									// Dupe proper experience ref and no conjoint experiences in this view.
 									response.addMessage(variantLocation, DUPE_OBJECT, v.getExperience().getName());
 									dupe = true;
 									break;
 								}
-								else if (!v.isProper() && !variant.isProper() && v.getCovariantExperiences().equals(variant.getCovariantExperiences())){
-									// Dupe local and covariant list.  Note that for this predicate relies on proper ordering. 
-									response.addMessage(variantLocation, COVARIANT_VARIANT_DUPE, StringUtils.join(v.getCovariantExperiences(), ", "));
+								else if (!v.isProper() && !variant.isProper() && v.getConjointExperiences().equals(variant.getConjointExperiences())){
+									// Dupe local and conjoint list.  Note that for this predicate relies on proper ordering. 
+									response.addMessage(variantLocation, CONJOINT_VARIANT_DUPE, StringUtils.join(v.getConjointExperiences(), ", "));
 									dupe = true;
 									break;
 								}
@@ -538,22 +538,22 @@ public class TestsParser implements Keywords {
 		}
 		
 		// Confirm Must have a variant for each vector in the variant space,
-		// defined by the proper and covariant experiences, unless one of them
+		// defined by the proper and conjoint experiences, unless one of them
 		// undefined, no matter which one. 
 		for (VariantSpace.Point point: tos.variantSpace().getAll()) {
 			
 			if (point.getVariant() == null && point.isDefinedOn(tos.getState())) {
 				
 				// We don't have a point and none of the coordinate experiences were declared as undefined.
-				if (point.getCovariantExperiences().size() == 0) {
+				if (point.getConjointExperiences().size() == 0) {
 					response.addMessage(tosLocation.plusObj(KEYWORD_VARIANTS), PROPER_VARIANT_MISSING, point.getExperience().getName());
 				}
 				else {
 					response.addMessage(
 							tosLocation.plusObj(KEYWORD_VARIANTS),
-							COVARIANT_VARIANT_MISSING,
+							CONJOINT_VARIANT_MISSING,
 							point.getExperience().getName(),
-							CollectionsUtils.toString(point.getCovariantExperiences(),  ","));
+							CollectionsUtils.toString(point.getConjointExperiences(),  ","));
 				}
 			}
 			else if (point.getVariant() != null && !point.isDefinedOn(tos.getState())) {
@@ -562,14 +562,14 @@ public class TestsParser implements Keywords {
 				if (point.getExperience().isPhantomOn(tos.getState())) {
 					response.addMessage(
 							tosLocation.plusObj(KEYWORD_VARIANTS),
-							COVARIANT_VARIANT_PROPER_PHANTOM, 
+							CONJOINT_VARIANT_PROPER_PHANTOM, 
 							point.getExperience().toString(), tos.getState().getName());
 				}
-				for (Experience e: point.getCovariantExperiences()) {
+				for (Experience e: point.getConjointExperiences()) {
 					if (!e.isPhantomOn(tos.getState())) continue;
 					response.addMessage(
 							tosLocation.plusObj(KEYWORD_VARIANTS),
-							COVARIANT_VARIANT_COVARIANT_PHANTOM,  
+							CONJOINT_VARIANT_CONJOINT_PHANTOM,  
 							e.toString(), tos.getState().getName());
 				}				
 			}

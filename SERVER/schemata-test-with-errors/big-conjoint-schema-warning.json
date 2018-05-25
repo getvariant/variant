@@ -1,10 +1,9 @@
 //
-// Based on Parser Covariant Okay Big Test Schema in Core.
 // All Tests:
 // Tests States
 //       1 2 3 4 5
 // test1   + + - -
-// test2 - + + +   OFF
+// test2 - + + +  
 // test3 - + - + 
 // test4 + +   - -
 // test5 + + - + -
@@ -16,9 +15,8 @@
  
 {                                                                                
    'meta':{
-      'name':'parser_covariant_okay_big_test',
-      'comment':'Based on Parser Covariant Okay Big Test Schema in Core.',
-      'hooks':[${schema-hooks:}] // Defaults to null list 
+      'name':'big_conjoint_schema',
+      'comment':'Schema for big tests with a warning'
    },
    'states':[                                                             
      {  'name':'state1',
@@ -29,7 +27,7 @@
             }
         ]
      },                                                                  
-     {  'NAME':'state2',
+     {  'NAME':'state2',                                                  
         'parameters': [
             {
                'name':'path',
@@ -59,7 +57,8 @@
                'name':'path',
                'value':'/path/to/state5'
             }
-        ]
+        ],
+        'unsupported': 23          // <- unsupported element
      }                                                                   
   ],                                                                     
   'tests':[  
@@ -80,8 +79,7 @@
               'name':'C',                                                
               'weight':30                                                
            }                                                             
-        ],
-        'hooks':[${test1-hooks:}], // Defaults to null list
+        ],                                                               
         'onStates':[                                                      
            {                                                             
               'stateRef':'state2',                                         
@@ -140,9 +138,7 @@
         ]                                                                
      },                                                                  
      {                                                                   
-        'name':'test2',
-        'hooks':[${test2-hooks:}], // Defaults to null list
-        'isOn':false,
+        'name':'test2',                                                  
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -236,7 +232,6 @@
      },                                                                  
      {                                                                   
         'name':'test3',
-        'hooks':[${test3-hooks:}], // Defaults to null list
         'covariantTestRefs': ['test2'],                                                  
         'experiences':[                                                  
            {                                                             
@@ -432,7 +427,6 @@
      },                                                                  
      {                                                                   
         'name':'test4',                                                  
-        'hooks':[${test4-hooks:}], // Defaults to null list                                  
         'covariantTestRefs': ['test1'],                                  
         'experiences':[                                                  
            {                                                             
@@ -568,7 +562,6 @@
      },                                                                  
      {                                                                   
         'name':'test5',                                                  
-        'hooks':[${test5-hooks:}], // Defaults to null list
         'covariantTestRefs': ['test2', 'test4'],                         
         'experiences':[                                                  
            {                                                             
@@ -907,7 +900,6 @@
      },                                                                  
      {                                                                   
         'name':'test6',                                                  
-        'hooks':[${test6-hooks:}], // Defaults to null list
         'covariantTestRefs': ['test2', 'test4', 'test1', 'test5'],       
         'experiences':[                                                  
            {                                                             

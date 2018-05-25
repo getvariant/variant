@@ -24,7 +24,7 @@ public class TargetingStabileTest extends BaseTestCore {
 	public void targetingTrackerStringTest() throws Exception {
 				
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(IoUtils.openResourceAsStream("/schema/ParserCovariantOkayBigTest.json")._1());
+		ParserResponse response = parser.parse(IoUtils.openResourceAsStream("/schema/ParserConjointOkayBigTest.json")._1());
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		Schema schema = response.getSchema();

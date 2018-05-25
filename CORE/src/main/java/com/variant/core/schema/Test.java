@@ -89,12 +89,12 @@ public interface Test {
 	public OnState getOnState(State state);
 		
 	/**
-	 * Get a list of tests covariant with this test, i.e. listed in this tests's covariant clause.
+	 * Get a list of tests conjoint with this test, i.e. listed in this tests's conjoint clause.
 	 * 
-	 * @return A list of tests in the order they were defined or null if this test does not reference any covariant tests.
+	 * @return A list of tests in the order they were defined or null if this test does not reference any conjoint tests.
 	 * @since 0.5
 	 */
-	public List<Test> getCovariantTests();
+	public List<Test> getConjointTests();
 		
 	/**
 	 * Is this test serial with another test? Two tests are serial when there does not exist a state
@@ -109,7 +109,7 @@ public interface Test {
 	/**
 	 * Is this test concurrent with the other test? This is equivalent to
 	 * {@code !isSerialWith(other)}. Concurrent tests can only be targeted 
-	 * independently if they are covariant.
+	 * independently if they are conjoint.
 	 * 
 	 * @param other
 	 * @return
@@ -118,14 +118,14 @@ public interface Test {
 	public boolean isConcurrentWith(Test other);
 
 	/**
-	 * Is this test covariantly concurrent with the other test? Covariantly concurrent tests 
+	 * Is this test conjointly concurrent with the other test? Conjointly concurrent tests 
 	 * can be targeted independently.
 	 * 
 	 * @param other
 	 * @return
 	 * @since 0.5
 	 */
-	public boolean isCovariantWith(Test other);
+	public boolean isConjointWith(Test other);
 
 	/**
 	 * Representation of a test experience.

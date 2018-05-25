@@ -283,7 +283,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'weight':20                                                \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ],                                                               \n" +
-			    	    "        'covariantTestRefs':['test1'],                                   \n" +
+			    	    "        'conjointTestRefs':['test1'],                                   \n" +
 			    	    "        'onStates':[                                                     \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'stateRef':'state1',                                       \n" +
@@ -408,7 +408,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'weight':20                                                \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ],                                                               \n" +
-			    	    "        'covariantTestRefs':['test1'],                                   \n" +
+			    	    "        'conjointTestRefs':['test1'],                                   \n" +
 			    	    "        'onStates':[                                                     \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'stateRef':'state1',                                       \n" +
@@ -429,7 +429,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 				        "                 // Error: covar A is off => the entire slice is too    \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
@@ -454,7 +454,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 				        "                 // Error: proper B is off => the entire slice is too    \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
@@ -488,12 +488,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/tests[1]/onStates[0]/variants/"), 
-				COVARIANT_VARIANT_COVARIANT_PHANTOM, "test1.B", "state1");
+				CONJOINT_VARIANT_CONJOINT_PHANTOM, "test1.B", "state1");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
 				new Location("/tests[1]/onStates[1]/variants/"), 
-				COVARIANT_VARIANT_PROPER_PHANTOM, "test2.B", "state2");
+				CONJOINT_VARIANT_PROPER_PHANTOM, "test2.B", "state2");
 		assertMessageEqual(expected, actual);
 	}
 	
@@ -575,7 +575,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'weight':20                                                \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ],                                                               \n" +
-			    	    "        'covariantTestRefs':['test1'],                                   \n" +
+			    	    "        'conjointTestRefs':['test1'],                                   \n" +
 			    	    "        'onStates':[                                                     \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'stateRef':'state1',                                       \n" +
@@ -596,7 +596,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 				        "                 // Error: covar A is undef on => the entire slice is too    \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
@@ -621,7 +621,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 				        "                 // Error: proper B is off => the entire slice is too    \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
@@ -655,12 +655,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/tests[1]/onStates[0]/variants/"), 
-				COVARIANT_VARIANT_COVARIANT_PHANTOM, "test1.B", "state1");
+				CONJOINT_VARIANT_CONJOINT_PHANTOM, "test1.B", "state1");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
 				new Location("/tests[1]/onStates[1]/variants/"), 
-				COVARIANT_VARIANT_PROPER_PHANTOM, "test2.B", "state2");
+				CONJOINT_VARIANT_PROPER_PHANTOM, "test2.B", "state2");
 		assertMessageEqual(expected, actual);
 	}
 	
@@ -774,7 +774,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "     },                                                                  \n" +
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test2',                                                  \n" +
-			    	    "        'covariantTestRefs':['test1'],                                   \n" +
+			    	    "        'conjointTestRefs':['test1'],                                   \n" +
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'A',                                                \n" +
@@ -811,10 +811,10 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 						"                       }                                                 \n" +
 						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
-/*	This covariant variant is missing.		
+/*	This conjoint variant is missing.		
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'B',                                \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'C'                           \n" +
@@ -843,7 +843,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'D',                                \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'C'                           \n" +
@@ -877,7 +877,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/tests[1]/onStates[0]/variants/"), 
-				COVARIANT_VARIANT_MISSING, "B", "test1.C");
+				CONJOINT_VARIANT_MISSING, "B", "test1.C");
 		assertMessageEqual(expected, actual);
 
 	}
@@ -997,7 +997,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "     },                                                                  \n" +
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test2',                                                  \n" +
-			    	    "        'covariantTestRefs':['test1'],                                   \n" +
+			    	    "        'conjointTestRefs':['test1'],                                   \n" +
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'A',                                                \n" +
@@ -1036,7 +1036,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'B',                                \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'C'                           \n" +
@@ -1064,7 +1064,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'D',                                \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'C'                           \n" +
@@ -1093,7 +1093,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'B',                                \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
@@ -1108,7 +1108,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'B',                                \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'D'                           \n" +
@@ -1132,7 +1132,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'C',                                \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
@@ -1147,7 +1147,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'C',                                \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'D'                           \n" +
@@ -1171,7 +1171,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'D',                                \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
@@ -1186,7 +1186,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                 },                                                      \n" +
 					    "                 {                                                       \n" +
 					    "                    'experienceRef': 'D',                                \n" +
-			    	    "                    'covariantExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
 			    	    "                          'testRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'D'                           \n" +

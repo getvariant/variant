@@ -183,8 +183,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertFalse(test2.isSerialWith(test1));
 		assertTrue(test1.isConcurrentWith(test2));
 		assertTrue(test2.isConcurrentWith(test1));
-		assertFalse(test1.isCovariantWith(test2));
-		assertFalse(test2.isCovariantWith(test1));
+		assertFalse(test1.isConjointWith(test2));
+		assertFalse(test2.isConjointWith(test1));
 
 		List<Hook> hooks = schema.getHooks();
 		assertEquals(6, hooks.size());
@@ -391,8 +391,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertFalse(test2.isSerialWith(test1));
 		assertTrue(test1.isConcurrentWith(test2));
 		assertTrue(test2.isConcurrentWith(test1));
-		assertFalse(test1.isCovariantWith(test2));
-		assertFalse(test2.isCovariantWith(test1));
+		assertFalse(test1.isConjointWith(test2));
+		assertFalse(test2.isConjointWith(test1));
 
 	}
 
@@ -544,8 +544,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertFalse(test2.isSerialWith(test1));
 		assertTrue(test1.isConcurrentWith(test2));
 		assertTrue(test2.isConcurrentWith(test1));
-		assertFalse(test1.isCovariantWith(test2));
-		assertFalse(test2.isCovariantWith(test1));
+		assertFalse(test1.isConjointWith(test2));
+		assertFalse(test2.isConjointWith(test1));
 	}
 		
 	// Happy path schema is used by other tests too.
@@ -988,12 +988,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(2, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("B"), variant.getExperience());
-		assertNull(variant.getCovariantExperiences());
+		assertNull(variant.getConjointExperiences());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/test1.B", variant.getParameters().get("path"));
 		variant = actualVariants.get(1);
 		assertEquals(test.getExperience("C"), variant.getExperience());
-		assertNull(variant.getCovariantExperiences());
+		assertNull(variant.getConjointExperiences());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/test1.C", variant.getParameters().get("path"));
 		
@@ -1037,7 +1037,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(1, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("D"), variant.getExperience());
-		assertNull(variant.getCovariantExperiences());
+		assertNull(variant.getConjointExperiences());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state3/test2.D", variant.getParameters().get("path"));
 
@@ -1049,7 +1049,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(1, actualVariants.size());
 		variant = actualVariants.get(0);
 		assertEquals(test.getExperience("D"), variant.getExperience());
-		assertNull(variant.getCovariantExperiences());
+		assertNull(variant.getConjointExperiences());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state2/test2.D", variant.getParameters().get("path"));
 		
@@ -1098,7 +1098,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(1, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);
 		assertEquals(test.getExperience("A"), variant.getExperience());
-		assertNull(variant.getCovariantExperiences());
+		assertNull(variant.getConjointExperiences());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/Test1.A", variant.getParameters().get("path"));
 		

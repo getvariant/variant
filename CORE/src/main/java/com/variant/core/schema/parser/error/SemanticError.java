@@ -172,57 +172,12 @@ public class SemanticError extends ParserError {
 	// 
 	// 051-150 Schema parser, Test
 	//
-/*
-	public static final SemanticError NO_TESTS_CLAUSE =
-			new SemanticError(51, Severity.INFO,  "'/tests' clause is missing"); 
-	
-	public static final SemanticError NO_TESTS =
-			new SemanticError(52, Severity.INFO,  "No tests found"); 
-	
-	public static final SemanticError TEST_NAME_MISSING =
-			new SemanticError(53, Severity.ERROR, "Test name is missing"); 
-	
-	public static final SemanticError TEST_NAME_INVALID =
-			new SemanticError(54, Severity.ERROR, "Test name must be a string, containing letters, digits and _, and cannot start with a digit"); 
-	
-	public static final SemanticError TEST_NAME_DUPE =
-			new SemanticError(55, Severity.ERROR, "Duplicate test name [%s]"); 
-	
-	public static final SemanticError TEST_ISON_NOT_BOOLEAN =
-			new SemanticError(56, Severity.ERROR, "'tests/isOn' property must be a boolean (Test [%s])"); 
-	
-	public static final SemanticError TEST_UNSUPPORTED_PROPERTY =
-			new SemanticError(57, Severity.WARN,  "Unsupported property 'tests/%s' (Test [%s])"); 
-	
-	public static final SemanticError EXPERIENCES_NOT_LIST =
-			new SemanticError(58, Severity.ERROR, "'tests/experiences' property must be a list (Test [%s])"); 
-	
-	public static final SemanticError EXPERIENCES_LIST_EMPTY =
-			new SemanticError(59, Severity.ERROR, "'tests/experiences' list must contain at least one element (Test [%s])"); 
-	
-	public static final SemanticError EXPERIENCE_NOT_OBJECT =
-			new SemanticError(60, Severity.ERROR, "'tests/experiences' list element must be an object (Test [%s])");  
-	
-	public static final SemanticError EXPERIENCE_NAME_MISSING =
-			new SemanticError(61, Severity.ERROR, "Experience name is missing (Test [%s])"); 
-	
-	public static final SemanticError EXPERIENCE_NAME_INVALID =
-			new SemanticError(62, Severity.ERROR, "Experience name must be a string containing letters, digits and _, and cannot start with a digit (Test [%s])"); 
-	
-	public static final SemanticError EXPERIENCE_NAME_DUPE =
-			new SemanticError(63, Severity.ERROR, "Duplicate expereince name [%s] in test [%s]"); 
-	
-	public static final SemanticError COVARIANT_TESTS_NOT_LIST =
-			new SemanticError(64, Severity.ERROR, "'tests/covariantTestRefs' property must be a list (Test [%s])"); 
 
-	public static final SemanticError COVARIANT_TESTREF_NOT_STRING =
-			new SemanticError(65, Severity.ERROR, "'tests/covariantTestRefs' list element must be a string (Test [%s])"); 
-*/	
-	public static final SemanticError COVARIANT_TESTREF_UNDEFINED =
-			new SemanticError(66, Severity.ERROR, "Property 'covariantTestRefs' references non-existent test [%s]"); 
+	public static final SemanticError CONJOINT_TESTREF_UNDEFINED =
+			new SemanticError(66, Severity.ERROR, "Property 'conjointTestRefs' references non-existent test [%s]"); 
 	
-	public static final SemanticError COVARIANT_TEST_DISJOINT =
-			new SemanticError(67, Severity.ERROR, "Test [%s] cannot declar test [%s] as covariant because they do not share any states"); 
+	public static final SemanticError CONJOINT_TEST_DISJOINT =
+			new SemanticError(67, Severity.ERROR, "Test [%s] cannot declar test [%s] as conjoint because they do not share any states"); 
 /*	
 	public static final SemanticError ISCONTROL_NOT_BOOLEAN =
 			new SemanticError(68, Severity.ERROR, "'tests/experience/isControl' property must be a boolean (Test [%s], Experience [%s])"); 
@@ -287,41 +242,41 @@ public class SemanticError extends ParserError {
 	public static final SemanticError PROPER_VARIANT_DUPE =
 			new SemanticError(88, Severity.ERROR, "Duplicate state variant references proper experience [%s]"); 
 	
-	public static final SemanticError COVARIANT_VARIANT_DUPE =
-			new SemanticError(89, Severity.ERROR, "Duplicate state variant references covariant experience(s) [%s]"); 
+	public static final SemanticError CONJOINT_VARIANT_DUPE =
+			new SemanticError(89, Severity.ERROR, "Duplicate state variant references conjoint experience(s) [%s]"); 
 	
 	public static final SemanticError PROPER_VARIANT_MISSING =
 			new SemanticError(90, Severity.ERROR, "State variant missing for proper experience [%s]"); 
 	
-	public static final SemanticError COVARIANT_VARIANT_MISSING =
-			new SemanticError(91, Severity.ERROR, "State variant missing for proper experience [%s] and covariant experience(s) [%s]");
+	public static final SemanticError CONJOINT_VARIANT_MISSING =
+			new SemanticError(91, Severity.ERROR, "State variant missing for proper experience [%s] and conjoint experience(s) [%s]");
 	
-	public static final SemanticError COVARIANT_VARIANT_TEST_NOT_COVARIANT =
-			new SemanticError(92, Severity.ERROR, "List element 'covariantExperienceRefs' cannot refer to non-covariant test [%s]"); 	
+	public static final SemanticError CONJOINT_VARIANT_TEST_NOT_CONJOINT =
+			new SemanticError(92, Severity.ERROR, "List element 'conjointExperienceRefs' cannot refer to non-conjoint test [%s]"); 	
 	
-	public static final SemanticError COVARIANT_VARIANT_PROPER_PHANTOM =
+	public static final SemanticError CONJOINT_VARIANT_PROPER_PHANTOM =
 			new SemanticError(93, Severity.ERROR, "State variant cannot refer to proper experience [%s], which is phantom on state [%s]"); 	
 	
-	public static final SemanticError COVARIANT_VARIANT_COVARIANT_PHANTOM =
-			new SemanticError(94, Severity.ERROR, "State variant cannot refer to covariant experience [%s], which is phantom on state [%s]"); 	
+	public static final SemanticError CONJOINT_VARIANT_CONJOINT_PHANTOM =
+			new SemanticError(94, Severity.ERROR, "State variant cannot refer to conjoint experience [%s], which is phantom on state [%s]"); 	
 	
 	public static final SemanticError PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT =
 			new SemanticError(95, Severity.ERROR, "Property '%s' is not allowed in a phantom state variant"); 
 	
-	public static final SemanticError COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT =
-			new SemanticError(99, Severity.ERROR, "Property 'covariantExperienceRefs' cannot reference non-covariant tests [%s]"); 
+	public static final SemanticError CONJOINT_EXPERIENCE_REF_TESTS_NOT_CONJOINT =
+			new SemanticError(99, Severity.ERROR, "Property 'conjointExperienceRefs' cannot reference non-conjoint tests [%s]"); 
 
-	public static final SemanticError COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED =
+	public static final SemanticError CONJOINT_EXPERIENCE_TEST_REF_UNDEFINED =
 			new SemanticError(102, Severity.ERROR, "Property 'testRef' references non-existent test [%s]"); 
 	
-	public static final SemanticError COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT =
+	public static final SemanticError CONJOINT_EXPERIENCE_TEST_REF_NONVARIANT =
 			new SemanticError(103, Severity.ERROR, "Property 'testRef' cannot reference test [%s] because it is nonvariant on the enclosing state [%s]"); 
 	
-	public static final SemanticError COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED =
+	public static final SemanticError CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED =
 			new SemanticError(104, Severity.ERROR, "Property 'experienceRef' references a non-existent experience [%s.%s]"); 
 	
-	public static final SemanticError COVARIANT_EXPERIENCE_DUPE =
-			new SemanticError(105, Severity.ERROR, "Duplicate covariant experience reference [%s.%s]"); 
+	public static final SemanticError CONJOINT_EXPERIENCE_DUPE =
+			new SemanticError(105, Severity.ERROR, "Duplicate conjoint experience reference [%s.%s]"); 
 
 	public static final SemanticError EXPERIENCEREF_UNDEFINED =
 			new SemanticError(109, Severity.ERROR, "Property 'experienceRef' references a non-existent experience [%s]"); 

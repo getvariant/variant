@@ -62,8 +62,8 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
          val path: Path = Path ("/tmp/schemata-test")
          Try(path.deleteRecursively())
          
-         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/schemata-test/schema1.json"))
-         FileUtils.copyFile(new File("conf-test/ParserCovariantOkayBigTestNoHooks.json"), new File("/tmp/schemata-test/schema2.json"))
+         FileUtils.copyFile(new File("conf-test/ParserConjointOkayBigTestNoHooks.json"), new File("/tmp/schemata-test/schema1.json"))
+         FileUtils.copyFile(new File("conf-test/ParserConjointOkayBigTestNoHooks.json"), new File("/tmp/schemata-test/schema2.json"))
          _app = new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .configure("variant.schemata.dir" -> "/tmp/schemata-test")
@@ -153,7 +153,7 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
          server.schemata.size mustBe 1
          val errLine = logTail(0)
          errLine.severity mustBe Severity.ERROR
-   		errLine.message must include (SCHEMA_CANNOT_REPLACE.asMessage("ParserCovariantOkayBigTestNoHooks", "schema1.json", "schema2.json"))
+   		errLine.message must include (SCHEMA_CANNOT_REPLACE.asMessage("ParserConjointOkayBigTestNoHooks", "schema1.json", "schema2.json"))
    		server.isUp mustBe true         
       }  
    }

@@ -7,8 +7,8 @@ interface Keywords {
 
 	static String KEYWORD_CLASS                     = "class";
 	static String KEYWORD_COMMENT                   = "comment";
-	static String KEYWORD_COVARIANT_EXPERIENCE_REFS = "covariantExperienceRefs";
-	static String KEYWORD_COVARIANT_TEST_REFS       = "covariantTestRefs";
+	static String KEYWORD_CONJOINT_EXPERIENCE_REFS = "conjointExperienceRefs";
+	static String KEYWORD_CONJOINT_TEST_REFS       = "conjointTestRefs";
 	static String KEYWORD_EXPERIENCES               = "experiences";
 	static String KEYWORD_EXPERIENCE_REF            = "experienceRef";
 	static String KEYWORD_FLUSHER                   = "flusher";

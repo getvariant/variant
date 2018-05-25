@@ -83,7 +83,7 @@ public class TestOnStateImpl implements Test.OnState {
 
 	/**
 	 * Get (and, if not yet, build) his object's variant space. 
-	 * Note that we have the test and its covariant set at the time of construction, 
+	 * Note that we have the test and its conjoint set at the time of construction, 
 	 * but variants are added one by one later. Caller must only call this when last 
 	 * variant was added.
 	 * 

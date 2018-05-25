@@ -8,15 +8,15 @@
 // test4 + +   - -
 // test5 + + - + -
 // test6 + - +   -
-// blank: not instrumented, -: nonvariant, +: has variants.
+// blank: not instrumented, -: phantom, +: has variants.
 // 
 // T1, T2, T3(T2), T4(T1), T5(T2,T4), T6(T1,T2,T4,T5)
  
  
 {                                                                                
    'meta':{
-      'name':'big_covar_schema',
-      'comment':'Schema for big tests with a warning'
+      'name':'big_conjoint_schema',
+      'comment':'Schema for big tests'
    },
    'states':[                                                             
      {  'name':'state1',
@@ -57,8 +57,7 @@
                'name':'path',
                'value':'/path/to/state5'
             }
-        ],
-        'unsupported': 23          // <- unsupported element
+        ]
      }                                                                   
   ],                                                                     
   'tests':[  
@@ -232,7 +231,7 @@
      },                                                                  
      {                                                                   
         'name':'test3',
-        'covariantTestRefs': ['test2'],                                                  
+        'conjointTestRefs': ['test2'],                                                  
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -276,7 +275,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'B'                           
@@ -291,7 +290,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'C'                           
@@ -306,7 +305,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'B'                           
@@ -321,7 +320,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'C'                           
@@ -363,7 +362,7 @@
                  },
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'B'                           
@@ -378,7 +377,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'C'                           
@@ -393,7 +392,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'B'                           
@@ -408,7 +407,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'C'                           
@@ -427,7 +426,7 @@
      },                                                                  
      {                                                                   
         'name':'test4',                                                  
-        'covariantTestRefs': ['test1'],                                  
+        'conjointTestRefs': ['test1'],                                  
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -490,7 +489,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test1',                            
                           'experienceRef': 'B'                           
@@ -505,7 +504,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test1',                            
                           'experienceRef': 'C'                           
@@ -520,7 +519,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test1',                            
                           'experienceRef': 'B'                           
@@ -535,7 +534,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test1',                            
                           'experienceRef': 'C'                           
@@ -562,7 +561,7 @@
      },                                                                  
      {                                                                   
         'name':'test5',                                                  
-        'covariantTestRefs': ['test2', 'test4'],                         
+        'conjointTestRefs': ['test2', 'test4'],                         
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -602,7 +601,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'B'                           
@@ -617,7 +616,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'C'                           
@@ -632,7 +631,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'B'                           
@@ -647,7 +646,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'C'                           
@@ -685,7 +684,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'B'                           
@@ -700,7 +699,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'C'                           
@@ -715,7 +714,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'B'                           
@@ -730,7 +729,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'C'                           
@@ -745,7 +744,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'B'                           
@@ -760,7 +759,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'C'                           
@@ -775,7 +774,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'B'                           
@@ -790,7 +789,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'C'                           
@@ -832,7 +831,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'B'                           
@@ -847,7 +846,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'C'                           
@@ -862,7 +861,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'B'                           
@@ -877,7 +876,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'C'                           
@@ -900,7 +899,7 @@
      },                                                                  
      {                                                                   
         'name':'test6',                                                  
-        'covariantTestRefs': ['test2', 'test4', 'test1', 'test5'],       
+        'conjointTestRefs': ['test2', 'test4', 'test1', 'test5'],       
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -940,7 +939,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'B'                           
@@ -955,7 +954,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'C'                           
@@ -970,7 +969,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'B'                           
@@ -985,7 +984,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'C'                           
@@ -1000,7 +999,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test5',                            
                           'experienceRef': 'B'                           
@@ -1015,7 +1014,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test5',                            
                           'experienceRef': 'C'                           
@@ -1030,7 +1029,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test5',                            
                           'experienceRef': 'B'                           
@@ -1045,7 +1044,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test5',                            
                           'experienceRef': 'C'                           
@@ -1060,7 +1059,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'B'                           
@@ -1079,7 +1078,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'B'                           
@@ -1098,7 +1097,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'C'                           
@@ -1117,7 +1116,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'C'                           
@@ -1136,7 +1135,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'B'                           
@@ -1155,7 +1154,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'B'                           
@@ -1174,7 +1173,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'C'                           
@@ -1193,7 +1192,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test4',                            
                           'experienceRef': 'C'                           
@@ -1239,7 +1238,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test1',                            
                           'experienceRef': 'B'                           
@@ -1254,7 +1253,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test1',                            
                           'experienceRef': 'C'                           
@@ -1269,7 +1268,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test1',                            
                           'experienceRef': 'B'                           
@@ -1284,7 +1283,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test1',                            
                           'experienceRef': 'C'                           
@@ -1299,7 +1298,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'B'                           
@@ -1314,7 +1313,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'C'                           
@@ -1329,7 +1328,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'B'                           
@@ -1344,7 +1343,7 @@
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'covariantExperienceRefs': [                         
+                    'conjointExperienceRefs': [                         
                        {                                                 
                           'testRef': 'test2',                            
                           'experienceRef': 'C'                           

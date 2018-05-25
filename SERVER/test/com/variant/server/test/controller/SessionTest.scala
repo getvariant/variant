@@ -67,7 +67,7 @@ class SessionTest extends BaseSpecWithServer {
       
       "obtain a connection" in {
          // POST new connection
-         assertResp(route(app, connectionRequest("big_covar_schema")))
+         assertResp(route(app, connectionRequest("big_conjoint_schema")))
            .isOk
            .withConnStatusHeader(OPEN)
            .withBodyJson { json =>
@@ -208,7 +208,7 @@ class SessionTest extends BaseSpecWithServer {
             .withNoBody
          
          // Obtain a parallel connection.
-         assertResp(route(app, connectionRequest("big_covar_schema")))
+         assertResp(route(app, connectionRequest("big_conjoint_schema")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
@@ -238,7 +238,7 @@ class SessionTest extends BaseSpecWithServer {
 
       "return SessionExpired on GET or PUT session on a wrong connection" in {
 
-         // Create a new session on the existing big_covar_schema connection
+         // Create a new session on the existing big_conjoint_schema connection
          val sid = newSid()
          val body = sessionJsonBigCovar.expand("sid" -> sid)
          assertResp(route(app, connectedRequest(PUT, endpoint, connId).withBody(body)))
@@ -288,7 +288,7 @@ class SessionTest extends BaseSpecWithServer {
 
       "allow access to a session after connection close on a parallel connection" in {
 
-         assertResp(route(app, connectionRequest("big_covar_schema")))
+         assertResp(route(app, connectionRequest("big_conjoint_schema")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json =>
@@ -296,7 +296,7 @@ class SessionTest extends BaseSpecWithServer {
                connId mustNot be (null)
          }     
 
-        assertResp(route(app, connectionRequest("big_covar_schema")))
+        assertResp(route(app, connectionRequest("big_conjoint_schema")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json =>

@@ -52,7 +52,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
 	   "startup with two schemata" in {
 	      
          server.schemata.size mustBe 2
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
                   
          // Let the directory watcher thread start before copying any files.
@@ -64,10 +64,10 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
 	   val connId2Pet = new Array[String](CONNECTIONS)
 
 
-	   "obtain CONNECTIONS connections to ParserCovariantOkayBigTestNoHooks" in {
+	   "obtain CONNECTIONS connections to ParserConjointOkayBigTestNoHooks" in {
 
 	      for (i <- 0 until CONNECTIONS) async {   
-            assertResp(route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")))
+            assertResp(route(app, connectionRequest("ParserConjointOkayBigTestNoHooks")))
               .isOk
               .withConnStatusHeader(OPEN)
               .withBodyJson { json =>
@@ -165,18 +165,18 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
 	      joinAll
    	}
 
-      "replace schema ParserCovariantOkayBigTestNoHooks" in {
+      "replace schema ParserConjointOkayBigTestNoHooks" in {
 
-	      val oldSchema = server.schemata.get("ParserCovariantOkayBigTestNoHooks").get
+	      val oldSchema = server.schemata.get("ParserConjointOkayBigTestNoHooks").get
          oldSchema.state mustBe State.Deployed
 
          async {
    	      
-            IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
+            IoUtils.fileCopy("conf-test/ParserConjointOkayBigTestNoHooks.json", s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
             Thread.sleep(dirWatcherLatencyMsecs)
             
             oldSchema.state mustBe State.Gone
-            val newSchema = server.schemata.get("ParserCovariantOkayBigTestNoHooks").get
+            val newSchema = server.schemata.get("ParserConjointOkayBigTestNoHooks").get
             newSchema.state mustBe State.Deployed
             newSchema mustNot be (oldSchema)
             server.schemata.size mustBe 2
@@ -276,7 +276,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
       "open a new connection to the new schema and create a session in it" in {
 
          // Connection
-         assertResp(route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")))
+         assertResp(route(app, connectionRequest("ParserConjointOkayBigTestNoHooks")))
            .isOk
            .withConnStatusHeader(OPEN)
            .withBodyJson { json =>

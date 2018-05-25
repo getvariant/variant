@@ -1,10 +1,6 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_DUPE;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_DUPE;
-import static com.variant.core.schema.parser.error.SemanticError.COVARIANT_VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -24,15 +20,13 @@ import com.variant.core.schema.parser.error.SemanticError.Location;
  * @author Igor
  *
  */
-public class ParserCovariantErrorMultiTest extends BaseTestCore {
+public class ParserConjointErrorMultiTest extends BaseTestCore {
 	
 	/**
-	 * PARSER_COVARIANT_VARIANT_DUPE
-	 * 
 	 * @throws Exception
 	 */
 	@Test
-	public void covariantVariantDupe_Test() throws Exception {
+	public void conjointVariantDupe_Test() throws Exception {
 		
 		String schema = 
 				"{                                                              \n" +
@@ -138,7 +132,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test3',                                       \n" +
-                "        'covariantTestRefs': ['test1', 'test2'],              \n" +
+                "        'conjointTestRefs': ['test1', 'test2'],              \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -163,7 +157,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -172,7 +166,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -184,7 +178,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -193,7 +187,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -210,7 +204,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -219,7 +213,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -228,7 +222,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -237,7 +231,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -249,7 +243,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -258,7 +252,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -267,7 +261,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -276,7 +270,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -285,7 +279,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" + // Dupe variant
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -317,7 +311,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected =  new ParserMessageImpl(new Location("/tests[2]/onStates[1]/variants[10]/"), COVARIANT_VARIANT_DUPE, "test1.C", "test3", "state2", "C");
+		ParserMessage expected =  new ParserMessageImpl(new Location("/tests[2]/onStates[1]/variants[10]/"), CONJOINT_VARIANT_DUPE, "test1.C", "test3", "state2", "C");
 		assertMessageEqual(actual, expected);
 	}
 
@@ -325,7 +319,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	 * @throws Exception
 	 */
 	@Test
-	public void covariantExperienceDupe_Test() throws Exception {
+	public void conjointExperienceDupe_Test() throws Exception {
 		
 		String schema = 
 				"{                                                             \n" +
@@ -411,7 +405,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-                "        'covariantTestRefs': ['test1'],                       \n" +
+                "        'conjointTestRefs': ['test1'],                       \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -447,7 +441,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -456,7 +450,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -468,7 +462,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -477,7 +471,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -495,7 +489,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test3',                                       \n" +
-                "        'covariantTestRefs': ['test1', 'test2'],              \n" +
+                "        'conjointTestRefs': ['test1', 'test2'],              \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -520,7 +514,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -529,7 +523,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -541,7 +535,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -550,7 +544,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -567,7 +561,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -576,7 +570,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -585,7 +579,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -594,7 +588,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -603,7 +597,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -616,7 +610,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -629,7 +623,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -642,7 +636,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -659,7 +653,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -668,7 +662,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -677,7 +671,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -686,7 +680,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -695,7 +689,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -708,7 +702,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
@@ -721,7 +715,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -734,7 +728,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'covariantExperienceRefs': [              \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
 	    	    "                          'testRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
@@ -771,19 +765,17 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[1]/variants[14]/covariantExperienceRefs[1]/experienceRef"), 
-				COVARIANT_EXPERIENCE_DUPE, "test1", "B");
+				new Location("/tests[2]/onStates[1]/variants[14]/conjointExperienceRefs[1]/experienceRef"), 
+				CONJOINT_EXPERIENCE_DUPE, "test1", "B");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[1]/variants/"), COVARIANT_VARIANT_MISSING, "C", "test1.B,test2.B", "test3", "state2");
+				new Location("/tests[2]/onStates[1]/variants/"), CONJOINT_VARIANT_MISSING, "C", "test1.B,test2.B", "test3", "state2");
 		assertMessageEqual(expected, actual);
 
 	}
 
 	/**
-	 * PARSER_COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT
-	 * PARSER_COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED
 	 */
 	@Test
 	public void testMore() throws Exception {
@@ -911,7 +903,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	    	    //--------------------------------------------------------------------------//	
 	    	    "     {                                                                   \n" +
 	    	    "        'name':'test3',                                                  \n" +
-	    	    "        'covariantTestRefs': ['test2', 'test1'],                         \n" +
+	    	    "        'conjointTestRefs': ['test2', 'test1'],                         \n" +
 	    	    "        'experiences':[                                                  \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'name':'A',                                                \n" +
@@ -940,7 +932,7 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
 	    	    "                          'testRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
@@ -949,16 +941,16 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
 	    	    "                          'testRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ]                                                   \n" +
 	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" +  // Invalid because T1 and T2 are not covariant.
+	    	    "                 {                                                       \n" +  // Invalid because T1 and T2 are not conjoint.
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
 	    	    "                          'testRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
@@ -969,9 +961,9 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	    	    "                       }                                                 \n" +
 	    	    "                     ]                                                   \n" +
 	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not covariant + there's no T2.C
+	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not conjoint + there's no T2.C
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
 	    	    "                          'testRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
@@ -982,9 +974,9 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	    	    "                       }                                                 \n" +
 	    	    "                     ]                                                   \n" +
 	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not covariant + there's no T1.C
+	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not conjoint + there's no T1.C
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
 	    	    "                          'testRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
@@ -995,9 +987,9 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 	    	    "                       }                                                 \n" +
 	    	    "                     ]                                                   \n" +
 	    	    "                 },                                                      \n" +
-	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not covariant + there's no T1.C nor T2.C
+	    	    "                 {                                                       \n" + // Invalid because T1 and T2 are not conjoint + there's no T1.C nor T2.C
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'covariantExperienceRefs': [                         \n" +
+	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
 	    	    "                          'testRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
@@ -1034,23 +1026,23 @@ public class ParserCovariantErrorMultiTest extends BaseTestCore {
 		assertEquals(4, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[1]/variants[3]/covariantExperienceRefs[1]/"), 
-				COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, "test1, test2");
+				new Location("/tests[2]/onStates[1]/variants[3]/conjointExperienceRefs[1]/"), 
+				CONJOINT_EXPERIENCE_REF_TESTS_NOT_CONJOINT, "test1, test2");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[1]/variants[4]/covariantExperienceRefs[1]/experienceRef"), 
-				COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test2", "C");
+				new Location("/tests[2]/onStates[1]/variants[4]/conjointExperienceRefs[1]/experienceRef"), 
+				CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test2", "C");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(2);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[1]/variants[5]/covariantExperienceRefs[0]/experienceRef"), 
-				COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C");
+				new Location("/tests[2]/onStates[1]/variants[5]/conjointExperienceRefs[0]/experienceRef"), 
+				CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(3);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[1]/variants[6]/covariantExperienceRefs[0]/experienceRef"), 
-				COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C");
+				new Location("/tests[2]/onStates[1]/variants[6]/conjointExperienceRefs[0]/experienceRef"), 
+				CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "C");
 		assertMessageEqual(expected, actual);
 	}
 	

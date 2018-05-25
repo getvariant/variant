@@ -67,14 +67,14 @@ public class VariantSpace {
 		/**
 		 * Can this coordinate vector be combined with a new dimension, i.e. a new test?
 		 * A new dimension can only be added to a vector whose all existing dimensions are
-		 * covariant with the given test.
+		 * conjoint with the given test.
 		 * 
 		 * @param test
-		 * @return true, if test is pair-wise covariant with all tests in this 
+		 * @return true, if test is pair-wise conjoint with all tests in this 
 		 */
 		private boolean isCombinableWith(Test test) {
 			for (Experience e: coordinates)
-				if (! e.getTest().isCovariantWith(test)) return false;
+				if (! e.getTest().isConjointWith(test)) return false;
 			return true;
 		}
 		
@@ -119,8 +119,8 @@ public class VariantSpace {
 		// Build basis sorted in ordinal order.
 		basis = new LinkedHashSet<Test>();
 		basis.add(tosImpl.getTest());
-		List<Test> covariantTests = tosImpl.getTest().getCovariantTests();
-		if (covariantTests != null) basis.addAll(covariantTests);
+		List<Test> conjointTests = tosImpl.getTest().getConjointTests();
+		if (conjointTests != null) basis.addAll(conjointTests);
 
 		// Pass 1. Build empty space, i.e. all Points with nulls for Variant values, for now.
 		for (Test t: basis) {
@@ -139,14 +139,14 @@ public class VariantSpace {
 				}
 			}
 			else {
-				// 2nd and on test is a covariant test.  Skip it, if it's not instrumented or is nonvariant on this state.
+				// 2nd and on test is a conjoint test.  Skip it, if it's not instrumented or is nonvariant on this state.
 				// Otherwise, compute the cartеsian product of what's already in the table and this current tests's experience list.
 				if (!tosImpl.getState().isInstrumentedBy(t) || tosImpl.getState().isNonvariantIn(t)) continue;				
 				
 				for (Experience exp: t.getExperiences()) {
 					if (exp.isControl()) continue;
 					for (Coordinates oldKey: oldKeys) {
-						// #30: Only multiply by this dimension, if it is covariant with all tests already in the table. 
+						// #30: Only multiply by this dimension, if it is conjoint with all tests already in the table. 
 						if (oldKey.isCombinableWith(t)) {
 							Coordinates coordinates = new Coordinates(oldKey, exp);
 							table.put(coordinates, new Point(coordinates));
@@ -165,16 +165,16 @@ public class VariantSpace {
 			// Local experience must be first.
 			coordinateExperiences.add(variant.getExperience());
 			
-			// Covariant experiences are not concurrent to basis, so we have to reorder.
+			// Conjoint experiences are not concurrent to basis, so we have to reorder.
 			for (Test basisTest: basis) {
 			
 				// Skip first test in basis because it refers to the local test and we already have that.
 				if (basisTest.equals(variant.getTest())) continue;
 				
 				if (!variant.isProper()) {
-					for (Experience covarExp: variant.getCovariantExperiences()) {
-						if (covarExp.getTest().equals(basisTest)) {
-							coordinateExperiences.add(covarExp);
+					for (Experience conjointExp: variant.getConjointExperiences()) {
+						if (conjointExp.getTest().equals(basisTest)) {
+							coordinateExperiences.add(conjointExp);
 							break;
 						}
 					}
@@ -249,10 +249,10 @@ public class VariantSpace {
 		}
 		
 		/**
-		 * Covariant experiences, if any.
+		 * Conjoint experiences, if any.
 		 * @return
 		 */
-		public List<Experience> getCovariantExperiences() {
+		public List<Experience> getConjointExperiences() {
 			return coordinates.coordinates.subList(1, coordinates.coordinates.size());
 		}
 

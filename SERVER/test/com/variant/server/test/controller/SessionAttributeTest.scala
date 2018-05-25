@@ -36,7 +36,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
       
       "obtain a connection and a session" in {
 
-         assertResp(route(app, connectionRequest("big_covar_schema")))
+         assertResp(route(app, connectionRequest("big_conjoint_schema")))
            .isOk
            .withConnStatusHeader(OPEN)
            .withBodyJson { json =>
@@ -105,7 +105,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
 
       "read the attribute in a parallel session" in {
          
-         assertResp(route(app, connectionRequest("big_covar_schema")))
+         assertResp(route(app, connectionRequest("big_conjoint_schema")))
            .isOk
            .withConnStatusHeader(OPEN)
            .withBodyJson { json =>

@@ -57,7 +57,7 @@ class EventTest extends BaseSpecWithServer {
       
    "EventController" should {
 
-      val schema = server.schemata("big_covar_schema")
+      val schema = server.schemata("big_conjoint_schema")
       val eventWriter = schema.eventWriter
 
       "return 404 on GET" in {
@@ -79,7 +79,7 @@ class EventTest extends BaseSpecWithServer {
       var schid: String = null
       
       "obtain a connection" in {
-         assertResp(route(app, connectionRequest("big_covar_schema")))
+         assertResp(route(app, connectionRequest("big_conjoint_schema")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json =>

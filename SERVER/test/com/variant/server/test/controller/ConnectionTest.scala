@@ -82,7 +82,7 @@ import EventTest._
          
          var cid: String = null
          
-         assertResp(route(app, connectedRequest(POST, endpoint + "/big_covar_schema", "foo")))
+         assertResp(route(app, connectedRequest(POST, endpoint + "/big_conjoint_schema", "foo")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
@@ -92,15 +92,15 @@ import EventTest._
                (json \ "ts").asOpt[Long].isDefined mustBe true
                val schemaSrc = (json \ "schema" \ "src").as[String]
                val schemaId = (json \ "schema" \ "id").as[String]
-               schemaSrc mustBe server.schemata("big_covar_schema").source
-               schemaId mustBe server.schemata("big_covar_schema").getId
+               schemaSrc mustBe server.schemata("big_conjoint_schema").source
+               schemaId mustBe server.schemata("big_conjoint_schema").getId
                val parser = ServerSchemaParser()
                val parserResp = parser.parse(schemaSrc)
                parserResp.hasMessages() mustBe false
          		parserResp.getSchema() mustNot be (null)
       	   	parserResp.getSchemaSrc() mustNot be (null)      	   	
                val schema = parserResp.getSchema
-               schema.getName mustEqual "big_covar_schema"
+               schema.getName mustEqual "big_conjoint_schema"
             }
          
          // close this connection. 
@@ -114,7 +114,7 @@ import EventTest._
 
       "open connection on POST with valid schema name" in {
          
-         assertResp(route(app, connectionRequest("big_covar_schema")))
+         assertResp(route(app, connectionRequest("big_conjoint_schema")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json =>
@@ -124,8 +124,8 @@ import EventTest._
                (json \ "ts").asOpt[Long].isDefined mustBe true
                val schemaSrc = (json \ "schema" \ "src").as[String]
                val schemaId = (json \ "schema" \ "id").as[String]
-               schemaSrc mustBe server.schemata("big_covar_schema").source
-               schemaId mustBe server.schemata("big_covar_schema").getId
+               schemaSrc mustBe server.schemata("big_conjoint_schema").source
+               schemaId mustBe server.schemata("big_conjoint_schema").getId
                val parser = ServerSchemaParser()
                val parserResp = parser.parse(schemaSrc)
                parserResp.hasMessages() mustBe false
@@ -133,7 +133,7 @@ import EventTest._
       	   	parserResp.getSchemaSrc() mustNot be (null)
       	   	
                val schema = parserResp.getSchema
-               schema.getName mustEqual "big_covar_schema"
+               schema.getName mustEqual "big_conjoint_schema"
             }
       }
       
@@ -162,7 +162,7 @@ import EventTest._
       "return 400 when attempting to open one too many connections" in {
          val max = server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
          for (i <- 1 to max) {
-            assertResp(route(app, connectionRequest("big_covar_schema")))
+            assertResp(route(app, connectionRequest("big_conjoint_schema")))
                .isOk
                .withConnStatusHeader(OPEN)
                .withBodyJson { json =>
@@ -171,8 +171,8 @@ import EventTest._
                   (json \ "ts").asOpt[Long].isDefined mustBe true
                   val schemaSrc = (json \ "schema" \ "src").as[String]
                   val schemaId = (json \ "schema" \ "id").as[String]
-                  schemaSrc mustBe server.schemata("big_covar_schema").source
-                  schemaId mustBe server.schemata("big_covar_schema").getId
+                  schemaSrc mustBe server.schemata("big_conjoint_schema").source
+                  schemaId mustBe server.schemata("big_conjoint_schema").getId
                   val parser = ServerSchemaParser()
                   val parserResp = parser.parse(schemaSrc)
                   parserResp.hasMessages() mustBe false
@@ -180,12 +180,12 @@ import EventTest._
          	   	parserResp.getSchemaSrc() mustNot be (null)
          	   	
                   val schema = parserResp.getSchema
-                  schema.getName mustEqual "big_covar_schema"                  
+                  schema.getName mustEqual "big_conjoint_schema"                  
                }
          }
          
          // One over
-         assertResp(route(app, connectionRequest("big_covar_schema")))
+         assertResp(route(app, connectionRequest("big_conjoint_schema")))
             .isError(TooManyConnections)
             .withNoConnStatusHeader
          
@@ -196,7 +196,7 @@ import EventTest._
             .withConnStatusHeader(CLOSED_BY_CLIENT)
 
          // Now should work
-         assertResp(route(app, connectionRequest("big_covar_schema")))
+         assertResp(route(app, connectionRequest("big_conjoint_schema")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json =>
@@ -205,8 +205,8 @@ import EventTest._
                (json \ "ts").asOpt[Long].isDefined mustBe true
                val schemaSrc = (json \ "schema" \ "src").as[String]
                val schemaId = (json \ "schema" \ "id").as[String]
-               schemaSrc mustBe server.schemata("big_covar_schema").source
-               schemaId mustBe server.schemata("big_covar_schema").getId
+               schemaSrc mustBe server.schemata("big_conjoint_schema").source
+               schemaId mustBe server.schemata("big_conjoint_schema").getId
                val parser = ServerSchemaParser()
                val parserResp = parser.parse(schemaSrc)
                parserResp.hasMessages() mustBe false
@@ -214,7 +214,7 @@ import EventTest._
       	   	parserResp.getSchemaSrc() mustNot be (null)
       	   	
                val schema = parserResp.getSchema
-               schema.getName mustEqual "big_covar_schema"
+               schema.getName mustEqual "big_conjoint_schema"
             }
       }
    }

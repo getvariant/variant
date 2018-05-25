@@ -94,18 +94,18 @@ public class VariantParser implements Keywords {
 			return null;						
 		}
 		
-		// Pass 2. Find covariantExperienceRefs.
-		ArrayList<TestExperienceImpl> covarTestExperiences = null;
+		// Pass 2. Find conjointExperienceRefs.
+		ArrayList<TestExperienceImpl> conjointTestExperiences = null;
 		
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_COVARIANT_EXPERIENCE_REFS)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_CONJOINT_EXPERIENCE_REFS)) {
 				
 				if (isPhantom) {
 					response.addMessage(
 							variantLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 							PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT, 
-							KEYWORD_COVARIANT_EXPERIENCE_REFS);
+							KEYWORD_CONJOINT_EXPERIENCE_REFS);
 					
 					return null;					
 				}
@@ -116,19 +116,19 @@ public class VariantParser implements Keywords {
 				}
 				catch (Exception e) {
 					response.addMessage(
-							variantLocation.plusObj(KEYWORD_COVARIANT_EXPERIENCE_REFS),
+							variantLocation.plusObj(KEYWORD_CONJOINT_EXPERIENCE_REFS),
 							PROPERTY_NOT_LIST,  
-							KEYWORD_COVARIANT_EXPERIENCE_REFS);
+							KEYWORD_CONJOINT_EXPERIENCE_REFS);
 					
 					return null;
 				}
 				
-				covarTestExperiences = new ArrayList<TestExperienceImpl>();
+				conjointTestExperiences = new ArrayList<TestExperienceImpl>();
 
 				int index = 0;
 				for (Object covarExperienceRefObj: covarExperienceRefList) {
 					
-					Location covarExpRefLocation = variantLocation.plusObj(KEYWORD_COVARIANT_EXPERIENCE_REFS).plusIx(index++);
+					Location covarExpRefLocation = variantLocation.plusObj(KEYWORD_CONJOINT_EXPERIENCE_REFS).plusIx(index++);
 					
 					Map<String,?> covarExperienceRefMap;
 					try {
@@ -138,7 +138,7 @@ public class VariantParser implements Keywords {
 						response.addMessage(
 								covarExpRefLocation,
 								ELEMENT_NOT_OBJECT, 
-								KEYWORD_COVARIANT_EXPERIENCE_REFS);
+								KEYWORD_CONJOINT_EXPERIENCE_REFS);
 						
 						return null;
 					}
@@ -169,7 +169,7 @@ public class VariantParser implements Keywords {
 					if (covarTest == null) {
 						response.addMessage(
 								covarExpRefLocation.plusProp(KEYWORD_TEST_REF),
-								COVARIANT_EXPERIENCE_TEST_REF_UNDEFINED,
+								CONJOINT_EXPERIENCE_TEST_REF_UNDEFINED,
 								covarTestRef);
 						return null;
 					}
@@ -178,7 +178,7 @@ public class VariantParser implements Keywords {
 					if (state.isNonvariantIn(covarTest)) {
 						response.addMessage(
 								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
-								COVARIANT_EXPERIENCE_TEST_REF_NONVARIANT, 
+								CONJOINT_EXPERIENCE_TEST_REF_NONVARIANT, 
 								covarTestRef, state.getName());
 						return null;						
 					}
@@ -188,40 +188,40 @@ public class VariantParser implements Keywords {
 					if (covarExperience == null) {
 						response.addMessage(
 								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
-								COVARIANT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, 
+								CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, 
 								covarTestRef, covarExperienceRef);
 						return null;
 					}
 
-					// This test must declare the other test as covariant.
-					if (test.getCovariantTests() == null || !test.getCovariantTests().contains(covarTest)) {
+					// This test must declare the other test as conjoint.
+					if (test.getConjointTests() == null || !test.getConjointTests().contains(covarTest)) {
 						response.addMessage(
 								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
-								COVARIANT_VARIANT_TEST_NOT_COVARIANT,
+								CONJOINT_VARIANT_TEST_NOT_CONJOINT,
 								covarTestRef);
 						return null;
 					}
 
-					if (covarTestExperiences.contains(covarExperience)) {
+					if (conjointTestExperiences.contains(covarExperience)) {
 						response.addMessage(
 								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
-								COVARIANT_EXPERIENCE_DUPE,
+								CONJOINT_EXPERIENCE_DUPE,
 								covarTestRef, covarExperienceRef);
 						return null;
 					}
 
-					// if multiple covarint experience refs, they can only reference pairwise covariant tests.
-					for (TestExperienceImpl e: covarTestExperiences) {
-						if (!e.getTest().isCovariantWith(covarExperience.getTest())) {
+					// if multiple conjoint experience refs, they can only reference pairwise conjoint tests.
+					for (TestExperienceImpl e: conjointTestExperiences) {
+						if (!e.getTest().isConjointWith(covarExperience.getTest())) {
 							response.addMessage(
 									covarExpRefLocation,
-									COVARIANT_EXPERIENCE_REF_TESTS_NOT_COVARIANT, 
+									CONJOINT_EXPERIENCE_REF_TESTS_NOT_CONJOINT, 
 									CollectionsUtils.toString(CollectionsUtils.list(e.getTest(), covarExperience.getTest()), ", "));
 							return null;
 						}
 					}
 
-					covarTestExperiences.add(covarExperience);
+					conjointTestExperiences.add(covarExperience);
 				}
 			}
 		}
@@ -233,7 +233,7 @@ public class VariantParser implements Keywords {
 		
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
-			if (StringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_EXPERIENCE_REF, KEYWORD_IS_PHANTOM, KEYWORD_COVARIANT_EXPERIENCE_REFS)) 
+			if (StringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_EXPERIENCE_REF, KEYWORD_IS_PHANTOM, KEYWORD_CONJOINT_EXPERIENCE_REFS)) 
 				continue;
 		
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_PARAMETERS)) {
@@ -261,12 +261,12 @@ public class VariantParser implements Keywords {
 		
 		// Resort covarTestExperiences in ordinal order, if present.
 		List<TestExperienceImpl> orderedCovarTestExperiences = null; 
-		if (covarTestExperiences != null) {
+		if (conjointTestExperiences != null) {
 			
-			orderedCovarTestExperiences = new ArrayList<TestExperienceImpl>(covarTestExperiences.size());
+			orderedCovarTestExperiences = new ArrayList<TestExperienceImpl>(conjointTestExperiences.size());
 
 			for (Test t: response.getSchema().getTests()) {
-				for (Experience e: covarTestExperiences) {
+				for (Experience e: conjointTestExperiences) {
 					if (t.equals(e.getTest())) {
 						orderedCovarTestExperiences.add((TestExperienceImpl) e);
 						break;

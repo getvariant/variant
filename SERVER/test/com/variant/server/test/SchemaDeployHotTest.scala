@@ -47,9 +47,9 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   "startup with two schemata" in {
 	      
 	      server.schemata.size mustBe 2
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
@@ -60,21 +60,21 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
       
       "deploy a third schema" in {
 
-	      IoUtils.fileCopy("schemata-test/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
+	      IoUtils.fileCopy("schemata-test/big-conjoint-schema.json", s"${schemataDir}/another-big-test-schema.json");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
 	      Thread.sleep(dirWatcherLatencyMsecs);
 	      
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_covar_schema").isDefined mustBe true
-         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
-         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+         server.schemata.get("big_conjoint_schema").isDefined mustBe true
+         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
+         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
 	   }
 	   
 	   "replace petclinic from same origin" in {
@@ -87,16 +87,16 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          currentSchema.state mustBe State.Gone
          
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").get.getId mustNot equal (currentSchema.getId())
-         server.schemata.get("big_covar_schema").isDefined mustBe true
-         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
-         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+         server.schemata.get("big_conjoint_schema").isDefined mustBe true
+         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
+         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
 
 	   }
 
@@ -110,16 +110,16 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          currentSchema.state mustBe State.Deployed
          
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").get.getId must equal (currentSchema.getId())
-         server.schemata.get("big_covar_schema").isDefined mustBe true
-         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
-         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+         server.schemata.get("big_conjoint_schema").isDefined mustBe true
+         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
+         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
 
          val logLines = ServerLogTailer.last(2)
          logLines(0).severity mustBe Severity.ERROR
@@ -131,31 +131,31 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 
    	"re-deploy a schema with parse warnings" in {
 
-   	   val currentSchema = server.schemata.get("big_covar_schema").get
+   	   val currentSchema = server.schemata.get("big_conjoint_schema").get
          currentSchema.state mustBe State.Deployed
 
-	      IoUtils.fileCopy("schemata-test-with-errors/big-covar-schema-warning.json", s"${schemataDir}/another-big-test-schema.json")
+	      IoUtils.fileCopy("schemata-test-with-errors/big-conjoint-schema-warning.json", s"${schemataDir}/another-big-test-schema.json")
          Thread.sleep(dirWatcherLatencyMsecs)
              
          currentSchema.state mustBe State.Gone
 
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_covar_schema").isDefined mustBe true
-         server.schemata.get("big_covar_schema").get.getId mustNot equal (currentSchema.getId)
-         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
-         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+         server.schemata.get("big_conjoint_schema").isDefined mustBe true
+         server.schemata.get("big_conjoint_schema").get.getId mustNot equal (currentSchema.getId)
+         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
+         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
 
 	   }
 
    	"undeploy deleted another-big-test-schema.json" in {
 	      
-	      val currentSchema = server.schemata.get("big_covar_schema").get
+	      val currentSchema = server.schemata.get("big_conjoint_schema").get
          currentSchema.state mustBe State.Deployed
 
 	      IoUtils.delete(s"${schemataDir}/another-big-test-schema.json");
@@ -164,9 +164,9 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          currentSchema.state mustBe State.Gone
          
 	      server.schemata.size mustBe 2
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
@@ -175,7 +175,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 
 	   "refuse to deploy a schema with syntax errors" in {
 	      
-	      IoUtils.fileCopy("schemata-test-with-errors/big-covar-schema-error.json", s"${schemataDir}/another-big-test-schema.json")
+	      IoUtils.fileCopy("schemata-test-with-errors/big-conjoint-schema-error.json", s"${schemataDir}/another-big-test-schema.json")
          Thread.sleep(dirWatcherLatencyMsecs)
              
          val logLines = ServerLogTailer.last(2)
@@ -185,9 +185,9 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          logLines(1).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
 
 	      server.schemata.size mustBe 2
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
@@ -207,9 +207,9 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          logLines(1).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
 
 	      server.schemata.size mustBe 2
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
@@ -218,28 +218,28 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
       
       "redeploy the third schema" in {
 
-	      IoUtils.fileCopy("schemata-test/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
+	      IoUtils.fileCopy("schemata-test/big-conjoint-schema.json", s"${schemataDir}/another-big-test-schema.json");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
 	      Thread.sleep(dirWatcherLatencyMsecs)
 	      
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_covar_schema").isDefined mustBe true
-         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
-         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+         server.schemata.get("big_conjoint_schema").isDefined mustBe true
+         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
+         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
 	   }
 
       var cid: String = null
 	   
-      "open connection to ParserCovariantOkayBigTestNoHooks" in {
+      "open connection to ParserConjointOkayBigTestNoHooks" in {
             
-         assertResp(route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")))
+         assertResp(route(app, connectionRequest("ParserConjointOkayBigTestNoHooks")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
@@ -251,7 +251,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
 	   var sid = newSid()
 	   
-	   "create a new session in schema ParserCovariantOkayBigTestNoHooks" in {
+	   "create a new session in schema ParserConjointOkayBigTestNoHooks" in {
          
          val body = sessionJson.expand("sid" -> sid)
          assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
@@ -260,17 +260,17 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
             .withNoBody
       }
 
-	   "delete schema ParserCovariantOkayBigTestNoHooks" in {
+	   "delete schema ParserConjointOkayBigTestNoHooks" in {
 
-	      val currentSchema = server.schemata.get("ParserCovariantOkayBigTestNoHooks").get
+	      val currentSchema = server.schemata.get("ParserConjointOkayBigTestNoHooks").get
          currentSchema.state mustBe State.Deployed
 
-	      IoUtils.delete(s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
+	      IoUtils.delete(s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
          Thread.sleep(dirWatcherLatencyMsecs)
     
          // Schema is gone
          currentSchema.state mustBe State.Gone
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks") mustBe None
+         server.schemata.get("ParserConjointOkayBigTestNoHooks") mustBe None
          
 	   }
 
@@ -316,29 +316,29 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
      	   
 	   "confirm the 3 schemata" in {
 	      
-         IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
+         IoUtils.fileCopy("conf-test/ParserConjointOkayBigTestNoHooks.json", s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
          IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${schemataDir}/petclinic-schema.json");
 
          Thread.sleep(dirWatcherLatencyMsecs)
          
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_covar_schema").isDefined mustBe true
-         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
-         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+         server.schemata.get("big_conjoint_schema").isDefined mustBe true
+         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
+         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
          
 	   }
 
       var cid1, cid2, cid3: String = null
 	   
-      "open new connection to ParserCovariantOkayBigTestNoHooks" in {
+      "open new connection to ParserConjointOkayBigTestNoHooks" in {
             
-         assertResp(route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")))
+         assertResp(route(app, connectionRequest("ParserConjointOkayBigTestNoHooks")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
@@ -362,7 +362,7 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   
 	   var sid1 = newSid()
 	   
-	   "create a session in schema ParserCovariantOkayBigTestNoHooks" in {
+	   "create a session in schema ParserConjointOkayBigTestNoHooks" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> sid1)
          assertResp(route(app, connectedRequest(PUT, context + "/session", cid1).withBody(body)))
@@ -373,13 +373,13 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 
 	   "redeploy schemata at once" in {
 	      
-	      val oldBigSchema = server.schemata.get("ParserCovariantOkayBigTestNoHooks").get
+	      val oldBigSchema = server.schemata.get("ParserConjointOkayBigTestNoHooks").get
          oldBigSchema.state mustBe State.Deployed
 
 	      // Override
-	      IoUtils.fileCopy("conf-test/ParserCovariantOkayBigTestNoHooks.json", s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
+	      IoUtils.fileCopy("conf-test/ParserConjointOkayBigTestNoHooks.json", s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
 	      // New file
-	      IoUtils.fileCopy("schemata-test/big-covar-schema.json", s"${schemataDir}/another-big-test-schema.json");
+	      IoUtils.fileCopy("schemata-test/big-conjoint-schema.json", s"${schemataDir}/another-big-test-schema.json");
 
 	      // While we wait for the FS system to notify directory watcher, make sure
 	      // the existing session is kept alive
@@ -398,21 +398,21 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          oldBigSchema.state mustBe State.Gone
 
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").isDefined mustBe true
-	      server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getId() mustNot equal (oldBigSchema.getId())
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.getName mustEqual "ParserCovariantOkayBigTestNoHooks"
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+	      server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getId() mustNot equal (oldBigSchema.getId())
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
          server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
          server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_covar_schema").isDefined mustBe true
-         server.schemata.get("big_covar_schema").get.getName mustEqual "big_covar_schema" 
-         server.schemata.get("big_covar_schema").get.state mustEqual State.Deployed 	      
+         server.schemata.get("big_conjoint_schema").isDefined mustBe true
+         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
+         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
 	   }
 
 	   var sid2 = newSid()
 	   
-	   "refuse to create new session in the draining connection to ParserCovariantOkayBigTestNoHooks" in {
+	   "refuse to create new session in the draining connection to ParserConjointOkayBigTestNoHooks" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> sid2)
          assertResp(route(app, connectedRequest(PUT, context + "/session", cid1).withBody(body)))
@@ -431,9 +431,9 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
             .withNoBody
       }
 
-	   "open connection to the new big_covar_schema" in {
+	   "open connection to the new big_conjoint_schema" in {
             
-         assertResp(route(app, connectionRequest("big_covar_schema")))
+         assertResp(route(app, connectionRequest("big_conjoint_schema")))
             .isOk
             .withConnStatusHeader(OPEN)
             .withBodyJson { json => 

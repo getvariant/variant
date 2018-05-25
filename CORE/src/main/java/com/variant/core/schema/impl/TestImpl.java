@@ -24,7 +24,7 @@ public class TestImpl implements Test {
 	private Schema schema;
 	private String name;
 	private boolean isOn = true;
-	private List<TestImpl> covariantTests;
+	private List<TestImpl> conjointTests;
 	private List<TestExperienceImpl> experiences;
 	private VariantSpace variantSpace;
 	private List<TestOnStateImpl> onStates;
@@ -111,15 +111,15 @@ public class TestImpl implements Test {
 	}
 
 	/**
-	 * Covariant tests declared by this test.
+	 * Conjoint tests declared by this test.
 	 * 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Test> getCovariantTests() {
-		if (covariantTests == null) return null;
-		return (List<Test>) (List<?>) Collections.unmodifiableList(covariantTests);
+	public List<Test> getConjointTests() {
+		if (conjointTests == null) return null;
+		return (List<Test>) (List<?>) Collections.unmodifiableList(conjointTests);
 	}
 	
 	/**
@@ -164,10 +164,10 @@ public class TestImpl implements Test {
 	}
 
 	@Override
-	public boolean isCovariantWith(Test other) {
+	public boolean isConjointWith(Test other) {
 		TestImpl otherImpl = (TestImpl) other;
-		return covariantTests != null && covariantTests.contains(other) || 
-			   otherImpl.covariantTests != null && otherImpl.covariantTests.contains(this);		
+		return conjointTests != null && conjointTests.contains(other) || 
+			   otherImpl.conjointTests != null && otherImpl.conjointTests.contains(this);		
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -202,8 +202,8 @@ public class TestImpl implements Test {
 	 * Caller must ensure that the covarTests are sorted in ordinal order.
 	 * @param tests
 	 */
-	public void setCovariantTests(List<TestImpl> covarTests) {
-		this.covariantTests = covarTests;
+	public void setConjointTests(List<TestImpl> covarTests) {
+		this.conjointTests = covarTests;
 	}
 	
 	/**

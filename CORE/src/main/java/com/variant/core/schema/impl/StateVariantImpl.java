@@ -19,7 +19,7 @@ public class StateVariantImpl implements StateVariant {
 
 	private TestOnStateImpl onStateImpl;
 	private TestExperienceImpl ownExperience;
-	private List<TestExperienceImpl> covarExperiences;
+	private List<TestExperienceImpl> conjointExperiences;
 	private Map<String,String> params;
 	
 	/**
@@ -27,10 +27,10 @@ public class StateVariantImpl implements StateVariant {
 	 * @param experiences
 	 * @param path
 	 */
-	public StateVariantImpl(TestOnStateImpl onViewImpl, TestExperienceImpl ownExperience, List<TestExperienceImpl> covarExperiences, Map<String,String> params) {
+	public StateVariantImpl(TestOnStateImpl onViewImpl, TestExperienceImpl ownExperience, List<TestExperienceImpl> conjointExperiences, Map<String,String> params) {
 		this.onStateImpl = onViewImpl;
 		this.ownExperience = ownExperience;
-		this.covarExperiences = covarExperiences;
+		this.conjointExperiences = conjointExperiences;
 		this.params = params;
 	}
 
@@ -38,8 +38,8 @@ public class StateVariantImpl implements StateVariant {
 	 * 
 	 * @param experience
 	 */
-	void addCovariantExperience(TestExperienceImpl experience) {
-		covarExperiences.add(experience);
+	void addConjointExperience(TestExperienceImpl experience) {
+		conjointExperiences.add(experience);
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -76,14 +76,14 @@ public class StateVariantImpl implements StateVariant {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Experience> getCovariantExperiences() {
-		if (covarExperiences == null) return null;
-		return (List<Experience>) (List<?>) Collections.unmodifiableList(covarExperiences);
+	public List<Experience> getConjointExperiences() {
+		if (conjointExperiences == null) return null;
+		return (List<Experience>) (List<?>) Collections.unmodifiableList(conjointExperiences);
 	}
 
 	@Override
 	public boolean isProper() {
-		return covarExperiences == null;
+		return conjointExperiences == null;
 	}
 	
 	/**

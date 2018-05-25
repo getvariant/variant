@@ -52,7 +52,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 	   "startup with two schemata" in {
 	      
          server.schemata.size mustBe 2
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks").get.state mustEqual State.Deployed
+         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
          server.schemata.get("petclinic").isDefined mustBe true
                   
          // Let the directory watcher thread start before copying any files.
@@ -62,10 +62,10 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 	   val connId2Big = new Array[String](CONNECTIONS)
 	   val connId2Pet = new Array[String](CONNECTIONS)
 
-	   "obtain CONNECTIONS connections to ParserCovariantOkayBigTestNoHooks" in {
+	   "obtain CONNECTIONS connections to ParserConjointOkayBigTestNoHooks" in {
 
 	      for (i <- 0 until CONNECTIONS) async {   
-            assertResp(route(app, connectionRequest("ParserCovariantOkayBigTestNoHooks")))
+            assertResp(route(app, connectionRequest("ParserConjointOkayBigTestNoHooks")))
               .isOk
               .withConnStatusHeader(OPEN)
               .withBodyJson { json =>
@@ -163,18 +163,18 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 	      joinAll
    	}
 
-      "delete schema ParserCovariantOkayBigTestNoHooks" in {
+      "delete schema ParserConjointOkayBigTestNoHooks" in {
 
-	      val oldSchema = server.schemata.get("ParserCovariantOkayBigTestNoHooks").get
+	      val oldSchema = server.schemata.get("ParserConjointOkayBigTestNoHooks").get
          oldSchema.state mustBe State.Deployed
 
          async {
    	      
-	         IoUtils.delete(s"${schemataDir}/ParserCovariantOkayBigTestNoHooks.json");
+	         IoUtils.delete(s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
             Thread.sleep(dirWatcherLatencyMsecs)
             
             oldSchema.state mustBe State.Gone
-            server.schemata.get("ParserCovariantOkayBigTestNoHooks") mustBe None
+            server.schemata.get("ParserConjointOkayBigTestNoHooks") mustBe None
 	      }
 	   }
 
@@ -210,7 +210,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 
          // Confirm the schema is gone.
          server.schemata.size mustBe 1
-         server.schemata.get("ParserCovariantOkayBigTestNoHooks") mustBe None
+         server.schemata.get("ParserConjointOkayBigTestNoHooks") mustBe None
 
    	}
 
