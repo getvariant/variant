@@ -228,7 +228,7 @@ public class VariantSpace {
 
 	
 	/**
-	 * Point of this space is gien by its coordinates and has Variant as value.
+	 * Point of this space is given by its coordinates and has Variant as value.
 	 */
 	public static class Point {
 		
@@ -265,7 +265,7 @@ public class VariantSpace {
 		}
 		
 		/**
-		 * A point is defined on a state if none of its coordinate experiences are declared as undefined.
+		 * A point is defined on a state if none of its coordinate experiences are declared as phantom.
 		 * @return
 		 */
 		public boolean isDefinedOn(State state) {

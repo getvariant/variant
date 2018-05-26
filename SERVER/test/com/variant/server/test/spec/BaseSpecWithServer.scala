@@ -85,7 +85,7 @@ class BaseSpecWithServer extends BaseSpec with OneAppPerSuite with BeforeAndAfte
       
       // Print deployment errors, if any
       server.schemaDeployer.parserResponses.foreach { 
-         _.getMessages.foreach(msg => {println("*** UNEXPECTED ***" + msg)})
+         _.getMessages.foreach(msg => {println("     *** UNEXPECTED PARSE ERRORS ***\n" + msg)})
       }
       
       //server.schemata.size mustBe 2 

@@ -8,7 +8,7 @@
 // test4 + +   - -
 // test5 + + - + -
 // test6 + - +   -
-// blank: not instrumented, -: nonvariant, +: has variants.
+// blank: not instrumented, -: phantom, +: has variants.
 // 
 // T1, T2, T3(T2), T4(T1), T5(T2,T4), T6(T1,T2,T4,T5)
  

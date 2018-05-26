@@ -17,7 +17,7 @@
 {                                                                                
    'meta':{
       'name':'ParserConjointOkayBigTestNoHooks',
-      'comment':'Based on Parser Conjoint Okay Big Test Schema in Core.'
+      'comment':'Based on Parser Conjoint Okay Big Test Schema in Core.',
       'hooks':[] 
    },
    'states':[                                                             
