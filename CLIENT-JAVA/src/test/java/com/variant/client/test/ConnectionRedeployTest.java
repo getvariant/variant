@@ -31,16 +31,16 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 	public void closedByServerRedeployTest() throws Exception {
 		
 		// Connection must go after schema undeployed.
-		final Connection conn1 = client.getConnection("big_covar_schema");		
+		final Connection conn1 = client.getConnection("big_conjoint_schema");		
 		assertNotNull(conn1);
 		assertEquals(OPEN, conn1.getStatus());
 		assertEquals(client, conn1.getClient());
 		assertNotNull(conn1.getSchema());
-		assertEquals("big_covar_schema", conn1.getSchema().getName());
+		assertEquals("big_conjoint_schema", conn1.getSchema().getName());
 		assertEquals(5, conn1.getSchema().getStates().size());
 		assertEquals(6, conn1.getSchema().getTests().size());
 
-	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
+	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		// Connection doesn't know its' gone.
@@ -92,12 +92,12 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 		
 		
 		// Open new connection to the redeployed schema
-		final Connection conn2 = client.getConnection("big_covar_schema");
+		final Connection conn2 = client.getConnection("big_conjoint_schema");
 		assertNotNull(conn2);
 		assertEquals(OPEN, conn2.getStatus());
 		assertEquals(client, conn2.getClient());
 		assertNotNull(conn2.getSchema());
-		assertEquals("big_covar_schema", conn2.getSchema().getName());
+		assertEquals("big_conjoint_schema", conn2.getSchema().getName());
 		assertEquals(5, conn2.getSchema().getStates().size());
 		assertEquals(6, conn2.getSchema().getTests().size());
 		assertFalse(conn1.equals(conn2));

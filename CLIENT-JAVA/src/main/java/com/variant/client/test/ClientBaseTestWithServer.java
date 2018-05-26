@@ -34,7 +34,7 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 
 		IoUtils.emptyDir(SCHEMATA_DIR);
 		//Deploy the schemata
-	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
+	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
 	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "petclinic-schema.json", SCHEMATA_DIR + "/petclinic-schema.json");
 		server = new ServerProcess();
 		server.start(svrConf);

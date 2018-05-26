@@ -41,22 +41,22 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	public void connectToExistingSchemataTest() throws Exception {
 			    
 		// Connection to a schema
-		Connection conn1 = client.getConnection("big_covar_schema");		
+		Connection conn1 = client.getConnection("big_conjoint_schema");		
 		assertNotNull(conn1);
 		assertEquals(OPEN, conn1.getStatus());
 		assertNotNull(conn1.getClient());
 		assertNotNull(conn1.getSchema());
-		assertEquals("big_covar_schema", conn1.getSchema().getName());
+		assertEquals("big_conjoint_schema", conn1.getSchema().getName());
 		assertEquals(5, conn1.getSchema().getStates().size());
 		assertEquals(6, conn1.getSchema().getTests().size());
 
 		// Second connection to the same schema
-		Connection conn2 = client.getConnection("big_covar_schema");		
+		Connection conn2 = client.getConnection("big_conjoint_schema");		
 		assertNotNull(conn2);
 		assertEquals(OPEN, conn2.getStatus());
 		assertEquals(conn1.getClient(), conn2.getClient());
 		assertNotNull(conn2.getSchema());
-		assertEquals("big_covar_schema", conn2.getSchema().getName());
+		assertEquals("big_conjoint_schema", conn2.getSchema().getName());
 		assertEquals(5, conn2.getSchema().getStates().size());
 		assertEquals(6, conn2.getSchema().getTests().size());
 
@@ -77,7 +77,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 				
 		// Other 2 connections should not be affected.
 		assertEquals(OPEN, conn2.getStatus());
-		assertEquals("big_covar_schema", conn2.getSchema().getName());
+		assertEquals("big_conjoint_schema", conn2.getSchema().getName());
 		assertEquals(5, conn2.getSchema().getStates().size());
 		assertEquals(6, conn2.getSchema().getTests().size());
 		assertEquals(OPEN, conn3.getStatus());
@@ -116,14 +116,14 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 
 		Connection[] connections = new Connection[10];
         for (int i = 0; i < 10; i++) {
-    		connections[i] = client.getConnection("big_covar_schema");		
+    		connections[i] = client.getConnection("big_conjoint_schema");		
     		assertNotNull(connections[i]);        	
         }
 		
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				client.getConnection("big_covar_schema");		
+				client.getConnection("big_conjoint_schema");		
 			}
 			
 		}.assertThrown(ServerError.TooManyConnections);
@@ -141,12 +141,12 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void closedByClientTest() throws Exception {
 		
-		final Connection conn = client.getConnection("big_covar_schema");		
+		final Connection conn = client.getConnection("big_conjoint_schema");		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 		assertNotNull(conn.getClient());
 		assertNotNull(conn.getSchema());
-		assertEquals("big_covar_schema", conn.getSchema().getName());
+		assertEquals("big_conjoint_schema", conn.getSchema().getName());
 		assertEquals(5, conn.getSchema().getStates().size());
 		assertEquals(6, conn.getSchema().getTests().size());
 		
@@ -213,12 +213,12 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void closedByServerRestartTest() throws Exception {
 		
-		final Connection conn = client.getConnection("big_covar_schema");		
+		final Connection conn = client.getConnection("big_conjoint_schema");		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 		assertNotNull(conn.getClient());
 		assertNotNull(conn.getSchema());
-		assertEquals("big_covar_schema", conn.getSchema().getName());
+		assertEquals("big_conjoint_schema", conn.getSchema().getName());
 		assertEquals(5, conn.getSchema().getStates().size());
 		assertEquals(6, conn.getSchema().getTests().size());
 

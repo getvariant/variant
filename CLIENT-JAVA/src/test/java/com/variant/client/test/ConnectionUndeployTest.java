@@ -30,18 +30,18 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void closedByServerUndeployTest() throws Exception {
 	
-		final Connection conn = client.getConnection("big_covar_schema");		
+		final Connection conn = client.getConnection("big_conjoint_schema");		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 		assertEquals(client, conn.getClient());
 		Schema schema = conn.getSchema();
 		assertNotNull(schema);
-		assertEquals("big_covar_schema", conn.getSchema().getName());
+		assertEquals("big_conjoint_schema", conn.getSchema().getName());
 		assertEquals(5, conn.getSchema().getStates().size());
 		assertEquals(6, conn.getSchema().getTests().size());
 
 		assertNull(conn.getSession("foo"));
-		IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
+		IoUtils.delete(SCHEMATA_DIR + "/big-conjoint-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		assertEquals(OPEN, conn.getStatus());
@@ -102,7 +102,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 		}.assertThrown(ConnectionClosedException.class);
 
 		// Confirm the schema is gone.
-		assertNull(client.getConnection("big_covar_schema"));
+		assertNull(client.getConnection("big_conjoint_schema"));
 
 	}	
 

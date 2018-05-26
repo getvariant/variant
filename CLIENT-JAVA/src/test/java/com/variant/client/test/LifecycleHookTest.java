@@ -65,7 +65,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 	public void sessionExpiredTest() throws Exception {
 							
 		// 1, Connection-level SessionExpired Hook
-		Connection conn1 = client.getConnection("big_covar_schema");
+		Connection conn1 = client.getConnection("big_conjoint_schema");
 		conn1.addLifecycleHook(new SessionExpiredHook(conn1));
 
 		Session ssn1 = conn1.getOrCreateSession(newSid());
@@ -91,7 +91,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		
 		// 2. session-level SessionExpired Hook
 		hookPosts.clear();
-		Connection conn2 = client.getConnection("big_covar_schema");
+		Connection conn2 = client.getConnection("big_conjoint_schema");
 		Session ssn3 = conn2.getOrCreateSession(newSid());
 		Session ssn4 = conn2.getOrCreateSession(newSid());
 		Session ssn5 = conn2.getOrCreateSession(newSid());
@@ -181,7 +181,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void connectionClosedByClientTest() throws Exception {
 		
-		Connection conn = client.getConnection("big_covar_schema");
+		Connection conn = client.getConnection("big_conjoint_schema");
 		Session ssn = conn.getOrCreateSession(newSid());
 		
 		AtomicInteger count = new AtomicInteger(0);
@@ -262,7 +262,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void connectionClosedByServerTest() throws Exception {
 		
-		Connection conn = client.getConnection("big_covar_schema");
+		Connection conn = client.getConnection("big_conjoint_schema");
 		Session ssn = conn.getOrCreateSession(newSid());
 		
 		MutableInteger count = new MutableInteger(0);
@@ -323,7 +323,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 						}
 				});
 
-	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
+	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		assertEquals(OPEN, conn.getStatus());

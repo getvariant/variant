@@ -45,19 +45,19 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	@org.junit.Test
 	public void serverUndeploySessionTimeoutTest() throws Exception {
 
-		// First connection to big_covar_schema
-		final Connection conn1 = client.getConnection("big_covar_schema");		
+		// First connection to big_conjoint_schema
+		final Connection conn1 = client.getConnection("big_conjoint_schema");		
 		assertEquals(OPEN, conn1.getStatus());
 		assertEquals(client, conn1.getClient());
 		final Schema schema1 = conn1.getSchema();
-		assertEquals("big_covar_schema", schema1.getName());
+		assertEquals("big_conjoint_schema", schema1.getName());
 
-		// Second connection to big_covar_schema
-		final Connection conn2 = client.getConnection("big_covar_schema");		
+		// Second connection to big_conjoint_schema
+		final Connection conn2 = client.getConnection("big_conjoint_schema");		
 		assertEquals(OPEN, conn2.getStatus());
 		assertEquals(client, conn2.getClient());
 		final Schema schema2 = conn2.getSchema();
-		assertEquals("big_covar_schema", schema2.getName());
+		assertEquals("big_conjoint_schema", schema2.getName());
 		assertEquals(schema1.getId(), schema2.getId());
 		
 		// Third connection to petclinic
@@ -135,7 +135,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 
-		IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
+		IoUtils.delete(SCHEMATA_DIR + "/big-conjoint-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		// Short session timeout => all sessions should be gone and 3 connections cleaned out.
@@ -280,7 +280,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 		
-		assertNull(client.getConnection("big_covar_schema"));
+		assertNull(client.getConnection("big_conjoint_schema"));
 
 	}	
 
@@ -292,26 +292,26 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	@org.junit.Test
 	public void serverUndeploySessionDrainingTest() throws Exception {
 
-		// Restore the big_covar_schema
-	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-covar-schema.json", SCHEMATA_DIR + "/big-covar-schema.json");
+		// Restore the big_conjoint_schema
+	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
 
 		// restart the server with the longger session timeout
 		int ssnTimeout = dirWatcherLatencyMillis/1000 + 2000;
 		server.restart(CollectionsUtils.pairsToMap(new Tuples.Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeout))));
 		
-		// First connection to big_covar_schema
-		final Connection conn1 = client.getConnection("big_covar_schema");		
+		// First connection to big_conjoint_schema
+		final Connection conn1 = client.getConnection("big_conjoint_schema");		
 		assertEquals(OPEN, conn1.getStatus());
 		assertEquals(client, conn1.getClient());
 		final Schema schema1 = conn1.getSchema();
-		assertEquals("big_covar_schema", schema1.getName());
+		assertEquals("big_conjoint_schema", schema1.getName());
 
-		// Second connection to big_covar_schema
-		final Connection conn2 = client.getConnection("big_covar_schema");		
+		// Second connection to big_conjoint_schema
+		final Connection conn2 = client.getConnection("big_conjoint_schema");		
 		assertEquals(OPEN, conn2.getStatus());
 		assertEquals(client, conn2.getClient());
 		final Schema schema2 = conn2.getSchema();
-		assertEquals("big_covar_schema", schema2.getName());
+		assertEquals("big_conjoint_schema", schema2.getName());
 		assertEquals(schema1.getId(), schema2.getId());
 		
 		// Third connection to petclinic
@@ -389,7 +389,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 
-		IoUtils.delete(SCHEMATA_DIR + "/big-covar-schema.json");
+		IoUtils.delete(SCHEMATA_DIR + "/big-conjoint-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		// Long session timeout => all sessions should be alive.
@@ -552,7 +552,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 		
-		assertNull(client.getConnection("big_covar_schema"));
+		assertNull(client.getConnection("big_conjoint_schema"));
 
 	}	
 }
