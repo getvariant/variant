@@ -13,13 +13,14 @@
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
 		<jackson.version>2.5.3</jackson.version>
+		<variant.version>0.9.0</variant.version>
     </properties>
 
     <artifactId>variant-core</artifactId>
     <name>Variant core library</name>
     <packaging>jar</packaging>
     <groupId>com.variant</groupId>
-    <version>0.8.1</version>
+    <version>${variant.version}</version>
     
     <dependencies>
         

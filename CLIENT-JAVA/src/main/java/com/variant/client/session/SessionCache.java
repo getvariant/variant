@@ -1,6 +1,5 @@
 package com.variant.client.session;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -46,7 +45,7 @@ public class SessionCache {
 	/**
 	 * Vacuum thread.
 	 * Expires and removes idle or stale sessions. 
-	 * NOT NEEDED AFTER #114 (0.8.1)
+	 * Reinstate!!! 
 	 * @author Igor.
 	 *
 	 *
