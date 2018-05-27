@@ -30,12 +30,12 @@ javadoc -d ${javadoc_dir}  \
   </script>" \
    -bottom "Release $version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2017 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
    com.variant.core                   \
-   com.variant.core.lce               \
+   com.variant.core.lifecycle         \
    com.variant.core.schema            \
    com.variant.client                 \
    com.variant.client.lifecycle       \
    com.variant.server.api             \
-   com.variant.server.lce
+   com.variant.server.api.lifecycle
 
 #
 # Package

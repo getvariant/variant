@@ -4,12 +4,12 @@ import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.core.lifecycle.LifecycleHook.PostResult;
 import com.variant.core.lifecycle.StateParsedLifecycleEvent;
 import com.variant.core.lifecycle.TestParsedLifecycleEvent;
+import com.variant.server.api.lifecycle.TestQualificationLifecycleEvent;
+import com.variant.server.api.lifecycle.TestTargetingLifecycleEvent;
 import com.variant.server.impl.StateParsedLifecycleEventPostResultImpl;
 import com.variant.server.impl.TestParsedLifecycleEventPostResultImpl;
 import com.variant.server.impl.TestQualificationLifecycleEventPostResultImpl;
 import com.variant.server.impl.TestTargetingLifecycleEventPostResultImpl;
-import com.variant.server.lifecycle.TestQualificationLifecycleEvent;
-import com.variant.server.lifecycle.TestTargetingLifecycleEvent;
 
 /**
  * Factory class for various concrete implementations of {@link PostResult}.

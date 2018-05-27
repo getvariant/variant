@@ -524,7 +524,7 @@ class HookScopeTest extends BaseSpecWithServer {
 
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testQualifier", "state1", "com.variant.server.lifecycle.TestQualificationLifecycleEvent"))
+   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testQualifier", "state1", "com.variant.server.api.lifecycle.TestQualificationLifecycleEvent"))
 
    		server.schemata.get(schemaName).isDefined mustBe false
    		

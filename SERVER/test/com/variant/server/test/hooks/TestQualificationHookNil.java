@@ -2,7 +2,7 @@ package com.variant.server.test.hooks;
 
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.Session;
-import com.variant.server.lifecycle.TestQualificationLifecycleEvent;
+import com.variant.server.api.lifecycle.TestQualificationLifecycleEvent;
 
 /**
  * Do nothing. Tests should be qualified by default.

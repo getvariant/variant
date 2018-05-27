@@ -2,7 +2,7 @@ package com.variant.server.test.hooks;
 
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.Session;
-import com.variant.server.lifecycle.TestTargetingLifecycleEvent;
+import com.variant.server.api.lifecycle.TestTargetingLifecycleEvent;
 
 /**
  * targeting listener does nothing, except logs test names.

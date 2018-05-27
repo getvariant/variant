@@ -1,7 +1,7 @@
 package com.variant.server.test.hooks;
 
 import com.variant.core.lifecycle.LifecycleHook;
-import com.variant.server.lifecycle.TestQualificationLifecycleEvent;
+import com.variant.server.api.lifecycle.TestQualificationLifecycleEvent;
 
 /**
  * This class does not implement the required interface.

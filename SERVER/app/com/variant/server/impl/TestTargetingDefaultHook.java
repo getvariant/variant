@@ -9,7 +9,7 @@ import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.PostResultFactory;
 import com.variant.server.api.ServerException;
-import com.variant.server.lifecycle.TestTargetingLifecycleEvent;
+import com.variant.server.api.lifecycle.TestTargetingLifecycleEvent;
 
 class TestTargetingDefaultHook implements LifecycleHook<TestTargetingLifecycleEvent> {
 	
