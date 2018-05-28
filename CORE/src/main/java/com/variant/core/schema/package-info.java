@@ -1,5 +1,5 @@
 /**
- * <p>Publicly accessible classes modeling the Variant XDM Schema.
+ * <p>Public classes modeling the objects of the Variant Experience Variation Model (XVM).
  *
  * @since 0.5
  */

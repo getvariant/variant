@@ -54,7 +54,7 @@ public interface Session {
 	public Map<State, Integer> getTraversedStates(); 
 
 	/**
-	 * <p>Get the XDM schema, associated with this session.
+	 * <p>Get the Variant schema, associated with this session.
 	 * 
 	 * @return An object of type {@link Schema}
 	 * 

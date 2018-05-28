@@ -5,7 +5,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.typesafe.config.Config;
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
-import com.variant.client.lifecycle.LifecycleService;
 import com.variant.core.conf.ConfigLoader;
 
 /**

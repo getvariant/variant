@@ -1,4 +1,4 @@
-package com.variant.client.lifecycle;
+package com.variant.client.impl;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -13,9 +13,12 @@ import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
-import com.variant.client.impl.ClientUserError;
-import com.variant.client.impl.ConnectionImpl;
-import com.variant.client.impl.SessionImpl;
+import com.variant.client.lifecycle.ConnectionClosed;
+import com.variant.client.lifecycle.ConnectionLifecycleEvent;
+import com.variant.client.lifecycle.LifecycleEvent;
+import com.variant.client.lifecycle.LifecycleHook;
+import com.variant.client.lifecycle.SessionExpired;
+import com.variant.client.lifecycle.SessionLifecycleEvent;
 
 public class LifecycleService {
 

@@ -4,7 +4,7 @@
 # 
 
 
-version=0.8
+version=0.9
 workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
 core_src_dir=${workspace_root_dir}/CORE/src/main/java
 server_src_dir=${workspace_root_dir}/SERVER/app
@@ -17,7 +17,7 @@ mkdir ${target_dir} ${javadoc_dir}
 
 javadoc -d ${javadoc_dir}  \
    -sourcepath ${core_src_dir}:${client_src_dir}:${server_src_dir} \
-   -windowtitle "Variant ${version}" \
+   -windowtitle "Variant Experience Server ${version} JavaDoc" \
    -doctitle "Variant Experiment Server ${version}" \
    -header "<a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\"> <img style=\"margin-bottom:5px;\" src=\"http://getvariant.com/wp-content/uploads/2016/05/VariantLogoSmall.png\"/> \</a> \
    <script> \
@@ -28,7 +28,7 @@ javadoc -d ${javadoc_dir}  \
     ga('create', 'UA-40337670-3', 'auto');                                             \
     ga('send', 'pageview');                                                            \
   </script>" \
-   -bottom "Release $version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2017 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
+   -bottom "Release $version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2018 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
    com.variant.core                   \
    com.variant.core.lifecycle         \
    com.variant.core.schema            \

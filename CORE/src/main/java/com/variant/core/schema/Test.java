@@ -3,7 +3,7 @@ package com.variant.core.schema;
 import java.util.List;
 
 /**
- * Representation of the Test XDM element.
+ * Representation of the Test XVM object.
  * 
  * @author Igor Urisman
  * @since 0.5

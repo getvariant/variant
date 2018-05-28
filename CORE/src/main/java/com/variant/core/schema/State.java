@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Representation of State XDM element.
+ * Representation of State XVM object.
  * 
  * @author Igor Urisman
  * @since 0.5

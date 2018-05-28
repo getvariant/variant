@@ -3,12 +3,11 @@ package com.variant.core.lifecycle;
 
 
 /**
- * <p>Parse time life cycle event. Posts its hooks whenever the schema parser 
- * successfully completes parsing of a state. Will not post for a state if parse errors were encountered. 
- * Use this life cycle event to enforce application semantics that is external to experiment schema, 
+ * Parse time life-cycle event which posts its hooks whenever the schema deployer successfully parses a state.
+ * Will not post for those states which contained parse errors. Use this hook to enforce application 
+ * semantics that is external to the experience variation model (XVM),
  * e.g. that a certain state parameter, expected by the application, was supplied.
  * 
- * @author Igor Urisman.
  * @since 0.7
  *
  */

@@ -1,6 +1,7 @@
 /**
- * <p>Variant Java Client API. Top-level objects.
- * Variant Java Client has no dependencies other than Java, i.e. any Java application can use it.
+ * This package contains top level classes for Variant Java Client API.
+ * <p>
+ * Provides connectivity to Variant Experience Server from any JVM process.
  * 
  * @since 0.5
  */

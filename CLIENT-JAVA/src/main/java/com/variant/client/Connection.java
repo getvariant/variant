@@ -7,13 +7,10 @@ import com.variant.core.schema.Schema;
 
 
 /**
- * <p>Represents a connection to Variant server. The first operation a new Variant client instance must
- * do is to connect to a particular schema on a Variant server, whose URL is provided by the
- * {@link ConfigKeys#SERVER_URL} config key.
+ * Represents a connection to a particular schema on a Variant server. 
+ * The first operation a new Variant client instance must
+ * do is connect to a particular schema on a Variant server by calling {@link VariantClient#getConnection(String)}
  * 
- * <p>Not thread safe, avoid sharing a connection object between threads.
- * 
- * @author Igor Urisman
  * @since 0.7
  */
 public interface Connection {
@@ -37,8 +34,7 @@ public interface Connection {
 	String getId();
 
 	/**
-	 * Get the XDM schema, associated with this connection.
-	 * Does not throw {@link ConnectionClosedException} if the connection is closed.
+	 * Get the Variant schema, associated with this connection.
 	 * 
 	 * @return An object of type {@link Schema}
 	 * 

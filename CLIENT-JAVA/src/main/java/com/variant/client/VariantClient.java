@@ -5,19 +5,19 @@ import com.typesafe.config.Config;
 import com.variant.client.impl.VariantClientImpl;
 
 /**
- * "Bare" Variant Java Client. Makes no assumptions about the host application other than 
- * it is Java (or any other JVM language, e.g. Scala). Allows host application interact with
- * one or more Variant servers. In many cases host applications use higher level adapter APIs,
- * which provide easier to use, higher level bindings, e.g. the Servlet adapter.
+ * Variant Java Client object.
+ * <p>
+ * Provides connectivity to Variant Experience Server from any JVM process. 
+ * Makes no assumptions about the host application other than 
+ * it is running on a JVM. 
  * 
- * @author Igor Urisman
  * @since 0.5
  */
 public interface VariantClient {
 		
 	/**
-	 * Externally supplied configuration. 
-	 * See <a href="https://github.com/typesafehub/config" target="_blank">https://github.com/typesafehub/config</a>
+	 * Externally supplied configuration.
+	 * See <a href="https://github.com/lightbend/config" target="_blank">https://github.com/lightbend/config</a>
 	 * for details on Lightbend Config.
 	 * 
 	 * @return An instance of the com.typesafe.config.Config type.
@@ -57,8 +57,5 @@ public interface VariantClient {
 			
 			return new VariantClientImpl();
 		}
-
 	}
-		
-	
 }

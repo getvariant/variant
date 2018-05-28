@@ -4,7 +4,7 @@ package com.variant.client;
  * Known external configuration keys. These are compile time aliases for the
  * configuration keys, used in the variant.conf file.
  * 
- * @author Igor Urisman
+ * @see 
  * @since 0.7
  */
 public interface ConfigKeys {
