@@ -69,7 +69,7 @@ public class SessionImpl implements Session {
 		Collection<TargetingTracker.Entry> entries = tt.get();
 		if (entries != null)
 			for (TargetingTracker.Entry e : entries)
-				result.add(e.getAsExperience(), e.getTimestamp());
+				result.add(e.getExperience(), e.getTimestamp());
 		return result;
 	}
 

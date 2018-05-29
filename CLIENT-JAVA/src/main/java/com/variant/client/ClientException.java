@@ -5,9 +5,9 @@ import com.variant.core.UserError;
 import com.variant.core.VariantException;
 
 /**
- * Superclass for all Variant client exceptions.
+ * Superclass of all Variant client exceptions. All exceptions thrown by Variant Java Client
+ * inherit from this class.
  * 
- * @author Igor Urisman
  * @since 0.7
  */
 @SuppressWarnings("serial")
@@ -30,7 +30,7 @@ public class ClientException extends VariantException {
 	}
 	
 	/**
-	 * Variant client internal exception, caused by internal problem, most likely a bug.
+	 * Variant client internal exception, caused by an internal problem, most likely a bug.
 	 * 
 	 * @since 0.7
 	 */
@@ -55,7 +55,7 @@ public class ClientException extends VariantException {
 	}
 	
 	/**
-	 * Variant client user exceptions, thrown in response to an invalid user action.
+	 * Variant client user exceptions, caused by an invalid user action.
 	 * 
 	 * @since 0.7
 	 */

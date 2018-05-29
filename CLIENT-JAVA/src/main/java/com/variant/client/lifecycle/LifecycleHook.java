@@ -3,8 +3,9 @@ package com.variant.client.lifecycle;
 /**
  * The interface to be implemented by user provided life-cycle hooks.
  *
- * @param <E> The life-cycle event class.
- * @since 0.8
+ * @param <E> The life-cycle event class of interest.
+ * 
+ * @since 0.9
  */
 public interface LifecycleHook<E extends LifecycleEvent> {
 	
@@ -14,7 +15,7 @@ public interface LifecycleHook<E extends LifecycleEvent> {
 	 * event types.
 	 * 
 	 * @return A {@link java.lang.Class} object associated with the life-cycle event type(s) of interest.
-     * @since 0.8
+     * @since 0.9
 	 */
 	Class<E> getLifecycleEventClass();
 	
@@ -25,7 +26,7 @@ public interface LifecycleHook<E extends LifecycleEvent> {
 	 * @param event The posting life cycle event. May be further examined for details.
 	 * 
 	 * @see com.variant.client.lifecycle.LifecycleEvent
-    * @since 0.8
+     * @since 0.9
 	 */
 	void post(E event) throws Exception;
 

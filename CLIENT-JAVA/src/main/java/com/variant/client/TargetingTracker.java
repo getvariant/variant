@@ -75,37 +75,20 @@ public interface TargetingTracker {
 		
 	/**
 	 * A targeting tracker entry.
-	 * Encapsulates the test name, experience name and the timestamp of when this experience was last seen by a user.
+	 * Encapsulates the test experience and the timestamp of when this experience was last seen by a user.
 	 * 
 	 * @since 0.6
 	 */
 	public static interface Entry {
 				
 		/**
-		 * Get test experience tracked by this entry as an instance {@link Experience}.
+		 * Get test experience tracked by this entry.
 		 * 
-		 * @return Test experience from the underlying connection's schema, whose name and test name match the content
-		 *         of this entry, or null if current schema does not have such an experience.
+		 * @return An object of type {@link Experience}.
 		 *         
     	 * @since 0.6
 		 */
-		public Experience getAsExperience();
-		
-		/**
-		 * Get the test name, tracked by this entry.
-		 * 
-		 * @return Test name.
-    	 * @since 0.6
-		 */
-		public String getTestName();
-		
-		/**
-		 * Get the experience name tracked by this entry.
-		 * 
-		 * @return Experience name.
-    	 * @since 0.6
-		 */
-		public String getExperienceName();
+		public Experience getExperience();
 		
 		/**
 		 * Get the timestamp when this experience was last seen by a user.

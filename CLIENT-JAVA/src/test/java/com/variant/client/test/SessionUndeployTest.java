@@ -34,7 +34,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	private int SESSIONS = 20;
 	
 	// Sole client
-	private VariantClient client = VariantClient.Factory.getInstance();		
+	private VariantClient client = VariantClient.Factory.getInstance();	
 	
 	/**
 	 * Schema undeployed with a session timeout interval set to less than
