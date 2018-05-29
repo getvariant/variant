@@ -3,10 +3,9 @@ package com.variant.core;
 import com.variant.core.schema.ParserMessage;
 
 /**
- * The immutable, uncontextualized part of a system error.
- * All errors are in subclasses.
+ * Superclass of all user errors, both client and server.
  * 
- * @author Igor
+ * @since 0.5
  */
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -77,7 +76,7 @@ abstract public class UserError {
 	}
 		
 	/**
-	 * Runtime message
+	 * As a message.
 	 * @param args
 	 * @return
 	 */
@@ -86,7 +85,7 @@ abstract public class UserError {
 	}
 
 	/**
-	 * Severity of a {@link ParserMessage}.
+	 * User error severity.
 	 * 
 	 * @since 0.5
 	 */

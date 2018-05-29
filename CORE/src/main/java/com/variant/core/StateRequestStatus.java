@@ -1,9 +1,15 @@
 package com.variant.core;
 
+/**
+ * The status of a state request. Host application can mark a state request as {@link #FAIL} in order to
+ * exclude it from subsequent analysis.
+ * 
+ * @since 0.5
+ */
 public enum StateRequestStatus {
 	
 	/**
-	 * No host errors have been encountered.
+	 * No errors.
 	 */
 	OK, 
 	
