@@ -23,7 +23,7 @@ import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
-import com.variant.client.lifecycle.LifecycleEvent;
+import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.client.lifecycle.SessionExpired;
 import com.variant.client.session.TargetingTrackerEntryImpl;
@@ -55,8 +55,8 @@ public class SessionImpl implements Session {
 	private StateRequestImpl stateRequest;
 
 	// Lifecycle hooks.
-	final private ArrayList<LifecycleHook<? extends LifecycleEvent>> lifecycleHooks = 
-			new ArrayList<LifecycleHook<? extends LifecycleEvent>>();
+	final private ArrayList<LifecycleHook<? extends ClientLifecycleEvent>> lifecycleHooks = 
+			new ArrayList<LifecycleHook<? extends ClientLifecycleEvent>>();
 
 	/**
 	 * 
@@ -331,7 +331,7 @@ public class SessionImpl implements Session {
 	 * Mutating or mutable state.
 	 */
 	@Override
-	public void addLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook) {
+	public void addLifecycleHook(LifecycleHook<? extends ClientLifecycleEvent> hook) {
 		preChecks();
 		refreshFromServer();
 		lifecycleHooks.add(hook);
@@ -412,8 +412,8 @@ public class SessionImpl implements Session {
 	/**
 	 * Read-only snapshot.
 	 */
-	public ImmutableList<LifecycleHook<? extends LifecycleEvent>> getLifecycleHooks() {
-		return new ImmutableList<LifecycleHook<? extends LifecycleEvent>>(lifecycleHooks);
+	public ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>> getLifecycleHooks() {
+		return new ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>>(lifecycleHooks);
 	}
 
 }

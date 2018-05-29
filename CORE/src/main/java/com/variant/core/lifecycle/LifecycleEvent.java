@@ -22,5 +22,5 @@ public interface LifecycleEvent {
 	 * 
 	 *  @since 0.7
 	 */
-	public LifecycleHook<? extends LifecycleEvent> getDefaultHook();
+	LifecycleHook<? extends LifecycleEvent> getDefaultHook();
 }

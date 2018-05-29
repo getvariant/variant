@@ -13,13 +13,13 @@ import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.VariantClient;
+import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.ConnectionClosed;
-import com.variant.client.lifecycle.LifecycleEvent;
-import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.UserError.Severity;
+import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
@@ -169,8 +169,8 @@ public class ConnectionImpl implements Connection {
 	}
 
 	// Lifecycle hooks.
-	final private ArrayList<LifecycleHook<? extends LifecycleEvent>> lifecycleHooks = 
-			new ArrayList<LifecycleHook<? extends LifecycleEvent>>();
+	final private ArrayList<LifecycleHook<? extends ClientLifecycleEvent>> lifecycleHooks = 
+			new ArrayList<LifecycleHook<? extends ClientLifecycleEvent>>();
 
 	// Session cache has package visibilithy because accessed by HooksService.
 	final SessionCache cache;
@@ -279,7 +279,7 @@ public class ConnectionImpl implements Connection {
 	}
 
 	@Override
-	public void addLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook) {
+	public void addLifecycleHook(LifecycleHook<? extends ClientLifecycleEvent> hook) {
 		preChecks();
 		lifecycleHooks.add(hook);
 	}
@@ -335,8 +335,8 @@ public class ConnectionImpl implements Connection {
 	/**
 	 * Read-only snapshot.
 	 */
-	public ImmutableList<LifecycleHook<? extends LifecycleEvent>> getLifecycleHooks() {
-		return new ImmutableList<LifecycleHook<? extends LifecycleEvent>>(lifecycleHooks);
+	public ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>> getLifecycleHooks() {
+		return new ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>>(lifecycleHooks);
 	}
 	
 	/**

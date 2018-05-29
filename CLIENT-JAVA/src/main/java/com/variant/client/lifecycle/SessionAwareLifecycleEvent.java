@@ -7,7 +7,7 @@ import com.variant.client.Session;
  *
  * @since 0.9
  */
-public interface SessionLifecycleEvent extends LifecycleEvent {
+public interface SessionAwareLifecycleEvent extends ClientLifecycleEvent {
 
 	/**
 	 * Get session associated with this session-scoped life-cycle event.

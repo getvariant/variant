@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import com.variant.client.lifecycle.LifecycleEvent;
+import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.schema.Schema;
@@ -173,6 +173,6 @@ public interface Connection {
 	 * @see Session#addLifecycleHook(LifecycleHook)
 	 * @since 0.9
 	 */
-	void addLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook);
+	void addLifecycleHook(LifecycleHook<? extends ClientLifecycleEvent> hook);
 
 }

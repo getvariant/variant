@@ -14,11 +14,11 @@ import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
 import com.variant.client.lifecycle.ConnectionClosed;
-import com.variant.client.lifecycle.ConnectionLifecycleEvent;
-import com.variant.client.lifecycle.LifecycleEvent;
+import com.variant.client.lifecycle.ConnectionAwareLifecycleEvent;
+import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.client.lifecycle.SessionExpired;
-import com.variant.client.lifecycle.SessionLifecycleEvent;
+import com.variant.client.lifecycle.SessionAwareLifecycleEvent;
 
 public class LifecycleService {
 
@@ -38,7 +38,7 @@ public class LifecycleService {
 	 * @param event
 	 */
 	@SuppressWarnings("unchecked")
-	private void postLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook, LifecycleEvent event) {
+	private void postLifecycleHook(LifecycleHook<? extends ClientLifecycleEvent> hook, ClientLifecycleEvent event) {
 		
 		threadPool.submit(
 					new Callable<Void>() {
@@ -47,7 +47,7 @@ public class LifecycleService {
 						public Void call() {
 							
 							try {
-								((LifecycleHook<LifecycleEvent>)hook).post(event);								
+								((LifecycleHook<ClientLifecycleEvent>)hook).post(event);								
 							}
 							catch (Throwable t) {
 								asyncExceptions.add(t);
@@ -76,17 +76,17 @@ public class LifecycleService {
 	/**
 	 * Raise a connection scoped event
 	 */
-	public void raiseEvent(Class<? extends ConnectionLifecycleEvent> eventClass, ConnectionImpl conn) {
+	public void raiseEvent(Class<? extends ConnectionAwareLifecycleEvent> eventClass, ConnectionImpl conn) {
 		
 		if (conn.getClient() != client) 
 			throw new ClientException.Internal("Bad client");
 	
 
-		for (LifecycleHook<? extends LifecycleEvent> hook: conn.getLifecycleHooks()) {
+		for (LifecycleHook<? extends ClientLifecycleEvent> hook: conn.getLifecycleHooks()) {
 
 			if (!eventClass.isAssignableFrom(hook.getLifecycleEventClass())) continue;
 
-				LifecycleEvent event = new ConnectionClosed() {		
+				ClientLifecycleEvent event = new ConnectionClosed() {		
 				@Override public Connection getConnection() {
 					return conn;
 				}
@@ -98,17 +98,17 @@ public class LifecycleService {
 	/**
 	 * Raise a session scoped event
 	 */
-	public void raiseEvent(Class<? extends SessionLifecycleEvent> eventClass, SessionImpl session) {
+	public void raiseEvent(Class<? extends SessionAwareLifecycleEvent> eventClass, SessionImpl session) {
 					
 		if (session.getConnection().getClient() != client) 
 			throw new ClientException.Internal("Bad client");
 
 		// 1. Connection level 
-		for (LifecycleHook<? extends LifecycleEvent> hook: ((ConnectionImpl)session.getConnection()).getLifecycleHooks()) {
+		for (LifecycleHook<? extends ClientLifecycleEvent> hook: ((ConnectionImpl)session.getConnection()).getLifecycleHooks()) {
 			
 			if (!eventClass.isAssignableFrom(hook.getLifecycleEventClass())) continue;
 
-				LifecycleEvent event = new SessionExpired() {		
+				ClientLifecycleEvent event = new SessionExpired() {		
 				@Override public Session getSession() {
 					return session;
 				}
@@ -118,11 +118,11 @@ public class LifecycleService {
 		
 		// 2. Session level 
 
-		for (LifecycleHook<? extends LifecycleEvent> hook: session.getLifecycleHooks()) {
+		for (LifecycleHook<? extends ClientLifecycleEvent> hook: session.getLifecycleHooks()) {
 			
 			if (!eventClass.isAssignableFrom(hook.getLifecycleEventClass())) continue;
 
-				LifecycleEvent event = new SessionExpired() {		
+				ClientLifecycleEvent event = new SessionExpired() {		
 				@Override public Session getSession() {
 					return session;
 				}

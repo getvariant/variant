@@ -31,7 +31,8 @@ import com.typesafe.config.Config;
  * 
  * <p>Variant creates a new instance of the implementation class for each triggered event.
  * 
- * @author Igor Urisman
+ * @param <E> The life-cycle event class to post this hook.
+ *
  * @since 0.5
  *
  */

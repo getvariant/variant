@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.typesafe.config.Config;
-import com.variant.client.lifecycle.LifecycleEvent;
+import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.State;
@@ -233,6 +233,6 @@ public interface Session {
 	 * @see Connection#addLifecycleHook(LifecycleHook)
 	 * @since 0.9
 	 */
-	void addLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook);
+	void addLifecycleHook(LifecycleHook<? extends ClientLifecycleEvent> hook);
 
 }

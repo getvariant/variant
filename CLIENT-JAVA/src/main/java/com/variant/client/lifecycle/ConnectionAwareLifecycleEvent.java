@@ -7,7 +7,7 @@ import com.variant.client.Connection;
  *
  * @since 0.9
  */
-public interface ConnectionLifecycleEvent extends LifecycleEvent {
+public interface ConnectionAwareLifecycleEvent extends ClientLifecycleEvent {
 
 	/**
 	 * Get connection associated with this connection-scoped life-cycle event.
