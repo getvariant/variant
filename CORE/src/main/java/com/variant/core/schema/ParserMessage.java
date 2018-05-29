@@ -1,6 +1,6 @@
 package com.variant.core.schema;
 
-import com.variant.core.impl.UserError.Severity;
+import com.variant.core.UserError.Severity;
 import com.variant.core.schema.parser.ParserResponse;
 
 /**

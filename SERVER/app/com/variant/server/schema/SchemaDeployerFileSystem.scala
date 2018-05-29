@@ -9,7 +9,7 @@ import com.variant.core.impl.CommonError._
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.VariantServer
-import com.variant.core.impl.UserError.Severity
+import com.variant.core.UserError.Severity
 import scala.collection.mutable.ArrayBuffer
 import scala.collection.mutable.HashMap
 import com.variant.server.util.AsyncDirectoryWatcher

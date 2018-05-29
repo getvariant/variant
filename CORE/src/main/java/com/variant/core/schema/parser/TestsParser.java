@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.variant.core.UserError.Severity;
 import com.variant.core.impl.CoreException;
 import com.variant.core.impl.ServerError;
 import com.variant.core.impl.VariantException;
 import com.variant.core.impl.VariantSpace;
-import com.variant.core.impl.UserError.Severity;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.StateVariant;

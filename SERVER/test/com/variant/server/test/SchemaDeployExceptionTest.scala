@@ -7,7 +7,7 @@ import org.apache.commons.io.FileUtils
 import org.scalatest.TestData
 import org.scalatestplus.play.OneAppPerTest
 import com.variant.core.impl.CommonError.CONFIG_PROPERTY_NOT_SET
-import com.variant.core.impl.UserError.Severity._
+import com.variant.core.UserError.Severity._
 import com.variant.server.api.ConfigKeys
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal._

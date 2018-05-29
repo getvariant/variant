@@ -3,7 +3,7 @@ package com.variant.server.test;
 import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
-import com.variant.core.impl.UserError.Severity._
+import com.variant.core.UserError.Severity._
 import com.variant.core.lifecycle.TestParsedLifecycleEvent
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._

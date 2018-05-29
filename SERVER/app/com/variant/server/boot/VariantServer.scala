@@ -17,7 +17,7 @@ import play.api.Application
 import com.variant.core.schema.parser.ParserResponse
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
-import com.variant.core.impl.UserError.Severity
+import com.variant.core.UserError.Severity
 import com.variant.server.api.ServerException
 import play.api.ApplicationLoader
 import com.variant.server.schema.SchemaDeployer

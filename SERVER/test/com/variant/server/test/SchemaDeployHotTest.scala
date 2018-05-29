@@ -4,7 +4,7 @@ import com.variant.core.ConnectionStatus.DRAINING
 import com.variant.core.ConnectionStatus.OPEN
 import com.variant.core.impl.ServerError.SessionExpired
 import com.variant.core.impl.ServerError.UnknownConnection
-import com.variant.core.impl.UserError.Severity
+import com.variant.core.UserError.Severity
 import com.variant.core.schema.parser.error.SemanticError
 import com.variant.core.schema.parser.error.SyntaxError
 import com.variant.core.util.IoUtils

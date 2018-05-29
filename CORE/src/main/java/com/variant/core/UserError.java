@@ -1,4 +1,4 @@
-package com.variant.core.impl;
+package com.variant.core;
 
 import com.variant.core.schema.ParserMessage;
 

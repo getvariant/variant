@@ -1,8 +1,8 @@
 package com.variant.core.schema.parser;
 
+import com.variant.core.UserError.Severity;
 import com.variant.core.impl.CommonError;
 import com.variant.core.impl.ServerError;
-import com.variant.core.impl.UserError.Severity;
 import com.variant.core.lifecycle.StateParsedLifecycleEvent;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;

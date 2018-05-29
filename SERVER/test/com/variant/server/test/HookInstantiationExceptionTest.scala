@@ -1,6 +1,6 @@
 package com.variant.server.test;
 
-import com.variant.core.impl.UserError.Severity._
+import com.variant.core.UserError.Severity._
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.BaseSpecWithServer
