@@ -10,7 +10,7 @@ import play.api.libs.typedmap.TypedKey
 import scala.concurrent.Future
 import scala.collection.mutable
 import com.variant.server.boot.VariantServer
-import com.variant.core.ServerError
+import com.variant.core.impl.ServerError
 import com.variant.core.util.TimeUtils
 import scala.concurrent.ExecutionContext
 import akka.util.Timeout

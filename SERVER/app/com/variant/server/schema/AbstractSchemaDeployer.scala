@@ -7,7 +7,7 @@ import play.api.Logger
 import com.variant.core.schema.parser.ParserResponse
 import com.variant.core.schema.parser.FlusherService
 import com.variant.core.schema.parser.HooksService
-import com.variant.core.UserError.Severity
+import com.variant.core.impl.UserError.Severity
 import com.variant.core.schema.ParserMessage
 
 abstract class AbstractSchemaDeployer() extends SchemaDeployer {

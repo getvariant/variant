@@ -3,11 +3,11 @@ package com.variant.server.test;
 import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
-import com.variant.core.UserError.Severity._
+import com.variant.core.impl.UserError.Severity._
 import com.variant.core.schema.Test
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.ServerError._
+import com.variant.core.impl.ServerError._
 import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
 import com.variant.core.schema.parser.error.SemanticError

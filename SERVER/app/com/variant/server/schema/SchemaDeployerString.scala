@@ -2,7 +2,7 @@ package com.variant.server.schema
 
 import scala.collection.JavaConversions._
 import play.api.Logger
-import com.variant.core.UserError.Severity
+import com.variant.core.impl.UserError.Severity
 import com.variant.core.schema.ParserMessage
 import com.variant.core.util.IoUtils
 import scala.collection.mutable.HashMap

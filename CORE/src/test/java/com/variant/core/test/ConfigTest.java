@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.typesafe.config.Config;
-import com.variant.core.CommonError;
 import com.variant.core.conf.ConfigLoader;
+import com.variant.core.impl.CommonError;
 
 public class ConfigTest extends BaseTestCore {
 

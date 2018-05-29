@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.CoreException;
+import com.variant.core.impl.CoreException;
 import com.variant.core.schema.parser.error.SemanticError.Location;
 import com.variant.core.util.Tuples.Pair;
 

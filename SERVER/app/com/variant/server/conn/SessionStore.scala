@@ -9,7 +9,7 @@ import javax.inject.Singleton
 import com.variant.server.boot.VariantServer
 import com.variant.core.session.CoreSession
 import com.variant.server.api.ServerException
-import com.variant.core.ServerError
+import com.variant.core.impl.ServerError
 import com.variant.core.ConnectionStatus._
 import javax.inject.Inject
 

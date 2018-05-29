@@ -5,7 +5,7 @@ import com.variant.core.schema.Schema
 import java.io.File
 import com.variant.core.schema.parser.ParserResponse
 import com.variant.server.api.ServerException
-import com.variant.core.UserError.Severity
+import com.variant.core.impl.UserError.Severity
 import com.variant.core.schema.Hook
 import com.variant.server.boot.VariantServer
 import com.variant.core.schema.parser.HooksService

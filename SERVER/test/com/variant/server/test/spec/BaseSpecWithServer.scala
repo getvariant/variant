@@ -5,7 +5,7 @@ import scala.collection.JavaConversions._
 import org.scalatest.BeforeAndAfterAll
 import org.scalatestplus.play.OneAppPerSuite
 import org.scalatestplus.play.PlaySpec
-import com.variant.core.ServerError
+import com.variant.core.impl.ServerError
 import com.variant.core.schema.Schema
 import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.core.util.Constants._

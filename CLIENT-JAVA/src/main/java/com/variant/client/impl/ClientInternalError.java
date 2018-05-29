@@ -1,6 +1,6 @@
 package com.variant.client.impl;
 
-import com.variant.core.CommonError;
+import com.variant.core.impl.CommonError;
 
 /**
  * Internal variant exceptions, emitted by the client code,

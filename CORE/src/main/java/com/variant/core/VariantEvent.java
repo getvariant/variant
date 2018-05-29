@@ -4,47 +4,54 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * A Variant event that can be triggered. Events are generated either implicitly by 
+ * A Variant event that can be triggered. Not to be confused with life-cycle events.
+ * <p>
+ * Variant events are generated either implicitly by 
  * Variant server, or explicitly by the host application. Implicitly generated events
  * are triggered at state request commit time, while custom events can be triggered
  * at will by passing custom implementations of this interface to 
- * {@link com.variant.client.VariantSession#triggerEvent(VariantEvent)}.
+ * {@code com.variant.client.VariantSession.triggerEvent(VariantEvent)}.
+ * <p>
+ * An event has a name, a value, and, optionally, a set of custom parameters which enrich
+ * event's application context, e.g. a user ID. Variant further enriches each event
+ * with variation related data, such as user's active experiences. 
+ * <p>
+ * A good example of a custom event is an application failure event, which your code triggers
+ * if an unexpected application failure was detected. This event could be processed downstream 
+ * to exclude this session from experiment analysis or to turn off traffic into offending experience.
  * 
- * @author Igor Urisman.
  * @since 0.5
  *
  */
 public interface VariantEvent {
 
 	/**
-	 * The name of the event, such as "STATE_VISIT".
-	 * @return Event name.
+	 * The name of the event.
+	 *
 	 * @since 0.5
 	 */
 	public String getName();
 
 	/**
-	 * The value of the event, such as "Login Page".
+	 * The value of the event.
 	 * 
-	 * @return Event value.
 	 * @since 0.5
 	 */
 	public String getValue();	
 
 	/**
-	 * Create timestamp.
+	 * Event creation timestamp.
 	 * 
-	 * @return Create timestamp.
 	 * @since 0.5
 	 */
 	public Date getCreateDate();
 	
 	/**
-	 * Custom parameters. An event may have any number of custom parameters which are
+	 * Event parameters. An event may have any number of custom parameters which are
 	 * simple key-value pairs. These will be passed without interpretation to the externally
 	 * configured event flusher which is expected to do something meaningful with them.
 	 * 
-	 * @return Custom parameters. Will be passed to the implementation of {@link EventFlusher}.
+	 * @return A map of event parameters as key/value pairs.
 	 * @since 0.5
 	 */
 	public Map<String, String> getParameterMap();

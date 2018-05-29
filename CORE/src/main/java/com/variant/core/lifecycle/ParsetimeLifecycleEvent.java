@@ -1,6 +1,6 @@
 package com.variant.core.lifecycle;
 
-import com.variant.core.UserError.Severity;
+import com.variant.core.impl.UserError.Severity;
 
 
 /**

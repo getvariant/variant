@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.variant.core.CoreException;
+import com.variant.core.impl.CoreException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;

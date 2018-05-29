@@ -2,7 +2,7 @@ package com.variant.server.impl;
 
 import java.util.Random;
 
-import com.variant.core.ServerError;
+import com.variant.core.impl.ServerError;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;

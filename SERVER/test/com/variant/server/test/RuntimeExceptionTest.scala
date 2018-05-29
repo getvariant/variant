@@ -1,12 +1,12 @@
 package com.variant.server.test
 
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.ServerError._
+import com.variant.core.impl.ServerError._
 import com.variant.server.api.Session
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerSuite
 import com.variant.server.api.ServerException
-import com.variant.core.CoreException
+import com.variant.core.impl.CoreException
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer

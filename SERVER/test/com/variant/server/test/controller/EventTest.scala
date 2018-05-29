@@ -6,7 +6,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.collection.JavaConversions._
-import com.variant.core.ServerError._
+import com.variant.core.impl.ServerError._
 import com.variant.core.ConnectionStatus._
 import com.variant.core.util.Constants._
 import com.variant.server.test.util.ParameterizedString

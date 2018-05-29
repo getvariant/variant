@@ -1,6 +1,6 @@
 package com.variant.server.api;
 
-import com.variant.core.ServerError;
+import com.variant.core.impl.ServerError;
 
 /**
  * Thrown when a user operation requests a combination of state and test that is not

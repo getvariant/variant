@@ -7,7 +7,7 @@ import com.variant.server.api.ConfigKeys._
 import com.variant.server.boot.ServerErrorLocal._
 import play.api.Logger
 import com.typesafe.config.Config
-import com.variant.core.VariantException
+import com.variant.core.impl.VariantException
 import com.variant.server.api.ServerException
 import com.variant.server.api.FlushableEvent
 import com.variant.server.api.EventFlusher

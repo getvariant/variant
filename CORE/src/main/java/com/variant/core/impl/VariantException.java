@@ -1,4 +1,4 @@
-package com.variant.core;
+package com.variant.core.impl;
 
 /**
  * The super-type for all Variant exception. 

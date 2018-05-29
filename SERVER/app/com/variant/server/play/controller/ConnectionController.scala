@@ -1,6 +1,6 @@
 package com.variant.server.play.controller
 
-import com.variant.core.ServerError._
+import com.variant.core.impl.ServerError._
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.conn.Connection
 import com.variant.server.conn.ConnectionStore

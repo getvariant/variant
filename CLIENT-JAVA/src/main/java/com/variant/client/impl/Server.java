@@ -16,8 +16,8 @@ import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.core.ConnectionStatus;
-import com.variant.core.ServerError;
 import com.variant.core.VariantEvent;
+import com.variant.core.impl.ServerError;
 import com.variant.core.impl.VariantEventSupport;
 
 /**

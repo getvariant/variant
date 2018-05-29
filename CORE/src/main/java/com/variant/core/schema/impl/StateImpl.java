@@ -1,6 +1,6 @@
 package com.variant.core.schema.impl;
 
-import static com.variant.core.ServerError.STATE_NOT_INSTRUMENTED_BY_TEST;
+import static com.variant.core.impl.ServerError.STATE_NOT_INSTRUMENTED_BY_TEST;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.CoreException;
+import com.variant.core.impl.CoreException;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;

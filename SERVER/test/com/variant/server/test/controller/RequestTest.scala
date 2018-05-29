@@ -6,7 +6,7 @@ import play.api.test.Helpers._
 import scala.collection.JavaConversions._
 import com.variant.server.api.ConfigKeys
 import com.variant.server.test.spec.BaseSpecWithServer
-import com.variant.core.ServerError._
+import com.variant.core.impl.ServerError._
 import play.api.libs.json._
 import com.variant.server.impl.SessionImpl
 import com.variant.core.session.CoreSession

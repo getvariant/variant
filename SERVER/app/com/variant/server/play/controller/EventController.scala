@@ -7,7 +7,7 @@ import play.api.mvc.Request
 import com.variant.server.conn.SessionStore
 import play.api.Logger
 import play.api.libs.json._
-import com.variant.core.ServerError._
+import com.variant.core.impl.ServerError._
 import java.util.Date
 import play.api.mvc.Result
 import play.api.mvc.AnyContent

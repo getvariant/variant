@@ -7,7 +7,7 @@ import org.junit.Test;
 import static com.variant.core.schema.parser.error.SyntaxError.*;
 import static com.variant.core.schema.parser.error.SemanticError.*;
 
-import com.variant.core.UserError.Severity;
+import com.variant.core.impl.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponse;

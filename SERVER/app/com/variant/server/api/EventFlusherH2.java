@@ -1,7 +1,7 @@
 package com.variant.server.api;
 
 
-import static com.variant.core.CommonError.CONFIG_PROPERTY_NOT_SET;
+import static com.variant.core.impl.CommonError.CONFIG_PROPERTY_NOT_SET;
 import static com.variant.server.api.ConfigKeys.EVENT_FLUSHER_CLASS_INIT;
 
 import java.sql.Connection;

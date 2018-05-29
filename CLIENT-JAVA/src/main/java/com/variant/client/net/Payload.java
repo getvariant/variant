@@ -7,7 +7,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.client.ClientException;
 import com.variant.client.net.http.HttpResponse;
-import com.variant.core.VariantException;
+import com.variant.core.impl.VariantException;
 import com.variant.core.session.CoreSession;
 
 

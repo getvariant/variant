@@ -1,7 +1,7 @@
 package com.variant.server.test.spec
 
 import play.api.libs.json.JsValue
-import com.variant.core.ServerError
+import com.variant.core.impl.ServerError
 import org.scalatestplus.play.PlaySpec
 import com.variant.server.api.Session
 import com.variant.core.session.SessionScopedTargetingStabile

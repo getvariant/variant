@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.variant.core.CommonError;
-import com.variant.core.UserError.Severity;
+import com.variant.core.impl.CommonError;
+import com.variant.core.impl.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.impl.SchemaImpl;

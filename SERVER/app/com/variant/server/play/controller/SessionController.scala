@@ -1,8 +1,8 @@
 package com.variant.server.play.controller
 
-import com.variant.core.ServerError.EmptyBody
+import com.variant.core.impl.ServerError.EmptyBody
 import com.variant.core.session.CoreSession
-import com.variant.core.ServerError._
+import com.variant.core.impl.ServerError._
 import com.variant.server.api.ServerException
 import com.variant.server.conn.ConnectionStore
 import com.variant.server.conn.SessionStore
@@ -13,7 +13,7 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import play.api.mvc.ControllerComponents
 import com.variant.server.play.action.ConnectedAction
-import com.variant.core.ServerError
+import com.variant.core.impl.ServerError
 import com.variant.core.ConnectionStatus._
 import com.variant.server.boot.VariantServer
 

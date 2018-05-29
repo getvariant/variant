@@ -1,7 +1,7 @@
 package com.variant.client.impl;
 
-import com.variant.core.CommonError;
-import com.variant.core.ServerError;
+import com.variant.core.impl.CommonError;
+import com.variant.core.impl.ServerError;
 
 /**
  * <p>User error emitted by the client and originating on the client. 

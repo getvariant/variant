@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.variant.core.UserError.Severity;
+import com.variant.core.impl.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponse;

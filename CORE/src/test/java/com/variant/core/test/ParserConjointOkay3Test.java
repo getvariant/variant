@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import com.variant.core.UserError.Severity;
+import com.variant.core.impl.UserError.Severity;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;

@@ -6,7 +6,7 @@ import scala.concurrent.ExecutionContext
 import com.variant.core.util.Constants._
 import com.variant.server.boot.VariantServer
 import com.variant.server.api.ServerException
-import com.variant.core.ServerError._
+import com.variant.core.impl.ServerError._
 import com.variant.core.ConnectionStatus._
 /**
  * A connected action.

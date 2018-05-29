@@ -3,7 +3,7 @@ package com.variant.server.test
 import play.api.Logger
 import play.api.test.Helpers._
 import com.variant.core.ConnectionStatus._
-import com.variant.core.ServerError._
+import com.variant.core.impl.ServerError._
 import com.variant.server.schema.State
 import com.variant.server.api.ConfigKeys._
 import com.variant.server.test.spec.BaseSpecWithServer

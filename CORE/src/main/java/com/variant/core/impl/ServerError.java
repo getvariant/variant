@@ -1,4 +1,4 @@
-package com.variant.core;
+package com.variant.core.impl;
 
 import java.lang.reflect.Field;
 

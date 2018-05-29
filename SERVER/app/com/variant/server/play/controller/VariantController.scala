@@ -1,7 +1,7 @@
 package com.variant.server.play.controller
 
 import com.fasterxml.jackson.core.JsonParseException
-import com.variant.core.ServerError
+import com.variant.core.impl.ServerError
 import com.variant.core.util.Constants
 import com.variant.server.api.ServerException
 import com.variant.server.boot.VariantServer

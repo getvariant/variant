@@ -6,9 +6,8 @@ import scala.util.Try
 import org.apache.commons.io.FileUtils
 import org.scalatest.TestData
 import org.scalatestplus.play.OneAppPerTest
-import com.variant.core.CommonError.CONFIG_PROPERTY_NOT_SET
-import com.variant.core.UserError.Severity
-import com.variant.core.UserError.Severity.FATAL
+import com.variant.core.impl.CommonError.CONFIG_PROPERTY_NOT_SET
+import com.variant.core.impl.UserError.Severity._
 import com.variant.server.api.ConfigKeys
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal._
@@ -152,7 +151,7 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
          val logTail = ServerLogTailer.last(3)
          server.schemata.size mustBe 1
          val errLine = logTail(0)
-         errLine.severity mustBe Severity.ERROR
+         errLine.severity mustBe ERROR
    		errLine.message must include (SCHEMA_CANNOT_REPLACE.asMessage("ParserConjointOkayBigTestNoHooks", "schema1.json", "schema2.json"))
    		server.isUp mustBe true         
       }  

@@ -1,6 +1,6 @@
 package com.variant.server.impl;
 
-import static com.variant.core.ServerError.HOOK_TARGETING_BAD_EXPERIENCE;
+import static com.variant.core.impl.ServerError.HOOK_TARGETING_BAD_EXPERIENCE;
 
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;

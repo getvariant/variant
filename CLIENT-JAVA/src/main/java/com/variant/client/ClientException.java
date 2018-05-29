@@ -1,8 +1,8 @@
 package com.variant.client;
 
 import com.variant.client.impl.ClientInternalError;
-import com.variant.core.UserError;
-import com.variant.core.VariantException;
+import com.variant.core.impl.UserError;
+import com.variant.core.impl.VariantException;
 
 /**
  * Superclass of all Variant client exceptions. All exceptions thrown by Variant Java Client

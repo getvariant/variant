@@ -5,7 +5,7 @@ import scala.collection.JavaConversions._
 import play.api.mvc.Request
 import com.variant.server.conn.SessionStore
 import play.api.Logger
-import com.variant.core.ServerError._
+import com.variant.core.impl.ServerError._
 import com.variant.server.schema.ServerSchema
 import com.variant.server.conn.Connection
 import com.variant.server.conn.ConnectionStore

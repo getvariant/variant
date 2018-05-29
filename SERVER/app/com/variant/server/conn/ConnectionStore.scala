@@ -10,7 +10,7 @@ import com.variant.server.boot.VariantServer
 import scala.collection.concurrent.TrieMap
 import com.typesafe.config.Config
 import com.variant.server.api.ServerException
-import com.variant.core.ServerError
+import com.variant.core.impl.ServerError
 import com.variant.core.ConnectionStatus._
 
 /*

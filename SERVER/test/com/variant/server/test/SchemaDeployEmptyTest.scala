@@ -4,7 +4,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatestplus.play.OneAppPerSuite
 import org.scalatestplus.play.PlaySpec
 
-import com.variant.core.UserError.Severity
+import com.variant.core.impl.UserError.Severity
 import com.variant.core.schema.parser.error.SyntaxError
 import com.variant.core.util.IoUtils
 import com.variant.server.boot.ServerErrorLocal

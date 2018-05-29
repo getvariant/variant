@@ -15,7 +15,7 @@ import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.lifecycle.ConnectionClosed;
 import com.variant.client.lifecycle.LifecycleHook;
-import com.variant.core.ServerError;
+import com.variant.core.impl.ServerError;
 
 /**
  * Test connections of a cold-deployed schemata.

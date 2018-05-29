@@ -1,6 +1,6 @@
 package com.variant.server.boot;
 
-import com.variant.core.CommonError;
+import com.variant.core.impl.CommonError;
 
 /**
  * Local Server Errors, i.e. ones thrown to the server log and not sent back to client.

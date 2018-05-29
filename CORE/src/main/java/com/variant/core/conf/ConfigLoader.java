@@ -1,6 +1,6 @@
 package com.variant.core.conf;
 
-import static com.variant.core.CommonError.*;
+import static com.variant.core.impl.CommonError.*;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.variant.core.CoreException;
+import com.variant.core.impl.CoreException;
 import com.variant.core.util.IoUtils;
 import com.variant.core.util.Tuples.Pair;
 
