@@ -28,7 +28,7 @@ javadoc -d ${javadoc_dir}  \
     ga('create', 'UA-40337670-3', 'auto');                                             \
     ga('send', 'pageview');                                                            \
   </script>" \
-   -bottom "Release $version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2018 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
+   -bottom "Variant Experience Server release $version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2018 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
    com.variant.core                   \
    com.variant.core.lifecycle         \
    com.variant.core.schema            \

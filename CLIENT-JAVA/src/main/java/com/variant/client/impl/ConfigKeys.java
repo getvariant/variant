@@ -1,10 +1,9 @@
-package com.variant.client;
+package com.variant.client.impl;
 
 /**
  * Known external configuration keys. These are compile time aliases for the
  * configuration keys, used in the variant.conf file.
  * 
- * @see 
  * @since 0.7
  */
 public interface ConfigKeys {

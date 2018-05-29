@@ -12,28 +12,22 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
 /**
- * <p>Represents a Variant user session. Provides a way to 
+ * Represents a Variant user session. Provides a way to 
  * identify a user across multiple state requests and contains session-scoped application 
- * state that must be preserved between state requests. Variant server acts as the session 
- * store by maintaining a map of user session objects keyed by session ID.
- * 
- * <p>Variant maintains its own session, instead of 
- * relying on the host application's native session, because 1) some host environments 
- * won't have the notion of a native session; and 2) it is frequently 
- * desirable for a Variant session to survive the destruction of the host application's session. 
- * For example, if the host application is a Web application, 
- * it natively relies on the HTTP session, provided to it by a Web container, like Tomcat. 
- * If a Variant experiment starts on a public page and continues past the login page, 
- * it is possible (in fact, quite likely) that the host application will recreate the 
- * underlying HTTP session upon login. If Variant session were somehow bound to the HTTP session, 
- * it would not be able to span states on the opposite side of the login page. 
- * But because Variant manages its own session, the fate of the host application's HTTP session 
- * is irrelevant, enabling Variant to instrument experiments that start by an unknown 
- * user and end by an authenticated one or vice versa.
+ * state that must be preserved between state requests. 
+ * <p>
+ * Variant server provides distributed
+ * session management which does not rely on the host application's own notion of the user
+ * session. This way host sessions and Variant sessions remain decoupled, leaving the host
+ * application free to recreate its session without affecting experience variations
+ * managed by Variant. For example, a Web application natively relies on the HTTP session, 
+ * provided to it by a Web container, like Apache Tomcat. 
+ * If a Variant experience variation starts on a public page and continues past the login page, 
+ * Variant sessions will not be disrupted should the application re-create its native session
+ * at login.
  *    
- * <p> Variant session expires when either a configurable session timeout period of inactivity,
- *     or after a schema re-deployment. Once the session represented a Session object has expired,
- *     all subsequent operations on it, apart from {@code getId()} and {@code isExpired()} will throw 
+ * <p> Variant sessions are expired by Variant server after a configurable session timeout 
+ *     period of inactivity. Once a session has expired, most methods of this class will throw 
  *     a {@link SessionExpiredException}.
  *
  * @author Igor Urisman
@@ -43,9 +37,9 @@ import com.variant.core.schema.Test;
 public interface Session {
 
 	/**
-     * <p>This session's ID.
+     * <p>This session's unique identifier.
      *  
-	 * @return Session ID.  
+	 * @return This session's unique identifier.  
 	 *
 	 * @since 0.7
 	 */
@@ -54,17 +48,16 @@ public interface Session {
 	/**
      * <p>This session's creation date. 
      *  
-	 * @return Creation timestamp.
+	 * @return This session's creation date.
 	 *
 	 * @since 0.7
 	 */
 	public Date getCreateDate();
 
 	/**
-     * <p>The server connection whch created this session. 
+     * <p>The connection object, which originally created this session via {@link Connection#getSession(Object...)}.
      *  
-	 * @return An instance of the {@link Connection} object, which originally created this object
-	 *         via {@link Connection#getSession(Object...)}.
+	 * @return An object of type {@link Connection}.
 	 *
 	 * @since 0.7
 	 */	
@@ -73,10 +66,11 @@ public interface Session {
 	/**
      * <p>Target this session for a state. 
      *  
-	 * @return An instance of the {@link StateRequest} object, which
+	 * @return An object of type {@link StateRequest}, which
 	 *         may be further examined for more information about the outcome of this operation.  
 	 * 
 	 * @throws SessionExpiredException
+	 * @throws ConnectionClosedException
 	 * @throws StateNotInstrumentedException 
 	 * 
 	 * @since 0.5
@@ -85,20 +79,20 @@ public interface Session {
 		
 	/**
 	 * Externally supplied configuration. A shortcut for {@code getConnection().getClient().getConfig()}
-	 * See https://github.com/typesafehub/config for details on Typesafe Config.
+	 * See Variant Java Client User Guile for details on configuring Variant Java client.
 	 * 
-	 * @return An instance of the {@link Config} type.
+	 * @return An object of type <a href="https://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">com.typesafe.config.Config</a>.
 	 * 
 	 * @since 0.7
 	 */
 	public Config getConfig();
 
 	/**
-     * <p>Session timeout interval, as set by the server. This session will be destroyed after it is inactive
-     *    for this many milliseconds. 
+     * <p>Session timeout interval, as set by the server. The server will dispose of this session after this many milliseconds of inactivity.
      *  
 	 * @return Timeout interval in milliseconds.
 	 *
+	 * @see #isExpired()
 	 * @since 0.7
 	 */	
 	public long getTimeoutMillis();
@@ -112,11 +106,11 @@ public interface Session {
      * </ul>
 
 	 * 
-	 * @return A map, whose entries are keyed by {@link State} and values are Integer visit counts in
+	 * @return A map, whose entries are keyed by {@link State} and values are Integer visit counts of
 	 *         that state.
 	 *         
 	 * @throws SessionExpiredException
-	 * @throws StateNotInstrumentedException 
+	 * @throws ConnectionClosedException
 	 * 
 	 * @since 0.7
 	 */
@@ -124,13 +118,13 @@ public interface Session {
 
 	/**
 	 * <p> The set of tests traversed by this session so far. A test T is traversed by
-	 * a session when the session is targeted for a state, which a) is instrumented by T,
-	 * b) T is not OFF, and c) this session qualified for T.
+	 * a session when the session is targeted for a state instrumented by T, T is not OFF, 
+	 * and the session is qualified for T.
 	 * 
 	 * @return A set of object of type {@link Test}.
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws StateNotInstrumentedException 
+	 * @throws ConnectionClosedException
 	 * 
 	 * @since 0.7
 	 */
@@ -144,7 +138,7 @@ public interface Session {
 	 * @return A set of {@link Test}s which this session is disqualified for. 
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws StateNotInstrumentedException 
+	 * @throws ConnectionClosedException
 	 * 
 	 * @since 0.7
 	 */
@@ -157,7 +151,7 @@ public interface Session {
 	 *         session.
 	 *  
 	 * @throws SessionExpiredException
-	 * @throws StateNotInstrumentedException 
+	 * @throws ConnectionClosedException
 	 * 
 	 * @since 0.5
 	 */
@@ -166,10 +160,10 @@ public interface Session {
 	/**
 	 * Trigger a custom event.
 	 * 
-	 * @param An implementation of {@link VariantEvent}, which represents the custom event to be triggered.
+	 * @param event An implementation of {@link VariantEvent}, which represents the custom event to be triggered.
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws StateNotInstrumentedException 
+	 * @throws ConnectionClosedException
 	 * 
 	 * @since 0.7
 	 */
@@ -177,66 +171,67 @@ public interface Session {
 		
 	/**
 	 * <p>Indicates whether this session has expired. A session is expired by the server
-	 * either after it has
-	 * been inactive for the period of time configured by the {@code session.timeout}
-	 * config key, or after the underlying {@link Connection} is closed.
+	 * after a configurable period of inactivity.
 	 * 
 	 * @return true if this session has expired or false otherwise. 
-	 * 
-	 * @throws StateNotInstrumentedException 
      *
+	 * @see #getTimeoutMillis()
 	 * @since 0.6
 	 */
 	public boolean isExpired();
 	
 	/**
-	 * <p>Set a session-scoped attribute.
+	 * <p>Set a session attribute.
 	 * 
-	 * @name Attribute name. Cannot be <code>null</code>.
-	 * @name Attribute value. Cannot be <code>null</code>.
-	 * @return The string previously associated with this attribute, or <code>null</code> if none.
+	 * @param name Attribute name. Cannot be <code>null</code>.
+	 * @param value Attribute value. Cannot be <code>null</code>.
+	 * @return The string value previously associated with this <code>name</code>, or <code>null</code> if none.
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws StateNotInstrumentedException 
+	 * @throws ConnectionClosedException
 	 * 
 	 * @since 0.6
 	 */
 	public String setAttribute(String name, String value);
 	
 	/**
-	 * <p>Retrieve the session-scoped attribute.
+	 * <p>Retrieve the value of a session attribute.
 	 * 
 	 * @param name Attribute name.
-	 * @return The string associated with this attribute.
+	 * @return The string value associated with this name.
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws StateNotInstrumentedException 
+	 * @throws ConnectionClosedException
 	 * 
 	 * @since 0.6
 	 */
 	public String getAttribute(String name);
 
 	/**
-	 * <p>Remove a session-scoped attribute.
+	 * <p>Remove a session attribute.
 	 * 
 	 * @param name Attribute name.
-	 * @return The string, previously associated with this attribute, or <code>null</code> if none.
+	 * @return The string value previously associated with this <code>name</name>, or <code>null</code> if none.
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws StateNotInstrumentedException 
+	 * @throws ConnectionClosedException
 	 * 
 	 * @since 0.7
 	 */
 	public String clearAttribute(String name);
 	
 	/**
-	 * Register a connection-level life-cycle hook. Hooks are posted asynchronously.
-	 * If multiple hooks are registered for a particular life-cycle event, connection-specific
-	 * hooks are posted first, followed by connection-specific hooks.  
-	 * order is undefined.
+	 * Register a session-level life-cycle hook. Hooks are posted asynchronously.
+	 * If multiple hooks are registered for a particular life-cycle event, connection-level
+	 * hooks are posted before session-level hooks.
 	 * 
-	 * @param An implementation of {@link Lifecycle}
-	 * @since 0.8
+	 * @param hook An implementation of {@link LifecycleHook}
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws ConnectionClosedException
+	 *
+	 * @see Connection#addLifecycleHook(LifecycleHook)
+	 * @since 0.9
 	 */
 	void addLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook);
 

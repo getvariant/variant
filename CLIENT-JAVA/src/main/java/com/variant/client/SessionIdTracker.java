@@ -1,28 +1,30 @@
 package com.variant.client;
 
-
-
 /**
- * <p>An environment-bound implementation will use an external mechanism 
- * to store the current session ID between state requests. For instance, in a Web application 
- * environment, session ID should be tracked in an HTTP cookie, just like the HTTP session ID.
- * Request scoped, i.e. Variant will reinitialize the concrete implementation class
- * at the start of a state request and destroy it at commit.
- * 
- * <p>By contract, an implementation must provide a no-argument constructor, which Variant will use
- * to instantiate it. To inject initial state, see {@link #init(Connection, Object...)}.
+ * Interface to be implemented by an environment-bound session ID tracker. The implementation will 
+ * use an external mechanism to store the current session ID between state requests. 
+ * For instance, in a Web application environment, session ID should be tracked in an HTTP cookie, 
+ * just like the HTTP session ID.
+ * <p>
+ * The implementation will have request scoped life-cycle, i.e. Variant will re-instantiate the 
+ * implementing class at the start of each state request.
+ * <p>
+ * By contract, an implementation must provide a no-argument constructor. To inject initial state, 
+ * use {@link #init(Connection, Object...)}.
+ * <p>
+ * Configured by <code>session.id.tracker.class.name</code> configuration property.
  *
- * @author Igor Urisman
  * @since 0.6
  */
 
 public interface SessionIdTracker {
 
 	/**
-	 * <p>Called by Variant to initialize a newly instantiated concrete implementation 
-	 * immediately following the instantiation. Called within the scope of the {@code Connection.getSession()} methods.
+	 * <p>Called by Variant to initialize a newly instantiated concrete implementation,
+	 * within the scope of {@link Connection#getSession(Object...)}
+	 * or {@link Connection#getOrCreateSession(Object...)} methods.
 	 * 
-	 * @param conn      The Variant server connection which is initializing this object.
+	 * @param conn      The Variant server connection initializing this object.
 	 * @param userData  An array of zero or more opaque objects, which the enclosing call to {@link Connection#getSession(Object...) }
 	 *                  or {@link Connection#getOrCreateSession(Object...)} will pass here without interpretation. 
 	 * 

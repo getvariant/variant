@@ -17,10 +17,9 @@ public interface VariantClient {
 		
 	/**
 	 * Externally supplied configuration.
-	 * See <a href="https://github.com/lightbend/config" target="_blank">https://github.com/lightbend/config</a>
-	 * for details on Lightbend Config.
+	 * See Variant Java Client User Guile for details on configuring Variant Java client.
 	 * 
-	 * @return An instance of the com.typesafe.config.Config type.
+	 * @return An object of type <a href="https://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">com.typesafe.config.Config</a>.
 	 * 
 	 * @since 0.7
 	 */
@@ -39,7 +38,7 @@ public interface VariantClient {
 	public Connection getConnection(String schema);
 		
 	/**
-	 * Factory class: call <code>getInstance()</code> to obtain a new instance of {@link VariantClient}.
+	 * Static factory class: call {@link #getInstance()} to obtain a new instance of {@link VariantClient}.
 	 * 
 	 * @since 0.6
 	 */
@@ -48,7 +47,7 @@ public interface VariantClient {
 		/**
 		 * Obtain a new instance of {@link VariantClient}.
 		 * Host application should hold on to and reuse the object returned by this method whenever possible.
-		 * One of these per address space is recommended.
+		 * One of these per process is recommended.
 		 * 
 		 * @return Instance of the {@link VariantClient} type.
 		 * @since 0.6

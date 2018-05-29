@@ -162,12 +162,16 @@ public interface Connection {
 
 	/**
 	 * Register a connection-level life-cycle hook. Hooks are posted asynchronously.
-	 * If multiple hooks are registered for a particular life-cycle event, connection-specific
-	 * hooks are posted first, followed by connection-specific hooks.  
-	 * order is undefined.
+	 * If multiple hooks are registered for a particular life-cycle event, connection-level
+	 * hooks are posted before session-level hooks.
 	 * 
-	 * @param An implementation of {@link Lifecycle}
-	 * @since 0.8
+	 * @param hook An implementation of {@link LifecycleHook}
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws ConnectionClosedException
+	 *
+	 * @see Session#addLifecycleHook(LifecycleHook)
+	 * @since 0.9
 	 */
 	void addLifecycleHook(LifecycleHook<? extends LifecycleEvent> hook);
 

@@ -1,7 +1,7 @@
 package com.variant.client.session;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.variant.client.Session;
 import com.variant.core.schema.Test.Experience;
@@ -23,9 +23,10 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 	 */
 	@Override
 	public void init(Session session, Object...userData) {
-		Collection<Entry> entries = new ArrayList<Entry>(userData.length);
+		Set<Entry> entries = new HashSet<Entry>(userData.length);
 		for (int i = 0; i < userData.length; i++) {
-			if (i > 0)	entries.add(new TargetingTrackerEntryImpl((Experience)userData[i], System.currentTimeMillis(), session));
+			if (i > 0) 
+				entries.add(new TargetingTrackerEntryImpl((Experience)userData[i], System.currentTimeMillis(), session));
 		}
 		set(entries);
 		this.session = session;
@@ -37,12 +38,12 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 	}
 
 	@Override
-	public Collection<Entry> get() {
+	public Set<Entry> get() {
 		return fromString(buffer);
 	}
 
 	@Override
-	public void set(Collection<Entry> entries) {
+	public void set(Set<Entry> entries) {
 		buffer = toString(entries);
 	}
 
