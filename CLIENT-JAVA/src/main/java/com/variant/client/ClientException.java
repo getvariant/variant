@@ -1,7 +1,7 @@
 package com.variant.client;
 
 import com.variant.client.impl.ClientInternalError;
-import com.variant.core.impl.UserError;
+import com.variant.core.UserError;
 import com.variant.core.impl.VariantException;
 
 /**

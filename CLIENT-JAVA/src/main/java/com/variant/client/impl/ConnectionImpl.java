@@ -19,7 +19,7 @@ import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
 import com.variant.core.ConnectionStatus;
-import com.variant.core.impl.UserError.Severity;
+import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
