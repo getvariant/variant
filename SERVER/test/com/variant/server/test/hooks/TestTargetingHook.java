@@ -8,9 +8,9 @@ import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
-import com.variant.server.api.PostResultFactory;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
+import com.variant.server.api.lifecycle.PostResultFactory;
 import com.variant.server.api.lifecycle.TestTargetingLifecycleEvent;
 
 /**

@@ -4,7 +4,7 @@ import com.typesafe.config.Config;
 import com.variant.core.UserError.Severity;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.lifecycle.StateParsedLifecycleEvent;
-import com.variant.server.api.PostResultFactory;
+import com.variant.server.api.lifecycle.PostResultFactory;
 
 public class StateParsedHook implements LifecycleHook<StateParsedLifecycleEvent> {
 	

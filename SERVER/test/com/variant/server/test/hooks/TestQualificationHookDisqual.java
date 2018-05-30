@@ -2,7 +2,7 @@ package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
 import com.variant.core.lifecycle.LifecycleHook;
-import com.variant.server.api.PostResultFactory;
+import com.variant.server.api.lifecycle.PostResultFactory;
 import com.variant.server.api.lifecycle.TestQualificationLifecycleEvent;
 
 public class TestQualificationHookDisqual implements LifecycleHook<TestQualificationLifecycleEvent>{

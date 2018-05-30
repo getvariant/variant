@@ -1,7 +1,7 @@
 package com.variant.server.impl;
 
 import com.variant.core.lifecycle.LifecycleHook;
-import com.variant.server.api.PostResultFactory;
+import com.variant.server.api.lifecycle.PostResultFactory;
 import com.variant.server.api.lifecycle.TestQualificationLifecycleEvent;
 
 class TestQualificationDefaultHook implements LifecycleHook<TestQualificationLifecycleEvent> {
