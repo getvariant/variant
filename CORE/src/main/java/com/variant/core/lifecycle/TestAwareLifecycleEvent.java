@@ -3,9 +3,8 @@ package com.variant.core.lifecycle;
 import com.variant.core.schema.Test;
 
 /**
- * <p>Super-interface for all life cycle event types, whose scope is limited to a particular test.
+ * Super-type of all life-cycle event types whose runtime context includes a particular test.
  * 
- * @author Igor Urisman.
  * @since 0.7
  *
  */

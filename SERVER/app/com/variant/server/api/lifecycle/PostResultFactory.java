@@ -17,7 +17,6 @@ import com.variant.server.impl.TestTargetingLifecycleEventPostResultImpl;
  * The <code>post()</code> method obtained an instance of its result class by calling one of 
  * the factory methods below.
  * 
- * @author Igor Urisman.
  * @since 0.7
  *
  */

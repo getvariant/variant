@@ -4,7 +4,7 @@ import com.variant.core.UserError.Severity;
 
 
 /**
- * <p>Super-interface for all life cycle event types that post their hooks at schema parse time.
+ * <p>Super-type of all life-cycle event types that post their hooks at schema parse time.
  * 
  * @author Igor Urisman.
  * @since 0.8
@@ -13,7 +13,7 @@ import com.variant.core.UserError.Severity;
 public interface ParsetimeLifecycleEvent extends LifecycleEvent {
 		
 	/**
-	 * Add a custom message to the pending parser resonse.
+	 * Add a custom message to the parser response in progress.
 	 * 
 	 * @param severity Severity of the custom message. Error and above will
 	 *        prevent this schema from being deployed.

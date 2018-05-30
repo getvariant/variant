@@ -3,9 +3,8 @@ package com.variant.core.lifecycle;
 import com.variant.core.schema.State;
 
 /**
- * <p>Super-interface for all life cycle event types, whose scope is limited to a particular state.
+ * Super-type of all life-cycle event types whose runtime context includes a particular state.
  * 
- * @author Igor Urisman.
  * @since 0.7
  *
  */
