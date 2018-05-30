@@ -1,16 +1,20 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.variant.core.schema.Flusher;
+import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
-import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
 

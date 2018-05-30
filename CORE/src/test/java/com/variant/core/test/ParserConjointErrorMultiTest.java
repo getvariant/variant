@@ -1,6 +1,10 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_REF_TESTS_NOT_CONJOINT;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;

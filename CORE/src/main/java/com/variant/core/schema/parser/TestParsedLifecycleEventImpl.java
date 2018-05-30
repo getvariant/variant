@@ -4,7 +4,6 @@ import com.variant.core.UserError.Severity;
 import com.variant.core.impl.CommonError;
 import com.variant.core.impl.ServerError;
 import com.variant.core.lifecycle.TestParsedLifecycleEvent;
-import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.Test;
 
 /**
@@ -42,25 +41,6 @@ public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 		}
 		
 		response.addMessage(error, message);
-	}
-
-	@Override
-	public LifecycleHook<TestParsedLifecycleEvent> getDefaultHook() {
-
-		return new LifecycleHook<TestParsedLifecycleEvent>() {
-
-			@Override
-			public Class<TestParsedLifecycleEvent> getLifecycleEventClass() {
-				return TestParsedLifecycleEvent.class;
-			}
-
-			@Override
-			public LifecycleHook.PostResult post(TestParsedLifecycleEvent event) {
-					
-				return new TestParsedLifecycleEvent.PostResult() {};
-				
-			}	
-		};
 	}
 
 }

@@ -1,11 +1,17 @@
 package com.variant.core.test;
 
-import static org.junit.Assert.*;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SyntaxError.JSON_SYNTAX_ERROR;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-
-import static com.variant.core.schema.parser.error.SyntaxError.*;
-import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;

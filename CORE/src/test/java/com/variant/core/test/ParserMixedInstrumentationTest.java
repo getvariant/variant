@@ -1,6 +1,12 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_CONJOINT_PHANTOM;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_PROPER_PHANTOM;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.error.SemanticError.PROPER_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

@@ -9,4 +9,4 @@ import com.variant.client.Connection;
  * 
  * @since 0.9
  */
-public interface ConnectionClosed extends ConnectionAwareLifecycleEvent {}
+public interface ConnectionClosedLifecycleEvent extends ConnectionAwareLifecycleEvent {}

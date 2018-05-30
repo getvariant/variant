@@ -1,9 +1,15 @@
 package com.variant.core.test;
 
+import static com.variant.core.schema.parser.error.SemanticError.DUPE_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import org.junit.Test;
 

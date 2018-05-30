@@ -6,4 +6,4 @@ package com.variant.client.lifecycle;
  * 
  * @since 0.9
  */
-public interface SessionExpired extends SessionAwareLifecycleEvent {}
+public interface SessionExpiredLifecycleEvent extends SessionAwareLifecycleEvent {}

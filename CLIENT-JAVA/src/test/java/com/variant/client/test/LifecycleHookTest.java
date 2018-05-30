@@ -19,9 +19,9 @@ import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.LifecycleService;
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.client.lifecycle.ConnectionClosed;
+import com.variant.client.lifecycle.ConnectionClosedLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
-import com.variant.client.lifecycle.SessionExpired;
+import com.variant.client.lifecycle.SessionExpiredLifecycleEvent;
 import com.variant.core.ConnectionStatus;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.IoUtils;
@@ -40,17 +40,17 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 	
 	private ArrayList<String> hookPosts = new ArrayList<String>();
 
-	private class SessionExpiredHook implements LifecycleHook<SessionExpired> {
+	private class SessionExpiredHook implements LifecycleHook<SessionExpiredLifecycleEvent> {
 		
 		final private Connection conn;
 		SessionExpiredHook(Connection conn) {
 			this.conn = conn;
 		}
-		@Override public Class<SessionExpired> getLifecycleEventClass() {
-			return SessionExpired.class;
+		@Override public Class<SessionExpiredLifecycleEvent> getLifecycleEventClass() {
+			return SessionExpiredLifecycleEvent.class;
 		}
 
-		@Override public void post(SessionExpired event) {
+		@Override public void post(SessionExpiredLifecycleEvent event) {
 			assertEquals(conn, event.getSession().getConnection());
 			assertTrue(event.getSession().isExpired());
 			hookPosts.add(event.getSession().getId());
@@ -188,13 +188,13 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 
 		// ConnectionClosed Hook
 		conn.addLifecycleHook(
-				new LifecycleHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
 					
-					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
-						return ConnectionClosed.class;
+					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
+						return ConnectionClosedLifecycleEvent.class;
 					}
 
-					@Override public void post(ConnectionClosed event) {
+					@Override public void post(ConnectionClosedLifecycleEvent event) {
 						count.incrementAndGet();  // Will be posted
 						Connection conn = event.getConnection();
 						assertEquals(ConnectionStatus.CLOSED_BY_CLIENT, conn.getStatus());
@@ -205,36 +205,36 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 
 		// Another, which throws an exception.
 		conn.addLifecycleHook(
-				new LifecycleHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
 					
-					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
-						return ConnectionClosed.class;
+					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
+						return ConnectionClosedLifecycleEvent.class;
 					}
 
-					@Override public void post(ConnectionClosed event) {
+					@Override public void post(ConnectionClosedLifecycleEvent event) {
 						throw new RuntimeException("Foobar");					}
 				});
 
 		conn.addLifecycleHook(
-				new LifecycleHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
 					
-					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
-						return ConnectionClosed.class;
+					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
+						return ConnectionClosedLifecycleEvent.class;
 					}
 
-					@Override public void post(ConnectionClosed event) {
+					@Override public void post(ConnectionClosedLifecycleEvent event) {
 						
 						count.incrementAndGet(); // Will be posted
 						
 						event.getConnection().addLifecycleHook(  // Will throw exception
 								
-								new LifecycleHook<ConnectionClosed>() {
+								new LifecycleHook<ConnectionClosedLifecycleEvent>() {
 									
-									@Override public Class<ConnectionClosed> getLifecycleEventClass() {
-										return ConnectionClosed.class;
+									@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
+										return ConnectionClosedLifecycleEvent.class;
 									}
 
-									@Override public void post(ConnectionClosed event) {
+									@Override public void post(ConnectionClosedLifecycleEvent event) {
 										count.incrementAndGet();  // should not get here!
 									}												
 
@@ -269,13 +269,13 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		
 		// ConnectionClosed Hook
 		conn.addLifecycleHook(
-				new LifecycleHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
 					
-					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
-						return ConnectionClosed.class;
+					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
+						return ConnectionClosedLifecycleEvent.class;
 					}
 
-					@Override public void post(ConnectionClosed event) {
+					@Override public void post(ConnectionClosedLifecycleEvent event) {
 						Connection conn = event.getConnection();
 						count.increment();  // Will be posted
 						assertEquals(ConnectionStatus.CLOSED_BY_SERVER, conn.getStatus());
@@ -286,36 +286,36 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 
 		// Another, which throws an exception.
 		conn.addLifecycleHook(
-				new LifecycleHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
 					
-					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
-						return ConnectionClosed.class;
+					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
+						return ConnectionClosedLifecycleEvent.class;
 					}
 
-					@Override public void post(ConnectionClosed event) {
+					@Override public void post(ConnectionClosedLifecycleEvent event) {
 						throw new RuntimeException("Foobar");					}
 				});
 
 		conn.addLifecycleHook(
-				new LifecycleHook<ConnectionClosed>() {
+				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
 					
-					@Override public Class<ConnectionClosed> getLifecycleEventClass() {
-						return ConnectionClosed.class;
+					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
+						return ConnectionClosedLifecycleEvent.class;
 					}
 
-					@Override public void post(ConnectionClosed event) {
+					@Override public void post(ConnectionClosedLifecycleEvent event) {
 						
 						count.increment(); // Will be posted
 						
 						event.getConnection().addLifecycleHook(  // Will throw exception
 								
-								new LifecycleHook<ConnectionClosed>() {
+								new LifecycleHook<ConnectionClosedLifecycleEvent>() {
 									
-									@Override public Class<ConnectionClosed> getLifecycleEventClass() {
-										return ConnectionClosed.class;
+									@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
+										return ConnectionClosedLifecycleEvent.class;
 									}
 
-									@Override public void post(ConnectionClosed event) {
+									@Override public void post(ConnectionClosedLifecycleEvent event) {
 										count.increment();  // should not get here!
 									}												
 

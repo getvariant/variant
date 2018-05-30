@@ -1,9 +1,15 @@
 package com.variant.core.test;
 
+import static com.variant.core.schema.parser.error.SemanticError.DUPE_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import org.junit.Test;
 
@@ -12,7 +18,7 @@ import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.parser.ParserMessageImpl;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.core.schema.parser.error.SemanticError.Location;;
+import com.variant.core.schema.parser.error.SemanticError.Location;
 
 /**
  * Parse time exceptions related to hooks with schema scope.

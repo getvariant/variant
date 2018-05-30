@@ -1,6 +1,8 @@
 package com.variant.core.conf;
 
-import static com.variant.core.impl.CommonError.*;
+import static com.variant.core.impl.CommonError.CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
+import static com.variant.core.impl.CommonError.CONFIG_FILE_NOT_FOUND;
+import static com.variant.core.impl.CommonError.CONFIG_RESOURCE_NOT_FOUND;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

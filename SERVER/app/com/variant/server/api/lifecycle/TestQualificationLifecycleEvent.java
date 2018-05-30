@@ -21,7 +21,7 @@ import com.variant.core.lifecycle.TestAwareLifecycleEvent;
  * @since 0.5
  *
  */
-public interface TestQualificationLifecycleEvent extends RuntimeLifecycleEvent, TestAwareLifecycleEvent {
+public interface TestQualificationLifecycleEvent extends ServerLifecycleEvent, TestAwareLifecycleEvent {
       
    /**
     * The return type of the {@link LifecycleHook#post(com.variant.core.LifecycleEvent) LifecycleHook.post(TestQualificationLifecycleEvent)} 

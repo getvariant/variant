@@ -13,11 +13,11 @@ import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
-import com.variant.client.lifecycle.ConnectionClosed;
+import com.variant.client.lifecycle.ConnectionClosedLifecycleEvent;
 import com.variant.client.lifecycle.ConnectionAwareLifecycleEvent;
 import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
-import com.variant.client.lifecycle.SessionExpired;
+import com.variant.client.lifecycle.SessionExpiredLifecycleEvent;
 import com.variant.client.lifecycle.SessionAwareLifecycleEvent;
 
 public class LifecycleService {
@@ -86,7 +86,7 @@ public class LifecycleService {
 
 			if (!eventClass.isAssignableFrom(hook.getLifecycleEventClass())) continue;
 
-				ClientLifecycleEvent event = new ConnectionClosed() {		
+				ClientLifecycleEvent event = new ConnectionClosedLifecycleEvent() {		
 				@Override public Connection getConnection() {
 					return conn;
 				}
@@ -108,7 +108,7 @@ public class LifecycleService {
 			
 			if (!eventClass.isAssignableFrom(hook.getLifecycleEventClass())) continue;
 
-				ClientLifecycleEvent event = new SessionExpired() {		
+				ClientLifecycleEvent event = new SessionExpiredLifecycleEvent() {		
 				@Override public Session getSession() {
 					return session;
 				}
@@ -122,7 +122,7 @@ public class LifecycleService {
 			
 			if (!eventClass.isAssignableFrom(hook.getLifecycleEventClass())) continue;
 
-				ClientLifecycleEvent event = new SessionExpired() {		
+				ClientLifecycleEvent event = new SessionExpiredLifecycleEvent() {		
 				@Override public Session getSession() {
 					return session;
 				}

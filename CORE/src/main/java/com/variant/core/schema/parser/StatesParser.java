@@ -10,10 +10,12 @@ import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PRO
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.variant.core.UserError.Severity;
 import com.variant.core.impl.CoreException;
 import com.variant.core.impl.ServerError;
-import com.variant.core.impl.VariantException;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.State;
@@ -29,6 +31,8 @@ import com.variant.core.util.MutableInteger;
  */
 public class StatesParser implements Keywords {
 			
+	private static final Logger LOG = LoggerFactory.getLogger(StatesParser.class);
+	
 	/**
 	 * Parse the STATES clause.
 	 * @param statesObject
@@ -77,9 +81,10 @@ public class StatesParser implements Keywords {
 					try {
 						hooksService.post(new StateParsedLifecycleEventImpl(state, response));
 					}
-					catch (VariantException e) {
+					catch (Exception e) {
 						response.addMessage(ServerError.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
-						throw e;
+						LOG.error(ServerError.HOOK_UNHANDLED_EXCEPTION.asMessage(StateParsedLifecycleEventImpl.class.getName(), e.getMessage()), e);
+
 					}
 				}
 				response.setMessageListener(null);

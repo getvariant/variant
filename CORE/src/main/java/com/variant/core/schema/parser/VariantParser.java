@@ -1,6 +1,20 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_REF_TESTS_NOT_CONJOINT;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_TEST_REF_NONVARIANT;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_TEST_REF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_TEST_NOT_CONJOINT;
+import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_ISCONTROL;
+import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

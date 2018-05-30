@@ -24,7 +24,7 @@ import com.variant.core.schema.Test.Experience;
  * @since 0.7
  *
  */
-public interface TestTargetingLifecycleEvent extends RuntimeLifecycleEvent, TestAwareLifecycleEvent, StateAwareLifecycleEvent {
+public interface TestTargetingLifecycleEvent extends ServerLifecycleEvent, TestAwareLifecycleEvent, StateAwareLifecycleEvent {
 	
    /**
     * The return type of the {@link LifecycleHook#post(com.variant.core.LifecycleEvent) LifecycleHook.post(TestTargetingLifecycleEvent)} 

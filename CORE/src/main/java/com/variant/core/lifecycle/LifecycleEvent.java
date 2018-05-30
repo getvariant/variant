@@ -13,14 +13,4 @@ package com.variant.core.lifecycle;
  * @since 0.5
  */
 
-public interface LifecycleEvent {
-	
-	/**
-	 * The default life-cycle hook, which is automatically added to each life cycle event's hook chain.
-	 * It is posted in case either 1) no life-cycle hooks were defined in the schema, or 2) none of those
-	 * life-cycle hooks defined in the schema for this event type returned a non-null response.
-	 * 
-	 *  @since 0.7
-	 */
-	LifecycleHook<? extends LifecycleEvent> getDefaultHook();
-}
+public interface LifecycleEvent {}

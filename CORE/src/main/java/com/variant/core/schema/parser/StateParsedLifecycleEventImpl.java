@@ -4,7 +4,6 @@ import com.variant.core.UserError.Severity;
 import com.variant.core.impl.CommonError;
 import com.variant.core.impl.ServerError;
 import com.variant.core.lifecycle.StateParsedLifecycleEvent;
-import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;
 
 /**
@@ -43,23 +42,4 @@ public class StateParsedLifecycleEventImpl implements StateParsedLifecycleEvent 
 		
 		response.addMessage(error, message);
 	}
-
-	@Override
-	public LifecycleHook<StateParsedLifecycleEvent> getDefaultHook() {
-		
-		return new LifecycleHook<StateParsedLifecycleEvent>() {
-
-			@Override
-			public Class<StateParsedLifecycleEvent> getLifecycleEventClass() {
-				return StateParsedLifecycleEvent.class;
-			}
-
-			@Override
-			public LifecycleHook.PostResult post(StateParsedLifecycleEvent event) {
-				return new StateParsedLifecycleEvent.PostResult() {};
-				
-			}	
-		};
-	}
-
 }

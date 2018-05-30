@@ -1,7 +1,8 @@
 package com.variant.core.schema.parser;
 
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
 import static com.variant.core.schema.parser.error.SyntaxError.JSON_SYNTAX_ERROR;
-import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.io.IOException;
 import java.io.InputStream;

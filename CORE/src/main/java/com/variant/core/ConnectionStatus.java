@@ -1,5 +1,7 @@
 package com.variant.core;
 
+import java.sql.Connection;
+
 /**
  * Status of a Variant connection, as returned by <code>Connection#getStatus()</code>
  * 

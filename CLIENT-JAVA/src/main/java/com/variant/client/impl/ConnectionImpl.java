@@ -14,7 +14,7 @@ import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.VariantClient;
 import com.variant.client.lifecycle.ClientLifecycleEvent;
-import com.variant.client.lifecycle.ConnectionClosed;
+import com.variant.client.lifecycle.ConnectionClosedLifecycleEvent;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
 import com.variant.core.ConnectionStatus;
@@ -318,13 +318,13 @@ public class ConnectionImpl implements Connection {
 		case CLOSED_BY_SERVER:
 			this.status = status;
 			destroy();
-			client.lceService.raiseEvent(ConnectionClosed.class, this);
+			client.lceService.raiseEvent(ConnectionClosedLifecycleEvent.class, this);
 			throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);
 		
 		case CLOSED_BY_CLIENT:
 			this.status = status;
 			destroy();
-			client.lceService.raiseEvent(ConnectionClosed.class, this);
+			client.lceService.raiseEvent(ConnectionClosedLifecycleEvent.class, this);
 			break;
 			
 		default: 

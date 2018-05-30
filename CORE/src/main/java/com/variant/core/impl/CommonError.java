@@ -1,7 +1,6 @@
 package com.variant.core.impl;
 
 import com.variant.core.UserError;
-import com.variant.core.UserError.Severity;
 
 
 /**

@@ -10,7 +10,8 @@ import com.variant.server.impl.TestQualificationLifecycleEventPostResultImpl;
 import com.variant.server.impl.TestTargetingLifecycleEventPostResultImpl;
 
 /**
- * Factory class for various concrete implementations of {@link PostResult}.
+ * A class with a number of static factory methods, returning concrete implementations of {@link PostResult}s,
+ * depending on the life-cycle event.
  * Each concrete user hook gets a chance to run when Variant calls its <code>post()</code> method.
  * The <code>post()</code> method communicates its outcome back to Variant by returning an object 
  * of type {@link PostResult}, corresponding to the concrete life cycle event type.

@@ -13,7 +13,6 @@ import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSIN
 import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
 import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
 import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_NUMBER;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_OBJECT;
 import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
 import static com.variant.core.schema.parser.error.SemanticError.PROPER_VARIANT_MISSING;
 import static com.variant.core.schema.parser.error.SemanticError.STATEREF_UNDEFINED;

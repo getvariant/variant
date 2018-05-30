@@ -1,15 +1,41 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
+import static com.variant.core.schema.parser.error.SemanticError.ALL_PROPER_EXPERIENCES_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_TESTREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_TEST_DISJOINT;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_CONJOINT_PHANTOM;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_PROPER_PHANTOM;
+import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.DUPE_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_EMPTY_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_NUMBER;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPER_VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.STATEREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_INCOMPATIBLE;
+import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_XOR;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.variant.core.UserError.Severity;
 import com.variant.core.impl.CoreException;
 import com.variant.core.impl.ServerError;
-import com.variant.core.impl.VariantException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserMessage;
@@ -34,7 +60,7 @@ import com.variant.core.util.StringUtils;
  */
 public class TestsParser implements Keywords {
 	
-	//private static final Logger LOG = LoggerFactory.getLogger(TestsParser.class);
+	private static final Logger LOG = LoggerFactory.getLogger(TestsParser.class);
 	
 	/**
 	 * @param result
@@ -85,9 +111,9 @@ public class TestsParser implements Keywords {
 				try {
 					hooksService.post(new TestParsedLifecycleEventImpl(test, response));
 				}
-				catch (VariantException e) {
+				catch (Exception e) {
 					response.addMessage(ServerError.HOOK_UNHANDLED_EXCEPTION, TestParsedLifecycleEventImpl.class.getName(), e.getMessage());
-					throw e;
+					LOG.error(ServerError.HOOK_UNHANDLED_EXCEPTION.asMessage(TestParsedLifecycleEventImpl.class.getName(), e.getMessage()), e);
 				}
 			}
 			response.setMessageListener(null);

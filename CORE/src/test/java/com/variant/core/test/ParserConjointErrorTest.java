@@ -1,7 +1,21 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
-import static org.junit.Assert.*;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_TEST_REF_NONVARIANT;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_TEST_REF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_TESTREF_UNDEFINED;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_TEST_DISJOINT;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_TEST_NOT_CONJOINT;
+import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPER_VARIANT_MISSING;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 

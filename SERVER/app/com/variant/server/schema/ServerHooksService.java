@@ -15,6 +15,7 @@ import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.HooksService;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.server.api.ServerException;
+import com.variant.server.api.lifecycle.ServerLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.VariantServer;
 import com.variant.server.boot.VariantServer$;
@@ -143,7 +144,7 @@ public class ServerHooksService implements HooksService {
    @SuppressWarnings("unchecked")
    @Override
    public LifecycleHook.PostResult post(LifecycleEvent event) {
-			   
+			   	   	   
 	   // 1. Build the hook chain, i.e. all hooks eligible for posting, in order.
 	   
 	   ArrayList<HookListEntry> chain = new ArrayList<HookListEntry>();
@@ -212,9 +213,14 @@ public class ServerHooksService implements HooksService {
 		
 		   }
 
-		   // Either empty chain, or none cared to return a result: post default hook.
-		   // (I don't understand the need form this cast)
-		   return ((LifecycleHook<LifecycleEvent>)event.getDefaultHook()).post(event);
+		   // Either empty chain, or none cared to return a result.
+		   // If this is a server event, post the default hook.
+		   if (event instanceof ServerLifecycleEvent) {
+			   ServerLifecycleEvent sle = (ServerLifecycleEvent) event;
+			   return ((LifecycleHook<ServerLifecycleEvent>) sle.getDefaultHook()).post(sle);
+		   }
+		   
+		   return null;
 
 		} catch (ServerException.Local e) {
 			throw e;

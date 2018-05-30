@@ -1,7 +1,11 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
-import static org.junit.Assert.*;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 

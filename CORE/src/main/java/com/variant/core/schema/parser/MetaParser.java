@@ -1,6 +1,10 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.*;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
+import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_OBJECT;
+import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
 
 import java.util.Map;
 

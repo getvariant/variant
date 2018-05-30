@@ -1,6 +1,5 @@
 package com.variant.core;
 
-import com.variant.core.schema.ParserMessage;
 
 /**
  * Superclass of all user errors, both client and server.
