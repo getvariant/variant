@@ -6,7 +6,6 @@ import com.variant.core.impl.ServerError;
  * Thrown when a user operation requests a combination of state and test that is not
  * defined in the schema.
  * 
- * @author Igor Urisman
  * @since 0.7
  */
 @SuppressWarnings("serial")

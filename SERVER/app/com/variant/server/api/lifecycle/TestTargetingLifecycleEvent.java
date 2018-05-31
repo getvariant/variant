@@ -7,12 +7,14 @@ import com.variant.core.schema.Test.Experience;
 
 /**
  * <p>Life cycle event triggered when Variant is about to target a user session for a test, but after the 
- * session has already been qualified for this test. This event will not be triggered for a session and for
- * a test for which it has been disqualified. If no hooks for this event are defined in the experiment schema, 
- * Variant server targets the session randomly, according to experience weights supplied in the schema. 
+ * session has already been qualified for this test. This event will not be triggered if this session has
+ * been disqualified for the test. If no hooks for this event are defined in the experiment schema, 
+ * Variant server targets the session randomly, according to experience weights supplied in the schema.
+ * If no applicable targeting hooks have been defined and no exeprience weights provided in the schema,
+ * a run-time user error will result.
  * 
-  * <p>If a user hook, subscribed to this event, wishes to target a session to a particular test experience,
-  * its <code>post()</code> method must return an object of type {@link PostResult}. An empty post result 
+ * <p>If a user hook, subscribed to this event, wishes to target a session to a particular test experience,
+ * its <code>post()</code> method must return an object of type {@link PostResult}. An empty post result 
  * object is obtained by calling the {@link PostResultFactory#mkPostResult(TestTargetingLifecycleEvent)} 
  * factory method.
  * 
