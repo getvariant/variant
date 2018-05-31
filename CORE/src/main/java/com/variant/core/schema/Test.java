@@ -3,7 +3,7 @@ package com.variant.core.schema;
 import java.util.List;
 
 /**
- * Representation of the Test XVM object.
+ * Representation of the <code>test</code> schema property.
  * 
  * @author Igor Urisman
  * @since 0.5

@@ -1,16 +1,16 @@
 package com.variant.core.schema;
 
 /**
- * Representation of the meta/flusher schema property.
+ * Representation of the event flusher schema property.
  * 
- * @author Igor Urisman
  * @since 0.8
  */
 
 public interface Flusher {
 	
 	/**
-	 * The canonical name of the class implementing this flusher.
+	 * The name of the class implementing this flusher. Variant will attempt to load this class dynamically by this name,
+	 * as in {@link Class#forName(String)}.
 	 * 
 	 * @return The string value of the "class" property. Never null.
 	 * @since 0.8

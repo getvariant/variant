@@ -4,15 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Representation of State XVM object.
+ * Representation of the <code>state</code> schema property.
  * 
- * @author Igor Urisman
  * @since 0.5
  */
 public interface State {
 
 	/**
-	 * The schema that created this State.
+	 * The schema object containing this state object.
 	 * 
 	 * @return An object of type {@link Schema}
 	 * @since 0.6
@@ -28,37 +27,39 @@ public interface State {
 	public String getName();	
 	
 	/**
-	 * State parameter.
+	 * Immutable map of sate parameters defined by this state.
 	 * 
-	 * @return Immutable map containing all parameters defined by this state.
+	 * @return Immutable map of sate parameters defined by this state.
 	 * @since 0.6
 	 */
 	public Map<String,String> getParameters();
 
 	/**
-	 * <p>All tests instrumented on this state. Comprises all declared instrumentations.
+	 * <p>List of tests which instrument this state.
 	 *  
-	 * @return List of tests in ordinal order, i.e. order they were defined.
+	 * @return List of tests in the order they were defined.
 	 * @since 0.5
 	 */
 	List<Test> getInstrumentedTests();
 
 	/**
-	 * Is this state instrumented by a particular test? In other words, is a test contained in the
-	 * return value of {@link #getInstrumentedTests()}.
+	 * Returns <code>true</code> if this state is instrumented by a given test. In other words,
+	 * is a given test contained in the return value of {@link #getInstrumentedTests()}?
 	 * 
 	 * @param test The test of interest.
-	 * @return
+	 * @return true if this state is instrumented by the given test, false otherwise. 
 	 * @since 0.5
 	 */
 	public boolean isInstrumentedBy(Test test);
 
 	/**
-	 * Is this state non-variant in a particular test?
+	 * Returns <code>true</code> if this state is declared as non-variant in a given test. 
+	 * It is the responsibility of the caller to ensure that this state is instrumented by the given test, 
+	 * i.e. that {@link #isInstrumentedBy(Test)} returns true.
 	 * 
 	 * @param test The test of interest.
 	 * 
-	 * @return True if this state is non-variant in the given test.
+	 * @return <code>true</code> if this state is non-variant in the given test, <code>false</code> otherwise.
 	 * @throws VariantRuntimeException if this state is not instrumented by the given test.
 	 * @since 0.5
 	 */

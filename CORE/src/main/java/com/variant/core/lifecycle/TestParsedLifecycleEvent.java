@@ -5,7 +5,7 @@ package com.variant.core.lifecycle;
 /**
  * Parse time life-cycle event which posts its hooks whenever the schema deployer successfully parses a test.
  * Will not post for those tests which contained parse errors. Use this hook to enforce application 
- * semantics that is external to the experience variation model (XVM).
+ * semantics which are external to the experience variation model (XVM).
  * 
  * @since 0.7
  *

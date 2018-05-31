@@ -1,12 +1,9 @@
 package com.variant.core.schema;
 
 /**
- * Representation of the schema hook property. Schema scoped hooks
- * are declared in the {@code meta/hooks} array; state scoped hooks are
- * declared in the {@code states/[?]/hooks} array; and test scoped hooks are
- * declared in the {@code tests/[?]/hooks} array. 
+ * Representation of the schema <code>hook</code> property. Depending on the definition context,
+ * a hook can have the scope of the entire schema, a particular state, or a particular test.
  * 
- * @author Igor Urisman
  * @since 0.7
  */
 
@@ -38,15 +35,15 @@ public interface Hook {
 	
 	
 	/**
-	 * Schema scoped life-cycle hook.
-	 * @author Igor
+	 * Schema scoped life-cycle hook. Declared in the {@code meta/hooks} array.
+     *
 	 * @since 0.7
 	 */
 	public interface Schema extends Hook {}
 	
 	/**
-	 * State scoped life-cycle hook.
-	 * @author Igor
+	 * State scoped life-cycle hook. Declared in the {@code state//hooks} array.
+	 *
 	 * @since 0.7
 	 */
 	public interface State extends Hook {
@@ -62,7 +59,7 @@ public interface Hook {
 	}
 
 	/**
-	 * Test scoped life-cycle hook.
+	 * Test-scoped life-cycle hook. Declared in the {@code test//hooks} array
 	 * @author Igor
 	 * @since 0.7
 	 */

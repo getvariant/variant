@@ -7,7 +7,7 @@ import com.variant.core.lifecycle.LifecycleEvent;
 /**
  * The interface to be implemented by a life-cycle hook, which wants to be posted by one or more life-cycle events.
  * Whenever Variant raises a life cycle event of (sub)type returned by {@link #getLifecycleEventClass()},
- * this hook is posted via the {@link #post(LifecycleEvent)} method. 
+ * this hook is posted via the {@link #post(ClientLifecycleEvent)} method. 
  * <p>
  * <p>Life-cycle hooks are registered by either {@link Connection#addLifecycleHook(LifecycleHook)} or
  * {@link Session#addLifecycleHook(LifecycleHook)}. Whenever a life-cycle event is raised, eligible hooks 

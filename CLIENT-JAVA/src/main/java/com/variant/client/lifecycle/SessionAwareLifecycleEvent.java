@@ -3,7 +3,7 @@ package com.variant.client.lifecycle;
 import com.variant.client.Session;
 
 /**
- * Session-scoped life-cycle event.
+ * Session-aware life-cycle event.
  *
  * @since 0.9
  */

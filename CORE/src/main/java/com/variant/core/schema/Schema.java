@@ -4,11 +4,12 @@ import java.util.List;
 
 
 /**
- * Representation of an experiment schema. A complete description of a set of experiments running on
- * a Variant server. Has two top level entities: {@link State}s and {@link Test}s. A schema
+ * Representation of an experiment schema. A complete description of a set of experience variations 
+ * running a Variant server. 
+ * <p>
+ * Any schema three top level entities: {@link Meta} {@link State}s and {@link Test}s. A schema
  * object is instantiated by the schema parser which reads and parses the schema file.
  * 
- * @author Igor Urisman
  * @since 0.5
  */
 public interface Schema {

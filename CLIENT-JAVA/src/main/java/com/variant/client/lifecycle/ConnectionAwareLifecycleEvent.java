@@ -3,7 +3,7 @@ package com.variant.client.lifecycle;
 import com.variant.client.Connection;
 
 /**
- * Connection-scoped life-cycle event.
+ * Connection-aware life-cycle event.
  *
  * @since 0.9
  */
