@@ -6,9 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Null event flusher. All Variant events are discarded. 
- * Useful for toggle experiments when persistence of Variant events is not needed.
- * 
+ * An implementation of {@link EventFlusher}, which discards Variant events.
  * 
  * @since 0.8
  *

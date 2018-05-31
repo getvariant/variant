@@ -21,9 +21,9 @@ package com.variant.core.lifecycle;
  * <p>
  * An implementation must provide at least one public constructor: 
  * <ol>
- * <li>If no state initialization is required, the default nullary constructor is sufficient. 
+ * <li>If no state initialization is required, a nullary constructor is sufficient. 
  * <li>If you need to pass an initial state to the newly constructed hook object, you must provide a constructor
- * which takes the single argument of the type of type <a href="https://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">com.typesafe.config.Config</a>.
+ * which takes the single argument of type <a href="https://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">com.typesafe.config.Config</a>.
  * Variant will invoke this constructor and pass it the parsed value of the {@code 'init'} property.
  * </ol>
  * 

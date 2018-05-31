@@ -1,13 +1,13 @@
 package com.variant.server.api;
 
-import java.util.Collection;
+import java.util.Set;
 
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
 
 /**
- * Variant event that can be flushed by {@link EventFlusher}. Instantiated by Variant server
+ * A enriched Variant event that can be flushed by {@link EventFlusher}. Instantiated by Variant server
  * and passed to an externally configured implementation of {@link EventFlusher}.
  * Extends {@link VariantEvent} with methods exposing runtime details of the underlying {@code VariantEvent}.
  * 
@@ -27,12 +27,13 @@ public interface FlushableEvent extends VariantEvent {
 	public CoreSession getSession();
 	
 	/**
-	 * Current live experiences.
+	 * Live experiences in effect at the time this event was generated.
 	 * 
-	 * @return A collection of objects of type {@link Experience}.
+	 * @return A set of objects of type {@link Experience}.
+	 * 
 	 * @see VariantCoreStateRequest#getLiveExperiences()
 	 * @since 0.7
 	 */
-	public Collection<Experience> getLiveExperiences();
+	public Set<Experience> getLiveExperiences();
 
 }

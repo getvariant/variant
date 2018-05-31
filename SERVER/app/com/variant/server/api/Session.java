@@ -9,9 +9,8 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
 /**
- * The server side of a Variant user session. Contains session-scoped application 
- * state that must be preserved between state requests. With the exception of the
- * session attributes, this object is not directly mutable by the client code.
+ * The server side of a Variant user session, contains session-scoped application 
+ * state.
  *
  * @author Igor Urisman
  * @since 0.7
@@ -54,7 +53,7 @@ public interface Session {
 	public Map<State, Integer> getTraversedStates(); 
 
 	/**
-	 * <p>Get the Variant schema, associated with this session.
+	 * The Variant schema, associated with this session.
 	 * 
 	 * @return An object of type {@link Schema}
 	 * 
@@ -95,28 +94,25 @@ public interface Session {
 	public StateRequest getStateRequest();
 
 	/**
-	 * <p>Set a session-scoped attribute. Session-scoped attributes are client-local and are not
-	 * replicated to the server. Consequently, another client will not see these attributes.
+	 * <p>Set the value of a session attribute.
 	 * 
-	 * @return The object previously associated with this attribute, or null if none.
+	 * @return The string value, previously associated with this attribute, or <code>null</code> if none.
 	 * @since 0.7
 	 */
 	public String setAttribute(String name, String value);
 	
 	/**
-	 * <p>Retrieve a session-scoped attribute. Session-scoped attributes are client-local and are not
-	 * replicated to the server. Consequently, another client will not see these attributes.
+	 * Retrieve a session attribute.
 	 * 
-	 * @return The object associated with this attribute.
+	 * @return The string value, associated with this attribute, or <code>null</code> if none.
 	 * @since 0.7
 	 */
 	public String getAttribute(String name);
 
 	/**
-	 * <p>Remove a session-scoped attribute. Session-scoped attributes are client-local and are not
-	 * replicated to the server. Consequently, another client will not see these attributes.
+	 * Remove a session attribute.
 	 * 
-	 * @return The string, previously associated with this attribute, or null if none.
+	 * @return The string value, previously associated with this attribute, or <code>null</code> if none.
 	 * @since 0.7
 	 */
 	public String clearAttribute(String name);

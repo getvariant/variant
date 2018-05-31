@@ -1,10 +1,10 @@
 package com.variant.server.event;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.Test.Experience;
@@ -66,9 +66,9 @@ public class FlushableEventImpl implements FlushableEvent, Serializable {
 	}
 
 	@Override
-	public Collection<Experience> getLiveExperiences() {
+	public Set<Experience> getLiveExperiences() {
 		
-		Collection<Experience> result = new LinkedList<Experience>();
+		Set<Experience> result = new HashSet<Experience>();
 		for (Experience e: session.getStateRequest().getLiveExperiences()) {
 		//	if (session.isQualified(e.getTest())) result.add(e);
 			result.add(e);

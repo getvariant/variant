@@ -13,18 +13,19 @@ import com.variant.server.jdbc.EventFlusherJdbc;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
 /**
- * <p>An implementation of {@link EventFlusher}, which writes Variant events to an
- * instance of PostgreSQL database. Requires database schema, as created by the
- * {@code create-schema.sql} SQL script, included in the distribution. The database
- * server URL and login credentials must be supplied in the
- * {@code /meta/flusher/init} property as the following object:
- * <pre>
- * {@code
- *  {"url":pg-server-url,"user":database-user,"password":database-password}
- * }
- * </pre>
+ * An implementation of {@link EventFlusher}, which writes Variant events to an 
+ * instance of PostgreSQL database. The required database schema can be created by the
+ * {@code create-schema.sql} SQL script, included with Variant server. 
+ * <p>
+ * Configuration.<br/>You may use the <code>variant.event.flusher.class.init</code> configuration property to pass configuration details to this object.
  * 
- * @author Igor Urisman
+ * <ul>
+ *  <li><code>url</code> - specifies the URL to the Postgres database.
+ *  <li><code>user</code> - the Postgres database user.
+ *  <li><code>password</code> - the Postgres database user's password.
+ * </ul>
+ * Example:<br/>
+ * <code>variant.event.flusher.class.init = {"url":"jdbc:postgresql://localhost/variant","user":"variant","password":"variant"}</code>
  * @since 0.5
  */
 public class EventFlusherPostgres extends EventFlusherJdbc {

@@ -1,7 +1,7 @@
 package com.variant.client.impl;
 
+import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
-import static com.variant.client.impl.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 
 import java.util.ArrayList;
 import java.util.Random;

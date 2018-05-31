@@ -1,8 +1,10 @@
-package com.variant.client.impl;
+package com.variant.client;
 
 /**
  * Known external configuration keys. These are compile time aliases for the
- * configuration keys, used in the variant.conf file.
+ * configuration keys, used in the variant.conf file. For example, to obtain
+ * the value of Variant Server's URL call 
+ * <code>VariantClient.getConfiguration().get(ConfigKeys.SERVER_URL)</code>
  * 
  * @since 0.7
  */

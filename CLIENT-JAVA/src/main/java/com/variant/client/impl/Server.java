@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.client.ClientException;
+import com.variant.client.ConfigKeys;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;

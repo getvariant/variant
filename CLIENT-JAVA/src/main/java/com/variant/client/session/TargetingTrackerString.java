@@ -7,9 +7,9 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.client.ConfigKeys;
 import com.variant.client.Session;
 import com.variant.client.TargetingTracker;
-import com.variant.client.impl.ConfigKeys;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.util.TimeUtils;

@@ -1,8 +1,8 @@
 package com.variant.client.impl;
 
+import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 import static com.variant.client.impl.ClientUserError.ACTIVE_REQUEST;
 import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
-import static com.variant.client.impl.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 
 import java.util.ArrayList;
 import java.util.Collection;

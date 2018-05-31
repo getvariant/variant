@@ -10,11 +10,20 @@ import com.typesafe.config.Config;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * <p>An environment independent implementation of {@link EventFlusher}, which appends
- * events to the application logger. Can't really be used in production, but is good
- * enough for the demo application because it does not require any external support.
+ * An implementation of {@link EventFlusher}, which appends Variant events
+ * to the application logger. This is the default, out of the box event flusher,
+ * which is completely independent of the operational environment. Probably not for production use, 
+ * but is good enough for the demo application.
+ * <p>
+ * Configuration. You may use the {@code variant.event.flusher.class.init} configuration property
+ * to pass configuration details to this object.
+ * <ul>
+ * <li><code>level</code> - specifies the logging level to be used. Defaults to 'INFO'.<br/>
+ * </ul>
+ * Example:<br/>
+ * <code>variant.event.flusher.class.init = {init="INFO"}</code>
  * 
- * @author Igor Urisman
+ * 
  * @since 0.5
  */
 public class EventFlusherAppLogger implements EventFlusher {
