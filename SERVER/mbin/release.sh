@@ -25,10 +25,10 @@ target_dir=${release_dir}/target
 cd ${workspace_root_dir}/SERVER
 sbt clean dist
 cd target/universal
-unzip variant-${version}.zip 
+unzip variant-${version}.zip
 rm variant-${version}.zip
 cd variant-${version}
-rm -rf README share
+rm -rf README share bin/foo*
 cp -r ${workspace_root_dir}/SERVER/distr/schemata .
 cp -r ${workspace_root_dir}/SERVER/distr/ext .
 cp -r ${workspace_root_dir}/SERVER/distr/db .
