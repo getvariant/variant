@@ -56,6 +56,8 @@ public class MetaParser implements Keywords {
 						if (!SemanticChecks.isName(name)) {
 							response.addMessage(metaLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
 						}
+						// We have a valid schema name.
+						response.setSchemaName(name);
 					}
 					catch (ClassCastException e) {
 						response.addMessage(metaLocation.plusProp(KEYWORD_NAME), NAME_INVALID);

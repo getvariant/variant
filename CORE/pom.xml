@@ -13,7 +13,7 @@
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
 		<jackson.version>2.5.3</jackson.version>
-		<variant.version>0.9.0</variant.version>
+		<variant.version>0.9.1</variant.version>
     </properties>
 
     <artifactId>variant-core</artifactId>

@@ -105,9 +105,19 @@ public abstract class SchemaParser implements Keywords {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 	
+	/**
+	 * 
+	 */
+	public SchemaParser() {}
+	
+	/**
+	 * Server will need access to reponse in progress.
+	 * @return
+	 */
 	public ParserResponse responseInProgress() {
 		return response;
 	}
+
 	/**
 	 * Parse schema from input stream. 
 	 * @param annotatedJsonStream
@@ -165,10 +175,10 @@ public abstract class SchemaParser implements Keywords {
 		}
 		
 		// 3. Semantical phase.
-		// Clean map will contain only entries with expected clauses AND keys uppercased.
-		Map<String, Object> cleanMap = new LinkedHashMap<String, Object>();
-		
+
 		// Pass 1.
+		// Clean map will contain only expected clauses AND keys uppercased.
+		Map<String, Object> cleanMap = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, ?> entry: mappedJson.entrySet()) {
 			if (StringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_META, KEYWORD_STATES, KEYWORD_TESTS)) {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
@@ -178,8 +188,7 @@ public abstract class SchemaParser implements Keywords {
 			}
 		}
 		
-		// Pass 2. Look at all clauses.  Expected ones are already uppercased.
-	
+		// Pass 2. Let the actual parsing commence.
 		HooksService hooksService = getHooksService();
 		FlusherService flusherService = getFlusherService();
 		

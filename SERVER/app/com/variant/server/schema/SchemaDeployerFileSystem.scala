@@ -67,23 +67,30 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
     */
    private def deployFrom(file: File) = {
       
-      logger.info("Deploying schema from file [%s]".format(file.getAbsolutePath))
-         
-      // Parse
-      val parserResp = parse(Source.fromFile(file).mkString)
-               
-      // If failed parsing, print errors and no schema.
-      if (parserResp.hasMessages(Severity.ERROR)) {
-         val schemaName = try { parserResp.getSchema.getName} catch {case _: NullPointerException => "?" }
-         logger.warn(ServerErrorLocal.SCHEMA_FAILED.asMessage(schemaName, file.getAbsolutePath))
-      }
+      // Ignore special files.
+      if (file.getName.startsWith(".")) {
+          logger.debug(s"Ignoring special file ${file.getName}")  
+      } 
       else {
-         try {
-            deploy(parserResp, file.getName)
-         } catch {
-            case ue: ServerException.Local => 
-               logger.error(ue.getMessage)
-               logger.warn(ServerErrorLocal.SCHEMA_FAILED.asMessage( parserResp.getSchema.getName, file.getAbsolutePath))
+         logger.info("Deploying schema from file [%s]".format(file.getAbsolutePath))
+            
+         // Parse
+         val parserResp = parse(Source.fromFile(file).mkString)
+                  
+         // If failed parsing, print errors and no schema.
+         if (parserResp.hasMessages(Severity.ERROR)) {
+            
+            val schemaName = if (parserResp.getSchemaName == null) "?" else parserResp.getSchemaName 
+            logger.warn(ServerErrorLocal.SCHEMA_FAILED.asMessage(schemaName, file.getAbsolutePath))
+         }
+         else {
+            try {
+               deploy(parserResp, file.getName)
+            } catch {
+               case ue: ServerException.Local => 
+                  logger.error(ue.getMessage)
+                  logger.warn(ServerErrorLocal.SCHEMA_FAILED.asMessage( parserResp.getSchema.getName, file.getAbsolutePath))
+            }
          }
       }
    }

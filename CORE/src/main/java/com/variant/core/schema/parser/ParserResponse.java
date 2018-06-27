@@ -17,8 +17,12 @@ public class ParserResponse {
 	private final SchemaParser parser; // The parser that created this response.
 	
 	private ArrayList<ParserMessage> messages = new ArrayList<ParserMessage>();
+	// schema name will be set so long as we can parse it out.
+	private String schemaName = null;
+	// schema and schema source will be blank if parser errors.
 	private SchemaImpl schema = new SchemaImpl();
 	private String schemaSrc = null;
+	
 	private MessageListener messageListener = null;
 	
 	/**
@@ -76,6 +80,10 @@ public class ParserResponse {
 		return ! getMessages(severity).isEmpty();
 	}
 
+	public String getSchemaName() {
+		return schemaName;
+	}
+
 	public Schema getSchema() {
 		return schema;
 	}
@@ -125,6 +133,14 @@ public class ParserResponse {
 
 	/**
 	 * 
+	 * @param schemaName
+	 */
+	public void setSchemaName(String schemaName) {
+		this.schemaName = schemaName;
+	}
+
+	/**
+	 * 
 	 * @param schemaSrc
 	 */
 	public void setSchemaSrc(String schemaSrc) {
@@ -138,7 +154,7 @@ public class ParserResponse {
 		schema = null;
 		schemaSrc = null;
 	}
-	
+
 	/**
 	 * 
 	 * @param listener

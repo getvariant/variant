@@ -1,20 +1,19 @@
 //
 // Variant Java client + Servlet adapter demo application.
-// Demonstrates instrumentation of a basic Variant experiment.
-// See https://github.com/getvariant/variant-java-servlet-adapter/tree/master/servlet-adapter-demo
-// for details.
+// Demonstrates instrumentation of a basic Variant toggle.
+// See https://github.com/getvariant/variant-java-demo for details.
 //
-// Copyright © 2015-2017 Variant, Inc. All Rights Reserved.
+// Copyright © 2015-2018 Variant, Inc. All Rights Reserved.
 
 {
    'meta':{
-      'name':'petclinic',
-      'comment':'Experiment schema for the Pet Clinic demo application'
+      'name':'petclinic_toggles',
+      'comment':'Variation schema for feature toggles on the Pet Clinic demo application'
    },
    'states':[                                                
      { 
        // The New Owner page used to add owner at /petclinic/owners/new 
-       'name':'newOwner',
+       'name':'vets',
        'parameters': [
             {
                'name':'path',
