@@ -35,7 +35,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void noSessionIdInTrackerTest() throws Exception {
 		
-		Connection conn = client.getConnection("big_conjoint_schema");		
+		Connection conn = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 		String sid = newSid();
@@ -72,7 +72,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
-		Connection conn = client.getConnection("big_conjoint_schema");		
+		Connection conn = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 		
@@ -114,7 +114,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void connectionClosedLocallyTest() throws Exception {
 		
-		Connection conn = client.getConnection("big_conjoint_schema");		
+		Connection conn = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 		
@@ -138,7 +138,7 @@ public class SessionTest extends ClientBaseTestWithServer {
     @org.junit.Test
 	public void connectionClosedRemotelyTest() throws Exception {
 		
-		Connection conn = client.getConnection("big_conjoint_schema");		
+		Connection conn = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 		
@@ -166,8 +166,8 @@ public class SessionTest extends ClientBaseTestWithServer {
 	public void attributesTest() throws Exception {
 
 		// Open two parallel connections
-		Connection conn1 = client.getConnection("big_conjoint_schema");		
-		Connection conn2 = client.getConnection("big_conjoint_schema");		
+		Connection conn1 = client.connectTo("big_conjoint_schema").get();		
+		Connection conn2 = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn1);
 		assertNotNull(conn2);
 		assertEquals(OPEN, conn1.getStatus());

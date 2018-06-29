@@ -18,9 +18,6 @@ public class ClientUserError extends CommonError {
 	// 271-300 Client Local user errors.
 	//
 	
-	//public static final ClientUserError BAD_CONN_URL =
-	//		new ClientUserError(331, "Invalid connection URL [%s]");
-
 	public static final ClientUserError TARGETING_TRACKER_NO_INTERFACE =
 			new ClientUserError(271, "Targeting tracker class [%s] must implement interface [%s]");
 	
@@ -41,6 +38,9 @@ public class ClientUserError extends CommonError {
 
 	public static final ClientUserError LIFECYCLE_LISTENER_EXCEPTION =
 			new ClientUserError(277, "Unhandled exception [%s] in lifecycle listener class [%s]");
+
+	public static final ClientUserError SERVER_CONNECTION_TIMEOUT =
+			new ClientUserError(278, "Unable to connect to Variant server at [%s]");
 
    /**
     * 

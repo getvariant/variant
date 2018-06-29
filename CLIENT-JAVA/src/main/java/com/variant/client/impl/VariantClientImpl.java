@@ -1,5 +1,6 @@
 package com.variant.client.impl;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.typesafe.config.Config;
@@ -23,6 +24,14 @@ public class VariantClientImpl implements VariantClient {
 	public final LifecycleService lceService = new LifecycleService(this);
 	public final Server server;
 		
+	/**
+	 */	
+	private Connection getConnection(String schema) {
+		ConnectionImpl result = connFactory.connectTo(schema);
+		if (result != null) connMap.put(result.getId(), result);
+		return result;
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -32,21 +41,18 @@ public class VariantClientImpl implements VariantClient {
 	public VariantClientImpl() {
 		server = new Server(this);
 	}
-
-	/**
-	 */
-	@Override
-	public Connection getConnection(String schema) {
-		ConnectionImpl result = connFactory.connectTo(schema);
-		if (result != null) connMap.put(result.getId(), result);
-		return result;
-	}
 	
 	/**
 	 */
 	@Override
 	public Config getConfig() {
 		return config;
+	}
+
+	@Override
+	public CompletableFuture<Connection> connectTo(String schema) {
+		return CompletableFuture.completedFuture(getConnection(schema));
+		
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -64,4 +70,5 @@ public class VariantClientImpl implements VariantClient {
 	public Connection byId(String id) {
 		return connMap.get(id);
 	}
+
 }

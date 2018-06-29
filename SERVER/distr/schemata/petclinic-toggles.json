@@ -20,9 +20,9 @@
                'value':'/petclinic/owners/new'
             }
         ]
-     },                                                    
+     },                                                     
      {  
-       // The Owner Detail page. Note that owner ID is in the path,
+        // The Owner Detail page. Note that owner ID is in the path,
         // so we have to use regular expression to match.
        'name':'ownerDetail',
        'parameters': [

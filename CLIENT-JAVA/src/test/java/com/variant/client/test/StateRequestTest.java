@@ -38,7 +38,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void noStabilTest() throws Exception {
 		
-		Connection conn = client.getConnection("big_conjoint_schema");		
+		Connection conn = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 
@@ -120,7 +120,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void deterministicTest() throws Exception {
 		
-		Connection conn = client.getConnection("big_conjoint_schema");
+		Connection conn = client.connectTo("big_conjoint_schema").get();
 		Schema schema = conn.getSchema();
 		
 		assertNotNull(conn);
@@ -170,7 +170,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void commitTest() throws Exception {
 		
-		Connection conn = client.getConnection("big_conjoint_schema");
+		Connection conn = client.connectTo("big_conjoint_schema").get();
 		Schema schema = conn.getSchema();
 		
 		assertNotNull(conn);
@@ -222,7 +222,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
-		Connection conn = client.getConnection("big_conjoint_schema");		
+		Connection conn = client.connectTo("big_conjoint_schema").get();		
 
 		String sid = newSid();
 		final Session ssn = conn.getOrCreateSession(sid);
@@ -253,7 +253,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void connectionClosedLocallyTest() throws Exception {
 		
-		Connection conn = client.getConnection("big_conjoint_schema");		
+		Connection conn = client.connectTo("big_conjoint_schema").get();		
 	   	Schema schema = conn.getSchema();
 
 		String sid = newSid();
@@ -283,9 +283,9 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	 * unless we create "user-agent" session attributes.
 	 */
 	@org.junit.Test
-	public void targetingHookExceptionTest() {
+	public void targetingHookExceptionTest() throws Exception {
 		
-		Connection conn = client.getConnection("petclinic");		
+		Connection conn = client.connectTo("petclinic").get();		
 	   	Schema schema = conn.getSchema();
 
 		String sid = newSid();
@@ -318,7 +318,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void targetFromParallelConnectionsTest() throws Exception {
 		
-		Connection conn1 = client.getConnection("big_conjoint_schema");		
+		Connection conn1 = client.connectTo("big_conjoint_schema").get();		
 	   	Schema schema1 = conn1.getSchema();
 
 		String sid = newSid();
@@ -326,7 +326,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 		StateRequest req1 = ssn1.targetForState(schema1.getState("state3"));
 
-		Connection conn2 = client.getConnection("big_conjoint_schema");		
+		Connection conn2 = client.connectTo("big_conjoint_schema").get();		
 	   	Schema schema2 = conn1.getSchema();
 	   	
 	   	assertEquals(schema2.getId(), schema1.getId());

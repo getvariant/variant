@@ -30,7 +30,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void closedByServerUndeployTest() throws Exception {
 	
-		final Connection conn = client.getConnection("big_conjoint_schema");		
+		final Connection conn = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 		assertEquals(client, conn.getClient());
@@ -102,7 +102,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 		}.assertThrown(ConnectionClosedException.class);
 
 		// Confirm the schema is gone.
-		assertNull(client.getConnection("big_conjoint_schema"));
+		assertNull(client.connectTo("big_conjoint_schema").get());
 
 	}	
 

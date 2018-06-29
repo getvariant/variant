@@ -46,14 +46,14 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	public void serverUndeploySessionTimeoutTest() throws Exception {
 
 		// First connection to big_conjoint_schema
-		final Connection conn1 = client.getConnection("big_conjoint_schema");		
+		final Connection conn1 = client.connectTo("big_conjoint_schema").get();		
 		assertEquals(OPEN, conn1.getStatus());
 		assertEquals(client, conn1.getClient());
 		final Schema schema1 = conn1.getSchema();
 		assertEquals("big_conjoint_schema", schema1.getName());
 
 		// Second connection to big_conjoint_schema
-		final Connection conn2 = client.getConnection("big_conjoint_schema");		
+		final Connection conn2 = client.connectTo("big_conjoint_schema").get();		
 		assertEquals(OPEN, conn2.getStatus());
 		assertEquals(client, conn2.getClient());
 		final Schema schema2 = conn2.getSchema();
@@ -61,7 +61,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		assertEquals(schema1.getId(), schema2.getId());
 		
 		// Third connection to petclinic
-		final Connection conn3 = client.getConnection("petclinic");		
+		final Connection conn3 = client.connectTo("petclinic").get();		
 		assertEquals(OPEN, conn3.getStatus());
 		assertEquals(client, conn3.getClient());
 		final Schema schema3 = conn3.getSchema();
@@ -280,7 +280,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 		
-		assertNull(client.getConnection("big_conjoint_schema"));
+		assertNull(client.connectTo("big_conjoint_schema").get());
 
 	}	
 
@@ -300,14 +300,14 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		server.restart(CollectionsUtils.pairsToMap(new Tuples.Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeout))));
 		
 		// First connection to big_conjoint_schema
-		final Connection conn1 = client.getConnection("big_conjoint_schema");		
+		final Connection conn1 = client.connectTo("big_conjoint_schema").get();		
 		assertEquals(OPEN, conn1.getStatus());
 		assertEquals(client, conn1.getClient());
 		final Schema schema1 = conn1.getSchema();
 		assertEquals("big_conjoint_schema", schema1.getName());
 
 		// Second connection to big_conjoint_schema
-		final Connection conn2 = client.getConnection("big_conjoint_schema");		
+		final Connection conn2 = client.connectTo("big_conjoint_schema").get();		
 		assertEquals(OPEN, conn2.getStatus());
 		assertEquals(client, conn2.getClient());
 		final Schema schema2 = conn2.getSchema();
@@ -315,7 +315,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		assertEquals(schema1.getId(), schema2.getId());
 		
 		// Third connection to petclinic
-		final Connection conn3 = client.getConnection("petclinic");		
+		final Connection conn3 = client.connectTo("petclinic").get();		
 		assertEquals(OPEN, conn3.getStatus());
 		assertEquals(client, conn3.getClient());
 		final Schema schema3 = conn3.getSchema();
@@ -552,7 +552,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 		
-		assertNull(client.getConnection("big_conjoint_schema"));
+		assertNull(client.connectTo("big_conjoint_schema").get());
 
 	}	
 }

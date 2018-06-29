@@ -1,6 +1,8 @@
 package com.variant.client;
 
 
+import java.util.concurrent.CompletableFuture;
+
 import com.typesafe.config.Config;
 import com.variant.client.impl.VariantClientImpl;
 
@@ -26,7 +28,7 @@ public interface VariantClient {
 	public Config getConfig();
 	
 	/**
-	 * Attempts to get a connection to the given experiment schema.
+	 * Connect to the given variation schema on the server.
 	 * 
 	 * @param schema The name of the schema, which should be deployed on the server.
 	 *        
@@ -34,9 +36,12 @@ public interface VariantClient {
 	 * requested schema was not found on the server.
 	 * 
 	 * @since 0.7
-	 */
+	 *
 	public Connection getConnection(String schema);
-		
+	*/
+	
+	public CompletableFuture<Connection> connectTo(String schema);
+	
 	/**
 	 * Static factory class: call {@link #getInstance()} to obtain a new instance of {@link VariantClient}.
 	 * 

@@ -31,7 +31,7 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 	public void closedByServerRedeployTest() throws Exception {
 		
 		// Connection must go after schema undeployed.
-		final Connection conn1 = client.getConnection("big_conjoint_schema");		
+		final Connection conn1 = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn1);
 		assertEquals(OPEN, conn1.getStatus());
 		assertEquals(client, conn1.getClient());
@@ -92,7 +92,7 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 		
 		
 		// Open new connection to the redeployed schema
-		final Connection conn2 = client.getConnection("big_conjoint_schema");
+		final Connection conn2 = client.connectTo("big_conjoint_schema").get();
 		assertNotNull(conn2);
 		assertEquals(OPEN, conn2.getStatus());
 		assertEquals(client, conn2.getClient());

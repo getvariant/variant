@@ -31,7 +31,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void connectToNonExistentSchemaTest() throws Exception {
 		
-		assertNull(client.getConnection("bad_schema"));
+		assertNull(client.connectTo("bad_schema").get());
 	
 	}	
 	
@@ -41,7 +41,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	public void connectToExistingSchemataTest() throws Exception {
 			    
 		// Connection to a schema
-		Connection conn1 = client.getConnection("big_conjoint_schema");		
+		Connection conn1 = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn1);
 		assertEquals(OPEN, conn1.getStatus());
 		assertNotNull(conn1.getClient());
@@ -51,7 +51,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		assertEquals(6, conn1.getSchema().getTests().size());
 
 		// Second connection to the same schema
-		Connection conn2 = client.getConnection("big_conjoint_schema");		
+		Connection conn2 = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn2);
 		assertEquals(OPEN, conn2.getStatus());
 		assertEquals(conn1.getClient(), conn2.getClient());
@@ -61,7 +61,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		assertEquals(6, conn2.getSchema().getTests().size());
 
 		// Third connection to another schema
-		Connection conn3 = client.getConnection("petclinic");		
+		Connection conn3 = client.connectTo("petclinic").get();		
 		assertNotNull(conn3);
 		assertEquals(OPEN, conn3.getStatus());
 		assertEquals(conn1.getClient(), conn3.getClient());
@@ -116,14 +116,14 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 
 		Connection[] connections = new Connection[10];
         for (int i = 0; i < 10; i++) {
-    		connections[i] = client.getConnection("big_conjoint_schema");		
+    		connections[i] = client.connectTo("big_conjoint_schema").get();		
     		assertNotNull(connections[i]);        	
         }
 		
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				client.getConnection("big_conjoint_schema");		
+				client.connectTo("big_conjoint_schema");		
 			}
 			
 		}.assertThrown(ServerError.TooManyConnections);
@@ -141,7 +141,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void closedByClientTest() throws Exception {
 		
-		final Connection conn = client.getConnection("big_conjoint_schema");		
+		final Connection conn = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 		assertNotNull(conn.getClient());
@@ -213,7 +213,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void closedByServerRestartTest() throws Exception {
 		
-		final Connection conn = client.getConnection("big_conjoint_schema");		
+		final Connection conn = client.connectTo("big_conjoint_schema").get();		
 		assertNotNull(conn);
 		assertEquals(OPEN, conn.getStatus());
 		assertNotNull(conn.getClient());

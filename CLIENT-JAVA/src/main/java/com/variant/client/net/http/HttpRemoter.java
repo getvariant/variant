@@ -11,7 +11,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.apache.http.conn.HttpHostConnectException;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.ConnectionClosedException;
@@ -51,9 +51,10 @@ public class HttpRemoter {
 	HttpResponse call(Requestable requestable) {
 		
 		long start = System.currentTimeMillis();
+		HttpUriRequest req = null;
 		CloseableHttpResponse resp = null;
 		try {
-			HttpUriRequest req = requestable.requestOp();
+			req = requestable.requestOp();
 			req.setHeader("Content-Type", Constants.HTTP_HEADER_CONTENT_TYPE);
 
 			resp = httpClient.execute(req);			
@@ -97,8 +98,11 @@ public class HttpRemoter {
 				);
 			}
 		}
-		catch (ClientException ce) {
-			throw ce;
+		catch (ClientException ex) {
+			throw ex;
+		}
+		catch (HttpHostConnectException ex) {
+			throw new ClientException.User(ClientUserError.SERVER_CONNECTION_TIMEOUT, req.getURI());
 		}
 		catch (Throwable e) {
 			throw new ClientException.Internal("Unexpected exception in HTTP POST: " + e.getMessage(), e);
@@ -119,10 +123,11 @@ public class HttpRemoter {
 	HttpResponse call(Requestable requestable, Connection conn) {
 		
 		long start = System.currentTimeMillis();
+		HttpUriRequest req = null;
 		CloseableHttpResponse resp = null;
 		try {
 			
-			HttpUriRequest req = requestable.requestOp();
+			req = requestable.requestOp();
 			req.setHeader("Content-Type", Constants.HTTP_HEADER_CONTENT_TYPE);
 			
 			if (conn.getStatus() == ConnectionStatus.OPEN ||
@@ -198,6 +203,9 @@ public class HttpRemoter {
 		}
 		catch (ClientException ce) {
 			throw ce;
+		}
+		catch (HttpHostConnectException ex) {
+			throw new ClientException.User(ClientUserError.SERVER_CONNECTION_TIMEOUT, req.getURI());
 		}
 		catch (Throwable e) {
 			throw new ClientException.Internal("Unexpected exception in HTTP POST: " + e.getMessage(), e);

@@ -42,7 +42,7 @@ public class EventDataGen extends ClientBaseTestWithServer {
 		}
 		assertFalse(response.hasMessages());
 */
-		Connection conn = client.getConnection("petclinicNoHooks");
+		Connection conn = client.connectTo("petclinicNoHooks").get();
 		assertNotNull(conn);
 		Schema schema = conn.getSchema();
 		Test test = schema.getTest("NewOwnerTest");
