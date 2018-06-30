@@ -12,15 +12,16 @@ import com.variant.core.schema.ParserMessage
 
 abstract class AbstractSchemaDeployer() extends SchemaDeployer {
 
-  private val logger = Logger(this.getClass)
+  private[this] val logger = Logger(this.getClass)
   
-  private val _parserResponses = mutable.ArrayBuffer[ParserResponse]()
+  private[this] val _parserResponses = mutable.ArrayBuffer[ParserResponse]()
   
   override lazy val parserResponses = _parserResponses.toSeq
   
   protected val _schemata = new Schemata()
+  
   // Callers get an immutable snapshot.
-  override def schemata = _schemata.toMap
+  // override def schemata = _schemata.toMap
 
   /**
    * Parse a schema.
@@ -43,29 +44,7 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
    * Deploy a parsed schema.
    */
   protected def deploy(parserResp: ParserResponse, origin: String) {
-
-     val schema = ServerSchema(parserResp, origin)
-    
-     _schemata.put(schema)
-
-    // Write log message
-    val msg = new StringBuilder()
-    msg.append("Deployed schema [%s] ID [%s], from [%s]:".format(schema.getName, schema.getId, origin));
-    for (test <- schema.getTests) {
-      msg.append("\n   ").append(test.getName()).append(":[");
-      var first = true;
-      for (exp <- test.getExperiences()) {
-        if (first) first = false;
-        else msg.append(", ");
-        msg.append(exp.getName);
-        if (exp.isControl) msg.append(" (control)");
-      }
-      msg.append("]");
-      msg.append(" (").append(if (test.isOn()) "ON" else "OFF").append(")");
-    }
-
-    logger.info(msg.toString())
-    
+     _schemata.deploy(SchemaGen(parserResp, origin) )
   }
 
   /**

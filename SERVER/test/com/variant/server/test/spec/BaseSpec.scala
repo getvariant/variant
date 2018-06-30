@@ -16,7 +16,7 @@ import play.api.libs.json.Json
 import play.api.Application
 import com.variant.server.boot.VariantServer
 import com.variant.server.conn.ConnectionStore
-import com.variant.server.conn.SessionStore
+import com.variant.server.boot.SessionStore
 import scala.concurrent.Future
 import play.api.mvc._
 import com.variant.core.ConnectionStatus

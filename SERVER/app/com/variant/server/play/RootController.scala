@@ -1,10 +1,10 @@
-package com.variant.server.play.controller
+package com.variant.server.play
 
 import javax.inject.Inject
 import org.apache.commons.lang3.time.DurationFormatUtils
 import play.api.mvc.Controller
 import play.api.mvc.Request
-import com.variant.server.conn.SessionStore
+import com.variant.server.boot.SessionStore
 import play.api.Logger
 import com.variant.core.impl.ServerError._
 import com.variant.server.boot.VariantServer
@@ -19,11 +19,10 @@ import com.variant.core.schema.State
 import com.variant.core.session.CoreStateRequest
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
-import com.variant.server.play.action.DisconnectedAction
 
 //@Singleton -- Is this for non-shared state controllers?
 class RootController @Inject() (
-      val disconnectedAction: DisconnectedAction,
+      val action: VariantAction,
       val cc: ControllerComponents,
       val server: VariantServer
       ) extends VariantController(cc, server)  {
@@ -31,12 +30,12 @@ class RootController @Inject() (
   /**
    *  If a path ends in a slash, redirect to the same path without the trailing /.
    */
-   def untrail(path:String) = disconnectedAction { MovedPermanently("/" + path) }
+   def untrail(path:String) = action { MovedPermanently("/" + path) }
 
    /**
     * Print server status message
     */
-   def status() = disconnectedAction { req =>
+   def status() = action { req =>
       Ok(server.productName + ", Uptime %s.".format(DurationFormatUtils.formatDuration(System.currentTimeMillis() - server.startTs, "HH:mm:ss")))
    }
 

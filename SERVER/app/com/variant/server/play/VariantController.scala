@@ -1,11 +1,10 @@
-package com.variant.server.play.controller
+package com.variant.server.play
 
 import com.fasterxml.jackson.core.JsonParseException
 import com.variant.core.impl.ServerError
-import com.variant.core.util.Constants
+import com.variant.core.util.Constants._
 import com.variant.server.api.ServerException
 import com.variant.server.boot.VariantServer
-
 import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json.JsValue
@@ -51,26 +50,7 @@ abstract class VariantController @Inject() (
                
             }
          case None => None
-      }      
-      
+      }       
    }
    
-   /**
-    * Get connection ID from header as an Option
-    */
-   protected def getConnId(req: Request[AnyContent]): Option[String] = {
-      req.headers.get(Constants.HTTP_HEADER_CONNID)
-   }
-
-   /**
-    * Get connection ID from HTTP header as String, or throw internal
-    * remote exception if the header wasn't sent.
-    *
-   protected def getConnIdOrBust(req: Request[AnyContent]): String = {
-      getConnId(req) match {
-         case Some(cid) => cid
-         case None => throw new ServerException.Remote(ServerError.ConnectionIdMissing)
-      }
-   }
-*/   
 }

@@ -1,22 +1,16 @@
 package com.variant.server.impl
 
-import scala.collection.mutable
-import com.variant.core.session.CoreSession
 import com.variant.core.VariantEvent
-import javax.inject.Inject
-import com.variant.core.schema.Schema
-import com.variant.server.event.FlushableEventImpl
-import com.variant.server.boot.VariantServer
-import com.variant.server.schema.ServerSchema
 import com.variant.core.schema.State
 import com.variant.core.schema.impl.StateImpl
-import com.variant.server.conn.Connection
-import com.variant.server.api.Session
-import com.variant.core.schema.Test
-import com.variant.core.session.SessionScopedTargetingStabile
-import com.variant.server.api.StateRequest
-import com.variant.core.session.CoreStateRequest
 import com.variant.core.schema.impl.TestImpl
+import com.variant.core.session.CoreSession
+import com.variant.core.session.CoreStateRequest
+import com.variant.core.session.SessionScopedTargetingStabile
+import com.variant.server.api.Session
+import com.variant.server.api.StateRequest
+import com.variant.server.event.FlushableEventImpl
+import com.variant.server.schema.SchemaGen
 
 /**
  * Server session enriches core session with server side functionality.
@@ -28,12 +22,12 @@ object SessionImpl {
    /**
     * Server session from core session.
     */
-   def apply(coreSession: CoreSession, conn: Connection) = new SessionImpl(coreSession, conn)
+   def apply(coreSession: CoreSession, schemaGen: SchemaGen) = new SessionImpl(coreSession, schemaGen)
 
    /**
     * Server session deserialized from core session's JSON.
     */
-   def apply(json: String, connection: Connection) = new SessionImpl(json, connection)
+   def apply(json: String, schemaGen: SchemaGen) = new SessionImpl(json, schemaGen)
 
    /**
     * New server session with nothing in it, but the SID - good for tests.
@@ -45,20 +39,20 @@ object SessionImpl {
    */
    /**
     * New server session with nothing in it, but the SID - good for tests.
-    */
+    *
    def empty(sid: String, schema: ServerSchema) = {
       new SessionImpl(new CoreSession(sid), new Connection(schema))
    }
-
+*/
 }
 
 /**
  * Construct from session ID.
  */
-class SessionImpl(var coreSession: CoreSession, val connection: Connection) extends Session {
+class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extends Session {
    
-   def this(json: String, connection: Connection) {
-      this(CoreSession.fromJson(json, connection.schema), connection)
+   def this(json: String, schemaGen: SchemaGen) {
+      this(CoreSession.fromJson(json, schemaGen), schemaGen)
    }
 
    /*----------------------------------------------------------------------------------------*/
@@ -70,9 +64,7 @@ class SessionImpl(var coreSession: CoreSession, val connection: Connection) exte
    override def getDisqualifiedTests = coreSession.getDisqualifiedTests
    
    override def getId = coreSession.getId
-   
-   override def getSchema  = connection.schema
-      
+         
    override def getStateRequest = StateRequestImpl(this, coreSession.getStateRequest)
    
    override def getTraversedStates = coreSession.getTraversedStates
@@ -105,7 +97,7 @@ class SessionImpl(var coreSession: CoreSession, val connection: Connection) exte
    /*
     */
    def targetForState(state: State): StateRequest = {
-      connection.schema.runtime.targetForState(this, state) 
+      schemaGen.runtime.targetForState(this, state) 
       this.getStateRequest()
    }
 
@@ -113,7 +105,7 @@ class SessionImpl(var coreSession: CoreSession, val connection: Connection) exte
     * 
     */
 	def triggerEvent(event: VariantEvent) {
-		connection.schema.eventWriter.write(new FlushableEventImpl(event, coreSession));
+		schemaGen.eventWriter.write(new FlushableEventImpl(event, coreSession));
 	}
 	
 	/*

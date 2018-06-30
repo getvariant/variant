@@ -5,7 +5,7 @@ import play.api.Environment
 import play.api.Play
 import com.variant.server.boot.VariantServer
 import com.variant.server.boot.VariantServerImpl
-import com.variant.server.conn.SessionStore
+import com.variant.server.boot.SessionStore
 import play.api.routing.Router
 
 /**

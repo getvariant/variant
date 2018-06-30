@@ -4,7 +4,7 @@ import scala.collection.JavaConversions._
 import javax.inject.Inject
 import play.api.mvc.Controller
 import play.api.mvc.Request
-import com.variant.server.conn.SessionStore
+import com.variant.server.boot.SessionStore
 import play.api.Logger
 import play.api.libs.json._
 import com.variant.core.impl.ServerError._
@@ -16,20 +16,17 @@ import play.api.http.HeaderNames
 import scala.collection.mutable.Map
 import com.variant.server.event.ServerEvent
 import com.variant.server.boot.ServerErrorRemote
-import com.variant.server.conn.ConnectionStore
 import com.variant.server.boot.VariantServer
 import com.variant.server.api.ServerException
-import com.variant.server.conn.Connection
 import com.variant.server.api.Session
 import com.variant.server.impl.SessionImpl
 import com.variant.core.util.Constants._
-import com.variant.core.ConnectionStatus._
 import play.api.mvc.ControllerComponents
-import com.variant.server.play.action.ConnectedAction
+import com.variant.server.play.VariantAction
 
 //@Singleton -- Is this for non-shared state controllers?
 class EventController @Inject() (
-      val connectedAction: ConnectedAction,
+      val action: VariantAction,
       val cc: ControllerComponents,
       val server: VariantServer
       ) extends VariantController(cc, server)  {
@@ -40,7 +37,7 @@ class EventController @Inject() (
     * POST
     * Trigger an event.
     */
-   def post() = connectedAction { req =>
+   def post() = action { req =>
 
       val bodyJson = getBody(req).getOrElse {
          throw new ServerException.Remote(EmptyBody)

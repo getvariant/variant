@@ -5,15 +5,12 @@ import scala.collection.mutable
 import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserResponse
 
-
 trait SchemaDeployer {
 
   /**
-   * Once constructed, a schema deployer returns all available schemata.
-   * The returned collection may change over time, as some deployers may
-   * scan periodically for updates.
+   * Once constructed, a schema deployer returns all available schemata at startup time.
    */
-  def schemata: Map[String, ServerSchema]
+  def schemata: Map[String, Schema]
   
   /**
    * All parser response objects in order they were produced by the deployer,
@@ -37,8 +34,9 @@ object SchemaDeployer {
 
   /**
    * Factory method returns a deployer that reads schema from a memory string once.
-   */
+   *
   def fromString(schemaSrc: String*): SchemaDeployer = new SchemaDeployerString(schemaSrc:_*)
+   */
 
   /**
    * Factory method returns a deployer that reads schema from a classpath resource once.

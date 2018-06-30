@@ -6,6 +6,7 @@ import com.variant.core.util.StringUtils
 import java.util.Random
 import com.variant.core.util.TimeUtils
 
+/** This is where that foo was coming from, right?
 object Foo {
    
    val rand = new Random
@@ -46,3 +47,4 @@ object Foo {
    }
 
 }
+**/

@@ -9,15 +9,14 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET     /*path/                     com.variant.server.play.controller.RootController.untrail(path)
 
 # Connection Controller
-POST    /connection/:schema      com.variant.server.play.controller.ConnectionController.open(schema: String)
-DELETE  /connection              com.variant.server.play.controller.ConnectionController.close()
+GET     /connection/:schema      com.variant.server.play.controller.ConnectionController.get(schema: String)
+
+# Session Controller
+GET     /session/:schema/:sid            com.variant.server.play.controller.SessionController.getSession(schema, sid)
+PUT     /session                 com.variant.server.play.controller.SessionController.saveSession()
 
 # Event Controller
 POST    /event                   com.variant.server.play.controller.EventController.post()
-
-# Session Controller
-GET     /session/:sid            com.variant.server.play.controller.SessionController.getSession(sid)
-PUT     /session                 com.variant.server.play.controller.SessionController.saveSession()
 
 PUT     /session/attr            com.variant.server.play.controller.SessionController.addAttribute()
 DELETE  /session/attr            com.variant.server.play.controller.SessionController.clearAttribute()

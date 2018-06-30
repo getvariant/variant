@@ -14,7 +14,7 @@ import com.variant.server.api.Session
 import com.variant.server.boot.VariantApplicationLoader
 import com.variant.server.boot.VariantServer
 import com.variant.server.conn.ConnectionStore
-import com.variant.server.conn.SessionStore
+import com.variant.server.boot.SessionStore
 import com.variant.server.impl.SessionImpl
 import com.variant.server.jdbc.JdbcService
 import play.api.Application

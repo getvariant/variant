@@ -1,40 +1,35 @@
 package com.variant.server.schema
 
-import scala.collection.JavaConversions._
-import com.variant.core.schema.Schema
-import java.io.File
+import java.util.concurrent.atomic.AtomicInteger
+
+import com.variant.core.schema.{ Schema => CoreSchema }
 import com.variant.core.schema.parser.ParserResponse
-import com.variant.server.api.ServerException
-import com.variant.core.UserError.Severity
-import com.variant.core.schema.Hook
-import com.variant.server.boot.VariantServer
-import com.variant.core.schema.parser.HooksService
-import com.variant.server.api.EventFlusher
-import com.variant.core.schema.parser.FlusherService
-import play.api.Logger
+import com.variant.core.util.StringUtils
 import com.variant.server.boot.Runtime
 import com.variant.server.event.EventWriter
-import java.util.concurrent.atomic.AtomicInteger
-import com.variant.core.util.StringUtils
+
+import play.api.Logger
 
 /**
  * 
  */
-object ServerSchema {
-   def apply(response: ParserResponse, origin: String) = new ServerSchema(response, origin)
+object SchemaGen {
+   
+   private val rand = new java.util.Random()
+   
+   def apply(response: ParserResponse, origin: String) = new SchemaGen(response, origin)
 }
 
 /**
- * Server side schema adds some server specific semantics.
+ * Server side schema adds some server specific state.
  */
-class ServerSchema (val response: ParserResponse, val origin: String) extends Schema {
+class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSchema {
   
    import State._
    
    private val logger = Logger(this.getClass)   
-   private val rand = new java.util.Random()
    private val coreSchema =  response.getSchema
-   private val id = StringUtils.random64BitString(rand)
+   private val id = StringUtils.random64BitString(SchemaGen.rand)
    
    /**
     * Schema can be New, Deployed or Gone
@@ -42,20 +37,10 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
    var state: State = New  
    
    /**
-    * Number of sessions connected to this schema
-    * over any parallel connection.
+    * Number of sessions connected to this schema generation.
     */
    val sessionCount = new AtomicInteger(0)
 
-   /**
-    * 
-    *
-   private def checkState {
-      if (state != Deployed)
-         throw new ServerException.Internal(
-               "Schema [%s] cannot be accessed due to state [%s]".format(getName, state))
-   }
-   */
    /*------------------------------------ Public Implementations ------------------------------------*/
 
    override def getName = {
@@ -104,9 +89,8 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
     * Undeploy this schema.
     */
 	def undeploy() {
-      state = Gone
-      VariantServer.instance.connStore.drainConnectionsToSchema(getId)
-	   logger.info("Undeployed schema [%s] ID [%s], from [%s]".format(getName, getId, origin))
+      state = Dead
+	   logger.info(s"Undeployed schema generation [${getName}] ID [${getId}], from [${origin}]")
 	}
    
    /**
@@ -117,9 +101,9 @@ class ServerSchema (val response: ParserResponse, val origin: String) extends Sc
 }
 
 /**
- * Schema lifecycle states.
+ * Lifecycle states of a schema generation.
  */
 object State extends Enumeration {
    type State = Value
-   val New, Deployed, Gone = Value
+   val New, Live, Dead = Value
 }

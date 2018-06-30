@@ -1,49 +1,64 @@
 package com.variant.server.schema
 
+import scala.collection.JavaConversions._
 import scala.collection.mutable.HashMap
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
-import com.variant.server.conn.ConnectionStore
+import play.api.Logger
 
 /**
  * 
  */
 class Schemata () {
   
-   private[this] val _schemaMap = HashMap[String, ServerSchema]()
+   private[this] val logger = Logger(this.getClass)
    
+   // Map of Schema objects keyed by schema name.
+   private[this] val _schemaMap = HashMap[String, Schema]()
+  
    /**
-    * Get a schema by name
+    * Deploy a schema generation
     */
-   def get(name: String) = synchronized { _schemaMap.get(name) }
-   
-   /**
-    * Atomically swap old schema with new schema.
-    */
-   def put(newSchema: ServerSchema): Unit = synchronized {
-      
-      // If already have a schema with that name, only replace if origins match.
-      _schemaMap.get(newSchema.getName) match {   
-         case Some(oldSchema) => {
-            if (oldSchema.origin != newSchema.origin) {
-              throw new ServerException.Local(ServerErrorLocal.SCHEMA_CANNOT_REPLACE, newSchema.getName(), oldSchema.origin, newSchema.origin)
-           }
-           oldSchema.undeploy()
-         }
-         case None => // There wasn't a schema by this name already.
+   def deploy(gen: SchemaGen) {
+         
+      _schemaMap.get(gen.getName()) match {
+         case Some(schema) => schema.deployGen(gen)
+         case None         => _schemaMap += gen.getName() -> new Schema(gen)
       }
       
-      newSchema.state = State.Deployed
-      _schemaMap += (newSchema.getName -> newSchema)
+      // Write log message
+      val msg = new StringBuilder()
+      msg.append("Deployed schema [%s] ID [%s], from [%s]:".format(gen.getName, gen.getId, gen.origin));
+      for (test <- gen.getTests) {
+         msg.append("\n   ").append(test.getName()).append(":[");
+         var first = true;
+      for (exp <- test.getExperiences()) {
+        if (first) first = false;
+        else msg.append(", ");
+        msg.append(exp.getName);
+        if (exp.isControl) msg.append(" (control)");
+      }
+      msg.append("]");
+      msg.append(" (").append(if (test.isOn()) "ON" else "OFF").append(")");
+    }
+
+    logger.info(msg.toString())
+
    }
    
    /**
-    * Delete a schema by origin.
-    * Remove schema from this map
+    * Get a schema by name
+    *
+   def get(name: String) = synchronized { _schemaMap.get(name) }
+   */
+   
+   /**
+    * Undeploy schema by origin.
+    * When a schema file is deleted, all we have if the file name.
+    * There must always be a schema with this origin.
     */
-   def undeploy(origin: String) = synchronized {
+   def undeploy(origin: String) {
       
-      // There should be at most one existing schema with the given origin.
       val schemaToRemove = _schemaMap.filter ( e => { e._2.origin == origin } )
       if (schemaToRemove.size > 1)
          throw new ServerException.Internal(s"Found ${schemaToRemove.size} schemata with origin ${origin}")
@@ -56,7 +71,9 @@ class Schemata () {
    
    /**
     * Contents as an immutable map
-    */
+    *
    def toMap = synchronized { _schemaMap.toMap }
+   * 
+   */
 }
     

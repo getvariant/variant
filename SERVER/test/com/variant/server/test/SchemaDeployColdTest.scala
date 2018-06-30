@@ -7,7 +7,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import scala.collection.JavaConversions._
 import com.variant.server.test.util.EventReader
-import com.variant.server.conn.SessionStore
+import com.variant.server.boot.SessionStore
 import com.variant.server.boot.VariantServer
 import play.api.inject.guice.GuiceApplicationBuilder
 import org.scalatest.TestData

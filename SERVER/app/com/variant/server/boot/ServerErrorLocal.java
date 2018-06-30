@@ -24,7 +24,7 @@ public class ServerErrorLocal extends CommonError {
 	// 421-440 Schema deployment
 	//
 	public final static ServerErrorLocal SCHEMA_CANNOT_REPLACE = 
-			new ServerErrorLocal(421, Severity.ERROR, "Cannot replace existing schema [%s] defined in file [%s] with one defined in file [%s]");
+			new ServerErrorLocal(421, Severity.ERROR, "Cannot replace existing schema [%s] defined in file [%s] with another schema with the same name defined in file [%s]");
 
 	public final static ServerErrorLocal OBJECT_CONSTRUCTOR_ERROR = 
 			new ServerErrorLocal(422, Severity.ERROR, "Unable to instantiate class [%s] becuase no suitable constructor was found");

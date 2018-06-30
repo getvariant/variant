@@ -11,8 +11,7 @@ import play.api.Configuration
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 import play.api.routing.Router
-import com.variant.core.schema.Schema
-import com.variant.server.schema.ServerSchema
+import com.variant.server.schema.Schema
 import play.api.Application
 import com.variant.core.schema.parser.ParserResponse
 import com.typesafe.config.Config
@@ -22,9 +21,7 @@ import com.variant.server.api.ServerException
 import play.api.ApplicationLoader
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.util.VariantClassLoader
-import com.variant.server.conn.ConnectionStore
 import play.api.Play
-import com.variant.server.conn.SessionStore
 
 
 /**
@@ -39,8 +36,7 @@ trait VariantServer {
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
    // Read-only snapshot
-   def schemata: Map[String, ServerSchema]
-   val connStore: ConnectionStore
+   def schemata: Map[String, Schema]
    val ssnStore: SessionStore
    def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
    def schemaDeployer: SchemaDeployer
@@ -75,7 +71,6 @@ class VariantServerImpl @Inject() (
 	private[this] val logger = Logger(this.getClass)
    private[this] var _schemaDeployer: SchemaDeployer = null
    private[this] var _isUp = false
-   private[this] var _connStore: ConnectionStore = null
    private[this] var _ssnStore: SessionStore = null
    private[this] var _vacThread: VacuumThread = null
   
@@ -88,8 +83,6 @@ class VariantServerImpl @Inject() (
 	
 	override val classloader = new VariantClassLoader()
    
-   override lazy val connStore  = _connStore
-
    override lazy val ssnStore  = _ssnStore
   
 	override def schemata = _schemaDeployer.schemata 
@@ -109,7 +102,6 @@ class VariantServerImpl @Inject() (
            config.entrySet().filter(x => x.getKey.startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
          }
             	
-      	_connStore = new ConnectionStore(this)
       	
       	_ssnStore = new SessionStore(this)
 
@@ -166,7 +158,7 @@ class VariantServerImpl @Inject() (
       logger.info(s"${productName} is shutting down")
       
       // Undeploy all schemata
-      schemata.foreach { case (name: String, schema: ServerSchema) => schema.undeploy() }
+      schemata.foreach { case (name: String, schema: Schema) => schema.undeploy() }
       
       logger.info(ServerErrorLocal.SERVER_SHUTDOWN.asMessage(
             productName,

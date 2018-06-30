@@ -44,17 +44,13 @@ public class ServerError extends CommonError {
 	public static final ServerError MissingParamName = 
 			new ServerError(626, "Parameter name is missing");
 
-//	public static final ServerError StateRequestAlreadyCommitted = 
-//			new ServerError(628, "State request already committed");
+//	public static final ServerError MissingSchemaNameHeader = 
+//			new ServerError(627, "Missing header " + Constants.HTTP_HEADER_SCHEMAID);
 
 	//
 	// 641-660 Internal, other.
 	//
-	public static final ServerError ConnectionIdMissing = 
-			new ServerError(641, "Missing connection ID header");
 
-	public static final ServerError InvalidConnectionStatus = 
-			new ServerError(642, "Invalid connection status [%s]");
 
 	/**
 	 */

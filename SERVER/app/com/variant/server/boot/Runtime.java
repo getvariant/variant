@@ -31,7 +31,7 @@ import com.variant.server.impl.TestQualificationLifecycleEventImpl;
 import com.variant.server.impl.TestQualificationLifecycleEventPostResultImpl;
 import com.variant.server.impl.TestTargetingLifecycleEventImpl;
 import com.variant.server.impl.TestTargetingLifecycleEventPostResultImpl;
-import com.variant.server.schema.ServerSchema;
+import com.variant.server.schema.SchemaGen;
 
 /**
  * Stateless runtime methods.
@@ -43,7 +43,7 @@ public class Runtime {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Runtime.class);
 	
-	final private ServerSchema schema;
+	final private SchemaGen schema;
 	
 	/**
 	 * Target this session for all active tests.
@@ -450,7 +450,7 @@ public class Runtime {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	public Runtime(ServerSchema schema) {
+	public Runtime(SchemaGen schema) {
 		this.schema = schema;
 	}
 	

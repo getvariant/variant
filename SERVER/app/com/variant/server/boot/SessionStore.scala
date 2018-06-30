@@ -1,17 +1,11 @@
-package com.variant.server.conn
+package com.variant.server.boot
 
 import com.variant.server.api.ConfigKeys._
 import play.api.Logger
 import scala.collection.concurrent.TrieMap
-import com.variant.server.api.Session
 import com.variant.server.impl.SessionImpl
-import javax.inject.Singleton
-import com.variant.server.boot.VariantServer
-import com.variant.core.session.CoreSession
 import com.variant.server.api.ServerException
 import com.variant.core.impl.ServerError
-import com.variant.core.ConnectionStatus._
-import javax.inject.Inject
 
 /**
  * Instantiated by Play as an eager singleton in Module
@@ -89,6 +83,7 @@ class SessionStore (private val server: VariantServer) {
 	private val sessionMap = new TrieMap[String, Entry]();
 
    /**
+    * Update an existing session or add a new one.
 	 */
 	def put(session: SessionImpl) {
 
@@ -96,24 +91,14 @@ class SessionStore (private val server: VariantServer) {
 		
       // No current entry for this session id
 		case None => 
-		   session.connection.status match {
-		      case OPEN => {
-		         sessionMap.put(session.getId, new Entry(session))
-		         session.connection.schema.sessionCount.incrementAndGet
-		      }
-		      case DRAINING => throw new ServerException.Remote(ServerError.UnknownConnection, session.connection.id)
-		      case _ => throw new ServerException.Remote(ServerError.InvalidConnectionStatus, session.connection.id)
-		   }		   
+         sessionMap.put(session.getId, new Entry(session))
+		   session.schemaGen.sessionCount.incrementAndGet
 		
-      // Have entry for this session id:
+      // Do we have a race condition if the session is expired?
+		// but not yet vacuumed? 
 		case Some(e) =>
-		   if (e.isExpired || ! e.session.connection.isParallelTo(session.connection)) {
-		      throw new ServerException.Remote(ServerError.SessionExpired, session.getId)
-		   }
-		   else   {
-		      e.touch()
-		      sessionMap.put(session.getId, new Entry(session))
-		   }
+   	  e.touch()
+		  sessionMap.put(session.getId, new Entry(session))
 		}
 	}
 	
@@ -121,13 +106,13 @@ class SessionStore (private val server: VariantServer) {
 	 * Retrieve a session by its ID as an Option.
 	 * Requestor's connection must be parallel to the session's.
 	 */
-	def get(sid: String, conn: Connection): Option[SessionImpl] = {
+	def get(schemaName: String, sid: String): Option[SessionImpl] = {
 	
 		sessionMap.get(sid) match { 
 		   
 		case None => None
 		case Some(e) =>
-		   if (!e.isExpired && e.session.connection.isParallelTo(conn)) {
+		   if (!e.isExpired) {
 		      e.touch()
 		      Some(e.session)
 		   }
@@ -140,8 +125,9 @@ class SessionStore (private val server: VariantServer) {
 	/**
 	 * Retrieve a session by its ID, or throw SessionExpired if does not exist.
 	 */
-	def getOrBust(sid: String, conn: Connection): SessionImpl = {
-      val result	= get(sid, conn).getOrElse {
+	def getOrBust(schemaName: String, sid: String): SessionImpl = {
+
+	   val result	= get(schemaName, sid).getOrElse {
          logger.debug(s"Not found session [${sid}]")      
          throw new ServerException.Remote(ServerError.SessionExpired, sid)
       }
@@ -157,7 +143,7 @@ class SessionStore (private val server: VariantServer) {
       val toDelete = sessionMap.filter { _._2.isExpired }
       toDelete.values.foreach { entry =>
          sessionMap -= entry.session.getId
-         entry.session.connection.schema.sessionCount.decrementAndGet()
+         entry.session.schemaGen.sessionCount.decrementAndGet()
          if (logger.isTraceEnabled)
 	         logger.trace(s"Vacuumed expired session ID [${entry.session.getId}]")
       }

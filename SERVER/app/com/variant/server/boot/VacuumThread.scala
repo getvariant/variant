@@ -4,7 +4,6 @@ import scala.collection.mutable
 import play.api.Logger
 import com.variant.core.ConnectionStatus._
 import com.variant.server.api.ConfigKeys._
-import com.variant.server.conn.Connection
 
 /**
  * Background vacuum thread.
@@ -34,9 +33,6 @@ class VacuumThread(server: VariantServer) extends Thread {
 			   
 				if (logger.isTraceEnabled) logger.trace(s"Vacuumed $deleteCount session(s)");
 				else if (logger.isDebugEnabled && deleteCount > 0) logger.debug(s"Vacuumed $deleteCount session(s)");
-
-				// Connections sweep
-            server.connStore.vacuum()
 
 				Thread.sleep(vacuumingFrequencyMillis)
 				logger.trace("Vacuum thread woke up after %s millis".format(System.currentTimeMillis() - now))
