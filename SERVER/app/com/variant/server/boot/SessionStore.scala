@@ -94,8 +94,8 @@ class SessionStore (private val server: VariantServer) {
          sessionMap.put(session.getId, new Entry(session))
 		   session.schemaGen.sessionCount.incrementAndGet
 		
-      // Do we have a race condition if the session is expired?
-		// but not yet vacuumed? 
+      // Do we have a race condition with the vacuum thread, 
+		// if the session is expired, but not yet vacuumed?  
 		case Some(e) =>
    	  e.touch()
 		  sessionMap.put(session.getId, new Entry(session))

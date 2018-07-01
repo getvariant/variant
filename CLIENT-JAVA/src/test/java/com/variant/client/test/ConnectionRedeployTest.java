@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNull;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.ConnectionClosedException;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.VariantClientImpl;
@@ -58,7 +58,7 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 
 		assertEquals(CLOSED_BY_SERVER, conn1.getStatus());
 		assertNull(((VariantClientImpl)client).byId(conn1.getId()));
@@ -74,7 +74,7 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 		
 		new ClientUserExceptionInterceptor() {
 			
@@ -86,7 +86,7 @@ public class ConnectionRedeployTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 
 		assertEquals(CLOSED_BY_SERVER, conn1.getStatus());
 		

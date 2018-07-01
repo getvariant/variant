@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.typesafe.config.Config;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.ConnectionClosedException;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
@@ -119,9 +119,9 @@ public class SessionImpl implements Session {
 	void preChecks() {
 		if (isExpired) {
 			if (conn.getStatus() == ConnectionStatus.DRAINING)
-				throw new ConnectionClosedException(ClientUserError.CONNECTION_DRAINING);
+				throw new UnknownSchemaException(ClientUserError.CONNECTION_DRAINING);
 			else if (conn.getStatus() != ConnectionStatus.OPEN)
-				throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);
+				throw new UnknownSchemaException(ClientUserError.CONNECTION_CLOSED);
 			else
 				throw new SessionExpiredException();
 		}
@@ -198,7 +198,7 @@ public class SessionImpl implements Session {
 		try {
 			refreshFromServer();
 		}
-		catch (SessionExpiredException | ConnectionClosedException e) { 
+		catch (SessionExpiredException | UnknownSchemaException e) { 
 			isExpired = true; 
 		}
 		
@@ -341,10 +341,11 @@ public class SessionImpl implements Session {
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
+/*
 	public void save() {
 		conn.client.server.sessionSave(this);
 	}
-
+*/
 	/**
 	 */
 	public CoreSession getCoreSession() {

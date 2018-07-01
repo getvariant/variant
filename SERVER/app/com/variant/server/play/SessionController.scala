@@ -23,6 +23,19 @@ class SessionController @Inject() (
    private val logger = Logger(this.getClass)	
 
    /**
+    * Get a session by ID, if exists in any of the given schema's generations.
+    */
+   def getSession(schemaName:String, sid:String) = action { req =>
+     
+      val ssn = server.ssnStore.getOrBust(schemaName, sid)
+      val response = JsObject(Seq(
+         "session" -> JsString(ssn.toJson)
+      ))
+      
+      Ok(response.toString)
+   }
+
+   /**
     * Save or replace a new session.
     *
     * IF the session exists THEN
@@ -46,20 +59,7 @@ class SessionController @Inject() (
       server.ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
       Ok      
    }
- 
-   /**
-    * Get a session by ID, if exists in any of the given schema gens.
-    */
-   def getSession(schemaName:String, sid:String) = action { req =>
-     
-      val ssn = server.ssnStore.getOrBust(schemaName, sid)
-      val response = JsObject(Seq(
-         "session" -> JsString(ssn.toJson)
-      ))
-      
-      Ok(response.toString)
-   }
-   
+    
    /**
     * 
     */

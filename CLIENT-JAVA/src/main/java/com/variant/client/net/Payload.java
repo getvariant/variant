@@ -21,45 +21,23 @@ abstract public class Payload {
 	 */
 	public static class Connection extends Payload {
 		
-		public final String id;
 		public final int sessionTimeout;
-		public final long timestamp;
-		public final String schemaId;
-		public final String schemaSrc;
 		
-		private Connection(String id, int sessionTimeout, long timestamp, String schemaSrc, String schemaId) {
-			this.id = id;
+		private Connection(int sessionTimeout) {
 			this.sessionTimeout = sessionTimeout;
-			this.timestamp = timestamp;
-			this.schemaId = schemaId;
-			this.schemaSrc = schemaSrc;
 		}
 		
-		public static Connection fromResponse(HttpResponse resp) {
+		public static Connection parse(HttpResponse resp) {
 			
 			try {
 				ObjectMapper mapper = new ObjectMapper();
 				@SuppressWarnings("unchecked")
 				Map<String,?> map = mapper.readValue(resp.body, Map.class);
-				String id = (String) map.get("id");
 				Integer ssnto = (Integer) map.get("ssnto");
-				Long ts = (Long) map.get("ts");
-				@SuppressWarnings("unchecked")
-				Map<String,String> schema = (Map<String,String>) map.get("schema");
-				String schemaSrc = schema.get("src");
-				String schemaId = schema.get("id");
-				if (id == null)
-					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "id", Connection.class.getName());
-				if (ts == null)
-					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "ts", Connection.class.getName());
 				if (ssnto == null)
 					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "ssnto", Connection.class.getName());
-				if (schemaSrc == null)
-					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/src", Connection.class.getName());
-				if (schemaId == null)
-					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/id", Connection.class.getName());
 				
-				return new Connection(id, ssnto, ts, schemaSrc, schemaId);
+				return new Connection(ssnto);
 			}
 			catch (VariantException va) {
 				throw va;
@@ -70,6 +48,7 @@ abstract public class Payload {
 		}
 		
 	}
+
 	
 	/**
 	 * Most responses will contain the most up-to-date session, and some will also contain a return value.
@@ -84,7 +63,7 @@ abstract public class Payload {
 			this.returns = returns;
 		}
 		
-		public static Session fromResponse(com.variant.client.Connection conn, HttpResponse resp) {
+		public static Session parse(com.variant.client.Connection conn, HttpResponse resp) {
 
 			try {
 				ObjectMapper mapper = new ObjectMapper();

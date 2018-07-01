@@ -9,11 +9,13 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET     /*path/                     com.variant.server.play.controller.RootController.untrail(path)
 
 # Connection Controller
+# :schema = schema name
 GET     /connection/:schema      com.variant.server.play.controller.ConnectionController.get(schema: String)
 
 # Session Controller
+# :schema = schema name; :sid = session id
 GET     /session/:schema/:sid            com.variant.server.play.controller.SessionController.getSession(schema, sid)
-PUT     /session                 com.variant.server.play.controller.SessionController.saveSession()
+POST    /session/:schema/:sid            com.variant.server.play.controller.SessionController.getOrCreate(schema, sid)
 
 # Event Controller
 POST    /event                   com.variant.server.play.controller.EventController.post()

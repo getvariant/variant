@@ -14,10 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.apache.http.conn.HttpHostConnectException;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.ConnectionClosedException;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
-import com.variant.core.ConnectionStatus;
 import com.variant.core.util.Constants;
 import com.variant.core.util.TimeUtils;
 
@@ -119,7 +118,7 @@ public class HttpRemoter {
 	 * 
 	 * @param requestable
 	 * @return
-	 */
+	 *
 	HttpResponse call(Requestable requestable, Connection conn) {
 		
 		long start = System.currentTimeMillis();
@@ -129,6 +128,7 @@ public class HttpRemoter {
 			
 			req = requestable.requestOp();
 			req.setHeader("Content-Type", Constants.HTTP_HEADER_CONTENT_TYPE);
+
 			
 			if (conn.getStatus() == ConnectionStatus.OPEN ||
 					conn.getStatus() == ConnectionStatus.DRAINING) {
@@ -216,6 +216,7 @@ public class HttpRemoter {
 			}
 		}		
 	}
+	*/
 	
 	/**
 	 */

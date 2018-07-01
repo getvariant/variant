@@ -9,7 +9,7 @@ import static org.junit.Assert.assertNull;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.ConnectionClosedException;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.VariantClientImpl;
@@ -170,7 +170,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 
 		new ClientUserExceptionInterceptor() {
 			
@@ -182,7 +182,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 
 		// Can't register hook on a closed conn
 		new ClientUserExceptionInterceptor() {
@@ -203,7 +203,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 		
 	}	
 
@@ -237,7 +237,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);       
+		}.assertThrown(UnknownSchemaException.class);       
 
 		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 
@@ -251,7 +251,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);       
+		}.assertThrown(UnknownSchemaException.class);       
 		
 		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 
@@ -265,7 +265,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 
 		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 	}	

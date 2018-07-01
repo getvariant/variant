@@ -26,15 +26,14 @@ public class HttpAdapter {
 	 * @param url
 	 * @return
 	 */
-	public HttpResponse get(final String url, Connection conn) { 		
+	public HttpResponse get(final String url) { 		
 		
 		return remoter.call(
 				new HttpRemoter.Requestable() {	
 					@Override public HttpUriRequest requestOp() {
 						return new HttpGet(url);
 					}
-				},
-				conn
+				}
 		);
 	} 
 
@@ -67,7 +66,7 @@ public class HttpAdapter {
 	 * @param body
 	 * @return
 	 */
-	public HttpResponse post(final String url, final String body, Connection conn) {
+	public HttpResponse post(final String url, final String body) {
 		
 		return remoter.call(
 				new HttpRemoter.Requestable() {	
@@ -76,31 +75,12 @@ public class HttpAdapter {
 						post.setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
 						return post;
 					}
-				},
-				conn
+				}
 		);			
 	}
 	
 	/**
 	 * Send a POST without a body
-	 * @param url
-	 * @param body
-	 * @return
-	 */
-	public HttpResponse post(final String url, Connection conn) {
-
-		return remoter.call(
-				new HttpRemoter.Requestable() {	
-					@Override public HttpUriRequest requestOp() {
-						return new HttpPost(url);
-					}
-				},
-				conn
-		);
-	}
-
-	/**
-	 * Unconnected post -- special case only used to get the connection.
 	 * @param url
 	 * @param body
 	 * @return
@@ -117,12 +97,29 @@ public class HttpAdapter {
 	}
 
 	/**
+	 * Unconnected post -- special case only used to get the connection.
+	 * @param url
+	 * @param body
+	 * @return
+	 *
+	public HttpResponse post(final String url) {
+
+		return remoter.call(
+				new HttpRemoter.Requestable() {	
+					@Override public HttpUriRequest requestOp() {
+						return new HttpPost(url);
+					}
+				}
+		);
+	}
+*/
+	/**
 	 * Send a PUT with a body.
 	 * @param url
 	 * @param body
 	 * @return
 	 */
-	public HttpResponse put(final String url, final String body, Connection conn) {
+	public HttpResponse put(final String url, final String body) {
 		return remoter.call(
 				new HttpRemoter.Requestable() {	
 					@Override public HttpUriRequest requestOp() throws Exception {
@@ -130,8 +127,7 @@ public class HttpAdapter {
 						put.setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
 						return put;
 					}
-				},
-				conn
+				}
 		);
 	}
 
@@ -141,15 +137,14 @@ public class HttpAdapter {
 	 * @param body
 	 * @return
 	 */
-	public HttpResponse delete(final String url, Connection conn) {
+	public HttpResponse delete(final String url) {
 		
 		return remoter.call(
 				new HttpRemoter.Requestable() {	
 					@Override public HttpUriRequest requestOp() {
 						return new HttpDelete(url);
 					}
-				},
-				conn
+				}
 		);
 	}
 
@@ -159,7 +154,7 @@ public class HttpAdapter {
 	 * @param body
 	 * @return
 	 */
-	public HttpResponse delete(final String url, final String body, Connection conn) {
+	public HttpResponse delete(final String url, final String body) {
 		
 		return remoter.call(
 				new HttpRemoter.Requestable() {	
@@ -168,8 +163,7 @@ public class HttpAdapter {
 						delete.setEntity(new ByteArrayEntity(body.getBytes("UTF-8")));
 						return delete;
 					}
-				},
-				conn
+				}
 		);
 	}
 

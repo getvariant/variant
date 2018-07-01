@@ -12,7 +12,6 @@ import com.variant.core.util.StringUtils
 import play.api.libs.json._
 import com.variant.server.impl.SessionImpl
 import com.variant.core.util.Constants._
-import com.variant.core.ConnectionStatus._
 
 /**
  * Session Controller Tests

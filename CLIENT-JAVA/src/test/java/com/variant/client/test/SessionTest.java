@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.ConnectionClosedException;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantClient;
@@ -127,7 +127,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 				ssn.targetForState(state2);
 			}
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 		
 	}
 
@@ -154,7 +154,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 				ssn.targetForState(state2);
 			}
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 		
 		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 		

@@ -12,7 +12,7 @@ import com.variant.core.impl.ServerError;
  * As well, we could close connections that have been idle for too long.
  * 
  * @author Igor.
- */
+ *
 class ConnectionFactory {
 	
 	private final VariantClientImpl client;
@@ -22,7 +22,7 @@ class ConnectionFactory {
 	}
 
 	/**
-	 */
+	 *
 	public ConnectionImpl connectTo(String schema) {
 		
 		try {
@@ -37,3 +37,4 @@ class ConnectionFactory {
 	}
 	
 }
+*/

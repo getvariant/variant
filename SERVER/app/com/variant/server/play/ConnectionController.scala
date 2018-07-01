@@ -6,6 +6,8 @@ import com.variant.core.impl.ServerError._
 import com.variant.server.boot.ServerErrorRemote
 import play.api.mvc.ControllerComponents
 import com.variant.server.boot.VariantServer
+import play.api.libs.json._
+import com.variant.server.api.ConfigKeys
 
 class ConnectionController @Inject() (
       val action: VariantAction,
@@ -25,7 +27,12 @@ class ConnectionController @Inject() (
         
          case Some(schema) => {
             logger.debug("Schema [%s] found".format(name))
-            Ok
+            
+            val response = JsObject(Seq(
+               "ssnto" -> JsNumber(VariantServer.instance.config.getInt(ConfigKeys.SESSION_TIMEOUT))
+            ))
+            
+            Ok(response.toString())
          }
          case None => {
             logger.debug("Schema [%s] not found".format(name))

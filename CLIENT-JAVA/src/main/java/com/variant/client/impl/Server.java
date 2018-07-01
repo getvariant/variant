@@ -10,13 +10,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.client.ClientException;
 import com.variant.client.ConfigKeys;
 import com.variant.client.Connection;
-import com.variant.client.ConnectionClosedException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
-import com.variant.core.ConnectionStatus;
 import com.variant.core.VariantEvent;
 import com.variant.core.impl.ServerError;
 import com.variant.core.impl.VariantEventSupport;
@@ -53,7 +51,7 @@ public class Server {
 		}
 
 	   /**
-		 * If no session yet, use this.
+		 * 
 		 */
 		T run(String sid, Connection conn) {
 			
@@ -62,14 +60,7 @@ public class Server {
 			}
 			// Intercept certain user exceptions.
 			catch (ClientException.User ce) {
-				if (ce.getError() == ServerError.UnknownConnection) {
-					// The server has disposed of this connetion.
-					((ConnectionImpl)conn).setStatus(ConnectionStatus.CLOSED_BY_SERVER);
-					// Superfluous throw because setStatus() above should throw the same exception,
-					// but without it compiler will complain.
-					throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);
-				}
-				else if (ce.getError() == ServerError.SessionExpired) {
+				if (ce.getError() == ServerError.SessionExpired) {
 					((ConnectionImpl)conn).cache.expire(sid);
 					throw new SessionExpiredException(ce);
 				}
@@ -125,41 +116,26 @@ public class Server {
 		if (LOG.isTraceEnabled()) LOG.trace("connect()");
 
 		HttpResponse resp = adapter.post(serverUrl + "connection/" + schema);
-		return Payload.Connection.fromResponse(resp);
+		return Payload.Connection.parse(resp);
 	}
 	
 	/**
 	 * Close this server connection (client side operation).
-	 */
+	 *
 	void disconnect(ConnectionImpl conn) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace("disconnect()");
 
 		adapter.delete(serverUrl + "connection", conn);
 	}
-	
-	//---------------------------------------------------------------------------------------------//
-	//                                           /EVENT                                            //
-	//---------------------------------------------------------------------------------------------//
-
-	public void eventSave(final Session ssn, final VariantEvent event) {
+	*/
 		
-		if (LOG.isTraceEnabled()) LOG.trace(
-				String.format("eventSave(%s,%s)", ssn.getId(), event.getName()));
-
-		new CommonExceptionHandlerVoid() {
-			@Override void voidBlock() throws Exception {
-				adapter.post(serverUrl + "event", ((VariantEventSupport)event).toJson(), ssn.getConnection());
-			}
-		}.run(ssn);
-	}
-	
 	//---------------------------------------------------------------------------------------------//
 	//                                          /SESSION                                           //
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * GET /session
+	 * GET /session/:schema/:sid
 	 * Get an existing session by ID or null if does not exist on the server.
 	 */
 	public Payload.Session sessionGet(final String sid, final ConnectionImpl conn) {
@@ -170,8 +146,27 @@ public class Server {
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.get(serverUrl + "session/" + sid, conn);
-				return Payload.Session.fromResponse(conn, resp);
+				HttpResponse resp = adapter.get(serverUrl + "session/" + conn.schema + "/" + sid);
+				return Payload.Session.parse(conn, resp);
+			}
+		}.run(sid, conn);
+	}
+
+	/**
+	 * POST /session/:schema/:sid
+	 * Get or create an existing session by ID or null if does not exist on the server.
+	 * Same URL as GET, no body.
+	 */
+	public Payload.Session sessionGetorCreate(final String sid, final ConnectionImpl conn) {
+
+		if (LOG.isTraceEnabled()) LOG.trace(
+				String.format("sessionGet(%s)", sid));
+		
+		return new CommonExceptionHandler<Payload.Session>() {
+			
+			@Override Payload.Session block() throws Exception {
+				HttpResponse resp = adapter.post(serverUrl + "session/" + conn.schema + "/" + sid);
+				return Payload.Session.parse(conn, resp);
 			}
 		}.run(sid, conn);
 	}
@@ -188,7 +183,7 @@ public class Server {
 		new CommonExceptionHandlerVoid() {
 			@Override void voidBlock() throws Exception {
 				String body = ((SessionImpl)ssn).getCoreSession().toJson();
-				adapter.put(serverUrl + "session", body, ssn.getConnection());
+				adapter.put(serverUrl + "session", body);
 			}
 		}.run(ssn);
 		
@@ -225,8 +220,8 @@ public class Server {
 
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.put(serverUrl + "session/attr", body.toString(), ssn.getConnection());
-				return Payload.Session.fromResponse(ssn.getConnection(), resp);
+				HttpResponse resp = adapter.put(serverUrl + "session/attr", body.toString());
+				return Payload.Session.parse(ssn.getConnection(), resp);
 			}
 		}.run(ssn);
 		
@@ -260,8 +255,8 @@ public class Server {
 
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.delete(serverUrl + "session/attr", body.toString(), ssn.getConnection());
-				return Payload.Session.fromResponse(ssn.getConnection(), resp);
+				HttpResponse resp = adapter.delete(serverUrl + "session/attr", body.toString());
+				return Payload.Session.parse(ssn.getConnection(), resp);
 			}
 		}.run(ssn);
 		
@@ -287,8 +282,8 @@ public class Server {
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.post(serverUrl + "request", body, ssn.getConnection()); 
-				return Payload.Session.fromResponse(ssn.getConnection(), resp);
+				HttpResponse resp = adapter.post(serverUrl + "request", body); 
+				return Payload.Session.parse(ssn.getConnection(), resp);
 			}
 		}.run(ssn);
 		
@@ -313,14 +308,30 @@ public class Server {
 				jsonGen.writeStringField("sid", ssn.getId());
 				jsonGen.writeEndObject();
 				jsonGen.flush();
-				HttpResponse resp = adapter.put(serverUrl + "request", body.toString(), ssn.getConnection());
-				return Payload.Session.fromResponse(ssn.getConnection(), resp);
+				HttpResponse resp = adapter.put(serverUrl + "request", body.toString());
+				return Payload.Session.parse(ssn.getConnection(), resp);
 			}
 		}.run(ssn);
 		
 		ssn.rewrap(response.session);
 
 		return true;
+	}
+
+	//---------------------------------------------------------------------------------------------//
+	//                                           /EVENT                                            //
+	//---------------------------------------------------------------------------------------------//
+
+	public void eventSave(final Session ssn, final VariantEvent event) {
+		
+		if (LOG.isTraceEnabled()) LOG.trace(
+				String.format("eventSave(%s,%s)", ssn.getId(), event.getName()));
+
+		new CommonExceptionHandlerVoid() {
+			@Override void voidBlock() throws Exception {
+				adapter.post(serverUrl + "event", ((VariantEventSupport)event).toJson());
+			}
+		}.run(ssn);
 	}
 
 }

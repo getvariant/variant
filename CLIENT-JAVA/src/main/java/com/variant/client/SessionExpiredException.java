@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import com.variant.client.impl.ClientUserError;
+import com.variant.core.impl.ServerError;
 
 
 /**
@@ -12,12 +12,8 @@ import com.variant.client.impl.ClientUserError;
 @SuppressWarnings("serial")
 public class SessionExpiredException extends ClientException.User {
 	
-	public SessionExpiredException() {
-		super(ClientUserError.SESSION_EXPIRED);
-	}
-
-	public SessionExpiredException(ClientException.User e) {
-		super(ClientUserError.SESSION_EXPIRED, e);
+	public SessionExpiredException(String sid) {
+		super(ServerError.SessionExpired, sid);
 	}
 
 }

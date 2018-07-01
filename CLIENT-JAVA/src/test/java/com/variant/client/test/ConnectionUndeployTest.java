@@ -8,7 +8,7 @@ import static org.junit.Assert.assertNull;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.ConnectionClosedException;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.VariantClientImpl;
@@ -60,7 +60,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 
 		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 		assertNull(((VariantClientImpl)client).byId(conn.getId()));
@@ -75,7 +75,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 
 		new ClientUserExceptionInterceptor() {
 			
@@ -87,7 +87,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 
 		new ClientUserExceptionInterceptor() {
 			
@@ -99,7 +99,7 @@ public class ConnectionUndeployTest extends ClientBaseTestWithServer {
 				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 
 		// Confirm the schema is gone.
 		assertNull(client.connectTo("big_conjoint_schema").get());

@@ -24,6 +24,7 @@ public class ClientUserError extends CommonError {
 	public static final ClientUserError SESSION_ID_TRACKER_NO_INTERFACE =
 			new ClientUserError(272, "Session ID tracker class [%s] must implement interface [%s]");
 
+/*
 	public static final ClientUserError CONNECTION_CLOSED =
 			new ClientUserError(273, "This connection has been closed");
 
@@ -32,7 +33,7 @@ public class ClientUserError extends CommonError {
 
 	public static final ClientUserError SESSION_EXPIRED =
 			new ClientUserError(275, "This session has expired");
-
+*/
 	public static final ClientUserError ACTIVE_REQUEST =
 			new ClientUserError(276, "Commit current state request first");
 

@@ -8,6 +8,7 @@ import com.typesafe.config.Config;
 import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.core.VariantEvent;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 
@@ -64,13 +65,24 @@ public interface Session {
 	public Connection getConnection();
 
 	/**
+	 * Get variation schema, associated with this session.
+	 * 
+	 * @return An object of type {@link Schema}
+	 * 
+	 * @throws UnknownSchemaException
+	 * 
+	 * @since 0.9
+	 */
+	Schema getSchema();
+
+	/**
      * <p>Target this session for a state. 
      *  
 	 * @return An object of type {@link StateRequest}, which
 	 *         may be further examined for more information about the outcome of this operation.  
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws ConnectionClosedException
+	 * @throws UnknownSchemaException
 	 * @throws StateNotInstrumentedException 
 	 * 
 	 * @since 0.5
@@ -110,7 +122,7 @@ public interface Session {
 	 *         that state.
 	 *         
 	 * @throws SessionExpiredException
-	 * @throws ConnectionClosedException
+	 * @throws UnknownSchemaException
 	 * 
 	 * @since 0.7
 	 */
@@ -124,7 +136,7 @@ public interface Session {
 	 * @return A set of object of type {@link Test}.
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws ConnectionClosedException
+	 * @throws UnknownSchemaException
 	 * 
 	 * @since 0.7
 	 */
@@ -138,7 +150,7 @@ public interface Session {
 	 * @return A set of {@link Test}s which this session is disqualified for. 
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws ConnectionClosedException
+	 * @throws UnknownSchemaException
 	 * 
 	 * @since 0.7
 	 */
@@ -151,7 +163,7 @@ public interface Session {
 	 *         session.
 	 *  
 	 * @throws SessionExpiredException
-	 * @throws ConnectionClosedException
+	 * @throws UnknownSchemaException
 	 * 
 	 * @since 0.5
 	 */
@@ -163,7 +175,7 @@ public interface Session {
 	 * @param event An implementation of {@link VariantEvent}, which represents the custom event to be triggered.
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws ConnectionClosedException
+	 * @throws UnknownSchemaException
 	 * 
 	 * @since 0.7
 	 */
@@ -188,7 +200,7 @@ public interface Session {
 	 * @return The string value previously associated with this <code>name</code>, or <code>null</code> if none.
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws ConnectionClosedException
+	 * @throws UnknownSchemaException
 	 * 
 	 * @since 0.6
 	 */
@@ -201,7 +213,7 @@ public interface Session {
 	 * @return The string value associated with this name.
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws ConnectionClosedException
+	 * @throws UnknownSchemaException
 	 * 
 	 * @since 0.6
 	 */
@@ -214,7 +226,7 @@ public interface Session {
 	 * @return The string value previously associated with this <code>name</name>, or <code>null</code> if none.
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws ConnectionClosedException
+	 * @throws UnknownSchemaException
 	 * 
 	 * @since 0.7
 	 */
@@ -228,7 +240,7 @@ public interface Session {
 	 * @param hook An implementation of {@link LifecycleHook}
 	 * 
 	 * @throws SessionExpiredException
-	 * @throws ConnectionClosedException
+	 * @throws UnknownSchemaException
 	 *
 	 * @see Connection#addLifecycleHook(LifecycleHook)
 	 * @since 0.9

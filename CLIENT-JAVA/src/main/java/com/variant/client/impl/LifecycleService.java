@@ -75,7 +75,7 @@ public class LifecycleService {
 
 	/**
 	 * Raise a connection scoped event
-	 */
+	 *
 	public void raiseEvent(Class<? extends ConnectionAwareLifecycleEvent> eventClass, ConnectionImpl conn) {
 		
 		if (conn.getClient() != client) 
@@ -94,7 +94,7 @@ public class LifecycleService {
 			postLifecycleHook(hook, event);
 		}
 	}
-
+*/
 	/**
 	 * Raise a session scoped event
 	 */
@@ -103,6 +103,7 @@ public class LifecycleService {
 		if (session.getConnection().getClient() != client) 
 			throw new ClientException.Internal("Bad client");
 
+		/*
 		// 1. Connection level 
 		for (LifecycleHook<? extends ClientLifecycleEvent> hook: ((ConnectionImpl)session.getConnection()).getLifecycleHooks()) {
 			
@@ -115,7 +116,7 @@ public class LifecycleService {
 			};
 			postLifecycleHook(hook, event);
 		}
-		
+		*/
 		// 2. Session level 
 
 		for (LifecycleHook<? extends ClientLifecycleEvent> hook: session.getLifecycleHooks()) {

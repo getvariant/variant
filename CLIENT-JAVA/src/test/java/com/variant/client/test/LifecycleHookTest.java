@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.variant.client.Connection;
-import com.variant.client.ConnectionClosedException;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantClient;
@@ -335,7 +335,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 				ssn.getAttribute("foo");
 			}
 			
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 	    
 		assertEquals(CLOSED_BY_SERVER, connection.getStatus());
 

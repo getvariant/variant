@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.typesafe.config.Config;
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
+import com.variant.client.net.Payload;
 import com.variant.core.conf.ConfigLoader;
 
 /**
@@ -18,8 +19,8 @@ import com.variant.core.conf.ConfigLoader;
 public class VariantClientImpl implements VariantClient {
 		
 	private final Config config = ConfigLoader.load("/variant.conf", "/com/variant/client/variant-default.conf");
-	private final ConnectionFactory connFactory = new ConnectionFactory(this);
-	private final ConcurrentHashMap<String, Connection> connMap = new ConcurrentHashMap<String, Connection>();
+//	private final ConnectionFactory connFactory = new ConnectionFactory(this);
+//	private final ConcurrentHashMap<String, Connection> connMap = new ConcurrentHashMap<String, Connection>();
 	
 	public final LifecycleService lceService = new LifecycleService(this);
 	public final Server server;
@@ -27,8 +28,17 @@ public class VariantClientImpl implements VariantClient {
 	/**
 	 */	
 	private Connection getConnection(String schema) {
+		try {
+			Payload.Connection payload = server.connect(schema);
+			return new ConnectionImpl(this, schema, payload);
+		}
+		catch (ClientException.User ue) {
+			if (ue.getError() == ServerError.UnknownSchema) 
+				return null;
+			throw ue;
+		}		
 		ConnectionImpl result = connFactory.connectTo(schema);
-		if (result != null) connMap.put(result.getId(), result);
+//		if (result != null) connMap.put(result.getId(), result);
 		return result;
 	}
 
@@ -58,6 +68,7 @@ public class VariantClientImpl implements VariantClient {
 	//---------------------------------------------------------------------------------------------//
 	//                                      PUBLIC EXT                                             //
 	//---------------------------------------------------------------------------------------------//
+	/*
 	public void freeConnection(String cid) {
 		connMap.remove(cid);
 	}
@@ -66,9 +77,9 @@ public class VariantClientImpl implements VariantClient {
 	 * Tests use this to confirm connetion's gone.
 	 * @param id
 	 * @return
-	 */
+	 *
 	public Connection byId(String id) {
 		return connMap.get(id);
 	}
-
+*/
 }

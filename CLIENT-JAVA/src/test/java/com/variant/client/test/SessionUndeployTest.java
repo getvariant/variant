@@ -11,7 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.ConnectionClosedException;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.StateRequest;
@@ -180,7 +180,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						assertEquals(CLOSED_BY_SERVER, conn1.getStatus());
 					}
 					
-				}.assertThrown(ConnectionClosedException.class);
+				}.assertThrown(UnknownSchemaException.class);
 		
 			});
 		}
@@ -225,7 +225,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						assertEquals(CLOSED_BY_SERVER, conn1.getStatus());
 					}
 					
-				}.assertThrown(ConnectionClosedException.class);
+				}.assertThrown(UnknownSchemaException.class);
 		
 			});
 		}
@@ -410,7 +410,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(ClientUserError.CONNECTION_DRAINING, e.getError());
 			}
 
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 				
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;
@@ -486,7 +486,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(ClientUserError.CONNECTION_DRAINING, e.getError());
 			}
 
-		}.assertThrown(ConnectionClosedException.class);
+		}.assertThrown(UnknownSchemaException.class);
 		
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;

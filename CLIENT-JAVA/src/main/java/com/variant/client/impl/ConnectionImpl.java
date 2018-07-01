@@ -8,7 +8,7 @@ import java.util.Random;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.ConnectionClosedException;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
@@ -17,7 +17,6 @@ import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.ConnectionClosedLifecycleEvent;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
-import com.variant.core.ConnectionStatus;
 import com.variant.core.UserError.Severity;
 import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.core.schema.ParserMessage;
@@ -35,19 +34,10 @@ import com.variant.core.util.immutable.ImmutableList;
 public class ConnectionImpl implements Connection {
 				
 	/**
-	 * Is this connection still valid?
-	 * @return
+	 * Anything?
 	 */
 	private void preChecks() {
-		
-		switch (status) {
-		
-		case OPEN:
-		case DRAINING: break;
-		
-		case CLOSED_BY_CLIENT: 
-		case CLOSED_BY_SERVER: throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);		
-		}
+		// Nothing?
 	}
 	
 	/**
@@ -99,18 +89,12 @@ public class ConnectionImpl implements Connection {
 			}
 		}
 		
-		
 		SessionImpl result = null;
 		
 		try {
 			result = fetchSession(sessionId, null);
 		}
 		catch (SessionExpiredException sex) { } // Return null instead.
-		
-		// if Session wasn't found on the server and the connection is draining,
-		// throw exception rather than return null.
-		if (result == null && status == ConnectionStatus.DRAINING)
-			throw new ConnectionClosedException(ClientUserError.CONNECTION_DRAINING);
 		
 		if (result == null && create) {
 			// Session expired locally, recreate OK => Recreate locally and save to server.
@@ -158,19 +142,22 @@ public class ConnectionImpl implements Connection {
 		SessionImpl clientSsn = localSession == null ? (SessionImpl) cache.get(sid) : localSession;
 		
 		if (clientSsn == null) {
-			// New headless session
+			// This client doesn't have this session yet.
 			clientSsn = new SessionImpl(this, serverSsn);
 			cache.add(clientSsn);
 		}
 		else {
+			// This client has the session.
 			clientSsn.rewrap(serverSsn);
 		}
 		return clientSsn;	
 	}
 
+	/*
 	// Lifecycle hooks.
 	final private ArrayList<LifecycleHook<? extends ClientLifecycleEvent>> lifecycleHooks = 
 			new ArrayList<LifecycleHook<? extends ClientLifecycleEvent>>();
+	*/
 
 	// Session cache has package visibilithy because accessed by HooksService.
 	final SessionCache cache;
@@ -181,50 +168,49 @@ public class ConnectionImpl implements Connection {
 
 	private static final Random RAND = new Random(System.currentTimeMillis());
 	
-	private final String id;
 	private final long sessionTimeoutMillis;
-	private final long timestamp;
-	private final Schema schema;
-	private ConnectionStatus status = null;
 
 	final VariantClientImpl client;
+	
+	public final String schema;
 
 	/**
 	 * 
 	 */
-	ConnectionImpl(VariantClientImpl client, Payload.Connection payload) {
+	ConnectionImpl(VariantClientImpl client, String schema, Payload.Connection payload) {
 		
 		this.client = client;
+		this.schema = schema;
 		
-		id = payload.id;
-		timestamp = payload.timestamp;
-		sessionTimeoutMillis = payload.sessionTimeout * 1000;
+		sessionTimeoutMillis = payload.sessionTimeout * 1000L;
 		cache = new SessionCache(this);
-		
+
+		/* This should go into session.
 		ParserResponse resp = new ClientSchemaParser().parse(payload.schemaSrc);
 		if (resp.hasMessages(Severity.ERROR)) {
 			StringBuilder buff = new StringBuilder("Unable to parse schema:\n");
 			for (ParserMessage msg: resp.getMessages()) buff.append("    ").append(msg.toString()).append("\n");
 			throw new ClientException.Internal(buff.toString());
 		}
-		status = ConnectionStatus.OPEN;
+		
 		schema = new SchemaImpl(payload.schemaId, resp.getSchema());
+		*/
 	}
 	
 	/**
+	 * Connections have no server side state
 	 * 
-	 */
 	private void destroy() {
 		cache.destroy();
 		client.freeConnection(id);
 	}
-	
+	*/
 	// ---------------------------------------------------------------------------------------------//
 	//                                             PUBLIC                                           //
 	// ---------------------------------------------------------------------------------------------//
 
 	/**
-	 */
+	 *
 	@Override
 	public String getId() {
 		return id;
@@ -266,7 +252,7 @@ public class ConnectionImpl implements Connection {
 			return null;
 		}	
 	}
-	
+/*
 	@Override
 	public Schema getSchema() {
 		preChecks();
@@ -289,7 +275,7 @@ public class ConnectionImpl implements Connection {
 		preChecks();
 		client.server.disconnect(this);
 	}
-
+*/
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
@@ -301,7 +287,7 @@ public class ConnectionImpl implements Connection {
 	}
 
 	/**
-	 */
+	 *
 	public void setStatus(ConnectionStatus status) {
 	
 		if (status == this.status) return;
@@ -334,7 +320,7 @@ public class ConnectionImpl implements Connection {
 	
 	/**
 	 * Read-only snapshot.
-	 */
+	 *
 	public ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>> getLifecycleHooks() {
 		return new ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>>(lifecycleHooks);
 	}
