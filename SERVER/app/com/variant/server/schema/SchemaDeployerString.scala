@@ -17,7 +17,7 @@ class SchemaDeployerString(schemaStrings: String*) extends AbstractSchemaDeploye
    private val logger = Logger(this.getClass)
   
    // Convert internal mutable map to an immutable one for the world
-   override def schemata = _schemata.toMap  
+   //override def schemata = _schemata.toMap  
   
    schemaStrings.foreach { (schemaSrc:String) =>
       

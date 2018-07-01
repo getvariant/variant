@@ -104,27 +104,22 @@ class SessionStore (private val server: VariantServer) {
 	
 	/**
 	 * Retrieve a session by its ID as an Option.
-    * If exists, must be in the right schema's gen.
 	 */
-	def get(schemaName: String, sid: String): Option[SessionImpl] = {
+	def get(sid: String): Option[SessionImpl] = {
 	
 		sessionMap.get(sid) match { 
 		   
-		case None => None
+   		case None => None
 		
-		case Some(e) =>
-		
-		   if (e.session.schemaGen.getName() != schemaName) 
-		      throw new ServerException.Internal(
-		            s"Session ID [${sid}]found but in the wrong schema. Expected [${schemaName}], but was [${e.session.schemaGen.getName()}]")
-		   
-		   if (!e.isExpired) {
-		      e.touch()
-		      Some(e.session)
-		   }
-		   else {
-		      None
-		   }
+	   	case Some(e) =>
+				   
+   		   if (!e.isExpired) {
+   		      e.touch()
+   		      Some(e.session)
+   		   }
+   		   else {
+   		      None
+   		   }
 		}
 	}
 
@@ -133,23 +128,22 @@ class SessionStore (private val server: VariantServer) {
 	 * Give exception if no schema or no live gen.
 	 * 
 	 * Requestor's connection must be parallel to the session's.
-	 */
-	def getOrCreate(schemaName: String, sid: String): SessionImpl = {
+	 *
+	def getOrCreate(sid: String): SessionImpl = {
 	
-	   get(schemaName, sid) match {
+	   get(sid) match {
 	      case Some(ssn) => ssn
-	      case None      => {
-	         server.schemata.
+	      case None      => server.schemata.
 	      }
 	   }
 	}
-
+*/
 	/**
 	 * Retrieve a session by its ID, or throw SessionExpired if does not exist.
 	 */
-	def getOrBust(schemaName: String, sid: String): SessionImpl = {
+	def getOrBust(sid: String): SessionImpl = {
 
-	   val result	= get(schemaName, sid).getOrElse {
+	   val result	= get(sid).getOrElse {
          logger.debug(s"Not found session [${sid}]")      
          throw new ServerException.Remote(ServerError.SessionExpired, sid)
       }

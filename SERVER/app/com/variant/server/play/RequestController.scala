@@ -6,9 +6,6 @@ import play.api.mvc.Request
 import com.variant.server.boot.SessionStore
 import play.api.Logger
 import com.variant.core.impl.ServerError._
-import com.variant.server.schema.ServerSchema
-import com.variant.server.conn.Connection
-import com.variant.server.conn.ConnectionStore
 import play.api.libs.json._
 import play.api.mvc.Result
 import com.variant.server.boot.ServerErrorRemote
@@ -48,15 +45,13 @@ class RequestController @Inject() (
          throw new ServerException.Remote(MissingProperty, "state")         
       }
 
-      val conn = req.attrs.get(connectedAction.ConnKey).get
-      val ssn = server.ssnStore.getOrBust(sid, conn)
-      val schema = ssn.connection.schema
-      val state = schema.getState(stateName)
+      val ssn = server.ssnStore.getOrBust(sid)
+      val state = ssn.schemaGen.getState(stateName)
 
       if (state == null)
-         throw new ServerException.Internal("State [%s] not in schema [%s]".format(stateName, schema.getName()))
+         throw new ServerException.Internal("State [%s] not in schema [%s]".format(stateName, ssn.schemaGen.getName()))
       
-      schema.runtime.targetForState(ssn, state)
+      ssn.schemaGen.runtime.targetForState(ssn, state)
 
       val response = JsObject(Seq(
          "session" -> JsString(ssn.asInstanceOf[SessionImpl].coreSession.toJson())
@@ -81,8 +76,7 @@ class RequestController @Inject() (
          throw new ServerException.Remote(MissingProperty, "sid")         
       }
       
-      val conn = req.attrs.get(connectedAction.ConnKey).get
-      val ssn = server.ssnStore.getOrBust(sid, conn)
+      val ssn = server.ssnStore.getOrBust(sid)
       val stateReq = ssn.getStateRequest
       val sve = stateReq.getStateVisitedEvent
       

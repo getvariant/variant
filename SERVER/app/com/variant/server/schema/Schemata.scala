@@ -61,12 +61,13 @@ class Schemata () {
    def undeploy(origin: String) {
       
       val schemaToRemove = _schemaMap.filter ( e => { e._2.origin == origin } )
+      
       if (schemaToRemove.size > 1)
          throw new ServerException.Internal(s"Found ${schemaToRemove.size} schemata with origin ${origin}")
       
       schemaToRemove.foreach { e => 
          _schemaMap -= e._1
-         e._2.undeploy() 
+         e._2.undeployLiveGen() 
       }
    }
    

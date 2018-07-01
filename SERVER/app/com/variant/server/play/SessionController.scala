@@ -14,6 +14,8 @@ import play.api.mvc.ControllerComponents
 import com.variant.core.impl.ServerError
 import com.variant.server.boot.VariantServer
 import com.variant.server.api.Session
+import com.variant.server.boot.ServerErrorRemote
+import com.variant.server.schema.SchemaGen
 
 class SessionController @Inject() (
       val action: VariantAction,
@@ -28,7 +30,13 @@ class SessionController @Inject() (
     */
    def getSession(schemaName:String, sid:String) = action { req =>
      
-      val ssn = server.ssnStore.getOrBust(schemaName, sid)
+      val ssn = server.ssnStore.getOrBust(sid)
+      
+      // Must match the schema name.
+      if (ssn.schemaGen.getName() != schemaName) 
+		      throw new ServerException.Internal(
+		            s"Session ID [${sid}]found but in the wrong schema. Expected [${schemaName}], but was [${ssn.schemaGen.getName()}]")
+
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson)
       ))
@@ -42,17 +50,54 @@ class SessionController @Inject() (
     */
    def getOrCreateSession(schemaName:String, sid:String) = action { req =>
      
-      var result:SessionImpl = null
-      
-      server.ssnStore.get(schemaName, sid) match {
-         case Some(ssn) => result = ssn
-         case None      => result = new SessionImpl
+      val result: SessionImpl = server.ssnStore.get(sid) match {
+         
+         // Have the session. Must match the schema name.
+         case Some(ssn) => {
+            
+            if (ssn.schemaGen.getName() != schemaName) 
+		      throw new ServerException.Internal(
+		            s"Session ID [${sid}]found but in the wrong schema. Expected [${schemaName}], but was [${ssn.schemaGen.getName()}]")
+            
+            ssn
+         }
+         
+         // Dont have the session. Try to create.
+         case None => {
+            
+            server.schemata.get(schemaName) match {
+               
+               // Have the schema. Must have a live gen.
+               case Some(schema) => {
+                  
+                  schema.liveGen match {
+                     // AOK. Creating the session
+                     case Some(liveGen) => new SessionImpl(sid, liveGen)
+                     case None => {
+                        logger.debug("Schema [%s] not found".format(schemaName))
+                        throw new ServerException.Remote(UnknownSchema, schemaName)
+                     }
+                  }
+               }
+               
+               // Don't have the schema.
+               case None => {
+                  logger.debug("Schema [%s] not found".format(schemaName))
+                  throw new ServerException.Remote(UnknownSchema, schemaName)
+               }
+            }
+         }
       }
-      
+
+      // If we're here, we have the session
       val response = JsObject(Seq(
-         "session" -> JsString(result.toJson)
+         "session" -> JsString(result.toJson),
+         "schema" -> JsObject(Seq(
+               "id" -> JsString(result.schemaGen.getId()),
+               "src" -> JsString(result.schemaGen.source)
+         ))
       ))
-      
+
       Ok(response.toString)
    }
 
@@ -70,7 +115,8 @@ class SessionController @Inject() (
     *   ELSE IF connection is DRAINING THEN UnknownConnection
     *   ELSE InternalError
     *   
-    */
+    **** We should not need a save session.
+    *  
    def saveSession() = action { req =>
 
       val ssnJson = req.body.asText.getOrElse {
@@ -80,7 +126,8 @@ class SessionController @Inject() (
       server.ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
       Ok      
    }
-    
+*/
+   
    /**
     * 
     */
@@ -98,8 +145,7 @@ class SessionController @Inject() (
       }
       val value = (bodyJson \ "value").asOpt[String].getOrElse(null)
 
-      val conn = req.attrs.get(connectedAction.ConnKey).get
-      val ssn = server.ssnStore.getOrBust(sid, conn)
+      val ssn = server.ssnStore.getOrBust(sid)
 
       val prevValue = ssn.setAttribute(name, value)
       
@@ -114,7 +160,7 @@ class SessionController @Inject() (
    /**
     * Clear an attribute
     */
-   def clearAttribute() = connectedAction { req =>
+   def clearAttribute() = action { req =>
 
       val bodyJson = getBody(req).getOrElse {
          throw new ServerException.Remote(EmptyBody)
@@ -126,8 +172,7 @@ class SessionController @Inject() (
          throw new ServerException.Remote(MissingProperty, "name")         
       }
 
-      val conn = req.attrs.get(connectedAction.ConnKey).get
-      val ssn = server.ssnStore.getOrBust(sid, conn)
+      val ssn = server.ssnStore.getOrBust(sid)
       val prevValue = ssn.clearAttribute(name)
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson),

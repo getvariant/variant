@@ -30,11 +30,9 @@ object SessionImpl {
    def apply(json: String, schemaGen: SchemaGen) = new SessionImpl(json, schemaGen)
 
    /**
-    * New server session with nothing in it, but the SID - good for tests.
+    * New server session with nothing in it, but the SID.
     */
-   def empty(sid: String, schemaName: String) = {
-      new SessionImpl(new CoreSession(sid), new Connection(schema))
-   }
+   def empty(sid: String, schemaGen: SchemaGen) = new SessionImpl(new CoreSession(sid), schemaGen)
 
    /**
     * New server session with nothing in it, but the SID - good for tests.

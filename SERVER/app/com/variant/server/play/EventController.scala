@@ -1,4 +1,4 @@
-package com.variant.server.play.controller
+package com.variant.server.play
 
 import scala.collection.JavaConversions._
 import javax.inject.Inject
@@ -22,7 +22,6 @@ import com.variant.server.api.Session
 import com.variant.server.impl.SessionImpl
 import com.variant.core.util.Constants._
 import play.api.mvc.ControllerComponents
-import com.variant.server.play.VariantAction
 
 //@Singleton -- Is this for non-shared state controllers?
 class EventController @Inject() (
@@ -59,9 +58,7 @@ class EventController @Inject() (
       
       val params = (bodyJson \ "params").asOpt[List[JsObject]].getOrElse(List[JsObject]())
 
-      val conn = req.attrs.get(connectedAction.ConnKey).get
-
-      val ssn = server.ssnStore.getOrBust(sid, conn)
+      val ssn = server.ssnStore.getOrBust(sid)
       
       if (ssn.getStateRequest == null)
          throw new ServerException.Remote(UnknownState)   

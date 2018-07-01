@@ -158,7 +158,7 @@ class VariantServerImpl @Inject() (
       logger.info(s"${productName} is shutting down")
       
       // Undeploy all schemata
-      schemata.foreach { case (name: String, schema: Schema) => schema.undeploy() }
+      schemata.foreach { case (name: String, schema: Schema) => schema.undeployLiveGen() }
       
       logger.info(ServerErrorLocal.SERVER_SHUTDOWN.asMessage(
             productName,

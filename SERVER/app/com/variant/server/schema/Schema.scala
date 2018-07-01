@@ -13,6 +13,8 @@ import play.api.Logger
  * 
  * Created with a seed generation, which provides the schema name and origin all
  * subsequent generations must match.
+ * 
+ * Cleaned up by the vacuum thread after all generations are gone.
  */
 class Schema(private val seed: SchemaGen) {
   
@@ -30,11 +32,21 @@ class Schema(private val seed: SchemaGen) {
    deployGen(seed)
    
    /**
-    * Undeploy a gen
+    * Undeploy a particular gen
     */
    private[this] def undeployGen(gen: SchemaGen) {
       gen.state = SchemaGen.State.Dead
    	logger.info(s"Undeployed schema generation ID [${gen.getId}] in schema [${name}]")
+   }
+
+   /**
+    * Undeploy the live gen
+    */
+   def undeployLiveGen() {
+      liveGen.foreach { gen =>
+         gen.state = SchemaGen.State.Dead
+         logger.info(s"Undeployed schema generation ID [${gen.getId}] in schema [${name}]")
+      }
    }
 
    /**
