@@ -176,7 +176,7 @@ public class SessionCache {
 		//vacuumThread.interrupt();
 		for (Entry e: cache.values()) {e.session.expire();}
 		cache.clear();
-		LOG.debug("Doestroyed session cache for connection [" + conn.getId() + "]");
+		LOG.debug("Doestroyed session cache for connection to schema [" + conn. + "]");
 	}
 
 }

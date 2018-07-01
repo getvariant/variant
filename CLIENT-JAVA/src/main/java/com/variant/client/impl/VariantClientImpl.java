@@ -1,13 +1,12 @@
 package com.variant.client.impl;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.typesafe.config.Config;
+import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
 import com.variant.client.net.Payload;
 import com.variant.core.conf.ConfigLoader;
+import com.variant.core.impl.ServerError;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
@@ -25,23 +24,6 @@ public class VariantClientImpl implements VariantClient {
 	public final LifecycleService lceService = new LifecycleService(this);
 	public final Server server;
 		
-	/**
-	 */	
-	private Connection getConnection(String schema) {
-		try {
-			Payload.Connection payload = server.connect(schema);
-			return new ConnectionImpl(this, schema, payload);
-		}
-		catch (ClientException.User ue) {
-			if (ue.getError() == ServerError.UnknownSchema) 
-				return null;
-			throw ue;
-		}		
-		ConnectionImpl result = connFactory.connectTo(schema);
-//		if (result != null) connMap.put(result.getId(), result);
-		return result;
-	}
-
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -60,9 +42,17 @@ public class VariantClientImpl implements VariantClient {
 	}
 
 	@Override
-	public CompletableFuture<Connection> connectTo(String schema) {
-		return CompletableFuture.completedFuture(getConnection(schema));
+	public Connection connectTo(String schema) {
 		
+		try {
+			Payload.Connection payload = server.connect(schema);
+			return new ConnectionImpl(this, schema, payload);
+		}
+		catch (ClientException.User ue) {
+			if (ue.getError() == ServerError.UnknownSchema) 
+				return null;
+			throw ue;
+		}		
 	}
 
 	//---------------------------------------------------------------------------------------------//

@@ -1,8 +1,5 @@
 package com.variant.client;
 
-import com.variant.client.lifecycle.ClientLifecycleEvent;
-import com.variant.client.lifecycle.LifecycleHook;
-import com.variant.core.schema.Schema;
 
 
 /**
@@ -120,6 +117,13 @@ public interface Connection {
 	 */
 	Session getSessionById(String sessionId);
 	
+	/**
+	 * The name of the schema which is the target of this connection.
+	 *
+	 * @since 0.9
+	 */
+	String getSchemaName();
+
 	/**
 	 * Register a connection-level life-cycle hook. Hooks are posted asynchronously.
 	 * If multiple hooks are registered for a particular life-cycle event, connection-level

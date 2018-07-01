@@ -1,8 +1,6 @@
 package com.variant.client;
 
 
-import java.util.concurrent.CompletableFuture;
-
 import com.typesafe.config.Config;
 import com.variant.client.impl.VariantClientImpl;
 
@@ -40,7 +38,7 @@ public interface VariantClient {
 	public Connection getConnection(String schema);
 	*/
 	
-	public CompletableFuture<Connection> connectTo(String schema);
+	public Connection connectTo(String schema);
 	
 	/**
 	 * Static factory class: call {@link #getInstance()} to obtain a new instance of {@link VariantClient}.

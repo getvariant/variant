@@ -104,14 +104,20 @@ class SessionStore (private val server: VariantServer) {
 	
 	/**
 	 * Retrieve a session by its ID as an Option.
-	 * Requestor's connection must be parallel to the session's.
+    * If exists, must be in the right schema's gen.
 	 */
 	def get(schemaName: String, sid: String): Option[SessionImpl] = {
 	
 		sessionMap.get(sid) match { 
 		   
 		case None => None
+		
 		case Some(e) =>
+		
+		   if (e.session.schemaGen.getName() != schemaName) 
+		      throw new ServerException.Internal(
+		            s"Session ID [${sid}]found but in the wrong schema. Expected [${schemaName}], but was [${e.session.schemaGen.getName()}]")
+		   
 		   if (!e.isExpired) {
 		      e.touch()
 		      Some(e.session)
@@ -120,6 +126,22 @@ class SessionStore (private val server: VariantServer) {
 		      None
 		   }
 		}
+	}
+
+	/**
+	 * Retrieve a session by its ID. If does not exist, create in the live gen.
+	 * Give exception if no schema or no live gen.
+	 * 
+	 * Requestor's connection must be parallel to the session's.
+	 */
+	def getOrCreate(schemaName: String, sid: String): SessionImpl = {
+	
+	   get(schemaName, sid) match {
+	      case Some(ssn) => ssn
+	      case None      => {
+	         server.schemata.
+	      }
+	   }
 	}
 
 	/**

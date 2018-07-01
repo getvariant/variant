@@ -5,6 +5,7 @@ import scala.collection.mutable.HashMap
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal
 import play.api.Logger
+import scala.collection.concurrent.TrieMap
 
 /**
  * 
@@ -14,7 +15,7 @@ class Schemata () {
    private[this] val logger = Logger(this.getClass)
    
    // Map of Schema objects keyed by schema name.
-   private[this] val _schemaMap = HashMap[String, Schema]()
+   private[this] val _schemaMap = new TrieMap[String, Schema]()
   
    /**
     * Deploy a schema generation
@@ -48,9 +49,9 @@ class Schemata () {
    
    /**
     * Get a schema by name
-    *
-   def get(name: String) = synchronized { _schemaMap.get(name) }
-   */
+    */
+   def get(name: String): Option[Schema] = { _schemaMap.get(name) }
+
    
    /**
     * Undeploy schema by origin.

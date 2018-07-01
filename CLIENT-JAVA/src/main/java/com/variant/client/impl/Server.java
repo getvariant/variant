@@ -62,7 +62,7 @@ public class Server {
 			catch (ClientException.User ce) {
 				if (ce.getError() == ServerError.SessionExpired) {
 					((ConnectionImpl)conn).cache.expire(sid);
-					throw new SessionExpiredException(ce);
+					throw new SessionExpiredException(sid);
 				}
 				else throw ce;
 			}
@@ -146,7 +146,7 @@ public class Server {
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.get(serverUrl + "session/" + conn.schema + "/" + sid);
+				HttpResponse resp = adapter.get(serverUrl + "session/" + conn.getSchemaName() + "/" + sid);
 				return Payload.Session.parse(conn, resp);
 			}
 		}.run(sid, conn);
@@ -165,7 +165,7 @@ public class Server {
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.post(serverUrl + "session/" + conn.schema + "/" + sid);
+				HttpResponse resp = adapter.post(serverUrl + "session/" + conn.getSchemaName() + "/" + sid);
 				return Payload.Session.parse(conn, resp);
 			}
 		}.run(sid, conn);

@@ -4,9 +4,8 @@ import com.variant.core.impl.ServerError;
 
 
 /**
- * Thrown when the underlying Variant session has expired, but the connection which opened this session is still usable.
+ * Thrown when the underlying Variant session has expired.
  * 
- * @author Igor Urisman
  * @since 0.7
  */
 @SuppressWarnings("serial")

@@ -3,28 +3,18 @@ package com.variant.client.impl;
 import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
 import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.UnknownSchemaException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.VariantClient;
-import com.variant.client.lifecycle.ClientLifecycleEvent;
-import com.variant.client.lifecycle.ConnectionClosedLifecycleEvent;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
-import com.variant.core.UserError.Severity;
-import com.variant.client.lifecycle.LifecycleHook;
-import com.variant.core.schema.ParserMessage;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.StringUtils;
-import com.variant.core.util.immutable.ImmutableList;
 
 /**
  * A connection to the server.
@@ -169,10 +159,10 @@ public class ConnectionImpl implements Connection {
 	private static final Random RAND = new Random(System.currentTimeMillis());
 	
 	private final long sessionTimeoutMillis;
+	private final String schema;
 
 	final VariantClientImpl client;
 	
-	public final String schema;
 
 	/**
 	 * 
@@ -252,13 +242,12 @@ public class ConnectionImpl implements Connection {
 			return null;
 		}	
 	}
-/*
+
 	@Override
-	public Schema getSchema() {
-		preChecks();
+	public String getSchemaName() {
 		return schema;
 	}
-
+/*
 	@Override
 	public ConnectionStatus getStatus() {
 		return status;

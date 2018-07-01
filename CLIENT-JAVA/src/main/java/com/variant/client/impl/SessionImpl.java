@@ -27,8 +27,8 @@ import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.client.lifecycle.SessionExpiredLifecycleEvent;
 import com.variant.client.session.TargetingTrackerEntryImpl;
-import com.variant.core.ConnectionStatus;
 import com.variant.core.VariantEvent;
+import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.session.CoreSession;
@@ -117,14 +117,7 @@ public class SessionImpl implements Session {
 	 * Package visibility because state request abject needs access.
 	 */
 	void preChecks() {
-		if (isExpired) {
-			if (conn.getStatus() == ConnectionStatus.DRAINING)
-				throw new UnknownSchemaException(ClientUserError.CONNECTION_DRAINING);
-			else if (conn.getStatus() != ConnectionStatus.OPEN)
-				throw new UnknownSchemaException(ClientUserError.CONNECTION_CLOSED);
-			else
-				throw new SessionExpiredException();
-		}
+		if (isExpired) throw new SessionExpiredException(getId());
 	}
 
 	// ---------------------------------------------------------------------------------------------//
@@ -415,6 +408,11 @@ public class SessionImpl implements Session {
 	 */
 	public ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>> getLifecycleHooks() {
 		return new ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>>(lifecycleHooks);
+	}
+
+	@Override
+	public Schema getSchema() {
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 }

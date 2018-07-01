@@ -15,6 +15,14 @@ import play.api.Logger
  */
 object SchemaGen {
    
+   /**
+	 * Lifecycle states of a schema generation.
+	 */
+   object State extends Enumeration {
+      type State = Value
+      val New, Live, Dead = Value
+   }
+
    private val rand = new java.util.Random()
    
    def apply(response: ParserResponse, origin: String) = new SchemaGen(response, origin)
@@ -24,18 +32,13 @@ object SchemaGen {
  * Server side schema adds some server specific state.
  */
 class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSchema {
-  
-   import State._
-   
-   private val logger = Logger(this.getClass)   
+           
+   //private val logger = Logger(this.getClass)   
    private val coreSchema =  response.getSchema
    private val id = StringUtils.random64BitString(SchemaGen.rand)
    
-   /**
-    * Schema can be New, Deployed or Gone
-    */
-   var state: State = New  
-   
+   private[schema] var state = SchemaGen.State.New  
+      
    /**
     * Number of sessions connected to this schema generation.
     */
@@ -84,26 +87,10 @@ class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSc
 	val hooksService = response.getParser.getHooksService.asInstanceOf[ServerHooksService]
    val flusherService = response.getParser.getFlusherService.asInstanceOf[ServerFlusherService]
 	val eventWriter = new EventWriter(flusherService)
-	
-   /**
-    * Undeploy this schema.
-    */
-	def undeploy() {
-      state = Dead
-	   logger.info(s"Undeployed schema generation [${getName}] ID [${getId}], from [${origin}]")
-	}
-   
+	   
    /**
     * 
     */
    override def toString() = s"{ServerSchema=[$getName], ID=[$getId]}"
    
-}
-
-/**
- * Lifecycle states of a schema generation.
- */
-object State extends Enumeration {
-   type State = Value
-   val New, Live, Dead = Value
 }

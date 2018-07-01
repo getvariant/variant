@@ -31,12 +31,11 @@ object SessionImpl {
 
    /**
     * New server session with nothing in it, but the SID - good for tests.
-    *
+    */
    def empty(sid: String, schemaName: String) = {
-      val schema = VariantServer.instance.schemata(schemaName)
-      new SessionImpl(new CoreSession(sid, schema), new Connection(schema))
+      new SessionImpl(new CoreSession(sid), new Connection(schema))
    }
-   */
+
    /**
     * New server session with nothing in it, but the SID - good for tests.
     *

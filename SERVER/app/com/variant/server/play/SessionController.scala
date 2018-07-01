@@ -13,6 +13,7 @@ import play.api.libs.json.JsString
 import play.api.mvc.ControllerComponents
 import com.variant.core.impl.ServerError
 import com.variant.server.boot.VariantServer
+import com.variant.server.api.Session
 
 class SessionController @Inject() (
       val action: VariantAction,
@@ -30,6 +31,26 @@ class SessionController @Inject() (
       val ssn = server.ssnStore.getOrBust(schemaName, sid)
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson)
+      ))
+      
+      Ok(response.toString)
+   }
+
+   /**
+    * Get a session by ID, if exists in any of the given schema's generations
+    * or create in the live gen.
+    */
+   def getOrCreateSession(schemaName:String, sid:String) = action { req =>
+     
+      var result:SessionImpl = null
+      
+      server.ssnStore.get(schemaName, sid) match {
+         case Some(ssn) => result = ssn
+         case None      => result = new SessionImpl
+      }
+      
+      val response = JsObject(Seq(
+         "session" -> JsString(result.toJson)
       ))
       
       Ok(response.toString)
@@ -63,7 +84,7 @@ class SessionController @Inject() (
    /**
     * 
     */
-   def addAttribute() = connectedAction { req =>
+   def addAttribute() = action { req =>
 
       val bodyJson = getBody(req).getOrElse {
          throw new ServerException.Remote(EmptyBody)
