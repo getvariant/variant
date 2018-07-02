@@ -7,7 +7,6 @@ import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.collection.JavaConversions._
 import com.variant.core.impl.ServerError._
-import com.variant.core.ConnectionStatus._
 import com.variant.core.util.Constants._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.EventReader
@@ -67,65 +66,28 @@ import EventTest._
 	   */
    
       "return  404 on POST with no schema name" in {
-         assertResp(route(app, connectionRequest("")))
+         assertResp(route(app, httpReq(GET, endpoint)))
             .is(NOT_FOUND)
             .withNoBody
       }
 
       "return  400 and error on POST to non-existent schema" in {         
-         assertResp(route(app, connectionRequest("foo")))
+         assertResp(route(app, httpReq(GET, endpoint + "/foo")))
             .isError(UnknownSchema, "foo")
-            .withNoConnStatusHeader
       }
       
-      "ignore connection ID header on connection" in {
-         
-         var cid: String = null
-         
-         assertResp(route(app, connectedRequest(POST, endpoint + "/big_conjoint_schema", "foo")))
-            .isOk
-            .withConnStatusHeader(OPEN)
-            .withBodyJson { json => 
-               (json \ "id").asOpt[String].isDefined mustBe true
-               cid = (json \ "id").as[String]
-               (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
-               (json \ "ts").asOpt[Long].isDefined mustBe true
-               val schemaSrc = (json \ "schema" \ "src").as[String]
-               val schemaId = (json \ "schema" \ "id").as[String]
-               schemaSrc mustBe server.schemata("big_conjoint_schema").source
-               schemaId mustBe server.schemata("big_conjoint_schema").getId
-               val parser = ServerSchemaParser()
-               val parserResp = parser.parse(schemaSrc)
-               parserResp.hasMessages() mustBe false
-         		parserResp.getSchema() mustNot be (null)
-      	   	parserResp.getSchemaSrc() mustNot be (null)      	   	
-               val schema = parserResp.getSchema
-               schema.getName mustEqual "big_conjoint_schema"
-            }
-         
-         // close this connection. 
-         assertResp(route(app, connectedRequest(DELETE, endpoint, cid)))
-            .isOk
-            .withNoBody
-            .withConnStatusHeader(CLOSED_BY_CLIENT)
-      }
-
-      var connId: String = null
-
       "open connection on POST with valid schema name" in {
          
-         assertResp(route(app, connectionRequest("big_conjoint_schema")))
+         assertResp(route(app, httpReq(GET, endpoint + "big_conjoint_schema")))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withBodyJson { json =>
                (json \ "id").asOpt[String].isDefined mustBe true
-               connId = (json \ "id").as[String]
                (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
                (json \ "ts").asOpt[Long].isDefined mustBe true
                val schemaSrc = (json \ "schema" \ "src").as[String]
                val schemaId = (json \ "schema" \ "id").as[String]
-               schemaSrc mustBe server.schemata("big_conjoint_schema").source
-               schemaId mustBe server.schemata("big_conjoint_schema").getId
+               schemaSrc mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.source
+               schemaId mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.getId
                val parser = ServerSchemaParser()
                val parserResp = parser.parse(schemaSrc)
                parserResp.hasMessages() mustBe false
@@ -136,87 +98,7 @@ import EventTest._
                schema.getName mustEqual "big_conjoint_schema"
             }
       }
-      
-      /* GET connection is off
-      "return OK on GET open connection" in {
-         val resp = route(app, FakeRequest(GET, endpoint + "/" + connId).withHeaders("Content-Type" -> "text/plain")).get
-         status(resp) mustBe OK
-         contentAsString(resp) mustBe empty
-      }
-      */
-      
-      "close connection on DELETE with valid connection ID" in {
-         assertResp(route(app, connectedRequest(DELETE, endpoint, connId)))
-            .isOk
-            .withConnStatusHeader(CLOSED_BY_CLIENT)
-            .withNoBody
-      }
-      
-      "return 400 on DELETE of connection which no longer exists" in {
-         assertResp(route(app, connectedRequest(DELETE, endpoint, connId)))
-            .isError(UnknownConnection, connId)
-            .withNoConnStatusHeader
-      }
-
-      // At this point, we should have no open connections.
-      "return 400 when attempting to open one too many connections" in {
-         val max = server.config.getInt(MAX_CONCURRENT_CONNECTIONS)
-         for (i <- 1 to max) {
-            assertResp(route(app, connectionRequest("big_conjoint_schema")))
-               .isOk
-               .withConnStatusHeader(OPEN)
-               .withBodyJson { json =>
-                  connId = (json \ "id").as[String]
-                  (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
-                  (json \ "ts").asOpt[Long].isDefined mustBe true
-                  val schemaSrc = (json \ "schema" \ "src").as[String]
-                  val schemaId = (json \ "schema" \ "id").as[String]
-                  schemaSrc mustBe server.schemata("big_conjoint_schema").source
-                  schemaId mustBe server.schemata("big_conjoint_schema").getId
-                  val parser = ServerSchemaParser()
-                  val parserResp = parser.parse(schemaSrc)
-                  parserResp.hasMessages() mustBe false
-            		parserResp.getSchema() mustNot be (null)
-         	   	parserResp.getSchemaSrc() mustNot be (null)
-         	   	
-                  val schema = parserResp.getSchema
-                  schema.getName mustEqual "big_conjoint_schema"                  
-               }
-         }
-         
-         // One over
-         assertResp(route(app, connectionRequest("big_conjoint_schema")))
-            .isError(TooManyConnections)
-            .withNoConnStatusHeader
-         
-         // Close one
-         assertResp(route(app, connectedRequest(DELETE, endpoint, connId)))
-            .isOk
-            .withNoBody
-            .withConnStatusHeader(CLOSED_BY_CLIENT)
-
-         // Now should work
-         assertResp(route(app, connectionRequest("big_conjoint_schema")))
-            .isOk
-            .withConnStatusHeader(OPEN)
-            .withBodyJson { json =>
-               connId = (json \ "id").as[String]
-               (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
-               (json \ "ts").asOpt[Long].isDefined mustBe true
-               val schemaSrc = (json \ "schema" \ "src").as[String]
-               val schemaId = (json \ "schema" \ "id").as[String]
-               schemaSrc mustBe server.schemata("big_conjoint_schema").source
-               schemaId mustBe server.schemata("big_conjoint_schema").getId
-               val parser = ServerSchemaParser()
-               val parserResp = parser.parse(schemaSrc)
-               parserResp.hasMessages() mustBe false
-         		parserResp.getSchema() mustNot be (null)
-      	   	parserResp.getSchemaSrc() mustNot be (null)
-      	   	
-               val schema = parserResp.getSchema
-               schema.getName mustEqual "big_conjoint_schema"
-            }
-      }
+            
    }
 }
 

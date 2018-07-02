@@ -13,7 +13,6 @@ import com.variant.core.session.CoreSession
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.util.EventExperienceFromDatabase
 import com.variant.core.impl.StateVisitedEvent
-import com.variant.core.ConnectionStatus._
 import com.variant.core.session.CoreStateRequest
 
 
@@ -25,12 +24,11 @@ class RequestTest extends BaseSpecWithServer {
    
    "Schema big_conjoint_schema" should {
 
-      val schema = server.schemata("big_conjoint_schema")
+      val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
       val schemaId = schema.getId
       val writer = schema.eventWriter
       val reader = EventReader(writer)
       val sid = newSid
-      var cid: String = null
 
       
       "have expected event writer confuration" in {
@@ -40,32 +38,19 @@ class RequestTest extends BaseSpecWithServer {
 
       }
 
-      "obtain a connection" in {
-
-         assertResp(route(app, connectionRequest("big_conjoint_schema")))
-            .isOk
-            .withConnStatusHeader(OPEN)
-            .withBodyJson { json => 
-               cid = (json \ "id").as[String]
-               cid mustNot be (null)
-           }
-      }
-
       "create new session" in {
          
          val body = SessionImpl.empty(sid, schema).toJson
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(body)))
+         assertResp(route(app, httpReq(PUT, context + "/session").withTextBody(body)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withNoBody
          
       }
 
       "create and commit new state request" in {
 
-         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
+         assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
                val coreSsn1 = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn1.getStateRequest
@@ -79,9 +64,8 @@ class RequestTest extends BaseSpecWithServer {
             ).toString
 
          // Target and get the request.
-         assertResp(route(app, connectedRequest(POST, context + "/request", cid).withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest
@@ -100,9 +84,8 @@ class RequestTest extends BaseSpecWithServer {
             ).toString
             
          var stateReq: CoreStateRequest = null
-         assertResp(route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                stateReq = coreSsn.getStateRequest
@@ -116,9 +99,8 @@ class RequestTest extends BaseSpecWithServer {
          
          // Try committing again... Should work because we don't actually check for this on the server.
          // and trust that the client will check before sending the request and check again after receiving.
-         assertResp(route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
             .isOk
-            .withConnStatusHeader(OPEN)
 
          // Wait for event writer to flush and confirm we wrote 1 state visit event.
          Thread.sleep(2000)
@@ -140,45 +122,32 @@ class RequestTest extends BaseSpecWithServer {
 
    "Schema petclinic" should {
 
-      val schema = server.schemata("petclinic")
+      val schema = server.schemata.get("petclinic").get.liveGen.get
       val schemaId = schema.getId
       val writer = schema.eventWriter
       val reader = EventReader(writer)
       val sid = newSid
-      var cid: String = null
-
-      "obtain a connection" in {
-
-         assertResp(route(app, connectionRequest("petclinic")))
-            .isOk
-            .withConnStatusHeader(OPEN)
-            .withBodyJson { json => 
-               cid = (json \ "id").as[String]
-               cid mustNot be (null)
-         }
-      }
 
       "create new session" in {
          
-         val ssn = SessionImpl.empty(sid, schema)
-         ssn.setAttribute("user-agent", "Safari")
-         val reqBody = ssn.toJson
+         // ssn.setAttribute("user-agent", "Safari")
 
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withTextBody(reqBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid)))
             .isOk
-            .withConnStatusHeader(OPEN)
-            .withNoBody
+            .withBodyJson { json =>
+                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+                SessionImpl(coreSsn, schema) mustEqual SessionImpl.empty(sid, schema)
+             }
       }
 
       "Disqualify session from test" in {
 
-         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
+         assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
-               val coreSsn1 = CoreSession.fromJson((json \ "session").as[String], schema)
-               coreSsn1.getAttribute("user-agent") mustBe "Safari"
-               coreSsn1.getStateRequest mustBe (null)
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               coreSsn.getAttribute("user-agent") mustBe "Safari"
+               coreSsn.getStateRequest mustBe (null)
              } 
          
          // Create state request object.
@@ -188,9 +157,8 @@ class RequestTest extends BaseSpecWithServer {
             ).toString
 
          // Target and get the request.
-         assertResp(route(app, connectedRequest(POST, context + "/request", cid).withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest
@@ -211,9 +179,8 @@ class RequestTest extends BaseSpecWithServer {
          val reqBody2 = Json.obj(
             "sid" -> sid
             ).toString
-         assertResp(route(app, connectedRequest(PUT, context + "/request", cid).withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest
@@ -233,9 +200,8 @@ class RequestTest extends BaseSpecWithServer {
          // Send custom event.
          val eventBody = EventTest.body.expand("sid" -> sid, "name" -> "eventName", "value" -> "eventValue")
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
-         assertResp(route(app, connectedRequest(POST, context + "/event", cid).withTextBody(eventBody)))
+         assertResp(route(app, httpReq(POST, context + "/event").withTextBody(eventBody)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withNoBody
 
          // Wait for event writer to flush and confirm all event were discarded.

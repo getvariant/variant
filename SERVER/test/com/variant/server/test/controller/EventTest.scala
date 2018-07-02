@@ -7,13 +7,10 @@ import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.collection.JavaConversions._
 import com.variant.core.impl.ServerError._
-import com.variant.core.ConnectionStatus._
 import com.variant.core.util.Constants._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.spec.BaseSpecWithServer
-import com.variant.server.conn.ConnectionStore
-import com.variant.server.conn.ConnectionStore
 import javax.inject.Inject
 import com.variant.server.api.Session
 import org.scalatest.TestData
@@ -57,68 +54,46 @@ class EventTest extends BaseSpecWithServer {
       
    "EventController" should {
 
-      val schema = server.schemata("big_conjoint_schema")
+      val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
       val eventWriter = schema.eventWriter
 
       "return 404 on GET" in {
          assertResp(route(app, FakeRequest(GET, endpoint)))
             .is(NOT_FOUND)
             .withNoBody
-            .withNoConnStatusHeader
       }
 
       "return 404 on PUT" in {
          assertResp(route(app, FakeRequest(PUT, endpoint)))
             .is(NOT_FOUND)
             .withNoBody
-            .withNoConnStatusHeader
-      }
-
-
-      var cid: String = null 
-      var schid: String = null
-      
-      "obtain a connection" in {
-         assertResp(route(app, connectionRequest("big_conjoint_schema")))
-            .isOk
-            .withConnStatusHeader(OPEN)
-            .withBodyJson { json =>
-               cid = (json \ "id").as[String]
-               cid mustNot be (null)
-               schid = (json \ "schema" \ "id").as[String]
-            }
       }
       
       "return 400 and error on POST with no body" in {
-         assertResp(route(app, connectedRequest(POST, endpoint, cid)))
+         assertResp(route(app, httpReq(POST, endpoint)))
             .isError(EmptyBody)
-            .withConnStatusHeader(OPEN)
      }
 
       "return  400 and error on POST with invalid JSON" in {
-         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody("bad json")))
+         assertResp(route(app, httpReq(POST, endpoint).withBody("bad json")))
             .isError(JsonParseError, "Unrecognized token 'bad': was expecting ('true', 'false' or 'null') at [Source: bad json; line: 1, column: 4]")
-            .withConnStatusHeader(OPEN)
      }
 
       "return  400 and error on POST with no sid" in {
-         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody(bodyNoSid)))
+         assertResp(route(app, httpReq(POST, endpoint).withBody(bodyNoSid)))
             .isError(MissingProperty, "sid")
-            .withConnStatusHeader(OPEN)
       }
 
       "return 400 and error on POST with no name" in {
-         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody(bodyNoName)))
+         assertResp(route(app, httpReq(POST, endpoint).withBody(bodyNoName)))
             .isError(MissingProperty, "name")
-            .withConnStatusHeader(OPEN)
       }
 
       "return  400 and error on POST with non-existent session" in {
          
          val eventBody = body.expand("sid" -> "foo")
-         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody(eventBody)))
+         assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
             .isError(SessionExpired, "foo")
-            .withConnStatusHeader(OPEN)
       }
 
       var ssn: Session = null;
@@ -126,20 +101,45 @@ class EventTest extends BaseSpecWithServer {
       "obtain a session" in {
          val sid = newSid()
          val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis(), schema.getId)).expand("sid" -> sid)
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(sessionJson)))
+         assertResp(route(app, httpReq(PUT, context + "/session").withBody(sessionJson)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withNoBody
 
-         ssn = server.ssnStore.get(sid, server.connStore.get(cid).get).get
+         ssn = server.ssnStore.get(sid).get
       }
       
+      "return 400 and error on POST with no body" in {
+         assertResp(route(app, httpReq(POST, endpoint)))
+            .isError(EmptyBody)
+     }
+
+      "return  400 and error on POST with invalid JSON" in {
+         assertResp(route(app, httpReq(POST, endpoint).withBody("bad json")))
+            .isError(JsonParseError, "Unrecognized token 'bad': was expecting ('true', 'false' or 'null') at [Source: bad json; line: 1, column: 4]")
+     }
+
+      "return  400 and error on POST with no sid" in {
+         assertResp(route(app, httpReq(POST, endpoint).withBody(bodyNoSid)))
+            .isError(MissingProperty, "sid")
+      }
+
+      "return 400 and error on POST with no name" in {
+         assertResp(route(app, httpReq(POST, endpoint).withBody(bodyNoName)))
+            .isError(MissingProperty, "name")
+      }
+
+      "return  400 and error on POST with non-existent session" in {
+         
+         val eventBody = body.expand("sid" -> "foo")
+         assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
+            .isError(SessionExpired, "foo")
+      }
+
       "return 400 and error on POST with missing param name" in {
 
          val eventBody = bodyNoParamName.expand("sid" -> ssn.getId)
-         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody(eventBody)))
+         assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
             .isError(MissingParamName)
-            .withConnStatusHeader(OPEN)
       }
 
       "flush the event with explicit timestamp" in {
@@ -149,10 +149,9 @@ class EventTest extends BaseSpecWithServer {
          val eventValue = Random.nextString(5)
          val eventBody = body.expand("sid" -> ssn.getId, "ts" -> timestamp, "name" -> eventName, "value" -> eventValue)
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
-         assertResp(route(app, connectedRequest(POST, endpoint, cid).withBody(eventBody)))
+         assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
             .isOk
             .withNoBody
-            .withConnStatusHeader(OPEN)
          
          // Read events back from the db, but must wait for the asych flusher.
          eventWriter.maxDelayMillis  mustEqual 2000
