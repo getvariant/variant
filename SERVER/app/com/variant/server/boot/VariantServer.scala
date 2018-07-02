@@ -22,6 +22,7 @@ import play.api.ApplicationLoader
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.util.VariantClassLoader
 import play.api.Play
+import com.variant.server.schema.Schemata
 
 
 /**
@@ -36,7 +37,7 @@ trait VariantServer {
    val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
    // Read-only snapshot
-   def schemata: Map[String, Schema]
+   def schemata: Schemata
    val ssnStore: SessionStore
    def useSchemaDeployer(newDeployer: SchemaDeployer): Unit
    def schemaDeployer: SchemaDeployer
@@ -158,7 +159,7 @@ class VariantServerImpl @Inject() (
       logger.info(s"${productName} is shutting down")
       
       // Undeploy all schemata
-      schemata.foreach { case (name: String, schema: Schema) => schema.undeployLiveGen() }
+      schemata.undeployAll()
       
       logger.info(ServerErrorLocal.SERVER_SHUTDOWN.asMessage(
             productName,

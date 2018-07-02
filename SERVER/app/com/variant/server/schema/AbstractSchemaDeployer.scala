@@ -18,11 +18,8 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
   
   override lazy val parserResponses = _parserResponses.toSeq
   
-  protected val _schemata = new Schemata()
+  override val schemata = new Schemata()
   
-  // Callers get an immutable snapshot.
-  // override def schemata = _schemata.toMap
-
   /**
    * Parse a schema.
    */
@@ -44,7 +41,7 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
    * Deploy a parsed schema.
    */
   protected def deploy(parserResp: ParserResponse, origin: String) {
-     _schemata.deploy(SchemaGen(parserResp, origin) )
+     schemata.deploy(SchemaGen(parserResp, origin) )
   }
 
   /**

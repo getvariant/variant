@@ -42,7 +42,7 @@ class EventWriter (private val flushService: ServerFlusherService) {
     private val flusherThread = new FlusherThread();
 	 // Not a daemon. Intercept interrupt and flush the buffer before exiting.
 	 flusherThread.setDaemon(false)
-	 flusherThread.setName("Event Flusher For Schema " + flushService.getSchema().getName())
+	 flusherThread.setName("Event Flusher For Schema " + flushService.getSchema().name)
 	 flusherThread.start() 
 
 	//---------------------------------------------------------------------------------------------//

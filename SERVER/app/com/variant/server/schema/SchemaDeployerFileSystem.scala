@@ -100,7 +100,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
     */
    private def undeployFrom(file: File) = {
       logger.info("Undeploying schema from file [%s]".format(file.getAbsolutePath))
-      _schemata.undeploy(file.getName)
+      schemata.undeploy(file.getName)
    }
 
    /**

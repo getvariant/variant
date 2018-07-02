@@ -72,6 +72,27 @@ class Schemata () {
    }
    
    /**
+    * Undeploy all schemata.
+    */
+   def undeployAll() {
+      _schemaMap.foreach { _._2.undeployLiveGen() }
+   }
+   
+   /**
+    * Remove dead generations and empty schemata.
+    */
+   def vacuum() {
+      // Remove dead generations
+      _schemaMap.values.foreach { _.vacuum() }
+      // Remove empty schemata
+      val toDelete = _schemaMap.filter( _._2.genCount == 0)
+      toDelete.foreach { e =>
+         _schemaMap -= e._1
+         logger.debug(s"Vacuumed schemata [${e._2.name}]")
+      }
+   }
+   
+   /**
     * Contents as an immutable map
     *
    def toMap = synchronized { _schemaMap.toMap }

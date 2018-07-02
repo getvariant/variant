@@ -74,6 +74,8 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
 
    override def setAttribute(name: java.lang.String, value: java.lang.String) = coreSession.setAttribute(name, value)
    
+   override def getSchema = schemaGen
+   
    /*----------------------------------------------------------------------------------------*/
    /*                                     PUBLIC EXT                                         */
    /*----------------------------------------------------------------------------------------*/

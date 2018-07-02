@@ -6,26 +6,26 @@
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
 
 # If a path ends in a slash, redirect to the same path without the trailing /.
-GET     /*path/                     com.variant.server.play.controller.RootController.untrail(path)
+GET     /*path/                     com.variant.server.play.RootController.untrail(path)
 
 # Connection Controller
 # :schema = schema name
-GET     /connection/:schema      com.variant.server.play.controller.ConnectionController.get(schema: String)
+GET     /connection/:schema      com.variant.server.play.ConnectionController.get(schema: String)
 
 # Session Controller
 # :schema = schema name; :sid = session id
-GET     /session/:schema/:sid            com.variant.server.play.controller.SessionController.getSession(schema, sid)
-POST    /session/:schema/:sid            com.variant.server.play.controller.SessionController.getOrCreate(schema, sid)
+GET     /session/:schema/:sid            com.variant.server.play.SessionController.getSession(schema, sid)
+POST    /session/:schema/:sid            com.variant.server.play.SessionController.getOrCreateSession(schema, sid)
 
 # Event Controller
-POST    /event                   com.variant.server.play.controller.EventController.post()
+POST    /event                   com.variant.server.play.EventController.post()
 
-PUT     /session/attr            com.variant.server.play.controller.SessionController.addAttribute()
-DELETE  /session/attr            com.variant.server.play.controller.SessionController.clearAttribute()
+PUT     /session/attr            com.variant.server.play.SessionController.addAttribute()
+DELETE  /session/attr            com.variant.server.play.SessionController.clearAttribute()
 
 # Request Controller
-POST    /request                 com.variant.server.play.controller.RequestController.create()
-PUT     /request                 com.variant.server.play.controller.RequestController.commit()
+POST    /request                 com.variant.server.play.RequestController.create()
+PUT     /request                 com.variant.server.play.RequestController.commit()
 
 # Health page at root
-GET     /                        com.variant.server.play.controller.RootController.status()
+GET     /                        com.variant.server.play.RootController.status()

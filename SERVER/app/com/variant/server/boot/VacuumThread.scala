@@ -2,7 +2,6 @@ package com.variant.server.boot
 
 import scala.collection.mutable
 import play.api.Logger
-import com.variant.core.ConnectionStatus._
 import com.variant.server.api.ConfigKeys._
 
 /**
@@ -28,12 +27,15 @@ class VacuumThread(server: VariantServer) extends Thread {
 			try {
 				val now = System.currentTimeMillis();
 				
-				// Sessions sweep
+				// Remove expired sessions from the session store,
 				val deleteCount = server.ssnStore.vacuum()  
 			   
 				if (logger.isTraceEnabled) logger.trace(s"Vacuumed $deleteCount session(s)");
 				else if (logger.isDebugEnabled && deleteCount > 0) logger.debug(s"Vacuumed $deleteCount session(s)");
 
+				// Remove drained schema generations and dead schemata.
+				server.schemata.vacuum()
+				
 				Thread.sleep(vacuumingFrequencyMillis)
 				logger.trace("Vacuum thread woke up after %s millis".format(System.currentTimeMillis() - now))
 			}

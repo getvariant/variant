@@ -32,6 +32,12 @@ class Schema(private val seed: SchemaGen) {
    deployGen(seed)
    
    /**
+    * How many generations does this schema have?
+    * If 0, it can be vacuumed.
+    */
+   def genCount = gens.size
+   
+   /**
     * Undeploy a particular gen
     */
    private[this] def undeployGen(gen: SchemaGen) {
@@ -81,4 +87,14 @@ class Schema(private val seed: SchemaGen) {
       }
    }
 
+   /**
+    * Remove dead drained generations
+    */
+   def vacuum() {
+      gens.filter(_.sessionCount.get == 0 ).foreach { gen =>
+         gens -= gen
+         logger.debug(s"Vacuumed schema generation ID [${gen.getId}] in schema [${name}]")
+      }
+      
+   }
 }
