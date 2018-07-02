@@ -52,6 +52,16 @@ class Schemata () {
     */
    def get(name: String): Option[Schema] = { _schemaMap.get(name) }
 
+   /**
+    * Get a given schema's live generation as an Option.
+    */
+   def getLiveGen(name: String): Option[SchemaGen] = {
+      
+      _schemaMap.get(name) match {
+         case Some(schema) => schema.liveGen
+         case None => None
+      }
+   }
    
    /**
     * Undeploy schema by origin.
@@ -70,6 +80,11 @@ class Schemata () {
          e._2.undeployLiveGen() 
       }
    }
+   
+   /**
+    * Count of live schemata
+    */
+   def size = _schemaMap.filter(_._2.liveGen.isDefined).size
    
    /**
     * Undeploy all schemata.
@@ -92,11 +107,5 @@ class Schemata () {
       }
    }
    
-   /**
-    * Contents as an immutable map
-    *
-   def toMap = synchronized { _schemaMap.toMap }
-   * 
-   */
 }
     

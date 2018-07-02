@@ -13,7 +13,6 @@ import com.variant.core.util.StringUtils
 import com.variant.server.api.Session
 import com.variant.server.boot.VariantApplicationLoader
 import com.variant.server.boot.VariantServer
-import com.variant.server.conn.ConnectionStore
 import com.variant.server.boot.SessionStore
 import com.variant.server.impl.SessionImpl
 import com.variant.server.jdbc.JdbcService
@@ -60,8 +59,8 @@ class BaseSpecWithServer extends BaseSpec with OneAppPerSuite with BeforeAndAfte
 	 * 
 	 */
 	private def recreateDatabase() {
-	   // Assuming the first schema in schemata has the right event writer
-		val jdbc = new JdbcService(server.schemata.head._2.eventWriter)
+	   // Assuming the there's always the petclinic schema and that it has the right event writer.
+		val jdbc = new JdbcService(server.schemata.get("petclinic").get.liveGen.get.eventWriter)
 		try {			
 			jdbc.getVendor match {
    			case JdbcService.Vendor.POSTGRES => {

@@ -1,25 +1,26 @@
 package com.variant.server.test.spec
 
-import play.api.libs.json.JsValue
-import com.variant.core.impl.ServerError
-import org.scalatestplus.play.PlaySpec
-import com.variant.server.api.Session
-import com.variant.core.session.SessionScopedTargetingStabile
-import com.variant.server.impl.SessionImpl
-import com.variant.core.schema.Schema
-import com.variant.core.util.StringUtils
-import com.variant.core.util.Constants._
 import java.util.Random
+
+import scala.concurrent.Future
+
+import org.scalatestplus.play.PlaySpec
+
+import com.variant.core.impl.ServerError
+import com.variant.core.schema.Schema
+import com.variant.core.session.SessionScopedTargetingStabile
+import com.variant.core.util.Constants.HTTP_HEADER_CONTENT_TYPE
+import com.variant.core.util.StringUtils
+import com.variant.server.api.Session
+import com.variant.server.boot.VariantServer
+import com.variant.server.impl.SessionImpl
+
+import play.api.Application
+import play.api.libs.json._
+import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.libs.json.Json
-import play.api.Application
-import com.variant.server.boot.VariantServer
-import com.variant.server.conn.ConnectionStore
-import com.variant.server.boot.SessionStore
-import scala.concurrent.Future
-import play.api.mvc._
-import com.variant.core.ConnectionStatus
+import play.api.test.Helpers._
 
 /**
  * 
@@ -117,35 +118,7 @@ trait BaseSpec extends PlaySpec {
                s"Status ${actCode} was not 400 " + stackLine  
             }
          this
-      }
-            
-     /**
-       * 
-       */
-      def withConnStatusHeader(expected: ConnectionStatus*) = {
-         header(HTTP_HEADER_CONN_STATUS, res) match {
-            case Some(h) => {
-               val act = ConnectionStatus.valueOf(h)
-               if (!expected.contains(act)) fail {
-                  s"Connection status ${act} in header was not equal ${expected.mkString(",")} " + stackLine
-               }
-            }
-            case None => {
-               fail {
-                  s"No connection status in header was not equal ${expected.mkString(",")} " + stackLine
-               }
-            }
-         }
-         this
-      }
-      
-      /**
-       * 
-       */
-      def withNoConnStatusHeader = {
-         header(HTTP_HEADER_CONN_STATUS, res) mustBe None
-         this
-      }
+      }      
 
       /**
        * 
@@ -228,21 +201,12 @@ trait BaseSpec extends PlaySpec {
     * Normalize a JSON string by removing any white space.
     */
    protected def normalJson(jsonIn: String):String = Json.stringify(Json.parse(jsonIn))
-
-   /**
-    * All connect route calls should use this. This is the only request
-    * that does not have connection id in X-Connection-ID header.
-    */
-   protected def connectionRequest(schemaName: String) = {
-      FakeRequest(POST, context + "/connection/" + schemaName).withHeaders("Content-Type" -> HTTP_HEADER_CONTENT_TYPE)
-   }
    
    /**
-    * All route calls, emulating a connected API call.
+    * All route calls, emulating an API call.
     */
-   protected def connectedRequest(method: String, uri: String, cid: String) = {
+   protected def httpReq(method: String, uri: String) =
       FakeRequest(method, uri)
-         .withHeaders("Content-Type" -> HTTP_HEADER_CONTENT_TYPE, HTTP_HEADER_CONNID -> cid)
-   }
+         .withHeaders("Content-Type" -> HTTP_HEADER_CONTENT_TYPE)
 
 }

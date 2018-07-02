@@ -64,28 +64,15 @@ class SessionController @Inject() (
          
          // Dont have the session. Try to create.
          case None => {
-            
-            server.schemata.get(schemaName) match {
-               
-               // Have the schema. Must have a live gen.
-               case Some(schema) => {
-                  
-                  schema.liveGen match {
-                     // AOK. Creating the session
-                     case Some(liveGen) => new SessionImpl(sid, liveGen)
-                     case None => {
-                        logger.debug("Schema [%s] not found".format(schemaName))
-                        throw new ServerException.Remote(UnknownSchema, schemaName)
-                     }
-                  }
-               }
-               
-               // Don't have the schema.
-               case None => {
-                  logger.debug("Schema [%s] not found".format(schemaName))
-                  throw new ServerException.Remote(UnknownSchema, schemaName)
-               }
+
+            val liveGen = server.schemata.getLiveGen(schemaName).getOrElse {
+               logger.debug("Schema [%s] not found".format(schemaName))
+               throw new ServerException.Remote(UnknownSchema, schemaName)
             }
+            
+            val newSsn = new SessionImpl(sid, liveGen)
+            server.ssnStore.put(newSsn)
+            newSsn
          }
       }
 
@@ -103,30 +90,35 @@ class SessionController @Inject() (
 
    /**
     * Save or replace a new session.
+    * It's not clear if real code uses it, but the test use it to create a particular session state.
     *
     * IF the session exists THEN
-    *   IF the current connection ID matches or is parallel 
-    *   to the session's original connection
+    *   IF its gen must matches the schema in request, 
     *   THEN Replace the session.
-    *   ELSE SessionExpired
+    *   ELSE SessionExpired  // Really weird case !!!
     * 
     * ELSE (the session does not exist)
-    *   IF connection is OPEN, create new session.
-    *   ELSE IF connection is DRAINING THEN UnknownConnection
-    *   ELSE InternalError
+    *   IF given schema exists and has a live gen, create
+    *   ELSE throw UnknownSchema error.
     *   
-    **** We should not need a save session.
-    *  
-   def saveSession() = action { req =>
+    */  
+   def saveSession(schemaName: String) = action { req =>
 
       val ssnJson = req.body.asText.getOrElse {
          throw new ServerException.Remote(EmptyBody)
       }
-
-      server.ssnStore.put(SessionImpl(CoreSession.fromJson(ssnJson, conn.schema), conn))
+         
+      val liveGen = server.schemata.getLiveGen(schemaName).getOrElse {
+         logger.debug("Schema [%s] not found".format(schemaName))
+         throw new ServerException.Remote(UnknownSchema, schemaName)
+      }
+      
+      val ssn = SessionImpl(CoreSession.fromJson(ssnJson, liveGen), liveGen)
+      server.ssnStore.put(ssn)
+      
       Ok      
    }
-*/
+
    
    /**
     * 
