@@ -19,13 +19,11 @@ class ServerTest extends BaseSpecWithServer {
          assertResp(route(app, FakeRequest(GET, context + "/bad")))
             .is(NOT_FOUND)
             .withNoBody
-            .withNoConnStatusHeader
       }
     
       "send splash on a root request" in  {
          assertResp(route(app, FakeRequest(GET, context)))
             .isOk
-            .withNoConnStatusHeader
             .withBodyText { body =>
                body must startWith (VariantServer.instance.productName)
                body must include ("Uptime")

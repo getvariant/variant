@@ -15,7 +15,6 @@ import com.variant.server.test.hooks.TestParsedHook
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.hooks.TestTargetingHookNil
 import com.variant.server.test.hooks.TestQualificationHookNil
-import com.variant.server.schema.SchemaDeployer.fromString
 import play.api.Application
 import org.scalatest.TestData
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -109,7 +108,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
       val response = schemaDeployer.parserResponses(0)
    		response.getMessages.size mustBe 0
    		server.schemata.get("FlusherTest").isDefined mustBe true
-   		val schema = server.schemata("FlusherTest")
+   		val schema = server.schemata.get("FlusherTest").get.liveGen.get
    		schema.getFlusher() mustBe null
    		
    		// As defined in conf-test/variant.conf
@@ -186,7 +185,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
       val response = schemaDeployer.parserResponses(0)
    		response.getMessages.size mustBe 0
    		server.schemata.get("FlusherTest").isDefined mustBe true
-   		val schema = server.schemata("FlusherTest")
+   		val schema = server.schemata.get("FlusherTest").get.liveGen.get
    		schema.getFlusher() mustNot be (null)
    		
    		// As defined in conf-test/variant.conf

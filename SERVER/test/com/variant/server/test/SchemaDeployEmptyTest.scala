@@ -63,7 +63,7 @@ class SchemaDeployEmptyTest extends PlaySpec with OneAppPerSuite with BeforeAndA
       val server = app.injector.instanceOf[VariantServer]
             
 	   "startup with empty schemata" in {
-	      server.schemata mustBe empty
+	      server.schemata.size mustBe 0
          server.startupErrorLog.size mustEqual 0
          val lastTwoLines = ServerLogTailer.last(2)
          lastTwoLines(0).severity mustBe Severity.INFO

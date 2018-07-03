@@ -16,7 +16,7 @@ GET     /connection/:schema      com.variant.server.play.ConnectionController.ge
 # :schema = schema name; :sid = session id
 GET     /session/:schema/:sid            com.variant.server.play.SessionController.getSession(schema, sid)
 POST    /session/:schema/:sid            com.variant.server.play.SessionController.getOrCreateSession(schema, sid)
-PUT     /session/:schema                 com.variant.server.play.SessionController.save(schema)
+PUT     /session/:schema                 com.variant.server.play.SessionController.saveSession(schema)
 
 # Event Controller
 POST    /event                   com.variant.server.play.EventController.post()

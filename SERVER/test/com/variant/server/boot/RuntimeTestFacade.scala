@@ -1,23 +1,21 @@
 package com.variant.server.boot
 
 import java.util.ArrayList
-
 import scala.collection.JavaConversions.seqAsJavaList
-
 import com.variant.core.schema.State
 import com.variant.core.schema.Test
 import com.variant.core.schema.Test.Experience
 import com.variant.core.schema.impl.StateVariantImpl
-import com.variant.server.schema.ServerSchema
+import com.variant.server.schema.SchemaGen
 
 /**
  * Test facade extends scope of non-public methods to public for testability.
  */
 object RuntimeTestFacade {
-    def apply(schema: ServerSchema) = new RuntimeTestFacade(schema)  
+    def apply(schemaGen: SchemaGen) = new RuntimeTestFacade(schemaGen)  
 }
 
-class RuntimeTestFacade(schema: ServerSchema)  extends Runtime(schema) {
+class RuntimeTestFacade(schemaGen: SchemaGen)  extends Runtime(schemaGen) {
 
    /**
     * 

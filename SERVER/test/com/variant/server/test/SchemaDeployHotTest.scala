@@ -1,16 +1,12 @@
 package com.variant.server.test
 
-import com.variant.core.ConnectionStatus.DRAINING
-import com.variant.core.ConnectionStatus.OPEN
 import com.variant.core.impl.ServerError.SessionExpired
-import com.variant.core.impl.ServerError.UnknownConnection
 import com.variant.core.UserError.Severity
 import com.variant.core.schema.parser.error.SemanticError
 import com.variant.core.schema.parser.error.SyntaxError
 import com.variant.core.util.IoUtils
 import com.variant.core.util.StringUtils
 import com.variant.server.boot.ServerErrorLocal
-import com.variant.server.schema.State
 import com.variant.server.test.controller.SessionTest
 import com.variant.server.test.spec.BaseSpecWithServer
 import com.variant.server.test.spec.TempSchemataDir
@@ -19,16 +15,14 @@ import com.variant.server.test.spec.TempSchemataDir.schemataDir
 import com.variant.server.test.spec.TempSchemataDir.sessionTimeoutSecs
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.ServerLogTailer
-
 import play.api.Logger
 import play.api.libs.json.JsValue.jsValueToJsLookup
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.test.Helpers.GET
-import play.api.test.Helpers.OK
-import play.api.test.Helpers.PUT
+import play.api.test.Helpers._
 import play.api.test.Helpers.route
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
+import com.variant.server.schema.SchemaGen.State._
 
 
 
@@ -47,12 +41,10 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   "startup with two schemata" in {
 	      
 	      server.schemata.size mustBe 2
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getName mustEqual "petclinic" 
                   
          // Let the directory watcher thread start before copying any files.
 	      Thread.sleep(100)
@@ -66,60 +58,54 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	      Thread.sleep(dirWatcherLatencyMsecs);
 	      
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_conjoint_schema").isDefined mustBe true
-         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
-         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getName mustEqual "petclinic" 
+         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         petGen.getName mustEqual "big_conjoint_schema" 
 	   }
 	   
 	   "replace petclinic from same origin" in {
 	      
-	      val currentSchema = server.schemata.get("petclinic").get
+	      val currentGen = server.schemata.get("petclinic").get.liveGen.get
 	      
          IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${schemataDir}/petclinic-schema.json");
          Thread.sleep(dirWatcherLatencyMsecs)
     
-         currentSchema.state mustBe State.Gone
+         val newGen =  server.schemata.get("petclinic").get.liveGen.get
+         newGen.getId mustNot be (currentGen.getId)
+         currentGen.state mustBe Dead
+         newGen.state mustBe Live
          
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").get.getId mustNot equal (currentSchema.getId())
-         server.schemata.get("big_conjoint_schema").isDefined mustBe true
-         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
-         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getName mustEqual "petclinic" 
+         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         petGen.getName mustEqual "big_conjoint_schema" 
 
 	   }
 
 	   "refuse to re-deploy petclinic from different origin" in {
 	      
-	      val currentSchema = server.schemata.get("petclinic").get
+	      val currentGen = server.schemata.get("petclinic").get.liveGen.get
 	      
          IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${schemataDir}/petclinic-schema2.json")
          Thread.sleep(dirWatcherLatencyMsecs)
     
-         currentSchema.state mustBe State.Deployed
+         val newGen =  server.schemata.get("petclinic").get.liveGen.get
+         newGen.getId must be (currentGen.getId)
+         newGen.state mustBe Live
          
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").get.getId must equal (currentSchema.getId())
-         server.schemata.get("big_conjoint_schema").isDefined mustBe true
-         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
-         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getName mustEqual "petclinic" 
+         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         petGen.getName mustEqual "big_conjoint_schema" 
 
          val logLines = ServerLogTailer.last(2)
          logLines(0).severity mustBe Severity.ERROR
@@ -131,45 +117,42 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 
    	"re-deploy a schema with parse warnings" in {
 
-   	   val currentSchema = server.schemata.get("big_conjoint_schema").get
-         currentSchema.state mustBe State.Deployed
+	      val currentGen = server.schemata.get("petclinic").get.liveGen.get
 
 	      IoUtils.fileCopy("schemata-test-with-errors/big-conjoint-schema-warning.json", s"${schemataDir}/another-big-test-schema.json")
          Thread.sleep(dirWatcherLatencyMsecs)
              
-         currentSchema.state mustBe State.Gone
+         val newGen =  server.schemata.get("petclinic").get.liveGen.get
+         newGen.getId mustNot be (currentGen.getId)
+         currentGen.state mustBe Dead
+         newGen.state mustBe Live
 
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_conjoint_schema").isDefined mustBe true
-         server.schemata.get("big_conjoint_schema").get.getId mustNot equal (currentSchema.getId)
-         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
-         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getName mustEqual "petclinic" 
+         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         petGen.getName mustEqual "big_conjoint_schema" 
 
 	   }
 
    	"undeploy deleted another-big-test-schema.json" in {
 	      
-	      val currentSchema = server.schemata.get("big_conjoint_schema").get
-         currentSchema.state mustBe State.Deployed
+	      val currentGen = server.schemata.get("big_conjoint_schemata").get.liveGen.get
 
 	      IoUtils.delete(s"${schemataDir}/another-big-test-schema.json");
          Thread.sleep(dirWatcherLatencyMsecs)
     
-         currentSchema.state mustBe State.Gone
+         val newGen =  server.schemata.get("petclinic").get.liveGen.get
+         newGen.getId must be (currentGen.getId)
+         newGen.state mustBe Dead
          
 	      server.schemata.size mustBe 2
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getName mustEqual "petclinic" 
 
 	   }
 
@@ -185,12 +168,12 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          logLines(1).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
 
 	      server.schemata.size mustBe 2
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getName mustEqual "petclinic" 
+         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         petGen.getName mustEqual "big_conjoint_schema" 
 
 	   }
 
@@ -206,13 +189,12 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          logLines(1).severity mustBe Severity.WARN
          logLines(1).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
 
-	      server.schemata.size mustBe 2
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getName mustEqual "petclinic" 
+         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         petGen.getName mustEqual "big_conjoint_schema" 
 
 	   }
       
@@ -224,52 +206,36 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	      Thread.sleep(dirWatcherLatencyMsecs)
 	      
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_conjoint_schema").isDefined mustBe true
-         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
-         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
-	   }
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getName mustEqual "petclinic" 
+         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         petGen.getName mustEqual "big_conjoint_schema" 
 
-      var cid: String = null
-	   
-      "open connection to ParserConjointOkayBigTestNoHooks" in {
-            
-         assertResp(route(app, connectionRequest("ParserConjointOkayBigTestNoHooks")))
-            .isOk
-            .withConnStatusHeader(OPEN)
-            .withBodyJson { json => 
-               (json \ "id").asOpt[String].isDefined mustBe true
-               cid = (json \ "id").as[String]
-            }
-   	}
-	   
+	   }
+	   	   
 	   val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
 	   var sid = newSid()
 	   
 	   "create a new session in schema ParserConjointOkayBigTestNoHooks" in {
          
-         val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
+         assertResp(route(app, httpReq(POST, context + "/session")))
             .is(OK)
-            .withConnStatusHeader(OPEN)
             .withNoBody
       }
 
 	   "delete schema ParserConjointOkayBigTestNoHooks" in {
 
-	      val currentSchema = server.schemata.get("ParserConjointOkayBigTestNoHooks").get
-         currentSchema.state mustBe State.Deployed
+	      val currentGen = server.schemata.get("big_conjoint_schemata").get.liveGen.get
 
 	      IoUtils.delete(s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
          Thread.sleep(dirWatcherLatencyMsecs)
     
          // Schema is gone
-         currentSchema.state mustBe State.Gone
+         currentGen.state mustBe Dead
+         
+         server.schemata.size mustBe 2
          server.schemata.get("ParserConjointOkayBigTestNoHooks") mustBe None
          
 	   }
@@ -277,9 +243,8 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 
 	   "permit session read over draining connection" in {
 	      
-         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
+         assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
             .isOk
-            .withConnStatusHeader(DRAINING)
             .withBodyJson { json => 
                StringUtils.digest((json \ "session").as[String]) mustBe 
                   StringUtils.digest(sessionJson.expand("sid" -> sid).toString())
@@ -289,28 +254,17 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
 	   "permit session update over draining connection" in {
 	      
          val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
+         assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
             .isOk
-            .withConnStatusHeader(DRAINING)
             .withNoBody
 	   }
-
-	   "refuse to create a new session in the draining connection" in {
-         
-	      sid = newSid()
-         val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
-            .isError(UnknownConnection, cid)
-            .withConnStatusHeader(DRAINING)
-      }
 	   
 	   "expire existing session as normal in the undeployed schema" in {
          
          Thread.sleep(sessionTimeoutSecs * 1000);
          
-         assertResp(route(app, connectedRequest(GET, context + "/session/" + sid, cid)))
+         assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
             .isError(SessionExpired, sid)
-            .withConnStatusHeader(DRAINING)
 
 	   }
      	   
@@ -322,59 +276,30 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          Thread.sleep(dirWatcherLatencyMsecs)
          
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_conjoint_schema").isDefined mustBe true
-         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
-         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getName mustEqual "petclinic" 
+         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         petGen.getName mustEqual "big_conjoint_schema" 
          
 	   }
 
-      var cid1, cid2, cid3: String = null
-	   
-      "open new connection to ParserConjointOkayBigTestNoHooks" in {
-            
-         assertResp(route(app, connectionRequest("ParserConjointOkayBigTestNoHooks")))
-            .isOk
-            .withConnStatusHeader(OPEN)
-            .withBodyJson { json => 
-               (json \ "id").asOpt[String].isDefined mustBe true
-               cid1 = (json \ "id").as[String]
-         }
-   	}
-	   
-      "open connection to petclinic" in {
-            
-         assertResp(route(app, connectionRequest("petclinic")))
-            .isOk
-            .withConnStatusHeader(OPEN)
-            .withBodyJson { json => 
-               (json \ "id").asOpt[String].isDefined mustBe true
-               cid2 = (json \ "id").as[String]
-            }
-   	}
-
       val sessionJsonBigCovar = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
 	   
-	   var sid1 = newSid()
+	   val sid1 = newSid()
 	   
 	   "create a session in schema ParserConjointOkayBigTestNoHooks" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> sid1)
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid1).withBody(body)))
+         assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withNoBody
       }
 
 	   "redeploy schemata at once" in {
 	      
-	      val oldBigSchema = server.schemata.get("ParserConjointOkayBigTestNoHooks").get
-         oldBigSchema.state mustBe State.Deployed
+         val currentGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
 
 	      // Override
 	      IoUtils.fileCopy("conf-test/ParserConjointOkayBigTestNoHooks.json", s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
@@ -386,70 +311,45 @@ class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
          val halfExp = sessionTimeoutSecs * 500
          for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
             Thread.sleep(wait)
-            assertResp(route(app, connectedRequest(GET, context + "/session/" + sid1, cid1)))
+            assertResp(route(app, httpReq(GET, context + "/session/" + sid1)))
                .isOk
-               .withConnStatusHeader(DRAINING)
                .withBodyJson { json => 
                   StringUtils.digest((json \ "session").as[String]) mustBe 
                      StringUtils.digest(sessionJsonBigCovar.expand("sid" -> sid1).toString())
                }
          }
 
-         oldBigSchema.state mustBe State.Gone
+         currentGen.state mustBe Dead
 
 	      server.schemata.size mustBe 3
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-	      server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getId() mustNot equal (oldBigSchema.getId())
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.state mustEqual State.Deployed
-         server.schemata.get("petclinic").isDefined mustBe true
-         server.schemata.get("petclinic").get.getName mustEqual "petclinic" 
-         server.schemata.get("petclinic").get.state mustEqual State.Deployed
-         server.schemata.get("big_conjoint_schema").isDefined mustBe true
-         server.schemata.get("big_conjoint_schema").get.getName mustEqual "big_conjoint_schema" 
-         server.schemata.get("big_conjoint_schema").get.state mustEqual State.Deployed 	      
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getName mustEqual "petclinic" 
+         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         petGen.getName mustEqual "big_conjoint_schema" 
+
 	   }
 
-	   var sid2 = newSid()
+	   val sid2 = newSid()
 	   
-	   "refuse to create new session in the draining connection to ParserConjointOkayBigTestNoHooks" in {
-         
-         val body = sessionJsonBigCovar.expand("sid" -> sid2)
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid1).withBody(body)))
-            .isError(UnknownConnection, cid1)
-            .withConnStatusHeader(DRAINING)
-      }
-
       val sessionJsonPetclinic = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
 
 	   "create new session in the unaffected schema petclinic" in {
          
          val body = sessionJsonPetclinic.expand("sid" -> sid2)
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid2).withBody(body)))
+         assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withNoBody
       }
 
-	   "open connection to the new big_conjoint_schema" in {
-            
-         assertResp(route(app, connectionRequest("big_conjoint_schema")))
-            .isOk
-            .withConnStatusHeader(OPEN)
-            .withBodyJson { json => 
-               (json \ "id").asOpt[String].isDefined mustBe true
-               cid3 = (json \ "id").as[String]
-            }
-   	}
-
-      var sid3 = newSid()
+      val sid3 = newSid()
 	   
 	   "create new session in the new schema" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> sid3)
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid3).withBody(body)))
+         assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
             .isOk
-            .withConnStatusHeader(OPEN)
             .withNoBody
       }
    }

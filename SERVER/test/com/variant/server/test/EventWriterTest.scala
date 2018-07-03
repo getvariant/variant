@@ -5,7 +5,6 @@ import java.util.Date
 import scala.collection.JavaConversions.collectionAsScalaIterable
 import scala.util.Random
 
-import com.variant.core.ConnectionStatus._
 import com.variant.server.event.ServerEvent
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.spec.BaseSpecWithServer
@@ -37,7 +36,7 @@ class EventWriterTest extends BaseSpecWithServer {
    
    "Event writer" should {
 
-      val schema = server.schemata("big_conjoint_schema")
+      val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
       val eventWriter = schema.eventWriter
       val eventReader = EventReader(eventWriter)
 
@@ -47,32 +46,18 @@ class EventWriterTest extends BaseSpecWithServer {
 	      eventWriter.maxDelayMillis mustEqual 2000
 
       }
-    
-      var cid: String = null
-      
-      "obtain a connection" in {
-         // POST new connection
-         assertResp(route(app, connectionRequest("big_conjoint_schema")))
-            .isOk
-            .withConnStatusHeader(OPEN)
-            .withBodyJson { json => 
-               cid = (json \ "id").as[String]
-               cid mustNot be (null)
-            }
-      }
-      
+            
       "flush an event after EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS" in {
          
          // Save session.
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
+         assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
             .isOk
             .withNoBody
-            .withConnStatusHeader(OPEN)
          
-         val ssn = server.ssnStore.get(sid, server.connStore.get(cid).get).get
+         val ssn = server.ssnStore.get(sid).get
          
          val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
          val se = new ServerEvent(name, value, new Date(timestamp));
@@ -112,12 +97,11 @@ class EventWriterTest extends BaseSpecWithServer {
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app, connectedRequest(PUT, context + "/session", cid).withBody(body)))
+         assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
             .isOk
             .withNoBody
-            .withConnStatusHeader(OPEN)
 
-         val ssn = server.ssnStore.get(sid, server.connStore.get(cid).get).get
+         val ssn = server.ssnStore.get(sid).get
 
          // Ensure the writer buffer is empty.
          eventWriter.flush()
@@ -148,12 +132,11 @@ class EventWriterTest extends BaseSpecWithServer {
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app,connectedRequest(PUT, context + "/session", cid).withBody(body)))
+         assertResp(route(app,httpReq(PUT, context + "/session").withBody(body)))
             .isOk
             .withNoBody
-            .withConnStatusHeader(OPEN)
 
-         val ssn = server.ssnStore.get(sid, server.connStore.get(cid).get).get
+         val ssn = server.ssnStore.get(sid).get
          
          val startOfWrite = System.currentTimeMillis()
 

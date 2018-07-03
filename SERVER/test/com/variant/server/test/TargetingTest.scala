@@ -169,7 +169,7 @@ class TargetingTest extends BaseSpecWithServerAsync {
 
 	      async {
 	         
-            val schema = server.schemata.get(schemaNames(0)).get
+            val schema = server.schemata.get(schemaNames(0)).get.liveGen.get
             val state = schema.getState("state1")
             val test = schema.getTest("test1")
       		
@@ -192,7 +192,7 @@ class TargetingTest extends BaseSpecWithServerAsync {
 
 	      async {
 
-	         val schema = server.schemata.get(schemaNames(1)).get
+	         val schema = server.schemata.get(schemaNames(1)).get.liveGen.get
             val state = schema.getState("state1")
             val test = schema.getTest("test1")
    
@@ -217,7 +217,7 @@ class TargetingTest extends BaseSpecWithServerAsync {
 
 	      async {
 
-            val schema = server.schemata.get(schemaNames(2)).get
+            val schema = server.schemata.get(schemaNames(2)).get.liveGen.get
             val state = schema.getState("state1")
             val test = schema.getTest("test1")
    
@@ -243,7 +243,7 @@ class TargetingTest extends BaseSpecWithServerAsync {
 
 	      async {
 
-            val schema = server.schemata.get(schemaNames(3)).get
+            val schema = server.schemata.get(schemaNames(3)).get.liveGen.get
             val state = schema.getState("state1")
             val test = schema.getTest("test1")
    
@@ -270,7 +270,7 @@ class TargetingTest extends BaseSpecWithServerAsync {
          
 	      async {
 
-            val schema = server.schemata.get(schemaNames(4)).get
+            val schema = server.schemata.get(schemaNames(4)).get.liveGen.get
             val state = schema.getState("state1")
             val test = schema.getTest("test1")
    
@@ -319,8 +319,8 @@ class TargetingTest extends BaseSpecWithServerAsync {
          val response = schemaDeployer.parserResponses(0)
          
          server.schemata.get(schemaName).isDefined mustBe true
-         val schema = server.schemata.get(schemaName).get
-
+         
+         val schema = server.schemata.get(schemaName).get.liveGen.get
          val state1 = schema.getState("state1")
 		   
 	

@@ -36,8 +36,9 @@ class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSc
    //private val logger = Logger(this.getClass)   
    private val coreSchema =  response.getSchema
    private val id = StringUtils.random64BitString(SchemaGen.rand)
-   
-   private[schema] var state = SchemaGen.State.New  
+  
+   // Public access for tests only!
+   var state = SchemaGen.State.New  
       
    /**
     * Number of sessions connected to this schema generation.

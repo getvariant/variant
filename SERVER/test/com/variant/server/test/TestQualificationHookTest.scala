@@ -78,7 +78,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
         //response.getMessages.foreach(println(_))
    	   response.hasMessages() mustBe false
        server.schemata.get(schemaName).isDefined mustBe true
-   	   val schema = server.schemata.get(schemaName).get
+   	   val schema = server.schemata.get(schemaName).get.liveGen.get
    		 val state1 = schema.getState("state1")
    	   val test1 = schema.getTest("test1")
    	   val test2 = schema.getTest("test2")
@@ -130,7 +130,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 	   
 	   "not be posted for tests already qualified" in {
 
-   	   val schema = server.schemata.get(schemaName).get
+   	   val schema = server.schemata.get(schemaName).get.liveGen.get
    		val state1 = schema.getState("state1")
    		val state2 = schema.getState("state2")
    	   val test1 = schema.getTest("test1")
@@ -195,7 +195,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
        response.hasMessages() mustBe false
        server.schemata.get(schemaName).isDefined mustBe true
-   	   val schema = server.schemata.get(schemaName).get
+   	   val schema = server.schemata.get(schemaName).get.liveGen.get
    		 val state1 = schema.getState("state1")
    		 val state2 = schema.getState("state2")
    	   val test1 = schema.getTest("test1")
@@ -274,7 +274,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
    	   response.hasMessages() mustBe false
        server.schemata.get(schemaName).isDefined mustBe true
-   	   val schema = server.schemata.get(schemaName).get
+   	   val schema = server.schemata.get(schemaName).get.liveGen.get
    		 val state1 = schema.getState("state1")
    		 val state2 = schema.getState("state2")
    	   val test1 = schema.getTest("test1")
@@ -305,7 +305,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
 
 	   "honor session-current targeting settings when targeting for state3" in {
 
-   	   val schema = server.schemata.get(schemaName).get
+   	   val schema = server.schemata.get(schemaName).get.liveGen.get
    		val state1 = schema.getState("state1")
    		val state2 = schema.getState("state2")
    		val state3 = schema.getState("state3")
@@ -354,7 +354,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
    	   response.hasMessages() mustBe false
    		 server.schemata.get(schemaName).isDefined mustBe true
 
-   	   val schema = server.schemata.get(schemaName).get
+   	   val schema = server.schemata.get(schemaName).get.liveGen.get
    		 val state1 = schema.getState("state1")
 		
    		 // New session.

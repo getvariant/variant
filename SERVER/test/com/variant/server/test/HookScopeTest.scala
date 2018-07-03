@@ -166,7 +166,7 @@ class HookScopeTest extends BaseSpecWithServer {
    		server.schemata.get(schemaName).isDefined mustBe true
    		
    		// Confirm runtime hooks were posted.
-   		val schema = server.schemata(schemaName)
+   		val schema = server.schemata.get(schemaName).get.liveGen.get
          val state1 = schema.getState("state1")
          val state2 = schema.getState("state2")
          val test = schema.getTest("test1")
@@ -439,7 +439,7 @@ class HookScopeTest extends BaseSpecWithServer {
    		server.schemata.get(schemaName).isDefined mustBe true
    		
    		// Confirm runtime hooks were posted.
-   		val schema = server.schemata.get(schemaName).get
+   		val schema = server.schemata.get(schemaName).get.liveGen.get
 
          val state1 = schema.getState("state1")
          val test = schema.getTest("test1")

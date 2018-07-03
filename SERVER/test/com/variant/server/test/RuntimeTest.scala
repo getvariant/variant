@@ -30,7 +30,7 @@ class RuntimeTest extends BaseSpecWithServer {
        val response = schemaDeployer.parserResponses(0)
        response.hasMessages() mustBe false		
        server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-   	 val schema = server.schemata.get("ParserConjointOkayBigTestNoHooks").get
+   	 val schema = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
  	    val runtime = RuntimeTestFacade(schema)
 
    	val state1 = schema.getState("state1")

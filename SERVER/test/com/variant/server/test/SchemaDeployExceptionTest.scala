@@ -109,14 +109,12 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
 
          server.isUp mustBe false
 
-         assertResp(route(app, connectionRequest("schema")))
+         assertResp(route(app, httpReq(GET, context + "/schema/foo")))
             .is(SERVICE_UNAVAILABLE)
-            .withNoConnStatusHeader
             .withNoBody
 
-         assertResp(route(app, connectedRequest(PUT, context + "/session", "cid")))
+         assertResp(route(app, httpReq(PUT, context + "/session/foo")))
             .is(SERVICE_UNAVAILABLE)
-            .withNoConnStatusHeader
             .withNoBody
       }
 }
@@ -137,7 +135,6 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
 
          assertResp(route(app, FakeRequest(GET, context + "/session/foo")))
             .is(SERVICE_UNAVAILABLE)
-            .withNoConnStatusHeader
             .withNoBody
 
    		server.isUp mustBe false
