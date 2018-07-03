@@ -18,7 +18,7 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
   
   override lazy val parserResponses = _parserResponses.toSeq
   
-  override val schemata = new Schemata()
+  override val schemata = new Schemata
   
   /**
    * Parse a schema.

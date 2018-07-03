@@ -60,6 +60,7 @@ class BaseSpecWithServer extends BaseSpec with OneAppPerSuite with BeforeAndAfte
 	 */
 	private def recreateDatabase() {
 	   // Assuming the there's always the petclinic schema and that it has the right event writer.
+	   println("************* " + server.schemata)
 		val jdbc = new JdbcService(server.schemata.get("petclinic").get.liveGen.get.eventWriter)
 		try {			
 			jdbc.getVendor match {

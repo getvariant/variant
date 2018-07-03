@@ -19,8 +19,8 @@ trait SchemaDeployer {
   def parserResponses: Seq[ParserResponse]
   
  /**
-   * Subclasses should override this, if there's anything to be done prior to parsing.
-   */
+  * Subclasses should override this, if there's anything to be done prior to parsing.
+  */
   def bootstrap() = {}
 
 }

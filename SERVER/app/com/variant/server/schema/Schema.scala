@@ -38,24 +38,6 @@ class Schema(private val seed: SchemaGen) {
    def genCount = gens.size
    
    /**
-    * Undeploy a particular gen
-    */
-   private[this] def undeployGen(gen: SchemaGen) {
-      gen.state = SchemaGen.State.Dead
-   	logger.info(s"Undeployed schema generation ID [${gen.getId}] in schema [${name}]")
-   }
-
-   /**
-    * Undeploy the live gen
-    */
-   def undeployLiveGen() {
-      liveGen.foreach { gen =>
-         gen.state = SchemaGen.State.Dead
-         logger.info(s"Undeployed schema generation ID [${gen.getId}] in schema [${name}]")
-      }
-   }
-
-   /**
     * Push a new live schema generation. Current live generation is undeployed.
     */
    def deployGen(gen: SchemaGen): Unit = {
@@ -87,14 +69,37 @@ class Schema(private val seed: SchemaGen) {
       }
    }
 
+      /**
+    * Undeploy a particular gen
+    */
+   private[this] def undeployGen(gen: SchemaGen) {
+      gen.state = SchemaGen.State.Dead
+   	logger.info(s"Undeployed schema generation ID [${gen.getId}] in schema [${name}]")
+   }
+
+   /**
+    * Undeploy the live gen
+    */
+   def undeployLiveGen() {
+      liveGen.foreach { gen =>
+         gen.state = SchemaGen.State.Dead
+         logger.info(s"Undeployed schema generation ID [${gen.getId}] in schema [${name}]")
+      }
+   }
+
    /**
     * Remove dead drained generations
     */
    def vacuum() {
-      gens.filter(_.sessionCount.get == 0 ).foreach { gen =>
+      gens.filter { gen =>
+         gen.state == SchemaGen.State.Dead &&
+         gen.sessionCount.get == 0
+      }
+      .foreach { gen =>
          gens -= gen
          logger.debug(s"Vacuumed schema generation ID [${gen.getId}] in schema [${name}]")
       }
-      
    }
+   
+   override def toString = gens.toString()
 }

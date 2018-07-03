@@ -11,8 +11,12 @@ import com.variant.core.impl.ServerError
 import com.variant.core.util.TimeUtils
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
+import javax.inject.Inject
 
-class VariantAction
+/**
+ * Superclass for all Variant actions.
+ */
+class VariantAction @Inject()
    (parser: BodyParsers.Default)
    (implicit ec: ExecutionContext) 
    extends ActionBuilderImpl(parser) with Results {

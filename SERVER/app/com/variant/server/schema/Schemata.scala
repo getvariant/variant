@@ -23,8 +23,14 @@ class Schemata () {
    def deploy(gen: SchemaGen) {
          
       _schemaMap.get(gen.getName()) match {
+         
          case Some(schema) => schema.deployGen(gen)
-         case None         => _schemaMap += gen.getName() -> new Schema(gen)
+         
+         case None         => {
+            _schemaMap += gen.getName() -> new Schema(gen)
+            logger.debug(s"Created new schema [${gen.getName}]")
+            println(_schemaMap)
+         }
       }
       
       // Write log message
@@ -97,8 +103,10 @@ class Schemata () {
     * Remove dead generations and empty schemata.
     */
    def vacuum() {
-      // Remove dead generations
+      
+      // Let each schema vacuum.
       _schemaMap.values.foreach { _.vacuum() }
+      
       // Remove empty schemata
       val toDelete = _schemaMap.filter( _._2.genCount == 0)
       toDelete.foreach { e =>
@@ -107,5 +115,6 @@ class Schemata () {
       }
    }
    
+   override def toString = _schemaMap.toString()
 }
     
