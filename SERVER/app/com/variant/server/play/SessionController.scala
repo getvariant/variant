@@ -38,7 +38,11 @@ class SessionController @Inject() (
 		            s"Session ID [${sid}]found but in the wrong schema. Expected [${schemaName}], but was [${ssn.schemaGen.getName()}]")
 
       val response = JsObject(Seq(
-         "session" -> JsString(ssn.toJson)
+         "session" -> JsString(ssn.toJson),
+         "schema" -> JsObject(Seq(
+               "id" -> JsString(ssn.schemaGen.getId()),
+               "src" -> JsString(ssn.schemaGen.source)
+         ))      
       ))
       
       Ok(response.toString)
@@ -70,7 +74,7 @@ class SessionController @Inject() (
                throw new ServerException.Remote(UnknownSchema, schemaName)
             }
             
-            val newSsn = new SessionImpl(sid, liveGen)
+            val newSsn = SessionImpl.empty(sid, liveGen)
             server.ssnStore.put(newSsn)
             newSsn
          }

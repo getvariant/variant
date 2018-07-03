@@ -38,6 +38,8 @@ trait BaseSpec extends PlaySpec {
    protected def context = application.configuration.get[String]("play.http.context")
    protected def server = application.injector.instanceOf[VariantServer]
 
+   protected def liveGenOf(schemaName: String) = server.schemata.get(schemaName).get.liveGen.get
+   
    protected def assertResp(resp: Option[Future[Result]]) = {
       new ResultWrap(resp.get)
    }

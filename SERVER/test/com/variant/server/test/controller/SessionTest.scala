@@ -12,6 +12,8 @@ import com.variant.core.util.StringUtils
 import play.api.libs.json._
 import com.variant.server.impl.SessionImpl
 import com.variant.core.util.Constants._
+import com.variant.core.schema.impl.SchemaImpl
+import com.variant.server.schema.ServerSchemaParser
 
 /**
  * Session Controller Tests
@@ -65,21 +67,21 @@ class SessionTest extends BaseSpecWithServer {
       
       "return 404 on GET with no sid" in {  
                   
-         assertResp(route(app, httpReq(GET, endpoint)))
+         assertResp(route(app, httpReq(GET, endpoint + "/petclinic")))
             .is(NOT_FOUND)
             .withNoBody
       }
 
       "return SessionExpired on GET non-existent session on valid CID" in {  
          
-         assertResp(route(app, httpReq(GET, endpoint + "/foo")))
+         assertResp(route(app, httpReq(GET, endpoint + "/petclinic/foo")))
             .isError(SessionExpired, "foo")
       }
 
       "return OK on PUT non-existent session with valid conn ID" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> "foo")
-         assertResp(route(app, httpReq(PUT, endpoint).withBody(body)))
+         assertResp(route(app, httpReq(PUT, endpoint + "/big_conjoint_schema").withBody(body)))
             .isOk
             .withNoBody
       }
@@ -88,7 +90,7 @@ class SessionTest extends BaseSpecWithServer {
        
          val body = "just some junk that should be ignored"
 
-         assertResp(route(app, httpReq(GET, endpoint + "/foo").withBody(body)))
+         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/foo").withBody(body)))
             .isOk
             .withBodyJson { json => 
                StringUtils.digest((json \ "session").as[String]) mustBe 
@@ -99,11 +101,11 @@ class SessionTest extends BaseSpecWithServer {
       "return OK and replace existing session on PUT" in {
        
          val putBody = sessionJsonBigCovar.expand("sid" -> "foo")
-         assertResp(route(app, httpReq(PUT, endpoint).withBody(putBody)))
+         assertResp(route(app, httpReq(PUT, endpoint + "/big_conjoint_schema").withBody(putBody)))
             .isOk
             .withNoBody
          
-         assertResp(route(app, httpReq(GET, endpoint + "/foo")))
+         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/foo")))
             .isOk
             .withBodyJson { json =>
                StringUtils.digest((json \ "session").as[String]) mustBe 
@@ -111,24 +113,55 @@ class SessionTest extends BaseSpecWithServer {
             }
       }
 
-      "return OK and create session on PUT" in {
+      "return OK and create session on POST" in {
        
-         val putBody = sessionJsonBigCovar.expand("sid" -> "bar1")
-         assertResp(route(app, httpReq(PUT, endpoint).withBody(putBody)))
-            .isOk
-            .withNoBody
-         
-         assertResp(route(app, httpReq(GET, endpoint + "/bar1")))
+         val sid = "bar"
+         assertResp(route(app, httpReq(POST, endpoint + "/big_conjoint_schema/" + sid)))
             .isOk
             .withBodyJson { json =>
-               StringUtils.digest((json \ "session").as[String]) mustBe 
-                  StringUtils.digest(sessionJsonBigCovar.expand("sid" -> "bar1"))
+               val ssn = Json.parse((json \ "session").as[String])
+               val schemaId = (json \ "schema" \ "id").as[String]
+               val schemaSrc = (json \ "schema" \ "src").as[String]
+
+               (ssn \ "sid").as[String] mustBe sid
+               (ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 100)
+               schemaSrc mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.source
+               schemaId mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.getId
+               val parser = ServerSchemaParser()
+               val parserResp = parser.parse(schemaSrc)
+               parserResp.hasMessages() mustBe false
+         		parserResp.getSchema() mustNot be (null)
+      	   	parserResp.getSchemaSrc() mustNot be (null)
+      	
+               val schema = parserResp.getSchema
+               schema.getName mustEqual "big_conjoint_schema"
+            }
+         
+         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + sid)))
+            .isOk
+            .withBodyJson { json =>
+               val ssn = Json.parse((json \ "session").as[String])
+               val schemaId = (json \ "schema" \ "id").as[String]
+               val schemaSrc = (json \ "schema" \ "src").as[String]
+
+               (ssn \ "sid").as[String] mustBe sid
+               (ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 100)
+               schemaSrc mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.source
+               schemaId mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.getId
+               val parser = ServerSchemaParser()
+               val parserResp = parser.parse(schemaSrc)
+               parserResp.hasMessages() mustBe false
+         		parserResp.getSchema() mustNot be (null)
+      	   	parserResp.getSchemaSrc() mustNot be (null)
+      	
+               val schema = parserResp.getSchema
+               schema.getName mustEqual "big_conjoint_schema"
             }
       }
 
      "not lose existing session with different key" in {
 
-         assertResp(route(app, httpReq(GET, endpoint + "/foo")))
+         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/foo")))
             .isOk
             .withBodyJson { json =>
                StringUtils.digest((json \ "session").as[String]) mustBe 
@@ -136,13 +169,13 @@ class SessionTest extends BaseSpecWithServer {
             }
       }
 
-      "keep an existing session alive" in {
+      "keep an existing session alive over time" in {
                
          val halfExp = sessionTimeoutMillis / 2
          halfExp mustBe 500   
          for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
             Thread.sleep(wait)
-            assertResp(route(app, httpReq(GET, endpoint + "/foo")))
+            assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/foo")))
                .isOk
                .withBodyJson { json => 
                   StringUtils.digest((json \ "session").as[String]) mustBe 
@@ -157,7 +190,7 @@ class SessionTest extends BaseSpecWithServer {
       
          ("foo" :: "bar" :: Nil).foreach { sid =>
 
-            assertResp(route(app, httpReq(GET, endpoint + "/" + sid)))
+            assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + sid)))
                .isError(SessionExpired, sid)
          }
       }
@@ -167,7 +200,7 @@ class SessionTest extends BaseSpecWithServer {
          val sid = newSid()
          val ts = System.currentTimeMillis()
          val body = sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts)
-         assertResp(route(app, httpReq(PUT, endpoint).withBody(body)))
+         assertResp(route(app, httpReq(PUT, endpoint + "/big_conjoint_schema").withBody(body)))
             .isOk
             .withNoBody
 
@@ -188,7 +221,7 @@ class SessionTest extends BaseSpecWithServer {
 
          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
 
-         assertResp(route(app, httpReq(GET, endpoint + "/" + sid)))
+         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + sid)))
             .isError(SessionExpired, sid)
 
        }

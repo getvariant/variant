@@ -72,33 +72,18 @@ import EventTest._
       }
 
       "return  400 and error on POST to non-existent schema" in {         
-         assertResp(route(app, httpReq(GET, endpoint + "/foo")))
-            .isError(UnknownSchema, "foo")
+         assertResp(route(app, httpReq(GET, endpoint + "/bad_schema")))
+            .isError(UnknownSchema, "bad_schema")
       }
       
       "open connection on POST with valid schema name" in {
          
-         assertResp(route(app, httpReq(GET, endpoint + "big_conjoint_schema")))
+         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema")))
             .isOk
             .withBodyJson { json =>
-               (json \ "id").asOpt[String].isDefined mustBe true
                (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
-               (json \ "ts").asOpt[Long].isDefined mustBe true
-               val schemaSrc = (json \ "schema" \ "src").as[String]
-               val schemaId = (json \ "schema" \ "id").as[String]
-               schemaSrc mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.source
-               schemaId mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.getId
-               val parser = ServerSchemaParser()
-               val parserResp = parser.parse(schemaSrc)
-               parserResp.hasMessages() mustBe false
-         		parserResp.getSchema() mustNot be (null)
-      	   	parserResp.getSchemaSrc() mustNot be (null)
-      	   	
-               val schema = parserResp.getSchema
-               schema.getName mustEqual "big_conjoint_schema"
             }
-      }
-            
+      }            
    }
 }
 
