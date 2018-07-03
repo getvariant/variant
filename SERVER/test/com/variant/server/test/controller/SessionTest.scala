@@ -67,14 +67,14 @@ class SessionTest extends BaseSpecWithServer {
       
       "return 404 on GET with no sid" in {  
                   
-         assertResp(route(app, httpReq(GET, endpoint + "/petclinic")))
+         assertResp(route(app, httpReq(GET, endpoint + "/petclinic_experiments")))
             .is(NOT_FOUND)
             .withNoBody
       }
 
       "return SessionExpired on GET non-existent session on valid CID" in {  
          
-         assertResp(route(app, httpReq(GET, endpoint + "/petclinic/foo")))
+         assertResp(route(app, httpReq(GET, endpoint + "/petclinic_experiments/foo")))
             .isError(SessionExpired, "foo")
       }
 
@@ -133,8 +133,8 @@ class SessionTest extends BaseSpecWithServer {
          		parserResp.getSchema() mustNot be (null)
       	   	parserResp.getSchemaSrc() mustNot be (null)
       	
-               val schema = parserResp.getSchema
-               schema.getName mustEqual "big_conjoint_schema"
+               val CoreSchema = parserResp.getSchema
+               CoreSchema.getName mustEqual "big_conjoint_schema"
             }
          
          assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + sid)))
@@ -154,8 +154,8 @@ class SessionTest extends BaseSpecWithServer {
          		parserResp.getSchema() mustNot be (null)
       	   	parserResp.getSchemaSrc() mustNot be (null)
       	
-               val schema = parserResp.getSchema
-               schema.getName mustEqual "big_conjoint_schema"
+               val CoreSchema = parserResp.getSchema
+               CoreSchema.getName mustEqual "big_conjoint_schema"
             }
       }
 

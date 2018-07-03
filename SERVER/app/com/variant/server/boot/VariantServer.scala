@@ -11,7 +11,6 @@ import play.api.Configuration
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 import play.api.routing.Router
-import com.variant.server.schema.Schema
 import play.api.Application
 import com.variant.core.schema.parser.ParserResponse
 import com.typesafe.config.Config

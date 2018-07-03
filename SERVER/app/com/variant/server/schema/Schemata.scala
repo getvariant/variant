@@ -15,7 +15,7 @@ class Schemata () {
    private[this] val logger = Logger(this.getClass)
    
    // Map of Schema objects keyed by schema name.
-   private[this] val _schemaMap = new TrieMap[String, Schema]()
+   private[this] val _schemaMap = new TrieMap[String, ServerSchema]()
   
    /**
     * Deploy a schema generation
@@ -27,7 +27,7 @@ class Schemata () {
          case Some(schema) => schema.deployGen(gen)
          
          case None         => {
-            _schemaMap += gen.getName() -> new Schema(gen)
+            _schemaMap += gen.getName() -> new ServerSchema(gen)
             logger.debug(s"Created new schema [${gen.getName}]")
             println(_schemaMap)
          }
@@ -56,7 +56,7 @@ class Schemata () {
    /**
     * Get a schema by name
     */
-   def get(name: String): Option[Schema] = { _schemaMap.get(name) }
+   def get(name: String): Option[ServerSchema] = { _schemaMap.get(name) }
 
    /**
     * Get a given schema's live generation as an Option.

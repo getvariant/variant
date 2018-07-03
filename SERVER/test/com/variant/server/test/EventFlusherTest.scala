@@ -37,7 +37,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    */
    implicit override def newAppForTest(testData: TestData): Application = {
 
-      // Petclinic schema will no parse without this.
+      // petclinic_experiments schema will no parse without this.
       sys.props +=("variant.ext.dir" -> "distr/ext")
       
       if (testData.name.contains("EVENT_FLUSHER_CLASS_NAME")) 

@@ -50,7 +50,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 	      
          server.schemata.size mustBe 2
          server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.isDefined mustBe true 
-         server.schemata.get("petclinic").get.liveGen.isDefined mustBe true
+         server.schemata.get("petclinic_experiments").get.liveGen.isDefined mustBe true
                   
          // Let the directory watcher thread start before copying any files.
    	   Thread.sleep(100)
@@ -65,10 +65,10 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 	      }
       }
 
-      "obtain concurrent connections to petclinic" in {
+      "obtain concurrent connections to petclinic_experiments" in {
 
 	      for (i <- 0 until 20) async {	      
-            assertResp(route(app, httpReq(GET, "/connection/petclinic")))
+            assertResp(route(app, httpReq(GET, "/connection/petclinic_experiments")))
               .isOk
               .withNoBody
 	      }

@@ -35,7 +35,7 @@ trait TempSchemataDir extends PlaySpec with OneAppPerSuite with BeforeAndAfterAl
    implicit override lazy val app: Application = {
       IoUtils.delete(schemataDir)
       IoUtils.fileCopy("conf-test/ParserConjointOkayBigTestNoHooks.json", s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
-      IoUtils.fileCopy("distr/schemata/petclinic-schema.json", s"${schemataDir}/petclinic-schema.json");
+      IoUtils.fileCopy("distr/schemata/petclinic-experiments.json", s"${schemataDir}/petclinic-experiments.json");
       sys.props +=("variant.ext.dir" -> "distr/ext")
       new GuiceApplicationBuilder()
          .configure(new Configuration(VariantApplicationLoader.config))

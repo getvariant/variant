@@ -46,7 +46,7 @@ class BaseSpecWithServer extends BaseSpec with OneAppPerSuite with BeforeAndAfte
 
       // in case some other test set it.
       sys.props -= "variant.schemata.dir"
-      // hook in the ext directory from the distribution dir to make the petclinic schema parse.
+      // hook in the ext directory from the distribution dir to make the petclinic_experiments schema parse.
       sys.props +=("variant.ext.dir" -> "distr/ext")
 
       new GuiceApplicationBuilder()
@@ -59,8 +59,8 @@ class BaseSpecWithServer extends BaseSpec with OneAppPerSuite with BeforeAndAfte
 	 * 
 	 */
 	private def recreateDatabase() {
-	   // Assuming the there's always the petclinic schema and that it has the right event writer.
-		val jdbc = new JdbcService(server.schemata.get("petclinic").get.liveGen.get.eventWriter)
+	   // Assuming the there's always the petclinic_experiments schema and that it has the right event writer.
+		val jdbc = new JdbcService(server.schemata.getLiveGen("petclinic_experiments").get.eventWriter)
 		try {			
 			jdbc.getVendor match {
    			case JdbcService.Vendor.POSTGRES => {

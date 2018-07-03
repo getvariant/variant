@@ -50,7 +50,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
 	      
          server.schemata.size mustBe 2
          server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.isDefined mustBe true
-         server.schemata.get("petclinic").get.liveGen.isDefined mustBe true
+         server.schemata.get("petclinic_experiments").get.liveGen.isDefined mustBe true
                   
          // Let the directory watcher thread start before copying any files.
    	   Thread.sleep(100)

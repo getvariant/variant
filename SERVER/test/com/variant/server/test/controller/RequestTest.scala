@@ -136,9 +136,9 @@ class RequestTest extends BaseSpecWithServer {
 
    }
 
-   "Schema petclinic" should {
+   "Schema petclinic_experiments" should {
 
-      val schema = server.schemata.get("petclinic").get.liveGen.get
+      val schema = server.schemata.get("petclinic_experiments").get.liveGen.get
       val schemaId = schema.getId
       val writer = schema.eventWriter
       val reader = EventReader(writer)
@@ -148,7 +148,7 @@ class RequestTest extends BaseSpecWithServer {
          
          // ssn.setAttribute("user-agent", "Safari")
 
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
             .isOk
             .withBodyJson { json =>
                val ssn = Json.parse((json \ "session").as[String])
@@ -157,8 +157,8 @@ class RequestTest extends BaseSpecWithServer {
 
                (ssn \ "sid").as[String] mustBe sid
                (ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 100)
-               schemaSrc mustBe server.schemata.get("petclinic").get.liveGen.get.source
-               schemaId mustBe server.schemata.get("petclinic").get.liveGen.get.getId
+               schemaSrc mustBe server.schemata.get("petclinic_experiments").get.liveGen.get.source
+               schemaId mustBe server.schemata.get("petclinic_experiments").get.liveGen.get.getId
                val parser = ServerSchemaParser()
                val parserResp = parser.parse(schemaSrc)
                parserResp.hasMessages() mustBe false
@@ -166,7 +166,7 @@ class RequestTest extends BaseSpecWithServer {
       	   	parserResp.getSchemaSrc() mustNot be (null)
       	
                val schema = parserResp.getSchema
-               schema.getName mustEqual "petclinic"
+               schema.getName mustEqual "petclinic_experiments"
             }
       }
 
@@ -183,7 +183,7 @@ class RequestTest extends BaseSpecWithServer {
 
       "disqualify session from test" in {
 
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)

@@ -16,7 +16,7 @@ import play.api.Logger
  * 
  * Cleaned up by the vacuum thread after all generations are gone.
  */
-class Schema(private val seed: SchemaGen) {
+class ServerSchema(private val seed: SchemaGen) {
   
    private[this] val logger = Logger(this.getClass)
    
