@@ -14,6 +14,7 @@ import com.variant.server.test.util.EventReader
 import com.variant.server.test.util.EventExperienceFromDatabase
 import com.variant.core.impl.StateVisitedEvent
 import com.variant.core.session.CoreStateRequest
+import com.variant.server.schema.ServerSchemaParser
 
 
 /**
@@ -40,20 +41,35 @@ class RequestTest extends BaseSpecWithServer {
 
       "create new session" in {
          
-         val body = SessionImpl.empty(sid, schema).toJson
-         assertResp(route(app, httpReq(PUT, context + "/session").withTextBody(body)))
-            .isOk
-            .withNoBody
-         
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+            .isOk         
+            .withBodyJson { json =>
+               val ssn = Json.parse((json \ "session").as[String])
+               val schemaId = (json \ "schema" \ "id").as[String]
+               val schemaSrc = (json \ "schema" \ "src").as[String]
+
+               (ssn \ "sid").as[String] mustBe sid
+               (ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 100)
+               schemaSrc mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.source
+               schemaId mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.getId
+               val parser = ServerSchemaParser()
+               val parserResp = parser.parse(schemaSrc)
+               parserResp.hasMessages() mustBe false
+         		parserResp.getSchema() mustNot be (null)
+      	   	parserResp.getSchemaSrc() mustNot be (null)
+      	
+               val schema = parserResp.getSchema
+               schema.getName mustEqual "big_conjoint_schema"
+            }
       }
 
       "create and commit new state request" in {
 
-         assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
+         assertResp(route(app, httpReq(GET, context + "/session/big_conjoint_schema/" + sid)))
             .isOk
             .withBodyJson { json => 
-               val coreSsn1 = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn1.getStateRequest
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
                stateReq mustBe (null)
          }
          
@@ -135,14 +151,39 @@ class RequestTest extends BaseSpecWithServer {
          assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid)))
             .isOk
             .withBodyJson { json =>
-                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-                SessionImpl(coreSsn, schema) mustEqual SessionImpl.empty(sid, schema)
-             }
+               val ssn = Json.parse((json \ "session").as[String])
+               val schemaId = (json \ "schema" \ "id").as[String]
+               val schemaSrc = (json \ "schema" \ "src").as[String]
+
+               (ssn \ "sid").as[String] mustBe sid
+               (ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 100)
+               schemaSrc mustBe server.schemata.get("petclinic").get.liveGen.get.source
+               schemaId mustBe server.schemata.get("petclinic").get.liveGen.get.getId
+               val parser = ServerSchemaParser()
+               val parserResp = parser.parse(schemaSrc)
+               parserResp.hasMessages() mustBe false
+         		parserResp.getSchema() mustNot be (null)
+      	   	parserResp.getSchemaSrc() mustNot be (null)
+      	
+               val schema = parserResp.getSchema
+               schema.getName mustEqual "petclinic"
+            }
       }
 
-      "Disqualify session from test" in {
+      "set an session attribute" in {
+         
+         val body: JsValue = Json.obj(
+            "sid" -> sid,
+            "name" -> "user-agent",
+            "value" -> "Safari"
+         )
+         assertResp(route(app, httpReq(PUT, context + "/session/attr").withBody(body.toString())))
+            .isOk
+      }
 
-         assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
+      "disqualify session from test" in {
+
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)

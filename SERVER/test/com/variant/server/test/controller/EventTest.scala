@@ -101,38 +101,11 @@ class EventTest extends BaseSpecWithServer {
       "obtain a session" in {
          val sid = newSid()
          val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis(), schema.getId)).expand("sid" -> sid)
-         assertResp(route(app, httpReq(PUT, context + "/session").withBody(sessionJson)))
+         assertResp(route(app, httpReq(PUT, context + "/session/big_conjoint_schema").withBody(sessionJson)))
             .isOk
             .withNoBody
 
          ssn = server.ssnStore.get(sid).get
-      }
-      
-      "return 400 and error on POST with no body" in {
-         assertResp(route(app, httpReq(POST, endpoint)))
-            .isError(EmptyBody)
-     }
-
-      "return  400 and error on POST with invalid JSON" in {
-         assertResp(route(app, httpReq(POST, endpoint).withBody("bad json")))
-            .isError(JsonParseError, "Unrecognized token 'bad': was expecting ('true', 'false' or 'null') at [Source: bad json; line: 1, column: 4]")
-     }
-
-      "return  400 and error on POST with no sid" in {
-         assertResp(route(app, httpReq(POST, endpoint).withBody(bodyNoSid)))
-            .isError(MissingProperty, "sid")
-      }
-
-      "return 400 and error on POST with no name" in {
-         assertResp(route(app, httpReq(POST, endpoint).withBody(bodyNoName)))
-            .isError(MissingProperty, "name")
-      }
-
-      "return  400 and error on POST with non-existent session" in {
-         
-         val eventBody = body.expand("sid" -> "foo")
-         assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
-            .isError(SessionExpired, "foo")
       }
 
       "return 400 and error on POST with missing param name" in {

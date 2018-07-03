@@ -35,14 +35,14 @@ class SessionAttributeTest extends BaseSpecWithServer {
       "Create a new session" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> sid1)
-         assertResp(route(app, httpReq(PUT, endpointSession).withBody(body)))
+         assertResp(route(app, httpReq(PUT, endpointSession + "/big_conjoint_schema").withBody(body)))
             .isOk
             .withNoBody
       }
 
       "return null on read of non-existent attribute" in {
                   
-         assertResp(route(app, httpReq(GET, endpointSession + "/" + sid1)))
+         assertResp(route(app, httpReq(GET, endpointSession + "/big_conjoint_schema/" + sid1)))
             .isOk
             .withBodyJson  { json =>
                extractAttr(json, "non-existent") mustBe None
@@ -79,7 +79,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
 
       "read the attribute " in {
                   
-         assertResp(route(app, httpReq(GET, endpointSession + "/" + sid1)))
+         assertResp(route(app, httpReq(POST, endpointSession + "/big_conjoint_schema/" + sid1)))
             .isOk
             .withBodyJson  { json =>
                extractAttr(json, "ATTRIBUTE NAME") mustBe Some("ATTRIBUTE VALUE")
@@ -103,7 +103,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
       
       "read the updated attribute in original session" in {
                   
-         assertResp(route(app, httpReq(GET, endpointSession + "/" + sid1)))
+         assertResp(route(app, httpReq(GET, endpointSession + "/big_conjoint_schema/" + sid1)))
             .isOk
             .withBodyJson  { json =>
                extractAttr(json, "ATTRIBUTE NAME") mustBe Some("SOME OTHER VALUE")
@@ -126,7 +126,7 @@ class SessionAttributeTest extends BaseSpecWithServer {
 
       "Confirm that the attribute is gone" in {
                   
-         assertResp(route(app, httpReq(GET, endpointSession + "/" + sid1)))
+         assertResp(route(app, httpReq(POST, endpointSession + "/big_conjoint_schema/" + sid1)))
             .isOk
             .withBodyJson  { json =>
                extractAttr(json, "ATTRIBUTE NAME") mustBe None

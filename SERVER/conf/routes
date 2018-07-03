@@ -14,15 +14,16 @@ GET     /connection/:schema      com.variant.server.play.ConnectionController.ge
 
 # Session Controller
 # :schema = schema name; :sid = session id
+# Attributes must go first so as "attr" is not matched as :schema
+PUT     /session/attr            com.variant.server.play.SessionController.addAttribute()
+DELETE  /session/attr            com.variant.server.play.SessionController.clearAttribute()
+
 GET     /session/:schema/:sid            com.variant.server.play.SessionController.getSession(schema, sid)
 POST    /session/:schema/:sid            com.variant.server.play.SessionController.getOrCreateSession(schema, sid)
 PUT     /session/:schema                 com.variant.server.play.SessionController.saveSession(schema)
 
 # Event Controller
 POST    /event                   com.variant.server.play.EventController.post()
-
-PUT     /session/attr            com.variant.server.play.SessionController.addAttribute()
-DELETE  /session/attr            com.variant.server.play.SessionController.clearAttribute()
 
 # Request Controller
 POST    /request                 com.variant.server.play.RequestController.create()
