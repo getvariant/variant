@@ -4,6 +4,7 @@ import play.api.Logger
 import play.api.test.Helpers._
 import com.variant.core.impl.ServerError._
 import com.variant.server.api.ConfigKeys._
+import com.variant.server.schema.SchemaGen.State._
 import com.variant.server.test.spec.BaseSpecWithServer
 import com.variant.server.test.spec.TempSchemataDir
 import com.variant.server.test.spec.TempSchemataDir._
@@ -13,7 +14,7 @@ import com.variant.server.test.controller.SessionTest
 import com.variant.core.util.IoUtils
 import com.variant.core.util.StringUtils
 import scala.util.Random
-import play.api.libs.json.Json
+import play.api.libs.json._
 
 
 /**
@@ -25,8 +26,8 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
    private val random = new Random(System.currentTimeMillis())
    private val SESSIONS = 100
 
-   private val sessionJsonBig = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
-   private val sessionJsonPet = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
+   //private val sessionJsonBig = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
+   //private val sessionJsonPet = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
    
    // Override the test default of 10
    override val config = "variant.max.concurrent.connections = 100"
@@ -66,20 +67,18 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
 
             val sid = newSid
 	         ssnId2Big(i) = sid
-	         val body = sessionJsonBig.expand("sid" -> sid)
-            assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
+            assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
                .is(OK)
-               .withNoBody
+               .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
          }
-	      
+         
          for (i <- 0 until SESSIONS) async {
 
             val sid = newSid
 	         ssnId2Pet(i) = sid
-	         val body = sessionJsonPet.expand("sid" -> sid)
-            assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
+            assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
                .is(OK)
-               .withNoBody
+               .withBodyJsonSession(sid, "petclinic_experiments")
          }
 	      
 	      joinAll // blocks until all sessions are created
@@ -90,22 +89,16 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          // pick connection randomly to emulate parallel connections.
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
                .is(OK)
-               .withBodyJson { json => 
-                  StringUtils.digest((json \ "session").as[String]) mustBe 
-                     StringUtils.digest(sessionJsonBig.expand("sid" -> sid).toString())
-            }
+               .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
          }
          
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
                .is(OK)
-               .withBodyJson { json => 
-                  StringUtils.digest((json \ "session").as[String]) mustBe 
-                     StringUtils.digest(sessionJsonPet.expand("sid" -> sid).toString())
-            }
+               .withBodyJsonSession(sid, "petclinic_experiments")
          }
 	      
 	      joinAll
@@ -114,40 +107,38 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
       "replace schema ParserConjointOkayBigTestNoHooks" in {
 
 	      val oldGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+	      oldGen.state mustBe Live
 
          async {
    	      
             IoUtils.fileCopy("conf-test/ParserConjointOkayBigTestNoHooks.json", s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
             Thread.sleep(dirWatcherLatencyMsecs)
             
+            oldGen.state mustBe Dead
+
             val newGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
-            newGen mustNot be (oldGen)
+            newGen.getId() mustNot be (oldGen.getId())
+            newGen.state mustBe Live
             server.schemata.size mustBe 2
 
 	      }
 	   }
 
-      "permit session reads over parallel connections, while schema is being replaced" in {
+      "permit session reads over dead generation" in {
 
          // pick connection randomly to emulate parallel connections.
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
                .is(OK)
-               .withBodyJson { json => 
-                  StringUtils.digest((json \ "session").as[String]) mustBe 
-                     StringUtils.digest(sessionJsonBig.expand("sid" -> sid).toString())
-            }
+               .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
          }
 
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
                .is(OK)
-               .withBodyJson { json => 
-                  StringUtils.digest((json \ "session").as[String]) mustBe 
-                     StringUtils.digest(sessionJsonPet.expand("sid" -> sid).toString())
-            }
+               .withBodyJsonSession(sid, "petclinic_experiments")
          }
          
          joinAll
@@ -157,10 +148,17 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
       "permit session updates over draining connections, after schema was replaced" in {
      
          for (i <- 0 until SESSIONS) {
-	         val body = sessionJsonBig.expand("sid" -> ssnId2Big(i))
-            assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
-               .is(OK)
-               .withNoBody
+            val sid = ssnId2Big(i)
+            val body: JsValue = Json.obj(
+               "sid" -> sid,
+               "name" -> "foo",
+               "value" -> "bar"
+            )
+            assertResp(route(app, httpReq(PUT, context + "/session/attr").withBody(body.toString())))
+               .isOk
+               .withBodySession  { ssn =>
+                  ssn.getAttribute("foo") mustBe "bar"
+               }
          }
 
          joinAll
@@ -169,54 +167,39 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
       "allow session create over live connection" in {
          
          val sid = newSid
-         val body = sessionJsonPet.expand("sid" -> sid)
 
-         // Create
-         assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
+         assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
             .is(OK)
-            .withNoBody
+            .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
 
          // And read, just in case
-         assertResp(route(app, httpReq(GET, context + "/session/")))
+         assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
             .is(OK)
-            .withBodyJson { json => 
-               StringUtils.digest((json \ "session").as[String]) mustBe 
-                  StringUtils.digest(body)
-         }
+            .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
 
       }
       
-      "refuse session create in draining gens" in {
-
-         val sid = newSid
-         val body = sessionJsonBig.expand("sid" -> sid)
-
-         // Create
-         assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
-            .isError(UnknownSchema, "blah")
-
-      }
-
       val newsid = newSid
       
-      "expire all sessions and dispose of all draining connections after session timeout period" in {
+      "expire all sessions and dispose of all dead gens" in {
        
          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis)
          
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
-               .isError(UnknownSchema, "blah")
+            assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+               .isError(SessionExpired, sid)
          }
 
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
                .isError(SessionExpired, sid)
          }
          
-         assertResp(route(app, httpReq(GET, context + "/session/" + newsid)))
-            .isError(SessionExpired, newsid)
       }
+      
+      // TODO: test that dead generations were vacuumed.
+
    }
 }
