@@ -53,7 +53,7 @@ class EventWriterTest extends BaseSpecWithServer {
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
+         assertResp(route(app, httpReq(PUT, context + "/session/big_conjoint_schema").withBody(body)))
             .isOk
             .withNoBody
          
@@ -97,7 +97,7 @@ class EventWriterTest extends BaseSpecWithServer {
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app, httpReq(PUT, context + "/session").withBody(body)))
+         assertResp(route(app, httpReq(PUT, context + "/session/big_conjoint_schema").withBody(body)))
             .isOk
             .withNoBody
 
@@ -132,7 +132,7 @@ class EventWriterTest extends BaseSpecWithServer {
          val sid = newSid
          eventReader.read(e => e.getSessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app,httpReq(PUT, context + "/session").withBody(body)))
+         assertResp(route(app,httpReq(PUT, context + "/session/big_conjoint_schema").withBody(body)))
             .isOk
             .withNoBody
 
