@@ -14,6 +14,7 @@ import com.variant.server.api.ConfigKeys._
 import com.variant.server.test.spec.BaseSpecWithServer
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.schema.ServerSchemaParser
+import com.variant.server.test.spec.BaseSpecWithServerAsync
 
 /*
  * Reusable event JSON objects. 
@@ -45,33 +46,22 @@ object ConnectionTest {
 /**
  * Event Controller
  */
-class ConnectionTest extends BaseSpecWithServer {
+class ConnectionTest extends BaseSpecWithServerAsync {
    
 
-import EventTest._
-   
+   import EventTest._
+      
    val endpoint = context + "/connection"
 
    "ConnectionController" should {
-
-      /* GET connection is off for now.
-      "return 702 Unknown connection on GET bad connection ID" in {
-         val resp = route(app, FakeRequest(GET, endpoint + "/foo")).get
-         status(resp) mustBe BAD_REQUEST
-         val (isInternal, error, args) = parseError(contentAsJson(resp))
-         isInternal mustBe UnknownConnection.isInternal() 
-         error mustBe UnknownConnection
-         args mustBe Seq("foo")
-      }
-	   */
    
-      "return  404 on POST with no schema name" in {
+      "return  404 on GET with no schema name" in {
          assertResp(route(app, httpReq(GET, endpoint)))
             .is(NOT_FOUND)
             .withNoBody
       }
 
-      "return  400 and error on POST to non-existent schema" in {         
+      "return  400 and error on GET to non-existent schema" in {         
          assertResp(route(app, httpReq(GET, endpoint + "/bad_schema")))
             .isError(UnknownSchema, "bad_schema")
       }
@@ -83,7 +73,7 @@ import EventTest._
             .withBodyJson { json =>
                (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
             }
-      }            
+      }         
    }
 }
 

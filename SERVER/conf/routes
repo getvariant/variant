@@ -15,6 +15,8 @@ GET     /connection/:schema      com.variant.server.play.ConnectionController.ge
 # Session Controller
 # :schema = schema name; :sid = session id
 # Attributes must go first so as "attr" is not matched as :schema
+# Note that there should not be a problem if schema = "attr" because PUT is only used
+# testing and very infrequently.
 PUT     /session/attr            com.variant.server.play.SessionController.addAttribute()
 DELETE  /session/attr            com.variant.server.play.SessionController.clearAttribute()
 

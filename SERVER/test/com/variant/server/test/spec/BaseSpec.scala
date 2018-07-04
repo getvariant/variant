@@ -1,26 +1,25 @@
 package com.variant.server.test.spec
 
 import java.util.Random
-
 import scala.concurrent.Future
-
 import org.scalatestplus.play.PlaySpec
-
 import com.variant.core.impl.ServerError
 import com.variant.core.schema.Schema
 import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.core.util.Constants.HTTP_HEADER_CONTENT_TYPE
 import com.variant.core.util.StringUtils
-import com.variant.server.api.Session
+import com.variant.server.impl.SessionImpl
 import com.variant.server.boot.VariantServer
 import com.variant.server.impl.SessionImpl
-
 import play.api.Application
 import play.api.libs.json._
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.test.Helpers._
+import com.variant.server.schema.ServerSchemaParser
+import com.variant.server.schema.SchemaGen
+import com.variant.server.api.Session
 
 /**
  * 
@@ -162,6 +161,84 @@ trait BaseSpec extends PlaySpec {
          this
       }
 
+      /**
+       * 
+       */
+      def withBodyJsonSession(sid: String, schemaName: String) = {
+         
+         try {
+            val json = contentAsJson(res)
+            val ssn = Json.parse((json \ "session").as[String])
+            val schemaId = (json \ "schema" \ "id").as[String]
+            val schemaSrc = (json \ "schema" \ "src").as[String]
+      
+            (ssn \ "sid").as[String] mustBe sid
+            (ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 10000)  // Created within a second from now.
+            schemaSrc mustBe server.schemata.get(schemaName).get.liveGen.get.source
+            schemaId mustBe server.schemata.getLiveGen(schemaName).get.getId
+            val parser = ServerSchemaParser()
+            val parserResp = parser.parse(schemaSrc)
+            parserResp.hasMessages() mustBe false
+      		parserResp.getSchema() mustNot be (null)
+         	parserResp.getSchemaSrc() mustNot be (null)
+      
+            val CoreSchema = parserResp.getSchema
+            CoreSchema.getName mustEqual schemaName
+         } catch {
+            case t: Throwable => 
+               fail(t.getMessage + stackLine, t) 
+         }
+         
+         this
+      }
+
+      /**
+       * Deserialize session from response body.
+       * Extract session ID from the json and use that
+       * to obtain the schema gen for deserialization.
+       */
+      def withBodySession
+         (ssnFunc: (SessionImpl) => Unit = {ssn => }) = {
+
+         try {
+            val json = contentAsJson(res)
+            val ssnJson = Json.parse((json \ "session").as[String])
+            val sid = (ssnJson \ "sid").as[String]
+            val gen = server.ssnStore.get(sid).get.schemaGen
+            val ssn = SessionImpl((json \ "session").as[String], gen);
+            ssnFunc(ssn)
+         } catch {
+            case t: Throwable => 
+               fail(t.getMessage + stackLine, t) 
+         }
+
+         this
+      }
+
+      /**
+       * Extract the value of an attribute from the response JSON.
+       * Note that the session JSON is stringified, so has to be parsed.
+       * THIS DOESN'T QUITE WORK
+      def withBodySession
+         (schemaName: String)
+         (ssnFunc: (SessionImpl) => Unit = {ssn => })
+         (returnsFunc: JsValue => Unit = {json => }) = {
+
+         try {
+            val liveGen = server.schemata.getLiveGen(schemaName).get
+            val json = contentAsJson(res)
+            val ssn = SessionImpl((json \ "session").as[String], liveGen);
+            ssnFunc(ssn)
+            returnsFunc((json \ "session").as[JsValue])
+         } catch {
+            case t: Throwable => 
+               fail(t.getMessage + stackLine, t) 
+         }
+
+         this
+      }
+      * 
+      */
    }      
 
    /**

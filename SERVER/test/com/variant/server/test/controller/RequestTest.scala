@@ -43,24 +43,7 @@ class RequestTest extends BaseSpecWithServer {
          
          assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
             .isOk         
-            .withBodyJson { json =>
-               val ssn = Json.parse((json \ "session").as[String])
-               val schemaId = (json \ "schema" \ "id").as[String]
-               val schemaSrc = (json \ "schema" \ "src").as[String]
-
-               (ssn \ "sid").as[String] mustBe sid
-               (ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 100)
-               schemaSrc mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.source
-               schemaId mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.getId
-               val parser = ServerSchemaParser()
-               val parserResp = parser.parse(schemaSrc)
-               parserResp.hasMessages() mustBe false
-         		parserResp.getSchema() mustNot be (null)
-      	   	parserResp.getSchemaSrc() mustNot be (null)
-      	
-               val schema = parserResp.getSchema
-               schema.getName mustEqual "big_conjoint_schema"
-            }
+            .withBodyJsonSession(sid, "big_conjoint_schema")
       }
 
       "create and commit new state request" in {
@@ -150,24 +133,7 @@ class RequestTest extends BaseSpecWithServer {
 
          assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
             .isOk
-            .withBodyJson { json =>
-               val ssn = Json.parse((json \ "session").as[String])
-               val schemaId = (json \ "schema" \ "id").as[String]
-               val schemaSrc = (json \ "schema" \ "src").as[String]
-
-               (ssn \ "sid").as[String] mustBe sid
-               (ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 100)
-               schemaSrc mustBe server.schemata.get("petclinic_experiments").get.liveGen.get.source
-               schemaId mustBe server.schemata.get("petclinic_experiments").get.liveGen.get.getId
-               val parser = ServerSchemaParser()
-               val parserResp = parser.parse(schemaSrc)
-               parserResp.hasMessages() mustBe false
-         		parserResp.getSchema() mustNot be (null)
-      	   	parserResp.getSchemaSrc() mustNot be (null)
-      	
-               val schema = parserResp.getSchema
-               schema.getName mustEqual "petclinic_experiments"
-            }
+            .withBodyJsonSession(sid, "petclinic_experiments")
       }
 
       "set an session attribute" in {

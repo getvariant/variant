@@ -8,8 +8,7 @@ import com.variant.server.boot.SessionStore
 import com.variant.server.impl.SessionImpl
 import javax.inject.Inject
 import play.api.Logger
-import play.api.libs.json.JsObject
-import play.api.libs.json.JsString
+import play.api.libs.json._
 import play.api.mvc.ControllerComponents
 import com.variant.core.impl.ServerError
 import com.variant.server.boot.VariantServer
@@ -24,7 +23,7 @@ class SessionController @Inject() (
       ) extends VariantController(cc, server)  {
    
    private val logger = Logger(this.getClass)	
-
+   
    /**
     * Get a session by ID, if exists in any of the given schema's generations.
     */
@@ -107,17 +106,32 @@ class SessionController @Inject() (
     *   
     */  
    def saveSession(schemaName: String) = action { req =>
-
+      
       val ssnJson = req.body.asText.getOrElse {
          throw new ServerException.Remote(EmptyBody)
       }
-         
-      val liveGen = server.schemata.getLiveGen(schemaName).getOrElse {
-         logger.debug("Schema [%s] not found".format(schemaName))
-         throw new ServerException.Remote(UnknownSchema, schemaName)
+      
+      val sid = (Json.parse(ssnJson) \ "sid").asOpt[String].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "sid")
       }
       
-      val ssn = SessionImpl(CoreSession.fromJson(ssnJson, liveGen), liveGen)
+      val gen = server.ssnStore.get(sid) match {
+         
+         case Some(ssn) => 
+            // Must match the schema name.
+            if (ssn.schemaGen.getName() != schemaName) 
+		      throw new ServerException.Internal(
+		            s"Session ID [${sid}]found but in the wrong schema. Expected [${schemaName}], but was [${ssn.schemaGen.getName()}]")
+		      ssn.schemaGen
+            
+         case None =>
+            // Given schema must have a live gen.
+            server.schemata.getLiveGen(schemaName).getOrElse {
+               throw new ServerException.Remote(UnknownSchema, schemaName)
+            }
+      }
+      
+      val ssn = SessionImpl(ssnJson, gen)
       server.ssnStore.put(ssn)
       
       Ok      

@@ -39,7 +39,6 @@ object SessionTest {
         "attrList": [{"name": "NAME1","val": "VALUE1"}, {"name": "NAME2","val": "VALUE2"}]
       }
    """
-
 }
 
 class SessionTest extends BaseSpecWithServer {
@@ -118,45 +117,11 @@ class SessionTest extends BaseSpecWithServer {
          val sid = "bar"
          assertResp(route(app, httpReq(POST, endpoint + "/big_conjoint_schema/" + sid)))
             .isOk
-            .withBodyJson { json =>
-               val ssn = Json.parse((json \ "session").as[String])
-               val schemaId = (json \ "schema" \ "id").as[String]
-               val schemaSrc = (json \ "schema" \ "src").as[String]
-
-               (ssn \ "sid").as[String] mustBe sid
-               (ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 100)
-               schemaSrc mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.source
-               schemaId mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.getId
-               val parser = ServerSchemaParser()
-               val parserResp = parser.parse(schemaSrc)
-               parserResp.hasMessages() mustBe false
-         		parserResp.getSchema() mustNot be (null)
-      	   	parserResp.getSchemaSrc() mustNot be (null)
-      	
-               val CoreSchema = parserResp.getSchema
-               CoreSchema.getName mustEqual "big_conjoint_schema"
-            }
+            .withBodyJsonSession (sid, "big_conjoint_schema")
          
          assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + sid)))
             .isOk
-            .withBodyJson { json =>
-               val ssn = Json.parse((json \ "session").as[String])
-               val schemaId = (json \ "schema" \ "id").as[String]
-               val schemaSrc = (json \ "schema" \ "src").as[String]
-
-               (ssn \ "sid").as[String] mustBe sid
-               (ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 100)
-               schemaSrc mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.source
-               schemaId mustBe server.schemata.get("big_conjoint_schema").get.liveGen.get.getId
-               val parser = ServerSchemaParser()
-               val parserResp = parser.parse(schemaSrc)
-               parserResp.hasMessages() mustBe false
-         		parserResp.getSchema() mustNot be (null)
-      	   	parserResp.getSchemaSrc() mustNot be (null)
-      	
-               val CoreSchema = parserResp.getSchema
-               CoreSchema.getName mustEqual "big_conjoint_schema"
-            }
+            .withBodyJsonSession (sid, "big_conjoint_schema")
       }
 
      "not lose existing session with different key" in {
