@@ -33,7 +33,7 @@ public class ServerFlusherService implements FlusherService {
 	
 		
 	private Flusher defaultFlusher() {
-		
+
 		Config config = server.config();
 
 		if (!config.hasPath(EVENT_FLUSHER_CLASS_NAME)) {

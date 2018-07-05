@@ -19,9 +19,7 @@ import play.api.Application
 import play.api.Configuration
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
-import play.api.test.Helpers.GET
-import play.api.test.Helpers.PUT
-import play.api.test.Helpers.SERVICE_UNAVAILABLE
+import play.api.test.Helpers._
 import play.api.test.Helpers.route
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
 import play.api.libs.json.Json
@@ -109,11 +107,15 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
 
          server.isUp mustBe false
 
-         assertResp(route(app, httpReq(GET, context + "/schema/foo")))
+         assertResp(route(app, httpReq(PUT, context + "/session/foo")))
             .is(SERVICE_UNAVAILABLE)
             .withNoBody
 
-         assertResp(route(app, httpReq(PUT, context + "/session/foo")))
+         assertResp(route(app, httpReq(GET, context + "/session/foo/bar")))
+            .is(SERVICE_UNAVAILABLE)
+            .withNoBody
+
+         assertResp(route(app, httpReq(POST, context + "/session/foo/bar")))
             .is(SERVICE_UNAVAILABLE)
             .withNoBody
       }
@@ -133,11 +135,20 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
       
       "return 503 in every http request after SCHEMATA_DIR_NOT_DIR" in {
 
-         assertResp(route(app, FakeRequest(GET, context + "/session/foo")))
+         server.isUp mustBe false
+                  
+         assertResp(route(app, httpReq(PUT, context + "/session/foo")))
             .is(SERVICE_UNAVAILABLE)
             .withNoBody
 
-   		server.isUp mustBe false
+         assertResp(route(app, httpReq(GET, context + "/session/foo/bar")))
+            .is(SERVICE_UNAVAILABLE)
+            .withNoBody
+
+         assertResp(route(app, httpReq(POST, context + "/session/foo/bar")))
+            .is(SERVICE_UNAVAILABLE)
+            .withNoBody
+
       }
    }
 

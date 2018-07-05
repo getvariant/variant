@@ -20,6 +20,8 @@ import play.api.test.Helpers._
 import com.variant.server.schema.ServerSchemaParser
 import com.variant.server.schema.SchemaGen
 import com.variant.server.api.Session
+import com.variant.core.schema.ParserMessage
+import com.variant.core.UserError
 
 /**
  * 
@@ -173,12 +175,12 @@ trait BaseSpec extends PlaySpec {
             val schemaSrc = (json \ "schema" \ "src").as[String]
       
             (ssn \ "sid").as[String] mustBe sid
-            (ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 10000)  // Created within a second from now.
+            //(ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 10000)  // Created within a second from now.
             schemaSrc mustBe server.schemata.get(schemaName).get.liveGen.get.source
             schemaId mustBe server.schemata.getLiveGen(schemaName).get.getId
             val parser = ServerSchemaParser()
             val parserResp = parser.parse(schemaSrc)
-            parserResp.hasMessages() mustBe false
+            parserResp.hasMessages(UserError.Severity.ERROR) mustBe false
       		parserResp.getSchema() mustNot be (null)
          	parserResp.getSchemaSrc() mustNot be (null)
       

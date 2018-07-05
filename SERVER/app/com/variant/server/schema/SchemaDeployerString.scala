@@ -19,7 +19,7 @@ class SchemaDeployerString(schemaStrings: String*) extends AbstractSchemaDeploye
    // Convert internal mutable map to an immutable one for the world
    //override def schemata = _schemata.toMap  
   
-   schemaStrings.foreach { (schemaSrc:String) =>
+   schemaStrings.foreach { schemaSrc =>
       
       val parserResponse = parse(schemaSrc)
        

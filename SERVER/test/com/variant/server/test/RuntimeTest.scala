@@ -24,12 +24,14 @@ import com.variant.server.test.spec.BaseSpecWithServer
 class RuntimeTest extends BaseSpecWithServer {
    
 	"Runtime" should {
-	   
+/*	   
        val schemaDeployer = SchemaDeployer.fromClasspath("/ParserConjointOkayBigTestNoHooks.json")
        server.useSchemaDeployer(schemaDeployer)
        val response = schemaDeployer.parserResponses(0)
        response.hasMessages() mustBe false		
        server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
+       * 
+       *
    	 val schema = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
  	    val runtime = RuntimeTestFacade(schema)
 
@@ -42,9 +44,22 @@ class RuntimeTest extends BaseSpecWithServer {
    	val test4 = schema.getTest("test4")
    	val test5 = schema.getTest("test5")
    	val test6 = schema.getTest("test6")
-
+*/
 	   "resolve for state1" in {
 	         	   
+         val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+ 	      val runtime = RuntimeTestFacade(schema)
+
+      	val state1 = schema.getState("state1")
+      	val state2 = schema.getState("state2")
+   	   val state3 = schema.getState("state3")
+   	   val test1 = schema.getTest("test1")
+      	val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+ 
    	   var caughtEx = intercept[ServerException.Internal] {
              runtime.resolveState(state1, Array(experience("test1.B", schema)))
          }
@@ -165,8 +180,21 @@ class RuntimeTest extends BaseSpecWithServer {
    		
 	   }
 	   
-	   "should resolve for state2" in {
+	   "resolve for state2" in {
    		
+         val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+ 	      val runtime = RuntimeTestFacade(schema)
+
+      	val state1 = schema.getState("state1")
+      	val state2 = schema.getState("state2")
+   	   val state3 = schema.getState("state3")
+   	   val test1 = schema.getTest("test1")
+      	val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+
 	      var resolution = runtime.resolveState(
 				   state2, 
 				   Array(
@@ -308,7 +336,20 @@ class RuntimeTest extends BaseSpecWithServer {
 	   
 	   "resolve for state3" in {
 
-   		var resolution = runtime.resolveState(
+         val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+ 	      val runtime = RuntimeTestFacade(schema)
+
+      	val state1 = schema.getState("state1")
+      	val state2 = schema.getState("state2")
+   	   val state3 = schema.getState("state3")
+   	   val test1 = schema.getTest("test1")
+      	val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+
+   	   var resolution = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test2.A", schema)   // control
@@ -491,7 +532,20 @@ class RuntimeTest extends BaseSpecWithServer {
 
 	   "resolve these coordinate vectors" in {
 
-         runtime.isResolvable(Array(experience("test1.A", schema))) mustBe true
+         val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+ 	      val runtime = RuntimeTestFacade(schema)
+
+      	val state1 = schema.getState("state1")
+      	val state2 = schema.getState("state2")
+   	   val state3 = schema.getState("state3")
+   	   val test1 = schema.getTest("test1")
+      	val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+
+   	   runtime.isResolvable(Array(experience("test1.A", schema))) mustBe true
 		
          runtime.isResolvable(Array(experience("test1.B", schema))) mustBe true
 
@@ -679,7 +733,20 @@ class RuntimeTest extends BaseSpecWithServer {
 	   
 	   "test isTargetable()" in {
 
-          var caughtEx = intercept[ServerException.Internal] {   
+         val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+ 	      val runtime = RuntimeTestFacade(schema)
+
+      	val state1 = schema.getState("state1")
+      	val state2 = schema.getState("state2")
+   	   val state3 = schema.getState("state3")
+   	   val test1 = schema.getTest("test1")
+      	val test2 = schema.getTest("test2")
+   	   val test3 = schema.getTest("test3")
+   	   val test4 = schema.getTest("test4")
+   	   val test5 = schema.getTest("test5")
+   	   val test6 = schema.getTest("test6")
+
+   	   var caughtEx = intercept[ServerException.Internal] {   
    				runtime.isTargetable(
    						test5,
    						state1,

@@ -35,7 +35,7 @@ class Schemata () {
       
       // Write log message
       val msg = new StringBuilder()
-      msg.append("Deployed schema [%s] ID [%s], from [%s]:".format(gen.getName, gen.getId, gen.origin));
+      msg.append("Deployed schema [%s] gen ID [%s], from [%s]:".format(gen.getName, gen.getId, gen.origin));
       for (test <- gen.getTests) {
          msg.append("\n   ").append(test.getName()).append(":[");
          var first = true;
@@ -76,15 +76,12 @@ class Schemata () {
     */
    def undeploy(origin: String) {
       
-      val schemaToRemove = _schemaMap.filter ( e => { e._2.origin == origin } )
+      val schemaToUndeploy = _schemaMap.filter ( e => { e._2.origin == origin } )
       
-      if (schemaToRemove.size > 1)
-         throw new ServerException.Internal(s"Found ${schemaToRemove.size} schemata with origin ${origin}")
+      if (schemaToUndeploy.size > 1)
+         throw new ServerException.Internal(s"Found ${schemaToUndeploy.size} schemata with origin ${origin}")
       
-      schemaToRemove.foreach { e => 
-         _schemaMap -= e._1
-         e._2.undeployLiveGen() 
-      }
+      schemaToUndeploy.foreach { e => e._2.undeployLiveGen() }
    }
    
    /**
@@ -111,7 +108,7 @@ class Schemata () {
       val toDelete = _schemaMap.filter( _._2.genCount == 0)
       toDelete.foreach { e =>
          _schemaMap -= e._1
-         logger.debug(s"Vacuumed schemata [${e._2.name}]")
+         logger.debug(s"Vacuumed schema [${e._2.name}]")
       }
    }
    

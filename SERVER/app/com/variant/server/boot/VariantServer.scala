@@ -76,7 +76,7 @@ class VariantServerImpl @Inject() (
   
 	// Make this instance statically discoverable
 	_instance = this	
-	
+
 	override lazy val isUp = _isUp
 	
 	override val config = playConfig.underlying
