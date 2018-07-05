@@ -55,26 +55,51 @@ abstract public class Payload {
 	 */
 	public static class Session extends Payload {
 		
-		public final CoreSession session;
+		public final String coreSsnSrc;
+		public final String schemaId;
+		public final String schemaSrc;
 		public final String returns;
 		
-		private Session(CoreSession session, String returns) {
-			this.session = session;
-			this.returns = returns;
+		private Session(String coreSsnSrc, String schemaId, String schemaSrc, String returns) {
+			this.coreSsnSrc = coreSsnSrc;
+			this.schemaId = schemaId;
+			this.schemaSrc = schemaSrc;
+			this.returns = returns;			
 		}
 		
 		public static Session parse(com.variant.client.Connection conn, HttpResponse resp) {
 
 			try {
+
+				String coreSsnSrc = null;
+				String schemaId = null;
+				String schemaSrc = null;
+				String returns = null;
+				
 				ObjectMapper mapper = new ObjectMapper();
+				
 				@SuppressWarnings("unchecked")
 				Map<String,?> map = mapper.readValue(resp.body, Map.class);
-				String coreSsnSrc = (String) map.get("session");
+
+				coreSsnSrc = (String) map.get("session");
 				if (coreSsnSrc == null)
 					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
-				String returns = (String) map.get("returns");
 
-				return new Session(CoreSession.fromJson(coreSsnSrc, conn.getSchema()), returns);
+				returns = (String) map.get("returns");
+
+				@SuppressWarnings("unchecked")
+				Map<String,String> schema = (Map<String,String>) map.get("schema");
+				if (schema!= null) {
+					schemaSrc = schema.get("src");
+					schemaId = schema.get("id");
+					if (schemaSrc == null)
+						throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/src", Connection.class.getName());
+					if (schemaId == null)
+						throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/id", Connection.class.getName());
+				}
+				
+
+				return new Session(coreSsnSrc, schemaId, schemaSrc, returns);
 			}
 			catch (VariantException va) {
 				throw va;
@@ -84,5 +109,4 @@ abstract public class Payload {
 			}
 		}
 	}
-
 }

@@ -18,6 +18,7 @@ import com.variant.client.net.http.HttpResponse;
 import com.variant.core.VariantEvent;
 import com.variant.core.impl.ServerError;
 import com.variant.core.impl.VariantEventSupport;
+import com.variant.core.session.CoreSession;
 
 /**
  * The abstraction of the remote server.  
@@ -157,7 +158,7 @@ public class Server {
 	 * Get or create an existing session by ID or null if does not exist on the server.
 	 * Same URL as GET, no body.
 	 */
-	public Payload.Session sessionGetorCreate(final String sid, final ConnectionImpl conn) {
+	public Payload.Session sessionGetOrCreate(final String sid, final ConnectionImpl conn) {
 
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionGet(%s)", sid));
@@ -225,7 +226,7 @@ public class Server {
 			}
 		}.run(ssn);
 		
-		ssn.rewrap(response.session);
+		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
 		return response.returns;
 	}
 
@@ -260,7 +261,7 @@ public class Server {
 			}
 		}.run(ssn);
 		
-		ssn.rewrap(response.session);
+		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
 		return response.returns;
 	}
 
@@ -287,7 +288,7 @@ public class Server {
 			}
 		}.run(ssn);
 		
-		ssn.rewrap(response.session);
+		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
 	}
 
 	/**
@@ -313,7 +314,7 @@ public class Server {
 			}
 		}.run(ssn);
 		
-		ssn.rewrap(response.session);
+		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
 
 		return true;
 	}

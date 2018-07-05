@@ -1,5 +1,6 @@
 package com.variant.client.session;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -9,7 +10,9 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
+import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.SessionImpl;
+import com.variant.core.util.TimeUtils;
 import com.variant.core.util.immutable.ImmutableList;
 
 /**
@@ -35,20 +38,19 @@ public class SessionCache {
 			this.session = session;
 			this.accessTimestamp = System.currentTimeMillis();
 		}
-		/*
+
 		boolean isIdle() {
 			return accessTimestamp + sessionTimeoutMillis < System.currentTimeMillis();
 		}
-		*/
 	}
 	
 	/**
 	 * Vacuum thread.
 	 * Expires and removes idle or stale sessions. 
-	 * Reinstate!!! 
+	 *
 	 * @author Igor.
 	 *
-	 *
+	 */
 	private class VacuumThread extends Thread {
 				
 		@Override
@@ -88,15 +90,14 @@ public class SessionCache {
 			}
 		}
 	}
-	*/
 
-	//private final long sessionTimeoutMillis;
-	//private final long vacuumInterval;
+	private final long sessionTimeoutMillis;
+	private final long vacuumInterval;
 	
 	private final ConcurrentHashMap<String, Entry> cache = new ConcurrentHashMap<String, Entry>();
 	private final Connection conn;
 	
-	// private VacuumThread vacuumThread;
+	private VacuumThread vacuumThread;
 
 	// ---------------------------------------------------------------------------------------------//
 	//                                             PUBLIC                                           //
@@ -105,10 +106,10 @@ public class SessionCache {
 	/**
 	 * 
 	 */
-	public SessionCache(Connection conn) {
+	public SessionCache(ConnectionImpl conn) {
 		this.conn = conn;
-	/*
-		this.sessionTimeoutMillis = sessionTimeoutMillis;
+
+		this.sessionTimeoutMillis = conn.getSessionTimeoutMillis();
 		// Vacuum therad wakes up no less frequently than 30 seconds, but more frequently for tests,
 		// when the timeout is set low, e.g. 1 sec.
 		this.vacuumInterval = Math.min(sessionTimeoutMillis / 2, TimeUtils.MILLIS_PER_SECOND * 30);
@@ -116,7 +117,6 @@ public class SessionCache {
 		vacuumThread.setDaemon(false);
 		vacuumThread.setName(VacuumThread.class.getSimpleName());
 		vacuumThread.start();
-	 */
 	}
 	
 	/**
@@ -176,7 +176,7 @@ public class SessionCache {
 		//vacuumThread.interrupt();
 		for (Entry e: cache.values()) {e.session.expire();}
 		cache.clear();
-		LOG.debug("Doestroyed session cache for connection to schema [" + conn. + "]");
+		LOG.debug("Doestroyed session cache for connection to schema [" + conn.getSchemaName() + "]");
 	}
 
 }

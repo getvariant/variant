@@ -56,7 +56,7 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 				String[] tokens = entry.split("\\.");
 				if (tokens.length == 3) {
 					try {
-						Test test = getSession().getConnection().getSchema().getTest(tokens[1]);
+						Test test = getSession().getSchema().getTest(tokens[1]);
 						if (test == null) {
 							if (LOG.isDebugEnabled()) {
 								LOG.debug("Ignored non-existent test [" + tokens[1] + "]");

@@ -39,7 +39,7 @@ public class TargetingTrackerEntryImpl implements TargetingTracker.Entry {
 	 */
 	@Override
 	public Experience getExperience() {
-		Test test = session.getConnection().getSchema().getTest(testName);
+		Test test = session.getSchema().getTest(testName);
 		return test == null ? null : test.getExperience(experienceName);
 	}
 	

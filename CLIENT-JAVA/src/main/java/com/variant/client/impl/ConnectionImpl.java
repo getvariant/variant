@@ -13,6 +13,10 @@ import com.variant.client.SessionIdTracker;
 import com.variant.client.VariantClient;
 import com.variant.client.net.Payload;
 import com.variant.client.session.SessionCache;
+import com.variant.core.UserError.Severity;
+import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.Schema;
+import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.StringUtils;
 
@@ -23,6 +27,15 @@ import com.variant.core.util.StringUtils;
  */
 public class ConnectionImpl implements Connection {
 				
+
+	//final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
+
+
+	private static final Random RAND = new Random(System.currentTimeMillis());
+	
+	private final long sessionTimeoutMillis;
+	private final String schema;
+
 	/**
 	 * Anything?
 	 */
@@ -74,27 +87,17 @@ public class ConnectionImpl implements Connection {
 				sidTracker.set(sessionId);
 			}
 			else {
-				// No ID in the tracker and create wasn't given. Same as expired session.
+				// No ID in the tracker and create wasn't given.
 				return null;
 			}
 		}
-		
-		SessionImpl result = null;
-		
+				
 		try {
-			result = fetchSession(sessionId, null);
+			return fetchSession(sessionId, create, null);
 		}
-		catch (SessionExpiredException sex) { } // Return null instead.
-		
-		if (result == null && create) {
-			// Session expired locally, recreate OK => Recreate locally and save to server.
-			CoreSession coreSession = new CoreSession(sessionId);
-			result = new SessionImpl(this, coreSession, sidTracker, userData);
-			client.server.sessionSave(result);
-			cache.add(result);
+		catch (SessionExpiredException sex) { 
+			return null;
 		}
-
-		return result;
 	}
 	
 	/**
@@ -103,37 +106,45 @@ public class ConnectionImpl implements Connection {
 	 * @param session
 	 */
 	void refreshSession(SessionImpl session) {
-		fetchSession(session.getId(), session);
+		fetchSession(session.getId(), false, session);
 	}
 	
 	/**
-	 * Get an existing session by session ID from the server.
-	 * If session exists on the server
-	 *   if exists locally then rewrap
-	 *   else create new local session
-	 * else
-	 *   if exists locally then expire, return null.
-	 *   else return null.
+	 * Get or create session by ID from the server.
 	 *   
 	 * @return
 	 */
-	private SessionImpl fetchSession(String sid, SessionImpl localSession) {
+	private SessionImpl fetchSession(String sid, boolean create, SessionImpl localSession) {
 
-		// Go straight to the server as we may not have it in the client-local cache,
-		// e.g. when we get it from a parallel connection.
-		Payload.Session payload = client.server.sessionGet(sid, this);
-
-		CoreSession serverSsn =  payload.session;
-		
-		// Have server session. If no client-side session object, create it
-		// otherwise, rewrap the core session from the server in the existing
-		// client-side object.
-		
+		// If we already have this session locally, we will reuse the schema.
 		SessionImpl clientSsn = localSession == null ? (SessionImpl) cache.get(sid) : localSession;
-		
+
+		// This will throw exceptions if no session.	
+		Payload.Session payload = create ? 
+				client.server.sessionGetOrCreate(sid, this) : client.server.sessionGet(sid, this);
+			
+	    // Parse the schema, but only if don't already have it locally.
+		Schema schema = null;
 		if (clientSsn == null) {
-			// This client doesn't have this session yet.
-			clientSsn = new SessionImpl(this, serverSsn);
+			ParserResponse resp = new ClientSchemaParser().parse(payload.schemaSrc);
+			if (resp.hasMessages(Severity.ERROR)) {
+				StringBuilder buff = new StringBuilder("Unable to parse schema:\n");
+				for (ParserMessage msg: resp.getMessages()) buff.append("    ").append(msg.toString()).append("\n");
+				throw new ClientException.Internal(buff.toString());
+			}
+			schema = new SchemaImpl(payload.schemaId, resp.getSchema());
+		}
+		else {
+			schema = clientSsn.getSchema();
+		}
+		
+		// Can create the core session now
+		CoreSession serverSsn =  CoreSession.fromJson(payload.coreSsnSrc, schema);
+		
+		// If no client-side session object, create it. 
+		// Otherwise, simply replace the core session from the server.
+		if (clientSsn == null) {
+			clientSsn = new SessionImpl(this, schema, serverSsn);
 			cache.add(clientSsn);
 		}
 		else {
@@ -152,15 +163,6 @@ public class ConnectionImpl implements Connection {
 	// Session cache has package visibilithy because accessed by HooksService.
 	final SessionCache cache;
 
-
-	//final private static Logger LOG = LoggerFactory.getLogger(ConnectionImpl.class);
-
-
-	private static final Random RAND = new Random(System.currentTimeMillis());
-	
-	private final long sessionTimeoutMillis;
-	private final String schema;
-
 	final VariantClientImpl client;
 	
 
@@ -175,16 +177,6 @@ public class ConnectionImpl implements Connection {
 		sessionTimeoutMillis = payload.sessionTimeout * 1000L;
 		cache = new SessionCache(this);
 
-		/* This should go into session.
-		ParserResponse resp = new ClientSchemaParser().parse(payload.schemaSrc);
-		if (resp.hasMessages(Severity.ERROR)) {
-			StringBuilder buff = new StringBuilder("Unable to parse schema:\n");
-			for (ParserMessage msg: resp.getMessages()) buff.append("    ").append(msg.toString()).append("\n");
-			throw new ClientException.Internal(buff.toString());
-		}
-		
-		schema = new SchemaImpl(payload.schemaId, resp.getSchema());
-		*/
 	}
 	
 	/**
@@ -236,7 +228,7 @@ public class ConnectionImpl implements Connection {
 		preChecks();
 		// Intercept session expired exception.
 		try {
-			return fetchSession(sessionId, null);
+			return fetchSession(sessionId, false, null);
 		}
 		catch (SessionExpiredException sex) { 
 			return null;

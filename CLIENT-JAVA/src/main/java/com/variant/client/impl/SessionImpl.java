@@ -49,6 +49,7 @@ public class SessionImpl implements Session {
 	
 	private final ConnectionImpl conn;  // Connection which created this session.
 	private final Server server;        // Server object associated with this VariantClient.
+	private final Schema schema;
 	private CoreSession coreSession;
 	private SessionIdTracker sessionIdTracker;
 	private TargetingTracker targetingTracker;
@@ -129,10 +130,12 @@ public class SessionImpl implements Session {
 	public SessionImpl(
 			Connection conn,
 			CoreSession coreSession,
+			Schema schema,
 			SessionIdTracker sessionIdTracker,
 			Object...userData) {
 		
 		this.conn = (ConnectionImpl) conn;
+		this.schema = schema;
 		this.server = this.conn.client.server;
 		this.coreSession = coreSession;
 		this.sessionIdTracker = sessionIdTracker;
@@ -146,9 +149,11 @@ public class SessionImpl implements Session {
 	 */
 	public SessionImpl(
 			Connection conn,
+			Schema schema,
 			CoreSession coreSession) {
 		
 		this.conn = (ConnectionImpl) conn;
+		this.schema = schema;
 		this.server = this.conn.client.server;
 		this.coreSession = coreSession;
 		this.sessionIdTracker = null;
@@ -412,7 +417,7 @@ public class SessionImpl implements Session {
 
 	@Override
 	public Schema getSchema() {
-		throw new UnsupportedOperationException("Not yet implemented");
+		return schema;
 	}
 
 }
