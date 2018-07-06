@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNotNull;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
-import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.core.impl.ServerError;
 import com.variant.core.util.IoUtils;
@@ -48,7 +47,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 			
-		}.assertThrown(UnknownSchemaException.class);
+		}.assertThrown();
 
 		// Can't do anything over the connection
 		new ClientExceptionInterceptor() {
@@ -61,7 +60,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 			
-		}.assertThrown(UnknownSchemaException.class);
+		}.assertThrown();
 
 	}	
 

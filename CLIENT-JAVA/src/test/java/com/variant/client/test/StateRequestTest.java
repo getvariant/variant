@@ -1,6 +1,10 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
@@ -8,7 +12,6 @@ import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
-import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.core.VariantEvent;

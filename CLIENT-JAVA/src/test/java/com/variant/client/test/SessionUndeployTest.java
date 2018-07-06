@@ -10,7 +10,6 @@ import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
-import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
@@ -414,7 +413,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 
-		}.assertThrown(UnknownSchemaException.class);
+		}.assertThrown();
 		
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;

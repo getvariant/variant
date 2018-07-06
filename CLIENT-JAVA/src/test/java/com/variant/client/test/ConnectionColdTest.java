@@ -6,7 +6,8 @@ import static org.junit.Assert.assertNull;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.UnknownSchemaException;
+import com.variant.client.ServerConnectException;
+import com.variant.client.Session;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
@@ -57,14 +58,16 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	}	
 
 	/**
-	 * Server restarted with the same schema. 
+	 * Server shutdown. 
 	 */
 	@org.junit.Test
-	public void closedByServerRestartTest() throws Exception {
+	public void serverDownTest() throws Exception {
 		
 		final Connection conn = client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn);
-
+		final Session ssn = conn.getOrCreateSession("foo");
+		assertNotNull(ssn);
+		
 		server.stop();
 
 		new ClientExceptionInterceptor() {
@@ -74,10 +77,12 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			}
 			
 			@Override public void onThrown(ClientException e) {
-				assertEquals(ClientUserError.SERVER_CONNECTION_TIMEOUT, e.getError());
+				assertEquals(
+						ClientUserError.SERVER_CONNECTION_TIMEOUT.asMessage("localhost"), 
+						e.getMessage());
 			}
 			
-		}.assertThrown();       
+		}.assertThrown(ServerConnectException.class);       
 
 		new ClientExceptionInterceptor() {
 			
@@ -86,23 +91,27 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			}
 			
 			@Override public void onThrown(ClientException e) {
-				assertEquals(ClientUserError.SERVER_CONNECTION_TIMEOUT, e.getError());
+				assertEquals(
+						ClientUserError.SERVER_CONNECTION_TIMEOUT.asMessage("localhost"), 
+						e.getMessage());
 			}
 			
-		}.assertThrown(UnknownSchemaException.class);       
+		}.assertThrown(ServerConnectException.class);       
 		
 
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				conn.getOrCreateSession("foo");
+				conn.getOrCreateSession("bar");
 			}
 			
 			@Override public void onThrown(ClientException e) {
-				assertEquals(ClientUserError.SERVER_CONNECTION_TIMEOUT, e.getError());
+				assertEquals(
+						ClientUserError.SERVER_CONNECTION_TIMEOUT.asMessage("localhost"), 
+						e.getMessage());
 			}
 			
-		}.assertThrown(UnknownSchemaException.class);
+		}.assertThrown(ServerConnectException.class);
 
 	}	
 

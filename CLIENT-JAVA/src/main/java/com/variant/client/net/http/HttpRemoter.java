@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.ClientException;
+import com.variant.client.ServerConnectException;
 import com.variant.client.impl.ClientUserError;
 import com.variant.core.impl.VariantException;
 import com.variant.core.util.Constants;
@@ -99,7 +100,8 @@ public class HttpRemoter {
 			throw ex;
 		}
 		catch (HttpHostConnectException ex) {
-			throw new ClientException(ClientUserError.SERVER_CONNECTION_TIMEOUT, req.getURI());
+			// To get the server, only get the URI prefix ending with a single slash.
+			throw new ServerConnectException(req.getURI().getHost());
 		}
 		catch (Throwable e) {
 			throw new ClientException.Internal("Unexpected exception in HTTP POST: " + e.getMessage(), e);
