@@ -61,7 +61,7 @@ public class ConnectionImpl implements Connection {
 				return result;
 			}
 			else {
-				throw new ClientException.User(SESSION_ID_TRACKER_NO_INTERFACE, className, SessionIdTracker.class.getName());
+				throw new ClientException(SESSION_ID_TRACKER_NO_INTERFACE, className, SessionIdTracker.class.getName());
 			}
 		}
 		catch (Exception e) {

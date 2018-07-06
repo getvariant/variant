@@ -375,7 +375,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)));			
 					}
 					
-					@Override public void onThrown(ClientException.User e) {
+					@Override public void onThrown(ClientException e) {
 						assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
 					}
 
@@ -410,7 +410,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				conn2.getOrCreateSession(newSid());				
 			}
 			
-			@Override public void onThrown(ClientException.User e) {
+			@Override public void onThrown(ClientException e) {
 				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 

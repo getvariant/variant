@@ -42,5 +42,30 @@ public class VariantException extends RuntimeException {
 		super(msg, t);
 	}
 
+	/**
+	 * An Internal exception, most likely a bug.
+	 * 
+	 * @since 0.9
+	 */
+	public static class Internal extends VariantException {
+		
+		public Internal(Throwable t) {
+			super(t);
+		}
+
+		public Internal(String msg) {
+			super(msg);
+		}
+
+		public Internal(String msg, Throwable t) {
+			super(msg, t);
+		}
+		
+		public Internal(CommonError error, Object...args) {
+			super(error.asMessage(args));
+		}
+
+	}
+
 
 }

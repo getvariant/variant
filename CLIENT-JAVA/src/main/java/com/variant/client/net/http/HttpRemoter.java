@@ -1,22 +1,20 @@
 package com.variant.client.net.http;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.http.conn.HttpHostConnectException;
+
 import com.variant.client.ClientException;
-import com.variant.client.Connection;
-import com.variant.client.UnknownSchemaException;
 import com.variant.client.impl.ClientUserError;
-import com.variant.client.impl.ConnectionImpl;
+import com.variant.core.impl.VariantException;
 import com.variant.core.util.Constants;
 import com.variant.core.util.TimeUtils;
 
@@ -86,7 +84,7 @@ public class HttpRemoter {
 				
 			case HttpStatus.SC_BAD_REQUEST:
 				
-				ClientException ce = result.toClientException();
+				VariantException ce = result.toVariantException();
 				if (LOG.isDebugEnabled()) LOG.debug("Server Error " + ce.getMessage());
 				throw ce;
 			
@@ -101,7 +99,7 @@ public class HttpRemoter {
 			throw ex;
 		}
 		catch (HttpHostConnectException ex) {
-			throw new ClientException.User(ClientUserError.SERVER_CONNECTION_TIMEOUT, req.getURI());
+			throw new ClientException(ClientUserError.SERVER_CONNECTION_TIMEOUT, req.getURI());
 		}
 		catch (Throwable e) {
 			throw new ClientException.Internal("Unexpected exception in HTTP POST: " + e.getMessage(), e);

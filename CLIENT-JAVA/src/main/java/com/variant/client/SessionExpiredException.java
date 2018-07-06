@@ -9,7 +9,7 @@ import com.variant.core.impl.ServerError;
  * @since 0.7
  */
 @SuppressWarnings("serial")
-public class SessionExpiredException extends ClientException.User {
+public class SessionExpiredException extends ClientException {
 	
 	public SessionExpiredException(String sid) {
 		super(ServerError.SessionExpired, sid);

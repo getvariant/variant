@@ -80,17 +80,23 @@ public class ServerProcess {
 	 * Stop the server.
 	 */
 	public void stop() throws Exception {
-
+		
 		if (svrProc == null) return;
 		
-		LOG.info(String.format("Stopping local server"));
 		// a slight delay to let the log reader have a chance to run one more time and catch up.
-		try {Thread.sleep(100);} catch(Throwable t) {}
+		Thread.sleep(100);
+		
+		String sysVar = System.getProperty("variant.server.project.dir");
+		String exec = (sysVar == null ? defaultPathToServerProject : sysVar) + "/mbin/remoteServerStop.sh";
+		String[] execArgs = {exec, " "};
+		Runtime.getRuntime().exec(execArgs);
+		
 		svrProc.destroyProc();
+		Thread.sleep(1000);  // Let async cleanup finish.
 		logReader.interrupt();
 		sbtErr = sbtOut = null;
 		serverUp = false;
-		Thread.sleep(1000);  // Let async cleanup finish.
+		LOG.info(String.format("Stopped local server"));
 	}
 
 	/**

@@ -60,7 +60,7 @@ public class Server {
 				return block(); 
 			}
 			// Intercept certain user exceptions.
-			catch (ClientException.User ce) {
+			catch (ClientException ce) {
 				if (ce.getError() == ServerError.SessionExpired) {
 					((ConnectionImpl)conn).cache.expire(sid);
 					throw new SessionExpiredException(sid);
@@ -116,7 +116,7 @@ public class Server {
 		
 		if (LOG.isTraceEnabled()) LOG.trace("connect()");
 
-		HttpResponse resp = adapter.post(serverUrl + "connection/" + schema);
+		HttpResponse resp = adapter.get(serverUrl + "connection/" + schema);
 		return Payload.Connection.parse(resp);
 	}
 	

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.client.ClientException;
 import com.variant.client.impl.ClientInternalError;
 import com.variant.core.impl.ServerError;
+import com.variant.core.impl.VariantException;
 
 public class HttpResponse {
 
@@ -43,11 +44,11 @@ public class HttpResponse {
 	}
 	
 	/**
-	 * Client exception contained herein.
+	 * The Variant exception contained herein.
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	ClientException toClientException() {
+	VariantException toVariantException() {
 
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
 		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
@@ -63,14 +64,14 @@ public class HttpResponse {
 			ServerError error = ServerError.byCode(code);
 			
 			if (isInternal) {
-				return new ClientException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.asMessage(args.toArray()));
+				return new VariantException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.asMessage(args.toArray()));
 			}
 			else {
-				return new ClientException.User(error, args.toArray());
+				return new ClientException(error, args.toArray());
 			}
 		}
 		catch(IOException parseException) {
-			return new ClientException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, parseException.getMessage());
+			return new VariantException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, parseException.getMessage());
 		}
 	
 	}

@@ -3,8 +3,7 @@
 cd `dirname $0`/../../SERVER
 rootdir=$(pwd)
 
-rm -rf target/universal/stage/RUNNING_PID
-lsof -n -i4TCP:5377 | grep LISTEN | awk '{print $2}' | xargs kill
+${rootdir}/mbin/remoteServerStop.sh
 
 config=${1:-${rootdir}/conf-test/remoteServer.conf}
 ext_dir=${rootdir}/distr/ext

@@ -28,3 +28,4 @@ public class ClientInternalError extends CommonError {
 	}
 
 }
+

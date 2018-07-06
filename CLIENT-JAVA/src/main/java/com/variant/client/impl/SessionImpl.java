@@ -1,8 +1,7 @@
 package com.variant.client.impl;
 
 import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
-import static com.variant.client.impl.ClientUserError.ACTIVE_REQUEST;
-import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
+import static com.variant.client.impl.ClientUserError.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -105,7 +104,7 @@ public class SessionImpl implements Session {
 				return result;
 			}
 			else {
-				throw new ClientException.User(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
+				throw new ClientException(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
 			}
 		}
 		catch (Exception e) {
@@ -174,11 +173,11 @@ public class SessionImpl implements Session {
 		preChecks();
 
 		if (state == null) 
-			throw new ClientException.User("State cannot be null");
+			throw new ClientException(PARAM_CANNOT_BE_NULL, "state");
 		
 		// Can't have two requests at one time
 		if (coreSession.getStateRequest() != null && !coreSession.getStateRequest().isCommitted()) {
-			throw new ClientException.User(ACTIVE_REQUEST);
+			throw new ClientException(ACTIVE_REQUEST);
 		}
 		server.requestCreate(this, state.getName());
 		return getStateRequest();
@@ -298,8 +297,8 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public String setAttribute(String name, String value) {
-		if (name == null) throw new ClientException.User("Name cannot be null");
-		if (value == null) throw new ClientException.User("Value cannot be null");
+		if (name == null) throw new ClientException(PARAM_CANNOT_BE_NULL, "name");
+		if (value == null) throw new ClientException(PARAM_CANNOT_BE_NULL, "value");
 		preChecks();
 		return server.sessionAttrSet(this, name, value);
 	}
@@ -309,7 +308,7 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public String getAttribute(String name) {
-		if (name == null) throw new ClientException.User("Name cannot be null");
+		if (name == null) throw new ClientException(PARAM_CANNOT_BE_NULL, "name");
 		preChecks();
 		refreshFromServer();
 		return coreSession.getAttribute(name);
@@ -320,7 +319,7 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public String clearAttribute(String name) {
-		if (name == null) throw new ClientException.User("Name cannot be null");
+		if (name == null) throw new ClientException(PARAM_CANNOT_BE_NULL, "name");
 		preChecks();
 		return server.sessionAttrClear(this, name);
 	}

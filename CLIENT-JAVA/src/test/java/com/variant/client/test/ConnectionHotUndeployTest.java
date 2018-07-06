@@ -44,7 +44,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 				conn1.getSession("foo");
 			}
 			
-			@Override public void onThrown(ClientException.User e) {
+			@Override public void onThrown(ClientException e) {
 				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 			
@@ -57,7 +57,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 				conn1.getOrCreateSession("bar");
 			}
 			
-			@Override public void onThrown(ClientException.User e) {
+			@Override public void onThrown(ClientException e) {
 				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 			

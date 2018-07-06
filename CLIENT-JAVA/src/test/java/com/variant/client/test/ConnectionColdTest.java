@@ -66,18 +66,18 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		assertNotNull(conn);
 
 		server.stop();
-		
+
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
 				conn.getSession("foo");
 			}
 			
-			@Override public void onThrown(ClientException.User e) {
+			@Override public void onThrown(ClientException e) {
 				assertEquals(ClientUserError.SERVER_CONNECTION_TIMEOUT, e.getError());
 			}
 			
-		}.assertThrown(UnknownSchemaException.class);       
+		}.assertThrown();       
 
 		new ClientUserExceptionInterceptor() {
 			
@@ -85,7 +85,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 				conn.getSessionById("foo");
 			}
 			
-			@Override public void onThrown(ClientException.User e) {
+			@Override public void onThrown(ClientException e) {
 				assertEquals(ClientUserError.SERVER_CONNECTION_TIMEOUT, e.getError());
 			}
 			
@@ -98,7 +98,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 				conn.getOrCreateSession("foo");
 			}
 			
-			@Override public void onThrown(ClientException.User e) {
+			@Override public void onThrown(ClientException e) {
 				assertEquals(ClientUserError.SERVER_CONNECTION_TIMEOUT, e.getError());
 			}
 			

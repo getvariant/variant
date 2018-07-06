@@ -43,18 +43,18 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 	 * User error Intercepter
 	 */
 	protected static abstract class ClientUserExceptionInterceptor 
-		extends ExceptionInterceptor<ClientException.User> {
+		extends ExceptionInterceptor<ClientException> {
 		
 		@Override
-		final public Class<ClientException.User> getExceptionClass() {
-			return ClientException.User.class;
+		final public Class<ClientException> getExceptionClass() {
+			return ClientException.class;
 		}
 
 		/**
 		 * Client side errors: we have access to them at comp time.
 		 */
 		final public void assertThrown(UserError error, Object...args) {
-			ClientException.User result = super.run();
+			ClientException result = super.run();
 			assertNotNull("No exception was thrown", result);
 			assertEquals("Expected exception was not thrown", result.getError(), error);
 		}
@@ -62,8 +62,8 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 		/**
 		 * Server side errors: We don't have access to them at comp time
 		 */
-		final public void assertThrown(Class<? extends ClientException.User> uex) {
-			ClientException.User result = super.run();
+		final public void assertThrown(Class<? extends ClientException> uex) {
+			ClientException result = super.run();
 			assertNotNull("No exception was thrown", result);
 			assertEquals("Expected exception was not thrown", uex, result.getClass());
 		}

@@ -30,10 +30,10 @@ public class ClientUserError extends CommonError {
 
 	public static final ClientUserError CONNECTION_DRAINING =
 			new ClientUserError(274, "No new sessions can be created over this connection because target schema has been undeployed");
-
-	public static final ClientUserError SESSION_EXPIRED =
-			new ClientUserError(275, "This session has expired");
 */
+	public static final ClientUserError PARAM_CANNOT_BE_NULL =
+			new ClientUserError(275, "Method parameter [%s] cannot be null");
+
 	public static final ClientUserError ACTIVE_REQUEST =
 			new ClientUserError(276, "Commit current state request first");
 

@@ -59,7 +59,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 				req.getLiveExperience(test1);
 			}
-			@Override public void onThrown(ClientException.User e) {
+			@Override public void onThrown(ClientException e) {
 				assertEquals(ServerError.STATE_NOT_INSTRUMENTED_BY_TEST, e.getError());
 			}
 		}.assertThrown(StateNotInstrumentedException.class);
@@ -195,7 +195,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 			   	ssn2.targetForState(state3);
 			}
-			@Override public void onThrown(ClientException.User e) {
+			@Override public void onThrown(ClientException e) {
 				assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
 			}
 		}.assertThrown(ClientUserError.ACTIVE_REQUEST);
@@ -226,7 +226,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 				req.commit();
 			}
-			@Override public void onThrown(ClientException.User e) {
+			@Override public void onThrown(ClientException e) {
 				assertEquals(ServerError.SessionExpired, e.getError());
 			}
 		}.assertThrown(SessionExpiredException.class);
@@ -251,7 +251,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 				ssn.targetForState(schema.getState("newOwner"));
 			}
-			@Override public void onThrown(ClientException.User e) {
+			@Override public void onThrown(ClientException e) {
 				assertEquals(ServerError.HOOK_UNHANDLED_EXCEPTION, e.getError());
 			}
 		}.assertThrown();

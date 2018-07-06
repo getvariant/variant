@@ -48,7 +48,7 @@ public class VariantClientImpl implements VariantClient {
 			Payload.Connection payload = server.connect(schema);
 			return new ConnectionImpl(this, schema, payload);
 		}
-		catch (ClientException.User ue) {
+		catch (ClientException ue) {
 			if (ue.getError() == ServerError.UnknownSchema) 
 				return null;
 			throw ue;
