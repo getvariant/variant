@@ -8,9 +8,11 @@ import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.ServerConnectException;
 import com.variant.client.Session;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
+import com.variant.core.impl.ServerError;
 
 /**
  * Test connections of a cold-deployed schemata.
@@ -26,7 +28,19 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void connectToNonExistentSchemaTest() throws Exception {
 		
-		assertNull(client.connectTo("bad_schema"));
+		new ClientExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				client.connectTo("bad_schema");
+			}
+			
+			@Override public void onThrown(ClientException e) {
+				assertEquals(
+						ServerError.UnknownSchema.asMessage("bad_schema"), 
+						e.getMessage());
+			}
+			
+		}.assertThrown(UnknownSchemaException.class);       
 	
 	}	
 	
@@ -55,6 +69,22 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		assertEquals(conn1.getClient(), conn3.getClient());
 		assertEquals("petclinic", conn3.getSchemaName());
 
+		// Retrieve good session over wrong connection
+		conn2.getOrCreateSession("foo");
+
+		new ClientExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				conn3.getSession("foo");
+			}
+			
+			@Override public void onThrown(ClientException e) {
+				assertEquals(
+						ServerError.WrongConnection.asMessage("petclinic"), 
+						e.getMessage());
+			}
+			
+		}.assertThrown();       
 	}	
 
 	/**

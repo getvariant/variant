@@ -12,6 +12,7 @@ import com.variant.client.ConfigKeys;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
@@ -116,8 +117,16 @@ public class Server {
 		
 		if (LOG.isTraceEnabled()) LOG.trace("connect()");
 
-		HttpResponse resp = adapter.get(serverUrl + "connection/" + schema);
-		return Payload.Connection.parse(resp);
+		try {
+			HttpResponse resp = adapter.get(serverUrl + "connection/" + schema);
+			return Payload.Connection.parse(resp);
+		}
+		catch (ClientException ce) {
+			if (ce.getError() == ServerError.UnknownSchema) {
+				throw new UnknownSchemaException(schema);
+			}
+			else throw ce;
+		}
 	}
 	
 	/**

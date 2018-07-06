@@ -9,6 +9,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.util.CollectionsUtils;
+
 /**
  * Start server process in a subprocess.
  * 
@@ -48,7 +50,7 @@ public class ServerProcess {
 	 * @param config
 	 */
 	public void start(Map<String,String> config) throws Exception {
-				
+
 		String sysVar = System.getProperty("variant.server.project.dir");
 		String exec = (sysVar == null ? defaultPathToServerProject : sysVar) + "/mbin/remoteServerStart.sh";
 		String[] execArgs = {exec, " "};
@@ -58,8 +60,7 @@ public class ServerProcess {
 
 		if (svrProc != null && svrProc.isAlive()) throw new RuntimeException("Server thread is alive. Call stop() first");
 		
-		LOG.info(String.format("Starting local server [%s %s]", exec, execArgs[1]));
-
+		LOG.info(String.format("Starting local server [%s]", CollectionsUtils.toString(execArgs)));
 		svrProc = new SbtThread(execArgs);
 		svrProc.start();
 

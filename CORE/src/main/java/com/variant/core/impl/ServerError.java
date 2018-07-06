@@ -92,8 +92,8 @@ public class ServerError extends CommonError {
 	public static final ServerError UnknownSchema = 
 			new ServerError(701, "Unknown schema [%s]");
 	
-	//public static final ServerError UnknownConnection = 
-	//		new ServerError(702, "Unknown connection [%s]");
+	public static final ServerError WrongConnection = 
+			new ServerError(702, "Cannot access existing session over connection to [%s]");
 	
 	//public static final ServerError TooManyConnections = 
 	//      new ServerError(703, "Too many connections");

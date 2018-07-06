@@ -33,8 +33,7 @@ class SessionController @Inject() (
       
       // Must match the schema name.
       if (ssn.schemaGen.getName() != schemaName) 
-		      throw new ServerException.Internal(
-		            s"Session ID [${sid}]found but in the wrong schema. Expected [${schemaName}], but was [${ssn.schemaGen.getName()}]")
+		      throw new ServerException.Remote(WrongConnection, schemaName)
 
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson),
@@ -59,8 +58,7 @@ class SessionController @Inject() (
          case Some(ssn) => {
             
             if (ssn.schemaGen.getName() != schemaName) 
-		      throw new ServerException.Internal(
-		            s"Session ID [${sid}]found but in the wrong schema. Expected [${schemaName}], but was [${ssn.schemaGen.getName()}]")
+		      throw new ServerException.Remote(WrongConnection, schemaName)
             
             ssn
          }
@@ -118,11 +116,12 @@ class SessionController @Inject() (
       val gen = server.ssnStore.get(sid) match {
          
          case Some(ssn) => 
+            
             // Must match the schema name.
             if (ssn.schemaGen.getName() != schemaName) 
-		      throw new ServerException.Internal(
-		            s"Session ID [${sid}]found but in the wrong schema. Expected [${schemaName}], but was [${ssn.schemaGen.getName()}]")
-		      ssn.schemaGen
+		      throw new ServerException.Remote(WrongConnection, schemaName)
+
+            ssn.schemaGen
             
          case None =>
             // Given schema must have a live gen.

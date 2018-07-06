@@ -132,7 +132,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		IoUtils.delete(SCHEMATA_DIR + "/big-conjoint-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
 
-		// Short session timeout => all sessions should be gone and 3 connections cleaned out.
+		// Short session timeout => all sessions should be gone
+		// and throw SessionExpired exception on any mutating op which goes over the network.
 		
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;
@@ -145,22 +146,32 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertTrue(ssn.isExpired());
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
-				//assertEquals(client.getConfig(), ssn.getConfig());
 				assertEquals(conn1, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
+				assertNull(conn1.getSessionById(sessions1[_i].getId()));
 				
-				switch (_i % 10) {
-				case 0: conn1.getSessionById(sessions1[_i].getId()); break;
-				case 1: ssn.getTraversedStates(); break;
-				case 2: ssn.getTraversedTests(); break;
-				case 3: ssn.getDisqualifiedTests(); break;
-				case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
-				case 5: ssn.getAttribute("foo"); break;
-				case 6: ssn.setAttribute("foo", "bar"); break;
-				case 7: ssn.clearAttribute("foo"); break;
-				case 8: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
-				case 9: req.commit(); break;
-				}
+				// Mutating methods.
+				new ClientExceptionInterceptor() {
+					
+					@Override public void toRun() {
+						switch (_i % 9) {
+						case 0: ssn.getTraversedStates(); break;
+						case 1: ssn.getTraversedTests(); break;
+						case 2: ssn.getDisqualifiedTests(); break;
+						case 3: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+						case 4: ssn.getAttribute("foo"); break;
+						case 5: ssn.setAttribute("foo", "bar"); break;
+						case 6: ssn.clearAttribute("foo"); break;
+						case 7: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
+						case 8: req.commit(); break;
+						}
+					}
+					
+					@Override public void onThrown(ClientException e) {
+						assertEquals(ServerError.SessionExpired, e.getError());
+					}
+					
+				}.assertThrown();
 		
 			});
 		}
@@ -176,22 +187,32 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertTrue(ssn.isExpired());
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
-				//assertEquals(client.getConfig(), ssn.getConfig());
 				assertEquals(conn2, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
-				
-				switch (_i % 10) {
-				case 0: conn2.getSessionById(sessions1[_i].getId()); break;
-				case 1: ssn.getTraversedStates(); break;
-				case 2: ssn.getTraversedTests(); break;
-				case 3: ssn.getDisqualifiedTests(); break;
-				case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
-				case 5: ssn.getAttribute("foo"); break;
-				case 6: ssn.setAttribute("foo", "bar"); break;
-				case 7: ssn.clearAttribute("foo"); break;
-				case 8: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
-				case 9: req.commit(); break;
-				}
+			    assertNull(conn2.getSessionById(sessions1[_i].getId()));
+			    
+				// Mutating methods.
+				new ClientExceptionInterceptor() {
+					
+					@Override public void toRun() {
+						switch (_i % 9) {
+						case 0: ssn.getTraversedStates(); break;
+						case 1: ssn.getTraversedTests(); break;
+						case 2: ssn.getDisqualifiedTests(); break;
+						case 3: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+						case 4: ssn.getAttribute("foo"); break;
+						case 5: ssn.setAttribute("foo", "bar"); break;
+						case 6: ssn.clearAttribute("foo"); break;
+						case 7: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
+						case 8: req.commit(); break;
+						}
+					}
+					
+					@Override public void onThrown(ClientException e) {
+						assertEquals(ServerError.SessionExpired, e.getError());
+					}
+					
+				}.assertThrown();
 		
 			});
 		}
@@ -210,28 +231,48 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertTrue(ssn.isExpired());
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
-				//assertEquals(client.getConfig(), ssn.getConfig());
 				assertEquals(conn3, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				
-					switch (_i % 9) {
-					case 0: req.commit(); break;
-					case 1: ssn.getTraversedStates(); break;
-					case 2: ssn.getTraversedTests(); break;
-					case 3: ssn.getDisqualifiedTests(); break;
-					case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
-					case 5: ssn.getAttribute("foo"); break;
-					case 6: ssn.setAttribute("foo", "bar"); break;
-					case 7: ssn.clearAttribute("foo"); break;
-					case 8: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
+				// Mutating methods.
+				new ClientExceptionInterceptor() {
+					
+					@Override public void toRun() {
+						switch (_i % 9) {
+						case 0: req.commit(); break;
+						case 1: ssn.getTraversedStates(); break;
+						case 2: ssn.getTraversedTests(); break;
+						case 3: ssn.getDisqualifiedTests(); break;
+						case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+						case 5: ssn.getAttribute("foo"); break;
+						case 6: ssn.setAttribute("foo", "bar"); break;
+						case 7: ssn.clearAttribute("foo"); break;
+						case 8: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
+						}
+					 }
+					
+					@Override public void onThrown(ClientException e) {
+						assertEquals(ServerError.SessionExpired, e.getError());
 					}
+					
+				}.assertThrown();
 		
 			});
 		}
 
 		joinAll();
 		
-		assertNull(client.connectTo("big_conjoint_schema"));
+		new ClientExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				client.connectTo("big_conjoint_schema");
+			}
+
+			@Override public void onThrown(ClientException e) {
+				assertEquals(ServerError.UnknownSchema, e.getError());
+			}
+			
+		}.assertThrown();
 
 	}	
 
@@ -247,14 +288,14 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
 
 		// restart the server with the longger session timeout
-		int ssnTimeout = dirWatcherLatencyMillis/1000 + 2000;
+		int ssnTimeout = dirWatcherLatencyMillis/1000 + 5;
 		server.restart(CollectionsUtils.pairsToMap(new Tuples.Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeout))));
 		
 		// Connection to a schema
 		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn1);
 		assertNotNull(conn1.getClient());
-		assertEquals(conn1.getSessionTimeoutMillis(), 1000);
+		assertEquals(ssnTimeout * 1000, conn1.getSessionTimeoutMillis());
 		assertNotNull(conn1.getSessionCache());
 		assertEquals("big_conjoint_schema", conn1.getSchemaName());
 		
@@ -451,7 +492,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			async (() -> {
 				
 				// Session has expired on the server
-				assertNull(conn3.getSessionById(sessions1[_i].getId()));
+				assertNotNull(conn3.getSessionById(sessions3[_i].getId()));
 
 				SessionImpl ssn = (SessionImpl) sessions3[_i];
 				StateRequest req = requests3[_i];
@@ -476,8 +517,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		}
 
 		joinAll();
-		
-		assertNull(client.connectTo("big_conjoint_schema"));
+
+		assertNotNull(client.connectTo("big_conjoint_schema"));
 
 	}	
 }
