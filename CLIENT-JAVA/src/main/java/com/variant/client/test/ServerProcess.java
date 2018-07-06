@@ -37,6 +37,10 @@ public class ServerProcess {
 	 */
 	public ServerProcess() {}
 
+	public void start() throws Exception {
+		start(new HashMap<String,String>());
+	}
+	
 	/**
 	 * Start the server in the background. If there's already a process in the background,
 	 * throw an exception.
@@ -86,6 +90,7 @@ public class ServerProcess {
 		logReader.interrupt();
 		sbtErr = sbtOut = null;
 		serverUp = false;
+		Thread.sleep(1000);  // Let async cleanup finish.
 	}
 
 	/**
@@ -94,7 +99,6 @@ public class ServerProcess {
 	 */
 	public void restart(Map<String,String> config) throws Exception {
 		stop();
-		Thread.sleep(1000);  // Let async cleanup finish.
 		start(config);
 	}
 

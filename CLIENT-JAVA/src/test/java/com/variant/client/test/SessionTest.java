@@ -1,21 +1,15 @@
 package com.variant.client.test;
 
-import static com.variant.core.ConnectionStatus.CLOSED_BY_CLIENT;
-import static com.variant.core.ConnectionStatus.CLOSED_BY_SERVER;
-import static com.variant.core.ConnectionStatus.OPEN;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.UnknownSchemaException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
+import com.variant.core.impl.ServerError;
 import com.variant.core.schema.State;
 
 public class SessionTest extends ClientBaseTestWithServer {
@@ -35,9 +29,8 @@ public class SessionTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void noSessionIdInTrackerTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema").get();		
+		Connection conn = client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn);
-		assertEquals(OPEN, conn.getStatus());
 		String sid = newSid();
 		
 		// By session ID
@@ -57,7 +50,8 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertTrue(ssn1.getDisqualifiedTests().isEmpty());
 		assertTrue(ssn1.getTraversedStates().isEmpty());
 		assertTrue(ssn1.getTraversedTests().isEmpty());		
-
+		assertEquals("big_conjoint_schema", ssn1.getSchema().getName());
+		
 		// Get same session by SID
 		Session ssn2 = conn.getSessionById(sid);
 		assertEquals(ssn1, ssn2);
@@ -72,9 +66,8 @@ public class SessionTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema").get();		
+		Connection conn = client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn);
-		assertEquals(OPEN, conn.getStatus());
 		
 		Session[] sessions = new Session[10];
 		for (int i = 0; i < sessions.length; i++) {
@@ -82,6 +75,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 			sessions[i] = conn.getOrCreateSession(sid);
 			assertNotNull(sessions[i]);
 			assertEquals(1000, sessions[i].getTimeoutMillis());
+			assertEquals("big_conjoint_schema", sessions[i].getSchema().getName());
 		}
 		
 		for (int i = 0; i < sessions.length; i++) {
@@ -92,7 +86,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		Thread.sleep(2000);
 		
-		final State state2 = conn.getSchema().getState("state2");
+		final State state2 = sessions[0].getSchema().getState("state2");
 		for (int i = 0; i < sessions.length; i++) {
 			assertTrue(sessions[i].isExpired());
 			final Session ssn = sessions[i];
@@ -101,77 +95,23 @@ public class SessionTest extends ClientBaseTestWithServer {
 					ssn.targetForState(state2);
 				}
 				@Override public void onThrown(ClientException.User e) {
-					assertEquals(ClientUserError.SESSION_EXPIRED, e.getError());
+					assertEquals(ServerError.SessionExpired, e.getError());
 					assertTrue(ssn.isExpired());
 				}
 			}.assertThrown(SessionExpiredException.class);
 		}
-		assertEquals(OPEN, conn.getStatus());
 	}
    
-	/**
-	 */
-	@org.junit.Test
-	public void connectionClosedLocallyTest() throws Exception {
-		
-		Connection conn = client.connectTo("big_conjoint_schema").get();		
-		assertNotNull(conn);
-		assertEquals(OPEN, conn.getStatus());
-		
-		String sid = newSid();
-		final Session ssn = conn.getOrCreateSession(sid);
-		final State state2 = conn.getSchema().getState("state2");
-		conn.close();
-		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
-		new ClientUserExceptionInterceptor() {
-			@Override public void toRun() {
-				ssn.targetForState(state2);
-			}
-		}.assertThrown(UnknownSchemaException.class);
-		
-	}
-
-	/**
-	 * Session expires too soon. See bug https://github.com/getvariant/variant/issues/67
-	 * + bug 82, probably a dupe.
-	 */
-    @org.junit.Test
-	public void connectionClosedRemotelyTest() throws Exception {
-		
-		Connection conn = client.connectTo("big_conjoint_schema").get();		
-		assertNotNull(conn);
-		assertEquals(OPEN, conn.getStatus());
-		
-		String sid = newSid();
-		final Session ssn = conn.getOrCreateSession(sid);
-		final State state2 = conn.getSchema().getState("state2");
-
-		server.restart();
-
-		assertEquals(OPEN, conn.getStatus());
-		
-		new ClientUserExceptionInterceptor() {
-			@Override public void toRun() {
-				ssn.targetForState(state2);
-			}
-		}.assertThrown(UnknownSchemaException.class);
-		
-		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
-		
-	}
-
 	/**
 	 */
 	@org.junit.Test
 	public void attributesTest() throws Exception {
 
 		// Open two parallel connections
-		Connection conn1 = client.connectTo("big_conjoint_schema").get();		
-		Connection conn2 = client.connectTo("big_conjoint_schema").get();		
+		Connection conn1 = client.connectTo("big_conjoint_schema");		
+		Connection conn2 = client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn1);
 		assertNotNull(conn2);
-		assertEquals(OPEN, conn1.getStatus());
-		assertEquals(OPEN, conn2.getStatus());
 
 		// Open a session.
 		String sid = newSid();

@@ -1,32 +1,19 @@
 package com.variant.client.test;
 
-import static com.variant.core.ConnectionStatus.CLOSED_BY_CLIENT;
-import static com.variant.core.ConnectionStatus.CLOSED_BY_SERVER;
-import static com.variant.core.ConnectionStatus.OPEN;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.variant.client.Connection;
-import com.variant.client.UnknownSchemaException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantClient;
-import com.variant.client.impl.ClientUserError;
-import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.LifecycleService;
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.client.lifecycle.ConnectionClosedLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.client.lifecycle.SessionExpiredLifecycleEvent;
-import com.variant.core.ConnectionStatus;
 import com.variant.core.util.CollectionsUtils;
-import com.variant.core.util.IoUtils;
-import com.variant.core.util.MutableInteger;
 
 /**
  * Test connections of a cold-deployed schemata.
@@ -62,9 +49,9 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 	/**
 	 * Session Expiration
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
-							
+		/*					
 		// 1, Connection-level SessionExpired Hook
 		Connection conn1 = client.connectTo("big_conjoint_schema").get();
 		conn1.addLifecycleHook(new SessionExpiredHook(conn1));
@@ -89,10 +76,13 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		lifecycleService.awaitAll();
 		
 		assertEqualAsSets(CollectionsUtils.set(ssn1.getId(), ssn2.getId()), hookPosts);
-		
+		*/
 		// 2. session-level SessionExpired Hook
 		hookPosts.clear();
-		Connection conn2 = client.connectTo("big_conjoint_schema").get();
+		Connection conn1 = client.connectTo("big_conjoint_schema");
+		Connection conn2 = client.connectTo("big_conjoint_schema");
+		Session ssn1 = conn1.getOrCreateSession(newSid());
+		Session ssn2 = conn1.getOrCreateSession(newSid());
 		Session ssn3 = conn2.getOrCreateSession(newSid());
 		Session ssn4 = conn2.getOrCreateSession(newSid());
 		Session ssn5 = conn2.getOrCreateSession(newSid());
@@ -114,7 +104,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		new ClientUserExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				ssn4.targetForState(conn2.getSchema().getState("state2"));
+				ssn4.targetForState(ssn4.getSchema().getState("state2"));
 			}
 			
 		}.assertThrown(SessionExpiredException.class);
@@ -175,259 +165,5 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		assertEqualAsLists(CollectionsUtils.list(ssn6.getId(), ssn6.getId(), ssn7.getId(), ssn7.getId(), ssn8.getId()), hookPosts);
 
 	}
-
-	/**
-	 * Connection closed by client
-	 */
-	//@org.junit.Test
-	public void connectionClosedByClientTest() throws Exception {
-		
-		Connection connection = client.connectTo("big_conjoint_schema").get();
-		Session ssn = connection.getOrCreateSession(newSid());
-		
-		AtomicInteger count = new AtomicInteger(0);
-
-		// ConnectionClosed Hook
-		connection.addLifecycleHook(
-				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
-					
-					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
-						return ConnectionClosedLifecycleEvent.class;
-					}
-
-					@Override public void post(ConnectionClosedLifecycleEvent event) {
-						count.incrementAndGet();  // Will be posted
-						Connection conn = event.getConnection();
-						assertEquals(ConnectionStatus.CLOSED_BY_CLIENT, conn.getStatus());
-						assertEquals(connection, conn);						
-					}
-
-				});
-
-		// Another, which throws an exception.
-		connection.addLifecycleHook(
-				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
-					
-					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
-						return ConnectionClosedLifecycleEvent.class;
-					}
-
-					@Override public void post(ConnectionClosedLifecycleEvent event) {
-						throw new RuntimeException("Foobar");					}
-				});
-
-		connection.addLifecycleHook(
-				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
-					
-					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
-						return ConnectionClosedLifecycleEvent.class;
-					}
-
-					@Override public void post(ConnectionClosedLifecycleEvent event) {
-						
-						count.incrementAndGet(); // Will be posted
-						
-						event.getConnection().addLifecycleHook(  // Will throw exception
-								
-								new LifecycleHook<ConnectionClosedLifecycleEvent>() {
-									
-									@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
-										return ConnectionClosedLifecycleEvent.class;
-									}
-
-									@Override public void post(ConnectionClosedLifecycleEvent event) {
-										count.incrementAndGet();  // should not get here!
-									}												
-
-								});
-						}
-				});
-
-		
-		connection.close();
-		assertEquals(CLOSED_BY_CLIENT, connection.getStatus());
-		assertNull(((ConnectionImpl)connection).getSessionCache().get(ssn.getId()));
-		
-		lifecycleService.awaitAll();
-		
-		assertEquals(2, count.intValue());
-		assertEquals(2, lifecycleService.asyncExceptions.size());
-		assertEquals("Foobar", lifecycleService.asyncExceptions.poll().getMessage());
-		assertEquals(ClientUserError.CONNECTION_CLOSED.asMessage(), lifecycleService.asyncExceptions.poll().getMessage());
-
-	}	
-	
-	/**
-	 * closed by server
-	 */
-	@org.junit.Test
-	public void connectionClosedByServerTest() throws Exception {
-		
-		Connection connection = client.connectTo("big_conjoint_schema").get();
-		Session ssn = connection.getOrCreateSession(newSid());
-		
-		MutableInteger count = new MutableInteger(0);
-		
-		// ConnectionClosed Hook
-		connection.addLifecycleHook(
-				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
-					
-					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
-						return ConnectionClosedLifecycleEvent.class;
-					}
-
-					@Override public void post(ConnectionClosedLifecycleEvent event) {
-						Connection conn = event.getConnection();
-						count.increment();  // Will be posted
-						assertEquals(ConnectionStatus.CLOSED_BY_SERVER, conn.getStatus());
-						assertEquals(connection, conn);
-					}
-
-				});
-
-		// Another, which throws an exception.
-		connection.addLifecycleHook(
-				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
-					
-					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
-						return ConnectionClosedLifecycleEvent.class;
-					}
-
-					@Override public void post(ConnectionClosedLifecycleEvent event) {
-						throw new RuntimeException("Foobar");					}
-				});
-
-		connection.addLifecycleHook(
-				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
-					
-					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
-						return ConnectionClosedLifecycleEvent.class;
-					}
-
-					@Override public void post(ConnectionClosedLifecycleEvent event) {
-						
-						count.increment(); // Will be posted
-						
-						event.getConnection().addLifecycleHook(  // Will throw exception
-								
-								new LifecycleHook<ConnectionClosedLifecycleEvent>() {
-									
-									@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
-										return ConnectionClosedLifecycleEvent.class;
-									}
-
-									@Override public void post(ConnectionClosedLifecycleEvent event) {
-										count.increment();  // should not get here!
-									}												
-
-								});
-						}
-				});
-
-	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
-		Thread.sleep(dirWatcherLatencyMillis);
-
-		assertEquals(OPEN, connection.getStatus());
-		
-		new ClientUserExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				ssn.getAttribute("foo");
-			}
-			
-		}.assertThrown(UnknownSchemaException.class);
-	    
-		assertEquals(CLOSED_BY_SERVER, connection.getStatus());
-
-		lifecycleService.awaitAll();
-		
-		assertEquals(2, lifecycleService.asyncExceptions.size());
-		assertEquals("Foobar", lifecycleService.asyncExceptions.poll().getMessage());
-		assertEquals(ClientUserError.CONNECTION_CLOSED.asMessage(), lifecycleService.asyncExceptions.poll().getMessage());
-		
-		assertNull(((ConnectionImpl)connection).getSessionCache().get(ssn.getId()));
-		assertEquals(2, count.intValue());
-	
-	}	
-
-	/**
-	 * Getting around Java's lack of closers.
-	 *
-	class ConnectionWrapper {
-		Connection connection;
-	}
-
-	private void graft(ConnectionWrapper cw, Connection newConn) {
-		
-		newConn.addLifecycleHook(
-				new LifecycleHook<ConnectionClosedLifecycleEvent>() {
-					
-					@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
-						return ConnectionClosedLifecycleEvent.class;
-					}
-
-					@Override public void post(ConnectionClosedLifecycleEvent event) {
-						client.connectTo("big_conjoint_schema")
-						.thenApply(
-								conn -> {
-									graft(cw, conn);
-									return conn;
-								}
-						);
-					}
-
-				});
-
-		cw.connection = newConn;
-	}
-
-	/**
-	 * connection grafting
-	 *
-	@org.junit.Test
-	public void connectionGrafting() throws Exception {
-		
-		ConnectionWrapper cw = new ConnectionWrapper();
-		
-		client.connectTo("big_conjoint_schema")
-			.thenApply(
-					conn -> {
-						graft(cw, conn);
-						return conn;
-					}
-			);
-			
-		Session ssn = cw.connection.getOrCreateSession(newSid());
-		assertNotNull(ssn);
-		assertEquals(ssn.getConnection(), cw.connection);
-
-
-
-	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
-		Thread.sleep(dirWatcherLatencyMillis);
-
-		
-		assertEquals(OPEN, connection.getStatus());
-		
-		new ClientUserExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				ssn.getAttribute("foo");
-			}
-			
-		}.assertThrown(ConnectionClosedException.class);
-	    
-		assertEquals(CLOSED_BY_SERVER, connection.getStatus());
-
-		lifecycleService.awaitAll();
-		
-		assertEquals(2, lifecycleService.asyncExceptions.size());
-		assertEquals("Foobar", lifecycleService.asyncExceptions.poll().getMessage());
-		assertEquals(ClientUserError.CONNECTION_CLOSED.asMessage(), lifecycleService.asyncExceptions.poll().getMessage());
-		
-		assertNull(((ConnectionImpl)connection).getSessionCache().get(ssn.getId()));
-	
-	}	
-*/
 
 }

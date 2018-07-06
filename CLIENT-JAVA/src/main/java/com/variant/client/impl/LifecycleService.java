@@ -10,15 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.ClientException;
-import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
-import com.variant.client.lifecycle.ConnectionClosedLifecycleEvent;
-import com.variant.client.lifecycle.ConnectionAwareLifecycleEvent;
 import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
-import com.variant.client.lifecycle.SessionExpiredLifecycleEvent;
 import com.variant.client.lifecycle.SessionAwareLifecycleEvent;
+import com.variant.client.lifecycle.SessionExpiredLifecycleEvent;
 
 public class LifecycleService {
 

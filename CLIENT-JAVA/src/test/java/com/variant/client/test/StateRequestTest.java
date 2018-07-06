@@ -1,20 +1,14 @@
 package com.variant.client.test;
 
-import static com.variant.core.ConnectionStatus.CLOSED_BY_CLIENT;
-import static com.variant.core.ConnectionStatus.OPEN;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.UnknownSchemaException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.core.VariantEvent;
@@ -38,9 +32,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void noStabilTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema").get();		
-		assertNotNull(conn);
-		assertEquals(OPEN, conn.getStatus());
+		Connection conn = client.connectTo("big_conjoint_schema");		
 
 		// Via SID tracker, create.
 		String sid = newSid();
@@ -48,7 +40,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn);
 		assertEquals(sid, ssn.getId());
 
-	   	Schema schema = conn.getSchema();
+	   	Schema schema = ssn.getSchema();
 	   	State state1 = schema.getState("state1");
 	   	//State state2 = schema.getState("state2");
 	   	final Test test1 = schema.getTest("test1");
@@ -112,7 +104,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(req, req2);  // << The problem probably is that session rewrap doesn't do request rewrap (see StateRequestImpl:104)
 		assertTrue(req2.isCommitted());
 
-		conn.close();
 	}
 	
 	/**
@@ -120,12 +111,11 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void deterministicTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema").get();
-		Schema schema = conn.getSchema();
+		Connection conn = client.connectTo("big_conjoint_schema");
 		
-		assertNotNull(conn);
-		assertEquals(OPEN, conn.getStatus());
-
+		// Some session, just to get the schema.
+		Schema schema = conn.getOrCreateSession("foo").getSchema();
+		
 		// Via SID tracker, create.
 		String sid = newSid();
 		Object[] userData = userDataForSimpleIn(sid, schema, "test4.C", "test5.C");
@@ -133,7 +123,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn);
 		assertEquals(sid, ssn.getId());
 
-	   	schema = conn.getSchema();
 	   	State state2 = schema.getState("state2");
 	   	Test test1 = schema.getTest("test1");
 	   	Test test2 = schema.getTest("test2");
@@ -162,7 +151,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		// No-op.
 		assertFalse(req.commit());
 		
-		conn.close();		
 	}
 
 	/**
@@ -170,11 +158,10 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void commitTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema").get();
-		Schema schema = conn.getSchema();
-		
-		assertNotNull(conn);
-		assertEquals(OPEN, conn.getStatus());
+		Connection conn = client.connectTo("big_conjoint_schema");
+
+		// Some session, just to get the schema.
+		Schema schema = conn.getOrCreateSession("foo").getSchema();
 
 		// Via SID tracker, create.
 		String sid = newSid();
@@ -183,7 +170,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn1);
 		assertEquals(sid, ssn1.getId());
 
-	   	schema = conn.getSchema();
 	   	final State state2 = schema.getState("state2");
 	   	final State state3 = schema.getState("state3");
 	   	
@@ -214,7 +200,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			}
 		}.assertThrown(ClientUserError.ACTIVE_REQUEST);
 
-		conn.close();		
 	}
 
 	/**
@@ -222,13 +207,13 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema").get();		
+		Connection conn = client.connectTo("big_conjoint_schema");		
 
 		String sid = newSid();
 		final Session ssn = conn.getOrCreateSession(sid);
 		assertFalse(ssn.isExpired());
 	
-	   	Schema schema = conn.getSchema();
+	   	Schema schema = ssn.getSchema();
 	   	State state2 = schema.getState("state2");
 	   	final StateRequest req = ssn.targetForState(state2);
 	   	
@@ -242,42 +227,11 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 				req.commit();
 			}
 			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.SESSION_EXPIRED, e.getError());
+				assertEquals(ServerError.SessionExpired, e.getError());
 			}
 		}.assertThrown(SessionExpiredException.class);
 	}
 	
-	/**
-	 * Session expires too soon. See bug https://github.com/getvariant/variant/issues/67
-	 */
-	@org.junit.Test
-	public void connectionClosedLocallyTest() throws Exception {
-		
-		Connection conn = client.connectTo("big_conjoint_schema").get();		
-	   	Schema schema = conn.getSchema();
-
-		String sid = newSid();
-		final Session ssn = conn.getOrCreateSession(sid);	
-	   	State state2 = schema.getState("state2");
-	   	final StateRequest req = ssn.targetForState(state2);
-	   	
-	   	conn.close();
-	   	
-	   	assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
-	   	assertTrue(ssn.isExpired());
-		
-	   	new ClientUserExceptionInterceptor() {
-			@Override public void toRun() {
-				req.commit();
-			}
-			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
-			}
-		}.assertThrown(UnknownSchemaException.class);
-		
-		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
-	}
-
 	/**
 	 * Petclinic schema defines a qual and a targeting hook which will fail,
 	 * unless we create "user-agent" session attributes.
@@ -285,12 +239,12 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void targetingHookExceptionTest() throws Exception {
 		
-		Connection conn = client.connectTo("petclinic").get();		
-	   	Schema schema = conn.getSchema();
+		Connection conn = client.connectTo("petclinic");		
 
 		String sid = newSid();
 		final Session ssn = conn.getOrCreateSession(sid);	
-
+		final Schema schema = ssn.getSchema();
+		
 		// Targeting and qual hooks will throw exceptions because they
 		// expect 'user-agent' attribute
 	   	new ClientUserExceptionInterceptor() {
@@ -318,21 +272,20 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void targetFromParallelConnectionsTest() throws Exception {
 		
-		Connection conn1 = client.connectTo("big_conjoint_schema").get();		
-	   	Schema schema1 = conn1.getSchema();
+		Connection conn1 = client.connectTo("big_conjoint_schema");		
 
 		String sid = newSid();
 		Session ssn1 = conn1.getOrCreateSession(sid);	
-		
+		Schema schema1 = ssn1.getSchema();
 		StateRequest req1 = ssn1.targetForState(schema1.getState("state3"));
 
-		Connection conn2 = client.connectTo("big_conjoint_schema").get();		
-	   	Schema schema2 = conn1.getSchema();
+		Connection conn2 = client.connectTo("big_conjoint_schema");		
+	   	Session ssn2 = conn2.getSessionById(sid);
+	   	assertNotNull(ssn2);
+		Schema schema2 = ssn2.getSchema();
 	   	
 	   	assertEquals(schema2.getId(), schema1.getId());
 	   	
-	   	Session ssn2 = conn2.getSessionById(sid);
-	   	assertNotNull(ssn2);
 	   	
 	   	StateRequest req2 = ssn2.getStateRequest();
 	   	assertNotNull(req2);

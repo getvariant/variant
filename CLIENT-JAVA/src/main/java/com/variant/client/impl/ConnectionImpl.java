@@ -266,38 +266,6 @@ public class ConnectionImpl implements Connection {
 	public long getSessionTimeoutMillis() {
 		return sessionTimeoutMillis;
 	}
-
-	/**
-	 *
-	public void setStatus(ConnectionStatus status) {
-	
-		if (status == this.status) return;
-	
-		switch (status) {
-		
-		case OPEN:
-			throw new ClientException.Internal("Cannot reopen a connection (currently " + this.status + ")");				
-		
-		case DRAINING: 
-			this.status = status;
-			break; // Anything?
-
-		case CLOSED_BY_SERVER:
-			this.status = status;
-			destroy();
-			client.lceService.raiseEvent(ConnectionClosedLifecycleEvent.class, this);
-			throw new ConnectionClosedException(ClientUserError.CONNECTION_CLOSED);
-		
-		case CLOSED_BY_CLIENT:
-			this.status = status;
-			destroy();
-			client.lceService.raiseEvent(ConnectionClosedLifecycleEvent.class, this);
-			break;
-			
-		default: 
-			throw new ClientException.Internal("Unexpected connection status from server " + status + ")");
-		}
-	}
 	
 	/**
 	 * Read-only snapshot.

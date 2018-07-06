@@ -1,8 +1,5 @@
 package com.variant.client.test;
 
-import static com.variant.core.ConnectionStatus.CLOSED_BY_SERVER;
-import static com.variant.core.ConnectionStatus.DRAINING;
-import static com.variant.core.ConnectionStatus.OPEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -11,15 +8,15 @@ import static org.junit.Assert.assertTrue;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.UnknownSchemaException;
 import com.variant.client.Session;
-import com.variant.client.SessionExpiredException;
 import com.variant.client.StateRequest;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
+import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.SessionImpl;
+import com.variant.core.impl.ServerError;
 import com.variant.core.impl.StateVisitedEvent;
-import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.IoUtils;
@@ -45,27 +42,25 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	@org.junit.Test
 	public void serverUndeploySessionTimeoutTest() throws Exception {
 
-		// First connection to big_conjoint_schema
-		final Connection conn1 = client.connectTo("big_conjoint_schema").get();		
-		assertEquals(OPEN, conn1.getStatus());
-		assertEquals(client, conn1.getClient());
-		final Schema schema1 = conn1.getSchema();
-		assertEquals("big_conjoint_schema", schema1.getName());
-
-		// Second connection to big_conjoint_schema
-		final Connection conn2 = client.connectTo("big_conjoint_schema").get();		
-		assertEquals(OPEN, conn2.getStatus());
-		assertEquals(client, conn2.getClient());
-		final Schema schema2 = conn2.getSchema();
-		assertEquals("big_conjoint_schema", schema2.getName());
-		assertEquals(schema1.getId(), schema2.getId());
+		// Connection to a schema
+		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("big_conjoint_schema");		
+		assertNotNull(conn1);
+		assertNotNull(conn1.getClient());
+		assertEquals(conn1.getSessionTimeoutMillis(), 1000);
+		assertNotNull(conn1.getSessionCache());
+		assertEquals("big_conjoint_schema", conn1.getSchemaName());
 		
-		// Third connection to petclinic
-		final Connection conn3 = client.connectTo("petclinic").get();		
-		assertEquals(OPEN, conn3.getStatus());
-		assertEquals(client, conn3.getClient());
-		final Schema schema3 = conn3.getSchema();
-		assertEquals("petclinic", schema3.getName());
+		// Second connection to the same schema
+		Connection conn2 = client.connectTo("big_conjoint_schema");		
+		assertNotNull(conn2);
+		assertEquals(conn1.getClient(), conn2.getClient());
+		assertEquals("big_conjoint_schema", conn2.getSchemaName());
+
+		// Third connection to petclinic schema
+		Connection conn3 = client.connectTo("petclinic");		
+		assertNotNull(conn3);
+		assertEquals(conn1.getClient(), conn3.getClient());
+		assertEquals("petclinic", conn3.getSchemaName());
 
 		// Create sessions in conn1
 		Session[] sessions1 = new Session[SESSIONS];
@@ -76,7 +71,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				String sid = newSid();
 				Session ssn = conn1.getOrCreateSession(sid);
 				assertEquals(sid, ssn.getId());
-				State state = schema1.getState("state" + ((_i % 5) + 1));
+				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1));
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
 				assertEquals(req, ssn.getStateRequest());
@@ -121,7 +116,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				String sid = newSid();
 				Session ssn = conn3.getOrCreateSession(sid);
 				assertEquals(sid, ssn.getId());
-				State state = schema3.getState("newOwner");
+				State state = ssn.getSchema().getState("newOwner");
 				// The qualifying and targeting hooks will throw an NPE
 				// if user-agent attribute is not set.
 				ssn.setAttribute("user-agent", "does not matter");
@@ -155,32 +150,18 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(conn1, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				
-				// Mutating methods throw connection closed exception
-				// because by now all sessions in the connection have expired and the
-				// connection has been vacuumed.
-				new ClientUserExceptionInterceptor() {
-				
-					@Override public void toRun() {
-						switch (_i % 10) {
-						case 0: conn1.getSessionById(sessions1[_i].getId()); break;
-						case 1: ssn.getTraversedStates(); break;
-						case 2: ssn.getTraversedTests(); break;
-						case 3: ssn.getDisqualifiedTests(); break;
-						case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), schema1.getState("state1"))); break;
-						case 5: ssn.getAttribute("foo"); break;
-						case 6: ssn.setAttribute("foo", "bar"); break;
-						case 7: ssn.clearAttribute("foo"); break;
-						case 8: ssn.targetForState(schema1.getState("state" + ((_i % 5) + 1))); break;
-						case 9: req.commit(); break;
-						}
-					}
-					
-					@Override public void onThrown(ClientException.User e) {
-						assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
-						assertEquals(CLOSED_BY_SERVER, conn1.getStatus());
-					}
-					
-				}.assertThrown(UnknownSchemaException.class);
+				switch (_i % 10) {
+				case 0: conn1.getSessionById(sessions1[_i].getId()); break;
+				case 1: ssn.getTraversedStates(); break;
+				case 2: ssn.getTraversedTests(); break;
+				case 3: ssn.getDisqualifiedTests(); break;
+				case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+				case 5: ssn.getAttribute("foo"); break;
+				case 6: ssn.setAttribute("foo", "bar"); break;
+				case 7: ssn.clearAttribute("foo"); break;
+				case 8: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
+				case 9: req.commit(); break;
+				}
 		
 			});
 		}
@@ -200,39 +181,21 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(conn2, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				
-				// Mutating methods throw connection closed exception
-				// because by now all sessions in the connection have expired and the
-				// connection has been cleaned out.
-				new ClientUserExceptionInterceptor() {
-				
-					@Override public void toRun() {
-						switch (_i % 10) {
-						case 0: conn2.getSessionById(sessions1[_i].getId()); break;
-						case 1: ssn.getTraversedStates(); break;
-						case 2: ssn.getTraversedTests(); break;
-						case 3: ssn.getDisqualifiedTests(); break;
-						case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), schema1.getState("state1"))); break;
-						case 5: ssn.getAttribute("foo"); break;
-						case 6: ssn.setAttribute("foo", "bar"); break;
-						case 7: ssn.clearAttribute("foo"); break;
-						case 8: ssn.targetForState(schema1.getState("state" + ((_i % 5) + 1))); break;
-						case 9: req.commit(); break;
-						}
-					}
-					
-					@Override public void onThrown(ClientException.User e) {
-						assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
-						assertEquals(CLOSED_BY_SERVER, conn1.getStatus());
-					}
-					
-				}.assertThrown(UnknownSchemaException.class);
+				switch (_i % 10) {
+				case 0: conn2.getSessionById(sessions1[_i].getId()); break;
+				case 1: ssn.getTraversedStates(); break;
+				case 2: ssn.getTraversedTests(); break;
+				case 3: ssn.getDisqualifiedTests(); break;
+				case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+				case 5: ssn.getAttribute("foo"); break;
+				case 6: ssn.setAttribute("foo", "bar"); break;
+				case 7: ssn.clearAttribute("foo"); break;
+				case 8: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
+				case 9: req.commit(); break;
+				}
 		
 			});
 		}
-
-		// The non-draining connection should remain open, even though all the sessions
-		// are gone and vacuumed.
-		assertEquals(OPEN, conn3.getStatus());
 
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;
@@ -252,35 +215,24 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(conn3, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				
-				// Mutating methods throw session expired exception
-				new ClientUserExceptionInterceptor() {
-				
-					@Override public void toRun() {
-						switch (_i % 9) {
-						case 0: req.commit(); break;
-						case 1: ssn.getTraversedStates(); break;
-						case 2: ssn.getTraversedTests(); break;
-						case 3: ssn.getDisqualifiedTests(); break;
-						case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), schema1.getState("state1"))); break;
-						case 5: ssn.getAttribute("foo"); break;
-						case 6: ssn.setAttribute("foo", "bar"); break;
-						case 7: ssn.clearAttribute("foo"); break;
-						case 8: ssn.targetForState(schema1.getState("state" + ((_i % 5) + 1))); break;
-						}
+					switch (_i % 9) {
+					case 0: req.commit(); break;
+					case 1: ssn.getTraversedStates(); break;
+					case 2: ssn.getTraversedTests(); break;
+					case 3: ssn.getDisqualifiedTests(); break;
+					case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+					case 5: ssn.getAttribute("foo"); break;
+					case 6: ssn.setAttribute("foo", "bar"); break;
+					case 7: ssn.clearAttribute("foo"); break;
+					case 8: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
 					}
-					
-					@Override public void onThrown(ClientException.User e) {
-						assertEquals(ClientUserError.SESSION_EXPIRED, e.getError());
-					}
-					
-				}.assertThrown(SessionExpiredException.class);
 		
 			});
 		}
 
 		joinAll();
 		
-		assertNull(client.connectTo("big_conjoint_schema").get());
+		assertNull(client.connectTo("big_conjoint_schema"));
 
 	}	
 
@@ -299,27 +251,25 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		int ssnTimeout = dirWatcherLatencyMillis/1000 + 2000;
 		server.restart(CollectionsUtils.pairsToMap(new Tuples.Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeout))));
 		
-		// First connection to big_conjoint_schema
-		final Connection conn1 = client.connectTo("big_conjoint_schema").get();		
-		assertEquals(OPEN, conn1.getStatus());
-		assertEquals(client, conn1.getClient());
-		final Schema schema1 = conn1.getSchema();
-		assertEquals("big_conjoint_schema", schema1.getName());
-
-		// Second connection to big_conjoint_schema
-		final Connection conn2 = client.connectTo("big_conjoint_schema").get();		
-		assertEquals(OPEN, conn2.getStatus());
-		assertEquals(client, conn2.getClient());
-		final Schema schema2 = conn2.getSchema();
-		assertEquals("big_conjoint_schema", schema2.getName());
-		assertEquals(schema1.getId(), schema2.getId());
+		// Connection to a schema
+		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("big_conjoint_schema");		
+		assertNotNull(conn1);
+		assertNotNull(conn1.getClient());
+		assertEquals(conn1.getSessionTimeoutMillis(), 1000);
+		assertNotNull(conn1.getSessionCache());
+		assertEquals("big_conjoint_schema", conn1.getSchemaName());
 		
-		// Third connection to petclinic
-		final Connection conn3 = client.connectTo("petclinic").get();		
-		assertEquals(OPEN, conn3.getStatus());
-		assertEquals(client, conn3.getClient());
-		final Schema schema3 = conn3.getSchema();
-		assertEquals("petclinic", schema3.getName());
+		// Second connection to the same schema
+		Connection conn2 = client.connectTo("big_conjoint_schema");		
+		assertNotNull(conn2);
+		assertEquals(conn1.getClient(), conn2.getClient());
+		assertEquals("big_conjoint_schema", conn2.getSchemaName());
+
+		// Third connection to petclinic schema
+		Connection conn3 = client.connectTo("petclinic");		
+		assertNotNull(conn3);
+		assertEquals(conn1.getClient(), conn3.getClient());
+		assertEquals("petclinic", conn3.getSchemaName());
 
 		// Create sessions in conn1
 		Session[] sessions1 = new Session[SESSIONS];
@@ -330,7 +280,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				String sid = newSid();
 				Session ssn = conn1.getOrCreateSession(sid);
 				assertEquals(sid, ssn.getId());
-				State state = schema1.getState("state" + ((_i % 5) + 1));
+				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1));
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
 				assertEquals(req, ssn.getStateRequest());
@@ -375,7 +325,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				String sid = newSid();
 				Session ssn = conn3.getOrCreateSession(sid);
 				assertEquals(sid, ssn.getId());
-				State state = schema3.getState("newOwner");
+				State state = ssn.getSchema().getState("newOwner");
 				// The qualifying and targeting hooks will throw an NPE
 				// if user-agent attribute is not set.
 				ssn.setAttribute("user-agent", "does not matter");
@@ -393,24 +343,6 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		// Long session timeout => all sessions should be alive.
-
-		// Client side of the connection doesn't yet know it's DRAINING.
-		assertEquals(OPEN, conn1.getStatus());
-		assertEquals(OPEN, conn2.getStatus());
-		assertEquals(OPEN, conn3.getStatus());
-
-		// Attempt to create a session will flip connection status to DRAINING.
-		new ClientUserExceptionInterceptor() {
-
-			@Override public void toRun() {
-				conn1.getSession(newSid());				
-			}
-			
-			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_DRAINING, e.getError());
-			}
-
-		}.assertThrown(UnknownSchemaException.class);
 				
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;
@@ -429,7 +361,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTraversedStates());
 				assertNotNull(ssn.getTraversedTests());
 				assertNotNull(ssn.getDisqualifiedTests());
-				ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), schema1.getState("state1")));
+				ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1")));
 				String key = "key" + _i;
 				String value = "value" + _i;
 				assertNull(ssn.getAttribute(key));
@@ -440,7 +372,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				new ClientUserExceptionInterceptor() {
 					
 					@Override public void toRun() {
-						ssn.targetForState(schema1.getState("state" + ((_i % 5) + 1)));			
+						ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)));			
 					}
 					
 					@Override public void onThrown(ClientException.User e) {
@@ -471,10 +403,6 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 		
-		assertEquals(DRAINING, conn1.getStatus());
-		assertEquals(DRAINING, conn2.getStatus());
-		assertEquals(OPEN, conn3.getStatus());
-
 		// Attempt to create a session should fail.
 		new ClientUserExceptionInterceptor() {
 
@@ -483,7 +411,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			}
 			
 			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_DRAINING, e.getError());
+				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 
 		}.assertThrown(UnknownSchemaException.class);
@@ -506,12 +434,12 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTraversedStates());
 				assertNotNull(ssn.getTraversedTests());
 				assertNotNull(ssn.getDisqualifiedTests());
-				ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), schema2.getState("state1")));
+				ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1")));
 				String key = "key" + _i;
 				String value = "value" + _i;
 				assertEquals(value, ssn.getAttribute(key));
 				assertEquals(value, sessions1[_i].clearAttribute(key));
-				assertNotNull(ssn.targetForState(schema1.getState("state" + ((_i % 5) + 1))));
+				assertNotNull(ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))));
 				assertTrue(req.commit());
 		
 			});
@@ -519,8 +447,6 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		// The non-draining connection should work too.
 		
-		assertEquals(OPEN, conn3.getStatus());
-
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;
 			async (() -> {
@@ -542,7 +468,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTraversedStates());
 				assertNotNull(ssn.getTraversedTests());
 				assertNotNull(ssn.getDisqualifiedTests());
-				State state = conn3.getSchema().getState("newOwner");
+				State state = ssn.getSchema().getState("newOwner");
 				// The user-agent attribute should still be set
 				assertEquals("does not matter", ssn.clearAttribute("user-agent"));
 				assertTrue(req.commit());
@@ -552,7 +478,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 		
-		assertNull(client.connectTo("big_conjoint_schema").get());
+		assertNull(client.connectTo("big_conjoint_schema"));
 
 	}	
 }

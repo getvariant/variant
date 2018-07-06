@@ -1,8 +1,5 @@
 package com.variant.client.test;
 
-import static com.variant.core.ConnectionStatus.CLOSED_BY_CLIENT;
-import static com.variant.core.ConnectionStatus.CLOSED_BY_SERVER;
-import static com.variant.core.ConnectionStatus.OPEN;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -12,10 +9,7 @@ import com.variant.client.Connection;
 import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
-import com.variant.client.impl.VariantClientImpl;
-import com.variant.client.lifecycle.ConnectionClosedLifecycleEvent;
-import com.variant.client.lifecycle.LifecycleHook;
-import com.variant.core.impl.ServerError;
+import com.variant.client.impl.ConnectionImpl;
 
 /**
  * Test connections of a cold-deployed schemata.
@@ -31,7 +25,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void connectToNonExistentSchemaTest() throws Exception {
 		
-		assertNull(client.connectTo("bad_schema").get());
+		assertNull(client.connectTo("bad_schema"));
 	
 	}	
 	
@@ -41,170 +35,25 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	public void connectToExistingSchemataTest() throws Exception {
 			    
 		// Connection to a schema
-		Connection conn1 = client.connectTo("big_conjoint_schema").get();		
+		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn1);
-		assertEquals(OPEN, conn1.getStatus());
 		assertNotNull(conn1.getClient());
-		assertNotNull(conn1.getSchema());
-		assertEquals("big_conjoint_schema", conn1.getSchema().getName());
-		assertEquals(5, conn1.getSchema().getStates().size());
-		assertEquals(6, conn1.getSchema().getTests().size());
-
+		assertEquals(conn1.getSessionTimeoutMillis(), 1000);
+		assertNotNull(conn1.getSessionCache());
+		assertEquals("big_conjoint_schema", conn1.getSchemaName());
+		
 		// Second connection to the same schema
-		Connection conn2 = client.connectTo("big_conjoint_schema").get();		
+		Connection conn2 = client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn2);
-		assertEquals(OPEN, conn2.getStatus());
 		assertEquals(conn1.getClient(), conn2.getClient());
-		assertNotNull(conn2.getSchema());
-		assertEquals("big_conjoint_schema", conn2.getSchema().getName());
-		assertEquals(5, conn2.getSchema().getStates().size());
-		assertEquals(6, conn2.getSchema().getTests().size());
+		assertEquals("big_conjoint_schema", conn2.getSchemaName());
 
-		// Third connection to another schema
-		Connection conn3 = client.connectTo("petclinic").get();		
+		// Third connection to petclinic schema
+		Connection conn3 = client.connectTo("petclinic");		
 		assertNotNull(conn3);
-		assertEquals(OPEN, conn3.getStatus());
 		assertEquals(conn1.getClient(), conn3.getClient());
-		assertNotNull(conn3.getSchema());
-		assertEquals("petclinic", conn3.getSchema().getName());
-		assertEquals(2, conn3.getSchema().getStates().size());
-		assertEquals(1, conn3.getSchema().getTests().size());
+		assertEquals("petclinic", conn3.getSchemaName());
 
-		// Close first connection
-		conn1.close();
-		assertEquals(CLOSED_BY_CLIENT, conn1.getStatus());
-		assertNull(((VariantClientImpl)client).byId(conn1.getId()));
-				
-		// Other 2 connections should not be affected.
-		assertEquals(OPEN, conn2.getStatus());
-		assertEquals("big_conjoint_schema", conn2.getSchema().getName());
-		assertEquals(5, conn2.getSchema().getStates().size());
-		assertEquals(6, conn2.getSchema().getTests().size());
-		assertEquals(OPEN, conn3.getStatus());
-		assertEquals("petclinic", conn3.getSchema().getName());
-		assertEquals(2, conn3.getSchema().getStates().size());
-		assertEquals(1, conn3.getSchema().getTests().size());
-
-		// Close second connection
-		conn2.close();
-		assertNull(((VariantClientImpl)client).byId(conn2.getId()));
-		assertEquals(CLOSED_BY_CLIENT, conn1.getStatus());
-		assertEquals(CLOSED_BY_CLIENT, conn2.getStatus());		
-
-		// Third connection should not be affected.
-		assertEquals(OPEN, conn3.getStatus());
-		assertEquals("petclinic", conn3.getSchema().getName());
-		assertEquals(2, conn3.getSchema().getStates().size());
-		assertEquals(1, conn3.getSchema().getTests().size());
-
-		// Close last connection
-		conn3.close();
-		assertNull(((VariantClientImpl)client).byId(conn3.getId()));
-		assertEquals(CLOSED_BY_CLIENT, conn1.getStatus());
-		assertEquals(CLOSED_BY_CLIENT, conn2.getStatus());
-		assertEquals(CLOSED_BY_CLIENT, conn3.getStatus());
-
-	}	
-
-
-	/**
-	 * This test will break if at its start there are any unclosed connections.
-	 * @throws Exception 
-	 */
-	@org.junit.Test
-	public void tooManyConnectionsTest() throws Exception {
-
-		Connection[] connections = new Connection[10];
-        for (int i = 0; i < 10; i++) {
-    		connections[i] = client.connectTo("big_conjoint_schema").get();		
-    		assertNotNull(connections[i]);        	
-        }
-		
-		new ClientUserExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				client.connectTo("big_conjoint_schema");		
-			}
-			
-		}.assertThrown(ServerError.TooManyConnections);
-
-        for (int i = 0; i < 10; i++) {
-    		connections[i].close();		
-    		assertEquals(CLOSED_BY_CLIENT, connections[i].getStatus());
-        }
-
-	}
-
-	/**
-	 * Connection closed by client.
-	 */
-	@org.junit.Test
-	public void closedByClientTest() throws Exception {
-		
-		final Connection conn = client.connectTo("big_conjoint_schema").get();		
-		assertNotNull(conn);
-		assertEquals(OPEN, conn.getStatus());
-		assertNotNull(conn.getClient());
-		assertNotNull(conn.getSchema());
-		assertEquals("big_conjoint_schema", conn.getSchema().getName());
-		assertEquals(5, conn.getSchema().getStates().size());
-		assertEquals(6, conn.getSchema().getTests().size());
-		
-		assertNull(conn.getSession("foo"));
-		assertNull(conn.getSessionById("foo"));
-		assertNotNull(conn.getOrCreateSession("foo"));  // Creates the session.
-		assertNotNull(conn.getSession("foo"));
-		assertNotNull(conn.getSessionById("foo"));
-		
-		conn.close();
-		assertEquals(CLOSED_BY_CLIENT, conn.getStatus());
-		
-		// Exception on subsequent operations
-		new ClientUserExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				conn.close();
-			}
-			
-			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
-			}
-			
-		}.assertThrown(UnknownSchemaException.class);
-
-		new ClientUserExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				conn.getSession("foo");
-			}
-			
-			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
-			}
-			
-		}.assertThrown(UnknownSchemaException.class);
-
-		// Can't register hook on a closed conn
-		new ClientUserExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				conn.addLifecycleHook(
-						new LifecycleHook<ConnectionClosedLifecycleEvent>() {
-							
-							@Override public Class<ConnectionClosedLifecycleEvent> getLifecycleEventClass() {
-								return ConnectionClosedLifecycleEvent.class;
-							}
-
-							@Override public void post(ConnectionClosedLifecycleEvent event) {}
-
-						});
-			}
-			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
-			}
-			
-		}.assertThrown(UnknownSchemaException.class);
-		
 	}	
 
 	/**
@@ -213,19 +62,10 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void closedByServerRestartTest() throws Exception {
 		
-		final Connection conn = client.connectTo("big_conjoint_schema").get();		
+		final Connection conn = client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn);
-		assertEquals(OPEN, conn.getStatus());
-		assertNotNull(conn.getClient());
-		assertNotNull(conn.getSchema());
-		assertEquals("big_conjoint_schema", conn.getSchema().getName());
-		assertEquals(5, conn.getSchema().getStates().size());
-		assertEquals(6, conn.getSchema().getTests().size());
 
-		server.restart();
-
-		// The connection doesn't yet know it's gone.
-		assertEquals(OPEN, conn.getStatus());
+		server.stop();
 		
 		new ClientUserExceptionInterceptor() {
 			
@@ -234,12 +74,10 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			}
 			
 			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+				assertEquals(ClientUserError.SERVER_CONNECTION_TIMEOUT, e.getError());
 			}
 			
 		}.assertThrown(UnknownSchemaException.class);       
-
-		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 
 		new ClientUserExceptionInterceptor() {
 			
@@ -248,12 +86,11 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			}
 			
 			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+				assertEquals(ClientUserError.SERVER_CONNECTION_TIMEOUT, e.getError());
 			}
 			
 		}.assertThrown(UnknownSchemaException.class);       
 		
-		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 
 		new ClientUserExceptionInterceptor() {
 			
@@ -262,12 +99,11 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			}
 			
 			@Override public void onThrown(ClientException.User e) {
-				assertEquals(ClientUserError.CONNECTION_CLOSED, e.getError());
+				assertEquals(ClientUserError.SERVER_CONNECTION_TIMEOUT, e.getError());
 			}
 			
 		}.assertThrown(UnknownSchemaException.class);
 
-		assertEquals(CLOSED_BY_SERVER, conn.getStatus());
 	}	
 
 }
