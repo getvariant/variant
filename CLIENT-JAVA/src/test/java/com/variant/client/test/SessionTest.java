@@ -90,7 +90,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		for (int i = 0; i < sessions.length; i++) {
 			assertTrue(sessions[i].isExpired());
 			final Session ssn = sessions[i];
-			new ClientUserExceptionInterceptor() {
+			new ClientExceptionInterceptor() {
 				@Override public void toRun() {
 					ssn.targetForState(state2);
 				}

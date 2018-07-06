@@ -369,7 +369,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(value, ssn.getAttribute(key));
 				
 				// Current state request is active
-				new ClientUserExceptionInterceptor() {
+				new ClientExceptionInterceptor() {
 					
 					@Override public void toRun() {
 						ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)));			
@@ -404,7 +404,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		joinAll();
 		
 		// Attempt to create a session should fail.
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 
 			@Override public void toRun() {
 				conn2.getOrCreateSession(newSid());				

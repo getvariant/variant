@@ -38,7 +38,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 		Thread.sleep(dirWatcherLatencyMillis);
 		
 		// Can't do anything over the connection
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
 				conn1.getSession("foo");
@@ -51,7 +51,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 		}.assertThrown(UnknownSchemaException.class);
 
 		// Can't do anything over the connection
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
 				conn1.getOrCreateSession("bar");

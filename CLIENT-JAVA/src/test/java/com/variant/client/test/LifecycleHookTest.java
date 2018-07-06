@@ -93,7 +93,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		Thread.sleep(ssn3.getTimeoutMillis());
 		assertTrue(hookPosts.isEmpty());
 
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
 				ssn3.addLifecycleHook(new SessionExpiredHook(conn2));
@@ -101,7 +101,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 			
 		}.assertThrown(SessionExpiredException.class);
 
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
 				ssn4.targetForState(ssn4.getSchema().getState("state2"));
@@ -109,7 +109,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 			
 		}.assertThrown(SessionExpiredException.class);
 		
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
 				ssn5.getAttribute("foo");
@@ -137,7 +137,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 				
 		assertTrue(hookPosts.isEmpty());
 		
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
 				ssn6.clearAttribute("foo");
@@ -145,7 +145,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 						
 		}.assertThrown(SessionExpiredException.class);
 
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
 				ssn7.getDisqualifiedTests();
@@ -153,7 +153,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 			
 		}.assertThrown(SessionExpiredException.class);
 
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
 				ssn8.getTraversedTests();

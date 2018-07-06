@@ -55,7 +55,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	assertEquals(req, ssn.getStateRequest());
 		assertEquals(5, req.getLiveExperiences().size());
 
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 			@Override public void toRun() {
 				req.getLiveExperience(test1);
 			}
@@ -191,7 +191,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 		assertNotNull(ssn1.targetForState(state3));
 		
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 			@Override public void toRun() {
 			   	ssn2.targetForState(state3);
 			}
@@ -222,7 +222,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		Thread.sleep(2000);
 		
 		assertTrue(ssn.isExpired());
-		new ClientUserExceptionInterceptor() {
+		new ClientExceptionInterceptor() {
 			@Override public void toRun() {
 				req.commit();
 			}
@@ -247,7 +247,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 		// Targeting and qual hooks will throw exceptions because they
 		// expect 'user-agent' attribute
-	   	new ClientUserExceptionInterceptor() {
+	   	new ClientExceptionInterceptor() {
 			@Override public void toRun() {
 				ssn.targetForState(schema.getState("newOwner"));
 			}

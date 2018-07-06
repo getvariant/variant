@@ -42,7 +42,7 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 	/**
 	 * User error Intercepter
 	 */
-	protected static abstract class ClientUserExceptionInterceptor 
+	protected static abstract class ClientExceptionInterceptor 
 		extends ExceptionInterceptor<ClientException> {
 		
 		@Override
