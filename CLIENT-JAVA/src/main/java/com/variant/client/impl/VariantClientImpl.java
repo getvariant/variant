@@ -1,12 +1,9 @@
 package com.variant.client.impl;
 
 import com.typesafe.config.Config;
-import com.variant.client.ClientException;
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
-import com.variant.client.net.Payload;
 import com.variant.core.conf.ConfigLoader;
-import com.variant.core.impl.ServerError;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
@@ -44,32 +41,7 @@ public class VariantClientImpl implements VariantClient {
 	@Override
 	public Connection connectTo(String schema) {
 		
-		try {
-			Payload.Connection payload = server.connect(schema);
-			return new ConnectionImpl(this, schema, payload);
-		}
-		catch (ClientException ue) {
-			if (ue.getError() == ServerError.UnknownSchema) 
-				return null;
-			throw ue;
-		}		
+		return new ConnectionImpl(this, schema, server.connect(schema));
 	}
 
-	//---------------------------------------------------------------------------------------------//
-	//                                      PUBLIC EXT                                             //
-	//---------------------------------------------------------------------------------------------//
-	/*
-	public void freeConnection(String cid) {
-		connMap.remove(cid);
-	}
-	
-	/**
-	 * Tests use this to confirm connetion's gone.
-	 * @param id
-	 * @return
-	 *
-	public Connection byId(String id) {
-		return connMap.get(id);
-	}
-*/
 }

@@ -30,9 +30,9 @@ public interface VariantClient {
 	 * 
 	 * @param schema The name of the schema, which should be deployed on the server.
 	 *        
-	 * @return An instance of the {@link Connection} type, or <code>null</null> if the
-	 * requested schema was not found on the server.
+	 * @return An instance of the {@link Connection} type.
 	 * 
+	 * @throws UnknownSchemaException if given schema does not exist on the server.
 	 * @since 0.7
 	 *
 	public Connection getConnection(String schema);

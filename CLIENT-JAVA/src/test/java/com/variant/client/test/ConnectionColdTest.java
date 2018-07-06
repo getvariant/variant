@@ -113,6 +113,12 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			
 		}.assertThrown(ServerConnectException.class);
 
+		// Should be back in business after server restarts.
+		server.start();
+		assertNull(conn.getSession("foo"));
+		assertNotNull(conn.getOrCreateSession("foo"));
+		assertNotNull(conn.getSession("foo"));
+		assertNotNull(conn.getSessionById("foo"));
 	}	
 
 }

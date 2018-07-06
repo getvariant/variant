@@ -1,7 +1,6 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
@@ -28,28 +27,18 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 		assertNotNull(conn1);
 		assertEquals("big_conjoint_schema", conn1.getSchemaName());
 
-		Session ssn1 = conn1.getOrCreateSession("foo");
+		Session foo1 = conn1.getOrCreateSession("foo");
 		
-		assertNotNull(ssn1);
-		assertEquals(conn1.getSchemaName(), ssn1.getSchema().getName());
+		assertNotNull(foo1);
+		assertEquals(conn1.getSchemaName(), foo1.getSchema().getName());
 
 		IoUtils.delete(SCHEMATA_DIR + "/big-conjoint-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
 		
-		// Can't do anything over the connection
-		new ClientExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				conn1.getSession("foo");
-			}
-			
-			@Override public void onThrown(ClientException e) {
-				assertEquals(ServerError.UnknownSchema, e.getError());
-			}
-			
-		}.assertThrown();
-
-		// Can't do anything over the connection
+		// Session should be timed out by now.
+		assertNull(conn1.getSession("foo"));
+		
+		// Can't create another session
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
@@ -61,6 +50,22 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 			}
 			
 		}.assertThrown();
+
+        // Can't create another connection.
+		new ClientExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				client.connectTo("big_conjoint_schema");
+			}
+			
+			@Override public void onThrown(ClientException e) {
+				assertEquals(ServerError.UnknownSchema, e.getError());
+			}
+			
+		}.assertThrown();
+		
+		// Petclinic should be fine.
+		assertNotNull(client.connectTo("petclinic"));
 
 	}	
 
