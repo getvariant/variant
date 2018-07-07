@@ -1,6 +1,7 @@
 package com.variant.client.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -30,16 +31,16 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 
 	private class SessionExpiredHook implements LifecycleHook<SessionExpiredLifecycleEvent> {
 		
-		final private Connection conn;
-		SessionExpiredHook(Connection conn) {
-			this.conn = conn;
+		final private Session ssn;
+		SessionExpiredHook(Session ssn) {
+			this.ssn = ssn;
 		}
 		@Override public Class<SessionExpiredLifecycleEvent> getLifecycleEventClass() {
 			return SessionExpiredLifecycleEvent.class;
 		}
 
 		@Override public void post(SessionExpiredLifecycleEvent event) {
-			assertEquals(conn, event.getSession().getConnection());
+			assertEquals(ssn.getId(), event.getSession().getId());
 			assertTrue(event.getSession().isExpired());
 			hookPosts.add(event.getSession().getId());
 		}
@@ -47,10 +48,10 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 	};
 
 	/**
-	 * Session Expiration
+	 * Session expired remotely, i.e. the SessionExpiredLifecycleEvent raised by Server, not by Vacuumer.
 	 */
 	@org.junit.Test
-	public void sessionExpiredTest() throws Exception {
+	public void sessionExpiredRemotelyTest() throws Exception {
 		/*					
 		// 1, Connection-level SessionExpired Hook
 		Connection conn1 = client.connectTo("big_conjoint_schema").get();
@@ -86,29 +87,35 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		Session ssn3 = conn2.getOrCreateSession(newSid());
 		Session ssn4 = conn2.getOrCreateSession(newSid());
 		Session ssn5 = conn2.getOrCreateSession(newSid());
-		
-		ssn3.addLifecycleHook(new SessionExpiredHook(conn2));
-		ssn5.addLifecycleHook(new SessionExpiredHook(conn2));
+		//System.out.println(CollectionsUtils.toString(CollectionsUtils.list(ssn1.getId(),ssn2.getId(),ssn3.getId(),ssn4.getId(),ssn5.getId())));
+		ssn1.addLifecycleHook(new SessionExpiredHook(ssn1));
+		ssn2.addLifecycleHook(new SessionExpiredHook(ssn2));
 
+		// Enough to expire on the server, but not yet to trip the local vacuum.
 		Thread.sleep(ssn3.getTimeoutMillis());
+
+		// Sessions don't know yet tye're expired.
+		assertFalse(ssn1.isExpired());
+		assertFalse(ssn2.isExpired());
+		assertFalse(ssn3.isExpired());
+		assertFalse(ssn4.isExpired());
+		assertFalse(ssn5.isExpired());
+		
 		assertTrue(hookPosts.isEmpty());
+		
+		// Second hook for ssn2 - should work.
+		ssn2.addLifecycleHook(new SessionExpiredHook(ssn2));
 
+		// Expires ssn2 and posts 2 hooks.
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				ssn3.addLifecycleHook(new SessionExpiredHook(conn2));
-			}
-			
-		}.assertThrown(SessionExpiredException.class);
-
-		new ClientExceptionInterceptor() {
-			
-			@Override public void toRun() {
-				ssn4.targetForState(ssn4.getSchema().getState("state2"));
+				ssn2.targetForState(ssn2.getSchema().getState("state2"));
 			}
 			
 		}.assertThrown(SessionExpiredException.class);
 		
+		// Expires ssn5, but no hooks
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
@@ -119,28 +126,41 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 
 		lifecycleService.awaitAll();
 
-		// ssn 4 doesn't have a hook registered.
-		assertEqualAsSets(CollectionsUtils.set(ssn3.getId(), ssn5.getId()), hookPosts);
+		assertFalse(ssn1.isExpired());
+		assertTrue(ssn2.isExpired());
+		assertFalse(ssn3.isExpired());
+		assertFalse(ssn4.isExpired());
+		assertTrue(ssn5.isExpired());
+		
+		//System.out.println("*********** " + CollectionsUtils.toString(hookPosts));
+		// ssn1 has the hook, but isn't yet expired, ssn2 has 2 hooks which should have been posted, 
+		// and ssn5 doesn't have a hook registered.
+		assertEqualAsSets(CollectionsUtils.list(ssn2.getId(), ssn2.getId()), hookPosts);
 
-		// 3. Connection- and session-level SessionExpired Hook
-		// (session level is posted last)
+		// Can't add hooks to expired sessions.
+		new ClientExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				ssn2.addLifecycleHook(new SessionExpiredHook(ssn2));
+			}
+			
+		}.assertThrown(SessionExpiredException.class);
 
-		hookPosts.clear();
-		Session ssn6 = conn1.getOrCreateSession(newSid());
-		Session ssn7 = conn1.getOrCreateSession(newSid());
-		Session ssn8 = conn2.getOrCreateSession(newSid());
-		ssn6.addLifecycleHook(new SessionExpiredHook(conn1));
-		ssn7.addLifecycleHook(new SessionExpiredHook(conn1));
-		ssn8.addLifecycleHook(new SessionExpiredHook(conn2));
+		new ClientExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				ssn5.addLifecycleHook(new SessionExpiredHook(ssn2));
+			}
+			
+		}.assertThrown(SessionExpiredException.class);
 
-		Thread.sleep(ssn2.getTimeoutMillis());
-				
+		hookPosts.clear();						
 		assertTrue(hookPosts.isEmpty());
 		
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				ssn6.clearAttribute("foo");
+				ssn1.clearAttribute("foo");
 			}
 						
 		}.assertThrown(SessionExpiredException.class);
@@ -148,7 +168,7 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				ssn7.getDisqualifiedTests();
+				ssn2.getDisqualifiedTests();
 			}
 			
 		}.assertThrown(SessionExpiredException.class);
@@ -156,13 +176,31 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				ssn8.getTraversedTests();
+				ssn3.getTraversedTests();
+			}
+			
+		}.assertThrown(SessionExpiredException.class);
+
+		new ClientExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				ssn4.setAttribute("foo", "bar");
+			}
+			
+		}.assertThrown(SessionExpiredException.class);
+
+		new ClientExceptionInterceptor() {
+			
+			@Override public void toRun() {
+				ssn5.getAttribute("foo");
 			}
 			
 		}.assertThrown(SessionExpiredException.class);
 
 		lifecycleService.awaitAll();
-		assertEqualAsLists(CollectionsUtils.list(ssn6.getId(), ssn6.getId(), ssn7.getId(), ssn7.getId(), ssn8.getId()), hookPosts);
+		// ssn2 and ssn5 have already fired.
+		//System.out.println("*********** " + CollectionsUtils.toString(hookPosts));
+		assertEqualAsLists(CollectionsUtils.list(ssn1.getId()), hookPosts);
 
 	}
 

@@ -1,7 +1,9 @@
 package com.variant.client.impl;
 
 import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
-import static com.variant.client.impl.ClientUserError.*;
+import static com.variant.client.impl.ClientUserError.ACTIVE_REQUEST;
+import static com.variant.client.impl.ClientUserError.PARAM_CANNOT_BE_NULL;
+import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import com.typesafe.config.Config;
 import com.variant.client.ClientException;
 import com.variant.client.Connection;
-import com.variant.client.UnknownSchemaException;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
@@ -184,20 +185,11 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * Mutable. But don't go to the server if already expired.
-	 * Do not throw connection expired exception.
+	 * Non-mutable. Don't go to the server just to find out if we've expired
+	 * because it's a race condition any way.
 	 */
 	@Override
 	public boolean isExpired() {
-		
-		if (isExpired) return true;
-		
-		try {
-			refreshFromServer();
-		}
-		catch (SessionExpiredException | UnknownSchemaException e) { 
-			isExpired = true; 
-		}
 		
 		return isExpired;
 	}
@@ -325,12 +317,11 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * Mutating or mutable state.
+	 * Don't go the server just to see if we're expired.
 	 */
 	@Override
 	public void addLifecycleHook(LifecycleHook<? extends ClientLifecycleEvent> hook) {
 		preChecks();
-		refreshFromServer();
 		lifecycleHooks.add(hook);
 	}
 

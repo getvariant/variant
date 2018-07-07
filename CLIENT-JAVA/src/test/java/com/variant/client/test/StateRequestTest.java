@@ -21,6 +21,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
+import com.variant.core.util.CollectionsUtils;
 
 public class StateRequestTest extends ClientBaseTestWithServer {
 
@@ -111,7 +112,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void deterministicTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");
@@ -125,6 +126,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		Session ssn = conn.getOrCreateSession(userData);
 		assertNotNull(ssn);
 		assertEquals(sid, ssn.getId());
+		assertEquals(0, ssn.getTraversedTests().size());
 
 	   	State state2 = schema.getState("state2");
 	   	Test test1 = schema.getTest("test1");
@@ -137,7 +139,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	final StateRequest req = ssn.targetForState(state2);
 	   	assertNotNull(req);
 		assertEquals(6, req.getLiveExperiences().size());
-
+		System.out.println("*********** " + CollectionsUtils.toString(req.getLiveExperiences()));
 		assertEquals(experience(schema, "test1.A"), req.getLiveExperience(test1));
 		assertEquals(experience(schema, "test2.A"), req.getLiveExperience(test2));
 		assertEquals(experience(schema, "test3.A"), req.getLiveExperience(test3));

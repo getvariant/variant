@@ -46,7 +46,7 @@ public class SessionCache {
 	
 	/**
 	 * Vacuum thread.
-	 * Expires and removes idle or stale sessions. 
+	 * Expires and removes idle sessions. 
 	 *
 	 * @author Igor.
 	 *
@@ -109,10 +109,9 @@ public class SessionCache {
 	public SessionCache(ConnectionImpl conn) {
 		this.conn = conn;
 
-		this.sessionTimeoutMillis = conn.getSessionTimeoutMillis();
-		// Vacuum therad wakes up no less frequently than 30 seconds, but more frequently for tests,
-		// when the timeout is set low, e.g. 1 sec.
-		this.vacuumInterval = Math.min(sessionTimeoutMillis / 2, TimeUtils.MILLIS_PER_SECOND * 30);
+		// Keep sessions alive on the client longer than server side timeout, to prevent eager expiration.
+		this.sessionTimeoutMillis = conn.getSessionTimeoutMillis() * 2;
+		this.vacuumInterval = sessionTimeoutMillis / 4;
 		vacuumThread = new VacuumThread();
 		vacuumThread.setDaemon(false);
 		vacuumThread.setName(VacuumThread.class.getSimpleName());
@@ -154,7 +153,7 @@ public class SessionCache {
 			if (LOG.isDebugEnabled()) 
 				LOG.debug("Local cache hit for sid [" + sid + "]");
 			entry.accessTimestamp = System.currentTimeMillis();
-			return entry.session;
+			result = entry.session;
 		}
 		return result;
 	}
@@ -173,7 +172,7 @@ public class SessionCache {
 	 * Mark all sessions as expired and release underlying memory.
 	 */
 	public void destroy() {
-		//vacuumThread.interrupt();
+		vacuumThread.interrupt();
 		for (Entry e: cache.values()) {e.session.expire();}
 		cache.clear();
 		LOG.debug("Doestroyed session cache for connection to schema [" + conn.getSchemaName() + "]");
