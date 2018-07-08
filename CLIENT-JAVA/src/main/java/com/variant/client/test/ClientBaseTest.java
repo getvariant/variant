@@ -3,7 +3,7 @@ package com.variant.client.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
 import com.variant.core.UserError;
 import com.variant.core.schema.Schema;
 import com.variant.core.test.VariantBaseTest;
@@ -43,18 +43,18 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 	 * User error Intercepter
 	 */
 	protected static abstract class ClientExceptionInterceptor 
-		extends ExceptionInterceptor<ClientException> {
+		extends ExceptionInterceptor<VariantException> {
 		
 		@Override
-		final public Class<ClientException> getExceptionClass() {
-			return ClientException.class;
+		final public Class<VariantException> getExceptionClass() {
+			return VariantException.class;
 		}
 
 		/**
 		 * Client side errors: we have access to them at comp time.
 		 */
 		final public void assertThrown(UserError error, Object...args) {
-			ClientException result = super.run();
+			VariantException result = super.run();
 			assertNotNull("No exception was thrown", result);
 			assertEquals("Expected exception was not thrown", result.getError(), error);
 		}
@@ -62,8 +62,8 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 		/**
 		 * Server side errors: We don't have access to them at comp time
 		 */
-		final public void assertThrown(Class<? extends ClientException> uex) {
-			ClientException result = super.run();
+		final public void assertThrown(Class<? extends VariantException> uex) {
+			VariantException result = super.run();
 			assertNotNull("No exception was thrown", result);
 			assertEquals("Expected exception was not thrown", uex, result.getClass());
 		}

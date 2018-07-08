@@ -5,7 +5,7 @@ import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTE
 
 import java.util.Random;
 
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
@@ -61,11 +61,11 @@ public class ConnectionImpl implements Connection {
 				return result;
 			}
 			else {
-				throw new ClientException(SESSION_ID_TRACKER_NO_INTERFACE, className, SessionIdTracker.class.getName());
+				throw new VariantException(SESSION_ID_TRACKER_NO_INTERFACE, className, SessionIdTracker.class.getName());
 			}
 		}
 		catch (Exception e) {
-			throw new ClientException.Internal("Unable to instantiate session id tracker class [" + className + "]", e);
+			throw new VariantException.Internal("Unable to instantiate session id tracker class [" + className + "]", e);
 		}
 
 	}
@@ -130,7 +130,7 @@ public class ConnectionImpl implements Connection {
 			if (resp.hasMessages(Severity.ERROR)) {
 				StringBuilder buff = new StringBuilder("Unable to parse schema:\n");
 				for (ParserMessage msg: resp.getMessages()) buff.append("    ").append(msg.toString()).append("\n");
-				throw new ClientException.Internal(buff.toString());
+				throw new VariantException.Internal(buff.toString());
 			}
 			schema = new SchemaImpl(payload.schemaId, resp.getSchema());
 		}

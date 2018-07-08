@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
@@ -63,7 +63,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 				req.getLiveExperience(test1);
 			}
-			@Override public void onThrown(ClientException e) {
+			@Override public void onThrown(VariantException e) {
 				assertEquals(ServerError.STATE_NOT_INSTRUMENTED_BY_TEST, e.getError());
 			}
 		}.assertThrown(StateNotInstrumentedException.class);
@@ -200,7 +200,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 			   	ssn2.targetForState(state3);
 			}
-			@Override public void onThrown(ClientException e) {
+			@Override public void onThrown(VariantException e) {
 				assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
 			}
 		}.assertThrown(ClientUserError.ACTIVE_REQUEST);
@@ -231,7 +231,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 				req.commit();
 			}
-			@Override public void onThrown(ClientException e) {
+			@Override public void onThrown(VariantException e) {
 				assertEquals(ServerError.SessionExpired, e.getError());
 			}
 		}.assertThrown(SessionExpiredException.class);
@@ -256,7 +256,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			@Override public void toRun() {
 				ssn.targetForState(schema.getState("newOwner"));
 			}
-			@Override public void onThrown(ClientException e) {
+			@Override public void onThrown(VariantException e) {
 				assertEquals(ServerError.HOOK_UNHANDLED_EXCEPTION, e.getError());
 			}
 		}.assertThrown();

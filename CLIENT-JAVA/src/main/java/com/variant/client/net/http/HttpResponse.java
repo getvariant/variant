@@ -14,10 +14,9 @@ import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
 import com.variant.client.impl.ClientInternalError;
 import com.variant.core.impl.ServerError;
-import com.variant.core.impl.VariantException;
 
 public class HttpResponse {
 
@@ -48,7 +47,7 @@ public class HttpResponse {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	VariantException toVariantException() {
+	com.variant.core.impl.VariantException toVariantException() {
 
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
 		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
@@ -64,10 +63,10 @@ public class HttpResponse {
 			ServerError error = ServerError.byCode(code);
 			
 			if (isInternal) {
-				return new VariantException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.asMessage(args.toArray()));
+				return new com.variant.core.impl.VariantException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.asMessage(args.toArray()));
 			}
 			else {
-				return new ClientException(error, args.toArray());
+				return new VariantException(error, args.toArray());
 			}
 		}
 		catch(IOException parseException) {

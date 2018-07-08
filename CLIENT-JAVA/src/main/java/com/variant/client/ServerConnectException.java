@@ -9,7 +9,7 @@ import com.variant.client.impl.ClientUserError;
  * @since 0.9
  */
 @SuppressWarnings("serial")
-public class ServerConnectException extends ClientException {
+public class ServerConnectException extends VariantException {
 	
 	public ServerConnectException(String url) {
 		super(ClientUserError.SERVER_CONNECTION_TIMEOUT, url);

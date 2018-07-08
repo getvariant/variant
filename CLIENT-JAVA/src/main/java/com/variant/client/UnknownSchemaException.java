@@ -10,7 +10,7 @@ import com.variant.core.impl.ServerError;
  * @since 0.9
  */
 @SuppressWarnings("serial")
-public class UnknownSchemaException extends ClientException {
+public class UnknownSchemaException extends VariantException {
 	
 	public UnknownSchemaException(String schema) {
 		super(ServerError.UnknownSchema, schema);

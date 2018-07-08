@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
@@ -167,7 +167,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						}
 					}
 					
-					@Override public void onThrown(ClientException e) {
+					@Override public void onThrown(VariantException e) {
 						assertEquals(ServerError.SessionExpired, e.getError());
 					}
 					
@@ -208,7 +208,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						}
 					}
 					
-					@Override public void onThrown(ClientException e) {
+					@Override public void onThrown(VariantException e) {
 						assertEquals(ServerError.SessionExpired, e.getError());
 					}
 					
@@ -251,7 +251,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						}
 					 }
 					
-					@Override public void onThrown(ClientException e) {
+					@Override public void onThrown(VariantException e) {
 						assertEquals(ServerError.SessionExpired, e.getError());
 					}
 					
@@ -268,7 +268,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				client.connectTo("big_conjoint_schema");
 			}
 
-			@Override public void onThrown(ClientException e) {
+			@Override public void onThrown(VariantException e) {
 				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 			
@@ -415,7 +415,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)));			
 					}
 					
-					@Override public void onThrown(ClientException e) {
+					@Override public void onThrown(VariantException e) {
 						assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
 					}
 
@@ -450,7 +450,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				conn2.getOrCreateSession(newSid());				
 			}
 			
-			@Override public void onThrown(ClientException e) {
+			@Override public void onThrown(VariantException e) {
 				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 

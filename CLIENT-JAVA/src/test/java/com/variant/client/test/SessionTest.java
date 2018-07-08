@@ -6,7 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
@@ -96,7 +96,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 				@Override public void toRun() {
 					ssn.targetForState(state2);
 				}
-				@Override public void onThrown(ClientException e) {
+				@Override public void onThrown(VariantException e) {
 					assertEquals(ServerError.SessionExpired, e.getError());
 					assertTrue(ssn.isExpired());
 				}

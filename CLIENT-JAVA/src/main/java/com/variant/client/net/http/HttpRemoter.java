@@ -12,10 +12,8 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.ClientException;
 import com.variant.client.ServerConnectException;
-import com.variant.client.impl.ClientUserError;
-import com.variant.core.impl.VariantException;
+import com.variant.client.VariantException;
 import com.variant.core.util.Constants;
 import com.variant.core.util.TimeUtils;
 
@@ -85,18 +83,18 @@ public class HttpRemoter {
 				
 			case HttpStatus.SC_BAD_REQUEST:
 				
-				VariantException ce = result.toVariantException();
+				com.variant.core.impl.VariantException ce = result.toVariantException();
 				if (LOG.isDebugEnabled()) LOG.debug("Server Error " + ce.getMessage());
 				throw ce;
 			
 			default:
-				throw new ClientException.Internal(
+				throw new VariantException.Internal(
 						String.format("Unexpected response from server: [%s %s : %s]",
 								req.getMethod(), req.getURI(), result.status)
 				);
 			}
 		}
-		catch (ClientException ex) {
+		catch (VariantException ex) {
 			throw ex;
 		}
 		catch (HttpHostConnectException ex) {
@@ -104,7 +102,7 @@ public class HttpRemoter {
 			throw new ServerConnectException(req.getURI().getHost());
 		}
 		catch (Throwable e) {
-			throw new ClientException.Internal("Unexpected exception in HTTP POST: " + e.getMessage(), e);
+			throw new VariantException.Internal("Unexpected exception in HTTP POST: " + e.getMessage(), e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					

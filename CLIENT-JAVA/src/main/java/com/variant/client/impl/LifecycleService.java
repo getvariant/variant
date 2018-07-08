@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
 import com.variant.client.lifecycle.ClientLifecycleEvent;
@@ -98,7 +98,7 @@ public class LifecycleService {
 	public void raiseEvent(Class<? extends SessionAwareLifecycleEvent> eventClass, SessionImpl session) {
 					
 		if (session.getConnection().getClient() != client) 
-			throw new ClientException.Internal("Bad client");
+			throw new VariantException.Internal("Bad client");
 
 		/*
 		// 1. Connection level 

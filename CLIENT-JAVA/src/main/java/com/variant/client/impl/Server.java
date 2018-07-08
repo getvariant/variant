@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
 import com.variant.client.ConfigKeys;
 import com.variant.client.Connection;
 import com.variant.client.Session;
@@ -61,7 +61,7 @@ public class Server {
 				return block(); 
 			}
 			// Intercept certain user exceptions.
-			catch (ClientException ce) {
+			catch (VariantException ce) {
 				if (ce.getError() == ServerError.SessionExpired) {
 					((ConnectionImpl)conn).cache.expire(sid);
 					throw new SessionExpiredException(sid);
@@ -70,13 +70,13 @@ public class Server {
 			}
 
 			// Pass through internal exceptions
-			catch (ClientException.Internal ce) { 
+			catch (VariantException.Internal ce) { 
 				throw ce;
 			}
 
 			// Something unexpected - wrap as an Internal.
 			catch (Exception e) {
-				throw new ClientException.Internal("Unexpected Exception", e);
+				throw new VariantException.Internal("Unexpected Exception", e);
 			}
 		}
 	}
@@ -121,7 +121,7 @@ public class Server {
 			HttpResponse resp = adapter.get(serverUrl + "connection/" + schema);
 			return Payload.Connection.parse(resp);
 		}
-		catch (ClientException ce) {
+		catch (VariantException ce) {
 			if (ce.getError() == ServerError.UnknownSchema) {
 				throw new UnknownSchemaException(schema);
 			}
@@ -225,7 +225,7 @@ public class Server {
 			jsonGen.flush();
 		}
 		catch (Exception t) {
-			throw new ClientException.Internal(t);
+			throw new VariantException.Internal(t);
 		}
 
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
@@ -260,7 +260,7 @@ public class Server {
 			jsonGen.flush();
 		}
 		catch (Exception t) {
-			throw new ClientException.Internal(t);
+			throw new VariantException.Internal(t);
 		}
 
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {

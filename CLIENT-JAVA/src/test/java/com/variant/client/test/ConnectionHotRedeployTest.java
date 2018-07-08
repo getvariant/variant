@@ -3,7 +3,7 @@ package com.variant.client.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
@@ -42,7 +42,7 @@ public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 				ssn1.setAttribute("foo", "bar");
 			}
 			
-			@Override public void onThrown(ClientException e) {
+			@Override public void onThrown(VariantException e) {
 				assertEquals(ServerError.SessionExpired, e.getError());
 			}
 			

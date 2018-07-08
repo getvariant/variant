@@ -5,10 +5,9 @@ import static com.variant.client.impl.ClientInternalError.NET_PAYLOAD_ELEMENT_MI
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
+import com.variant.client.impl.ClientInternalError;
 import com.variant.client.net.http.HttpResponse;
-import com.variant.core.impl.VariantException;
-import com.variant.core.session.CoreSession;
 
 
 /**
@@ -35,7 +34,7 @@ abstract public class Payload {
 				Map<String,?> map = mapper.readValue(resp.body, Map.class);
 				Integer ssnto = (Integer) map.get("ssnto");
 				if (ssnto == null)
-					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "ssnto", Connection.class.getName());
+					throw new VariantException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "ssnto", Connection.class.getName());
 				
 				return new Connection(ssnto);
 			}
@@ -43,7 +42,8 @@ abstract public class Payload {
 				throw va;
 			}
 			catch (Throwable t) {
-					throw new VariantException(String.format("Unable to parse payload type [%s]", Connection.class.getName()), t);
+				throw new VariantException(
+						ClientInternalError.INTERNAL_ERROR, String.format("Unable to parse payload type [%s]", Session.class.getName()), t);
 			}
 		}
 		
@@ -83,7 +83,7 @@ abstract public class Payload {
 
 				coreSsnSrc = (String) map.get("session");
 				if (coreSsnSrc == null)
-					throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
+					throw new VariantException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
 
 				returns = (String) map.get("returns");
 
@@ -93,9 +93,9 @@ abstract public class Payload {
 					schemaSrc = schema.get("src");
 					schemaId = schema.get("id");
 					if (schemaSrc == null)
-						throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/src", Connection.class.getName());
+						throw new VariantException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/src", Connection.class.getName());
 					if (schemaId == null)
-						throw new ClientException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/id", Connection.class.getName());
+						throw new VariantException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/id", Connection.class.getName());
 				}
 				
 
@@ -105,7 +105,8 @@ abstract public class Payload {
 				throw va;
 			}
 			catch (Throwable t) {
-					throw new VariantException(String.format("Unable to parse payload type [%s]", Session.class.getName()), t);
+					throw new VariantException(
+							ClientInternalError.INTERNAL_ERROR, String.format("Unable to parse payload type [%s]", Session.class.getName()), t);
 			}
 		}
 	}

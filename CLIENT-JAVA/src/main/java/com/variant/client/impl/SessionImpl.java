@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
@@ -105,11 +105,11 @@ public class SessionImpl implements Session {
 				return result;
 			}
 			else {
-				throw new ClientException(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
+				throw new VariantException(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
 			}
 		}
 		catch (Exception e) {
-			throw new ClientException.Internal("Unable to instantiate targeting tracker class [" + className +"]", e);
+			throw new VariantException.Internal("Unable to instantiate targeting tracker class [" + className +"]", e);
 		}
 	}
 	
@@ -174,11 +174,11 @@ public class SessionImpl implements Session {
 		preChecks();
 
 		if (state == null) 
-			throw new ClientException(PARAM_CANNOT_BE_NULL, "state");
+			throw new VariantException(PARAM_CANNOT_BE_NULL, "state");
 		
 		// Can't have two requests at one time
 		if (coreSession.getStateRequest() != null && !coreSession.getStateRequest().isCommitted()) {
-			throw new ClientException(ACTIVE_REQUEST);
+			throw new VariantException(ACTIVE_REQUEST);
 		}
 		server.requestCreate(this, state.getName());
 		return getStateRequest();
@@ -289,8 +289,8 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public String setAttribute(String name, String value) {
-		if (name == null) throw new ClientException(PARAM_CANNOT_BE_NULL, "name");
-		if (value == null) throw new ClientException(PARAM_CANNOT_BE_NULL, "value");
+		if (name == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "name");
+		if (value == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "value");
 		preChecks();
 		return server.sessionAttrSet(this, name, value);
 	}
@@ -300,7 +300,7 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public String getAttribute(String name) {
-		if (name == null) throw new ClientException(PARAM_CANNOT_BE_NULL, "name");
+		if (name == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "name");
 		preChecks();
 		refreshFromServer();
 		return coreSession.getAttribute(name);
@@ -311,7 +311,7 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public String clearAttribute(String name) {
-		if (name == null) throw new ClientException(PARAM_CANNOT_BE_NULL, "name");
+		if (name == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "name");
 		preChecks();
 		return server.sessionAttrClear(this, name);
 	}
@@ -359,7 +359,7 @@ public class SessionImpl implements Session {
 		}
 		
 		if (coreSession == null) 
-			throw new ClientException.Internal("Null Core Session");
+			throw new VariantException.Internal("Null Core Session");
 		
 		// The new core session which this object wraps.
 		this.coreSession = (CoreSession) coreSession;

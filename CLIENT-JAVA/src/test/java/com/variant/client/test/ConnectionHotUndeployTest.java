@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import com.variant.client.ClientException;
+import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
@@ -47,7 +47,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 				conn1.getOrCreateSession("bar");
 			}
 			
-			@Override public void onThrown(ClientException e) {
+			@Override public void onThrown(VariantException e) {
 				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 			
@@ -60,7 +60,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 				client.connectTo("big_conjoint_schema");
 			}
 			
-			@Override public void onThrown(ClientException e) {
+			@Override public void onThrown(VariantException e) {
 				assertEquals(ServerError.UnknownSchema, e.getError());
 			}
 			

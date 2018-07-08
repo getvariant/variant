@@ -10,7 +10,7 @@ import com.variant.core.impl.ServerError;
  * @since 0.7
  */
 @SuppressWarnings("serial")
-public class StateNotInstrumentedException extends ClientException {
+public class StateNotInstrumentedException extends VariantException {
 	
 	public StateNotInstrumentedException(CoreException.User e) {
 		super(ServerError.STATE_NOT_INSTRUMENTED_BY_TEST, e, e.args);
