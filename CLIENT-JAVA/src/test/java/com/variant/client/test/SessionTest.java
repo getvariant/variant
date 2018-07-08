@@ -47,7 +47,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		ssn1 = conn.getOrCreateSession(sid);
 		assertNotNull(ssn1);
 		assertEquals(sid, ssn1.getId());
-		assertEquals(System.currentTimeMillis(), ssn1.getCreateDate().getTime(), 1);
+		assertEquals(System.currentTimeMillis(), ssn1.getCreateDate().getTime(), 2);
 		assertEquals(conn, ssn1.getConnection());
 		assertTrue(ssn1.getDisqualifiedTests().isEmpty());
 		assertTrue(ssn1.getTraversedStates().isEmpty());
@@ -90,7 +90,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		final State state2 = sessions[0].getSchema().getState("state2");
 		for (int i = 0; i < sessions.length; i++) {
-			assertTrue(sessions[i].isExpired());
+			assertFalse(sessions[i].isExpired());
 			final Session ssn = sessions[i];
 			new ClientExceptionInterceptor() {
 				@Override public void toRun() {

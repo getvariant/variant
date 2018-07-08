@@ -226,7 +226,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		// Let vacuum thread a chance to run.
 		Thread.sleep(2000);
 		
-		assertTrue(ssn.isExpired());
+		assertFalse(ssn.isExpired());
 		new ClientExceptionInterceptor() {
 			@Override public void toRun() {
 				req.commit();
