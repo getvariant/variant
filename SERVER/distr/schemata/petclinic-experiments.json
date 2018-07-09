@@ -17,7 +17,7 @@
        'parameters': [
             {
                'name':'path',
-               'value':'/petclinic/owners/new'
+               'value':'/owners/new'
             }
         ]
      },                                                    
@@ -28,7 +28,7 @@
        'parameters': [
             {
                'name':'path',
-               'value':'/petclinic/owners/~\\d+/'
+               'value':'/owners/~\\d+/'
             }
         ]
      }                                                     

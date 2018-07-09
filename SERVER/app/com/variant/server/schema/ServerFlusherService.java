@@ -92,7 +92,7 @@ public class ServerFlusherService implements FlusherService {
 			
 			this.flusher = (EventFlusher) flusherObj;
 			logger.info(String.format(
-					"Registered event logger [%s] for schema [%s]", 
+					"Registered event flusher [%s] for schema [%s]", 
 					flusher.getClassName(), parser.responseInProgress().getSchema().getName()));
 						
 		}

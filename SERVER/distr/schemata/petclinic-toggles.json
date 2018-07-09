@@ -8,89 +8,53 @@
 {
    'meta':{
       'name':'petclinic_toggles',
-      'comment':'Variation schema for feature toggles on the Pet Clinic demo application'
+      'comment':'Variation schema for feature toggles on the Pet Clinic demo application',
+      'flusher': {
+        'class':'com.variant.server.api.EventFlusherToggler',
+        'init':{'attrName': 'ViewAsJsonFix', 'schemaFileName':'distr/schemata/petclinic-toggles.json'}
+       }
    },
    'states':[                                                
      { 
-       // The New Owner page used to add owner at /petclinic/owners/new 
+       // The veterinarians page
        'name':'vets',
        'parameters': [
             {
                'name':'path',
-               'value':'/petclinic/owners/new'
+               'value':'/vets.html'
             }
         ]
-     },                                                     
-     {  
-        // The Owner Detail page. Note that owner ID is in the path,
-        // so we have to use regular expression to match.
-       'name':'ownerDetail',
-       'parameters': [
-            {
-               'name':'path',
-               'value':'/petclinic/owners/~\\d+/'
-            }
-        ]
-     }                                                     
+     }
    ],                                                        
    'tests':[                                                 
       {                                                      
-         'name':'NewOwnerTest',
-         'isOn': true,                                     
+         'name':'ViewAsJsonFix',
+         'isOn': true,
          'experiences':[                                     
             {                                                
-               'name':'outOfTheBox',                                   
+               'name':'existing',                                   
                'weight':1,                                  
                'isControl':true                              
             },                                               
             {                                                
-               'name':'tosCheckbox',                                   
+               'name':'fix',                                   
                'weight':1                                   
-            },                                               
-            {                                                
-               'name':'tosAndMailCheckbox',                                   
-               'weight':1                                   
-            }                                               
+            }              
          ],                                                  
-         'onStates':[                                         
+         'onStates':[
             {                                                
-               'stateRef':'newOwner',                    
+               'stateRef':'vets',                    
                'variants':[                                  
                   {                                          
-                     'experienceRef': 'tosCheckbox',
+                     'experienceRef': 'fix',
                      'parameters': [
                         {
                            'name':'path',
-                           'value':'/owners/new/variant/newOwnerTest.tosCheckbox'
+                           'value':'/vets__ViewAsJsonFix.html'
                         }
                      ]
-                  },                                         
-                  {                                          
-                     'experienceRef': 'tosAndMailCheckbox',                   
-                     'parameters': [
-                        {
-                           'name':'path',
-                           'value':'/owners/new/variant/newOwnerTest.tosAndMailCheckbox'
-                        }
-                     ]
-                  }                                          
+                  }                      
                ]                                             
-            },
-            {                                                
-               'stateRef':'ownerDetail',                            
-               'isNonvariant': true
-            }                                                
-         ],
-         'hooks':[
-            {
-               // Disqualifies all Safari traffic.
-               'name':'SafariDisqualifier',
-               'class':'com.variant.server.ext.demo.SafariDisqualHook'
-            },
-            {
-               // Assigns all Chrome traffic to the control experience
-               'name':'ChromeTargeter',
-               'class':'com.variant.server.ext.demo.ChromeTargetingHook'
             }
          ]
       }                                                     
