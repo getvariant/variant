@@ -1,10 +1,11 @@
 package com.variant.client.impl;
 
-import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
-import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
+import static com.variant.client.ConfigKeys.*;
+import static com.variant.client.impl.ClientUserError.*;
 
 import java.util.Random;
 
+import com.variant.client.TargetingTracker;
 import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
@@ -57,7 +58,7 @@ public class ConnectionImpl implements Connection {
 			Object sidTrackerObject = sidTrackerClass.newInstance();
 			if (sidTrackerObject instanceof SessionIdTracker) {
 				SessionIdTracker result = (SessionIdTracker) sidTrackerObject;
-				result.init(this, userData);
+				result.init(userData);
 				return result;
 			}
 			else {
@@ -67,8 +68,35 @@ public class ConnectionImpl implements Connection {
 		catch (Exception e) {
 			throw new VariantException.Internal("Unable to instantiate session id tracker class [" + className + "]", e);
 		}
-
 	}
+	
+	/**
+	 * Instantiate targeting tracker.
+	 * 
+	 * @param userData
+	 * @return
+	 */
+	private TargetingTracker initTargetingTracker(Session ssn, Object...userData) {
+		
+		// Instantiate targeting tracker.
+		String className = client.getConfig().getString(TARGETING_TRACKER_CLASS_NAME);
+		
+		try {
+			Object object = Class.forName(className).newInstance();
+			if (object instanceof TargetingTracker) {
+				TargetingTracker result = (TargetingTracker) object;
+				result.init(ssn, userData);
+				return result;
+			}
+			else {
+				throw new VariantException(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
+			}
+		}
+		catch (Exception e) {
+			throw new VariantException.Internal("Unable to instantiate targeting tracker class [" + className +"]", e);
+		}
+	}
+
 			
 	/**
 	 * 
@@ -91,9 +119,12 @@ public class ConnectionImpl implements Connection {
 				return null;
 			}
 		}
-				
+			
 		try {
-			return fetchSession(sessionId, create, null);
+			SessionImpl result = fetchSession(sessionId, create, null);
+			result.sessionIdTracker = sidTracker;
+			result.targetingTracker = initTargetingTracker(result, userData);
+			return result;
 		}
 		catch (SessionExpiredException sex) { 
 			return null;

@@ -51,9 +51,11 @@ public class SessionImpl implements Session {
 	private final Server server;        // Server object associated with this VariantClient.
 	private final Schema schema;
 	private CoreSession coreSession;
-	private SessionIdTracker sessionIdTracker;
-	private TargetingTracker targetingTracker;
 	private StateRequestImpl stateRequest;
+
+	// These are set by ConnectionImpl
+	SessionIdTracker sessionIdTracker = null;
+	TargetingTracker targetingTracker = null;
 
 	// Lifecycle hooks.
 	final private ArrayList<LifecycleHook<? extends ClientLifecycleEvent>> lifecycleHooks = 
@@ -126,7 +128,7 @@ public class SessionImpl implements Session {
 	// ---------------------------------------------------------------------------------------------//
 	/**
 	 * Create a brand new foreground session with a session ID and a targeting trackers.
-	 */
+	 *
 	public SessionImpl(
 			Connection conn,
 			CoreSession coreSession,
@@ -142,7 +144,7 @@ public class SessionImpl implements Session {
 		this.targetingTracker = initTargetingTracker(userData);
 		this.coreSession.setTargetingStabile(toTargetingStabile(targetingTracker));
 	}
-
+*/
 	/**
 	 * Create a headless session without the session ID and the targeting trackers.
 	 * May contain state request object.

@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.ConfigKeys;
-import com.variant.client.Session;
 import com.variant.client.TargetingTracker;
 import com.variant.core.schema.Test;
 import com.variant.core.schema.Test.Experience;
@@ -28,13 +27,7 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 	private static Logger LOG = LoggerFactory.getLogger(TargetingTrackerString.class);
 	
 	protected TargetingTrackerString() {}
-	
-	/**
-	 * Concrete implementations will provided the connection.
-	 * @return
-	 */
-	abstract protected Session getSession();
-	
+		
 	/**
 	 * Parse the content from an input string.
 	 * @param input

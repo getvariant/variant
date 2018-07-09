@@ -1,6 +1,5 @@
 package com.variant.client.session;
 
-import com.variant.client.Connection;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.TargetingTracker;
 
@@ -20,7 +19,7 @@ public class SessionIdTrackerSimple implements SessionIdTracker {
 	 * 1... - {@link TargetingTracker.Entry} objects, if any
 	 */
 	@Override
-	public void init(Connection conn, Object... userData) {
+	public void init(Object... userData) {
 		sessionId = (String) userData[0];
 	}
 

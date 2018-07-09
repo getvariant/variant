@@ -16,7 +16,7 @@ import com.variant.core.schema.Test.Experience;
  * implementing class at the start of each state request.
  * <p>
  * By contract, an implementation must provide a no-argument constructor. To inject initial state, 
- * use {@link #init(Session, Object...)}.
+ * use {@link #init(Object...)}.
  * <p>
  * Configured by <code>targeting.tracker.class.name</code> configuration property.
  *
@@ -28,7 +28,7 @@ public interface TargetingTracker {
 	/**
 	 * <p>Called by Variant to initialize a newly instantiated concrete implementation, 
 	 * within the scope of {@link Connection#getSession(Object...)}
-	 * or {@link Connection#getOrCreateSession(Object...)} methods.
+	 * or {@link Connection#getOrCreateSession(Session, Object...)} methods.
 	 * 
 	 * @param session   The Variant session initializing this object.
 	 * @param userData  An array of zero or more opaque objects, which the enclosing call to {@link Connection#getSession(Object...) }
@@ -39,6 +39,12 @@ public interface TargetingTracker {
 	public void init(Session session, Object...userData);
 
 	
+	/**
+	 * Variant session which initialized and is using this tracker.
+	 * @return
+	 */
+	public Session getSession();
+
 	/**
 	 * All currently tracked experiences. The implementation must guarantee 
 	 * consistency of this operation, i.e. that the returned set does not contain two entries

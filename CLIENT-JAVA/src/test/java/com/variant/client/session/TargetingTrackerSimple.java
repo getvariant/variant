@@ -48,7 +48,7 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 	}
 
 	@Override
-	protected Session getSession() {
+	public Session getSession() {
 		return session;
 	}
 

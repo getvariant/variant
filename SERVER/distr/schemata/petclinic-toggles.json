@@ -10,8 +10,8 @@
       'name':'petclinic_toggles',
       'comment':'Variation schema for feature toggles on the Pet Clinic demo application',
       'flusher': {
-        'class':'com.variant.server.api.EventFlusherToggler',
-        'init':{'attrName': 'ViewAsJsonFix', 'schemaFileName':'distr/schemata/petclinic-toggles.json'}
+        'class':'com.variant.server.ext.demo.EventFlusherToggler',
+        'init':{'attrName': 'ViewAsJsonFix', 'schemaFileName':'schemata/petclinic-toggles.json'}
        }
    },
    'states':[                                                
@@ -21,7 +21,7 @@
        'parameters': [
             {
                'name':'path',
-               'value':'/vets.html'
+               'value':'/petclinic/vets.html'
             }
         ]
      }

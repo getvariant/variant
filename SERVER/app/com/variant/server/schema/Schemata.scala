@@ -29,7 +29,6 @@ class Schemata () {
          case None         => {
             _schemaMap += gen.getName() -> new ServerSchema(gen)
             logger.debug(s"Created new schema [${gen.getName}]")
-            println(_schemaMap)
          }
       }
       

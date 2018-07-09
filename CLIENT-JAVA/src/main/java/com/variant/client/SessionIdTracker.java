@@ -10,7 +10,7 @@ package com.variant.client;
  * implementing class at the start of each state request.
  * <p>
  * By contract, an implementation must provide a no-argument constructor. To inject initial state, 
- * use {@link #init(Connection, Object...)}.
+ * use {@link #init(Object...)}.
  * <p>
  * Configured by <code>session.id.tracker.class.name</code> configuration property.
  *
@@ -24,13 +24,12 @@ public interface SessionIdTracker {
 	 * within the scope of {@link Connection#getSession(Object...)}
 	 * or {@link Connection#getOrCreateSession(Object...)} methods.
 	 * 
-	 * @param conn      The Variant server connection initializing this object.
 	 * @param userData  An array of zero or more opaque objects, which the enclosing call to {@link Connection#getSession(Object...) }
 	 *                  or {@link Connection#getOrCreateSession(Object...)} will pass here without interpretation. 
 	 * 
 	 * @since 0.6
 	 */
-	public void init(Connection conn, Object...userData);
+	public void init(Object...userData);
 
 	/**
 	 * <p>Retrieve the current value of the session ID from the tracker. 
