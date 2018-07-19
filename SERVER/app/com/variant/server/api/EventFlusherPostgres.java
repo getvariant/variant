@@ -1,14 +1,13 @@
 package com.variant.server.api;
 
+import static com.variant.core.impl.CommonError.CONFIG_PROPERTY_NOT_SET;
 import static com.variant.server.api.ConfigKeys.EVENT_FLUSHER_CLASS_INIT;
-import static com.variant.server.boot.ServerErrorLocal.*;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
-import com.typesafe.config.ConfigObject;
-import com.typesafe.config.ConfigValue;
+import com.typesafe.config.Config;
 import com.variant.server.jdbc.EventFlusherJdbc;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
@@ -34,25 +33,22 @@ public class EventFlusherPostgres extends EventFlusherJdbc {
 	private String user = null;
 	private String password = null;
 	
-	public EventFlusherPostgres(ConfigObject config) throws Exception {
+	public EventFlusherPostgres(Config config) throws Exception {
 				
-		ConfigValue val = config.get("url");
-		if (val == null)
+		url = config.getString("url");
+		if (url == null)
 			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "url", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
-		url = (String) val.unwrapped(); 		// TODO: This will break if url exists but is no a string.
 
-		val = config.get("user");
-		if (val == null)
+		user = config.getString("user");
+		if (user == null)
 			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "user", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
-		user = (String) val.unwrapped(); 		// TODO: This will break if url exists but is no a string.
 
-		val = config.get("password");
-		if (val == null)
+		password = config.getString("password");
+		if (password == null)
 			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "password", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
-		password = (String) val.unwrapped(); 	// TODO: This will break if url exists but is no a string.
 
 	}
 

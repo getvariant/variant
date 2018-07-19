@@ -33,7 +33,7 @@ libraryDependencies ++= Seq(
   // Variant Core
   "com.variant"            % "variant-core"        % coreVersion,  
   // Postgres 9.1 JDBC driver in test
-  "postgresql"             % "postgresql"  % "9.1-901-1.jdbc4"   % Test,
+  "postgresql"             % "postgresql"  % "9.1-901-1.jdbc4"   , //% Test, Include in production. #149
   // H2 In mem DB in test 
   "com.h2database"         % "h2"          % "1.4.191"           % Test,
   

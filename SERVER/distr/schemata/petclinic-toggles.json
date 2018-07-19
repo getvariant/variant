@@ -37,7 +37,7 @@
                'isControl':true                              
             },                                               
             {                                                
-               'name':'fix',                                   
+               'name':'fix',
                'weight':1                                   
             }              
          ],                                                  
