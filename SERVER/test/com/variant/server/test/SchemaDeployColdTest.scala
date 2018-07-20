@@ -64,9 +64,11 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
       
       val server = app.injector.instanceOf[VariantServer]
       server.startupErrorLog.size mustEqual 0
-      server.schemata.size mustBe 1
+      server.schemata.size mustBe 2
       server.schemata.get("petclinic_experiments").isDefined mustBe true
       server.schemata.get("petclinic_experiments").get.liveGen.get.getName mustEqual "petclinic_experiments"
+      server.schemata.get("petclinic_toggles").isDefined mustBe true
+      server.schemata.get("petclinic_toggles").get.liveGen.get.getName mustEqual "petclinic_toggles"
    }
 
 }
