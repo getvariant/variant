@@ -33,7 +33,6 @@ trait VariantServer {
    val config: Config // Do not expose Play's Configuration
    val classloader: VariantClassLoader
    val startupErrorLog = mutable.ArrayBuffer[ServerException]()
-   val productName = "Variant Experiment Server release %s".format(SbtService.version)
    val startTs = System.currentTimeMillis
    // Read-only snapshot
    def schemata: Schemata
@@ -46,6 +45,9 @@ trait VariantServer {
  * 
  */
 object VariantServer {
+
+   val version = "0.9.2"
+   val productName = "Variant Experiment Server release %s".format(version)
 
    // Static instance location.
    private [boot] var _instance: VariantServer = _

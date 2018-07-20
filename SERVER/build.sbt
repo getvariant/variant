@@ -2,7 +2,7 @@
 // Variant Server build config
 //
 
-val coreVersion = "0.9.1"
+val coreVersion = "0.9.2"
 name := "Variant"
 version := coreVersion
 
@@ -45,7 +45,8 @@ libraryDependencies ++= Seq(
   )
 
 // Capture SBT build info in a source file available at compile time.
-sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { (d, v, n) =>
+/** No longer works in sbt 13.******************\
+sourceGenerators in Compile += (sourceManaged in Compile, version, name) map { (d, v, n) =>
   val file = d / "SbtService.scala"
   IO.write(file, """package com.variant.server.boot
     |object SbtService {
@@ -55,6 +56,7 @@ sourceGenerators in Compile <+= (sourceManaged in Compile, version, name) map { 
     |""".stripMargin.format(v, n))
   Seq(file)
 }
+*************************************************/
 
 //
 // ScalaTest related settings
