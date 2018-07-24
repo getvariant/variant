@@ -11,7 +11,7 @@ import com.variant.core.util.Constants._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.EventReader
 import com.variant.server.api.ConfigKeys._
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.schema.ServerSchemaParser
 import com.variant.server.test.spec.BaseSpecWithServerAsync

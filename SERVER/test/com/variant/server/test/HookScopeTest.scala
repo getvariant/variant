@@ -18,14 +18,14 @@ import com.variant.server.test.hooks.TestTargetingHookNil
 import com.variant.server.test.hooks.TestQualificationHookNil
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 
 /**
  * TODO: Need to also test annotations.
  * @author Igor
  * 
  */
-class HookScopeTest extends BaseSpecWithServer {
+class HookScopeTest extends EmbeddedServerSpec {
 
    val schemaName = "HookScopeTest"
   /*

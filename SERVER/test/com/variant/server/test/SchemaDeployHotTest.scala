@@ -8,7 +8,7 @@ import com.variant.core.util.IoUtils
 import com.variant.core.util.StringUtils
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.test.controller.SessionTest
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.spec.TempSchemataDir
 import com.variant.server.test.spec.TempSchemataDir.dirWatcherLatencyMsecs
 import com.variant.server.test.spec.TempSchemataDir.schemataDir
@@ -27,7 +27,7 @@ import com.variant.server.schema.SchemaGen.State._
 /**
  * Test various schema deployment scenarios
  */
-class SchemaDeployHotTest extends BaseSpecWithServer with TempSchemataDir {
+class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
       
    private val logger = Logger(this.getClass)
 

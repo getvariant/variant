@@ -10,9 +10,9 @@ import com.variant.core.impl.CoreException
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 
-class RuntimeExceptionTest extends BaseSpecWithServer {
+class RuntimeExceptionTest extends EmbeddedServerSpec {
 
    val schemaName = "RuntimeExceptionTest"
    

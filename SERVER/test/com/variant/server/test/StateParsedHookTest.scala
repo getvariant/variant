@@ -16,14 +16,14 @@ import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.core.schema.parser.error.SemanticError
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 
 /**
  * TODO: Need to also test annotations.
  * @author Igor
  * 
  */
-class StateParsedHookTest extends BaseSpecWithServer {
+class StateParsedHookTest extends EmbeddedServerSpec {
 	 
    val schemaName = "SchemaScopedHooks"
    

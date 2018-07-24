@@ -9,5 +9,5 @@ import com.variant.core.util.LogTailer.Entry
  */
 object ServerLogTailer {
   
-   def last(n: Integer, fileName: String = "logs/application.log"): Seq[Entry] = LogTailer.last(n, fileName).toSeq
+   def last(n: Integer, fileName: String = "log/variant.log"): Seq[Entry] = LogTailer.last(n, fileName).toSeq
 }

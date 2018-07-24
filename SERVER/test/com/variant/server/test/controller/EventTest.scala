@@ -10,7 +10,7 @@ import com.variant.core.impl.ServerError._
 import com.variant.core.util.Constants._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.EventReader
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 import javax.inject.Inject
 import com.variant.server.api.Session
 import org.scalatest.TestData
@@ -46,7 +46,7 @@ object EventTest {
 /**
  * Event Controller
  */
-class EventTest extends BaseSpecWithServer {
+class EventTest extends EmbeddedServerSpec {
    
    import EventTest._
    

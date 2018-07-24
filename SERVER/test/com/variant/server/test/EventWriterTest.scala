@@ -7,7 +7,7 @@ import scala.util.Random
 
 import com.variant.server.event.ServerEvent
 import com.variant.server.impl.SessionImpl
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.util.EventReader
 import com.variant.server.test.util.ParameterizedString
 
@@ -21,7 +21,7 @@ import play.api.test.Helpers.route
 import play.api.test.Helpers.status
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
 		
-class EventWriterTest extends BaseSpecWithServer {
+class EventWriterTest extends EmbeddedServerSpec {
 
    val sessionJson = ParameterizedString("""
       {"sid":"${sid:}",

@@ -7,7 +7,7 @@ import scala.collection.JavaConversions._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.controller.SessionTest._
 import com.variant.server.api.ConfigKeys
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.core.impl.ServerError._
 import com.variant.core.util.StringUtils
 import play.api.libs.json._
@@ -17,7 +17,7 @@ import com.variant.core.util.Constants._
 /**
  * Session Attribute Tests
  */
-class SessionAttributeTest extends BaseSpecWithServer {
+class SessionAttributeTest extends EmbeddedServerSpec {
       
    val endpointSession = context + "/session"
    val endpointAttribute = context + "/session/attr"

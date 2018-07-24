@@ -27,16 +27,15 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 
 /**
- * Common to all tests.
- * Builds a custom application.
+ * All tests using an embedded server inherint from here.
  */
-object BaseSpecWithServer {
+object EmbeddedServerSpec {
    private var sqlSchemaCreated = false
 }
 
-class BaseSpecWithServer extends BaseSpec with OneAppPerSuite with BeforeAndAfterAll {
+class EmbeddedServerSpec extends BaseSpec with OneAppPerSuite with BeforeAndAfterAll {
 
-   import BaseSpecWithServer._
+   import EmbeddedServerSpec._
    
    private val logger = Logger(this.getClass)
    
@@ -109,5 +108,6 @@ class BaseSpecWithServer extends BaseSpec with OneAppPerSuite with BeforeAndAfte
 			}
 		}
 	}
+   
    
 }

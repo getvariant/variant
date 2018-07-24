@@ -14,14 +14,14 @@ import com.variant.server.api.ServerException
 import scala.collection.mutable.ArrayBuffer
 import com.variant.server.schema.SchemaDeployerClasspath
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 
 /**
  * TODO: Need to also test annotations.
  * @author Igor
  * 
  */
-class RuntimeTest extends BaseSpecWithServer {
+class RuntimeTest extends EmbeddedServerSpec {
    
 	"Runtime" should {
 /*	   

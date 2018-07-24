@@ -5,7 +5,7 @@ import play.api.test.Helpers._
 import com.variant.core.impl.ServerError._
 import com.variant.server.api.ConfigKeys._
 import com.variant.server.schema.SchemaGen.State._
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.spec.TempSchemataDir
 import com.variant.server.test.spec.TempSchemataDir._
 import com.variant.server.test.spec.BaseSpecWithServerAsync

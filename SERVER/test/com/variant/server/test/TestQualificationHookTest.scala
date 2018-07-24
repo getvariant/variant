@@ -1,6 +1,6 @@
 package com.variant.server.test
 
-import org.apache.commons.io.IOUtils
+import scala.io.Source
 import scala.collection.JavaConversions._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.util.ParameterizedString
@@ -9,9 +9,9 @@ import com.variant.core.schema.Hook
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.api.Session
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 
-class TestQualificationHookTest extends BaseSpecWithServer {
+class TestQualificationHookTest extends EmbeddedServerSpec {
       
    /**
     * Inject all the hooks into the schema in /ParserConjointOkayBigTest.json
@@ -30,7 +30,7 @@ class TestQualificationHookTest extends BaseSpecWithServer {
       val test6HooksList = hooks.getOrElse("test6-hooks","")
       
       val stream = getClass.getResourceAsStream("/ParserConjointOkayBigTest.json")
-      ParameterizedString(IOUtils.toString(stream)).expand(
+      ParameterizedString(Source.fromInputStream(stream).mkString).expand(
             "schema-hooks"-> schemaHooksList,
             "test1-hooks"->test1HooksList,
             "test2-hooks"->test2HooksList,

@@ -17,14 +17,14 @@ import com.variant.server.test.hooks.TestParsedHook
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.test.hooks.StateParsedHook2Constructors
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 
 /**
  * TODO: Need to also test annotations.
  * @author Igor
  * 
  */
-class ExtapiInstantiationTest extends BaseSpecWithServer {
+class ExtapiInstantiationTest extends EmbeddedServerSpec {
 
    val schemaName = "ExtapiInstantiationTest"
    

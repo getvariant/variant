@@ -16,14 +16,14 @@ import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.test.hooks.TestParsedHook
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.test.spec.BaseSpecWithServer
+import com.variant.server.test.spec.EmbeddedServerSpec
 
 /**
  * TODO: Need to also test annotations.
  * @author Igor
  * 
  */
-class TestParsedHookTest extends BaseSpecWithServer {
+class TestParsedHookTest extends EmbeddedServerSpec {
 
    val schemaName = "TestParsedHookTest"
    
