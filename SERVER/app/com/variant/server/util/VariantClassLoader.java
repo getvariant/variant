@@ -13,6 +13,11 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.variant.server.api.ServerException;
 
+/**
+ * Custom class loader to look in the ext/ directory in addition to the managed dependencies in lib/
+ * The superclass does the delegation to the parent.
+ *
+ */
 public class VariantClassLoader extends URLClassLoader {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantClassLoader.class);

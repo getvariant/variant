@@ -17,6 +17,7 @@ class StandaloneServerTest extends StandaloneServerSpec {
    "Server" should {
 
       "start with two schemata" in {
+         
          server.start()
          
          new HttpOperation.Get("http://localhost:5377/variant/connection/petclinic_experiments")

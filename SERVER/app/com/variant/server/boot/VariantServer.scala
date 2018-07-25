@@ -97,7 +97,7 @@ class VariantServerImpl @Inject() (
 	 * Application startup.
 	 */
    def bootup() {
-
+      
       try {
          // Echo all config keys if debug
       	if (logger.isDebugEnabled) {

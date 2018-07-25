@@ -33,7 +33,8 @@ build)
     unzip target/universal/variant-server-*.zip -d ${server_dir}
     mv ${server_dir}/variant-server-*/* ${server_dir}
     rmdir ${server_dir}/variant-server-*
-    cp conf-test/standaloneServer.conf ${server_dir}/conf/variant.conf
+    cp standalone-server/conf/variant.conf ${server_dir}/conf
+    cp standalone-server/ext/* ${server_dir}/ext
     
     # Restore the target directory.
     if [ -e /tmp/target ]; then
