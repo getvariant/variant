@@ -29,35 +29,35 @@ import com.variant.server.jdbc.JdbcService.Vendor;
  */
 public class EventFlusherPostgres extends EventFlusherJdbc {
 	
-	private String url = null;
-	private String user = null;
-	private String password = null;
-	
+	private Connection conn = null;
+
 	public EventFlusherPostgres(Config config) throws Exception {
 				
-		url = config.getString("url");
+		String url = config.getString("url");
 		if (url == null)
 			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "url", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 
-		user = config.getString("user");
+		String user = config.getString("user");
 		if (user == null)
 			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "user", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 
-		password = config.getString("password");
+		String password = config.getString("password");
 		if (password == null)
 			throw new ServerException.Local(
 					CONFIG_PROPERTY_NOT_SET, "password", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 
+		Properties props = new Properties();
+		props.setProperty("user", user);
+		props.setProperty("password", password);
+		conn = DriverManager.getConnection(url, props);		
+		
 	}
 
 	@Override
 	public Connection getJdbcConnection() throws Exception {
-		Properties props = new Properties();
-		props.setProperty("user", user);
-		props.setProperty("password", password);
-		return DriverManager.getConnection(url, props);		
+		return conn;
 	}
 
 	@Override
