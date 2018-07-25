@@ -48,7 +48,7 @@ public class ServerErrorLocal extends CommonError {
 			new ServerErrorLocal(428, Severity.ERROR, "Event flusher class [%s] must implement interface [%s]");
 
 	public final static ServerErrorLocal SCHEMA_FAILED = 
-			new ServerErrorLocal(429, Severity.WARN, "Schema [%s] was not deployedd from [%s] due to previous errors");
+			new ServerErrorLocal(429, Severity.WARN, "Schema [%s] was not deployed from [%s] due to previous errors");
 
 	public final static ServerErrorLocal EMPTY_SCHEMATA = 
 			new ServerErrorLocal(430, Severity.INFO, "No schemata found in [%s]");
