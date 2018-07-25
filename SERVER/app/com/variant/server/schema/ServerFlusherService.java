@@ -100,6 +100,7 @@ public class ServerFlusherService implements FlusherService {
 			response.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, flusher.getClassName(), e.getClass().getName());
 		}
 		catch (Exception e) {
+			// We log here, even though the schema deployer will echo the error again, in order to log e's call stack.
 			logger.error(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage(flusher.getClassName(), e.getClass().getName()), e);
 			response.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, flusher.getClassName(), e.getClass().getName());
 		}

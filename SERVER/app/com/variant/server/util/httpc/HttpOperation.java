@@ -2,7 +2,6 @@ package com.variant.server.util.httpc;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 abstract public class HttpOperation {
@@ -14,8 +13,19 @@ abstract public class HttpOperation {
 	private int connTimeout = DEFAULT_CONNECTION_TIMEOUT;
 	private int readTimeout = DEFAULT_READ_TIMEOUT;
 	
-	HttpOperation(String url) throws MalformedURLException, IOException {
-		conn = (HttpURLConnection) new URL(url).openConnection();
+	/**
+	 * 
+	 * @param url
+	 */
+	HttpOperation(String url) {
+		HttpURLConnection connResult = null;
+		try {
+			connResult = (HttpURLConnection) new URL(url).openConnection();
+		}
+		catch (Throwable t) {
+			throw new RuntimeException("Unable to connect to [" + url + "]", t);
+		}
+		conn = connResult;
 	}
 	
 	/**
@@ -31,14 +41,26 @@ abstract public class HttpOperation {
 	}
 	
 	//-------------------------------------------------------------------------------\\
-	//                               CONCRETE METHODS
+	//                            Factory Methods
+	//-------------------------------------------------------------------------------\\
+	
+	public static HttpOperation get(String url) {
+		return new Get(url);
+	}
+	//-------------------------------------------------------------------------------\\
+	//                            CONCRETE OPERATIONS
 	//-------------------------------------------------------------------------------\\
 
 	public static class Get extends HttpOperation {
 		
-		public Get(String url) throws MalformedURLException, IOException {
+		private Get(String url) {
 			super(url);
-			conn.setRequestMethod("GET");
+			try {
+				conn.setRequestMethod("GET");
+			}
+			catch (Throwable t) {
+				throw new RuntimeException("Unable to set GET", t);
+			}
 		}
 	}
 }

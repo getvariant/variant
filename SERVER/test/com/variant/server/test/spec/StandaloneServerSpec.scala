@@ -28,7 +28,7 @@ object StandaloneServerSpec {
 class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
 
    // Directory where the standalong server is built. Tests may overide this.
-   protected val serverDir = "/tmp/standaloneServer"
+   protected val serverDir = "/private/tmp/standaloneServer"
    
    // The standalone server 
    protected val server = new StandaloneServer(serverDir)
@@ -65,10 +65,10 @@ class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
 
          server.start()
          
-         new HttpOperation.Get("http://localhost:5377/variant/connection/petclinic_experiments")
+         HttpOperation.get("http://localhost:5377/variant/connection/petclinic_experiments")
             .exec().getResponseCode mustBe 200
             
-         new HttpOperation.Get("http://localhost:5377/variant/connection/petclinic_toggles")
+         HttpOperation.get("http://localhost:5377/variant/connection/petclinic_toggles")
             .exec().getResponseCode mustBe 200
    }
    
