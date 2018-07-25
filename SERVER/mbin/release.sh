@@ -33,7 +33,18 @@ cp -r ${workspace_root_dir}/SERVER/distr/schemata .
 cp -r ${workspace_root_dir}/SERVER/distr/ext .
 cp -r ${workspace_root_dir}/SERVER/distr/db .
 cp ${workspace_root_dir}/SERVER/distr/bin/variant.sh bin
+
+# Rename play-built startup script in order not to confuse the customers.
 mv bin/variant bin/playapp
+
+# HACK! Don't know how to do this cleaner, short of ditching Play.
+# Add the ext/ directory to the server's classpath by directly manipulating the
+# the play-built startup script.
+sed 's/\(^declare \-r app_classpath\)\(.*\)\("$\)/\1\2:\$lib_dir\/..\/ext\/\*\3/' bin/playapp > /tmp/playapp
+mv /tmp/playapp bin
+chmod 751 bin/playapp
+
+# extAPI jar is just our main jar, renamed.
 cp lib/variant.variant-${version}-sans-externalized.jar ../variant-server-extapi-${version}.jar
 cd ..
 mv variant-${version} variant-server-${version}

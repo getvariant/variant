@@ -15,6 +15,7 @@ import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.VariantServer
+import com.variant.server.util.httpc.HttpOperation
 
 /**
  * All tests using a standalone server inherint from here.
@@ -60,10 +61,15 @@ class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
 	}
 	*/ 
    
-   "Server must come up with a valid schema" in {
+   "Server must come up with two schema" in {
 
-      //val health = Seq("curl", "localhost:5377/variant").!!
-      //println(health)
+         server.start()
+         
+         new HttpOperation.Get("http://localhost:5377/variant/connection/petclinic_experiments")
+            .exec().getResponseCode mustBe 200
+            
+         new HttpOperation.Get("http://localhost:5377/variant/connection/petclinic_toggles")
+            .exec().getResponseCode mustBe 200
    }
    
     /**

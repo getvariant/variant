@@ -81,7 +81,7 @@ class SchemaDeployEmptyTest extends PlaySpec with OneAppPerSuite with BeforeAndA
 
          server.schemata.size mustBe 0
 
-         val lastTwoLines = ServerLogTailer.last(2, "logs/application.log")
+         val lastTwoLines = ServerLogTailer.last(2)
          lastTwoLines(0).severity mustBe Severity.ERROR
          lastTwoLines(0).message must startWith("[" + SyntaxError.JSON_SYNTAX_ERROR.getCode + "]")
          lastTwoLines(1).severity mustBe Severity.WARN
