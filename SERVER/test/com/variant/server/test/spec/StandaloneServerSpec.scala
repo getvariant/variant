@@ -148,24 +148,26 @@ class StandaloneServer(serverDir: String) {
       
       // Confirm the server is running at this point.
       // Give the server time to bind to port -- happens last
+      var timeoutMillis = 20000
       var waited = 0L
       var confirmed  = false
-      while (!confirmed && waited < 10000) {
+      while (!confirmed && waited < timeoutMillis) {
          try {   
             val health = Source.fromURL("http://localhost:5377/variant").mkString
-            if (!health.matches(VariantServer.productName + ".*"))
+            if (!health.startsWith(VariantServer.productName))
                throw new RuntimeException (s"Unexpected halth response from server [${health}]")
             confirmed = true;
          }
          catch { 
-            case _:Throwable => 
+            case t:Throwable => 
+               println("************** " + t.getMessage)
                Thread.sleep(100)
                waited += 100
          }
       }
       
-      if (waited >= 10000)
-         throw new RuntimeException("Timed out waiting for standalone server to come up")
+      if (waited >= timeoutMillis)
+         throw new RuntimeException(s"Timed out waiting for standalone server to come up after ${waited} millis")
    }
    
    /**

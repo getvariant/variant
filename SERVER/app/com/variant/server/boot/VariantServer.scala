@@ -42,7 +42,7 @@ trait VariantServer {
 object VariantServer {
 
    val version = "0.9.2"
-   val productName = "Variant Experiment Server release %s".format(version)
+   val productName = "Variant Experience Server release %s".format(version)
 
    // Static instance location.
    private [boot] var _instance: VariantServer = _

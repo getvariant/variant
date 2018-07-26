@@ -46,9 +46,6 @@ class StandaloneServerTest extends StandaloneServerSpec {
          resp.getErrorContent mustBe ServerError.UnknownSchema.asMessage("petclinic_experiments")
          
          val lines = ServerLogTailer.last(7, serverDir + "/log/variant.log")
-         println("***")
-         println(lines)
-         println("***")
          
          lines(0).severity mustBe ERROR
          lines(0).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.server.api.EventFlusherPostgres", "java.lang.reflect.InvocationTargetException")
