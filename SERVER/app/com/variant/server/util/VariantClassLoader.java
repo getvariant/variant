@@ -17,7 +17,7 @@ import com.variant.server.api.ServerException;
  * Custom class loader to look in the ext/ directory in addition to the managed dependencies in lib/
  * The superclass does the delegation to the parent.
  *
- */
+ *  DON'T THINK WE NEED IT.
 public class VariantClassLoader extends URLClassLoader {
 
 	private static final Logger LOG = LoggerFactory.getLogger(VariantClassLoader.class);
@@ -25,7 +25,7 @@ public class VariantClassLoader extends URLClassLoader {
 	/**
 	 * Build an array of custom URLs we want to include in the path.
 	 * @return
-	 */
+	 *
 	private static URL[] getCustomUrls() {
 
 		// Let tests override the location of the ext directory
@@ -66,7 +66,7 @@ public class VariantClassLoader extends URLClassLoader {
 	/**
 	 * package visibility constructor.
 	 * @return
-	 */
+	 *
 	public VariantClassLoader() {
 		super(getCustomUrls());
 	}
@@ -75,7 +75,7 @@ public class VariantClassLoader extends URLClassLoader {
 	 * Instantiate a class with a given name.
 	 * @return null if proper constructor could not be found, i.e. nullary if initArg was null,
 	 *         or the single arg constructor of type ConfigObject otherwise.
-	 */
+	 *
 	public Object instantiate(String className, String initArg) throws Exception {
 
 		Class<?> cls = super.loadClass(className);
@@ -128,3 +128,4 @@ public class VariantClassLoader extends URLClassLoader {
 		return result;
 	}
 }
+*/

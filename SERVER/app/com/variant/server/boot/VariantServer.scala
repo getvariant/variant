@@ -1,27 +1,22 @@
 package com.variant.server.boot
 
-import scala.concurrent.Future
-import scala.collection.JavaConversions._
+import scala.collection.JavaConversions.asScalaSet
 import scala.collection.mutable
+import scala.concurrent.Future
+
 import org.apache.commons.lang3.time.DurationFormatUtils
-import com.variant.server.event.EventWriter
-import javax.inject._
+
+import com.typesafe.config.Config
+import com.variant.core.UserError.Severity
+import com.variant.server.api.ServerException
+import com.variant.server.schema.SchemaDeployer
+import com.variant.server.schema.Schemata
+
+import javax.inject.Inject
 import javax.inject.Singleton
 import play.api.Configuration
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
-import play.api.routing.Router
-import play.api.Application
-import com.variant.core.schema.parser.ParserResponse
-import com.typesafe.config.Config
-import com.typesafe.config.ConfigFactory
-import com.variant.core.UserError.Severity
-import com.variant.server.api.ServerException
-import play.api.ApplicationLoader
-import com.variant.server.schema.SchemaDeployer
-import com.variant.server.util.VariantClassLoader
-import play.api.Play
-import com.variant.server.schema.Schemata
 
 
 /**
@@ -31,7 +26,7 @@ trait VariantServer {
    
    val isUp: Boolean 
    val config: Config // Do not expose Play's Configuration
-   val classloader: VariantClassLoader
+   //val classloader: VariantClassLoader
    val startupErrorLog = mutable.ArrayBuffer[ServerException]()
    val startTs = System.currentTimeMillis
    // Read-only snapshot
@@ -83,7 +78,7 @@ class VariantServerImpl @Inject() (
 	
 	override val config = playConfig.underlying
 	
-	override val classloader = new VariantClassLoader()
+	//override val classloader = new VariantClassLoader()
    
    override lazy val ssnStore  = _ssnStore
   

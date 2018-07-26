@@ -19,6 +19,7 @@ import com.variant.server.api.lifecycle.ServerLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.VariantServer;
 import com.variant.server.boot.VariantServer$;
+import com.variant.server.util.ClassUtil;
 
 /**
  * User Hook processor
@@ -73,7 +74,7 @@ public class ServerHooksService implements HooksService {
 
 		try {
 			// Create the hook object for the supplied LifecycleHook implementation.
-			Object hookObj = server.classloader().instantiate(hookDef.getClassName(), hookDef.getInit());
+			Object hookObj = ClassUtil.instantiate(hookDef.getClassName(), hookDef.getInit());
 					
 			if (hookObj == null) {
 				parserResponse.addMessage(ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR, hookDef.getClassName());
@@ -202,7 +203,7 @@ public class ServerHooksService implements HooksService {
 				   
 			   hookDef = hle.hookDef;
 				   												
-			   LifecycleHook<LifecycleEvent> hook = (LifecycleHook<LifecycleEvent>) server.classloader().instantiate(hle.hookDef.getClassName(), hle.hookDef.getInit());
+			   LifecycleHook<LifecycleEvent> hook = (LifecycleHook<LifecycleEvent>) ClassUtil.instantiate(hle.hookDef.getClassName(), hle.hookDef.getInit());
 			   LifecycleHook.PostResult result = hook.post(event);
 			   
 			   if (LOG.isTraceEnabled())

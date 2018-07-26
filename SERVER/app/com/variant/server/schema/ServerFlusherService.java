@@ -17,6 +17,7 @@ import com.variant.server.api.EventFlusher;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.VariantServer;
 import com.variant.server.boot.VariantServer$;
+import com.variant.server.util.ClassUtil;
 
 public class ServerFlusherService implements FlusherService {
 
@@ -77,7 +78,7 @@ public class ServerFlusherService implements FlusherService {
 		
 		try {
 			// Create the Class object for the supplied LifecycleHook implementation.
-			Object flusherObj = server.classloader().instantiate(flusher.getClassName(), flusher.getInit());
+			Object flusherObj = ClassUtil.instantiate(flusher.getClassName(), flusher.getInit());
 			
 			if (flusherObj == null) {
 				response.addMessage(ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR, flusher.getClassName());
