@@ -52,7 +52,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertTrue(ssn1.getDisqualifiedTests().isEmpty());
 		assertTrue(ssn1.getTraversedStates().isEmpty());
 		assertTrue(ssn1.getTraversedTests().isEmpty());		
-		assertEquals("big_conjoint_schema", ssn1.getSchema().getName());
+		assertEquals("big_conjoint_schema", ssn1.getSchema().getMeta().getName());
 		
 		// Get same session by SID
 		Session ssn2 = conn.getSessionById(sid);
@@ -77,7 +77,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 			sessions[i] = conn.getOrCreateSession(sid);
 			assertNotNull(sessions[i]);
 			assertEquals(1000, sessions[i].getTimeoutMillis());
-			assertEquals("big_conjoint_schema", sessions[i].getSchema().getName());
+			assertEquals("big_conjoint_schema", sessions[i].getSchema().getMeta().getName());
 		}
 		
 		for (int i = 0; i < sessions.length; i++) {

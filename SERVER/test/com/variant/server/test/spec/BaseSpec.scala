@@ -176,7 +176,7 @@ trait BaseSpec extends PlaySpec {
             (ssn \ "sid").as[String] mustBe sid
             //(ssn \ "ts").as[Long] mustBe > (System.currentTimeMillis() - 10000)  // Created within a second from now.
             schemaSrc mustBe server.schemata.get(schemaName).get.liveGen.get.source
-            schemaId mustBe server.schemata.getLiveGen(schemaName).get.getId
+            schemaId mustBe server.schemata.getLiveGen(schemaName).get.id
             val parser = ServerSchemaParser()
             val parserResp = parser.parse(schemaSrc)
             parserResp.hasMessages(UserError.Severity.ERROR) mustBe false
@@ -184,7 +184,7 @@ trait BaseSpec extends PlaySpec {
          	parserResp.getSchemaSrc() mustNot be (null)
       
             val CoreSchema = parserResp.getSchema
-            CoreSchema.getName mustEqual schemaName
+            CoreSchema.getMeta.getName mustEqual schemaName
          } catch {
             case t: Throwable => 
                fail(t.getMessage + stackLine, t) 

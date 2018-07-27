@@ -44,8 +44,8 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		assertNotNull(response.getSchemaSrc());
 		Schema schema = response.getSchema();
 
-		assertEquals(schema.getName(), "OkayBigTest");
-		assertEquals(schema.getComment(), "Schema for okay big test!");
+		assertEquals(schema.getMeta().getName(), "OkayBigTest");
+		assertEquals(schema.getMeta().getComment(), "Schema for okay big test!");
 		
 		final Test test1 = schema.getTest("test1");
 		final Test test2 = schema.getTest("test2");

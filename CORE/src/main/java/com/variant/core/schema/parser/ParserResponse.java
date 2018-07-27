@@ -17,8 +17,12 @@ public class ParserResponse {
 	private final SchemaParser parser; // The parser that created this response.
 	
 	private ArrayList<ParserMessage> messages = new ArrayList<ParserMessage>();
+	
 	// schema name will be set so long as we can parse it out.
+	// we keep it separate from the schema because schema object will be invalidated
+	// at the end of an unsuccessful parse, but we need the name for error messages
 	private String schemaName = null;
+	
 	// schema and schema source will be blank if parser errors.
 	private SchemaImpl schema = new SchemaImpl();
 	private String schemaSrc = null;

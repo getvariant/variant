@@ -46,8 +46,6 @@ class EmbeddedServerSpec extends BaseSpec with OneAppPerSuite with BeforeAndAfte
 
       // in case some other test set it.
       sys.props -= "variant.schemata.dir"
-      // hook in the ext directory from the distribution dir to make the petclinic_experiments schema parse.
-      sys.props +=("variant.ext.dir" -> "distr/ext")
 
       new GuiceApplicationBuilder()
          .configure(new Configuration(VariantApplicationLoader.config))

@@ -7,6 +7,7 @@ import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
+import com.variant.client.impl.SchemaImpl;
 import com.variant.core.impl.ServerError;
 import com.variant.core.util.IoUtils;
 
@@ -30,7 +31,7 @@ public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 		Session ssn1 = conn1.getOrCreateSession("foo");
 		
 		assertNotNull(ssn1);
-		assertEquals(conn1.getSchemaName(), ssn1.getSchema().getName());
+		assertEquals(conn1.getSchemaName(), ssn1.getSchema().getMeta().getName());
 		
 	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);
@@ -52,8 +53,8 @@ public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 		Session ssn2 = conn1.getOrCreateSession("foo");
 		
 		assertNotNull(ssn2);
-		assertEquals(ssn1.getSchema().getName(), ssn2.getSchema().getName());
-		assertNotEquals(ssn1.getSchema().getId(), ssn2.getSchema().getId());		
+		assertEquals(ssn1.getSchema().getMeta().getName(), ssn2.getSchema().getMeta().getName());
+		assertNotEquals(((SchemaImpl)ssn1.getSchema()).getId(), ((SchemaImpl)ssn2.getSchema()).getId());		
 		assertNotNull(ssn2.targetForState(ssn1.getSchema().getState("state3")));
 
 		// New connection should work too

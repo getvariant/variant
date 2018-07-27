@@ -483,15 +483,12 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(schema);
-
+		printMessages(response);
 		assertFalse(response.hasMessages(Severity.FATAL));
 		assertTrue(response.hasMessages(Severity.ERROR));
-		assertEquals(2, response.getMessages().size());
+		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/meta/namee"), UNSUPPORTED_PROPERTY, "namee");
-		assertMessageEqual(expected, actual);
-		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/meta/"), NAME_MISSING);
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/"), NAME_MISSING);
 		assertMessageEqual(expected, actual);
 	}
 

@@ -24,7 +24,7 @@ class ServerSchema(private val seed: SchemaGen) {
    private[this] val gens = new ListBuffer[SchemaGen]()
    
    // This schema's name
-   val name = seed.getName()
+   val name = seed.getMeta.getName
    
    // This schema's origin
    val origin = seed.origin
@@ -43,9 +43,9 @@ class ServerSchema(private val seed: SchemaGen) {
    def deployGen(gen: SchemaGen): Unit = {
       
       // New gen's name must match ours.
-      if (gen.getName != name)
+      if (gen.getMeta.getName != name)
          throw new ServerException.Internal(
-               s"Cannot add schema gen [${gen.getName}] to schema [${name}]");
+               s"Cannot add schema gen [${gen.getMeta.getName}] to schema [${name}]");
 
       // New gen's origin must match ours.
       if (gen.origin != origin)
@@ -74,7 +74,7 @@ class ServerSchema(private val seed: SchemaGen) {
     */
    private[this] def undeployGen(gen: SchemaGen) {
       gen.state = SchemaGen.State.Dead
-   	logger.info(s"Undeployed schema generation ID [${gen.getId}] in schema [${name}]")
+   	logger.info(s"Undeployed schema generation ID [${gen.id}] in schema [${name}]")
    }
 
    /**
@@ -83,7 +83,7 @@ class ServerSchema(private val seed: SchemaGen) {
    def undeployLiveGen() {
       liveGen.foreach { gen =>
          gen.state = SchemaGen.State.Dead
-         logger.info(s"Undeployed schema generation ID [${gen.getId}] in schema [${name}]")
+         logger.info(s"Undeployed schema generation ID [${gen.id}] in schema [${name}]")
       }
    }
 
@@ -97,7 +97,7 @@ class ServerSchema(private val seed: SchemaGen) {
       }
       .foreach { gen =>
          gens -= gen
-         logger.debug(s"Vacuumed schema generation ID [${gen.getId}] in schema [${name}]")
+         logger.debug(s"Vacuumed schema generation ID [${gen.id}] in schema [${name}]")
       }
    }
    

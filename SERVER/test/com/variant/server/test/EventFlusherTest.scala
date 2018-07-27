@@ -36,9 +36,6 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    * This will implicitely rebuild the server before each test.
    */
    implicit override def newAppForTest(testData: TestData): Application = {
-
-      // petclinic_experiments schema will no parse without this.
-      sys.props +=("variant.ext.dir" -> "distr/ext")
       
       if (testData.name.contains("EVENT_FLUSHER_CLASS_NAME")) 
          new GuiceApplicationBuilder()
@@ -109,7 +106,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    		response.getMessages.size mustBe 0
    		server.schemata.get("FlusherTest").isDefined mustBe true
    		val schema = server.schemata.get("FlusherTest").get.liveGen.get
-   		schema.getFlusher() mustBe null
+   		schema.getMeta.getFlusher() mustBe null
    		
    		// As defined in conf-test/variant.conf
    		schema.eventWriter.flusher.getClass mustBe classOf[com.variant.server.api.EventFlusherH2]
@@ -186,7 +183,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    		response.getMessages.size mustBe 0
    		server.schemata.get("FlusherTest").isDefined mustBe true
    		val schema = server.schemata.get("FlusherTest").get.liveGen.get
-   		schema.getFlusher() mustNot be (null)
+   		schema.getMeta.getFlusher() mustNot be (null)
    		
    		// As defined in conf-test/variant.conf
    		schema.eventWriter.flusher.getClass mustBe classOf[com.variant.server.api.EventFlusherNull]

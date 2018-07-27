@@ -262,7 +262,7 @@ public class CoreStateRequest implements Serializable {
 		State state = schema.getState(stateName);
 		
 		if (state == null) 
-			throw new CoreException.Internal(String.format("State [%s] not in schema [%s]", stateName, schema.getName()));
+			throw new CoreException.Internal(String.format("State [%s] not in schema [%s]", stateName, schema.getMeta().getName()));
 
 		CoreStateRequest result = new CoreStateRequest(session, state);
 		

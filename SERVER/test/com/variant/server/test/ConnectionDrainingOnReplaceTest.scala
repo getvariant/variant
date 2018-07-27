@@ -117,7 +117,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
             oldGen.state mustBe Dead
 
             val newGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
-            newGen.getId() mustNot be (oldGen.getId())
+            newGen.id mustNot be (oldGen.id)
             newGen.state mustBe Live
             server.schemata.size mustBe 2
 

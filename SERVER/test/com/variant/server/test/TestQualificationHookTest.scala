@@ -88,7 +88,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
    	   val test6 = schema.getTest("test6")
        ssn = SessionImpl.empty(newSid(), schema)
 
-   	   schema.getHooks() mustBe empty
+   	   schema.getMeta.getHooks mustBe empty
    	   test1.getHooks.size mustBe 1
    	   val h1 = test1.getHooks.get(0)
    	   h1.getName mustBe "nullQualificationHookT1"
@@ -206,7 +206,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
    	   val test6 = schema.getTest("test6")
        ssn = SessionImpl.empty(newSid(), schema)
    	   
-       schema.getHooks() mustBe empty
+       schema.getMeta.getHooks mustBe empty
    	   test1.getHooks.size mustBe 1
    	   val h1 = test1.getHooks.get(0)
    	   h1.getName mustBe "disqualHook"

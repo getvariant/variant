@@ -49,7 +49,7 @@ class RequestController @Inject() (
       val state = ssn.schemaGen.getState(stateName)
 
       if (state == null)
-         throw new ServerException.Internal("State [%s] not in schema [%s]".format(stateName, ssn.schemaGen.getName()))
+         throw new ServerException.Internal("State [%s] not in schema [%s]".format(stateName, ssn.schemaGen.getMeta.getName))
       
       ssn.schemaGen.runtime.targetForState(ssn, state)
 

@@ -26,7 +26,7 @@ class RequestTest extends EmbeddedServerSpec {
    "Schema big_conjoint_schema" should {
 
       val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
-      val schemaId = schema.getId
+      val schemaId = schema.id
       val writer = schema.eventWriter
       val reader = EventReader(writer)
       val sid = newSid
@@ -122,7 +122,7 @@ class RequestTest extends EmbeddedServerSpec {
    "Schema petclinic_experiments" should {
 
       val schema = server.schemata.get("petclinic_experiments").get.liveGen.get
-      val schemaId = schema.getId
+      val schemaId = schema.id
       val writer = schema.eventWriter
       val reader = EventReader(writer)
       val sid = newSid

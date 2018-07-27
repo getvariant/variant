@@ -32,7 +32,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 		Session foo1 = conn1.getOrCreateSession("foo");
 		
 		assertNotNull(foo1);
-		assertEquals(conn1.getSchemaName(), foo1.getSchema().getName());
+		assertEquals(conn1.getSchemaName(), foo1.getSchema().getMeta().getName());
 
 		IoUtils.delete(SCHEMATA_DIR + "/big-conjoint-schema.json");
 		Thread.sleep(dirWatcherLatencyMillis);

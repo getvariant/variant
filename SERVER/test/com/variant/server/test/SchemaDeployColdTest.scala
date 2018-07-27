@@ -24,7 +24,6 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
    implicit override def newAppForTest(testData: TestData): Application = {
       
       if (testData.name.startsWith("1.")) {
-         sys.props +=("variant.ext.dir" -> "distr/ext")  // petclinic_experiments needs this.
          // Just application property
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
@@ -33,11 +32,9 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
             .build()
       }
       else if (testData.name.startsWith("2.")) {
-         // Override with system property. In order for the distribution version of the petclinic_experiments schema
-         // to parse, we need to give a custom variant.ext.dir location
+         // Override with system property.
          sys.props.contains("variant.schemata.dir") must be (false)
          sys.props +=("variant.schemata.dir" -> "distr/schemata")  // only has petclinic_experiments schema.
-         sys.props +=("variant.ext.dir" -> "distr/ext") // petclinic_experiments needs this.
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .build()
@@ -55,9 +52,9 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
       server.startupErrorLog.size mustEqual 0
       server.schemata.size mustBe 2
       server.schemata.get("big_conjoint_schema").isDefined mustBe true
-      server.schemata.get("big_conjoint_schema").get.liveGen.get.getName mustEqual "big_conjoint_schema"
+      server.schemata.get("big_conjoint_schema").get.liveGen.get.getMeta.getName mustEqual "big_conjoint_schema"
       server.schemata.get("petclinic_experiments").isDefined mustBe true
-      server.schemata.get("petclinic_experiments").get.liveGen.get.getName mustEqual "petclinic_experiments"
+      server.schemata.get("petclinic_experiments").get.liveGen.get.getMeta.getName mustEqual "petclinic_experiments"
    }
    
    "2. Schema should deploy from system property variant.schemata.dir" in {
@@ -66,9 +63,9 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
       server.startupErrorLog.size mustEqual 0
       server.schemata.size mustBe 2
       server.schemata.get("petclinic_experiments").isDefined mustBe true
-      server.schemata.get("petclinic_experiments").get.liveGen.get.getName mustEqual "petclinic_experiments"
+      server.schemata.get("petclinic_experiments").get.liveGen.get.getMeta.getName mustEqual "petclinic_experiments"
       server.schemata.get("petclinic_toggles").isDefined mustBe true
-      server.schemata.get("petclinic_toggles").get.liveGen.get.getName mustEqual "petclinic_toggles"
+      server.schemata.get("petclinic_toggles").get.liveGen.get.getMeta.getName mustEqual "petclinic_toggles"
    }
 
 }

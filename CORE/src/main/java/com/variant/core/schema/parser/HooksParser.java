@@ -15,8 +15,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.impl.CoreException;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.impl.MetaImpl;
 import com.variant.core.schema.impl.SchemaHookImpl;
-import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.StateHookImpl;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestHookImpl;
@@ -35,7 +35,7 @@ public class HooksParser implements Keywords {
 	 * @param hooksObject
 	 * @param response
 	 */
-	static void parseMetaHooks(Object hooksObject, Location metaLocation, ParserResponse response) {		
+	static void parseMetaHooks(Object hooksObject, MetaImpl meta, Location metaLocation, ParserResponse response) {		
 		
 		Location hooksLocation = metaLocation.plusObj(KEYWORD_HOOKS);
 		
@@ -48,7 +48,7 @@ public class HooksParser implements Keywords {
 				Location hookLocation = hooksLocation.plusIx(i++);
 				Hook hook = parseHook(rawHook, hookLocation, response);
 				
-				if (hook != null && !((SchemaImpl) response.getSchema()).addHook(hook)) {
+				if (hook != null && !meta.addHook(hook)) {
 					response.addMessage(hookLocation, DUPE_OBJECT, hook.getName());
 				}
 			}

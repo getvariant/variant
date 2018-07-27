@@ -32,13 +32,13 @@ class SessionController @Inject() (
       val ssn = server.ssnStore.getOrBust(sid)
       
       // Must match the schema name.
-      if (ssn.schemaGen.getName() != schemaName) 
+      if (ssn.schemaGen.getMeta.getName != schemaName) 
 		      throw new ServerException.Remote(WrongConnection, schemaName)
 
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson),
          "schema" -> JsObject(Seq(
-               "id" -> JsString(ssn.schemaGen.getId()),
+               "id" -> JsString(ssn.schemaGen.id),
                "src" -> JsString(ssn.schemaGen.source)
          ))      
       ))
@@ -57,7 +57,7 @@ class SessionController @Inject() (
          // Have the session. Must match the schema name.
          case Some(ssn) => {
             
-            if (ssn.schemaGen.getName() != schemaName) 
+            if (ssn.schemaGen.getMeta.getName != schemaName) 
 		      throw new ServerException.Remote(WrongConnection, schemaName)
             
             ssn
@@ -81,7 +81,7 @@ class SessionController @Inject() (
       val response = JsObject(Seq(
          "session" -> JsString(result.toJson),
          "schema" -> JsObject(Seq(
-               "id" -> JsString(result.schemaGen.getId()),
+               "id" -> JsString(result.schemaGen.id),
                "src" -> JsString(result.schemaGen.source)
          ))
       ))
@@ -118,7 +118,7 @@ class SessionController @Inject() (
          case Some(ssn) => 
             
             // Must match the schema name.
-            if (ssn.schemaGen.getName() != schemaName) 
+            if (ssn.schemaGen.getMeta.getName != schemaName) 
 		      throw new ServerException.Remote(WrongConnection, schemaName)
 
             ssn.schemaGen

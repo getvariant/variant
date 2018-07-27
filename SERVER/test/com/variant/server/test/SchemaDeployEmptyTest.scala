@@ -39,7 +39,6 @@ class SchemaDeployEmptyTest extends PlaySpec with OneAppPerSuite with BeforeAndA
    // Custom application builder.  
    implicit override lazy val app: Application = {
       IoUtils.emptyDir(schemataDir)
-      sys.props +=("variant.ext.dir" -> "distr/ext")
       new GuiceApplicationBuilder()
          .configure(new Configuration(VariantApplicationLoader.config))
          .configure("variant.schemata.dir" -> schemataDir)

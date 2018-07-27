@@ -89,7 +89,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
             } catch {
                case ue: ServerException.Local => 
                   logger.error(ue.getMessage)
-                  logger.warn(ServerErrorLocal.SCHEMA_FAILED.asMessage( parserResp.getSchema.getName, file.getAbsolutePath))
+                  logger.warn(ServerErrorLocal.SCHEMA_FAILED.asMessage( parserResp.getSchema.getMeta.getName, file.getAbsolutePath))
             }
          }
       }

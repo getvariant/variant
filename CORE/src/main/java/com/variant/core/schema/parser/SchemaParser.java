@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.UserError.Severity;
 import com.variant.core.impl.CoreException;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.Meta;
 import com.variant.core.schema.parser.error.SemanticError;
 import com.variant.core.schema.parser.error.SyntaxError;
 import com.variant.core.util.IoUtils;
@@ -173,7 +174,7 @@ public abstract class SchemaParser implements Keywords {
 			response.clearSchema();
 			return response;
 		}
-		
+	
 		// 3. Semantical phase.
 
 		// Pass 1.
@@ -192,20 +193,22 @@ public abstract class SchemaParser implements Keywords {
 		HooksService hooksService = getHooksService();
 		FlusherService flusherService = getFlusherService();
 		
-		Object meta = cleanMap.get(KEYWORD_META.toUpperCase());
-		if (meta == null) {
+		Object metaObj = cleanMap.get(KEYWORD_META.toUpperCase());
+		if (metaObj == null) {
 			response.addMessage(rootLocation, PROPERTY_MISSING, KEYWORD_META);
 		}
 		else {			
-			// Parse meta info
-			MetaParser.parse(meta, rootLocation.plusObj(KEYWORD_META), response);
-			
-			// Init all schema scoped hooks.
-			for (Hook hook: response.getSchema().getHooks()) hooksService.initHook(hook, response);
-			
-			// Init schema flusher. If no flusher was supplied, 
-			// flusher service is expected to init the default flusher.
-			flusherService.initFlusher(response.getSchema().getFlusher());
+			// Parse meta section
+			MetaParser.parse(metaObj, rootLocation.plusObj(KEYWORD_META), response);
+						
+			// If we have the Meta section, init all schema scoped hooks and the flusher.
+			Meta meta = response.getSchema().getMeta();
+			if (meta != null) {
+				for (Hook hook: meta.getHooks()) hooksService.initHook(hook, response);
+
+				// If no flusher was supplied, flusher service is expected to init the default flusher.
+				flusherService.initFlusher(meta.getFlusher());
+			}
 		}
 
 		Object states = cleanMap.get(KEYWORD_STATES.toUpperCase());

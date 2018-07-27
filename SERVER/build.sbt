@@ -69,8 +69,10 @@ testOptions in Test += Tests.Argument("-oF")  // Full stack traces (truncagted b
 // Test scoped classpath directory - need this for tests that deploy schema from classpath.
 unmanagedClasspath in Test += baseDirectory.value / "conf-test"
 unmanagedClasspath in Runtime += baseDirectory.value / "conf-test"
+
 // Include the extapi demo jar.
 unmanagedClasspath in Test += baseDirectory.value / "distr/ext/*"
+unmanagedClasspath in Runtime += baseDirectory.value / "distr/ext/*"
 
 
 // Config overrides for run and test.

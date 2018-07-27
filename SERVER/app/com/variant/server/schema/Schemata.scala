@@ -22,19 +22,19 @@ class Schemata () {
     */
    def deploy(gen: SchemaGen) {
          
-      _schemaMap.get(gen.getName()) match {
+      _schemaMap.get(gen.getMeta.getName) match {
          
          case Some(schema) => schema.deployGen(gen)
          
          case None         => {
-            _schemaMap += gen.getName() -> new ServerSchema(gen)
-            logger.debug(s"Created new schema [${gen.getName}]")
+            _schemaMap += gen.getMeta.getName -> new ServerSchema(gen)
+            logger.debug(s"Created new schema [${gen.getMeta.getName}]")
          }
       }
       
       // Write log message
       val msg = new StringBuilder()
-      msg.append("Deployed schema [%s] gen ID [%s], from [%s]:".format(gen.getName, gen.getId, gen.origin));
+      msg.append("Deployed schema [%s] gen ID [%s], from [%s]:".format(gen.getMeta.getName, gen.id, gen.origin));
       for (test <- gen.getTests) {
          msg.append("\n   ").append(test.getName()).append(":[");
          var first = true;

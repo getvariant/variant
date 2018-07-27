@@ -100,7 +100,7 @@ class EventTest extends EmbeddedServerSpec {
 
       "obtain a session" in {
          val sid = newSid()
-         val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis(), schema.getId)).expand("sid" -> sid)
+         val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis(), schema.id)).expand("sid" -> sid)
          assertResp(route(app, httpReq(PUT, context + "/session/big_conjoint_schema").withBody(sessionJson)))
             .isOk
             .withNoBody

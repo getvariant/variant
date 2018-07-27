@@ -35,7 +35,8 @@ class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSc
            
    //private val logger = Logger(this.getClass)   
    private val coreSchema =  response.getSchema
-   private val id = StringUtils.random64BitString(SchemaGen.rand)
+
+   val id = StringUtils.random64BitString(SchemaGen.rand)
   
    // Public access for tests only!
    var state = SchemaGen.State.New  
@@ -47,23 +48,10 @@ class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSc
 
    /*------------------------------------ Public Implementations ------------------------------------*/
 
-   override def getName = {
-	   coreSchema.getName
+   override def getMeta = {
+	   coreSchema.getMeta
 	}
 
-   override def getComment = {
-	   coreSchema.getComment
-	}
-
-   override def getHooks = {
-	   coreSchema.getHooks
-	}
-
-   override def getFlusher = {
-	   coreSchema.getFlusher
-	}
-
-   override def getId = id
 
 	override def getStates = {
 	   coreSchema.getStates
@@ -92,6 +80,6 @@ class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSc
    /**
     * 
     */
-   override def toString() = s"{ServerSchema=[$getName], ID=[$getId]}"
+   override def toString() = s"{ServerSchema=[${getMeta.getName}], ID=[${id}]}"
    
 }

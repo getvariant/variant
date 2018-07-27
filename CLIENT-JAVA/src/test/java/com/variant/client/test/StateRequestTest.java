@@ -14,6 +14,7 @@ import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
+import com.variant.client.impl.SchemaImpl;
 import com.variant.core.VariantEvent;
 import com.variant.core.impl.ServerError;
 import com.variant.core.impl.StateVisitedEvent;
@@ -289,7 +290,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	assertNotNull(ssn2);
 		Schema schema2 = ssn2.getSchema();
 	   	
-	   	assertEquals(schema2.getId(), schema1.getId());
+	   	assertEquals(((SchemaImpl)schema2).getId(), ((SchemaImpl)schema1).getId());
 	   	
 	   	
 	   	StateRequest req2 = ssn2.getStateRequest();

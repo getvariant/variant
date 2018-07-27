@@ -5,8 +5,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.variant.core.schema.Flusher;
-import com.variant.core.schema.Hook;
+import com.variant.core.schema.Meta;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -15,14 +14,9 @@ import com.variant.core.schema.Test;
  * @author Igor
  */
 public class SchemaImpl implements Schema {
-	
-	// Meta
-	private String name = null;
-	private String comment = null;
-	private Flusher flusher = null;
-	
-	// Hooks are keyed by name.
-	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
+
+	// The meta section
+	private MetaImpl meta;
 	
 	// Views are keyed by name
 	private LinkedHashSet<State> states = new LinkedHashSet<State>();
@@ -31,36 +25,20 @@ public class SchemaImpl implements Schema {
 	private LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
 		
 	/**
-	 * Package instantiation.
 	 */
 	public SchemaImpl() {}
 					
     //---------------------------------------------------------------------------------------------//
 	//                                    PUBLIC INTERFACE                                         //
 	//---------------------------------------------------------------------------------------------//	
-
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	@Override
-	public String getComment() {
-		return comment;
-	}
-
-	@Override
-	public List<Hook> getHooks() {
-		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
-		result.addAll(hooks);
-		return Collections.unmodifiableList(result);
-	}
-
-	@Override
-	public Flusher getFlusher() {
-		return flusher;
-	}
 	
+	/**
+	 */
+	@Override
+	public Meta getMeta() {
+		return meta;
+	}
+
 	/**
 	 * States in the ordinal order, as an immutable list.
 	 */
@@ -118,10 +96,8 @@ public class SchemaImpl implements Schema {
 	 * @param name
 	 * @param comment
 	 */
-	public void setMeta(String name, String comment, Flusher flusher) {
-		this.name = name;
-		this.comment = comment;
-		this.flusher = flusher;
+	public void setMeta(MetaImpl meta) {
+		this.meta = meta;
 	}
 	
 	/**
@@ -140,15 +116,6 @@ public class SchemaImpl implements Schema {
 	 */
 	public boolean addTest(Test test) {
 		return tests.add(test);
-	}
-
-	/**
-	 * Add life-cycle hook to this schema
-	 * @param hook
-	 * @return true if hook didn't exist, false if did.
-	 */
-	public boolean addHook(Hook hook) {
-		return hooks.add(hook);
 	}
 
 }
