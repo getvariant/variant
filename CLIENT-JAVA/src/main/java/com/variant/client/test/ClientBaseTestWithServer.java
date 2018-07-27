@@ -14,15 +14,18 @@ import com.variant.core.util.IoUtils;
 abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 		
 	// Subclasses can get to the server process here
-	protected static ServerProcess server = null;
+	protected static StandaloneServer server = null;
 		
-	// Server should have initialized this schemata dir
-	public final static String SCHEMATA_DIR = "/tmp/schemata-remote";
+	// Remote server should mount this schemata dir
+	public final static String SERVER_DIR = "/tmp/remote-server";
+
+	// Remote server should mount this schemata dir
+	public final static String SCHEMATA_DIR = "/tmp/remote-schemata";
 	
 	// Schema files location in the local project
 	public final static String SCHEMATA_DIR_SRC = "src/test/resources/schemata-remote/";
 
-	// Takes this long for the new schema to be detected.
+	// Filesystem watcher takes this long to react.
 	public final static int dirWatcherLatencyMillis = 12000;
 	
 	/**
@@ -32,11 +35,10 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 	 */
 	protected static void startServer(Map<String, String> svrConf) throws Exception {
 
-		IoUtils.emptyDir(SCHEMATA_DIR);
 		//Deploy the schemata
 	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
 	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "petclinic-schema.json", SCHEMATA_DIR + "/petclinic-schema.json");
-		server = new ServerProcess();
+		server = new StandaloneServer(SERVER_DIR);
 		server.start(svrConf);
 	}
 

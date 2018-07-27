@@ -9,7 +9,8 @@ import com.variant.core.schema.Schema;
 import com.variant.core.test.VariantBaseTest;
 
 /**
- * Base class for all Core JUnit tests.
+ * Base class for all Client JUnit tests.
+ * TODO: why isn't this in test?
  */
 public abstract class ClientBaseTest extends VariantBaseTest {
 	
