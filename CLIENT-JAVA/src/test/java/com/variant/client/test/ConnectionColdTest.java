@@ -27,7 +27,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	 */
 	@org.junit.Test
 	public void connectToNonExistentSchemaTest() throws Exception {
-		
+
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
@@ -90,7 +90,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	/**
 	 * Server shutdown. 
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void serverDownTest() throws Exception {
 		
 		final Connection conn = client.connectTo("big_conjoint_schema");		

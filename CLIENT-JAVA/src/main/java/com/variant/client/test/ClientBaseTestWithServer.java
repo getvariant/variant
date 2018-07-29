@@ -1,8 +1,5 @@
 package com.variant.client.test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 
@@ -33,26 +30,24 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 	 * Additional server-side config parameters may be set to override the default.
 	 * @throws Exception
 	 */
-	protected static void startServer(Map<String, String> svrConf) throws Exception {
+	protected static void buildServer() throws Exception {
 
 		//Deploy the schemata
 	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
 	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "petclinic-schema.json", SCHEMATA_DIR + "/petclinic-schema.json");
 		server = new StandaloneServer(SERVER_DIR);
-		server.start(svrConf);
+		
 	}
 
-	protected static void startServer() throws Exception {
-		startServer(new HashMap<String,String>());
-	}
 	
 	/**
-	 * Start server once per test case.
+	 * Build server once per test case.
 	 * @throws Exception
 	 */
 	@BeforeClass
 	public static void beforeClass() throws Exception {
-		startServer();
+		buildServer();
+		server.start();
 	}
 	
 	/**

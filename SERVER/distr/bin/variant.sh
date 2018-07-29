@@ -14,13 +14,13 @@ stop)
      rm -f RUNNING_PID
      echo "Stopped"
    else
-     ./variant.sh status
+     $0 status
    fi
    ;;
 status)
    if [ -f RUNNING_PID ] ; then 
       echo "Running PID $(cat RUNNING_PID)" 
-   else 
+   else
       echo "Not running"
    fi  
    ;;

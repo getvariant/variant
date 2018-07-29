@@ -1,11 +1,11 @@
 #! /bin/bash
-set -x
+
 cd `dirname $0`/../../SERVER
 root_dir=$(pwd)
 
 # All args are required
-if [ $# -ne 2 ]; then
-    echo "usage: `basename $0` {build|start|stop} target-dir"
+if [ $# -lt 2 ]; then
+    echo "usage: `basename $0` {build|start|stop} target-dir jvm_params"
     exit 1
 fi
 
@@ -47,7 +47,9 @@ build)
 start)
     # Start the server
     lsof -n -i4TCP:5377 | grep LISTEN | awk '{print $2}' | xargs kill
-    ${server_dir}/bin/variant.sh start
+    shift 2
+    echo ">>>>> ${server_dir}/bin/variant.sh start $@"
+    ${server_dir}/bin/variant.sh start $@
     ;;
 
 stop)

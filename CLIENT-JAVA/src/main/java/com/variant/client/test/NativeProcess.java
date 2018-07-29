@@ -42,28 +42,67 @@ public class NativeProcess {
 		
 		return new NativeProcess(
 				command, 
-				(String line) -> {
+				line -> {
 					System.out.println("<OUT> " + line); 
 				}, 
-				(String line) -> {
+				line -> {
 					System.out.println("<ERR> " + line); 					
 				});
 	}
 	
 	/**
-	 * Convenience method. Sends std out and std error to the console.
-	 * Blocks until process is completed. Returns status.
+	 * Convenience method. Sends std out and std error to this System.{our,err}
+	 * respectively. Blocks until process is completed. Returns status.
+	 * 
+	 * @return completion code of the subprocess.
 	 */
 	public static int exec(String command) throws Exception {
 		
 		NativeProcess p = start(command);
-		while (p.proc.isAlive()) Thread.sleep(100);
+		while (p.proc.isAlive()) Thread.sleep(250);
+		return p.proc.exitValue();
+	}
+
+	/**
+	 * Convenience method. Ignores subprocess's both standard out and err.
+	 * Blocks until process is completed. Returns status.
+	 * 
+	 * @return completion code of the subprocess.
+	 */
+	public static int execSilent(String command) throws Exception {
+		
+		NativeProcess p = start(
+				command,
+				line -> {},
+				line -> {});
+		
+		while (p.proc.isAlive()) Thread.sleep(250);
+		return p.proc.exitValue();
+	}
+
+	/**
+	 * Convenience method. Ignores subprocess's standard out and 
+	 * connects subprocess's standard err to that of the caller.
+	 * Blocks until process is completed. Returns status.
+	 * 
+	 * @return completion code of the subprocess.
+	 */
+	public static int execQuiet(String command) throws Exception {
+		
+		NativeProcess p = start(
+				command,
+				line -> {},
+				line -> {
+					System.out.println("<ERR> " + line); 					
+				});
+		
+		while (p.proc.isAlive()) Thread.sleep(250);
 		return p.proc.exitValue();
 	}
 
 	// Instance members
 	private final Process proc;
-	//private final OutConsumerThread outConsumerThread;
+	private final OutConsumerThread outConsumerThread;
 	
 	/**
 	 * Create and start the process in a separate thread.
@@ -74,8 +113,26 @@ public class NativeProcess {
 	 */
 	private NativeProcess(String command, StringToUnit outConsumer, StringToUnit errorConsumer) throws IOException {
 
+		// Start the process
 		proc = new ProcessBuilder(command.split("\\s+")).start();
-		new OutConsumerThread(outConsumer, errorConsumer).start();
+		
+		// Connect the process's output streams
+		outConsumerThread = new OutConsumerThread(outConsumer, errorConsumer);
+		outConsumerThread.start();
+	}
+
+	/**
+	 * Destroy this process.
+	 */
+	public void destroy() {
+		outConsumerThread.interrupt();
+		proc.destroy();
+	}
+
+	/**
+	 */
+	public boolean isAlive() {
+		return proc.isAlive();
 	}
 
 	/**
@@ -97,7 +154,7 @@ public class NativeProcess {
 				BufferedReader outReader = null;				
 				BufferedReader errReader = null;
 				
-				while(true && ! isInterrupted()) {
+				while(! isInterrupted()) {
 					
 					InputStream stdout = proc.getInputStream();
 					InputStream stderr = proc.getErrorStream();
@@ -122,10 +179,12 @@ public class NativeProcess {
 					Thread.sleep(100);
 					
 					// Shutdown this thread if the native process is completed.
-					if (!proc.isAlive()) return;
+					if (!proc.isAlive()) break;
 				}
 			}
-			catch (Exception e) {}
+			catch (IOException e) {
+				LOG.error("Uncaught exception in OutConsumerThread: " + e.getMessage(), e);
+			} catch (InterruptedException e) {}
 		}
 	}
 	
