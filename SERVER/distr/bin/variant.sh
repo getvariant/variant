@@ -5,17 +5,16 @@ cd $(dirname $0)/..
 
 case "$1" in
 start)
-   bin/playapp -Dhttp.port=5377
+   shift
+   # If caller passed http.port, it will override the default.
+   echo "bin/playapp -Dhttp.port=5377 $@"
+   bin/playapp -Dhttp.port=5377 $@
    ;;
 
 stop)
-   if [ -f RUNNING_PID ] ; then
-     kill $(cat RUNNING_PID) > /dev/null 2>&1
-     rm -f RUNNING_PID
-     echo "Stopped"
-   else
-     $0 status
-   fi
+   # Sending the process the interrupt signal appears to be the prescribed way to shutdown the server.
+   ps -ef | grep java | grep 'variant.variant-0.9.2' | awk '{print $2}' | xargs kill 
+
    ;;
 status)
    if [ -f RUNNING_PID ] ; then 

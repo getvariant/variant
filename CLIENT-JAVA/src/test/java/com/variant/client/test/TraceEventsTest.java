@@ -20,7 +20,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	private final VariantClient client = VariantClient.Factory.getInstance();
 	
 	public TraceEventsTest() throws Exception {
-		startServer();
+		restartServer();
 	}
 	
 	/**

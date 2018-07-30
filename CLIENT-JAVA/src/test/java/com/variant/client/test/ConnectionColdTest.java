@@ -28,6 +28,8 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void connectToNonExistentSchemaTest() throws Exception {
 
+		restartServer();
+		
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
@@ -48,7 +50,9 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	 */
 	@org.junit.Test
 	public void connectToExistingSchemataTest() throws Exception {
-			    
+	
+		restartServer();
+		
 		// Connection to a schema
 		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn1);
@@ -90,15 +94,17 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	/**
 	 * Server shutdown. 
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void serverDownTest() throws Exception {
+	
+		restartServer();
 		
 		final Connection conn = client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn);
 		final Session ssn = conn.getOrCreateSession("foo");
 		assertNotNull(ssn);
 		
-		server.stop();
+		stopServer();
 
 		new ClientExceptionInterceptor() {
 			
@@ -144,7 +150,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		}.assertThrown(ServerConnectException.class);
 
 		// Should be back in business after server restarts.
-		server.start();
+		restartServer();
 		assertNull(conn.getSession("foo"));
 		assertNotNull(conn.getOrCreateSession("foo"));
 		assertNotNull(conn.getSession("foo"));

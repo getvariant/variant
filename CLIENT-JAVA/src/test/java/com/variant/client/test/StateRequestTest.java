@@ -29,7 +29,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	private final VariantClient client = VariantClient.Factory.getInstance();
 	
 	public StateRequestTest() throws Exception {
-		startServer();
+		restartServer();
 	}
 	
 	/**

@@ -23,7 +23,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 	 * @throws Exception
 	 */
 	public SessionTest() throws Exception {
-	   startServer();
+	   restartServer();
 	}
 	
 	/**

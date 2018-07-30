@@ -2,6 +2,7 @@ package com.variant.client.test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import org.slf4j.LoggerFactory;
 public class StandaloneServer {
 
 	private static final Logger LOG = LoggerFactory.getLogger(StandaloneServer.class);
-	private static final long STARTUP_TIMEOUT_SECS = 60; // give up if server didn't startup in a minute.
+	private static final long STARTUP_TIMEOUT_SECS = 20; // give up if server didn't startup in a minute.
 
 	// Junit's implementation of BeforeClass() requires it to be static, so we
 	// can't use an abstract method here since it must be static. This value will only
@@ -59,14 +60,11 @@ public class StandaloneServer {
 	}
 	
 	/**
-	 * Start the async server. If already running, though an exception.
+	 * Start the async server. If one's already running, it will be killed.
 	 * 
 	 * @param config
 	 */
 	public void start(Map<String,String> config) throws Exception {
-
-		// Stop server, in case it's running.
-		stop();
 		
 		// Build the command
 		String command = serverDir + "/bin/variant.sh start";
@@ -76,17 +74,39 @@ public class StandaloneServer {
 		
 		LOG.info(String.format("Starting standalone server [%s]", command));
 		
-		server  = NativeProcess.start(command);
+		// An object instead of a primitive to get around Java's lack of support for closures.
+		final AtomicBoolean instantiated = new AtomicBoolean(false);
+
+		server  = NativeProcess.start(
+				command,
+				line -> {
+					System.out.println("<OUT> " + line);
+					if (line.matches(".*Variant Experience Server .* bootstrapped .*")) instantiated.set(true);
+				}, 
+				line -> {
+					System.out.println("<ERR> " + line); 					
+				});
+
 		
-		boolean isUp = false;
+		// Wait for the server to come up. There's a race condition between this thread and the thread
+		// insiide the server process which reads the subprocess's output to this process's output.
+		// We want to block this method until BOTH the server output has been fully transmitted and it
+		// has bound to the port and listens to connections.
+		boolean listens = false;
 		long start = System.currentTimeMillis();
-		while((System.currentTimeMillis() < start + STARTUP_TIMEOUT_SECS*1000) && server.isAlive() && !isUp) {
-			if (NativeProcess.execSilent("curl http://localhost:5377/variant") == 0) isUp = true;
+		while(
+				(System.currentTimeMillis() < start + STARTUP_TIMEOUT_SECS*1000) && 
+				server.isAlive() && 
+				!(listens && instantiated.get())) {
+			
+			if (NativeProcess.execSilent("curl http://localhost:5377/variant") == 0) listens = true;
+			
 			Thread.sleep(200);
 		}
 		
-		if (!isUp) {
+		if (!listens || !instantiated.get()) {
 			server.destroy();
+			System.out.println("*** " + listens + ", " + instantiated.get());
 			throw new RuntimeException("Server failed to startup in " + STARTUP_TIMEOUT_SECS + " seconds");
 		}
 
@@ -98,25 +118,7 @@ public class StandaloneServer {
 	public void stop() throws Exception {
 		String command = serverDir + "/bin/variant.sh stop";
 		LOG.info("Stopping standalone server [" + command + "]");
-		if (NativeProcess.execQuiet(command) != 0) 
+		if (NativeProcess.exec(command) != 0) 
 			throw new RuntimeException("Unable to stop server");
 	}
-
-	/**
-	 * Restart the server.
-	 * @throws Exception 
-	 *
-	public void restart(Map<String,String> config) throws Exception {
-		stop();
-		start(config);
-	}
-
-	/**
-	 * Restart the server.
-	 * @throws Exception 
-	 *
-	public void restart() throws Exception {
-		restart(new HashMap<String,String>());
-	}
-	*/
 }

@@ -166,7 +166,9 @@ public class NativeProcess {
 							outReader = new BufferedReader(new InputStreamReader(stdout));
 						
 						String line = null;
-						while((line = outReader.readLine()) != null) outConsumer.apply(line);
+						while((line = outReader.readLine()) != null) {
+							outConsumer.apply(line);
+						}
 					
 
 						// Read error

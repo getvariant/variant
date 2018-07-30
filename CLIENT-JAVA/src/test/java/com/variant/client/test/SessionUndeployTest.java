@@ -289,7 +289,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		// restart the server with the longger session timeout
 		int ssnTimeout = dirWatcherLatencyMillis/1000 + 5;
-		server.restart(CollectionsUtils.pairsToMap(new Tuples.Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeout))));
+		stopServer();
+		restartServer(CollectionsUtils.pairsToMap(new Tuples.Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeout))));
 		
 		// Connection to a schema
 		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("big_conjoint_schema");		
