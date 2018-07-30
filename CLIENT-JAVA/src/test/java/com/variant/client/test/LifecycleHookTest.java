@@ -52,6 +52,8 @@ public class LifecycleHookTest extends ClientBaseTestWithServer {
 	 */
 	@org.junit.Test
 	public void sessionExpiredRemotelyTest() throws Exception {
+		
+		restartServer();
 		/*					
 		// 1, Connection-level SessionExpired Hook
 		Connection conn1 = client.connectTo("big_conjoint_schema").get();

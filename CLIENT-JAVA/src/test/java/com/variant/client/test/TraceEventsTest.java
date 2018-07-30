@@ -1,9 +1,7 @@
 package com.variant.client.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import com.variant.client.Connection;
@@ -13,20 +11,17 @@ import com.variant.client.VariantClient;
 import com.variant.core.VariantEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
 
 public class TraceEventsTest extends ClientBaseTestWithServer {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
-	
-	public TraceEventsTest() throws Exception {
-		restartServer();
-	}
-	
+		
 	/**
 	 */
 	@org.junit.Test
 	public void implicitEvents() throws Exception {
+		
+		restartServer();
 		
 		Connection conn = client.connectTo("big_conjoint_schema");		
 
@@ -60,7 +55,6 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		VariantEvent event2 = req2.getStateVisitedEvent();
 		//assertEquals(event1, event2);  // Fails. Bug #158
 
-		
 	}
 
 }

@@ -17,20 +17,14 @@ import com.variant.core.schema.State;
 public class SessionTest extends ClientBaseTestWithServer {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
-	
-	/**
-	 * 
-	 * @throws Exception
-	 */
-	public SessionTest() throws Exception {
-	   restartServer();
-	}
-	
+		
 	/**
 	 */
 	@org.junit.Test
 	public void noSessionIdInTrackerTest() throws Exception {
 		
+		restartServer();
+
 		Connection conn = client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn);
 		String sid = newSid();
@@ -68,6 +62,8 @@ public class SessionTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
+		restartServer();
+
 		Connection conn = client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn);
 		
@@ -108,6 +104,8 @@ public class SessionTest extends ClientBaseTestWithServer {
 	 */
 	@org.junit.Test
 	public void attributesTest() throws Exception {
+
+		restartServer();
 
 		// Open two parallel connections
 		Connection conn1 = client.connectTo("big_conjoint_schema");		

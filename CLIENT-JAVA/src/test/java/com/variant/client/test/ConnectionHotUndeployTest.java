@@ -24,6 +24,8 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void schemaUndeployTest() throws Exception {
 	
+		restartServer();
+
 		// Connection must go after schema undeployed.
 		final Connection conn1 = client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn1);

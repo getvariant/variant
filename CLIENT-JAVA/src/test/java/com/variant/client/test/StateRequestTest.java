@@ -27,16 +27,14 @@ import com.variant.core.util.CollectionsUtils;
 public class StateRequestTest extends ClientBaseTestWithServer {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
-	
-	public StateRequestTest() throws Exception {
-		restartServer();
-	}
-	
+		
 	/**
 	 */
 	@org.junit.Test
 	public void noStabilTest() throws Exception {
 		
+		restartServer();
+
 		Connection conn = client.connectTo("big_conjoint_schema");		
 
 		// Via SID tracker, create.
@@ -116,6 +114,8 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	//@org.junit.Test
 	public void deterministicTest() throws Exception {
 		
+		restartServer();
+
 		Connection conn = client.connectTo("big_conjoint_schema");
 		
 		// Some session, just to get the schema.
@@ -140,7 +140,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	final StateRequest req = ssn.targetForState(state2);
 	   	assertNotNull(req);
 		assertEquals(6, req.getLiveExperiences().size());
-		System.out.println("*********** " + CollectionsUtils.toString(req.getLiveExperiences()));
+
 		assertEquals(experience(schema, "test1.A"), req.getLiveExperience(test1));
 		assertEquals(experience(schema, "test2.A"), req.getLiveExperience(test2));
 		assertEquals(experience(schema, "test3.A"), req.getLiveExperience(test3));
@@ -164,6 +164,8 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void commitTest() throws Exception {
 		
+		restartServer();
+
 		Connection conn = client.connectTo("big_conjoint_schema");
 
 		// Some session, just to get the schema.
@@ -213,6 +215,8 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
+		restartServer();
+
 		Connection conn = client.connectTo("big_conjoint_schema");		
 
 		String sid = newSid();
@@ -245,6 +249,8 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void targetingHookExceptionTest() throws Exception {
 		
+		restartServer();
+
 		Connection conn = client.connectTo("petclinic");		
 
 		String sid = newSid();
@@ -278,6 +284,8 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void targetFromParallelConnectionsTest() throws Exception {
 		
+		restartServer();
+
 		Connection conn1 = client.connectTo("big_conjoint_schema");		
 
 		String sid = newSid();

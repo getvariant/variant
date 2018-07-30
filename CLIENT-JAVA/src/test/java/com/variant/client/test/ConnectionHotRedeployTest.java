@@ -24,6 +24,8 @@ public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void schemaRedeployTest() throws Exception {
 		
+		restartServer();
+		
 		final Connection conn1 = client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn1);
 		assertEquals("big_conjoint_schema", conn1.getSchemaName());

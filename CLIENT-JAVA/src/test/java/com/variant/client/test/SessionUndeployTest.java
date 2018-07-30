@@ -41,6 +41,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	@org.junit.Test
 	public void serverUndeploySessionTimeoutTest() throws Exception {
 
+		restartServer();
+		
 		// Connection to a schema
 		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("big_conjoint_schema");		
 		assertNotNull(conn1);
@@ -283,6 +285,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	 */
 	@org.junit.Test
 	public void serverUndeploySessionDrainingTest() throws Exception {
+
+		restartServer();
 
 		// Restore the big_conjoint_schema
 	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");

@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.variant.core.util.IoUtils;
+import com.variant.core.util.StringUtils;
 
 /**
  * Base class for all Client JUnit tests which require a server. (Most of them.)
@@ -35,7 +36,13 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 	protected static StandaloneServer buildServer() {
 
 		try {
-		    return new StandaloneServer(SERVER_DIR);
+		    StandaloneServer result = new StandaloneServer(SERVER_DIR);
+		    String msg = "Built Standalone Server in " + SERVER_DIR;
+		    int width = msg.length() + 10;
+		    System.out.println("       " + StringUtils.repeat("*", width));
+		    System.out.println("       **** " + msg + " ****");
+		    System.out.println("       " + StringUtils.repeat("*", width));
+		    return result;
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Unable to build server", e);
