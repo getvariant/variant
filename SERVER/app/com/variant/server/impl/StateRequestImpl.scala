@@ -8,7 +8,7 @@ import com.variant.core.StateRequestStatus
 import com.variant.core.schema.Test.Experience
 import com.variant.core.schema.Test
 import com.variant.core.schema.StateVariant
-import com.variant.core.VariantEvent
+import com.variant.core.TraceEvent
 import com.variant.core.schema.impl.StateVariantImpl
 import com.variant.server.api.Session
 
@@ -64,7 +64,7 @@ class StateRequestImpl(private val session: Session, private val coreReq:CoreSta
    /**
     * 
     */
-   override def getStateVisitedEvent(): VariantEvent = coreReq.getStateVisitedEvent 
+   override def getStateVisitedEvent(): TraceEvent = coreReq.getStateVisitedEvent 
    
    /*----------------------------------------------------------------------------------------*/
    /*                                     PUBLIC EXT                                         */

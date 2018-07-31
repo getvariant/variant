@@ -6,11 +6,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
+import com.variant.client.VariantException;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.SessionImpl;
@@ -160,7 +160,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedTests(); break;
 						case 2: ssn.getDisqualifiedTests(); break;
-						case 3: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+						case 3: ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
 						case 4: ssn.getAttribute("foo"); break;
 						case 5: ssn.setAttribute("foo", "bar"); break;
 						case 6: ssn.clearAttribute("foo"); break;
@@ -201,7 +201,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedTests(); break;
 						case 2: ssn.getDisqualifiedTests(); break;
-						case 3: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+						case 3: ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
 						case 4: ssn.getAttribute("foo"); break;
 						case 5: ssn.setAttribute("foo", "bar"); break;
 						case 6: ssn.clearAttribute("foo"); break;
@@ -245,7 +245,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 1: ssn.getTraversedStates(); break;
 						case 2: ssn.getTraversedTests(); break;
 						case 3: ssn.getDisqualifiedTests(); break;
-						case 4: ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+						case 4: ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
 						case 5: ssn.getAttribute("foo"); break;
 						case 6: ssn.setAttribute("foo", "bar"); break;
 						case 7: ssn.clearAttribute("foo"); break;
@@ -406,7 +406,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTraversedStates());
 				assertNotNull(ssn.getTraversedTests());
 				assertNotNull(ssn.getDisqualifiedTests());
-				ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1")));
+				ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1")));
 				String key = "key" + _i;
 				String value = "value" + _i;
 				assertNull(ssn.getAttribute(key));
@@ -479,7 +479,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTraversedStates());
 				assertNotNull(ssn.getTraversedTests());
 				assertNotNull(ssn.getDisqualifiedTests());
-				ssn.triggerEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1")));
+				ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1")));
 				String key = "key" + _i;
 				String value = "value" + _i;
 				assertEquals(value, ssn.getAttribute(key));

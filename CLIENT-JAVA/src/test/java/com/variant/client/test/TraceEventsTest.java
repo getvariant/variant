@@ -8,7 +8,7 @@ import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
-import com.variant.core.VariantEvent;
+import com.variant.core.TraceEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 
@@ -38,7 +38,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	   	assertEquals(req1, ssn1.getStateRequest());
 		assertEquals(5, req1.getLiveExperiences().size());
 		
-		VariantEvent event1 = req1.getStateVisitedEvent();
+		TraceEvent event1 = req1.getStateVisitedEvent();
 		assertEquals(0, event1.getParameterMap().size());
 
 		event1.getParameterMap().put("foo", "bar");
@@ -52,7 +52,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		StateRequest req2 = ssn2.getStateRequest();
 		assertEquals(req1, req2); 
 		assertTrue(req2.isCommitted());
-		VariantEvent event2 = req2.getStateVisitedEvent();
+		TraceEvent event2 = req2.getStateVisitedEvent();
 		//assertEquals(event1, event2);  // Fails. Bug #158
 
 	}

@@ -1,6 +1,6 @@
 package com.variant.server.impl
 
-import com.variant.core.VariantEvent
+import com.variant.core.TraceEvent
 import com.variant.core.schema.State
 import com.variant.core.schema.impl.StateImpl
 import com.variant.core.schema.impl.TestImpl
@@ -103,7 +103,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
    /**
     * 
     */
-	def triggerEvent(event: VariantEvent) {
+	def triggerEvent(event: TraceEvent) {
 		schemaGen.eventWriter.write(new FlushableEventImpl(event, coreSession));
 	}
 	

@@ -7,7 +7,7 @@ import java.util.Set;
 import com.typesafe.config.Config;
 import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
-import com.variant.core.VariantEvent;
+import com.variant.core.TraceEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -170,16 +170,16 @@ public interface Session {
 	public StateRequest getStateRequest();
 
 	/**
-	 * Trigger a custom event.
+	 * Trigger a custom trace event.
 	 * 
-	 * @param event An implementation of {@link VariantEvent}, which represents the custom event to be triggered.
+	 * @param event An implementation of {@link TraceEvent}, which represents the custom trace event to be triggered.
 	 * 
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException
 	 * 
 	 * @since 0.7
 	 */
-	public void triggerEvent(VariantEvent event);
+	public void triggerTraceEvent(TraceEvent event);
 		
 	/**
 	 * <p>Indicates whether this session has expired. A session is expired by the server

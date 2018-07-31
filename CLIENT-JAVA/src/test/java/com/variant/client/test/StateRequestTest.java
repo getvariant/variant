@@ -15,7 +15,7 @@ import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.SchemaImpl;
-import com.variant.core.VariantEvent;
+import com.variant.core.TraceEvent;
 import com.variant.core.impl.ServerError;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
@@ -86,7 +86,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 		assertEquals(ssn, req.getSession());
 		assertEquals(state1, req.getState());
-		VariantEvent event = req.getStateVisitedEvent();
+		TraceEvent event = req.getStateVisitedEvent();
 		assertNotNull(event);
 		assertEquals(StateVisitedEvent.EVENT_NAME, event.getName());
 		assertEquals(req.getState().getName(), event.getValue());

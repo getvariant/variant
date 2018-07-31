@@ -10,7 +10,7 @@
  * Life-cycle hooks provide a convenient way to augment Variant server's default behavior with
  * custom semantics.
  * <p>
- * Event flushers are responsible for writing individual Variant events (not to be
+ * Event flushers are responsible for writing individual trace events (not to be
  * confused with life-cycle events) to persistent storage. Variant server comes with
  * a few basic event flushers, such as one for the PostgreSQL database, but you will
  * likely want to develop your own flusher to suit your application environment. 

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An implementation of {@link EventFlusher}, which discards Variant events.
+ * An implementation of {@link EventFlusher}, which discards trace events.
  * 
  * @since 0.8
  *

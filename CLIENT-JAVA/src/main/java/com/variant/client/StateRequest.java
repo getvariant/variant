@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.variant.core.StateRequestStatus;
-import com.variant.core.VariantEvent;
+import com.variant.core.TraceEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
@@ -89,10 +89,10 @@ public interface StateRequest {
 	/** Pending state visited event. 
 	 *  This is useful if the caller wants to add parameters to this event before it is triggered.
 	 *  
-	 * @return Object of type {@link VariantEvent}.
+	 * @return Object of type {@link TraceEvent}.
 	 * @since 0.6
 	 */
-	VariantEvent getStateVisitedEvent();
+	TraceEvent getStateVisitedEvent();
 	
 	/**
 	 * Set the status of this request.
@@ -112,7 +112,7 @@ public interface StateRequest {
 	
 	/**
 	 * Commit this state request.
-     * The associated state visited {@link VariantEvent} is triggered.
+     * The associated state visited {@link TraceEvent} is triggered.
      * No-op if this request has already been committed, i.e. okay to call multiple times.
 	 * 
 	 * @param userData   An array of zero or more opaque objects which will be passed to {@link SessionIdTracker#save(Object...)}

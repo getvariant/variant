@@ -8,7 +8,7 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-public class VariantEventFromDatabase {
+public class TraceEventFromDatabase {
 
 	long id;
 	String sessionId;
@@ -18,7 +18,7 @@ public class VariantEventFromDatabase {
 	Map<String,String> params;
     Collection<EventExperienceFromDatabase> eventExperiences;
     
-	VariantEventFromDatabase() {}
+	TraceEventFromDatabase() {}
 	
 	public Long getId() { return id; }
 	public String getName() { return name; }

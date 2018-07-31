@@ -2,11 +2,9 @@ package com.variant.server.api;
 
 import java.util.Collection;
 
-import com.typesafe.config.ConfigObject;
-
 /**
- * <p>Interface to be implemented by a user-supplied class, handling writing
- * Variant events to external storage. The implementation will be instantiated
+ * <p>Interface to be implemented by a user-supplied class, handling the writing of
+ * trace events to external storage. The implementation will be instantiated
  * by Variant and is bound to a particular Variant schema. The implementation is defined
  * by the {@code meta/flusher} schema property. If no flusher is supplied in the schema,
  * Variant will used the server-wide default, as defined by 
@@ -48,7 +46,7 @@ public interface EventFlusher {
 	/**
 	 * <p>Called by the server, whenever the asynchronous event writer needs to flush events from memory. 
 	 * 
-	 * @param events A collection of decorated variant events {@link FlushableEvent} to be written off.
+	 * @param events A collection of decorated trace events {@link FlushableEvent} to be written off.
 	 *               The size of the collection may be up to the size defined by the 
      *               variant.event.writer.buffer.size configuration property.
 	 * 

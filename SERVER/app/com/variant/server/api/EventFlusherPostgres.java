@@ -12,7 +12,7 @@ import com.variant.server.jdbc.EventFlusherJdbc;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
 /**
- * An implementation of {@link EventFlusher}, which writes Variant events to an 
+ * An implementation of {@link EventFlusher}, which writes trace events to an 
  * instance of PostgreSQL database. The required database schema can be created by the
  * {@code create-schema.sql} SQL script, included with Variant server. 
  * <p>

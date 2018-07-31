@@ -57,7 +57,7 @@ public interface Test {
      * <li>A user traversing this test will always see control experience.
      * <li>If a user already has an entry for this test in his targeting tracker, it will be ignored, 
      *     but not discarded. If not, no entries will be added to the user’s targeting tracker.
-     * <li>No variant events will be logged for this test.
+     * <li>No trace events will be logged for this test.
      * </ol>
 	 * @return true if the test is on, false if not.
 	 * @since 0.5

@@ -38,7 +38,7 @@ class EventReader (eventWriter: EventWriter) {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	def read(p: VariantEventFromDatabase => Boolean = (_ => true)) = {
+	def read(p: TraceEventFromDatabase => Boolean = (_ => true)) = {
 
 		val SELECT_EVENTS_SQL = 
 				"SELECT e.id, e.session_id, e.created_on, e.event_name, e.event_value, p.key, p.value " +
@@ -50,7 +50,7 @@ class EventReader (eventWriter: EventWriter) {
 		
 		JdbcAdapter.executeQuery(
 			jdbcConnection, 
-			new JdbcAdapter.QueryOperation[Collection[VariantEventFromDatabase]]() {
+			new JdbcAdapter.QueryOperation[Collection[TraceEventFromDatabase]]() {
 
 				override def execute(conn: Connection) = {
 					
@@ -59,13 +59,13 @@ class EventReader (eventWriter: EventWriter) {
 					val eventsRresulSet = stmt.executeQuery(SELECT_EVENTS_SQL);
 
 					// Keep items in a map keyed by event ID for easy access.
-					val eventMap = new HashMap[Long, VariantEventFromDatabase]();
+					val eventMap = new HashMap[Long, TraceEventFromDatabase]();
 					
 					while (eventsRresulSet.next()) {
 						val id = eventsRresulSet.getLong(1);
 						var event = eventMap.get(id);
 						if (event == null) {
-							event = new VariantEventFromDatabase();
+							event = new TraceEventFromDatabase();
 							event.id = id;
 							event.sessionId = eventsRresulSet.getString(2).trim(); // Fixed width in DB.
 							event.createdOn = eventsRresulSet.getTimestamp(3);

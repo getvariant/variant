@@ -8,7 +8,7 @@ import com.variant.core.session.CoreSession;
 
 
 @SuppressWarnings("serial")
-public class StateVisitedEvent extends VariantEventSupport implements Serializable {
+public class StateVisitedEvent extends TraceEventSupport implements Serializable {
 
 	public static final String EVENT_NAME = "$STATE_VISIT";
 		
@@ -34,7 +34,7 @@ public class StateVisitedEvent extends VariantEventSupport implements Serializab
 			throw new CoreException.Internal(
 					String.format("Session id [%s] does not match payload SID [%s]", session.getId(), sid));
 
-		return VariantEventSupport.fromJson(new StateVisitedEvent(session), mappedJson);
+		return TraceEventSupport.fromJson(new StateVisitedEvent(session), mappedJson);
 
 	}
 }

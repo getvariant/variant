@@ -9,14 +9,14 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.variant.core.VariantEvent;
+import com.variant.core.TraceEvent;
 import com.variant.core.session.CoreSession;
 
 /**
  * 
  * @author Igor.
  */
-abstract public class VariantEventSupport implements VariantEvent {
+abstract public class TraceEventSupport implements TraceEvent {
 		
 	protected final CoreSession session;
 	protected String name;
@@ -30,7 +30,7 @@ abstract public class VariantEventSupport implements VariantEvent {
 			
 	/**
 	 */
-	public VariantEventSupport(CoreSession session, String name) {
+	public TraceEventSupport(CoreSession session, String name) {
 		this.session = session;
 		this.name = name;
 	}
@@ -126,7 +126,7 @@ abstract public class VariantEventSupport implements VariantEvent {
 	 * @param json
 	 * @return
 	 */
-	public static <T extends VariantEventSupport> T fromJson(T result, Map<String,?> mappedJson) {
+	public static <T extends TraceEventSupport> T fromJson(T result, Map<String,?> mappedJson) {
 		
 		result.name = (String) mappedJson.get(FIELD_NAME_NAME);
 		result.value = (String) mappedJson.get(FIELD_NAME_VALUE);

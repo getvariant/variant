@@ -10,7 +10,7 @@ import com.typesafe.config.Config;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * An implementation of {@link EventFlusher}, which appends Variant events
+ * An implementation of {@link EventFlusher}, which appends trace events
  * to the application logger. This is the default, out of the box event flusher,
  * which is completely independent of the operational environment. Probably not for production use, 
  * but is good enough for the demo application.

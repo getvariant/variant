@@ -16,18 +16,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
-import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
+import com.variant.client.VariantException;
 import com.variant.client.lifecycle.ClientLifecycleEvent;
 import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.client.lifecycle.SessionExpiredLifecycleEvent;
 import com.variant.client.session.TargetingTrackerEntryImpl;
-import com.variant.core.VariantEvent;
+import com.variant.core.TraceEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
@@ -271,7 +271,7 @@ public class SessionImpl implements Session {
 	 * Mutating or mutable state.
 	 */
 	@Override
-	public void triggerEvent(VariantEvent event) {
+	public void triggerTraceEvent(TraceEvent event) {
 		preChecks();
 		conn.client.server.eventSave(this, event);
 	}

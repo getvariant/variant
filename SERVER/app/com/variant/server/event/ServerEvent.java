@@ -4,12 +4,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.variant.core.VariantEvent;
+import com.variant.core.TraceEvent;
 
 /**
  * Event received over HTTP and suitable to pass to the Core API.
  */
-public class ServerEvent implements VariantEvent {
+public class ServerEvent implements TraceEvent {
 
 	private String name;
 	private String value;

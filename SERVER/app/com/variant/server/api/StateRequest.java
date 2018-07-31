@@ -1,11 +1,10 @@
 package com.variant.server.api;
 
-import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
 import com.variant.core.StateRequestStatus;
-import com.variant.core.VariantEvent;
+import com.variant.core.TraceEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
@@ -49,10 +48,10 @@ public interface StateRequest {
 	/** Pending state visited event. 
 	 *  This is useful if the caller wants to add parameters to this event before it is triggered.
 	 *  
-	 * @return Object of type {@link VariantEvent}.
+	 * @return Object of type {@link TraceEvent}.
 	 * @since 0.7
 	 */
-	VariantEvent getStateVisitedEvent();
+	TraceEvent getStateVisitedEvent();
 
 	/**
 	 * Current status of this request.

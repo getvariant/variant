@@ -16,9 +16,9 @@ import com.variant.client.UnknownSchemaException;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
-import com.variant.core.VariantEvent;
+import com.variant.core.TraceEvent;
 import com.variant.core.impl.ServerError;
-import com.variant.core.impl.VariantEventSupport;
+import com.variant.core.impl.TraceEventSupport;
 import com.variant.core.session.CoreSession;
 
 /**
@@ -332,14 +332,14 @@ public class Server {
 	//                                           /EVENT                                            //
 	//---------------------------------------------------------------------------------------------//
 
-	public void eventSave(final Session ssn, final VariantEvent event) {
+	public void eventSave(final Session ssn, final TraceEvent event) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("eventSave(%s,%s)", ssn.getId(), event.getName()));
 
 		new CommonExceptionHandlerVoid() {
 			@Override void voidBlock() throws Exception {
-				adapter.post(serverUrl + "event", ((VariantEventSupport)event).toJson());
+				adapter.post(serverUrl + "event", ((TraceEventSupport)event).toJson());
 			}
 		}.run(ssn);
 	}

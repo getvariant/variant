@@ -7,7 +7,7 @@ import com.variant.client.Session;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
 import com.variant.core.StateRequestStatus;
-import com.variant.core.VariantEvent;
+import com.variant.core.TraceEvent;
 import com.variant.core.impl.CoreException;
 import com.variant.core.impl.ServerError;
 import com.variant.core.schema.State;
@@ -78,7 +78,7 @@ public class StateRequestImpl implements StateRequest {
 	}
 
 	@Override
-	public VariantEvent getStateVisitedEvent() {
+	public TraceEvent getStateVisitedEvent() {
 		checkState();
 		return session.getCoreSession().getStateRequest().getStateVisitedEvent();
 	}

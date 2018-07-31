@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.variant.core.VariantEvent;
+import com.variant.core.TraceEvent;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
 import com.variant.server.api.FlushableEvent;
@@ -24,13 +24,13 @@ public class FlushableEventImpl implements FlushableEvent, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private CoreSession session;
-	private VariantEvent userEvent;
+	private TraceEvent userEvent;
 	
 	/**
 	 * Constructor
 	 * @return
 	 */
-	public FlushableEventImpl(VariantEvent event, CoreSession session) {
+	public FlushableEventImpl(TraceEvent event, CoreSession session) {
 		this.userEvent = event;		
 		this.session = session;
 	}
@@ -83,7 +83,7 @@ public class FlushableEventImpl implements FlushableEvent, Serializable {
 	 * The event we're wrapping.
 	 * @return
 	 */
-	public VariantEvent getOriginalEvent() {
+	public TraceEvent getOriginalEvent() {
 		return userEvent;
 	}
 	
