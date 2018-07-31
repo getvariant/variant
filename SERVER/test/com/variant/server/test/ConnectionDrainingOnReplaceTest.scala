@@ -28,10 +28,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
 
    //private val sessionJsonBig = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
    //private val sessionJsonPet = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
-   
-   // Override the test default of 10
-   override val config = "variant.max.concurrent.connections = 100"
-   
+      
    val sessionTimeoutMillis = server.config.getInt(SESSION_TIMEOUT) * 1000
    val vacuumIntervalMillis = server.config.getInt(SESSION_VACUUM_INTERVAL) * 1000
    

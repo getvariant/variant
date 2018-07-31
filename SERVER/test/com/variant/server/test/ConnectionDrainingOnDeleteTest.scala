@@ -26,9 +26,6 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
    private val logger = Logger(this.getClass)
    private val random = new Random(System.currentTimeMillis())
    private val SESSIONS = 100 
-
-   // Override the test default of 10
-   override val config = "variant.max.concurrent.connections = 100"
    
    val sessionTimeoutMillis = server.config.getInt(SESSION_TIMEOUT) * 1000
    val vacuumIntervalMillis = server.config.getInt(SESSION_VACUUM_INTERVAL) * 1000
