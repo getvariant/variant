@@ -14,6 +14,7 @@ import com.variant.client.impl.LifecycleService;
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.client.lifecycle.SessionExpiredLifecycleEvent;
+import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.core.util.CollectionsUtils;
 
 /**

@@ -1,4 +1,4 @@
-package com.variant.client.test;
+package com.variant.client.test.util;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -10,7 +10,6 @@ import com.variant.core.test.VariantBaseTest;
 
 /**
  * Base class for all Client JUnit tests.
- * TODO: why isn't this in test?
  */
 public abstract class ClientBaseTest extends VariantBaseTest {
 	

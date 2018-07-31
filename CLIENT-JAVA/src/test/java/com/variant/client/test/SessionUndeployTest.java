@@ -14,6 +14,7 @@ import com.variant.client.VariantException;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.SessionImpl;
+import com.variant.client.test.util.ClientBaseTestWithServerAsync;
 import com.variant.core.impl.ServerError;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.State;

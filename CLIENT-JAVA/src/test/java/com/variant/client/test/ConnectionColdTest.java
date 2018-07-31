@@ -12,6 +12,7 @@ import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
+import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.core.impl.ServerError;
 
 /**

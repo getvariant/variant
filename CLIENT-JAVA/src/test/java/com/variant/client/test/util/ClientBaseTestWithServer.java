@@ -1,8 +1,9 @@
-package com.variant.client.test;
+package com.variant.client.test.util;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.variant.client.test.StandaloneServer;
 import com.variant.core.util.IoUtils;
 import com.variant.core.util.StringUtils;
 

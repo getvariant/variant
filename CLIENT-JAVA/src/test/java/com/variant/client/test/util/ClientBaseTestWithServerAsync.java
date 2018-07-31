@@ -1,4 +1,4 @@
-package com.variant.client.test;
+package com.variant.client.test.util;
 
 import static org.junit.Assert.fail;
 

@@ -7,7 +7,6 @@ case "$1" in
 start)
    shift
    # If caller passed http.port, it will override the default.
-   echo "bin/playapp -Dhttp.port=5377 $@"
    bin/playapp -Dhttp.port=5377 $@
    ;;
 
