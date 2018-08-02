@@ -41,6 +41,7 @@ class RequestTest extends EmbeddedServerSpec {
 
       "create new session" in {
          
+         // create a new session.
          assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
             .isOk         
             .withBodyJsonSession(sid, "big_conjoint_schema")
@@ -48,15 +49,15 @@ class RequestTest extends EmbeddedServerSpec {
 
       "create and commit new state request" in {
 
+         // Get existing session.
          assertResp(route(app, httpReq(GET, context + "/session/big_conjoint_schema/" + sid)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest
-               stateReq mustBe (null)
+               coreSsn.getStateRequest mustBe (null)
          }
-         
-         // Create state request object.
+ 
+         // Target sesion for "state2"
          val reqBody1 = Json.obj(
             "sid" -> sid,
             "state" -> "state2"
@@ -115,8 +116,85 @@ class RequestTest extends EmbeddedServerSpec {
          // should not have produced a new event, i.e. still 1.
          Thread.sleep(2000)
          reader.read(e => e.getSessionId == sid).size mustBe 1
-      }
 
+      }
+      
+      "refuse to create a new state request on top of an existing one" in {
+
+         val sid = newSid
+         
+         // create a new session.
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+            .isOk         
+            .withBodyJsonSession(sid, "big_conjoint_schema")
+   
+         // Target sesion for "state2"
+         val reqBody1 = Json.obj(
+            "sid" -> sid,
+            "state" -> "state2"
+            ).toString
+
+         // Target and get the request.
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe false
+               stateReq.getLiveExperiences.size mustBe 6
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state2")
+               stateReq.getStateVisitedEvent mustNot be (null)
+            }
+
+         // Target again and get the error.
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+            .isError(ACTIVE_REQUEST)
+
+         // Commit the request.
+         val reqBody2 = Json.obj(
+            "sid" -> sid
+            ).toString
+
+         var stateReq: CoreStateRequest = null
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe true
+               stateReq.getLiveExperiences.size mustBe 6
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state2")
+         }
+         
+         // Can target again.
+         // Target sesion for "state3"
+         val reqBody3 = Json.obj(
+            "sid" -> sid,
+            "state" -> "state3"
+            ).toString
+
+         // Target and get the request.
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody3)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe false
+               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state3")
+               stateReq.getStateVisitedEvent mustNot be (null)
+            }
+
+      }
    }
 
    "Schema petclinic_experiments" should {

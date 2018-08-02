@@ -19,6 +19,7 @@ import com.variant.server.test.hooks.TestQualificationHookNil
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.server.impl.StateRequestImpl
 
 /**
  * TODO: Need to also test annotations.
@@ -174,11 +175,13 @@ class HookScopeTest extends EmbeddedServerSpec {
    		ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
    		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
 
-   		ssn.targetForState(state1)
+   	   val req = ssn.targetForState(state1)
    		// Only test1 is instrumented on state1
-   		ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
+     		ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
    		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
-   		
+   		// commit before targeting again.
+   		req.asInstanceOf[StateRequestImpl].commit();	
+
    		// Test3 is instrumented on state2
    		ssn.targetForState(state2)
          ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1 test3"

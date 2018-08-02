@@ -93,7 +93,7 @@ class EventTest extends EmbeddedServerSpec {
          
          val eventBody = body.expand("sid" -> "foo")
          assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
-            .isError(SessionExpired, "foo")
+            .isError(SESSION_EXPIRED, "foo")
       }
 
       var ssn: Session = null;

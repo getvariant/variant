@@ -48,7 +48,6 @@ start)
     # Start the server
     lsof -n -i4TCP:5377 | grep LISTEN | awk '{print $2}' | xargs kill
     shift 2
-    echo ">>>>> ${server_dir}/bin/variant.sh start $@"
     ${server_dir}/bin/variant.sh start $@
     ;;
 

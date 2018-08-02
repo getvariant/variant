@@ -145,7 +145,7 @@ class SessionStore (private val server: VariantServer) {
 
 	   val result	= get(sid).getOrElse {
          logger.debug(s"Not found session [${sid}]")      
-         throw new ServerException.Remote(ServerError.SessionExpired, sid)
+         throw new ServerException.Remote(ServerError.SESSION_EXPIRED, sid)
       }
       logger.debug(s"Found session [${sid}]")            
       result

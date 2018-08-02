@@ -34,14 +34,12 @@ public class ClientUserError extends CommonError {
 	public static final ClientUserError PARAM_CANNOT_BE_NULL =
 			new ClientUserError(275, "Method parameter [%s] cannot be null");
 
-	public static final ClientUserError ACTIVE_REQUEST =
-			new ClientUserError(276, "Commit current state request first");
 
 	public static final ClientUserError LIFECYCLE_LISTENER_EXCEPTION =
-			new ClientUserError(277, "Unhandled exception [%s] in lifecycle listener class [%s]");
+			new ClientUserError(276, "Unhandled exception [%s] in lifecycle listener class [%s]");
 
 	public static final ClientUserError SERVER_CONNECTION_TIMEOUT =
-			new ClientUserError(278, "Unable to connect to Variant server at [%s]");
+			new ClientUserError(277, "Unable to connect to Variant server at [%s]");
 
    /**
     * 

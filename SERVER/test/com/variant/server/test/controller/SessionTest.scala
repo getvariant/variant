@@ -74,7 +74,7 @@ class SessionTest extends EmbeddedServerSpec {
       "return SessionExpired on GET non-existent session on valid CID" in {  
          
          assertResp(route(app, httpReq(GET, endpoint + "/petclinic_experiments/foo")))
-            .isError(SessionExpired, "foo")
+            .isError(SESSION_EXPIRED, "foo")
       }
 
       "return OK on PUT non-existent session with valid conn ID" in {
@@ -156,7 +156,7 @@ class SessionTest extends EmbeddedServerSpec {
          ("foo" :: "bar" :: Nil).foreach { sid =>
 
             assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + sid)))
-               .isError(SessionExpired, sid)
+               .isError(SESSION_EXPIRED, sid)
          }
       }
 
@@ -187,7 +187,7 @@ class SessionTest extends EmbeddedServerSpec {
          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
 
          assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + sid)))
-            .isError(SessionExpired, sid)
+            .isError(SESSION_EXPIRED, sid)
 
        }
 

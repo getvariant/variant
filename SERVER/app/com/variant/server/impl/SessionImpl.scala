@@ -11,6 +11,9 @@ import com.variant.server.api.Session
 import com.variant.server.api.StateRequest
 import com.variant.server.event.FlushableEventImpl
 import com.variant.server.schema.SchemaGen
+import com.variant.server.api.ServerException
+import com.variant.core.impl.ServerError
+import com.variant.core.schema.impl.StateVariantImpl
 
 /**
  * Server session enriches core session with server side functionality.
@@ -51,7 +54,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
    def this(json: String, schemaGen: SchemaGen) {
       this(CoreSession.fromJson(json, schemaGen), schemaGen)
    }
-
+   
    /*----------------------------------------------------------------------------------------*/
    /*                                        PUBLIC                                          */
    /*----------------------------------------------------------------------------------------*/
@@ -62,7 +65,10 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
    
    override def getId = coreSession.getId
          
-   override def getStateRequest = StateRequestImpl(this, coreSession.getStateRequest)
+   override def getStateRequest = {
+      if (coreSession.getStateRequest == null) null 
+      else StateRequestImpl(this, coreSession.getStateRequest)
+   }
    
    override def getTraversedStates = coreSession.getTraversedStates
    
@@ -88,9 +94,15 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
 
    def getTargetingStabile(): SessionScopedTargetingStabile = coreSession.getTargetingStabile()
      
-   def newStateRequest(state: StateImpl): StateRequestImpl = {
-      coreSession.setStateRequest(new CoreStateRequest(coreSession, state))
-      getStateRequest
+   def setStateRequest(state: StateImpl, variant: StateVariantImpl) {
+   
+      if (coreSession.getStateRequest != null && !coreSession.getStateRequest.isCommitted) {
+         throw new ServerException.Remote(ServerError.ACTIVE_REQUEST)                  
+      }
+
+      val coreReq = new CoreStateRequest(coreSession, state);
+      coreReq.setResolvedStateVariant(variant)
+      coreSession.setStateRequest(coreReq)
    }
    
    /*

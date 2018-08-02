@@ -10,6 +10,7 @@ import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.api.Session
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.server.impl.StateRequestImpl
 
 class TestQualificationHookTest extends EmbeddedServerSpec {
       
@@ -125,6 +126,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
 		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test3"
+		   req.asInstanceOf[StateRequestImpl].commit()
 
 	   }
 	   
@@ -300,7 +302,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 		   stabile.get("test5").toString() must startWith ("test5")
 		   stabile.get("test6").toString() must startWith ("test6.B")
 		   req.getResolvedParameters().get("path") must startWith ("/path/to/state2")
-
+		   req.asInstanceOf[StateRequestImpl].commit();
 	   }
 
 	   "honor session-current targeting settings when targeting for state3" in {

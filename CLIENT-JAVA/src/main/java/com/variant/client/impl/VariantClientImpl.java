@@ -25,7 +25,6 @@ public class VariantClientImpl implements VariantClient {
 //	private final ConnectionFactory connFactory = new ConnectionFactory(this);
 //	private final ConcurrentHashMap<String, Connection> connMap = new ConcurrentHashMap<String, Connection>();
 	
-	public final LifecycleService lceService = new LifecycleService(this);
 	public final Server server;
 		
 	//---------------------------------------------------------------------------------------------//

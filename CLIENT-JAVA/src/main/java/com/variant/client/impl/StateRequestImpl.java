@@ -25,6 +25,9 @@ public class StateRequestImpl implements StateRequest {
 	private final ConnectionImpl conn;
 	private CoreStateRequest coreRequest;
 	
+	/**
+	 * Ok to use this object?
+	 */
 	private void checkState() {
 		session.preChecks();
 	}
@@ -87,7 +90,9 @@ public class StateRequestImpl implements StateRequest {
 	public boolean commit(Object... userData) {
 		
 		checkState();
-		if (isCommitted()) return false;
+		
+		// If locally commited, don't bother.
+		if (session.getCoreSession().getStateRequest().isCommitted()) return false;
 		
 		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 		session.saveTrackers(userData);

@@ -63,7 +63,7 @@ class ConnectionTest extends BaseSpecWithServerAsync {
 
       "return  400 and error on GET to non-existent schema" in {         
          assertResp(route(app, httpReq(GET, endpoint + "/bad_schema")))
-            .isError(UnknownSchema, "bad_schema")
+            .isError(UNKNOWN_SCHEMA, "bad_schema")
       }
       
       "open connection on POST with valid schema name" in {

@@ -61,7 +61,7 @@ class EventController @Inject() (
       val ssn = server.ssnStore.getOrBust(sid)
       
       if (ssn.getStateRequest == null)
-         throw new ServerException.Remote(UnknownState)   
+         throw new ServerException.Remote(UNKNOWN_STATE)   
 
       val event = new ServerEvent(name, value, new Date(timestamp));  
       

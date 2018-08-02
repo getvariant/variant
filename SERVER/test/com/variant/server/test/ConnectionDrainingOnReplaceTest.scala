@@ -185,13 +185,13 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Big(i)
             assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
-               .isError(SessionExpired, sid)
+               .isError(SESSION_EXPIRED, sid)
          }
 
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Pet(i)
             assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
-               .isError(SessionExpired, sid)
+               .isError(SESSION_EXPIRED, sid)
          }
          
       }

@@ -44,26 +44,32 @@ public class Server {
 		abstract T block() throws Exception;
 		
 		/**
-		 * All sessions should use this.
-		 * All real work happens in {@link #run(Connection)}.
-		 * Here we only intercept and clean out expired sessions.
+		 * Call to server backed by a local session object.
+		 * All sessions should use this. All real work happens in {@link #run(String)}.
+		 * Here we only intercept the session expired exception thrown earlier and
+		 * and mark session expired.
 		 */
-		T run(Session ssn) {
-			return run(ssn.getId(), ssn.getConnection());
+		T run(SessionImpl ssn) {
+			try {
+				return run(ssn.getId());
+			}
+			catch (SessionExpiredException x) {
+				ssn.expire();
+				throw x;
+			}
 		}
 
 	   /**
-		 * 
+		 *  Call to server with no local session, only sid.
 		 */
-		T run(String sid, Connection conn) {
+		T run(String sid) {
 			
 			try { 
 				return block(); 
 			}
 			// Intercept certain user exceptions.
 			catch (VariantException ce) {
-				if (ce.getError() == ServerError.SessionExpired) {
-					((ConnectionImpl)conn).cache.expire(sid);
+				if (ce.getError() == ServerError.SESSION_EXPIRED) {
 					throw new SessionExpiredException(sid);
 				}
 				else throw ce;
@@ -79,6 +85,7 @@ public class Server {
 				throw new VariantException.Internal("Unexpected Exception", e);
 			}
 		}
+				
 	}
 
 	/**
@@ -122,7 +129,7 @@ public class Server {
 			return Payload.Connection.parse(resp);
 		}
 		catch (VariantException ce) {
-			if (ce.getError() == ServerError.UnknownSchema) {
+			if (ce.getError() == ServerError.UNKNOWN_SCHEMA) {
 				throw new UnknownSchemaException(schema);
 			}
 			else throw ce;
@@ -159,7 +166,7 @@ public class Server {
 				HttpResponse resp = adapter.get(serverUrl + "session/" + conn.getSchemaName() + "/" + sid);
 				return Payload.Session.parse(conn, resp);
 			}
-		}.run(sid, conn);
+		}.run(sid);
 	}
 
 	/**
@@ -178,14 +185,14 @@ public class Server {
 				HttpResponse resp = adapter.post(serverUrl + "session/" + conn.getSchemaName() + "/" + sid);
 				return Payload.Session.parse(conn, resp);
 			}
-		}.run(sid, conn);
+		}.run(sid);
 	}
 
 	/**
 	 * Save or replace session on server.
 	 * Is this actually needed?
 	 */
-	public void sessionSave(final Session ssn) {
+	public void sessionSave(final SessionImpl ssn) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionSave(%s)", ssn.getId()));
@@ -332,7 +339,7 @@ public class Server {
 	//                                           /EVENT                                            //
 	//---------------------------------------------------------------------------------------------//
 
-	public void eventSave(final Session ssn, final TraceEvent event) {
+	public void eventSave(final SessionImpl ssn, final TraceEvent event) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("eventSave(%s,%s)", ssn.getId(), event.getName()));

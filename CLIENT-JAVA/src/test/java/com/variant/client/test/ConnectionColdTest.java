@@ -39,7 +39,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			
 			@Override public void onThrown(VariantException e) {
 				assertEquals(
-						ServerError.UnknownSchema.asMessage("bad_schema"), 
+						ServerError.UNKNOWN_SCHEMA.asMessage("bad_schema"), 
 						e.getMessage());
 			}
 			
@@ -59,7 +59,6 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		assertNotNull(conn1);
 		assertNotNull(conn1.getClient());
 		assertEquals(conn1.getSessionTimeoutMillis(), 1000);
-		assertNotNull(conn1.getSessionCache());
 		assertEquals("big_conjoint_schema", conn1.getSchemaName());
 		
 		// Second connection to the same schema
@@ -85,7 +84,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			
 			@Override public void onThrown(VariantException e) {
 				assertEquals(
-						ServerError.WrongConnection.asMessage("petclinic"), 
+						ServerError.WRONG_CONNECTION.asMessage("petclinic"), 
 						e.getMessage());
 			}
 			

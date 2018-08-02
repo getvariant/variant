@@ -1,25 +1,27 @@
 package com.variant.client.impl;
 
-import static com.variant.client.ConfigKeys.*;
-import static com.variant.client.impl.ClientUserError.*;
+import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
+import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
+import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
+import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
 
 import java.util.Random;
 
-import com.variant.client.TargetingTracker;
-import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
+import com.variant.client.TargetingTracker;
 import com.variant.client.VariantClient;
+import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
-import com.variant.client.session.SessionCache;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.StringUtils;
+import com.variant.core.util.Tuples.Pair;
 
 /**
  * A connection to the server.
@@ -36,6 +38,19 @@ public class ConnectionImpl implements Connection {
 	
 	private final long sessionTimeoutMillis;
 	private final String schema;
+	final VariantClientImpl client;
+
+	/**
+	 * 
+	 */
+	ConnectionImpl(VariantClientImpl client, String schema, Payload.Connection payload) {
+		
+		this.client = client;
+		this.schema = schema;
+		
+		sessionTimeoutMillis = payload.sessionTimeout * 1000L;
+
+	}
 
 	/**
 	 * Anything?
@@ -121,7 +136,8 @@ public class ConnectionImpl implements Connection {
 		}
 			
 		try {
-			SessionImpl result = fetchSession(sessionId, create, null);
+			Pair<CoreSession, Schema> fromServer = fetchSession(sessionId, create);
+			SessionImpl result = new SessionImpl(this, fromServer._2(), fromServer._1());
 			result.sessionIdTracker = sidTracker;
 			result.targetingTracker = initTargetingTracker(result, userData);
 			return result;
@@ -137,7 +153,8 @@ public class ConnectionImpl implements Connection {
 	 * @param session
 	 */
 	void refreshSession(SessionImpl session) {
-		fetchSession(session.getId(), false, session);
+		Pair<CoreSession, Schema> fromServer = fetchSession(session.getId(), false);
+		session.rewrap(fromServer._1());
 	}
 	
 	/**
@@ -145,89 +162,32 @@ public class ConnectionImpl implements Connection {
 	 *   
 	 * @return
 	 */
-	private SessionImpl fetchSession(String sid, boolean create, SessionImpl localSession) {
+	private Pair<CoreSession, Schema> fetchSession(String sid, boolean create) {
 
-		// If we already have this session locally, we will reuse the schema.
-		SessionImpl clientSsn = localSession == null ? (SessionImpl) cache.get(sid) : localSession;
-
-		// This will throw exceptions if no session.	
+		// This may throw session expired exception.	
 		Payload.Session payload = create ? 
 				client.server.sessionGetOrCreate(sid, this) : client.server.sessionGet(sid, this);
 			
-	    // Parse the schema, but only if don't already have it locally.
-		Schema schema = null;
-		if (clientSsn == null) {
-			ParserResponse resp = new ClientSchemaParser().parse(payload.schemaSrc);
-			if (resp.hasMessages(Severity.ERROR)) {
-				StringBuilder buff = new StringBuilder("Unable to parse schema:\n");
-				for (ParserMessage msg: resp.getMessages()) buff.append("    ").append(msg.toString()).append("\n");
-				throw new VariantException.Internal(buff.toString());
-			}
-			schema = new SchemaImpl(payload.schemaId, resp.getSchema());
+	    // Parse the schema.
+		// TODO: cache parsed schema indexed by gen IDs, so as not to reparse on each session refresh.
+		ParserResponse resp = new ClientSchemaParser().parse(payload.schemaSrc);
+		if (resp.hasMessages(Severity.ERROR)) {
+			StringBuilder buff = new StringBuilder("Unable to parse schema:\n");
+			for (ParserMessage msg: resp.getMessages()) buff.append("    ").append(msg.toString()).append("\n");
+			throw new VariantException.Internal(buff.toString());
 		}
-		else {
-			schema = clientSsn.getSchema();
-		}
+		Schema schema = new SchemaImpl(payload.schemaId, resp.getSchema());
 		
 		// Can create the core session now
 		CoreSession serverSsn =  CoreSession.fromJson(payload.coreSsnSrc, schema);
 		
-		// If no client-side session object, create it. 
-		// Otherwise, simply replace the core session from the server.
-		if (clientSsn == null) {
-			clientSsn = new SessionImpl(this, schema, serverSsn);
-			cache.add(clientSsn);
-		}
-		else {
-			// This client has the session.
-			clientSsn.rewrap(serverSsn);
-		}
-		return clientSsn;	
-	}
-
-	/*
-	// Lifecycle hooks.
-	final private ArrayList<LifecycleHook<? extends ClientLifecycleEvent>> lifecycleHooks = 
-			new ArrayList<LifecycleHook<? extends ClientLifecycleEvent>>();
-	*/
-
-	// Session cache has package visibilithy because accessed by HooksService.
-	final SessionCache cache;
-
-	final VariantClientImpl client;
-	
-
-	/**
-	 * 
-	 */
-	ConnectionImpl(VariantClientImpl client, String schema, Payload.Connection payload) {
-		
-		this.client = client;
-		this.schema = schema;
-		
-		sessionTimeoutMillis = payload.sessionTimeout * 1000L;
-		cache = new SessionCache(this);
+		return new Pair<CoreSession, Schema>(serverSsn, schema);
 
 	}
-	
-	/**
-	 * Connections have no server side state
-	 * 
-	private void destroy() {
-		cache.destroy();
-		client.freeConnection(id);
-	}
-	*/
+
 	// ---------------------------------------------------------------------------------------------//
 	//                                             PUBLIC                                           //
 	// ---------------------------------------------------------------------------------------------//
-
-	/**
-	 *
-	@Override
-	public String getId() {
-		return id;
-	}
 
 	/**
 	 * Should always be safe. We call this during open connection..
@@ -259,7 +219,8 @@ public class ConnectionImpl implements Connection {
 		preChecks();
 		// Intercept session expired exception.
 		try {
-			return fetchSession(sessionId, false, null);
+			Pair<CoreSession, Schema> fromServer = fetchSession(sessionId, false);
+			return new SessionImpl(this, fromServer._2(), fromServer._1());
 		}
 		catch (SessionExpiredException sex) { 
 			return null;
@@ -270,24 +231,7 @@ public class ConnectionImpl implements Connection {
 	public String getSchemaName() {
 		return schema;
 	}
-/*
-	@Override
-	public ConnectionStatus getStatus() {
-		return status;
-	}
 
-	@Override
-	public void addLifecycleHook(LifecycleHook<? extends ClientLifecycleEvent> hook) {
-		preChecks();
-		lifecycleHooks.add(hook);
-	}
-
-	@Override
-	public void close() {
-		preChecks();
-		client.server.disconnect(this);
-	}
-*/
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
@@ -298,18 +242,4 @@ public class ConnectionImpl implements Connection {
 		return sessionTimeoutMillis;
 	}
 	
-	/**
-	 * Read-only snapshot.
-	 *
-	public ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>> getLifecycleHooks() {
-		return new ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>>(lifecycleHooks);
-	}
-	
-	/**
-	 * Only tests are allowed to use this.
-	 */
-	public SessionCache getSessionCache() {
-		return cache;
-	}
-
 }

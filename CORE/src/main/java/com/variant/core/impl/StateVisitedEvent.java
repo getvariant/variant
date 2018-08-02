@@ -13,7 +13,6 @@ public class StateVisitedEvent extends TraceEventSupport implements Serializable
 	public static final String EVENT_NAME = "$STATE_VISIT";
 		
 	/**
-	 * Public instantiation
 	 */
 	public StateVisitedEvent(CoreSession session, State state) {
 		super(session, EVENT_NAME);

@@ -33,7 +33,7 @@ class SessionController @Inject() (
       
       // Must match the schema name.
       if (ssn.schemaGen.getMeta.getName != schemaName) 
-		      throw new ServerException.Remote(WrongConnection, schemaName)
+		      throw new ServerException.Remote(WRONG_CONNECTION, schemaName)
 
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson),
@@ -58,7 +58,7 @@ class SessionController @Inject() (
          case Some(ssn) => {
             
             if (ssn.schemaGen.getMeta.getName != schemaName) 
-		      throw new ServerException.Remote(WrongConnection, schemaName)
+		      throw new ServerException.Remote(WRONG_CONNECTION, schemaName)
             
             ssn
          }
@@ -68,7 +68,7 @@ class SessionController @Inject() (
 
             val liveGen = server.schemata.getLiveGen(schemaName).getOrElse {
                logger.debug("Schema [%s] not found".format(schemaName))
-               throw new ServerException.Remote(UnknownSchema, schemaName)
+               throw new ServerException.Remote(UNKNOWN_SCHEMA, schemaName)
             }
             
             val newSsn = SessionImpl.empty(sid, liveGen)
@@ -119,14 +119,14 @@ class SessionController @Inject() (
             
             // Must match the schema name.
             if (ssn.schemaGen.getMeta.getName != schemaName) 
-		      throw new ServerException.Remote(WrongConnection, schemaName)
+		      throw new ServerException.Remote(WRONG_CONNECTION, schemaName)
 
             ssn.schemaGen
             
          case None =>
             // Given schema must have a live gen.
             server.schemata.getLiveGen(schemaName).getOrElse {
-               throw new ServerException.Remote(UnknownSchema, schemaName)
+               throw new ServerException.Remote(UNKNOWN_SCHEMA, schemaName)
             }
       }
       

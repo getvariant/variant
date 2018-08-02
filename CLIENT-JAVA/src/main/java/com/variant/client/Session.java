@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.typesafe.config.Config;
-import com.variant.client.lifecycle.ClientLifecycleEvent;
-import com.variant.client.lifecycle.LifecycleHook;
 import com.variant.core.TraceEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -182,17 +180,6 @@ public interface Session {
 	public void triggerTraceEvent(TraceEvent event);
 		
 	/**
-	 * <p>Indicates whether this session has expired. A session is expired by the server
-	 * after a configurable period of inactivity.
-	 * 
-	 * @return true if this session has expired or false otherwise. 
-     *
-	 * @see #getTimeoutMillis()
-	 * @since 0.6
-	 */
-	public boolean isExpired();
-	
-	/**
 	 * <p>Set a session attribute.
 	 * 
 	 * @param name Attribute name. Cannot be <code>null</code>.
@@ -232,19 +219,4 @@ public interface Session {
 	 */
 	public String clearAttribute(String name);
 	
-	/**
-	 * Register a session-level life-cycle hook. Hooks are posted asynchronously.
-	 * If multiple hooks are registered for a particular life-cycle event, connection-level
-	 * hooks are posted before session-level hooks.
-	 * 
-	 * @param hook An implementation of {@link LifecycleHook}
-	 * 
-	 * @throws SessionExpiredException
-	 * @throws UnknownSchemaException
-	 *
-	 * @see Connection#addLifecycleHook(LifecycleHook)
-	 * @since 0.9
-	 */
-	void addLifecycleHook(LifecycleHook<? extends ClientLifecycleEvent> hook);
-
 }

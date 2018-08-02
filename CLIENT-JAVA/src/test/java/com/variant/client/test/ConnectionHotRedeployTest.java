@@ -47,7 +47,7 @@ public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 			}
 			
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.SessionExpired, e.getError());
+				assertEquals(ServerError.SESSION_EXPIRED, e.getError());
 			}
 			
 		}.assertThrown();

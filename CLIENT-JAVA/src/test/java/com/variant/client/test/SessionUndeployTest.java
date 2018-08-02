@@ -1,7 +1,6 @@
 package com.variant.client.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -49,7 +48,6 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		assertNotNull(conn1);
 		assertNotNull(conn1.getClient());
 		assertEquals(conn1.getSessionTimeoutMillis(), 1000);
-		assertNotNull(conn1.getSessionCache());
 		assertEquals("big_conjoint_schema", conn1.getSchemaName());
 		
 		// Second connection to the same schema
@@ -146,18 +144,29 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				StateRequest req = requests1[_i];
 
 				// Non-mutating methods that don't go over the network.
-				assertTrue(ssn.isExpired());
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
 				assertEquals(conn1, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				assertNull(conn1.getSessionById(sessions1[_i].getId()));
 				
-				// Mutating methods.
+				// Attempt to target should fail due to active state request.
 				new ClientExceptionInterceptor() {
 					
 					@Override public void toRun() {
-						switch (_i % 9) {
+						ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); 
+					}
+					
+					@Override public void onThrown(VariantException e) {
+						assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
+					}
+				}.assertThrown();
+				
+				// All else should throw session expired exception.
+				new ClientExceptionInterceptor() {
+					
+					@Override public void toRun() {
+						switch (_i % 8) {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedTests(); break;
 						case 2: ssn.getDisqualifiedTests(); break;
@@ -165,13 +174,12 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 4: ssn.getAttribute("foo"); break;
 						case 5: ssn.setAttribute("foo", "bar"); break;
 						case 6: ssn.clearAttribute("foo"); break;
-						case 7: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
-						case 8: req.commit(); break;
+						case 7: req.commit(); break;
 						}
 					}
 					
 					@Override public void onThrown(VariantException e) {
-						assertEquals(ServerError.SessionExpired, e.getError());
+						assertEquals(ServerError.SESSION_EXPIRED, e.getError());
 					}
 					
 				}.assertThrown();
@@ -187,18 +195,29 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				StateRequest req = requests2[_i];
 
 				// Non-mutating methods that don't go over the network.
-				assertTrue(ssn.isExpired());
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
 				assertEquals(conn2, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 			    assertNull(conn2.getSessionById(sessions1[_i].getId()));
 			    
+				// Attempt to target should fail due to active state request.
+				new ClientExceptionInterceptor() {
+					
+					@Override public void toRun() {
+						ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); 
+					}
+					
+					@Override public void onThrown(VariantException e) {
+						assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
+					}
+				}.assertThrown();
+
 				// Mutating methods.
 				new ClientExceptionInterceptor() {
 					
 					@Override public void toRun() {
-						switch (_i % 9) {
+						switch (_i % 8) {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedTests(); break;
 						case 2: ssn.getDisqualifiedTests(); break;
@@ -206,13 +225,12 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 4: ssn.getAttribute("foo"); break;
 						case 5: ssn.setAttribute("foo", "bar"); break;
 						case 6: ssn.clearAttribute("foo"); break;
-						case 7: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
-						case 8: req.commit(); break;
+						case 7: req.commit(); break;
 						}
 					}
 					
 					@Override public void onThrown(VariantException e) {
-						assertEquals(ServerError.SessionExpired, e.getError());
+						assertEquals(ServerError.SESSION_EXPIRED, e.getError());
 					}
 					
 				}.assertThrown();
@@ -225,37 +243,48 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			async (() -> {
 				
 				// Session has expired on the server
-				assertNull(conn3.getSessionById(sessions1[_i].getId()));
+				assertNull(conn3.getSessionById(sessions3[_i].getId()));
 			
 				SessionImpl ssn = (SessionImpl) sessions3[_i];
 				StateRequest req = requests3[_i];
 
 				// Non-mutating methods that don't go over the network.
-				assertTrue(ssn.isExpired());
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
 				assertEquals(conn3, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				
-				// Mutating methods.
+				// Attempt to target should fail due to active state request.
 				new ClientExceptionInterceptor() {
 					
 					@Override public void toRun() {
-						switch (_i % 9) {
+						ssn.targetForState(ssn.getSchema().getState("newOwner"));
+					 }
+					
+					@Override public void onThrown(VariantException e) {
+						assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
+					}
+					
+				}.assertThrown();
+
+				// All else throw session expired exception.
+				new ClientExceptionInterceptor() {
+					
+					@Override public void toRun() {
+						switch (_i % 8) {
 						case 0: req.commit(); break;
 						case 1: ssn.getTraversedStates(); break;
 						case 2: ssn.getTraversedTests(); break;
 						case 3: ssn.getDisqualifiedTests(); break;
-						case 4: ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+						case 4: ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("newOwner"))); break;
 						case 5: ssn.getAttribute("foo"); break;
 						case 6: ssn.setAttribute("foo", "bar"); break;
 						case 7: ssn.clearAttribute("foo"); break;
-						case 8: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
 						}
 					 }
 					
 					@Override public void onThrown(VariantException e) {
-						assertEquals(ServerError.SessionExpired, e.getError());
+						assertEquals(ServerError.SESSION_EXPIRED, e.getError());
 					}
 					
 				}.assertThrown();
@@ -272,7 +301,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			}
 
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.UnknownSchema, e.getError());
+				assertEquals(ServerError.UNKNOWN_SCHEMA, e.getError());
 			}
 			
 		}.assertThrown();
@@ -302,7 +331,6 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		assertNotNull(conn1);
 		assertNotNull(conn1.getClient());
 		assertEquals(ssnTimeout * 1000, conn1.getSessionTimeoutMillis());
-		assertNotNull(conn1.getSessionCache());
 		assertEquals("big_conjoint_schema", conn1.getSchemaName());
 		
 		// Second connection to the same schema
@@ -397,7 +425,6 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				SessionImpl ssn = (SessionImpl) sessions1[_i];
 				StateRequest req = requests1[_i];
 
-				assertFalse(ssn.isExpired());
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
 				assertEquals(client.getConfig(), ssn.getConfig());
@@ -427,10 +454,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 				}.assertThrown();
 				
-				// Getting session by id in the same connection should yield the same object.
 				Session ssnByIdFromThisConnection = conn1.getSessionById(ssn.getId());
-				assertEquals(ssn, ssnByIdFromThisConnection);
-				assertEquals(ssn.getStateRequest(), ssnByIdFromThisConnection.getStateRequest());
 				assertEquals(value, ssnByIdFromThisConnection.getAttribute(key));
 				
 				// Getting session by ID in different connection should yield different object.
@@ -457,7 +481,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			}
 			
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.UnknownSchema, e.getError());
+				assertEquals(ServerError.UNKNOWN_SCHEMA, e.getError());
 			}
 
 		}.assertThrown();
@@ -469,14 +493,12 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				SessionImpl ssn = (SessionImpl) sessions2[_i];
 				StateRequest req = requests2[_i];
 
-				assertFalse(ssn.isExpired());
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
 				assertEquals(client.getConfig(), ssn.getConfig());
 				assertEquals(conn2, ssn.getConnection());
 				assertEquals(ssnTimeout * 1000, ssn.getTimeoutMillis());
 				
-				assertEquals(ssn, conn2.getSessionById(ssn.getId()));
 				assertNotNull(ssn.getTraversedStates());
 				assertNotNull(ssn.getTraversedTests());
 				assertNotNull(ssn.getDisqualifiedTests());
@@ -503,14 +525,12 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				SessionImpl ssn = (SessionImpl) sessions3[_i];
 				StateRequest req = requests3[_i];
 
-				assertFalse(ssn.isExpired());
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
 				assertEquals(client.getConfig(), ssn.getConfig());
 				assertEquals(conn3, ssn.getConnection());
 				assertEquals(ssnTimeout * 1000, ssn.getTimeoutMillis());
 				
-				assertEquals(ssn, conn3.getSessionById(ssn.getId()));
 				assertNotNull(ssn.getTraversedStates());
 				assertNotNull(ssn.getTraversedTests());
 				assertNotNull(ssn.getDisqualifiedTests());

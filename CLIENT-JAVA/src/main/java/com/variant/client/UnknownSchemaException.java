@@ -13,7 +13,7 @@ import com.variant.core.impl.ServerError;
 public class UnknownSchemaException extends VariantException {
 	
 	public UnknownSchemaException(String schema) {
-		super(ServerError.UnknownSchema, schema);
+		super(ServerError.UNKNOWN_SCHEMA, schema);
 	}
 
 }

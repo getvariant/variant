@@ -89,19 +89,19 @@ public class ServerError extends CommonError {
 	//
 	// 701-800 User, Client API
 	//
-	public static final ServerError UnknownSchema = 
+	public static final ServerError UNKNOWN_SCHEMA = 
 			new ServerError(701, "Unknown schema [%s]");
 	
-	public static final ServerError WrongConnection = 
+	public static final ServerError WRONG_CONNECTION = 
 			new ServerError(702, "Cannot access existing session over connection to [%s]");
 	
-	//public static final ServerError TooManyConnections = 
-	//      new ServerError(703, "Too many connections");
+	public static final ServerError ACTIVE_REQUEST =
+			new ServerError(703, "In-progress state request found in session. Commit or cancel it first");
 
-	public static final ServerError SessionExpired = 
+	public static final ServerError SESSION_EXPIRED = 
 			new ServerError(704, "Session ID [%s] does not exist");
 
-	public static final ServerError UnknownState = 
+	public static final ServerError UNKNOWN_STATE = 
 			new ServerError(705, "No state request in session. Target this session for a state first");
 
 	public final static ServerError STATE_UNDEFINED_IN_EXPERIENCE =

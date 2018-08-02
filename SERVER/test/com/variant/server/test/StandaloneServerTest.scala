@@ -43,7 +43,7 @@ class StandaloneServerTest extends StandaloneServerSpec {
          server.start()
          val resp = HttpOperation.get("http://localhost:5377/variant/connection/petclinic_experiments").exec()
          resp.getResponseCode mustBe 400
-         resp.getErrorContent mustBe ServerError.UnknownSchema.asMessage("petclinic_experiments")
+         resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic_experiments")
          
          val lines = ServerLogTailer.last(7, serverDir + "/log/variant.log")
          

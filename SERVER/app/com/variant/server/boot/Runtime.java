@@ -225,8 +225,7 @@ public class Runtime {
 				"Vector [" + CollectionsUtils.toString(vector, ",") + "] is unresolvable");
 		
 		// AOK. Create the state request object.
-		StateRequestImpl newReq = session.newStateRequest(state);
-		newReq.setResolvedStateVariant(resolution._2());
+		session.setStateRequest(state, resolution._2());
 	}
 
 	/**

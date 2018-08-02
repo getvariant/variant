@@ -183,7 +183,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
       "refuse session create in dead generation" in {
 
          assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + newSid)))
-            .isError(UnknownSchema, "ParserConjointOkayBigTestNoHooks")
+            .isError(UNKNOWN_SCHEMA, "ParserConjointOkayBigTestNoHooks")
       }
 
       "expire all sessions and dispose of all dead generations after session timeout period" in {
@@ -193,13 +193,13 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Big(i)
             assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
-               .isError(SessionExpired, sid)
+               .isError(SESSION_EXPIRED, sid)
          }
 
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Pet(i)
             assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
-               .isError(SessionExpired, sid)
+               .isError(SESSION_EXPIRED, sid)
          }
          
          // TODO: test that dead generations were vacuumed.

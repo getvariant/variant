@@ -1,16 +1,16 @@
 package com.variant.client.test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import com.variant.client.VariantException;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantClient;
+import com.variant.client.VariantException;
+import com.variant.client.impl.SessionImpl;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.core.impl.ServerError;
 import com.variant.core.schema.State;
@@ -51,11 +51,15 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		// Get same session by SID
 		Session ssn2 = conn.getSessionById(sid);
-		assertEquals(ssn1, ssn2);
+		assertEquals(
+				((SessionImpl)ssn1).getCoreSession().toJson(), 
+				((SessionImpl)ssn2).getCoreSession().toJson());
 		
 		// Get same session via SID tracker
 		ssn2 = conn.getSession(sid);
-		assertEquals(ssn1, ssn2);	
+		assertEquals(
+				((SessionImpl)ssn1).getCoreSession().toJson(), 
+				((SessionImpl)ssn2).getCoreSession().toJson());
 	}
 	
 	/**
@@ -77,25 +81,19 @@ public class SessionTest extends ClientBaseTestWithServer {
 			assertEquals("big_conjoint_schema", sessions[i].getSchema().getMeta().getName());
 		}
 		
-		for (int i = 0; i < sessions.length; i++) {
-			assertFalse(sessions[i].isExpired());
-		}
-
 		// Let sessions a chance to expire on the server.
 		
 		Thread.sleep(2000);
 		
 		final State state2 = sessions[0].getSchema().getState("state2");
 		for (int i = 0; i < sessions.length; i++) {
-			assertFalse(sessions[i].isExpired());
 			final Session ssn = sessions[i];
 			new ClientExceptionInterceptor() {
 				@Override public void toRun() {
 					ssn.targetForState(state2);
 				}
 				@Override public void onThrown(VariantException e) {
-					assertEquals(ServerError.SessionExpired, e.getError());
-					assertTrue(ssn.isExpired());
+					assertEquals(ServerError.SESSION_EXPIRED, e.getError());
 				}
 			}.assertThrown(SessionExpiredException.class);
 		}
@@ -123,6 +121,9 @@ public class SessionTest extends ClientBaseTestWithServer {
 		Session ssn2 = conn2.getSessionById(sid);
 		assertNotNull(ssn2);
 		assertEquals(sid, ssn2.getId());
+		assertEquals(
+				((SessionImpl)ssn1).getCoreSession().toJson(), 
+				((SessionImpl)ssn2).getCoreSession().toJson());
 		
 		// Set attribute in ssn1
 		assertNull(ssn1.getAttribute("foo"));
@@ -132,6 +133,8 @@ public class SessionTest extends ClientBaseTestWithServer {
 
 		// read back in ssn1 and ssn2
 		assertEquals(attr, ssn1.getAttribute("foo"));
+		ssn2.getAttribute("foo");
+		System.out.println(((SessionImpl)ssn2).getCoreSession().toJson());		
 		assertEquals(attr, ssn2.getAttribute("foo"));
 		
 		// Clear in ssn2

@@ -37,7 +37,7 @@ class ConnectionController @Inject() (
          }
          case None => {
             logger.debug("Schema [%s] not found".format(name))
-            ServerErrorRemote(UnknownSchema).asResult(name)
+            ServerErrorRemote(UNKNOWN_SCHEMA).asResult(name)
          }
       }
    } 

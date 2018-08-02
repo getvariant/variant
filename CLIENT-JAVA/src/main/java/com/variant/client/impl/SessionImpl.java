@@ -1,12 +1,8 @@
 package com.variant.client.impl;
 
-import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 import static com.variant.client.impl.ClientUserError.ACTIVE_REQUEST;
 import static com.variant.client.impl.ClientUserError.PARAM_CANNOT_BE_NULL;
-import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,9 +19,6 @@ import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
 import com.variant.client.VariantException;
-import com.variant.client.lifecycle.ClientLifecycleEvent;
-import com.variant.client.lifecycle.LifecycleHook;
-import com.variant.client.lifecycle.SessionExpiredLifecycleEvent;
 import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.TraceEvent;
 import com.variant.core.schema.Schema;
@@ -33,7 +26,6 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Test;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
-import com.variant.core.util.immutable.ImmutableList;
 
 /**
  * Permanent wrapper around transient CoreSession, + client only session functionality. 
@@ -44,28 +36,23 @@ import com.variant.core.util.immutable.ImmutableList;
 public class SessionImpl implements Session {
 
 	final private static Logger LOG = LoggerFactory.getLogger(SessionImpl.class);
-	
-	private boolean isExpired = false;
-	
+		
 	private final ConnectionImpl conn;  // Connection which created this session.
 	private final Server server;        // Server object associated with this VariantClient.
 	private final Schema schema;
 	private CoreSession coreSession;
 	private StateRequestImpl stateRequest;
+	public boolean isExpired = false;
 
 	// These are set by ConnectionImpl
 	SessionIdTracker sessionIdTracker = null;
 	TargetingTracker targetingTracker = null;
 
-	// Lifecycle hooks.
-	final private ArrayList<LifecycleHook<? extends ClientLifecycleEvent>> lifecycleHooks = 
-			new ArrayList<LifecycleHook<? extends ClientLifecycleEvent>>();
-
 	/**
 	 * 
 	 * @param tt
 	 * @return
-	 */
+	 *
 	private SessionScopedTargetingStabile toTargetingStabile(TargetingTracker tt) {
 
 		SessionScopedTargetingStabile result = new SessionScopedTargetingStabile();
@@ -75,7 +62,7 @@ public class SessionImpl implements Session {
 				result.add(e.getExperience(), e.getTimestamp());
 		return result;
 	}
-
+*/
 	/**
 	 * 
 	 * @param stabile
@@ -93,7 +80,7 @@ public class SessionImpl implements Session {
 	 * 
 	 * @param userData
 	 * @return
-	 */
+	 *
 	private TargetingTracker initTargetingTracker(Object...userData) {
 		
 		// Instantiate targeting tracker.
@@ -114,13 +101,13 @@ public class SessionImpl implements Session {
 			throw new VariantException.Internal("Unable to instantiate targeting tracker class [" + className +"]", e);
 		}
 	}
-	
+*/	
 	/**
 	 * Sill ok to use this object?
 	 * Package visibility because state request abject needs access.
 	 */
 	void preChecks() {
-		if (isExpired) throw new SessionExpiredException(getId());
+		if (isExpired) throw new SessionExpiredException(coreSession.getId());
 	}
 
 	// ---------------------------------------------------------------------------------------------//
@@ -168,7 +155,7 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 *
+	 * 
 	 */
 	@Override
 	public StateRequest targetForState(State state) {
@@ -184,16 +171,6 @@ public class SessionImpl implements Session {
 		}
 		server.requestCreate(this, state.getName());
 		return getStateRequest();
-	}
-
-	/**
-	 * Non-mutable. Don't go to the server just to find out if we've expired
-	 * because it's a race condition any way.
-	 */
-	@Override
-	public boolean isExpired() {
-		
-		return isExpired;
 	}
 	
 	/**
@@ -318,24 +295,17 @@ public class SessionImpl implements Session {
 		return server.sessionAttrClear(this, name);
 	}
 
-	/**
-	 * Don't go the server just to see if we're expired.
-	 */
-	@Override
-	public void addLifecycleHook(LifecycleHook<? extends ClientLifecycleEvent> hook) {
-		preChecks();
-		lifecycleHooks.add(hook);
-	}
-
 
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//
-/*
-	public void save() {
-		conn.client.server.sessionSave(this);
+
+	/**
+	 */
+	public void  expire() {
+		isExpired = true;
 	}
-*/
+
 	/**
 	 */
 	public CoreSession getCoreSession() {
@@ -383,30 +353,12 @@ public class SessionImpl implements Session {
 	}
 	
 	/**
-	 * Expire this session object.
-	 */
-	public void expire() {
-		
-		if (LOG.isDebugEnabled()) LOG.debug("Expired session [" + getId() + "]");
-
-		isExpired = true;
-		((VariantClientImpl)conn.getClient()).lceService.raiseEvent(SessionExpiredLifecycleEvent.class, this);
-	}
-
-	/**
 	 * Refresh this session from server.
 	 */
 	public void refreshFromServer() {
 		conn.refreshSession(this);
 	}
 	
-	/**
-	 * Read-only snapshot.
-	 */
-	public ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>> getLifecycleHooks() {
-		return new ImmutableList<LifecycleHook<? extends ClientLifecycleEvent>>(lifecycleHooks);
-	}
-
 	@Override
 	public Schema getSchema() {
 		return schema;

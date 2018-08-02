@@ -1,6 +1,6 @@
 package com.variant.server.test
 
-import com.variant.core.impl.ServerError.SessionExpired
+import com.variant.core.impl.ServerError.SESSION_EXPIRED
 import com.variant.core.UserError.Severity
 import com.variant.core.schema.parser.error.SemanticError
 import com.variant.core.schema.parser.error.SyntaxError
@@ -261,7 +261,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          Thread.sleep(sessionTimeoutSecs * 1000);
          
          assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
-            .isError(SessionExpired, sid)
+            .isError(SESSION_EXPIRED, sid)
 
 	   }
      	   

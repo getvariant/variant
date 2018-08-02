@@ -12,7 +12,7 @@ import com.variant.core.impl.ServerError;
 public class SessionExpiredException extends VariantException {
 	
 	public SessionExpiredException(String sid) {
-		super(ServerError.SessionExpired, sid);
+		super(ServerError.SESSION_EXPIRED, sid);
 	}
 
 }
