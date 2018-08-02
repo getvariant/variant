@@ -6,18 +6,18 @@ import com.variant.server.api.Session;
 
 
 /**
- * <p>Super-type of all server life-cycle event types. Concrete implementations
+ * <p>Super-type of all  life-cycle event types raised at run time. Concrete implementations
  * are made available to user code via the {@link LifecycleHook#post(LifecycleEvent)} callback.
  *
  * <p>Life-cycle hooks provide a consistent way of extending the functionality of Variant server 
- * and client with custom semantics via callback methods, which can augment defaultt functionality
+ * and client with custom semantics via callback methods, which can augment default functionality
  * with application specific semantics.
  *  
  * @author Igor Urisman.
  * @since 0.8
  */
 
-public interface ServerLifecycleEvent extends LifecycleEvent {
+public interface RuntimeLifecycleEvent extends LifecycleEvent {
 	
 	/**
 	 * User session on whose behalf the event is raised.
@@ -33,6 +33,6 @@ public interface ServerLifecycleEvent extends LifecycleEvent {
 	 * 
 	 *  @since 0.7
 	 */
-	LifecycleHook<? extends ServerLifecycleEvent> getDefaultHook();
+	LifecycleHook<? extends RuntimeLifecycleEvent> getDefaultHook();
 	
 }

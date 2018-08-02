@@ -15,7 +15,7 @@ import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.HooksService;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.server.api.ServerException;
-import com.variant.server.api.lifecycle.ServerLifecycleEvent;
+import com.variant.server.api.lifecycle.RuntimeLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.VariantServer;
 import com.variant.server.boot.VariantServer$;
@@ -216,9 +216,9 @@ public class ServerHooksService implements HooksService {
 
 		   // Either empty chain, or none cared to return a result.
 		   // If this is a server event, post the default hook.
-		   if (event instanceof ServerLifecycleEvent) {
-			   ServerLifecycleEvent sle = (ServerLifecycleEvent) event;
-			   return ((LifecycleHook<ServerLifecycleEvent>) sle.getDefaultHook()).post(sle);
+		   if (event instanceof RuntimeLifecycleEvent) {
+			   RuntimeLifecycleEvent sle = (RuntimeLifecycleEvent) event;
+			   return ((LifecycleHook<RuntimeLifecycleEvent>) sle.getDefaultHook()).post(sle);
 		   }
 		   
 		   return null;
