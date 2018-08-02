@@ -12,7 +12,7 @@ start)
 
 stop)
    # Sending the process the interrupt signal appears to be the prescribed way to shutdown the server.
-   ps -ef | grep java | grep 'variant.variant-0.9.2' | awk '{print $2}' | xargs kill -2
+   ps -ef | grep java | grep 'variant.variant-<version>' | awk '{print $2}' | xargs kill -2
 
    ;;
 status)

@@ -37,6 +37,11 @@ cp ${workspace_root_dir}/SERVER/distr/bin/variant.sh bin
 # Rename play-built startup script in order not to confuse the customers.
 mv bin/variant bin/playapp
 
+# Replace version in the control script. Used by "stop"
+sed "s/<version>/${version}/" bin/variant.sh > /tmp/variant.sh
+mv /tmp/variant.sh bin
+chmod 751 bin/variant.sh
+
 # HACK! Don't know how to do this cleaner, short of ditching Play.
 # Add the ext/ directory to the server's classpath by directly manipulating the
 # the play-built startup script.
