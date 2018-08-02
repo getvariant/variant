@@ -91,7 +91,7 @@ public class CoreException extends VariantException {
 		 */
 		@Override
 		public String getMessage() {
-			return "[" + error.getCode() + "] " + error.asMessage(args);
+			return error.asMessage(args);
 		}
 
 	}
