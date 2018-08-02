@@ -10,7 +10,6 @@ import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
-import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.SessionImpl;
 import com.variant.client.test.util.ClientBaseTestWithServerAsync;
@@ -149,24 +148,12 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(conn1, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				assertNull(conn1.getSessionById(sessions1[_i].getId()));
-				
-				// Attempt to target should fail due to active state request.
-				new ClientExceptionInterceptor() {
-					
-					@Override public void toRun() {
-						ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); 
-					}
-					
-					@Override public void onThrown(VariantException e) {
-						assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
-					}
-				}.assertThrown();
-				
+								
 				// All else should throw session expired exception.
 				new ClientExceptionInterceptor() {
 					
 					@Override public void toRun() {
-						switch (_i % 8) {
+						switch (_i % 9) {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedTests(); break;
 						case 2: ssn.getDisqualifiedTests(); break;
@@ -174,7 +161,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 4: ssn.getAttribute("foo"); break;
 						case 5: ssn.setAttribute("foo", "bar"); break;
 						case 6: ssn.clearAttribute("foo"); break;
-						case 7: req.commit(); break;
+						case 7: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
+						case 8: req.commit(); break;
 						}
 					}
 					
@@ -201,23 +189,10 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(1000, ssn.getTimeoutMillis());
 			    assertNull(conn2.getSessionById(sessions1[_i].getId()));
 			    
-				// Attempt to target should fail due to active state request.
-				new ClientExceptionInterceptor() {
-					
-					@Override public void toRun() {
-						ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); 
-					}
-					
-					@Override public void onThrown(VariantException e) {
-						assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
-					}
-				}.assertThrown();
-
 				// Mutating methods.
 				new ClientExceptionInterceptor() {
-					
 					@Override public void toRun() {
-						switch (_i % 8) {
+						switch (_i % 9) {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedTests(); break;
 						case 2: ssn.getDisqualifiedTests(); break;
@@ -226,6 +201,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 5: ssn.setAttribute("foo", "bar"); break;
 						case 6: ssn.clearAttribute("foo"); break;
 						case 7: req.commit(); break;
+						case 8: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
 						}
 					}
 					
@@ -254,24 +230,11 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(conn3, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				
-				// Attempt to target should fail due to active state request.
-				new ClientExceptionInterceptor() {
-					
-					@Override public void toRun() {
-						ssn.targetForState(ssn.getSchema().getState("newOwner"));
-					 }
-					
-					@Override public void onThrown(VariantException e) {
-						assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
-					}
-					
-				}.assertThrown();
-
 				// All else throw session expired exception.
 				new ClientExceptionInterceptor() {
 					
 					@Override public void toRun() {
-						switch (_i % 8) {
+						switch (_i % 9) {
 						case 0: req.commit(); break;
 						case 1: ssn.getTraversedStates(); break;
 						case 2: ssn.getTraversedTests(); break;
@@ -280,6 +243,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 5: ssn.getAttribute("foo"); break;
 						case 6: ssn.setAttribute("foo", "bar"); break;
 						case 7: ssn.clearAttribute("foo"); break;
+						case 8: ssn.targetForState(ssn.getSchema().getState("newOwner")); break;
+
 						}
 					 }
 					
@@ -449,7 +414,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 					}
 					
 					@Override public void onThrown(VariantException e) {
-						assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
+						assertEquals(ServerError.ACTIVE_REQUEST, e.getError());
 					}
 
 				}.assertThrown();

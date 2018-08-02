@@ -49,9 +49,8 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertTrue(req1.commit());
 
 		Session ssn2 = conn.getSessionById(sid);
-		assertEquals(ssn1, ssn2);
+
 		StateRequest req2 = ssn2.getStateRequest();
-		assertEquals(req1, req2); 
 		assertTrue(req2.isCommitted());
 		TraceEvent event2 = req2.getStateVisitedEvent();
 		//assertEquals(event1, event2);  // Fails. Bug #158

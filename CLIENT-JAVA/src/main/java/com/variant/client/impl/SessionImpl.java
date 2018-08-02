@@ -1,6 +1,5 @@
 package com.variant.client.impl;
 
-import static com.variant.client.impl.ClientUserError.ACTIVE_REQUEST;
 import static com.variant.client.impl.ClientUserError.PARAM_CANNOT_BE_NULL;
 
 import java.util.Date;
@@ -165,10 +164,6 @@ public class SessionImpl implements Session {
 		if (state == null) 
 			throw new VariantException(PARAM_CANNOT_BE_NULL, "state");
 		
-		// Can't have two requests at one time
-		if (coreSession.getStateRequest() != null && !coreSession.getStateRequest().isCommitted()) {
-			throw new VariantException(ACTIVE_REQUEST);
-		}
 		server.requestCreate(this, state.getName());
 		return getStateRequest();
 	}

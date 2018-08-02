@@ -30,7 +30,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void noStabilTest() throws Exception {
 		
 		restartServer();
@@ -197,24 +197,20 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertTrue(req2.isCommitted());
 		
 		assertNotNull(ssn1.targetForState(state3));
-
-		ssn2.targetForState(state3);
 		
-		/*
 		new ClientExceptionInterceptor() {
 			@Override public void toRun() {
 			   	ssn2.targetForState(state3);
 			}
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ClientUserError.ACTIVE_REQUEST, e.getError());
+				assertEquals(ServerError.ACTIVE_REQUEST, e.getError());
 			}
 		}.assertThrown();
-*/
 	}
 
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
 		restartServer();
@@ -246,7 +242,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	 * Petclinic schema defines a qual and a targeting hook which will fail,
 	 * unless we create "user-agent" session attributes.
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void targetingHookExceptionTest() throws Exception {
 		
 		restartServer();
@@ -281,7 +277,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertTrue(req.isCommitted());
 	}
 	
-	//@org.junit.Test
+	@org.junit.Test
 	public void targetFromParallelConnectionsTest() throws Exception {
 		
 		restartServer();
