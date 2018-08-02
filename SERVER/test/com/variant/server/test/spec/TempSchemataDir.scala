@@ -7,7 +7,7 @@ import play.api.Application
 import com.variant.core.util.IoUtils
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.Configuration
-import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.play.VariantApplicationLoader
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 

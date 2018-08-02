@@ -11,7 +11,7 @@ import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.core.util.Constants._
 import com.variant.core.util.StringUtils
 import com.variant.server.api.Session
-import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.play.VariantApplicationLoader
 import com.variant.server.boot.VariantServer
 import com.variant.server.boot.SessionStore
 import com.variant.server.impl.SessionImpl

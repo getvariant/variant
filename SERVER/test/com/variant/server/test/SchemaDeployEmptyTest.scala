@@ -8,7 +8,7 @@ import com.variant.core.UserError.Severity
 import com.variant.core.schema.parser.error.SyntaxError
 import com.variant.core.util.IoUtils
 import com.variant.server.boot.ServerErrorLocal
-import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.play.VariantApplicationLoader
 import com.variant.server.boot.VariantServer
 import com.variant.server.test.util.ServerLogTailer
 

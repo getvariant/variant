@@ -16,7 +16,7 @@ import com.variant.server.api.Session
 import org.scalatest.TestData
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.play.VariantApplicationLoader
 import play.api.Configuration
 
 object EventTest {

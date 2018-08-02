@@ -19,7 +19,7 @@ import play.api.Application
 import org.scalatest.TestData
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.Configuration
-import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.play.VariantApplicationLoader
 import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerTest
 import com.variant.server.boot.VariantServer

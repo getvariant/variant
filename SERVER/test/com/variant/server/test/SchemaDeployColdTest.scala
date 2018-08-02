@@ -14,7 +14,7 @@ import org.scalatest.TestData
 import org.apache.commons.io.FileUtils
 import java.io.File
 import play.api.Configuration
-import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.play.VariantApplicationLoader
 
 /**
  * Test various schema deployment scenarios

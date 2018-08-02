@@ -1,15 +1,11 @@
-package com.variant.server.boot
+package com.variant.server.play
 
 import play.api.ApplicationLoader
 import play.api.Configuration
 import play.api.inject._
 import play.api.inject.guice._
 import play.api.Logger
-
-import com.typesafe.config.ConfigFactory
 import com.variant.core.conf.ConfigLoader
-
-import java.io.InputStreamReader
 
 /**
  * Inject Variant configuration into the application loader so that it has
@@ -21,7 +17,7 @@ import java.io.InputStreamReader
 /**
  * Statically accessible configuration logic that is accessible in any mode.
  */
-object VariantApplicationLoader { 
+object VariantApplicationLoader {
    
    def config = ConfigLoader.load("/variant.conf", "/com/variant/server/boot/variant-default.conf");
 

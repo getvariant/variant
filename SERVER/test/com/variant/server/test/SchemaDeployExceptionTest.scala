@@ -11,7 +11,7 @@ import com.variant.core.UserError.Severity._
 import com.variant.server.api.ConfigKeys
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.server.boot.VariantApplicationLoader
+import com.variant.server.play.VariantApplicationLoader
 import com.variant.server.boot.VariantServer
 import com.variant.server.test.spec.BaseSpec
 import com.variant.server.test.util.ServerLogTailer
