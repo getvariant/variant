@@ -22,15 +22,6 @@ class Module (environment: Environment, config: Configuration) extends AbstractM
 
    override def configure() = {
 
-      // Connection Store
-      //bind(classOf[ConnectionStore]).to(classOf[ConnectionStoreImpl]).asEagerSingleton
-
-      // Session Store
-      //bind(classOf[SessionStore]).to(classOf[SessionStoreImpl]).asEagerSingleton
-
-      // Application injector
-      //bind(classOf[ApplicationInjector]).to(classOf[PlayApplicationInjector]).asEagerSingleton
-
       // Variant server boot and shutdown
       bind(classOf[VariantServer]).to(classOf[VariantServerImpl]).asEagerSingleton
 
