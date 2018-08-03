@@ -10,7 +10,8 @@ root_dir=$(pwd)
 
 # All args are required
 if [ $# -ne 1 ]; then
-    echo "usage: `basename $0` target-dir"
+    echo "usage: `basename $0` target-dir" >&2
+    echo "but was: `basename $0` $@" >&2
     exit 1
 fi
 

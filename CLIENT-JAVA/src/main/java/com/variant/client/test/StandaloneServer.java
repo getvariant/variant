@@ -41,7 +41,7 @@ public class StandaloneServer {
 		// Run the command
 		String command = script + " build " + serverDir;
 		LOG.info(String.format("Building standalone server [%s]", command));
-		int rc = NativeProcess.execQuiet(script + " build " + serverDir);
+		int rc = NativeProcess.execQuiet(script + " " + serverDir);
 
 		if (rc != 0) {
 			throw new RuntimeException("Failed to build standalone server");
