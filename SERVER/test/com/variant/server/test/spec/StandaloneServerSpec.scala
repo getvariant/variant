@@ -1,7 +1,7 @@
 package com.variant.server.test.spec
 
 import scala.sys.process.stringSeqToProcess
-import scala.sys.process.Process
+import scala.sys.process._
 import scala.io.Source
 import scala.collection.mutable
 import org.scalatest.BeforeAndAfterAll
@@ -107,19 +107,30 @@ class StandaloneServer(serverDir: String) {
    // Build standalone server in serverDir.
    // Stdout is ignored. Stderr is sent to console.
    // Blocks until process terminates.
-   Seq("mbin/standaloneServer.sh", "build", serverDir).!!
+   Seq("mbin/standaloneServer.sh", serverDir).!!
    println(s"Built server in ${serverDir}")
-   
+
+   private[this] var svrProc: Process = _
+
    // Start server.
    val out = new LinkedBlockingQueue[String]()
    val err = new LinkedBlockingQueue[String]()
-
-   var svrProc: Process = _
-   
-   /**
-    * Start the server
+      
+  /**
+    * Start the server. Blocks until the server is confirmed to be up with both
+    * status message in the log and the health page. If no server after given timeout
+    * interval in seconds, throws a RuntimeException.
+    * 
     */
-   def start() {
+   def start(
+         // Optional list of -Dkey=value params to be passed to variant.sh in the form of a Map.
+         //   e.g. Map("http.port" -> "1234") becomes -Dhttp.port=1234
+         commandLineParams: Map[String,String] = Map(),
+         // Optional timeout interval in seconds.
+         timeout: Int = 5,
+         // A callback to call in case of Timeout
+         onTimeout: () => Unit = () => throw new RuntimeException(s"Timed out waiting for server to start")
+      ) {
       
       out.clear()
       err.clear()
@@ -135,51 +146,63 @@ class StandaloneServer(serverDir: String) {
             })
    
       // Run server asynchronously
-      svrProc = Seq("mbin/standaloneServer.sh", "start", serverDir).run(svrLog)
+      var paramString = ""
+      var port = "5377" // Default
+      
+      commandLineParams.foreach { t => 
+         paramString += " -D" + t._1 + "=" + t._2
+         if (t._1 == "http.port") port = t._2      
+      }
+      svrProc = (serverDir + "/bin/variant.sh start " + paramString.toString).run(svrLog)
       
       // Block until we read the line with message 431.
       var started = false
-      while (!started) {
-         val line = out.poll(5, TimeUnit.SECONDS)
-         if (line == null)
-            throw new RuntimeException("Timed out waiting for server to start")
-         if (line.matches(".*\\[431\\].*bootstrapped.*")) started = true;
+      var failed = false
+      while (!started && !failed) {
+         val line = out.poll(timeout, TimeUnit.SECONDS)
+         
+         // If we timed out, do the onTimeout function
+         // Otherwise, keep checking.
+         if (line == null) {
+            onTimeout()
+            failed = true
+         }
+         else if (line.matches(".*\\[431\\].*bootstrapped.*")) started = true;
       }
       
-      // Confirm the server is running at this point.
-      // Give the server time to bind to port -- happens last
-      var timeoutMillis = 20000
-      var waited = 0L
-      var confirmed  = false
-      while (!confirmed && waited < timeoutMillis) {
-         try {   
-            val health = Source.fromURL("http://localhost:5377/variant").mkString
-            if (!health.startsWith(VariantServer.productName))
-               throw new RuntimeException (s"Unexpected halth response from server [${health}]")
-            confirmed = true;
+      if (!failed) {
+         // Confirm the server is running at this point.
+         // Give the server time to bind to port -- happens last
+         var timeoutMillis = 20000
+         var waited = 0L
+         var confirmed  = false
+         while (!confirmed && waited < timeoutMillis) {
+            try {
+               val health = Source.fromURL("http://localhost:" + port + "/variant").mkString
+               if (!health.startsWith(VariantServer.productName))
+                  throw new RuntimeException (s"Unexpected halth response from server [${health}]")
+               confirmed = true;
+            }
+            catch { 
+               case t:Throwable => 
+                  Thread.sleep(100)
+                  waited += 100
+            }
          }
-         catch { 
-            case t:Throwable => 
-               println("************** " + t.getMessage)
-               Thread.sleep(100)
-               waited += 100
-         }
+         
+         if (waited >= timeoutMillis)
+            throw new RuntimeException(s"Timed out waiting for standalone server to come up after ${waited} millis")
       }
-      
-      if (waited >= timeoutMillis)
-         throw new RuntimeException(s"Timed out waiting for standalone server to come up after ${waited} millis")
    }
    
    /**
     * Stop this server.
     * Stdout and stderr are sent to console.
     */
-   def stop() {
-      out.clear()
-      err.clear()
+   def stop() {  
 
-      // This actually kills the server.
-      Seq("mbin/standaloneServer.sh", "stop", serverDir).!
+      (serverDir + "/bin/variant.sh stop").!
+
       // Wait until the server process exits.
       val svrExitStatus = svrProc.exitValue
       println(s"Server process completed with status ${svrExitStatus}")
@@ -188,8 +211,12 @@ class StandaloneServer(serverDir: String) {
          throw new RuntimeException(s"Server process exited with error status ${svrExitStatus}")
          * 
          */
+      
+      out.clear()
+      err.clear()
+      svrProc = null;
+      
       // Let the server shutdown clean.
-      Thread.sleep(250)
-
+      // Thread.sleep(250)
    }
 }

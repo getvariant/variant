@@ -1,62 +1,47 @@
 #! /bin/bash
 
+#
+# BUILD A PRODUCTION SERVER IN A GIVEN DIRECTORY
+# USED FOR TESTING.
+#
+
 cd `dirname $0`/../../SERVER
 root_dir=$(pwd)
 
 # All args are required
-if [ $# -lt 2 ]; then
-    echo "usage: `basename $0` {build|start|stop} target-dir jvm_params"
+if [ $# -ne 1 ]; then
+    echo "usage: `basename $0` target-dir"
     exit 1
 fi
 
-server_dir=$2
+server_dir=$1
 
 #
 # Main
 #
-case "$1" in
-build)
 
-    # Preserve the target directory, if we're running inside an sbt forked test,
-    # as it will be blown away by release.sh
-    if [ -e target ]; then
-        rm -rf /tmp/target
-        mv target /tmp
-    fi
-       
-    # Build the server
-    mbin/release.sh
+# Preserve the target directory, if we're running inside an sbt forked test,
+# as it will be blown away by release.sh
+if [ -e target ]; then
+    rm -rf /tmp/target
+    mv target /tmp
+fi
+   
+# Build the server
+mbin/release.sh
 
-    # Unzip server to a temp directory
-    rm -rf ${server_dir}
-    mkdir ${server_dir}
-    unzip target/universal/variant-server-*.zip -d ${server_dir}
-    mv ${server_dir}/variant-server-*/* ${server_dir}
-    rmdir ${server_dir}/variant-server-*
-    cp standalone-server/conf/variant.conf ${server_dir}/conf
-    cp standalone-server/ext/* ${server_dir}/ext
-    
-    # Restore the target directory.
-    if [ -e /tmp/target ]; then
-        rm -rf target
-        mv /tmp/target .
-    fi
+# Unzip server to a temp directory
+rm -rf ${server_dir}
+mkdir ${server_dir}
+unzip target/universal/variant-server-*.zip -d ${server_dir}
+mv ${server_dir}/variant-server-*/* ${server_dir}
+rmdir ${server_dir}/variant-server-*
+cp standalone-server/conf/variant.conf ${server_dir}/conf
+cp standalone-server/ext/* ${server_dir}/ext
 
-    ;;
+# Restore the target directory.
+if [ -e /tmp/target ]; then
+    rm -rf target
+    mv /tmp/target .
+fi
 
-start)
-    # Start the server
-    lsof -n -i4TCP:5377 | grep LISTEN | awk '{print $2}' | xargs kill
-    shift 2
-    ${server_dir}/bin/variant.sh start $@
-    ;;
-
-stop)
-    # Stop the server
-    ${server_dir}/bin/variant.sh stop
-    ;;
-
-*)
-        echo "usage: `basename $0` {build|start|stop} target-dir"
-        exit 1
-esac

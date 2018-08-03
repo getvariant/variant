@@ -26,7 +26,7 @@
 
   <logger name="play" level="WARN" />
   <logger name="application" level="WARN" />
-  <logger name="com.variant" level="INFO" />
+  <logger name="com.variant" level="debug" />
 
   <!-- Off these ones as they are annoying, and anyway we manage configuration ourselves -->
   <logger name="com.avaje.ebean.config.PropertyMapLoader" level="OFF" />
