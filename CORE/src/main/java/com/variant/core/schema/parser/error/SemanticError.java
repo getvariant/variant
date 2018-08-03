@@ -291,11 +291,13 @@ public class SemanticError extends ParserError {
 	// 
 	// 171-200 Schema parser Other
 	//
+	// Note that 171 is taken by the SyntaxError.JSON_SYTAX_ERROR.
+	
 	public static final SemanticError UNSUPPORTED_PROPERTY =
-			new SemanticError(171, Severity.WARN,  "Unsupported property [%s]");
+			new SemanticError(172, Severity.WARN,  "Unsupported property [%s]");
 
 	public static final SemanticError NAME_INVALID =
-			new SemanticError(172, Severity.ERROR, "Property 'name' must be a string, containing letters, digits and _, and cannot start with a digit"); 
+			new SemanticError(173, Severity.ERROR, "Property 'name' must be a string, containing letters, digits and _, and cannot start with a digit"); 
 
 	public static final SemanticError NAME_MISSING =
 			new SemanticError(174, Severity.ERROR, "Property 'name' is missing"); 

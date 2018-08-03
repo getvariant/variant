@@ -60,7 +60,11 @@ public abstract class SchemaParser implements Keywords {
 	
 	/**
 	 * Schema pre-parser.
-	 * 1. Remove comments (// to EOL.
+	 * 
+	 * 1. Remove comments: // to EOL.
+	 *    Pay attention to when we're inside or outside of quotation marks (both single or double):
+	 *    '//' inside quotation mark is just part of a JSON string.
+	 *    
 	 * 2. (TODO) variable expansion?
 	 * 
 	 * @param annotatedJsonString
@@ -68,27 +72,54 @@ public abstract class SchemaParser implements Keywords {
 	 */
 	private String preParse(String annotatedJsonString) {
 		
-		// Pass 1. Remove //-style comments.
+		// Pass 1. Remove comments.
 		StringBuilder result = new StringBuilder();
-		String lines[] = annotatedJsonString.split("\n");
-		for (String line: lines) {
-			
-			int commentIndex = line.indexOf("//");
-			
-			if (commentIndex == 0) {
-				// full line - skip.
-				continue;
-			}
-			else if (commentIndex >= 0) {
-				// partial line: remove from // to eol.
-				result.append(line.substring(0, commentIndex));
+		
+		boolean quoted = false;
+		boolean comment = false;
+		boolean first = true;
+		char prev = 0;  // Just for compiler's sake.
+
+		for (char c: annotatedJsonString.toCharArray()) {
+						
+			if (first) {
+				first = false;
+				if (c != '/') result.append(c);
 			}
 			else {
-				result.append(line);
-			}
-			result.append('\n');
-		}		
+				// If prev unquoted char was / and this one isn't, print the prev char as
+				// we hold the first / in case it's followed by another /.
+				if (!quoted && !comment && c != '/' && prev == '/') result.append('/');
+				
+				switch (c) {
 
+				case '"': 
+				case '\'':
+					if (!comment) {
+						quoted = ! quoted;
+						result.append(c);
+					}
+					break;
+
+				case '/':
+					if (quoted) result.append(c);
+					else if (prev == '/') comment = true;
+					break;
+					
+				case '\n':
+					comment = false;
+					result.append(c);
+					break;
+					
+				default:
+					if (!comment) result.append(c);
+				}
+			}			
+			prev = c;
+		}
+
+		// TODO: Pass 2. Expansion Variables.
+		
 		return result.toString();
 	}
 	

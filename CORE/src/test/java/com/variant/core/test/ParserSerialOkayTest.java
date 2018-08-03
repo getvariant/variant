@@ -43,7 +43,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 					    "      ],                                                                  \n" +
 					    "      'flusher': {                                                        \n" +
 					    "        'class':'flusher.class.Foo',                                      \n" +  
-					    "        'init':{}                                                         \n" +
+					    "        'init':{'url':'jdbc:postgresql://localhost/variant\','user':'variant','password': 'variant'} \n" +
 					    "       }                                                                  \n" +
  		    		    "  },                                                                      \n" +
 			    	    //==========================================================================//
@@ -177,7 +177,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Flusher flusher = schema.getMeta().getFlusher();
 		assertNotNull(flusher);
 		assertEquals("flusher.class.Foo", flusher.getClassName());
-		assertEquals("{}", flusher.getInit());
+		assertEquals("{\"url\":\"jdbc:postgresql://localhost/variant\",\"user\":\"variant\",\"password\":\"variant\"}", flusher.getInit());
 
 		Test test1 = schema.getTest("test1");
 		Test test2 = schema.getTest("test2");
@@ -1108,6 +1108,5 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		
 	}
 
-	
 }
 
