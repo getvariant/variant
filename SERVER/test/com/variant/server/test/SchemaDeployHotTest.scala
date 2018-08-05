@@ -11,7 +11,6 @@ import com.variant.server.test.controller.SessionTest
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.spec.TempSchemataDir
 import com.variant.server.test.spec.TempSchemataDir.dirWatcherLatencyMsecs
-import com.variant.server.test.spec.TempSchemataDir.schemataDir
 import com.variant.server.test.spec.TempSchemataDir.sessionTimeoutSecs
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.ServerLogTailer
