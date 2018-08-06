@@ -1,20 +1,11 @@
-package com.variant.server.test;
+package com.variant.server.test.extapi
 
-import com.variant.core.schema.State
-import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
-import com.variant.core.schema.Test
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.impl.ServerError._
-import com.variant.server.api.ServerException
-import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.core.schema.parser.error.SemanticError
-import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
-import com.variant.server.test.hooks.TestParsedHook
-import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.test.hooks.StateParsedHook2Constructors
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec

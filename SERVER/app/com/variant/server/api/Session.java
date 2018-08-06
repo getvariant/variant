@@ -53,8 +53,8 @@ public interface Session {
 	public Map<State, Integer> getTraversedStates(); 
 
 	/**
-	 * The schema generation, associated with this session.
-	 * 
+	 * Get variation schema, associated with this session.
+	 *  
 	 * @return An object of type {@link Schema}
 	 * 
 	 * @since 0.9

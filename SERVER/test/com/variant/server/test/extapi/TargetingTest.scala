@@ -1,11 +1,10 @@
-package com.variant.server.test
+package com.variant.server.test.extapi
 
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.hooks.TestTargetingHook
 import com.variant.server.test.hooks.TestTargetingHookNil
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.api.ServerException
-import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.BaseSpecWithServerAsync
 import com.variant.core.impl.ServerError

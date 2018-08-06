@@ -1,13 +1,10 @@
-package com.variant.server.test
+package com.variant.server.test.extapi
 
 import scala.io.Source
 import scala.collection.JavaConversions._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.hooks.TestQualificationHookNil
-import com.variant.core.schema.Hook
-import com.variant.server.schema.SchemaDeployer.fromString
-import com.variant.server.api.Session
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.impl.StateRequestImpl
