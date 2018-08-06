@@ -4,27 +4,25 @@ import java.util.Set;
 
 import com.variant.core.TraceEvent;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.CoreSession;
 
 /**
  * A enriched Variant trace event that can be flushed by {@link EventFlusher}. Instantiated by Variant server
  * and passed to an externally configured implementation of {@link EventFlusher}.
  * Extends {@link TraceEvent} with methods exposing runtime details of the underlying {@code TraceEvent}.
  * 
- * @author Igor Urisman
  * @since 0.7
  */
-public interface FlushableEvent extends TraceEvent {
+public interface FlushableTraceEvent extends TraceEvent {
 
 	
 	/**
-	 * The current Variant session.
+	 * The Variant session which created this trace event.
 	 * 
-	 * @return An object of type {@link VariantCoreSession}.
+	 * @return An object of type {@link Session}.
 	 * 
 	 * @since 0.7
 	 */
-	public CoreSession getSession();
+	public Session getSession();
 	
 	/**
 	 * Live experiences in effect at the time this event was generated.

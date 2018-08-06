@@ -9,7 +9,7 @@ import com.variant.core.session.CoreStateRequest
 import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.server.api.Session
 import com.variant.server.api.StateRequest
-import com.variant.server.event.FlushableEventImpl
+import com.variant.server.event.FlushableTraceEventImpl
 import com.variant.server.schema.SchemaGen
 import com.variant.server.api.ServerException
 import com.variant.core.impl.ServerError
@@ -116,7 +116,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
     * 
     */
 	def triggerEvent(event: TraceEvent) {
-		schemaGen.eventWriter.write(new FlushableEventImpl(event, coreSession));
+		schemaGen.eventWriter.write(new FlushableTraceEventImpl(event, this));
 	}
 	
 	/*

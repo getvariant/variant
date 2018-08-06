@@ -9,7 +9,8 @@ import java.util.Set;
 import com.variant.core.TraceEvent;
 import com.variant.core.schema.Test.Experience;
 import com.variant.core.session.CoreSession;
-import com.variant.server.api.FlushableEvent;
+import com.variant.server.api.FlushableTraceEvent;
+import com.variant.server.api.Session;
 
 /**
  * Flushable event implementation suitable for the server.
@@ -17,20 +18,20 @@ import com.variant.server.api.FlushableEvent;
  * @author Igor.
  *
  */
-public class FlushableEventImpl implements FlushableEvent, Serializable {
+public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializable {
 			
 	/**
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private CoreSession session;
+	private Session session;
 	private TraceEvent userEvent;
 	
 	/**
 	 * Constructor
 	 * @return
 	 */
-	public FlushableEventImpl(TraceEvent event, CoreSession session) {
+	public FlushableTraceEventImpl(TraceEvent event, Session session) {
 		this.userEvent = event;		
 		this.session = session;
 	}
@@ -61,7 +62,7 @@ public class FlushableEventImpl implements FlushableEvent, Serializable {
 	}
 	
 	@Override
-	public CoreSession getSession() {
+	public Session getSession() {
 		return session;
 	}
 

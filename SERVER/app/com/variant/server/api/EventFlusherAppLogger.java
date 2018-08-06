@@ -43,10 +43,10 @@ public class EventFlusherAppLogger implements EventFlusher {
 	}
 
 	@Override
-	public void flush(Collection<FlushableEvent> events)
+	public void flush(Collection<FlushableTraceEvent> events)
 			throws Exception {
 
-		for (FlushableEvent event: events) {
+		for (FlushableTraceEvent event: events) {
 			StringBuilder msg = new StringBuilder();
 			msg.append("{")
          .append("event_name:'").append(event.getName()).append("', ")

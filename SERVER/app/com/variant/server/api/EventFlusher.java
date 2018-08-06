@@ -12,7 +12,7 @@ import java.util.Collection;
  * system properties.
  * 
  * <p>The implementation should expect Variant 
- * server to periodically call {@link #flush(Collection)} with a collection of {@link FlushableEvent}s,
+ * server to periodically call {@link #flush(Collection)} with a collection of {@link FlushableTraceEvent}s,
  * ready to be flushed. The frequency of this call and the likely number of events in the collection depend
  * on the rate of event production and the following system properties:
  * <ul>
@@ -46,12 +46,12 @@ public interface EventFlusher {
 	/**
 	 * <p>Called by the server, whenever the asynchronous event writer needs to flush events from memory. 
 	 * 
-	 * @param events A collection of decorated trace events {@link FlushableEvent} to be written off.
+	 * @param events A collection of decorated trace events {@link FlushableTraceEvent} to be written off.
 	 *               The size of the collection may be up to the size defined by the 
      *               variant.event.writer.buffer.size configuration property.
 	 * 
 	 * @see EventFlusherH2, EventFlusherPostgres
 	 * @since 0.7
 	 */
-	public void flush(Collection<FlushableEvent> events) throws Exception;
+	public void flush(Collection<FlushableTraceEvent> events) throws Exception;
 }

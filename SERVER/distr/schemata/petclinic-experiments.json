@@ -9,6 +9,17 @@
    'meta':{
       'name':'petclinic_experiments',
       'comment':'Variation schema for experiments on the Pet Clinic demo application'
+      // The default flusher appends to the server log file log/variant.log
+      // To have trace events written off to a PostgreSQL database, uncomment below
+      // and specify the appropriate JDBC credentials.
+      // ,'flusher': {
+      //  'class':'com.variant.server.api.EventFlusherPostgres',
+      //  'init': {
+      //	  'url':'jdbc:postgresql://localhost/variant',
+      //      'user':'variant',
+      //       'password':'variant;
+      //  }
+      // }
    },
    'states':[                                                
      { 

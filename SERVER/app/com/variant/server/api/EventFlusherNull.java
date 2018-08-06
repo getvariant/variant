@@ -16,7 +16,7 @@ public class EventFlusherNull implements EventFlusher {
 	private static final Logger LOG = LoggerFactory.getLogger(EventFlusherNull.class);
 		
 	@Override
-	public void flush(Collection<FlushableEvent> events) throws Exception {
+	public void flush(Collection<FlushableTraceEvent> events) throws Exception {
 			LOG.debug(String.format("Discarded %s events.", events.size()));
 	}
 
