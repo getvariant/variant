@@ -17,7 +17,7 @@
       //  'init': {
       //	  'url':'jdbc:postgresql://localhost/variant',
       //      'user':'variant',
-      //       'password':'variant;
+      //       'password':'variant'
       //  }
       // }
    },
