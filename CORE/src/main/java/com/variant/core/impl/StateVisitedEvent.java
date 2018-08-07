@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.variant.core.schema.State;
 import com.variant.core.session.CoreSession;
+import com.variant.core.util.immutable.ImmutableMap;
 
 
 @SuppressWarnings("serial")
@@ -18,7 +19,14 @@ public class StateVisitedEvent extends TraceEventSupport implements Serializable
 		super(session, EVENT_NAME);
 		value = state.getName();
 	}
-	
+
+	/**
+	 * Flushiers will need to get to the attribute map.
+	 * @return
+	 */
+	public Map<String,String> getAttributes() {
+		return new ImmutableMap<String,String>(attributes);
+	}
 	/**
 	 * Private instantiation, for desearialization, when state is not yet known.
 	 */

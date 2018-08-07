@@ -5,23 +5,38 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.variant.core.TraceEvent;
+import com.variant.core.impl.StateVisitedEvent;
+import com.variant.core.util.immutable.ImmutableMap;
 
 /**
  * Event received over HTTP and suitable to pass to the Core API.
  */
-public class ServerEvent implements TraceEvent {
+public class ServerTraceEvent  implements TraceEvent {
 
 	private String name;
 	private String value;
 	private Date createDate = new Date();
-	private Map<String,String> params = new HashMap<String,String>();
+	private Map<String,String> attributes = new HashMap<String,String>();
 	
-	public ServerEvent(String name, String value, Date createDate) {
+	/**
+	 * Construct a trace event from scratch
+	 */
+	public ServerTraceEvent(String name, String value, Date createDate) {
 		this.name = name;
 		this.value = value;
 		this.createDate = createDate;
 	}
 	
+	/**
+	 * Construct a trace event from a core trace event.
+	 */
+	public ServerTraceEvent(StateVisitedEvent sve) {
+		this.name = sve.getName();
+		this.value = sve.getValue();
+		this.createDate = sve.getCreateDate();
+		attributes.putAll(sve.getAttributes());
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -42,8 +57,18 @@ public class ServerEvent implements TraceEvent {
 	}
 
 	@Override
-	public Map<String, String> getParameterMap() {
-		return params;
+	public String clearAttribute(String key) {
+		return attributes.remove(key);
+	}
+
+	@Override
+	public String getAttribute(String key) {
+		return attributes.get(key);
+	}
+
+	@Override
+	public String setAttribute(String key, String val) {
+		return attributes.put(key, value);
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -51,6 +76,11 @@ public class ServerEvent implements TraceEvent {
 	//---------------------------------------------------------------------------------------------//
 	
 	public void setParameter(String key, String value) {
-		params.put(key, value);
+		attributes.put(key, value);
 	}
+
+	public Map<String, String> getAttributes() {
+		return new ImmutableMap<String, String>(attributes);
+	}
+
 }

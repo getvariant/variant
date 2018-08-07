@@ -18,11 +18,11 @@ import com.variant.core.session.CoreSession;
  */
 abstract public class TraceEventSupport implements TraceEvent {
 		
+	protected Map<String, String> attributes = new HashMap<String, String>();
 	protected final CoreSession session;
 	protected String name;
 	protected String value;
 	protected Date createDate = new Date();
-	protected Map<String, String> params = new HashMap<String, String>();
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -44,39 +44,31 @@ abstract public class TraceEventSupport implements TraceEvent {
 	public String getValue() {
 		return value;
 	}
-
-	@Override
-	public Map<String,String> getParameterMap() {
-		return params;
-	}
 	
 	@Override
 	public Date getCreateDate() {
 		return createDate;
 	}
 
-	//---------------------------------------------------------------------------------------------//
-	//                                        PUBLIC EXT                                           //
-	//---------------------------------------------------------------------------------------------//
-
-	/**
-	 * 
-	 * @param key
-	 * @param value
-	 *
-	public void setParameter(String key, String value) {
-		params.put(key, value);
+	@Override
+	public String setAttribute(String key, String value) {
+		return attributes.put(key, value);
 	}
 
-	public String getParameter(String key) {
-		return params.get(key);
+	@Override
+	public String getAttribute(String key) {
+		return attributes.get(key);
 	}
-	*/
 	
+	@Override
+	public String clearAttribute(String key) {
+		return attributes.remove(key);
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                       Serialization                                          //
 	//---------------------------------------------------------------------------------------------//
-
+	
 	protected static final String FIELD_NAME_SID = "sid";
 	private static final String FIELD_NAME_KEY = "key";
 	private static final String FIELD_NAME_NAME = "name";
@@ -99,9 +91,9 @@ abstract public class TraceEventSupport implements TraceEvent {
 			jsonGen.writeStringField(FIELD_NAME_NAME, getName());
 			jsonGen.writeStringField(FIELD_NAME_VALUE, getValue());
 			
-			if (!params.isEmpty()) {
+			if (!attributes.isEmpty()) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_PARAMS);
-				for (Map.Entry<String,String> e: params.entrySet()) {
+				for (Map.Entry<String,String> e: attributes.entrySet()) {
 					jsonGen.writeStartObject();
 					jsonGen.writeStringField(FIELD_NAME_KEY, e.getKey());
 					jsonGen.writeStringField(FIELD_NAME_VALUE, e.getValue());
@@ -136,7 +128,7 @@ abstract public class TraceEventSupport implements TraceEvent {
 		List<Map<String,String>> params = (List<Map<String,String>>) mappedJson.get(FIELD_NAME_PARAMS);
 		if (params != null) {
 			for (Map<String,String> p: params) {
-				result.params.put(p.get(FIELD_NAME_KEY), p.get(FIELD_NAME_VALUE));
+				result.attributes.put(p.get(FIELD_NAME_KEY), p.get(FIELD_NAME_VALUE));
 			}
 		}
 		return result;

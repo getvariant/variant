@@ -180,7 +180,7 @@ public interface Session {
 	public void triggerTraceEvent(TraceEvent event);
 		
 	/**
-	 * <p>Set a session attribute.
+	 * Set a session attribute.
 	 * 
 	 * @param name Attribute name. Cannot be <code>null</code>.
 	 * @param value Attribute value. Cannot be <code>null</code>.
@@ -194,7 +194,7 @@ public interface Session {
 	public String setAttribute(String name, String value);
 	
 	/**
-	 * <p>Retrieve the value of a session attribute.
+	 * <Retrieve the value of a session attribute.
 	 * 
 	 * @param name Attribute name.
 	 * @return The string value associated with this name.
@@ -207,7 +207,7 @@ public interface Session {
 	public String getAttribute(String name);
 
 	/**
-	 * <p>Remove a session attribute.
+	 * Remove a session attribute.
 	 * 
 	 * @param name Attribute name.
 	 * @return The string value previously associated with this <code>name</name>, or <code>null</code> if none.

@@ -83,10 +83,10 @@ class RequestController @Inject() (
 		// We won't have an event if nothing is instrumented on this state, or session
       // is disqualified for the test(s) instrumented on this state.
       if (sve != null) {
-	      sve.getParameterMap().put("$REQ_STATUS", ssn.getStateRequest.getStatus.name);
+	      sve.setAttribute("$REQ_STATUS", ssn.getStateRequest.getStatus.name);
 			// log all resolved state params as event params.
       	for ((key, value) <- ssn.getStateRequest.getResolvedParameters()) {
-		      sve.getParameterMap().put(key, value);				
+		      sve.setAttribute(key, value);				
 	      }
    		// Trigger state visited event
 	   	ssn.triggerEvent(sve);

@@ -154,7 +154,8 @@ public class SessionImpl implements Session {
 	}
 
 	/**
-	 * 
+	 * Target this session for a given state.
+	 * This also creates the state visited event.
 	 */
 	@Override
 	public StateRequest targetForState(State state) {

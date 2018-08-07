@@ -1,7 +1,6 @@
 package com.variant.core;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
  * A Variant trace event that can be triggered. Variant trace events are the elementary data points, 
@@ -44,13 +43,40 @@ public interface TraceEvent {
 	public Date getCreateDate();
 	
 	/**
-	 * Event parameters. An event may have any number of custom parameters which are
-	 * simple key-value pairs. These will be passed without interpretation to the externally
-	 * configured event flusher which is expected to do something meaningful with them.
+	 * Set a trace event attribute.
+	 * Local operation. Event attributes are not sent to the server
+	 * until they are triggered either explicitly with the <code>Session.triggerTraceEvent()</code>
+	 * method, or implicitly when a state request object is committed.
 	 * 
-	 * @return A map of event parameters as key/value pairs.
-	 * @since 0.5
+	 * @param name Attribute name. Cannot be <code>null</code>.
+	 * @param value Attribute value. Cannot be <code>null</code>.
+	 * @return The string value previously associated with this <code>name</code>, or <code>null</code> if none.
+	 * 
+	 * @since 0.9
 	 */
-	public Map<String, String> getParameterMap();
+	public String setAttribute(String name, String value);
+	
+	/**
+	 * Retrieve the value of an event attribute.
+	 * 
+	 * @param name Attribute name.
+	 * @return The string value associated with this name.
+	 * 
+	 * @since 0.9
+	 */
+	public String getAttribute(String name);
+
+	/**
+	 * Remove a session attribute.
+	 * Local operation. Event attributes are not sent to the server
+	 * until they are triggered either explicitly with the <code>Session.triggerTraceEvent()</code>
+	 * method, or implicitly when a state request object is committed.
+	 * 
+	 * @param name Attribute name.
+	 * @return The string value previously associated with this <code>name</name>, or <code>null</code> if none.
+	 * 
+	 * @since 0.9
+	 */
+	public String clearAttribute(String name);
 
 }

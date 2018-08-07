@@ -14,7 +14,7 @@ import play.api.mvc.AnyContent
 import play.api.libs.json.JsValue
 import play.api.http.HeaderNames
 import scala.collection.mutable.Map
-import com.variant.server.event.ServerEvent
+import com.variant.server.event.ServerTraceEvent
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.boot.VariantServer
 import com.variant.server.api.ServerException
@@ -63,7 +63,7 @@ class EventController @Inject() (
       if (ssn.getStateRequest == null)
          throw new ServerException.Remote(UNKNOWN_STATE)   
 
-      val event = new ServerEvent(name, value, new Date(timestamp));  
+      val event = new ServerTraceEvent(name, value, new Date(timestamp));  
       
       params.foreach(p => {
          val name = (p \ "name").asOpt[String].getOrElse {

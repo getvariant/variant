@@ -8,7 +8,6 @@ import java.util.Set;
 
 import com.variant.core.TraceEvent;
 import com.variant.core.schema.Test.Experience;
-import com.variant.core.session.CoreSession;
 import com.variant.server.api.FlushableTraceEvent;
 import com.variant.server.api.Session;
 
@@ -25,13 +24,13 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	private static final long serialVersionUID = 1L;
 
 	private Session session;
-	private TraceEvent userEvent;
+	private ServerTraceEvent userEvent;
 	
 	/**
 	 * Constructor
 	 * @return
 	 */
-	public FlushableTraceEventImpl(TraceEvent event, Session session) {
+	public FlushableTraceEventImpl(ServerTraceEvent event, Session session) {
 		this.userEvent = event;		
 		this.session = session;
 	}
@@ -57,8 +56,8 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	}
 
 	@Override
-	public Map<String,String> getParameterMap() {
-		return userEvent.getParameterMap();
+	public Map<String,String> getAttributes() {
+		return userEvent.getAttributes();
 	}
 	
 	@Override
@@ -103,7 +102,7 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 		.append("eventValue:").append(getValue()).append("', ")
 		.append("params:{");
 		boolean first = true;
-		for (Map.Entry<String, String> e: getParameterMap().entrySet()) {
+		for (Map.Entry<String, String> e: getAttributes().entrySet()) {
 			if (first) first = false;
 			else result.append(",");
 			result.append("'").append(e.getKey()).append("':");

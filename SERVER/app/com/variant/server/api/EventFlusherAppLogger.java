@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
 import com.variant.core.schema.Test.Experience;
+import com.variant.server.event.FlushableTraceEventImpl;
 
 /**
  * An implementation of {@link EventFlusher}, which appends trace events
@@ -69,10 +70,10 @@ public class EventFlusherAppLogger implements EventFlusher {
    			msg.append("]");
 			}			
 			
-	      if (!event.getParameterMap().isEmpty()) {
+	      if (!event.getAttributes().isEmpty()) {
             msg.append(", event_params:[");
             boolean first = true;
-	         for (Map.Entry<String, String> param: event.getParameterMap().entrySet()) {
+	         for (Map.Entry<String, String> param: event.getAttributes().entrySet()) {
 	            if (first) first = false;
 	            else msg.append(", ");
 	            msg.append("{")

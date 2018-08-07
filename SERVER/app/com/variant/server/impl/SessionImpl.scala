@@ -14,6 +14,7 @@ import com.variant.server.schema.SchemaGen
 import com.variant.server.api.ServerException
 import com.variant.core.impl.ServerError
 import com.variant.core.schema.impl.StateVariantImpl
+import com.variant.server.event.ServerTraceEvent
 
 /**
  * Server session enriches core session with server side functionality.
@@ -116,7 +117,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
     * 
     */
 	def triggerEvent(event: TraceEvent) {
-		schemaGen.eventWriter.write(new FlushableTraceEventImpl(event, this));
+		schemaGen.eventWriter.write(new FlushableTraceEventImpl(event.asInstanceOf[ServerTraceEvent], this));
 	}
 	
 	/*

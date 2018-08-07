@@ -14,7 +14,6 @@ import java.util.Set;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.core.StateRequestStatus;
-import com.variant.core.TraceEvent;
 import com.variant.core.impl.CoreException;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
@@ -110,7 +109,7 @@ public class CoreStateRequest implements Serializable {
 		return new CaseInsensitiveImmutableMap<String>(resolvedParameterMap);
 	}
 	
-	public TraceEvent getStateVisitedEvent() {		
+	public StateVisitedEvent getStateVisitedEvent() {		
 		return event;
 	}
 
