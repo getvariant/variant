@@ -63,8 +63,6 @@ class RequestController @Inject() (
    /**
     * PUT
     * Commit a state request.
-    * We override the default parser because Play sets it to ignore for the DELETE operation.
-    * (More discussion: https://github.com/playframework/playframework/issues/4606)
     */
    def commit() = action { req =>
 

@@ -10,6 +10,7 @@ import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.core.TraceEvent;
+import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 
@@ -40,9 +41,9 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals(5, req1.getLiveExperiences().size());
 		
 		TraceEvent event1 = req1.getStateVisitedEvent();
-		assertEquals(0, event1.getParameterMap().size());
+		assertEquals(0, ((StateVisitedEvent)event1).getAttributes().size());
 
-		event1.getParameterMap().put("foo", "bar");
+		event1.setAttribute("foo", "bar");
 		
 
 		// Reget the session. Should have the event params.		

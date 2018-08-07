@@ -287,7 +287,6 @@ public class Server {
 
 	/**
 	 * POST /request.
-     * Create a state request by targeting session for a state
 	 */
 	public void requestCreate(SessionImpl ssn, String state) {
 
@@ -305,6 +304,7 @@ public class Server {
 		}.run(ssn);
 		
 		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
+		
 	}
 
 	/**

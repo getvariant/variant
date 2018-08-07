@@ -502,7 +502,8 @@ public class Runtime {
 		else {
 			LOG.trace("Session [" + session.getId() + "] touched state [" + state.getName() +"]");
 			ssnImpl.addTraversedState(stateImpl);
-			((StateRequestImpl)session.getStateRequest()).createStateVisitedEvent();
+			// Do not create state visited event on the server. See #158
+			// ((StateRequestImpl)session.getStateRequest()).createStateVisitedEvent();
 		}		
 	}
 	

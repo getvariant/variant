@@ -155,7 +155,8 @@ public class SessionImpl implements Session {
 
 	/**
 	 * Target this session for a given state.
-	 * This also creates the state visited event.
+     * State visited event is not part of the session's shared state, so we create it here
+     * and it remains a local object, until it gets sent to the server with request commit.
 	 */
 	@Override
 	public StateRequest targetForState(State state) {
@@ -166,6 +167,13 @@ public class SessionImpl implements Session {
 			throw new VariantException(PARAM_CANNOT_BE_NULL, "state");
 		
 		server.requestCreate(this, state.getName());
+		
+		// This logic requires we have the request object back from the server
+		// and in the current session.
+		StateRequestImpl req = (StateRequestImpl) getStateRequest();
+		if (!state.getInstrumentedTests().isEmpty() && !req.getLiveExperiences().isEmpty()) {
+			req.createStateVisitedEvent();
+		}
 		return getStateRequest();
 	}
 	

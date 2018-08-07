@@ -86,12 +86,12 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 		assertEquals(ssn, req.getSession());
 		assertEquals(state1, req.getState());
-		TraceEvent event = req.getStateVisitedEvent();
+		StateVisitedEvent event = (StateVisitedEvent) req.getStateVisitedEvent();
 		assertNotNull(event);
 		assertEquals(StateVisitedEvent.EVENT_NAME, event.getName());
 		assertEquals(req.getState().getName(), event.getValue());
 		assertEquals(ssn.getCreateDate().getTime(), event.getCreateDate().getTime(), 10);
-		assertTrue(event.getParameterMap().isEmpty());
+		assertTrue(event.getAttributes().isEmpty());
 				
 		assertTrue(req.commit());
 		assertTrue(req.isCommitted());

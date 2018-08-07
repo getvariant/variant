@@ -135,8 +135,8 @@ public class StateRequestImpl implements StateRequest {
 		this.coreRequest = coreRequest;
 	}
 	
-	public CoreStateRequest getCoreStateRequest() {
-		return coreRequest;
+	public void createStateVisitedEvent() {
+		coreRequest.createStateVisitedEvent();
 	}
 	
 }
